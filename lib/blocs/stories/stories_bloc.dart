@@ -66,8 +66,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       _storiesRepository
           .fetchStoriesStream(
               ids: state.storyIdsByType[event.type]!.sublist(
-                  _pageSize * currentPage + 1,
-                  _pageSize + _pageSize * currentPage))
+                  _pageSize * (currentPage + 1),
+                  _pageSize + _pageSize * (currentPage + 1)))
           .listen((story) {
         add(StoryLoaded(
           story: story,
