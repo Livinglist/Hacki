@@ -47,12 +47,12 @@ class Story extends Item {
           title: json['title'] as String,
           url: json['url'] == null ? '' : json['url'] as String,
           kids: json['kids'] == null ? [] : (json['kids'] as List).cast<int>(),
+          text: json['text'] == null ? '' : json['text'] as String,
           dead: false,
           parts: [],
           deleted: false,
           parent: 0,
           poll: 0,
-          text: '',
         );
 
   String get postedDate =>

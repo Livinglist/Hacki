@@ -80,213 +80,226 @@ class _HomeScreenState extends State<HomeScreen>
         }
       },
       builder: (context, state) {
-        return DefaultTabController(
-          length: 5,
-          child: Scaffold(
-            appBar: PreferredSize(
-              preferredSize: const Size(0, 60),
-              child: Column(
+        return WillPopScope(
+          onWillPop: () => Future.value(false),
+          child: DefaultTabController(
+            length: 5,
+            child: Scaffold(
+              appBar: PreferredSize(
+                preferredSize: const Size(0, 60),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).padding.top,
+                    ),
+                    TabBar(
+                      controller: tabController,
+                      indicatorColor: Colors.orange,
+                      tabs: [
+                        Tab(
+                          child: Text(
+                            'TOP',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: currentIndex == 0
+                                  ? Colors.orange
+                                  : Colors.grey,
+                            ),
+                          ),
+                        ),
+                        Tab(
+                          child: Text(
+                            'NEW',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: currentIndex == 1
+                                  ? Colors.orange
+                                  : Colors.grey,
+                            ),
+                          ),
+                        ),
+                        Tab(
+                          child: Text(
+                            'ASK',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: currentIndex == 2
+                                  ? Colors.orange
+                                  : Colors.grey,
+                            ),
+                          ),
+                        ),
+                        Tab(
+                          child: Text(
+                            'SHOW',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: currentIndex == 3
+                                  ? Colors.orange
+                                  : Colors.grey,
+                            ),
+                          ),
+                        ),
+                        Tab(
+                          child: Text(
+                            'JOBS',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: currentIndex == 4
+                                  ? Colors.orange
+                                  : Colors.grey,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              body: TabBarView(
+                controller: tabController,
                 children: [
-                  SizedBox(
-                    height: MediaQuery.of(context).padding.top,
+                  ItemsListView<Story>(
+                    key: const PageStorageKey('test'),
+                    refreshController: refreshControllerTop,
+                    items: state.storiesByType[StoryType.top]!,
+                    onRefresh: () {
+                      context
+                          .read<StoriesBloc>()
+                          .add(StoriesRefresh(type: StoryType.top));
+                    },
+                    onLoadMore: () {
+                      context
+                          .read<StoriesBloc>()
+                          .add(StoriesLoadMore(type: StoryType.top));
+                    },
+                    onTap: (story) {
+                      HackiApp.navigatorKey.currentState!.pushNamed(
+                          StoryScreen.routeName,
+                          arguments: StoryScreenArgs(story: story));
+
+                      if (cacheService.isFirstTimeReading(story.id)) {
+                        final url = Uri.encodeFull(story.url);
+                        canLaunch(url).then((val) {
+                          if (val) {
+                            launch(url);
+                          }
+                        });
+                        cacheService.store(story.id);
+                      }
+                    },
                   ),
-                  TabBar(
-                    controller: tabController,
-                    indicatorColor: Colors.orange,
-                    tabs: [
-                      Tab(
-                        child: Text(
-                          'TOP',
-                          style: TextStyle(
-                            color:
-                                currentIndex == 0 ? Colors.orange : Colors.grey,
-                          ),
-                        ),
-                      ),
-                      Tab(
-                        child: Text(
-                          'NEW',
-                          style: TextStyle(
-                            color:
-                                currentIndex == 1 ? Colors.orange : Colors.grey,
-                          ),
-                        ),
-                      ),
-                      Tab(
-                        child: Text(
-                          'ASK',
-                          style: TextStyle(
-                            color:
-                                currentIndex == 2 ? Colors.orange : Colors.grey,
-                          ),
-                        ),
-                      ),
-                      Tab(
-                        child: Text(
-                          'SHOW',
-                          style: TextStyle(
-                            color:
-                                currentIndex == 3 ? Colors.orange : Colors.grey,
-                          ),
-                        ),
-                      ),
-                      Tab(
-                        child: Text(
-                          'JOBS',
-                          style: TextStyle(
-                            color:
-                                currentIndex == 4 ? Colors.orange : Colors.grey,
-                          ),
-                        ),
-                      ),
-                    ],
+                  ItemsListView<Story>(
+                    refreshController: refreshControllerNew,
+                    items: state.storiesByType[StoryType.latest]!,
+                    onRefresh: () {
+                      context
+                          .read<StoriesBloc>()
+                          .add(StoriesRefresh(type: StoryType.latest));
+                    },
+                    onLoadMore: () {
+                      context
+                          .read<StoriesBloc>()
+                          .add(StoriesLoadMore(type: StoryType.latest));
+                    },
+                    onTap: (story) {
+                      HackiApp.navigatorKey.currentState!.pushNamed(
+                          StoryScreen.routeName,
+                          arguments: StoryScreenArgs(story: story));
+
+                      if (cacheService.isFirstTimeReading(story.id)) {
+                        final url = Uri.encodeFull(story.url);
+                        canLaunch(url).then((val) {
+                          if (val) {
+                            launch(url);
+                          }
+                        });
+                        cacheService.store(story.id);
+                      }
+                    },
+                  ),
+                  ItemsListView<Story>(
+                    refreshController: refreshControllerAsk,
+                    items: state.storiesByType[StoryType.ask]!,
+                    onRefresh: () {
+                      context
+                          .read<StoriesBloc>()
+                          .add(StoriesRefresh(type: StoryType.ask));
+                    },
+                    onLoadMore: () {
+                      context
+                          .read<StoriesBloc>()
+                          .add(StoriesLoadMore(type: StoryType.ask));
+                    },
+                    onTap: (story) {
+                      HackiApp.navigatorKey.currentState!.pushNamed(
+                          StoryScreen.routeName,
+                          arguments: StoryScreenArgs(story: story));
+
+                      if (cacheService.isFirstTimeReading(story.id)) {
+                        final url = Uri.encodeFull(story.url);
+                        canLaunch(url).then((val) {
+                          if (val) {
+                            launch(url);
+                          }
+                        });
+                        cacheService.store(story.id);
+                      }
+                    },
+                  ),
+                  ItemsListView<Story>(
+                    refreshController: refreshControllerShow,
+                    items: state.storiesByType[StoryType.show]!,
+                    onRefresh: () {
+                      context
+                          .read<StoriesBloc>()
+                          .add(StoriesRefresh(type: StoryType.show));
+                    },
+                    onLoadMore: () {
+                      context
+                          .read<StoriesBloc>()
+                          .add(StoriesLoadMore(type: StoryType.show));
+                    },
+                    onTap: (story) {
+                      HackiApp.navigatorKey.currentState!.pushNamed(
+                          StoryScreen.routeName,
+                          arguments: StoryScreenArgs(story: story));
+
+                      if (cacheService.isFirstTimeReading(story.id)) {
+                        final url = Uri.encodeFull(story.url);
+                        canLaunch(url).then((val) {
+                          if (val) {
+                            launch(url);
+                          }
+                        });
+                        cacheService.store(story.id);
+                      }
+                    },
+                  ),
+                  ItemsListView<Story>(
+                    refreshController: refreshControllerJobs,
+                    items: state.storiesByType[StoryType.jobs]!,
+                    onRefresh: () {
+                      context
+                          .read<StoriesBloc>()
+                          .add(StoriesRefresh(type: StoryType.jobs));
+                    },
+                    onLoadMore: () {
+                      context
+                          .read<StoriesBloc>()
+                          .add(StoriesLoadMore(type: StoryType.jobs));
+                    },
+                    onTap: (story) {
+                      final url = Uri.encodeFull(story.url);
+                      canLaunch(url).then((val) {
+                        if (val) {
+                          launch(url);
+                        }
+                      });
+                    },
                   ),
                 ],
               ),
-            ),
-            body: TabBarView(
-              controller: tabController,
-              children: [
-                ItemsListView<Story>(
-                  key: const PageStorageKey('test'),
-                  refreshController: refreshControllerTop,
-                  items: state.storiesByType[StoryType.top]!,
-                  onRefresh: () {
-                    context
-                        .read<StoriesBloc>()
-                        .add(StoriesRefresh(type: StoryType.top));
-                  },
-                  onLoadMore: () {
-                    context
-                        .read<StoriesBloc>()
-                        .add(StoriesLoadMore(type: StoryType.top));
-                  },
-                  onTap: (story) {
-                    HackiApp.navigatorKey.currentState!.pushNamed(
-                        StoryScreen.routeName,
-                        arguments: StoryScreenArgs(story: story));
-
-                    if (cacheService.isFirstTimeReading(story.id)) {
-                      final url = Uri.encodeFull(story.url);
-                      canLaunch(url).then((val) {
-                        if (val) {
-                          launch(url);
-                        }
-                      });
-                      cacheService.store(story.id);
-                    }
-                  },
-                ),
-                ItemsListView<Story>(
-                  refreshController: refreshControllerNew,
-                  items: state.storiesByType[StoryType.latest]!,
-                  onRefresh: () {
-                    context
-                        .read<StoriesBloc>()
-                        .add(StoriesRefresh(type: StoryType.latest));
-                  },
-                  onLoadMore: () {
-                    context
-                        .read<StoriesBloc>()
-                        .add(StoriesLoadMore(type: StoryType.latest));
-                  },
-                  onTap: (story) {
-                    HackiApp.navigatorKey.currentState!.pushNamed(
-                        StoryScreen.routeName,
-                        arguments: StoryScreenArgs(story: story));
-
-                    if (cacheService.isFirstTimeReading(story.id)) {
-                      final url = Uri.encodeFull(story.url);
-                      canLaunch(url).then((val) {
-                        if (val) {
-                          launch(url);
-                        }
-                      });
-                      cacheService.store(story.id);
-                    }
-                  },
-                ),
-                ItemsListView<Story>(
-                  refreshController: refreshControllerAsk,
-                  items: state.storiesByType[StoryType.ask]!,
-                  onRefresh: () {
-                    context
-                        .read<StoriesBloc>()
-                        .add(StoriesRefresh(type: StoryType.ask));
-                  },
-                  onLoadMore: () {
-                    context
-                        .read<StoriesBloc>()
-                        .add(StoriesLoadMore(type: StoryType.ask));
-                  },
-                  onTap: (story) {
-                    HackiApp.navigatorKey.currentState!.pushNamed(
-                        StoryScreen.routeName,
-                        arguments: StoryScreenArgs(story: story));
-
-                    if (cacheService.isFirstTimeReading(story.id)) {
-                      final url = Uri.encodeFull(story.url);
-                      canLaunch(url).then((val) {
-                        if (val) {
-                          launch(url);
-                        }
-                      });
-                      cacheService.store(story.id);
-                    }
-                  },
-                ),
-                ItemsListView<Story>(
-                  refreshController: refreshControllerShow,
-                  items: state.storiesByType[StoryType.show]!,
-                  onRefresh: () {
-                    context
-                        .read<StoriesBloc>()
-                        .add(StoriesRefresh(type: StoryType.show));
-                  },
-                  onLoadMore: () {
-                    context
-                        .read<StoriesBloc>()
-                        .add(StoriesLoadMore(type: StoryType.show));
-                  },
-                  onTap: (story) {
-                    HackiApp.navigatorKey.currentState!.pushNamed(
-                        StoryScreen.routeName,
-                        arguments: StoryScreenArgs(story: story));
-
-                    if (cacheService.isFirstTimeReading(story.id)) {
-                      final url = Uri.encodeFull(story.url);
-                      canLaunch(url).then((val) {
-                        if (val) {
-                          launch(url);
-                        }
-                      });
-                      cacheService.store(story.id);
-                    }
-                  },
-                ),
-                ItemsListView<Story>(
-                  refreshController: refreshControllerJobs,
-                  items: state.storiesByType[StoryType.jobs]!,
-                  onRefresh: () {
-                    context
-                        .read<StoriesBloc>()
-                        .add(StoriesRefresh(type: StoryType.jobs));
-                  },
-                  onLoadMore: () {
-                    context
-                        .read<StoriesBloc>()
-                        .add(StoriesLoadMore(type: StoryType.jobs));
-                  },
-                  onTap: (story) {
-                    final url = Uri.encodeFull(story.url);
-                    canLaunch(url).then((val) {
-                      if (val) {
-                        launch(url);
-                      }
-                    });
-                  },
-                ),
-              ],
             ),
           ),
         );

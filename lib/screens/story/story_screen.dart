@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
@@ -85,6 +86,21 @@ class StoryScreen extends StatelessWidget {
                       ),
                     ),
                   ),
+                ),
+                if (story.text.isNotEmpty)
+                  Html(
+                    data: story.text,
+                    onLinkTap: (link, _, __, ___) {
+                      final url = Uri.encodeFull(link ?? '');
+                      canLaunch(url).then((val) {
+                        if (val) {
+                          launch(url);
+                        }
+                      });
+                    },
+                  ),
+                const Divider(
+                  height: 0,
                 ),
                 if (state.comments.isEmpty) ...[
                   const SizedBox(
