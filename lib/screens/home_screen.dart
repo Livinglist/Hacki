@@ -284,7 +284,6 @@ class _HomeScreenState extends State<HomeScreen>
                         launch(url);
                       }
                     });
-                    cacheService.store(story.id);
                   },
                 ),
               ],
