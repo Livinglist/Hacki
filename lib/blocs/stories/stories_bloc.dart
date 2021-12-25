@@ -60,7 +60,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     var upper = _pageSize + _pageSize * (currentPage + 1);
 
     if (len > lower) {
-      if (len > upper) {
+      if (len < upper) {
         upper = len;
       }
 
