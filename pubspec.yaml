@@ -8,7 +8,6 @@ environment:
 
 dependencies:
   algolia: ^1.0.1
-  app_tracking_transparency: ^2.0.1
   badges: ^2.0.1
   bloc: ^7.0.0
   collection:
@@ -30,7 +29,6 @@ dependencies:
   flutter_typeahead: ^3.2.1
   gbk_codec: ^0.4.0
   get_it: 7.2.0
-  google_fonts: ^2.1.1
   html: ^0.15.0
   http: ^0.13.3
   in_app_review: ^2.0.3
@@ -55,6 +53,4 @@ flutter:
   uses-material-design: true
   generate: true
 
-  assets:
-    - google_fonts/
 

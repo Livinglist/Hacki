@@ -278,19 +278,13 @@ class _HomeScreenState extends State<HomeScreen>
                         .add(StoriesLoadMore(type: StoryType.jobs));
                   },
                   onTap: (story) {
-                    HackiApp.navigatorKey.currentState!.pushNamed(
-                        StoryScreen.routeName,
-                        arguments: StoryScreenArgs(story: story));
-
-                    if (cacheService.isFirstTimeReading(story.id)) {
-                      final url = Uri.encodeFull(story.url);
-                      canLaunch(url).then((val) {
-                        if (val) {
-                          launch(url);
-                        }
-                      });
-                      cacheService.store(story.id);
-                    }
+                    final url = Uri.encodeFull(story.url);
+                    canLaunch(url).then((val) {
+                      if (val) {
+                        launch(url);
+                      }
+                    });
+                    cacheService.store(story.id);
                   },
                 ),
               ],
