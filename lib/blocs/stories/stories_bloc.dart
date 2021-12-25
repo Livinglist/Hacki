@@ -63,11 +63,13 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       if (len > upper) {
         upper = len;
       }
+
       _storiesRepository
           .fetchStoriesStream(
               ids: state.storyIdsByType[event.type]!.sublist(
-                  _pageSize * (currentPage + 1),
-                  _pageSize + _pageSize * (currentPage + 1)))
+        lower,
+        upper,
+      ))
           .listen((story) {
         add(StoryLoaded(
           story: story,
