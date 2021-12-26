@@ -9,9 +9,11 @@ class CommentTile extends StatelessWidget {
   const CommentTile({
     Key? key,
     required this.comment,
+    this.level = 0,
   }) : super(key: key);
 
   final Comment comment;
+  final int level;
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +30,10 @@ class CommentTile extends StatelessWidget {
                 children: [
                   Text(
                     comment.by,
-                    style: const TextStyle(
-                      color: Colors.orange,
+                    style: TextStyle(
+                      //255, 152, 0
+                      color: Color.fromRGBO(
+                          255, 152, (level * 40).clamp(0, 255), 1),
                     ),
                   ),
                   const Spacer(),
@@ -72,7 +76,10 @@ class CommentTile extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 12),
                   child: Column(
                     children: state.comments
-                        .map((e) => CommentTile(comment: e))
+                        .map((e) => CommentTile(
+                              comment: e,
+                              level: level + 1,
+                            ))
                         .toList(),
                   ),
                 );
