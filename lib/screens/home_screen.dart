@@ -86,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen>
             length: 5,
             child: Scaffold(
               appBar: PreferredSize(
-                preferredSize: const Size(0, 60),
+                preferredSize: const Size(0, 48),
                 child: Column(
                   children: [
                     SizedBox(
