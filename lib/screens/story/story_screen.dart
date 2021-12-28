@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:hacki/blocs/blocs.dart';
@@ -78,7 +79,8 @@ class _StoryScreenState extends State<StoryScreen> {
     super.initState();
 
     scrollController.addListener(() {
-      FocusScope.of(context).unfocus();
+      //focusNode.unfocus();
+      FocusScope.of(context).requestFocus(FocusNode());
       if (commentEditingController.text.isEmpty) {
         setState(() {
           _showReplyBox = false;
@@ -104,6 +106,8 @@ class _StoryScreenState extends State<StoryScreen> {
             _replyingTo = null;
             _showReplyBox = false;
           });
+          focusNode.unfocus();
+          HapticFeedback.lightImpact();
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content:
                 Text('Comment submitted! ${(happyFaces..shuffle()).first}'),
@@ -139,6 +143,7 @@ class _StoryScreenState extends State<StoryScreen> {
                 children: [
                   Positioned.fill(
                     child: SmartRefresher(
+                      scrollController: scrollController,
                       enablePullUp: true,
                       header: const WaterDropMaterialHeader(
                         backgroundColor: Colors.orange,
@@ -170,11 +175,11 @@ class _StoryScreenState extends State<StoryScreen> {
                       ),
                       controller: refreshController,
                       onRefresh: () {
+                        HapticFeedback.lightImpact();
                         context.read<CommentsCubit>().refresh();
                       },
                       onLoading: () {},
                       child: SingleChildScrollView(
-                        controller: scrollController,
                         child: Column(
                           children: [
                             SizedBox(

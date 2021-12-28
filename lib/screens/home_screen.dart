@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/locator.dart';
@@ -164,6 +165,7 @@ class _HomeScreenState extends State<HomeScreen>
                     refreshController: refreshControllerTop,
                     items: state.storiesByType[StoryType.top]!,
                     onRefresh: () {
+                      HapticFeedback.lightImpact();
                       context
                           .read<StoriesBloc>()
                           .add(StoriesRefresh(type: StoryType.top));
@@ -193,6 +195,7 @@ class _HomeScreenState extends State<HomeScreen>
                     refreshController: refreshControllerNew,
                     items: state.storiesByType[StoryType.latest]!,
                     onRefresh: () {
+                      HapticFeedback.lightImpact();
                       context
                           .read<StoriesBloc>()
                           .add(StoriesRefresh(type: StoryType.latest));
@@ -222,6 +225,7 @@ class _HomeScreenState extends State<HomeScreen>
                     refreshController: refreshControllerAsk,
                     items: state.storiesByType[StoryType.ask]!,
                     onRefresh: () {
+                      HapticFeedback.lightImpact();
                       context
                           .read<StoriesBloc>()
                           .add(StoriesRefresh(type: StoryType.ask));
@@ -251,6 +255,7 @@ class _HomeScreenState extends State<HomeScreen>
                     refreshController: refreshControllerShow,
                     items: state.storiesByType[StoryType.show]!,
                     onRefresh: () {
+                      HapticFeedback.lightImpact();
                       context
                           .read<StoriesBloc>()
                           .add(StoriesRefresh(type: StoryType.show));
@@ -280,6 +285,7 @@ class _HomeScreenState extends State<HomeScreen>
                     refreshController: refreshControllerJobs,
                     items: state.storiesByType[StoryType.jobs]!,
                     onRefresh: () {
+                      HapticFeedback.lightImpact();
                       context
                           .read<StoriesBloc>()
                           .add(StoriesRefresh(type: StoryType.jobs));
