@@ -15,26 +15,43 @@ class CommentsCubit extends Cubit<CommentsState> {
             storiesRepository ?? locator.get<StoriesRepository>(),
         assert(story != null || commentIds != null),
         super(CommentsState.init()) {
-    if (story != null) {
-      emit(state.copyWith(story: story));
-    }
-    init(story?.kids ?? commentIds!);
+    init(story?.kids ?? commentIds!, story);
   }
 
   final StoriesRepository _storiesRepository;
 
-  void init(List<int> commentIds) {
-    for (final id in commentIds) {
-      _storiesRepository
-          .fetchCommentBy(commentId: id.toString())
-          .then((comment) {
-        emit(state.copyWith(comments: List.from(state.comments)..add(comment)));
-      });
-    }
+  Future<void> init(List<int> commentIds, Story? story) async {
+    if (story != null) {
+      final updatedStory = await _storiesRepository.fetchStoryById(story.id);
 
-    emit(state.copyWith(
-      status: CommentsStatus.loaded,
-    ));
+      emit(state.copyWith(story: updatedStory));
+
+      for (final id in updatedStory.kids) {
+        await _storiesRepository
+            .fetchCommentBy(commentId: id.toString())
+            .then((comment) {
+          emit(state.copyWith(
+              comments: List.from(state.comments)..add(comment)));
+        });
+      }
+
+      emit(state.copyWith(
+        status: CommentsStatus.loaded,
+      ));
+    } else {
+      for (final id in commentIds) {
+        await _storiesRepository
+            .fetchCommentBy(commentId: id.toString())
+            .then((comment) {
+          emit(state.copyWith(
+              comments: List.from(state.comments)..add(comment)));
+        });
+      }
+
+      emit(state.copyWith(
+        status: CommentsStatus.loaded,
+      ));
+    }
   }
 
   Future<void> refresh() async {
