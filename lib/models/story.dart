@@ -36,6 +36,24 @@ class Story extends Item {
           text: '',
         );
 
+  Story.empty()
+      : super(
+          id: 0,
+          score: 0,
+          descendants: 0,
+          time: 0,
+          by: '',
+          title: '',
+          url: '',
+          kids: [],
+          dead: false,
+          parts: [],
+          deleted: false,
+          parent: 0,
+          poll: 0,
+          text: '',
+        );
+
   Story.fromJson(Map<String, dynamic> json)
       : super(
           descendants:

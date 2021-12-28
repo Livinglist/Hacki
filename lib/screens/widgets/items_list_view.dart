@@ -54,7 +54,6 @@ class ItemsListView<T extends Item> extends StatelessWidget {
       ),
       controller: refreshController,
       onRefresh: onRefresh,
-
       onLoading: onLoadMore,
       child: ListView(
         children: [

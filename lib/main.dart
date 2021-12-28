@@ -27,6 +27,10 @@ class HackiApp extends StatelessWidget {
         BlocProvider<StoriesBloc>(
           create: (context) => StoriesBloc(),
         ),
+        BlocProvider<AuthBloc>(
+          lazy: false,
+          create: (context) => AuthBloc(),
+        ),
       ],
       child: MaterialApp(
         title: 'Hacki',

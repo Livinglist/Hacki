@@ -9,7 +9,7 @@ class StoriesRepository {
   final FirebaseClient _firebaseClient;
   static const _baseUrl = 'https://hacker-news.firebaseio.com/v0/';
 
-  Future<List<int>> fetchTopStoryIds({required StoryType of}) async {
+  Future<List<int>> fetchStoryIds({required StoryType of}) async {
     final suffix = () {
       switch (of) {
         case StoryType.top:
@@ -33,17 +33,34 @@ class StoriesRepository {
     return ids;
   }
 
+  Future<Story> fetchStoryById(int id) async {
+    final story = await _firebaseClient
+        .get('${_baseUrl}item/$id.json')
+        .then((dynamic val) {
+      final json = val as Map<String, dynamic>;
+      final story = Story.fromJson(json);
+      return story;
+    });
+
+    return story;
+  }
+
   Stream<Story> fetchStoriesStream({required List<int> ids}) async* {
     for (final id in ids) {
       final story = await _firebaseClient
           .get('${_baseUrl}item/$id.json')
           .then((dynamic val) {
+        if (val == null) {
+          return null;
+        }
         final json = val as Map<String, dynamic>;
         final story = Story.fromJson(json);
         return story;
       });
 
-      yield story;
+      if (story != null) {
+        yield story;
+      }
     }
   }
 

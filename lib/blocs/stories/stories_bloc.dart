@@ -14,42 +14,45 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   })  : _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
         super(const StoriesState.init()) {
-    loadTopStories(of: StoryType.top);
-    loadTopStories(of: StoryType.latest);
-    loadTopStories(of: StoryType.ask);
-    loadTopStories(of: StoryType.show);
-    loadTopStories(of: StoryType.jobs);
-
     on<StoriesInitialize>(onInitialize);
     on<StoriesRefresh>(onRefresh);
     on<StoriesLoadMore>(onLoadMore);
     on<StoryLoaded>(onStoryLoaded);
+    on<StoriesLoaded>(onStoriesLoaded);
+    add(StoriesInitialize());
   }
 
   final StoriesRepository _storiesRepository;
   static const _pageSize = 20;
 
-  Future loadTopStories({required StoryType of}) async {
-    final ids = await _storiesRepository.fetchTopStoryIds(of: of).then((ids) {
-      emit(state.copyWithStoryIdsUpdated(of: of, to: ids));
-      emit(state.copyWithCurrentPageUpdated(of: of, to: 0));
-      return ids;
-    });
+  Future<void> loadTopStories(
+      {required StoryType of, required Emitter<StoriesState> emit}) async {
+    final ids = await _storiesRepository.fetchStoryIds(of: of);
+    emit(state
+        .copyWithStoryIdsUpdated(of: of, to: ids)
+        .copyWithCurrentPageUpdated(of: of, to: 0));
     _storiesRepository
         .fetchStoriesStream(ids: ids.sublist(0, 20))
         .listen((story) {
       add(StoryLoaded(story: story, type: of));
     }).onDone(() {
-      emit(state.copyWithStatusUpdated(of: of, to: StoriesStatus.loaded));
+      add(StoriesLoaded(type: of));
     });
   }
 
-  void onInitialize(StoriesInitialize event, Emitter<StoriesState> emit) =>
-      loadTopStories(of: event.type);
+  Future<void> onInitialize(
+      StoriesInitialize event, Emitter<StoriesState> emit) async {
+    await loadTopStories(of: StoryType.top, emit: emit);
+    await loadTopStories(of: StoryType.latest, emit: emit);
+    await loadTopStories(of: StoryType.ask, emit: emit);
+    await loadTopStories(of: StoryType.show, emit: emit);
+    await loadTopStories(of: StoryType.jobs, emit: emit);
+  }
 
-  void onRefresh(StoriesRefresh event, Emitter<StoriesState> emit) {
+  Future<void> onRefresh(
+      StoriesRefresh event, Emitter<StoriesState> emit) async {
     emit(state.copyWithRefreshed(of: event.type));
-    loadTopStories(of: event.type);
+    await loadTopStories(of: event.type, emit: emit);
   }
 
   void onLoadMore(StoriesLoadMore event, Emitter<StoriesState> emit) {
@@ -89,5 +92,9 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         ),
       );
     }
+  }
+
+  void onStoriesLoaded(StoriesLoaded event, Emitter<StoriesState> emit) {
+    emit(state.copyWithStatusUpdated(of: event.type, to: StoriesStatus.loaded));
   }
 }
