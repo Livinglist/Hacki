@@ -5,7 +5,7 @@ import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class CommentTile extends StatelessWidget {
+class CommentTile extends StatefulWidget {
   const CommentTile({
     Key? key,
     required this.comment,
@@ -18,7 +18,19 @@ class CommentTile extends StatelessWidget {
   final Function(Comment) onTap;
 
   @override
+  _CommentTileState createState() => _CommentTileState();
+}
+
+class _CommentTileState extends State<CommentTile>
+    with AutomaticKeepAliveClientMixin {
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
+
+    final comment = widget.comment;
+    final level = widget.level;
+    final onTap = widget.onTap;
+
     return BlocProvider(
       create: (_) => CommentsCubit(commentIds: comment.kids),
       child: InkWell(
@@ -96,4 +108,7 @@ class CommentTile extends StatelessWidget {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

@@ -179,125 +179,124 @@ class _StoryScreenState extends State<StoryScreen> {
                         context.read<CommentsCubit>().refresh();
                       },
                       onLoading: () {},
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height: MediaQuery.of(context).padding.top,
-                            ),
-                            InkWell(
-                              onTap: () {
+                      child: ListView(
+                        primary: false,
+                        children: [
+                          SizedBox(
+                            height: MediaQuery.of(context).padding.top,
+                          ),
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (widget.story != _replyingTo) {
+                                  commentEditingController.clear();
+                                }
                                 setState(() {
-                                  if (widget.story != _replyingTo) {
-                                    commentEditingController.clear();
-                                  }
-                                  setState(() {
-                                    _showReplyBox = true;
-                                    _replyingTo = widget.story;
-                                  });
-                                  focusNode.requestFocus();
+                                  _showReplyBox = true;
+                                  _replyingTo = widget.story;
                                 });
-                              },
-                              child: Column(
-                                children: [
-                                  Padding(
+                                focusNode.requestFocus();
+                              });
+                            },
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 6,
+                                    right: 6,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        widget.story.by,
+                                        style: const TextStyle(
+                                          color: Colors.orange,
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      Text(
+                                        widget.story.postedDate,
+                                        style: const TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    final url =
+                                        Uri.encodeFull(widget.story.url);
+                                    canLaunch(url).then((val) {
+                                      if (val) {
+                                        launch(url);
+                                      }
+                                    });
+                                  },
+                                  child: Padding(
                                     padding: const EdgeInsets.only(
                                       left: 6,
                                       right: 6,
+                                      bottom: 12,
+                                      top: 12,
                                     ),
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          widget.story.by,
-                                          style: const TextStyle(
-                                            color: Colors.orange,
-                                          ),
-                                        ),
-                                        const Spacer(),
-                                        Text(
-                                          widget.story.postedDate,
-                                          style: const TextStyle(
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      ],
+                                    child: Text(
+                                      widget.story.title,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold),
                                     ),
                                   ),
-                                  InkWell(
-                                    onTap: () {
-                                      final url =
-                                          Uri.encodeFull(widget.story.url);
+                                ),
+                                if (widget.story.text.isNotEmpty)
+                                  Html(
+                                    data: widget.story.text,
+                                    onLinkTap: (link, _, __, ___) {
+                                      final url = Uri.encodeFull(link ?? '');
                                       canLaunch(url).then((val) {
                                         if (val) {
                                           launch(url);
                                         }
                                       });
                                     },
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                        left: 6,
-                                        right: 6,
-                                        bottom: 12,
-                                        top: 12,
-                                      ),
-                                      child: Text(
-                                        widget.story.title,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
                                   ),
-                                  if (widget.story.text.isNotEmpty)
-                                    Html(
-                                      data: widget.story.text,
-                                      onLinkTap: (link, _, __, ___) {
-                                        final url = Uri.encodeFull(link ?? '');
-                                        canLaunch(url).then((val) {
-                                          if (val) {
-                                            launch(url);
-                                          }
-                                        });
-                                      },
-                                    ),
-                                ],
-                              ),
+                              ],
                             ),
-                            const Divider(
-                              height: 0,
-                            ),
-                            if (state.comments.isEmpty &&
-                                state.status == CommentsStatus.loaded) ...[
-                              const SizedBox(
-                                height: 240,
-                              ),
-                              const Center(
-                                child: Text(
-                                  'Nothing yet',
-                                  style: TextStyle(color: Colors.white30),
-                                ),
-                              ),
-                            ],
-                            ...state.comments.map(
-                              (e) => CommentTile(
-                                comment: e,
-                                onTap: (cmt) {
-                                  if (cmt != _replyingTo) {
-                                    commentEditingController.clear();
-                                  }
-
-                                  setState(() {
-                                    _showReplyBox = true;
-                                    _replyingTo = cmt;
-                                  });
-                                  focusNode.requestFocus();
-                                },
-                              ),
-                            ),
+                          ),
+                          const Divider(
+                            height: 0,
+                          ),
+                          if (state.comments.isEmpty &&
+                              state.status == CommentsStatus.loaded) ...[
                             const SizedBox(
-                              height: 120,
+                              height: 240,
+                            ),
+                            const Center(
+                              child: Text(
+                                'Nothing yet',
+                                style: TextStyle(color: Colors.white30),
+                              ),
                             ),
                           ],
-                        ),
+                          ...state.comments.map(
+                            (e) => CommentTile(
+                              comment: e,
+                              onTap: (cmt) {
+                                if (cmt != _replyingTo) {
+                                  commentEditingController.clear();
+                                }
+
+                                setState(() {
+                                  _showReplyBox = true;
+                                  _replyingTo = cmt;
+                                });
+                                focusNode.requestFocus();
+                              },
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 120,
+                          ),
+                        ],
                       ),
                     ),
                   ),
