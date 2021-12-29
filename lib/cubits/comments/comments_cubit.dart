@@ -30,8 +30,10 @@ class CommentsCubit extends Cubit<CommentsState> {
         await _storiesRepository
             .fetchCommentBy(commentId: id.toString())
             .then((comment) {
-          emit(state.copyWith(
-              comments: List.from(state.comments)..add(comment)));
+          if (comment != null) {
+            emit(state.copyWith(
+                comments: List.from(state.comments)..add(comment)));
+          }
         });
       }
 
@@ -43,8 +45,10 @@ class CommentsCubit extends Cubit<CommentsState> {
         await _storiesRepository
             .fetchCommentBy(commentId: id.toString())
             .then((comment) {
-          emit(state.copyWith(
-              comments: List.from(state.comments)..add(comment)));
+          if (comment != null) {
+            emit(state.copyWith(
+                comments: List.from(state.comments)..add(comment)));
+          }
         });
       }
 
@@ -64,7 +68,10 @@ class CommentsCubit extends Cubit<CommentsState> {
       await _storiesRepository
           .fetchCommentBy(commentId: id.toString())
           .then((comment) {
-        emit(state.copyWith(comments: List.from(state.comments)..add(comment)));
+        if (comment != null) {
+          emit(state.copyWith(
+              comments: List.from(state.comments)..add(comment)));
+        }
       });
     }
 

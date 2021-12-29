@@ -64,10 +64,13 @@ class StoriesRepository {
     }
   }
 
-  Future<Comment> fetchCommentBy({required String commentId}) async {
+  Future<Comment?> fetchCommentBy({required String commentId}) async {
     final comment = await _firebaseClient
         .get('${_baseUrl}item/$commentId.json')
         .then((dynamic val) {
+      if (val == null) {
+        return null;
+      }
       final json = val as Map<String, dynamic>;
       final comment = Comment.fromJson(json);
       return comment;
