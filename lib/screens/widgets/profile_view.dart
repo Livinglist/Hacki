@@ -134,7 +134,7 @@ class _ProfileViewState extends State<ProfileView>
                             ),
                             ActionChip(
                               label: const Text('About'),
-                              elevation: 8,
+                              elevation: 4,
                               onPressed: () {
                                 showAboutDialog(
                                   context: context,
@@ -161,7 +161,7 @@ class _ProfileViewState extends State<ProfileView>
                             ),
                             ActionChip(
                               label: const Text('Log out'),
-                              elevation: 8,
+                              elevation: 4,
                               onPressed: onLogoutTapped,
                             ),
                             const SizedBox(
@@ -171,7 +171,7 @@ class _ProfileViewState extends State<ProfileView>
                               label: const Text(
                                 'Favorite',
                               ),
-                              elevation: 8,
+                              elevation: 4,
                               selected: _pageType == PageType.fav,
                               onSelected: (val) {
                                 if (val) {
@@ -189,7 +189,7 @@ class _ProfileViewState extends State<ProfileView>
                               label: const Text(
                                 'Submitted',
                               ),
-                              elevation: 8,
+                              elevation: 4,
                               selected: _pageType == PageType.history,
                               onSelected: (val) {
                                 if (val) {
