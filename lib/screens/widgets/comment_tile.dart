@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:hacki/utils/utils.dart';
 
 class CommentTile extends StatefulWidget {
   const CommentTile({
@@ -78,14 +78,7 @@ class _CommentTileState extends State<CommentTile>
                 ),
               Html(
                 data: widget.comment.text,
-                onLinkTap: (link, _, __, ___) {
-                  final url = Uri.encodeFull(link ?? '');
-                  canLaunch(url).then((val) {
-                    if (val) {
-                      launch(url);
-                    }
-                  });
-                },
+                onLinkTap: (link, _, __, ___) => LinkUtil.launch(link ?? ''),
               ),
               const Divider(
                 height: 0,

@@ -8,6 +8,7 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/items_list_view.dart';
+import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 enum PageType { fav, history }
@@ -28,6 +29,7 @@ class _ProfileViewState extends State<ProfileView>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, authState) {
         if (authState.username.isEmpty) {
@@ -166,6 +168,33 @@ class _ProfileViewState extends State<ProfileView>
                               }
                             },
                             selectedColor: Colors.orange,
+                          ),
+                          const SizedBox(
+                            width: 12,
+                          ),
+                          ActionChip(
+                            label: const Text('About'),
+                            elevation: 8,
+                            onPressed: () {
+                              showAboutDialog(
+                                context: context,
+                                applicationName: 'Hacki',
+                                applicationVersion: '0.0.1',
+                                applicationIcon: Image.asset(
+                                  'assets/hacki_icon.png',
+                                  height: 96,
+                                  width: 96,
+                                ),
+                                applicationLegalese: '2022 Jiaqi Feng',
+                                children: [
+                                  TextButton(
+                                    onPressed: () => LinkUtil.launch(
+                                        'https://github.com/Livinglist/Hacki'),
+                                    child: const Text('Source Code'),
+                                  ),
+                                ],
+                              );
+                            },
                           ),
                         ],
                       ),

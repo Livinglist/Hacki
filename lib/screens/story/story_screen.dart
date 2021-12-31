@@ -7,8 +7,8 @@ import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class StoryScreenArgs {
   StoryScreenArgs({required this.story});
@@ -166,15 +166,8 @@ class _StoryScreenState extends State<StoryScreen> {
                         icon: const Icon(
                           Icons.stream,
                         ),
-                        onPressed: () {
-                          final url = Uri.encodeFull(
-                              'https://news.ycombinator.com/item?id=${widget.story.id}');
-                          canLaunch(url).then((val) {
-                            if (val) {
-                              launch(url);
-                            }
-                          });
-                        },
+                        onPressed: () => LinkUtil.launch(
+                            'https://news.ycombinator.com/item?id=${widget.story.id}'),
                       ),
                     ],
                   ),
@@ -260,15 +253,8 @@ class _StoryScreenState extends State<StoryScreen> {
                                       ),
                                     ),
                                     InkWell(
-                                      onTap: () {
-                                        final url =
-                                            Uri.encodeFull(widget.story.url);
-                                        canLaunch(url).then((val) {
-                                          if (val) {
-                                            launch(url);
-                                          }
-                                        });
-                                      },
+                                      onTap: () =>
+                                          LinkUtil.launch(widget.story.url),
                                       child: Padding(
                                         padding: const EdgeInsets.only(
                                           left: 6,
@@ -286,15 +272,8 @@ class _StoryScreenState extends State<StoryScreen> {
                                     if (widget.story.text.isNotEmpty)
                                       Html(
                                         data: widget.story.text,
-                                        onLinkTap: (link, _, __, ___) {
-                                          final url =
-                                              Uri.encodeFull(link ?? '');
-                                          canLaunch(url).then((val) {
-                                            if (val) {
-                                              launch(url);
-                                            }
-                                          });
-                                        },
+                                        onLinkTap: (link, _, __, ___) =>
+                                            LinkUtil.launch(link ?? ''),
                                       ),
                                   ],
                                 ),

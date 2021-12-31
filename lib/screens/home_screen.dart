@@ -8,8 +8,8 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
+import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -190,12 +190,7 @@ class _HomeScreenState extends State<HomeScreen>
                           arguments: StoryScreenArgs(story: story));
 
                       if (cacheService.isFirstTimeReading(story.id)) {
-                        final url = Uri.encodeFull(story.url);
-                        canLaunch(url).then((val) {
-                          if (val) {
-                            launch(url);
-                          }
-                        });
+                        LinkUtil.launch(story.url);
                         cacheService.store(story.id);
                       }
                     },
@@ -220,12 +215,7 @@ class _HomeScreenState extends State<HomeScreen>
                           arguments: StoryScreenArgs(story: story));
 
                       if (cacheService.isFirstTimeReading(story.id)) {
-                        final url = Uri.encodeFull(story.url);
-                        canLaunch(url).then((val) {
-                          if (val) {
-                            launch(url);
-                          }
-                        });
+                        LinkUtil.launch(story.url);
                         cacheService.store(story.id);
                       }
                     },
@@ -250,12 +240,7 @@ class _HomeScreenState extends State<HomeScreen>
                           arguments: StoryScreenArgs(story: story));
 
                       if (cacheService.isFirstTimeReading(story.id)) {
-                        final url = Uri.encodeFull(story.url);
-                        canLaunch(url).then((val) {
-                          if (val) {
-                            launch(url);
-                          }
-                        });
+                        LinkUtil.launch(story.url);
                         cacheService.store(story.id);
                       }
                     },
@@ -280,12 +265,7 @@ class _HomeScreenState extends State<HomeScreen>
                           arguments: StoryScreenArgs(story: story));
 
                       if (cacheService.isFirstTimeReading(story.id)) {
-                        final url = Uri.encodeFull(story.url);
-                        canLaunch(url).then((val) {
-                          if (val) {
-                            launch(url);
-                          }
-                        });
+                        LinkUtil.launch(story.url);
                         cacheService.store(story.id);
                       }
                     },
@@ -304,14 +284,7 @@ class _HomeScreenState extends State<HomeScreen>
                           .read<StoriesBloc>()
                           .add(StoriesLoadMore(type: StoryType.jobs));
                     },
-                    onTap: (story) {
-                      final url = Uri.encodeFull(story.url);
-                      canLaunch(url).then((val) {
-                        if (val) {
-                          launch(url);
-                        }
-                      });
-                    },
+                    onTap: (story) => LinkUtil.launch(story.url),
                   ),
                   const ProfileView(),
                 ],

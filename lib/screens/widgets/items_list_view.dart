@@ -3,8 +3,8 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/custom_circular_progress_indicator.dart';
 import 'package:hacki/screens/widgets/story_tile.dart';
+import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ItemsListView<T extends Item> extends StatelessWidget {
   const ItemsListView({
@@ -99,14 +99,8 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                                 flex: 7,
                                 child: Html(
                                   data: e.text,
-                                  onLinkTap: (link, _, __, ___) {
-                                    final url = Uri.encodeFull(link ?? '');
-                                    canLaunch(url).then((val) {
-                                      if (val) {
-                                        launch(url);
-                                      }
-                                    });
-                                  },
+                                  onLinkTap: (link, _, __, ___) =>
+                                      LinkUtil.launch(link ?? ''),
                                 ),
                               ),
                               Flexible(
