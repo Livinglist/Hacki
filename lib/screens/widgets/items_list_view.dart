@@ -100,7 +100,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                                 child: Html(
                                   data: e.text,
                                   onLinkTap: (link, _, __, ___) =>
-                                      LinkUtil.launch(link ?? ''),
+                                      LinkUtil.launchUrl(link ?? ''),
                                 ),
                               ),
                               Flexible(

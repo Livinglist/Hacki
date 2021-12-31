@@ -166,7 +166,7 @@ class _StoryScreenState extends State<StoryScreen> {
                         icon: const Icon(
                           Icons.stream,
                         ),
-                        onPressed: () => LinkUtil.launch(
+                        onPressed: () => LinkUtil.launchUrl(
                             'https://news.ycombinator.com/item?id=${widget.story.id}'),
                       ),
                     ],
@@ -254,7 +254,7 @@ class _StoryScreenState extends State<StoryScreen> {
                                     ),
                                     InkWell(
                                       onTap: () =>
-                                          LinkUtil.launch(widget.story.url),
+                                          LinkUtil.launchUrl(widget.story.url),
                                       child: Padding(
                                         padding: const EdgeInsets.only(
                                           left: 6,
@@ -273,7 +273,7 @@ class _StoryScreenState extends State<StoryScreen> {
                                       Html(
                                         data: widget.story.text,
                                         onLinkTap: (link, _, __, ___) =>
-                                            LinkUtil.launch(link ?? ''),
+                                            LinkUtil.launchUrl(link ?? ''),
                                       ),
                                   ],
                                 ),

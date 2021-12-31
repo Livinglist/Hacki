@@ -170,7 +170,6 @@ class _HomeScreenState extends State<HomeScreen>
                 controller: tabController,
                 children: [
                   ItemsListView<Story>(
-                    key: const PageStorageKey('test'),
                     refreshController: refreshControllerTop,
                     items: state.storiesByType[StoryType.top]!,
                     onRefresh: () {
@@ -190,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen>
                           arguments: StoryScreenArgs(story: story));
 
                       if (cacheService.isFirstTimeReading(story.id)) {
-                        LinkUtil.launch(story.url);
+                        LinkUtil.launchUrl(story.url);
                         cacheService.store(story.id);
                       }
                     },
@@ -215,7 +214,7 @@ class _HomeScreenState extends State<HomeScreen>
                           arguments: StoryScreenArgs(story: story));
 
                       if (cacheService.isFirstTimeReading(story.id)) {
-                        LinkUtil.launch(story.url);
+                        LinkUtil.launchUrl(story.url);
                         cacheService.store(story.id);
                       }
                     },
@@ -240,7 +239,7 @@ class _HomeScreenState extends State<HomeScreen>
                           arguments: StoryScreenArgs(story: story));
 
                       if (cacheService.isFirstTimeReading(story.id)) {
-                        LinkUtil.launch(story.url);
+                        LinkUtil.launchUrl(story.url);
                         cacheService.store(story.id);
                       }
                     },
@@ -265,7 +264,7 @@ class _HomeScreenState extends State<HomeScreen>
                           arguments: StoryScreenArgs(story: story));
 
                       if (cacheService.isFirstTimeReading(story.id)) {
-                        LinkUtil.launch(story.url);
+                        LinkUtil.launchUrl(story.url);
                         cacheService.store(story.id);
                       }
                     },
@@ -284,7 +283,7 @@ class _HomeScreenState extends State<HomeScreen>
                           .read<StoriesBloc>()
                           .add(StoriesLoadMore(type: StoryType.jobs));
                     },
-                    onTap: (story) => LinkUtil.launch(story.url),
+                    onTap: (story) => LinkUtil.launchUrl(story.url),
                   ),
                   const ProfileView(),
                 ],

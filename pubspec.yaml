@@ -50,4 +50,7 @@ flutter:
   uses-material-design: true
   generate: true
 
+  assets:
+    - images/hacki_icon.png
+
 

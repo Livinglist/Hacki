@@ -78,7 +78,7 @@ class _CommentTileState extends State<CommentTile>
                 ),
               Html(
                 data: widget.comment.text,
-                onLinkTap: (link, _, __, ___) => LinkUtil.launch(link ?? ''),
+                onLinkTap: (link, _, __, ___) => LinkUtil.launchUrl(link ?? ''),
               ),
               const Divider(
                 height: 0,

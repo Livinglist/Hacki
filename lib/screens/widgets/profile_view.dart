@@ -24,6 +24,7 @@ class _ProfileViewState extends State<ProfileView>
     with AutomaticKeepAliveClientMixin {
   final refreshControllerHistory = RefreshController();
   final refreshControllerFav = RefreshController();
+  final scrollController = ScrollController(initialScrollOffset: 80);
 
   PageType _pageType = PageType.fav;
 
@@ -123,80 +124,87 @@ class _ProfileViewState extends State<ProfileView>
                     ),
                     Align(
                       alignment: Alignment.topLeft,
-                      child: Row(
-                        children: [
-                          const SizedBox(
-                            width: 12,
-                          ),
-                          ActionChip(
-                            label: const Text('Log out'),
-                            elevation: 8,
-                            onPressed: onLogoutTapped,
-                          ),
-                          const SizedBox(
-                            width: 12,
-                          ),
-                          FilterChip(
-                            label: const Text(
-                              'Favorite',
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        controller: scrollController,
+                        child: Row(
+                          children: [
+                            const SizedBox(
+                              width: 12,
                             ),
-                            elevation: 8,
-                            selected: _pageType == PageType.fav,
-                            onSelected: (val) {
-                              if (val) {
-                                setState(() {
-                                  _pageType = PageType.fav;
-                                });
-                              }
-                            },
-                            selectedColor: Colors.orange,
-                          ),
-                          const SizedBox(
-                            width: 12,
-                          ),
-                          FilterChip(
-                            label: const Text(
-                              'Submitted',
-                            ),
-                            elevation: 8,
-                            selected: _pageType == PageType.history,
-                            onSelected: (val) {
-                              if (val) {
-                                setState(() {
-                                  _pageType = PageType.history;
-                                });
-                              }
-                            },
-                            selectedColor: Colors.orange,
-                          ),
-                          const SizedBox(
-                            width: 12,
-                          ),
-                          ActionChip(
-                            label: const Text('About'),
-                            elevation: 8,
-                            onPressed: () {
-                              showAboutDialog(
-                                context: context,
-                                applicationName: 'Hacki',
-                                applicationVersion: '0.0.1',
-                                applicationIcon: Image.asset(
-                                  'assets/hacki_icon.png',
-                                  height: 96,
-                                  width: 96,
-                                ),
-                                applicationLegalese: '2022 Jiaqi Feng',
-                                children: [
-                                  TextButton(
-                                    onPressed: () => LinkUtil.launch(
-                                        'https://github.com/Livinglist/Hacki'),
-                                    child: const Text('Source Code'),
+                            ActionChip(
+                              label: const Text('About'),
+                              elevation: 8,
+                              onPressed: () {
+                                showAboutDialog(
+                                  context: context,
+                                  applicationName: 'Hacki',
+                                  applicationVersion: '0.0.1',
+                                  applicationIcon: Image.asset(
+                                    'images/hacki_icon.png',
+                                    height: 96,
+                                    width: 96,
                                   ),
-                                ],
-                              );
-                            },
-                          ),
-                        ],
+                                  applicationLegalese: '2022 Jiaqi Feng',
+                                  children: [
+                                    TextButton(
+                                      onPressed: () => LinkUtil.launchUrl(
+                                          'https://github.com/Livinglist/Hacki'),
+                                      child: const Text('Source Code'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                            const SizedBox(
+                              width: 12,
+                            ),
+                            ActionChip(
+                              label: const Text('Log out'),
+                              elevation: 8,
+                              onPressed: onLogoutTapped,
+                            ),
+                            const SizedBox(
+                              width: 12,
+                            ),
+                            FilterChip(
+                              label: const Text(
+                                'Favorite',
+                              ),
+                              elevation: 8,
+                              selected: _pageType == PageType.fav,
+                              onSelected: (val) {
+                                if (val) {
+                                  setState(() {
+                                    _pageType = PageType.fav;
+                                  });
+                                }
+                              },
+                              selectedColor: Colors.orange,
+                            ),
+                            const SizedBox(
+                              width: 12,
+                            ),
+                            FilterChip(
+                              label: const Text(
+                                'Submitted',
+                              ),
+                              elevation: 8,
+                              selected: _pageType == PageType.history,
+                              onSelected: (val) {
+                                if (val) {
+                                  setState(() {
+                                    _pageType = PageType.history;
+                                  });
+                                }
+                              },
+                              selectedColor: Colors.orange,
+                            ),
+                            const SizedBox(
+                              width: 130,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
