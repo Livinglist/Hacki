@@ -45,6 +45,31 @@ class StoriesRepository {
     return story;
   }
 
+  Stream<Item> fetchItemsStream({required List<int> ids}) async* {
+    for (final id in ids) {
+      final item = await _firebaseClient
+          .get('${_baseUrl}item/$id.json')
+          .then((dynamic val) {
+        if (val == null) {
+          return null;
+        }
+        final json = val as Map<String, dynamic>;
+        final type = json['type'] as String;
+        if (type == 'story' || type == 'job') {
+          final story = Story.fromJson(json);
+          return story;
+        } else if (json['type'] == 'comment') {
+          final comment = Comment.fromJson(json);
+          return comment;
+        }
+      });
+
+      if (item != null) {
+        yield item;
+      }
+    }
+  }
+
   Stream<Story> fetchStoriesStream({required List<int> ids}) async* {
     for (final id in ids) {
       final story = await _firebaseClient
@@ -77,5 +102,52 @@ class StoriesRepository {
     });
 
     return comment;
+  }
+
+  Future<Item?> fetchItemBy({required String id}) async {
+    final item = await _firebaseClient
+        .get('${_baseUrl}item/$id.json')
+        .then((dynamic val) {
+      if (val == null) {
+        return null;
+      }
+      final json = val as Map<String, dynamic>;
+      final type = json['type'] as String;
+      if (type == 'story' || type == 'job') {
+        final story = Story.fromJson(json);
+        return story;
+      } else if (json['type'] == 'comment') {
+        final comment = Comment.fromJson(json);
+        return comment;
+      }
+    });
+
+    return item;
+  }
+
+  Future<List<int>?> fetchSubmitted({required String of}) async {
+    final submitted = await _firebaseClient
+        .get('${_baseUrl}user/$of.json')
+        .then((dynamic val) {
+      if (val == null) {
+        return null;
+      }
+      final json = val as Map<String, dynamic>;
+      final submitted = (json['submitted'] as List).cast<int>();
+      return submitted;
+    });
+
+    return submitted;
+  }
+
+  Future<Story?> fetchParentStory({required String id}) async {
+    Item? item;
+
+    do {
+      item = await fetchItemBy(id: item?.parent.toString() ?? id);
+      if (item == null) return null;
+    } while (item is Comment);
+
+    return item as Story;
   }
 }

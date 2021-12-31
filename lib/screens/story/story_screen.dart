@@ -137,264 +137,304 @@ class _StoryScreenState extends State<StoryScreen> {
             }
           },
           builder: (context, state) {
-            return Scaffold(
-              resizeToAvoidBottomInset: true,
-              body: Stack(
-                children: [
-                  Positioned.fill(
-                    child: SmartRefresher(
-                      scrollController: scrollController,
-                      enablePullUp: true,
-                      header: const WaterDropMaterialHeader(
-                        backgroundColor: Colors.orange,
-                      ),
-                      footer: CustomFooter(
-                        loadStyle: LoadStyle.ShowWhenLoading,
-                        builder: (context, mode) {
-                          Widget body;
-                          if (mode == LoadStatus.idle) {
-                            body = const Text('');
-                          } else if (mode == LoadStatus.loading) {
-                            body = const Text('');
-                          } else if (mode == LoadStatus.failed) {
-                            body = const Text(
-                              '',
-                            );
-                          } else if (mode == LoadStatus.canLoading) {
-                            body = const Text(
-                              '',
-                            );
+            return BlocBuilder<FavCubit, FavState>(
+              builder: (context, favState) {
+                final isFav = favState.favIds.contains(widget.story.id);
+                return Scaffold(
+                  resizeToAvoidBottomInset: true,
+                  appBar: AppBar(
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    actions: [
+                      IconButton(
+                        icon: Icon(
+                          isFav ? Icons.favorite : Icons.favorite_border,
+                          color: isFav
+                              ? Colors.orange
+                              : Theme.of(context).iconTheme.color,
+                        ),
+                        onPressed: () {
+                          HapticFeedback.lightImpact();
+                          if (isFav) {
+                            context.read<FavCubit>().removeFav(widget.story.id);
                           } else {
-                            body = const Text('');
+                            context.read<FavCubit>().addFav(widget.story.id);
                           }
-                          return SizedBox(
-                            height: 55,
-                            child: Center(child: body),
-                          );
                         },
                       ),
-                      controller: refreshController,
-                      onRefresh: () {
-                        HapticFeedback.lightImpact();
-                        context.read<CommentsCubit>().refresh();
-                      },
-                      onLoading: () {},
-                      child: ListView(
-                        primary: false,
-                        children: [
-                          SizedBox(
-                            height: MediaQuery.of(context).padding.top,
-                          ),
-                          InkWell(
-                            onTap: () {
-                              setState(() {
-                                if (widget.story != _replyingTo) {
-                                  commentEditingController.clear();
-                                }
-                                setState(() {
-                                  _showReplyBox = true;
-                                  _replyingTo = widget.story;
-                                });
-                                focusNode.requestFocus();
-                              });
-                            },
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: 6,
-                                    right: 6,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        widget.story.by,
-                                        style: const TextStyle(
-                                          color: Colors.orange,
-                                        ),
-                                      ),
-                                      const Spacer(),
-                                      Text(
-                                        widget.story.postedDate,
-                                        style: const TextStyle(
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    final url =
-                                        Uri.encodeFull(widget.story.url);
-                                    canLaunch(url).then((val) {
-                                      if (val) {
-                                        launch(url);
-                                      }
-                                    });
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                      left: 6,
-                                      right: 6,
-                                      bottom: 12,
-                                      top: 12,
-                                    ),
-                                    child: Text(
-                                      widget.story.title,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                ),
-                                if (widget.story.text.isNotEmpty)
-                                  Html(
-                                    data: widget.story.text,
-                                    onLinkTap: (link, _, __, ___) {
-                                      final url = Uri.encodeFull(link ?? '');
-                                      canLaunch(url).then((val) {
-                                        if (val) {
-                                          launch(url);
-                                        }
-                                      });
-                                    },
-                                  ),
-                              ],
-                            ),
-                          ),
-                          const Divider(
-                            height: 0,
-                          ),
-                          if (state.comments.isEmpty &&
-                              state.status == CommentsStatus.loaded) ...[
-                            const SizedBox(
-                              height: 240,
-                            ),
-                            const Center(
-                              child: Text(
-                                'Nothing yet',
-                                style: TextStyle(color: Colors.white30),
-                              ),
-                            ),
-                          ],
-                          ...state.comments.map(
-                            (e) => CommentTile(
-                              comment: e,
-                              onTap: (cmt) {
-                                if (cmt != _replyingTo) {
-                                  commentEditingController.clear();
-                                }
-
-                                setState(() {
-                                  _showReplyBox = true;
-                                  _replyingTo = cmt;
-                                });
-                                focusNode.requestFocus();
-                              },
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 120,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: 70,
-                    child: Offstage(
-                      offstage: !_showReplyBox,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black54,
-                              offset: Offset(0, 20), //(x,y)
-                              blurRadius: 40,
-                            ),
-                          ],
+                      IconButton(
+                        icon: const Icon(
+                          Icons.stream,
                         ),
-                        child: Material(
-                          child: Flex(
-                            direction: Axis.horizontal,
+                        onPressed: () {
+                          final url = Uri.encodeFull(
+                              'https://news.ycombinator.com/item?id=${widget.story.id}');
+                          canLaunch(url).then((val) {
+                            if (val) {
+                              launch(url);
+                            }
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  body: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: SmartRefresher(
+                          scrollController: scrollController,
+                          enablePullUp: true,
+                          header: const WaterDropMaterialHeader(
+                            backgroundColor: Colors.orange,
+                          ),
+                          footer: CustomFooter(
+                            loadStyle: LoadStyle.ShowWhenLoading,
+                            builder: (context, mode) {
+                              Widget body;
+                              if (mode == LoadStatus.idle) {
+                                body = const Text('');
+                              } else if (mode == LoadStatus.loading) {
+                                body = const Text('');
+                              } else if (mode == LoadStatus.failed) {
+                                body = const Text(
+                                  '',
+                                );
+                              } else if (mode == LoadStatus.canLoading) {
+                                body = const Text(
+                                  '',
+                                );
+                              } else {
+                                body = const Text('');
+                              }
+                              return SizedBox(
+                                height: 55,
+                                child: Center(child: body),
+                              );
+                            },
+                          ),
+                          controller: refreshController,
+                          onRefresh: () {
+                            HapticFeedback.lightImpact();
+                            context.read<CommentsCubit>().refresh();
+                          },
+                          onLoading: () {},
+                          child: ListView(
+                            primary: false,
                             children: [
-                              const SizedBox(
-                                width: 16,
-                              ),
-                              Flexible(
-                                flex: 9,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(top: 16),
-                                  child: TextField(
-                                    focusNode: focusNode,
-                                    controller: commentEditingController,
-                                    maxLines: 5,
-                                    decoration: InputDecoration(
-                                      alignLabelWithHint: true,
-                                      contentPadding: EdgeInsets.zero,
-                                      hintText: _replyingTo == null
-                                          ? ''
-                                          : 'Replying ${_replyingTo!.by}',
-                                      hintStyle: const TextStyle(
-                                        color: Colors.grey,
+                              InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    if (widget.story != _replyingTo) {
+                                      commentEditingController.clear();
+                                    }
+                                    setState(() {
+                                      _showReplyBox = true;
+                                      _replyingTo = widget.story;
+                                    });
+                                    focusNode.requestFocus();
+                                  });
+                                },
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        left: 6,
+                                        right: 6,
                                       ),
-                                      focusedBorder: InputBorder.none,
-                                      border: InputBorder.none,
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            widget.story.by,
+                                            style: const TextStyle(
+                                              color: Colors.orange,
+                                            ),
+                                          ),
+                                          const Spacer(),
+                                          Text(
+                                            widget.story.postedDate,
+                                            style: const TextStyle(
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    keyboardType: TextInputType.multiline,
-                                    textInputAction: TextInputAction.newline,
-                                  ),
+                                    InkWell(
+                                      onTap: () {
+                                        final url =
+                                            Uri.encodeFull(widget.story.url);
+                                        canLaunch(url).then((val) {
+                                          if (val) {
+                                            launch(url);
+                                          }
+                                        });
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                          left: 6,
+                                          right: 6,
+                                          bottom: 12,
+                                          top: 12,
+                                        ),
+                                        child: Text(
+                                          widget.story.title,
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    ),
+                                    if (widget.story.text.isNotEmpty)
+                                      Html(
+                                        data: widget.story.text,
+                                        onLinkTap: (link, _, __, ___) {
+                                          final url =
+                                              Uri.encodeFull(link ?? '');
+                                          canLaunch(url).then((val) {
+                                            if (val) {
+                                              launch(url);
+                                            }
+                                          });
+                                        },
+                                      ),
+                                  ],
                                 ),
                               ),
-                              if (_replyingTo != null &&
-                                  postState.status != PostStatus.loading)
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.close,
-                                    color: Colors.orange,
+                              const Divider(
+                                height: 0,
+                              ),
+                              if (state.comments.isEmpty &&
+                                  state.status == CommentsStatus.loaded) ...[
+                                const SizedBox(
+                                  height: 240,
+                                ),
+                                const Center(
+                                  child: Text(
+                                    'Nothing yet',
+                                    style: TextStyle(color: Colors.white30),
                                   ),
-                                  onPressed: () {
-                                    commentEditingController.clear();
+                                ),
+                              ],
+                              ...state.comments.map(
+                                (e) => CommentTile(
+                                  comment: e,
+                                  onTap: (cmt) {
+                                    if (cmt != _replyingTo) {
+                                      commentEditingController.clear();
+                                    }
+
                                     setState(() {
-                                      _showReplyBox = false;
-                                      _replyingTo = null;
+                                      _showReplyBox = true;
+                                      _replyingTo = cmt;
                                     });
-                                    focusNode.unfocus();
+                                    focusNode.requestFocus();
                                   },
                                 ),
-                              if (postState.status == PostStatus.loading)
-                                const SizedBox(
-                                  height: 24,
-                                  width: 24,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.orange,
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              else
-                                Flexible(
-                                  child: IconButton(
-                                    icon: const Icon(
-                                      Icons.send,
-                                      color: Colors.orange,
-                                    ),
-                                    onPressed: onSendTapped,
-                                  ),
-                                ),
+                              ),
                               const SizedBox(
-                                width: 16,
+                                height: 120,
                               ),
                             ],
                           ),
                         ),
                       ),
-                    ),
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        height: 70,
+                        child: Offstage(
+                          offstage: !_showReplyBox,
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black54,
+                                  offset: Offset(0, 20), //(x,y)
+                                  blurRadius: 40,
+                                ),
+                              ],
+                            ),
+                            child: Material(
+                              child: Flex(
+                                direction: Axis.horizontal,
+                                children: [
+                                  const SizedBox(
+                                    width: 16,
+                                  ),
+                                  Flexible(
+                                    flex: 9,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 16),
+                                      child: TextField(
+                                        focusNode: focusNode,
+                                        controller: commentEditingController,
+                                        maxLines: 5,
+                                        decoration: InputDecoration(
+                                          alignLabelWithHint: true,
+                                          contentPadding: EdgeInsets.zero,
+                                          hintText: _replyingTo == null
+                                              ? ''
+                                              : 'Replying ${_replyingTo!.by}',
+                                          hintStyle: const TextStyle(
+                                            color: Colors.grey,
+                                          ),
+                                          focusedBorder: InputBorder.none,
+                                          border: InputBorder.none,
+                                        ),
+                                        keyboardType: TextInputType.multiline,
+                                        textInputAction:
+                                            TextInputAction.newline,
+                                      ),
+                                    ),
+                                  ),
+                                  if (_replyingTo != null &&
+                                      postState.status != PostStatus.loading)
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.close,
+                                        color: Colors.orange,
+                                      ),
+                                      onPressed: () {
+                                        commentEditingController.clear();
+                                        setState(() {
+                                          _showReplyBox = false;
+                                          _replyingTo = null;
+                                        });
+                                        focusNode.unfocus();
+                                      },
+                                    ),
+                                  if (postState.status == PostStatus.loading)
+                                    const SizedBox(
+                                      height: 24,
+                                      width: 24,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.orange,
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  else
+                                    Flexible(
+                                      child: IconButton(
+                                        icon: const Icon(
+                                          Icons.send,
+                                          color: Colors.orange,
+                                        ),
+                                        onPressed: onSendTapped,
+                                      ),
+                                    ),
+                                  const SizedBox(
+                                    width: 16,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                );
+              },
             );
           },
         );
@@ -449,7 +489,7 @@ class _StoryScreenState extends State<StoryScreen> {
                         ),
                       ),
                     )
-                  else ...[
+                  else if (!state.isLoggedIn) ...[
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 18,

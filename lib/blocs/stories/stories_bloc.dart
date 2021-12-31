@@ -79,6 +79,9 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
           type: event.type,
         ));
       });
+    } else {
+      emit(state.copyWithStatusUpdated(
+          of: event.type, to: StoriesStatus.loaded));
     }
   }
 

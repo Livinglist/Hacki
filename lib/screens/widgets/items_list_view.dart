@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/custom_circular_progress_indicator.dart';
 import 'package:hacki/screens/widgets/story_tile.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ItemsListView<T extends Item> extends StatelessWidget {
   const ItemsListView({
@@ -18,7 +20,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   final RefreshController refreshController;
   final VoidCallback onRefresh;
   final VoidCallback onLoadMore;
-  final Function(Story) onTap;
+  final Function(T) onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +65,76 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                 StoryTile(
                   story: e,
                   onTap: () => onTap(e),
+                ),
+                const Divider(
+                  height: 0,
+                ),
+              ];
+            } else if (e is Comment) {
+              return [
+                Padding(
+                  padding: const EdgeInsets.only(left: 6),
+                  child: InkWell(
+                    onTap: () => onTap(e),
+                    child: Padding(
+                      padding: EdgeInsets.zero,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (e.deleted)
+                            const Center(
+                              child: Padding(
+                                padding: EdgeInsets.only(top: 6),
+                                child: Text(
+                                  'deleted',
+                                  style: TextStyle(color: Colors.white30),
+                                ),
+                              ),
+                            ),
+                          Flex(
+                            direction: Axis.horizontal,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                flex: 7,
+                                child: Html(
+                                  data: e.text,
+                                  onLinkTap: (link, _, __, ___) {
+                                    final url = Uri.encodeFull(link ?? '');
+                                    canLaunch(url).then((val) {
+                                      if (val) {
+                                        launch(url);
+                                      }
+                                    });
+                                  },
+                                ),
+                              ),
+                              Flexible(
+                                flex: 3,
+                                child: Row(
+                                  children: [
+                                    const Spacer(),
+                                    Text(
+                                      e.postedDate,
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 12,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Divider(
+                            height: 0,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
                 const Divider(
                   height: 0,

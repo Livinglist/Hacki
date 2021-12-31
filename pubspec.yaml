@@ -35,6 +35,7 @@ dependencies:
   objectid: ^2.0.0
   package_info: ^2.0.2
   pull_to_refresh: ^2.0.0
+  shared_preferences: ^2.0.11
   universal_platform: ^1.0.0+1
   url_launcher: ^6.0.10
 

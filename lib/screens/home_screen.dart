@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
-    tabController = TabController(vsync: this, length: 5)
+    tabController = TabController(vsync: this, length: 6)
       ..addListener(() {
         setState(() {
           currentIndex = tabController.index;
@@ -84,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen>
         return WillPopScope(
           onWillPop: () => Future.value(false),
           child: DefaultTabController(
-            length: 5,
+            length: 6,
             child: Scaffold(
               appBar: PreferredSize(
                 preferredSize: const Size(0, 48),
@@ -94,6 +94,7 @@ class _HomeScreenState extends State<HomeScreen>
                       height: MediaQuery.of(context).padding.top,
                     ),
                     TabBar(
+                      isScrollable: true,
                       controller: tabController,
                       indicatorColor: Colors.orange,
                       tabs: [
@@ -150,6 +151,14 @@ class _HomeScreenState extends State<HomeScreen>
                                   ? Colors.orange
                                   : Colors.grey,
                             ),
+                          ),
+                        ),
+                        Tab(
+                          icon: Icon(
+                            Icons.person,
+                            size: 16,
+                            color:
+                                currentIndex == 5 ? Colors.orange : Colors.grey,
                           ),
                         ),
                       ],
@@ -304,6 +313,7 @@ class _HomeScreenState extends State<HomeScreen>
                       });
                     },
                   ),
+                  const ProfileView(),
                 ],
               ),
             ),

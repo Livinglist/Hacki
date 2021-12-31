@@ -10,11 +10,13 @@ class CommentTile extends StatefulWidget {
     Key? key,
     required this.comment,
     required this.onTap,
+    this.loadKids = true,
     this.level = 0,
   }) : super(key: key);
 
   final Comment comment;
   final int level;
+  final bool loadKids;
   final Function(Comment) onTap;
 
   @override
@@ -27,14 +29,10 @@ class _CommentTileState extends State<CommentTile>
   Widget build(BuildContext context) {
     super.build(context);
 
-    final comment = widget.comment;
-    final level = widget.level;
-    final onTap = widget.onTap;
-
     return BlocProvider(
-      create: (_) => CommentsCubit(commentIds: comment.kids),
+      create: (_) => CommentsCubit(commentIds: widget.comment.kids),
       child: InkWell(
-        onTap: () => onTap(comment),
+        onTap: () => widget.onTap(widget.comment),
         child: Padding(
           padding: EdgeInsets.zero,
           child: Column(
@@ -45,16 +43,22 @@ class _CommentTileState extends State<CommentTile>
                 child: Row(
                   children: [
                     Text(
-                      comment.by,
+                      widget.comment.by,
                       style: TextStyle(
                         //255, 152, 0
                         color: Color.fromRGBO(
-                            255, 152, (level * 40).clamp(0, 255), 1),
+                          255,
+                          widget.level * 40 < 255
+                              ? 152
+                              : (widget.level * 20).clamp(0, 255),
+                          (widget.level * 40).clamp(0, 255),
+                          1,
+                        ),
                       ),
                     ),
                     const Spacer(),
                     Text(
-                      comment.postedDate,
+                      widget.comment.postedDate,
                       style: const TextStyle(
                         color: Colors.grey,
                       ),
@@ -62,7 +66,7 @@ class _CommentTileState extends State<CommentTile>
                   ],
                 ),
               ),
-              if (comment.deleted)
+              if (widget.comment.deleted)
                 const Center(
                   child: Padding(
                     padding: EdgeInsets.only(top: 6),
@@ -73,7 +77,7 @@ class _CommentTileState extends State<CommentTile>
                   ),
                 ),
               Html(
-                data: comment.text,
+                data: widget.comment.text,
                 onLinkTap: (link, _, __, ___) {
                   final url = Uri.encodeFull(link ?? '');
                   canLaunch(url).then((val) {
@@ -86,22 +90,23 @@ class _CommentTileState extends State<CommentTile>
               const Divider(
                 height: 0,
               ),
-              BlocBuilder<CommentsCubit, CommentsState>(
-                builder: (context, state) {
-                  return Padding(
-                    padding: const EdgeInsets.only(left: 12),
-                    child: Column(
-                      children: state.comments
-                          .map((e) => CommentTile(
-                                comment: e,
-                                onTap: onTap,
-                                level: level + 1,
-                              ))
-                          .toList(),
-                    ),
-                  );
-                },
-              ),
+              if (widget.loadKids)
+                BlocBuilder<CommentsCubit, CommentsState>(
+                  builder: (context, state) {
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 12),
+                      child: Column(
+                        children: state.comments
+                            .map((e) => CommentTile(
+                                  comment: e,
+                                  onTap: widget.onTap,
+                                  level: widget.level + 1,
+                                ))
+                            .toList(),
+                      ),
+                    );
+                  },
+                ),
             ],
           ),
         ),

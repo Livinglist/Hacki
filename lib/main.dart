@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/screens/screens.dart';
 
 Future main() async {
@@ -30,6 +31,14 @@ class HackiApp extends StatelessWidget {
         BlocProvider<AuthBloc>(
           lazy: false,
           create: (context) => AuthBloc(),
+        ),
+        BlocProvider<HistoryCubit>(
+          lazy: false,
+          create: (context) => HistoryCubit(authBloc: context.read<AuthBloc>()),
+        ),
+        BlocProvider<FavCubit>(
+          lazy: false,
+          create: (context) => FavCubit(authBloc: context.read<AuthBloc>()),
         ),
       ],
       child: MaterialApp(

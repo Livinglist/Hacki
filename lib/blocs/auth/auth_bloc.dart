@@ -14,6 +14,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         super(const AuthState.init()) {
     on<AuthInitialize>(onInitialize);
     on<AuthLogin>(onLogin);
+    on<AuthLogout>(onLogout);
     add(AuthInitialize());
   }
 
@@ -21,9 +22,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> onInitialize(
       AuthInitialize event, Emitter<AuthState> emit) async {
-    await _authRepository.loggedIn.then((loggedIn) {
+    await _authRepository.loggedIn.then((loggedIn) async {
       if (loggedIn) {
-        emit(state.copyWith(isLoggedIn: true));
+        await _authRepository.username.then((username) {
+          emit(state.copyWith(
+            isLoggedIn: true,
+            username: username,
+          ));
+        });
       }
     });
   }
@@ -35,9 +41,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         username: event.username, password: event.password);
 
     if (successful) {
-      emit(state.copyWith(isLoggedIn: true, status: AuthStatus.loaded));
+      emit(state.copyWith(
+        username: event.username,
+        isLoggedIn: true,
+        status: AuthStatus.loaded,
+      ));
     } else {
       emit(state.copyWith(status: AuthStatus.failure));
     }
+  }
+
+  Future<void> onLogout(AuthLogout event, Emitter<AuthState> emit) async {
+    emit(state.copyWith(status: AuthStatus.loading));
+
+    await _authRepository.logout();
+
+    emit(state.copyWith(
+      username: '',
+      isLoggedIn: false,
+      status: AuthStatus.loaded,
+    ));
   }
 }
