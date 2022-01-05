@@ -2,6 +2,11 @@
 
 A simple Hacker News reader made with Flutter.
 
+![iOS](https://img.shields.io/badge/iOS-13%20-blue)
+[![Visits Badge](https://badges.pufler.dev/visits/livinglist/Hacki)](https://badges.pufler.dev)
+[![GitHub](https://img.shields.io/github/stars/livinglist/Hacki?style=social)](https://img.shields.io/github/stars/livinglist/Hacki?style=social)
+[![style: effective dart](https://img.shields.io/badge/style-effective_dart-40c4ff.svg)](https://pub.dev/packages/effective_dart)
+
 
 <p align="center">
   <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/147820444-55263f3d-bbc2-4efd-9f90-c9bdcf6013ef.png"> 
