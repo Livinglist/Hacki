@@ -1,3 +1,4 @@
+import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
@@ -32,6 +33,10 @@ class HackiApp extends StatelessWidget {
           lazy: false,
           create: (context) => AuthBloc(),
         ),
+        BlocProvider<PreferenceCubit>(
+          lazy: false,
+          create: (context) => PreferenceCubit(),
+        ),
         BlocProvider<HistoryCubit>(
           lazy: false,
           create: (context) => HistoryCubit(authBloc: context.read<AuthBloc>()),
@@ -41,16 +46,18 @@ class HackiApp extends StatelessWidget {
           create: (context) => FavCubit(authBloc: context.read<AuthBloc>()),
         ),
       ],
-      child: MaterialApp(
-        title: 'Hacki',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.orange,
+      child: FeatureDiscovery(
+        child: MaterialApp(
+          title: 'Hacki',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            primarySwatch: Colors.orange,
+          ),
+          darkTheme: ThemeData.dark(),
+          navigatorKey: navigatorKey,
+          onGenerateRoute: CustomRouter.onGenerateRoute,
+          initialRoute: HomeScreen.routeName,
         ),
-        darkTheme: ThemeData.dark(),
-        navigatorKey: navigatorKey,
-        onGenerateRoute: CustomRouter.onGenerateRoute,
-        initialRoute: HomeScreen.routeName,
       ),
     );
   }

@@ -9,6 +9,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 class ItemsListView<T extends Item> extends StatelessWidget {
   const ItemsListView({
     Key? key,
+    required this.showWebPreview,
     required this.refreshController,
     required this.items,
     required this.onRefresh,
@@ -16,6 +17,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     required this.onTap,
   }) : super(key: key);
 
+  final bool showWebPreview;
   final List<T> items;
   final RefreshController refreshController;
   final VoidCallback onRefresh;
@@ -65,10 +67,12 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                 StoryTile(
                   story: e,
                   onTap: () => onTap(e),
+                  showWebPreview: showWebPreview,
                 ),
-                const Divider(
-                  height: 0,
-                ),
+                if (!showWebPreview)
+                  const Divider(
+                    height: 0,
+                  ),
               ];
             } else if (e is Comment) {
               return [

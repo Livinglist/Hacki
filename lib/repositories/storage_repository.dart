@@ -11,6 +11,17 @@ class StorageRepository {
   static const String _usernameKey = 'username';
   static const String _passwordKey = 'password';
 
+  /// The key of a boolean value deciding whether or not the story
+  /// tile should display link preview. Defaults to false.
+  static const String _displayModeKey = 'displayModeKey';
+
+  /// The key of a boolean value deciding whether or not user should be
+  /// navigated to web view first. Defaults to false.
+  static const String _navigationModeKey = 'navigationModeKey';
+
+  static const bool _displayModeDefaultValue = false;
+  static const bool _navigationModeDefaultValue = false;
+
   final Future<SharedPreferences> _prefs;
   final FlutterSecureStorage _secureStorage;
 
@@ -20,6 +31,12 @@ class StorageRepository {
 
   Future<String?> get password async => _secureStorage.read(key: _passwordKey);
 
+  Future<bool> get shouldShowComplexStoryTile async => _prefs.then(
+      (prefs) => prefs.getBool(_displayModeKey) ?? _displayModeDefaultValue);
+
+  Future<bool> get shouldShowWebFirst async => _prefs.then((prefs) =>
+      prefs.getBool(_navigationModeKey) ?? _navigationModeDefaultValue);
+
   Future<List<int>> favList({required String of}) => _prefs.then((prefs) =>
       (prefs.getStringList(of) ?? <String>[]).map(int.parse).toList());
 
@@ -27,6 +44,20 @@ class StorageRepository {
       {required String username, required String password}) async {
     await _secureStorage.write(key: _usernameKey, value: username);
     await _secureStorage.write(key: _passwordKey, value: password);
+  }
+
+  Future<void> toggleDisplayMode() async {
+    final prefs = await _prefs;
+    final currentMode =
+        prefs.getBool(_displayModeKey) ?? _displayModeDefaultValue;
+    await prefs.setBool(_displayModeKey, !currentMode);
+  }
+
+  Future<void> toggleNavigationMode() async {
+    final prefs = await _prefs;
+    final currentMode =
+        prefs.getBool(_navigationModeKey) ?? _navigationModeDefaultValue;
+    await prefs.setBool(_navigationModeKey, !currentMode);
   }
 
   Future<void> addFav({required String username, required int id}) async {

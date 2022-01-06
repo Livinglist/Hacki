@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 
 part 'auth_event.dart';
@@ -15,6 +16,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthInitialize>(onInitialize);
     on<AuthLogin>(onLogin);
     on<AuthLogout>(onLogout);
+    on<AuthToggleAgreeToEULA>(onToggleAgreeToEULA);
+    on<AuthFlag>(onFlag);
     add(AuthInitialize());
   }
 
@@ -32,6 +35,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         });
       }
     });
+  }
+
+  Future<void> onToggleAgreeToEULA(
+      AuthToggleAgreeToEULA event, Emitter<AuthState> emit) async {
+    emit(state.copyWith(agreedToEULA: !state.agreedToEULA));
+  }
+
+  Future<void> onFlag(AuthFlag event, Emitter<AuthState> emit) async {
+    if (state.isLoggedIn) {
+      final flagged = event.item.dead;
+      await _authRepository.flag(id: event.item.id, flag: !flagged);
+    }
   }
 
   Future<void> onLogin(AuthLogin event, Emitter<AuthState> emit) async {

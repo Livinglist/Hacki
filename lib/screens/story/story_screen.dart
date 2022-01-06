@@ -1,9 +1,12 @@
+import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:hacki/blocs/blocs.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
@@ -78,8 +81,17 @@ class _StoryScreenState extends State<StoryScreen> {
   void initState() {
     super.initState();
 
+    SchedulerBinding.instance?.addPostFrameCallback((_) {
+      FeatureDiscovery.discoverFeatures(
+        context,
+        const <String>{
+          Constants.featureAddStoryToFavList,
+          Constants.featureOpenStoryInWebView,
+        },
+      );
+    });
+
     scrollController.addListener(() {
-      //focusNode.unfocus();
       FocusScope.of(context).requestFocus(FocusNode());
       if (commentEditingController.text.isEmpty) {
         setState(() {
@@ -147,11 +159,24 @@ class _StoryScreenState extends State<StoryScreen> {
                     elevation: 0,
                     actions: [
                       IconButton(
-                        icon: Icon(
-                          isFav ? Icons.favorite : Icons.favorite_border,
-                          color: isFav
-                              ? Colors.orange
-                              : Theme.of(context).iconTheme.color,
+                        icon: DescribedFeatureOverlay(
+                          targetColor: Theme.of(context).primaryColor,
+                          tapTarget: Icon(
+                            isFav ? Icons.favorite : Icons.favorite_border,
+                            color: Colors.white,
+                          ),
+                          featureId: Constants.featureAddStoryToFavList,
+                          title: const Text('Fav a Story'),
+                          description: const Text(
+                            'Save this article for later.',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          child: Icon(
+                            isFav ? Icons.favorite : Icons.favorite_border,
+                            color: isFav
+                                ? Colors.orange
+                                : Theme.of(context).iconTheme.color,
+                          ),
                         ),
                         onPressed: () {
                           HapticFeedback.lightImpact();
@@ -163,8 +188,22 @@ class _StoryScreenState extends State<StoryScreen> {
                         },
                       ),
                       IconButton(
-                        icon: const Icon(
-                          Icons.stream,
+                        icon: DescribedFeatureOverlay(
+                          targetColor: Theme.of(context).primaryColor,
+                          tapTarget: const Icon(
+                            Icons.stream,
+                            color: Colors.white,
+                          ),
+                          featureId: Constants.featureOpenStoryInWebView,
+                          title: const Text('Open in Browser'),
+                          description: const Text(
+                            'Want more than just reading and replying? '
+                            'You can tap here to open this story in a browser.',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          child: const Icon(
+                            Icons.stream,
+                          ),
                         ),
                         onPressed: () => LinkUtil.launchUrl(
                             'https://news.ycombinator.com/item?id=${widget.story.id}'),
@@ -307,6 +346,7 @@ class _StoryScreenState extends State<StoryScreen> {
                                     });
                                     focusNode.requestFocus();
                                   },
+                                  onFlag: onFlagTapped,
                                 ),
                               ),
                               const SizedBox(
@@ -421,6 +461,104 @@ class _StoryScreenState extends State<StoryScreen> {
     );
   }
 
+  void onFlagTapped(Item item) {
+    showModalBottomSheet<bool>(
+        context: context,
+        builder: (context) {
+          return Container(
+            height: 140,
+            color: Theme.of(context).canvasColor,
+            child: Material(
+              color: Colors.transparent,
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.local_police),
+                    title: const Text(
+                      'Flag',
+                    ),
+                    onTap: () => Navigator.pop(context, true),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.close),
+                    title: const Text(
+                      'Cancel',
+                    ),
+                    onTap: () => Navigator.pop(context, false),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }).then((flagTapped) {
+      if (flagTapped ?? false) {
+        showDialog<bool>(
+            context: context,
+            builder: (context) {
+              return SimpleDialog(
+                title: const Text('Flag this comment?'),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 24,
+                      right: 12,
+                    ),
+                    child: Text(
+                      'Flag this comment posted by ${item.by}?',
+                      style: const TextStyle(
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      right: 12,
+                    ),
+                    child: ButtonBar(
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(
+                              color: Colors.red,
+                            ),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context, true);
+                          },
+                          style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(Colors.deepOrange),
+                          ),
+                          child: const Text(
+                            'Yes',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }).then((didFlag) {
+          if (didFlag ?? false) {
+            context.read<AuthBloc>().add(AuthFlag(item: item));
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('Comment flagged!'),
+              backgroundColor: Colors.orange,
+            ));
+          }
+        });
+      }
+    });
+  }
+
   void onSendTapped() {
     final authBloc = context.read<AuthBloc>();
     final postCubit = context.read<PostCubit>();
@@ -514,13 +652,61 @@ class _StoryScreenState extends State<StoryScreen> {
                           left: 18,
                         ),
                         child: Text(
-                          'Something went wrong...$sadFace',
+                          'Something went wrong... $sadFace',
                           style: const TextStyle(
                             color: Colors.grey,
                             fontSize: 12,
                           ),
                         ),
                       ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            state.agreedToEULA
+                                ? Icons.check_box
+                                : Icons.check_box_outline_blank,
+                            color: state.agreedToEULA
+                                ? Colors.deepOrange
+                                : Colors.grey,
+                          ),
+                          onPressed: () => context
+                              .read<AuthBloc>()
+                              .add(AuthToggleAgreeToEULA()),
+                        ),
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              const TextSpan(
+                                text: 'I agree to ',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              WidgetSpan(
+                                child: Transform.translate(
+                                  offset: const Offset(0, 1),
+                                  child: TapDownWrapper(
+                                    onTap: () => LinkUtil.launchUrl(
+                                        Constants.endUserAgreementLink),
+                                    child: const Text(
+                                      'End User Agreement',
+                                      style: TextStyle(
+                                        color: Colors.deepOrange,
+                                        decoration: TextDecoration.underline,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
                     Padding(
                       padding: const EdgeInsets.only(
                         right: 12,
@@ -538,22 +724,31 @@ class _StoryScreenState extends State<StoryScreen> {
                           ),
                           ElevatedButton(
                             onPressed: () {
-                              final username = usernameController.text;
-                              final password = passwordController.text;
-                              if (username.isNotEmpty && password.isNotEmpty) {
-                                context.read<AuthBloc>().add(AuthLogin(
-                                      username: username,
-                                      password: password,
-                                    ));
+                              if (state.agreedToEULA) {
+                                final username = usernameController.text;
+                                final password = passwordController.text;
+                                if (username.isNotEmpty &&
+                                    password.isNotEmpty) {
+                                  context.read<AuthBloc>().add(AuthLogin(
+                                        username: username,
+                                        password: password,
+                                      ));
+                                }
                               }
                             },
                             style: ButtonStyle(
-                              backgroundColor:
-                                  MaterialStateProperty.all(Colors.orange),
+                              backgroundColor: MaterialStateProperty.all(
+                                state.agreedToEULA
+                                    ? Colors.deepOrange
+                                    : Colors.grey,
+                              ),
                             ),
                             child: const Text(
                               'Log in',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ],

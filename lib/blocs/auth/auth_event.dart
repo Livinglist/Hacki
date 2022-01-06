@@ -23,6 +23,20 @@ class AuthLogin extends AuthEvent {
       ];
 }
 
+class AuthToggleAgreeToEULA extends AuthEvent {
+  @override
+  List<Object?> get props => [];
+}
+
+class AuthFlag extends AuthEvent {
+  AuthFlag({required this.item});
+
+  final Item item;
+
+  @override
+  List<Object?> get props => [item];
+}
+
 class AuthLogout extends AuthEvent {
   @override
   List<Object?> get props => [];

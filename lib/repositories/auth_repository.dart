@@ -50,6 +50,23 @@ class AuthRepository {
     await _storageRepository.removeAuth();
   }
 
+  Future<bool> flag({
+    required int id,
+    required bool flag,
+  }) async {
+    final uri = Uri.https(authority, 'flag');
+    final username = await _storageRepository.username;
+    final password = await _storageRepository.password;
+    final PostDataMixin data = FlagPostData(
+      acct: username!,
+      pw: password!,
+      id: id,
+      un: flag ? null : 't',
+    );
+
+    return _performDefaultPost(uri, data);
+  }
+
   Future<bool> _performDefaultPost(
     Uri uri,
     PostDataMixin data, {

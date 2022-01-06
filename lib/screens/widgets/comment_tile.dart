@@ -10,6 +10,7 @@ class CommentTile extends StatefulWidget {
     Key? key,
     required this.comment,
     required this.onTap,
+    required this.onFlag,
     this.loadKids = true,
     this.level = 0,
   }) : super(key: key);
@@ -18,6 +19,7 @@ class CommentTile extends StatefulWidget {
   final int level;
   final bool loadKids;
   final Function(Comment) onTap;
+  final Function(Comment) onFlag;
 
   @override
   _CommentTileState createState() => _CommentTileState();
@@ -33,6 +35,7 @@ class _CommentTileState extends State<CommentTile>
       create: (_) => CommentsCubit(commentIds: widget.comment.kids),
       child: InkWell(
         onTap: () => widget.onTap(widget.comment),
+        onLongPress: () => widget.onFlag(widget.comment),
         child: Padding(
           padding: EdgeInsets.zero,
           child: Column(
@@ -93,6 +96,7 @@ class _CommentTileState extends State<CommentTile>
                             .map((e) => CommentTile(
                                   comment: e,
                                   onTap: widget.onTap,
+                                  onFlag: widget.onFlag,
                                   level: widget.level + 1,
                                 ))
                             .toList(),

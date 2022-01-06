@@ -46,3 +46,27 @@ class CommentPostData with PostDataMixin {
     };
   }
 }
+
+class FlagPostData with PostDataMixin {
+  FlagPostData({
+    required this.acct,
+    required this.pw,
+    required this.id,
+    this.un,
+  });
+
+  final String acct;
+  final String pw;
+  final int id;
+  final String? un;
+
+  @override
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'acct': acct,
+      'pw': pw,
+      'id': id,
+      'un': un,
+    };
+  }
+}

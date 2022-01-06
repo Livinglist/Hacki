@@ -11,25 +11,30 @@ class AuthState extends Equatable {
     required this.username,
     required this.isLoggedIn,
     required this.status,
+    required this.agreedToEULA,
   });
 
   const AuthState.init()
       : username = '',
         isLoggedIn = false,
-        status = AuthStatus.loaded;
+        status = AuthStatus.loaded,
+        agreedToEULA = false;
 
   final String username;
   final bool isLoggedIn;
+  final bool agreedToEULA;
   final AuthStatus status;
 
   AuthState copyWith({
     String? username,
     bool? isLoggedIn,
+    bool? agreedToEULA,
     AuthStatus? status,
   }) {
     return AuthState(
       username: username ?? this.username,
       isLoggedIn: isLoggedIn ?? this.isLoggedIn,
+      agreedToEULA: agreedToEULA ?? this.agreedToEULA,
       status: status ?? this.status,
     );
   }
@@ -38,6 +43,7 @@ class AuthState extends Equatable {
   List<Object?> get props => [
         username,
         isLoggedIn,
+        agreedToEULA,
         status,
       ];
 }
