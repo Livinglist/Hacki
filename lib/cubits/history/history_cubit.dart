@@ -28,7 +28,11 @@ class HistoryCubit extends Cubit<HistoryState> {
         final username = authState.username;
 
         _storiesRepository.fetchSubmitted(of: username).then((submittedIds) {
-          emit(state.copyWith(submittedIds: submittedIds));
+          emit(state.copyWith(
+            submittedIds: submittedIds,
+            submittedItems: [],
+            currentPage: 0,
+          ));
           if (submittedIds != null) {
             _storiesRepository
                 .fetchItemsStream(
@@ -95,7 +99,11 @@ class HistoryCubit extends Cubit<HistoryState> {
   }
 
   void reset() {
-    emit(state.copyWith(submittedIds: [], submittedItems: []));
+    emit(state.copyWith(
+      submittedIds: [],
+      submittedItems: [],
+      currentPage: 0,
+    ));
   }
 
   void _onItemLoaded(Item item) {

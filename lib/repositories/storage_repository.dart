@@ -37,8 +37,12 @@ class StorageRepository {
   Future<bool> get shouldShowWebFirst async => _prefs.then((prefs) =>
       prefs.getBool(_navigationModeKey) ?? _navigationModeDefaultValue);
 
-  Future<List<int>> favList({required String of}) => _prefs.then((prefs) =>
-      (prefs.getStringList(of) ?? <String>[]).map(int.parse).toList());
+  Future<List<int>> favList({required String of}) =>
+      _prefs.then((prefs) => ((prefs.getStringList('') ?? <String>[])
+            ..addAll(prefs.getStringList(of) ?? <String>[]))
+          .map(int.parse)
+          .toSet()
+          .toList());
 
   Future<void> setAuth(
       {required String username, required String password}) async {

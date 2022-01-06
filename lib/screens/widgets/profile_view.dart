@@ -37,23 +37,6 @@ class _ProfileViewState extends State<ProfileView>
       builder: (context, preferenceState) {
         return BlocBuilder<AuthBloc, AuthState>(
           builder: (context, authState) {
-            if (authState.username.isEmpty) {
-              return Column(
-                children: [
-                  const SizedBox(
-                    height: 120,
-                  ),
-                  ElevatedButton(
-                    onPressed: onLoginTapped,
-                    style: ElevatedButton.styleFrom(primary: Colors.deepOrange),
-                    child: const Text(
-                      'Log in',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  )
-                ],
-              );
-            }
             return BlocConsumer<HistoryCubit, HistoryState>(
               listener: (context, historyState) {
                 if (historyState.status == HistoryStatus.loaded) {
@@ -74,10 +57,31 @@ class _ProfileViewState extends State<ProfileView>
                   builder: (context, favState) {
                     return Stack(
                       children: [
+                        if (!authState.isLoggedIn &&
+                            _pageType == PageType.history)
+                          Positioned.fill(
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 120,
+                                ),
+                                ElevatedButton(
+                                  onPressed: onLoginTapped,
+                                  style: ElevatedButton.styleFrom(
+                                      primary: Colors.deepOrange),
+                                  child: const Text(
+                                    'Log in',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
                         Positioned.fill(
                           top: 50,
                           child: Offstage(
-                            offstage: _pageType != PageType.history,
+                            offstage: !authState.isLoggedIn ||
+                                _pageType != PageType.history,
                             child: ItemsListView<Item>(
                               showWebPreview: false,
                               refreshController: refreshControllerHistory,
@@ -202,11 +206,18 @@ class _ProfileViewState extends State<ProfileView>
                                 const SizedBox(
                                   width: 12,
                                 ),
-                                ActionChip(
-                                  label: const Text('Log out'),
-                                  elevation: 4,
-                                  onPressed: onLogoutTapped,
-                                ),
+                                if (authState.isLoggedIn)
+                                  ActionChip(
+                                    label: const Text('Log out'),
+                                    elevation: 4,
+                                    onPressed: onLogoutTapped,
+                                  )
+                                else
+                                  ActionChip(
+                                    label: const Text('Log in'),
+                                    elevation: 4,
+                                    onPressed: onLoginTapped,
+                                  ),
                                 const SizedBox(
                                   width: 12,
                                 ),
@@ -515,7 +526,6 @@ class _ProfileViewState extends State<ProfileView>
                       onPressed: () {
                         Navigator.pop(context);
                         context.read<AuthBloc>().add(AuthLogout());
-                        context.read<FavCubit>().reset();
                         context.read<HistoryCubit>().reset();
                       },
                       style: ButtonStyle(

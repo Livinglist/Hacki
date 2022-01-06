@@ -33,6 +33,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             username: username,
           ));
         });
+      } else {
+        emit(state.copyWith(
+          isLoggedIn: false,
+          username: '',
+        ));
       }
     });
   }
@@ -67,15 +72,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> onLogout(AuthLogout event, Emitter<AuthState> emit) async {
-    emit(state.copyWith(status: AuthStatus.loading));
-
-    await _authRepository.logout();
-
     emit(state.copyWith(
       username: '',
       isLoggedIn: false,
       agreedToEULA: false,
-      status: AuthStatus.loaded,
     ));
+
+    await _authRepository.logout();
   }
 }
