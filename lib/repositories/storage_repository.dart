@@ -12,15 +12,15 @@ class StorageRepository {
   static const String _passwordKey = 'password';
 
   /// The key of a boolean value deciding whether or not the story
-  /// tile should display link preview. Defaults to false.
+  /// tile should display link preview. Defaults to true.
   static const String _displayModeKey = 'displayModeKey';
 
   /// The key of a boolean value deciding whether or not user should be
   /// navigated to web view first. Defaults to false.
   static const String _navigationModeKey = 'navigationModeKey';
 
-  static const bool _displayModeDefaultValue = false;
-  static const bool _navigationModeDefaultValue = false;
+  static const bool _displayModeDefaultValue = true;
+  static const bool _navigationModeDefaultValue = true;
 
   final Future<SharedPreferences> _prefs;
   final FlutterSecureStorage _secureStorage;
