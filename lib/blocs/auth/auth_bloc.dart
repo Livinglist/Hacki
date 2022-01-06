@@ -74,6 +74,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(state.copyWith(
       username: '',
       isLoggedIn: false,
+      agreedToEULA: false,
       status: AuthStatus.loaded,
     ));
   }
