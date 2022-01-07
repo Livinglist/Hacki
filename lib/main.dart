@@ -45,6 +45,10 @@ class HackiApp extends StatelessWidget {
           lazy: false,
           create: (context) => FavCubit(authBloc: context.read<AuthBloc>()),
         ),
+        BlocProvider<BlocklistCubit>(
+          lazy: false,
+          create: (context) => BlocklistCubit(),
+        ),
       ],
       child: FeatureDiscovery(
         child: MaterialApp(

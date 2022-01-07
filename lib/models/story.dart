@@ -56,16 +56,15 @@ class Story extends Item {
 
   Story.fromJson(Map<String, dynamic> json)
       : super(
-          descendants:
-              json['descendants'] == null ? 0 : json['descendants'] as int,
+          descendants: json['descendants'] as int? ?? 0,
           id: json['id'] as int,
           score: json['score'] as int,
           time: json['time'] as int,
           by: json['by'] as String,
           title: json['title'] as String,
-          url: json['url'] == null ? '' : json['url'] as String,
-          kids: json['kids'] == null ? [] : (json['kids'] as List).cast<int>(),
-          text: json['text'] == null ? '' : json['text'] as String,
+          url: json['url'] as String? ?? '',
+          kids: (json['kids'] as List?)?.cast<int>() ?? [],
+          text: json['text'] as String? ?? '',
           dead: false,
           parts: [],
           deleted: false,

@@ -10,6 +10,7 @@ class StorageRepository {
 
   static const String _usernameKey = 'username';
   static const String _passwordKey = 'password';
+  static const String _blocklistKey = 'blocklist';
 
   /// The key of a boolean value deciding whether or not the story
   /// tile should display link preview. Defaults to true.
@@ -31,6 +32,9 @@ class StorageRepository {
 
   Future<String?> get password async => _secureStorage.read(key: _passwordKey);
 
+  Future<List<String>> get blocklist async =>
+      _prefs.then((prefs) => prefs.getStringList(_blocklistKey) ?? []);
+
   Future<bool> get shouldShowComplexStoryTile async => _prefs.then(
       (prefs) => prefs.getBool(_displayModeKey) ?? _displayModeDefaultValue);
 
@@ -48,6 +52,11 @@ class StorageRepository {
       {required String username, required String password}) async {
     await _secureStorage.write(key: _usernameKey, value: username);
     await _secureStorage.write(key: _passwordKey, value: password);
+  }
+
+  Future<void> removeAuth() async {
+    await _secureStorage.delete(key: _usernameKey);
+    await _secureStorage.delete(key: _passwordKey);
   }
 
   Future<void> toggleDisplayMode() async {
@@ -80,8 +89,8 @@ class StorageRepository {
         username, favList.map((e) => e.toString()).toList());
   }
 
-  Future<void> removeAuth() async {
-    await _secureStorage.delete(key: _usernameKey);
-    await _secureStorage.delete(key: _passwordKey);
+  Future<void> setBlocklist(List<String> usernames) async {
+    final prefs = await _prefs;
+    await prefs.setStringList(_blocklistKey, usernames);
   }
 }

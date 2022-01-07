@@ -13,6 +13,8 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+enum _MenuAction { block, flag, cancel }
+
 class StoryScreenArgs {
   StoryScreenArgs({required this.story});
 
@@ -346,7 +348,7 @@ class _StoryScreenState extends State<StoryScreen> {
                                     });
                                     focusNode.requestFocus();
                                   },
-                                  onFlag: onFlagTapped,
+                                  onLongPress: onLongPressed,
                                 ),
                               ),
                               const SizedBox(
@@ -461,12 +463,14 @@ class _StoryScreenState extends State<StoryScreen> {
     );
   }
 
-  void onFlagTapped(Item item) {
-    showModalBottomSheet<bool>(
+  void onLongPressed(Item item) {
+    final isBlocked =
+        context.read<BlocklistCubit>().state.blocklist.contains(item.by);
+    showModalBottomSheet<_MenuAction>(
         context: context,
         builder: (context) {
           return Container(
-            height: 140,
+            height: 180,
             color: Theme.of(context).canvasColor,
             child: Material(
               color: Colors.transparent,
@@ -477,84 +481,176 @@ class _StoryScreenState extends State<StoryScreen> {
                     title: const Text(
                       'Flag',
                     ),
-                    onTap: () => Navigator.pop(context, true),
+                    onTap: () => Navigator.pop(context, _MenuAction.flag),
+                  ),
+                  ListTile(
+                    leading: Icon(
+                        isBlocked ? Icons.visibility : Icons.visibility_off),
+                    title: Text(
+                      isBlocked ? 'Unblock' : 'Block',
+                    ),
+                    onTap: () => Navigator.pop(context, _MenuAction.block),
                   ),
                   ListTile(
                     leading: const Icon(Icons.close),
                     title: const Text(
                       'Cancel',
                     ),
-                    onTap: () => Navigator.pop(context, false),
+                    onTap: () => Navigator.pop(context, _MenuAction.cancel),
                   ),
                 ],
               ),
             ),
           );
-        }).then((flagTapped) {
-      if (flagTapped ?? false) {
-        showDialog<bool>(
-            context: context,
-            builder: (context) {
-              return SimpleDialog(
-                title: const Text('Flag this comment?'),
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: 24,
-                      right: 12,
-                    ),
-                    child: Text(
-                      'Flag this comment posted by ${item.by}?',
-                      style: const TextStyle(
-                        color: Colors.grey,
+        }).then((action) {
+      if (action != null) {
+        switch (action) {
+          case _MenuAction.flag:
+            showFlagPopup(item);
+            break;
+          case _MenuAction.block:
+            showBlockPopup(item, isBlocked);
+            break;
+          case _MenuAction.cancel:
+        }
+      }
+    });
+  }
+
+  void showFlagPopup(Item item) {
+    showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            title: const Text('Flag this comment?'),
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 24,
+                  right: 12,
+                ),
+                child: Text(
+                  'Flag this comment posted by ${item.by}?',
+                  style: const TextStyle(
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                  right: 12,
+                ),
+                child: ButtonBar(
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(
+                          color: Colors.red,
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      right: 12,
-                    ),
-                    child: ButtonBar(
-                      children: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          child: const Text(
-                            'Cancel',
-                            style: TextStyle(
-                              color: Colors.red,
-                            ),
-                          ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context, true);
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.deepOrange),
+                      ),
+                      child: const Text(
+                        'Yes',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context, true);
-                          },
-                          style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all(Colors.deepOrange),
-                          ),
-                          child: const Text(
-                            'Yes',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
+                  ],
+                ),
+              ),
+            ],
+          );
+        }).then((yesTapped) {
+      if (yesTapped ?? false) {
+        context.read<AuthBloc>().add(AuthFlag(item: item));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Comment flagged!'),
+          backgroundColor: Colors.orange,
+        ));
+      }
+    });
+  }
+
+  void showBlockPopup(Item item, bool isBlocked) {
+    showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text('${isBlocked ? 'Unblock' : 'Block'} this user?'),
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 24,
+                  right: 12,
+                ),
+                child: Text(
+                  'Do you want to ${isBlocked ? 'unblock' : 'block'} ${item.by}'
+                  ' and ${isBlocked ? 'display' : 'hide'} '
+                  'comments posted by this user?',
+                  style: const TextStyle(
+                    color: Colors.grey,
                   ),
-                ],
-              );
-            }).then((didFlag) {
-          if (didFlag ?? false) {
-            context.read<AuthBloc>().add(AuthFlag(item: item));
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content: Text('Comment flagged!'),
-              backgroundColor: Colors.orange,
-            ));
-          }
-        });
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                  right: 12,
+                ),
+                child: ButtonBar(
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context, true);
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.deepOrange),
+                      ),
+                      child: const Text(
+                        'Yes',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
+        }).then((yesTapped) {
+      if (yesTapped ?? false) {
+        if (isBlocked) {
+          context.read<BlocklistCubit>().removeFromBlocklist(item.by);
+        } else {
+          context.read<BlocklistCubit>().addToBlocklist(item.by);
+        }
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('User ${isBlocked ? 'unblocked' : 'blocked'}!'),
+          backgroundColor: Colors.orange,
+        ));
       }
     });
   }
