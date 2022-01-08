@@ -129,27 +129,25 @@ class StoryTile extends StatelessWidget {
       } else {
         final text = parse(story.text).body?.text ?? '';
 
-        return FadeIn(
-          child: TapDownWrapper(
-            onTap: onTap,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-              ),
-              child: AbsorbPointer(
-                child: SizedBox(
-                  height: height,
-                  child: LinkView(
-                    title: story.title,
-                    description: text,
-                    onTap: (_) {},
-                    url: '',
-                    imageUri: Constants.hackerNewsLogoLink,
-                    bodyMaxLines: 4,
-                    titleTextStyle: TextStyle(
-                      color: Theme.of(context).textTheme.subtitle1!.color,
-                      fontWeight: FontWeight.bold,
-                    ),
+        return TapDownWrapper(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12,
+            ),
+            child: AbsorbPointer(
+              child: SizedBox(
+                height: height,
+                child: LinkView(
+                  title: story.title,
+                  description: text,
+                  onTap: (_) {},
+                  url: '',
+                  imageUri: Constants.hackerNewsLogoLink,
+                  bodyMaxLines: 4,
+                  titleTextStyle: TextStyle(
+                    color: Theme.of(context).textTheme.subtitle1!.color,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
@@ -158,26 +156,24 @@ class StoryTile extends StatelessWidget {
         );
       }
     } else {
-      return FadeIn(
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(
-                  height: 8,
-                ),
-                Text(
-                  story.title,
-                  style: const TextStyle(fontSize: 15),
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-              ],
-            ),
+      return InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(
+                height: 8,
+              ),
+              Text(
+                story.title,
+                style: const TextStyle(fontSize: 15),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+            ],
           ),
         ),
       );

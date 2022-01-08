@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/custom_circular_progress_indicator.dart';
@@ -64,10 +65,12 @@ class ItemsListView<T extends Item> extends StatelessWidget {
           ...items.map((e) {
             if (e is Story) {
               return [
-                StoryTile(
-                  story: e,
-                  onTap: () => onTap(e),
-                  showWebPreview: showWebPreview,
+                FadeIn(
+                  child: StoryTile(
+                    story: e,
+                    onTap: () => onTap(e),
+                    showWebPreview: showWebPreview,
+                  ),
                 ),
                 if (!showWebPreview)
                   const Divider(
