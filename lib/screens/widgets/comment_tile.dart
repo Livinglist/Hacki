@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
@@ -107,11 +108,13 @@ class _CommentTileState extends State<CommentTile>
                           padding: const EdgeInsets.only(left: 12),
                           child: Column(
                             children: state.comments
-                                .map((e) => CommentTile(
-                                      comment: e,
-                                      onTap: widget.onTap,
-                                      onLongPress: widget.onLongPress,
-                                      level: widget.level + 1,
+                                .map((e) => FadeIn(
+                                      child: CommentTile(
+                                        comment: e,
+                                        onTap: widget.onTap,
+                                        onLongPress: widget.onLongPress,
+                                        level: widget.level + 1,
+                                      ),
                                     ))
                                 .toList(),
                           ),

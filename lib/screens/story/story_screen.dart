@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
@@ -335,20 +336,22 @@ class _StoryScreenState extends State<StoryScreen> {
                                 ),
                               ],
                               ...state.comments.map(
-                                (e) => CommentTile(
-                                  comment: e,
-                                  onTap: (cmt) {
-                                    if (cmt != _replyingTo) {
-                                      commentEditingController.clear();
-                                    }
+                                (e) => FadeIn(
+                                  child: CommentTile(
+                                    comment: e,
+                                    onTap: (cmt) {
+                                      if (cmt != _replyingTo) {
+                                        commentEditingController.clear();
+                                      }
 
-                                    setState(() {
-                                      _showReplyBox = true;
-                                      _replyingTo = cmt;
-                                    });
-                                    focusNode.requestFocus();
-                                  },
-                                  onLongPress: onLongPressed,
+                                      setState(() {
+                                        _showReplyBox = true;
+                                        _replyingTo = cmt;
+                                      });
+                                      focusNode.requestFocus();
+                                    },
+                                    onLongPress: onLongPressed,
+                                  ),
                                 ),
                               ),
                               const SizedBox(

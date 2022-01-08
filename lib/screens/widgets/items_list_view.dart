@@ -79,60 +79,62 @@ class ItemsListView<T extends Item> extends StatelessWidget {
               ];
             } else if (e is Comment) {
               return [
-                Padding(
-                  padding: const EdgeInsets.only(left: 6),
-                  child: InkWell(
-                    onTap: () => onTap(e),
-                    child: Padding(
-                      padding: EdgeInsets.zero,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (e.deleted)
-                            const Center(
-                              child: Padding(
-                                padding: EdgeInsets.only(top: 6),
-                                child: Text(
-                                  'deleted',
-                                  style: TextStyle(color: Colors.white30),
+                FadeIn(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 6),
+                    child: InkWell(
+                      onTap: () => onTap(e),
+                      child: Padding(
+                        padding: EdgeInsets.zero,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (e.deleted)
+                              const Center(
+                                child: Padding(
+                                  padding: EdgeInsets.only(top: 6),
+                                  child: Text(
+                                    'deleted',
+                                    style: TextStyle(color: Colors.white30),
+                                  ),
                                 ),
                               ),
-                            ),
-                          Flex(
-                            direction: Axis.horizontal,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Flexible(
-                                flex: 7,
-                                child: Html(
-                                  data: e.text,
-                                  onLinkTap: (link, _, __, ___) =>
-                                      LinkUtil.launchUrl(link ?? ''),
+                            Flex(
+                              direction: Axis.horizontal,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Flexible(
+                                  flex: 7,
+                                  child: Html(
+                                    data: e.text,
+                                    onLinkTap: (link, _, __, ___) =>
+                                        LinkUtil.launchUrl(link ?? ''),
+                                  ),
                                 ),
-                              ),
-                              Flexible(
-                                flex: 3,
-                                child: Row(
-                                  children: [
-                                    const Spacer(),
-                                    Text(
-                                      e.postedDate,
-                                      style: const TextStyle(
-                                        color: Colors.grey,
+                                Flexible(
+                                  flex: 3,
+                                  child: Row(
+                                    children: [
+                                      const Spacer(),
+                                      Text(
+                                        e.postedDate,
+                                        style: const TextStyle(
+                                          color: Colors.grey,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(
-                                      width: 12,
-                                    ),
-                                  ],
+                                      const SizedBox(
+                                        width: 12,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const Divider(
-                            height: 0,
-                          ),
-                        ],
+                              ],
+                            ),
+                            const Divider(
+                              height: 0,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
