@@ -389,7 +389,7 @@ class _StoryScreenState extends State<StoryScreen> {
                                       child: TextField(
                                         focusNode: focusNode,
                                         controller: commentEditingController,
-                                        maxLines: 5,
+                                        maxLines: 10,
                                         decoration: InputDecoration(
                                           alignLabelWithHint: true,
                                           contentPadding: EdgeInsets.zero,
