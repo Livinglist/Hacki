@@ -148,21 +148,21 @@ class _LinkPreviewState extends State<LinkPreview> {
     }
   }
 
-  Widget _buildPlaceHolder(Color color, double defaultHeight) {
-    return SizedBox(
-      height: defaultHeight,
-      child: LayoutBuilder(builder: (context, constraints) {
-        final layoutWidth = constraints.biggest.width;
-        final layoutHeight = constraints.biggest.height;
-
-        return Container(
-          color: color,
-          width: layoutWidth,
-          height: layoutHeight,
-        );
-      }),
-    );
-  }
+  // Widget _buildPlaceHolder(Color color, double defaultHeight) {
+  //   return SizedBox(
+  //     height: defaultHeight,
+  //     child: LayoutBuilder(builder: (context, constraints) {
+  //       final layoutWidth = constraints.biggest.width;
+  //       final layoutHeight = constraints.biggest.height;
+  //
+  //       return Container(
+  //         color: color,
+  //         width: layoutWidth,
+  //         height: layoutHeight,
+  //       );
+  //     }),
+  //   );
+  // }
 
   Widget _buildLinkContainer(
     double _height, {
@@ -228,8 +228,11 @@ class _LinkPreviewState extends State<LinkPreview> {
       );
     } else {
       loadedWidget = _info == null
-          ? widget.errorWidget ??
-              _buildPlaceHolder(widget.backgroundColor!, _height)
+          ? _buildLinkContainer(
+              _height,
+              title: _errorTitle,
+              image: _errorImage,
+            )
           : _buildLinkContainer(_height,
               title: _errorTitle,
               desc: WebAnalyzer.isNotEmpty(info!.description)
