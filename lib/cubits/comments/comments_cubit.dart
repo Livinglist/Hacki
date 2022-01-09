@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
+import 'package:hacki/services/cache_service.dart';
 
 part 'comments_state.dart';
 
@@ -10,14 +11,17 @@ class CommentsCubit extends Cubit<CommentsState> {
   CommentsCubit(
       {Story? story,
       List<int>? commentIds,
+      CacheService? cacheService,
       StoriesRepository? storiesRepository})
-      : _storiesRepository =
+      : _cacheService = cacheService ?? locator.get<CacheService>(),
+        _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
         assert(story != null || commentIds != null),
         super(CommentsState.init()) {
     init(story?.kids ?? commentIds!, story);
   }
 
+  final CacheService _cacheService;
   final StoriesRepository _storiesRepository;
 
   Future<void> init(List<int> commentIds, Story? story) async {
@@ -27,14 +31,15 @@ class CommentsCubit extends Cubit<CommentsState> {
       emit(state.copyWith(story: updatedStory));
 
       for (final id in updatedStory.kids) {
-        await _storiesRepository
-            .fetchCommentBy(commentId: id.toString())
-            .then((comment) {
-          if (comment != null) {
-            emit(state.copyWith(
-                comments: List.from(state.comments)..add(comment)));
-          }
-        });
+        final cachedComment = _cacheService.getComment(id);
+        if (cachedComment != null) {
+          emit(state.copyWith(
+              comments: List.from(state.comments)..add(cachedComment)));
+        } else {
+          await _storiesRepository
+              .fetchCommentBy(commentId: id.toString())
+              .then(_onCommentFetched);
+        }
       }
 
       emit(state.copyWith(
@@ -42,14 +47,15 @@ class CommentsCubit extends Cubit<CommentsState> {
       ));
     } else {
       for (final id in commentIds) {
-        await _storiesRepository
-            .fetchCommentBy(commentId: id.toString())
-            .then((comment) {
-          if (comment != null) {
-            emit(state.copyWith(
-                comments: List.from(state.comments)..add(comment)));
-          }
-        });
+        final cachedComment = _cacheService.getComment(id);
+        if (cachedComment != null) {
+          emit(state.copyWith(
+              comments: List.from(state.comments)..add(cachedComment)));
+        } else {
+          await _storiesRepository
+              .fetchCommentBy(commentId: id.toString())
+              .then(_onCommentFetched);
+        }
       }
 
       emit(state.copyWith(
@@ -65,19 +71,27 @@ class CommentsCubit extends Cubit<CommentsState> {
         await _storiesRepository.fetchStoryById(state.story.id);
 
     for (final id in updatedStory.kids) {
-      await _storiesRepository
-          .fetchCommentBy(commentId: id.toString())
-          .then((comment) {
-        if (comment != null) {
-          emit(state.copyWith(
-              comments: List.from(state.comments)..add(comment)));
-        }
-      });
+      final cachedComment = _cacheService.getComment(id);
+      if (cachedComment != null) {
+        emit(state.copyWith(
+            comments: List.from(state.comments)..add(cachedComment)));
+      } else {
+        await _storiesRepository
+            .fetchCommentBy(commentId: id.toString())
+            .then(_onCommentFetched);
+      }
     }
 
     emit(state.copyWith(
       story: updatedStory,
       status: CommentsStatus.loaded,
     ));
+  }
+
+  void _onCommentFetched(Comment? comment) {
+    if (comment != null) {
+      _cacheService.cacheComment(comment);
+      emit(state.copyWith(comments: List.from(state.comments)..add(comment)));
+    }
   }
 }

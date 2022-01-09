@@ -26,12 +26,9 @@ class CommentTile extends StatefulWidget {
   _CommentTileState createState() => _CommentTileState();
 }
 
-class _CommentTileState extends State<CommentTile>
-    with AutomaticKeepAliveClientMixin {
+class _CommentTileState extends State<CommentTile> {
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-
     return BlocProvider<CommentsCubit>(
       create: (_) => CommentsCubit(commentIds: widget.comment.kids),
       child: BlocBuilder<BlocklistCubit, BlocklistState>(
@@ -129,7 +126,4 @@ class _CommentTileState extends State<CommentTile>
       ),
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }
