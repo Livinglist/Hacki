@@ -32,6 +32,7 @@ dependencies:
   gbk_codec: ^0.4.0
   get_it: 7.2.0
   html: ^0.15.0
+  html_unescape: ^2.0.0
   http: ^0.13.3
   in_app_review: ^2.0.3
   intl: ^0.17.0

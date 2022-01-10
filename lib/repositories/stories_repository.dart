@@ -1,5 +1,6 @@
 import 'package:firebase/firebase_io.dart';
 import 'package:hacki/models/models.dart';
+import 'package:html_unescape/html_unescape.dart';
 
 class StoriesRepository {
   StoriesRepository({
@@ -97,6 +98,25 @@ class StoriesRepository {
         return null;
       }
       final json = val as Map<String, dynamic>;
+      final text = json['text'] as String? ?? '';
+      final parsedText = HtmlUnescape()
+          .convert(text)
+          .replaceAll('<p>', '\n')
+          .replaceAllMapped(
+            RegExp(r'\<i\>(.*?)\<\/i\>'),
+            (Match match) => '*${match[1]}*',
+          )
+          .replaceAllMapped(
+            RegExp(r'\<pre\>\<code\>(.*?)\<\/code\>\<\/pre\>', dotAll: true),
+            (Match match) => match[1]?.trimRight() ?? '',
+          )
+          .replaceAllMapped(
+            RegExp(r'\<a href=\"(.*?)\".*?\>.*?\<\/a\>'),
+            (Match match) => match[1] ?? '',
+          )
+          .replaceAll('\n', '\n\n');
+      json['text'] = parsedText;
+
       final comment = Comment.fromJson(json);
       return comment;
     });
