@@ -116,11 +116,6 @@ class _CommentTileState extends State<CommentTile> {
                             onOpen: (link) => LinkUtil.launchUrl(link.url),
                           ),
                         ),
-                      // Html(
-                      //   data: widget.comment.text,
-                      //   onLinkTap: (link, _, __, ___) =>
-                      //       LinkUtil.launchUrl(link ?? ''),
-                      // ),
                       const Divider(
                         height: 0,
                       ),

@@ -8,9 +8,11 @@ import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -107,6 +109,8 @@ class _StoryScreenState extends State<StoryScreen> {
 
   @override
   void dispose() {
+    locator.get<CacheService>().resetComments();
+    refreshController.dispose();
     commentEditingController.dispose();
     scrollController.dispose();
     super.dispose();
@@ -250,6 +254,7 @@ class _StoryScreenState extends State<StoryScreen> {
                           controller: refreshController,
                           onRefresh: () {
                             HapticFeedback.lightImpact();
+                            locator.get<CacheService>().resetComments();
                             context.read<CommentsCubit>().refresh();
                           },
                           onLoading: () {},

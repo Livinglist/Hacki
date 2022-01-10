@@ -11,4 +11,8 @@ class CacheService {
   void cacheComment(Comment comment) => _comments[comment.id] = comment;
 
   Comment? getComment(int id) => _comments[id];
+
+  void resetComments() {
+    _comments.clear();
+  }
 }
