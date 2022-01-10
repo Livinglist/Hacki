@@ -17,5 +17,6 @@ A simple Hacker News reader made with Flutter.
    <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/148328188-b14752dc-571d-4382-bf97-d2c1c71dc2d0.png"> 
    <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/148328189-1b6d267a-a6c5-4461-ac31-da200de0d4b7.png"> 
    <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/148328191-20dc46f0-0e1a-4fff-824b-181cfbe2eca7.png"> 
+   <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/148724241-5f639386-c2d7-48a4-bcd1-de800dac44c6.png"> 
+   <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/148724244-620a3a0f-c201-400f-8406-ef7ab6ba690b.png"> 
 </p>
-
