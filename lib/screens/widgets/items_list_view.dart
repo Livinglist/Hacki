@@ -147,6 +147,9 @@ class ItemsListView<T extends Item> extends StatelessWidget {
 
             return [Container()];
           }).expand((element) => element),
+          const SizedBox(
+            height: 40,
+          ),
         ],
       ),
     );
