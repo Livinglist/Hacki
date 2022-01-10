@@ -84,7 +84,11 @@ class LinkView extends StatelessWidget {
                   child: imageUri == ''
                       ? Container(color: bgColor ?? Colors.grey)
                       : Padding(
-                          padding: const EdgeInsets.only(right: 5),
+                          padding: const EdgeInsets.only(
+                            right: 5,
+                            top: 5,
+                            bottom: 5,
+                          ),
                           child: CachedNetworkImage(
                             imageUrl: imageUri,
                             fit: isIcon ? BoxFit.scaleDown : BoxFit.cover,
