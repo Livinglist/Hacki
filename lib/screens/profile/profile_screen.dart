@@ -13,16 +13,21 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-enum PageType { fav, history, settings }
-
-class ProfileView extends StatefulWidget {
-  const ProfileView({Key? key}) : super(key: key);
-
-  @override
-  _ProfileViewState createState() => _ProfileViewState();
+enum PageType {
+  fav,
+  history,
+  settings,
+  search,
 }
 
-class _ProfileViewState extends State<ProfileView>
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({Key? key}) : super(key: key);
+
+  @override
+  _ProfileScreenState createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen>
     with AutomaticKeepAliveClientMixin {
   final refreshControllerHistory = RefreshController();
   final refreshControllerFav = RefreshController();
@@ -141,6 +146,13 @@ class _ProfileViewState extends State<ProfileView>
                         Positioned.fill(
                           top: 50,
                           child: Offstage(
+                            offstage: _pageType != PageType.search,
+                            child: const SearchScreen(),
+                          ),
+                        ),
+                        Positioned.fill(
+                          top: 50,
+                          child: Offstage(
                             offstage: _pageType != PageType.settings,
                             child: Column(
                               children: [
@@ -249,6 +261,24 @@ class _ProfileViewState extends State<ProfileView>
                                     if (val) {
                                       setState(() {
                                         _pageType = PageType.history;
+                                      });
+                                    }
+                                  },
+                                  selectedColor: Colors.orange,
+                                ),
+                                const SizedBox(
+                                  width: 12,
+                                ),
+                                FilterChip(
+                                  label: const Text(
+                                    'Search',
+                                  ),
+                                  elevation: 4,
+                                  selected: _pageType == PageType.search,
+                                  onSelected: (val) {
+                                    if (val) {
+                                      setState(() {
+                                        _pageType = PageType.search;
                                       });
                                     }
                                   },

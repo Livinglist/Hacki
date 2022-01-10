@@ -334,7 +334,7 @@ class _HomeScreenState extends State<HomeScreen>
                         },
                         onTap: (story) => LinkUtil.launchUrl(story.url),
                       ),
-                      const ProfileView(),
+                      const ProfileScreen(),
                     ],
                   ),
                 ),

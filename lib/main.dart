@@ -49,6 +49,10 @@ class HackiApp extends StatelessWidget {
           lazy: false,
           create: (context) => BlocklistCubit(),
         ),
+        BlocProvider<SearchCubit>(
+          lazy: false,
+          create: (context) => SearchCubit(),
+        ),
       ],
       child: FeatureDiscovery(
         child: MaterialApp(
