@@ -186,7 +186,7 @@ class _ProfileViewState extends State<ProfileView>
                                     showAboutDialog(
                                       context: context,
                                       applicationName: 'Hacki',
-                                      applicationVersion: '0.0.3',
+                                      applicationVersion: '0.0.4',
                                       applicationIcon: Image.asset(
                                         'images/hacki_icon.png',
                                         height: 96,
