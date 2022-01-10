@@ -46,9 +46,11 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                       ),
                       onChanged: (val) {
-                        debouncer.run(() {
-                          context.read<SearchCubit>().search(val);
-                        });
+                        if (val.isNotEmpty) {
+                          debouncer.run(() {
+                            context.read<SearchCubit>().search(val);
+                          });
+                        }
                       },
                     ),
                   ),
