@@ -95,7 +95,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                                   padding: EdgeInsets.only(top: 6),
                                   child: Text(
                                     'deleted',
-                                    style: TextStyle(color: Colors.white30),
+                                    style: TextStyle(color: Colors.grey),
                                   ),
                                 ),
                               ),

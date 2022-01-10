@@ -58,7 +58,7 @@ class Story extends Item {
       : super(
           descendants: json['descendants'] as int? ?? 0,
           id: json['id'] as int,
-          score: json['score'] as int,
+          score: json['score'] as int? ?? 0,
           time: json['time'] as int,
           by: json['by'] as String,
           title: json['title'] as String,

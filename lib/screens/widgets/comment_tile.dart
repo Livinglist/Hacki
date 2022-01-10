@@ -9,6 +9,7 @@ import 'package:hacki/utils/utils.dart';
 class CommentTile extends StatefulWidget {
   const CommentTile({
     Key? key,
+    required this.myUsername,
     required this.comment,
     required this.onTap,
     required this.onLongPress,
@@ -16,6 +17,7 @@ class CommentTile extends StatefulWidget {
     this.level = 0,
   }) : super(key: key);
 
+  final String? myUsername;
   final Comment comment;
   final int level;
   final bool loadKids;
@@ -46,7 +48,7 @@ class _CommentTileState extends State<CommentTile> {
                 b = (widget.level * 40 - 255).clamp(0, 255);
               }
 
-              return InkWell(
+              final child = InkWell(
                 onTap: () => widget.onTap(widget.comment),
                 onLongPress: () => widget.onLongPress(widget.comment),
                 child: Padding(
@@ -87,7 +89,7 @@ class _CommentTileState extends State<CommentTile> {
                             padding: EdgeInsets.symmetric(vertical: 12),
                             child: Text(
                               'deleted',
-                              style: TextStyle(color: Colors.white30),
+                              style: TextStyle(color: Colors.grey),
                             ),
                           ),
                         )
@@ -127,6 +129,7 @@ class _CommentTileState extends State<CommentTile> {
                                 .map((e) => FadeIn(
                                       child: CommentTile(
                                         comment: e,
+                                        myUsername: widget.myUsername,
                                         onTap: widget.onTap,
                                         onLongPress: widget.onLongPress,
                                         level: widget.level + 1,
@@ -139,6 +142,15 @@ class _CommentTileState extends State<CommentTile> {
                   ),
                 ),
               );
+
+              if (widget.myUsername == widget.comment.by) {
+                return Material(
+                  color: Colors.orangeAccent.withOpacity(0.3),
+                  child: child,
+                );
+              }
+
+              return child;
             },
           );
         },

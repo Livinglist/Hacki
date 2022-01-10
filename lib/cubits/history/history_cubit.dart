@@ -60,7 +60,7 @@ class HistoryCubit extends Cubit<HistoryState> {
       }
 
       _storiesRepository
-          .fetchStoriesStream(
+          .fetchItemsStream(
               ids: state.submittedIds.sublist(
             lower,
             upper,
