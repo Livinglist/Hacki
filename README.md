@@ -8,6 +8,15 @@ A simple Hacker News reader made with Flutter.
 [![style: effective dart](https://img.shields.io/badge/style-effective_dart-40c4ff.svg)](https://pub.dev/packages/effective_dart)
 
 
+You can:
+- Log in using your Hacker News account.
+- Browse stories from various categories.
+- Leave comments on stories.
+- Mark stories as favorite.
+- Browse comments and stories you have posted in the past.
+- Search for stories on Hacker News.
+
+
 <p align="center">
    <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/148328177-755b59b3-69f2-418e-9214-7ac98f7172be.png"> 
    <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/148328180-65542b34-d716-4ec9-8eff-e4cba7612b3b.png"> 
