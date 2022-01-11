@@ -202,7 +202,6 @@ class _LinkPreviewState extends State<LinkPreview> {
 
   @override
   Widget build(BuildContext context) {
-    final info = _info as WebInfo?;
     final _height = (MediaQuery.of(context).size.height) * 0.15;
     final loadingWidget = widget.placeholderWidget ??
         Container(
@@ -227,6 +226,7 @@ class _LinkPreviewState extends State<LinkPreview> {
         image: img.trim() == '' ? _errorImage : img,
       );
     } else {
+      final info = _info as WebInfo?;
       loadedWidget = _info == null
           ? _buildLinkContainer(
               _height,
