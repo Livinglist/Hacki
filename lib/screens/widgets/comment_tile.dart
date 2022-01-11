@@ -154,27 +154,30 @@ class _CommentTileState extends State<CommentTile> {
                       color: Colors.orangeAccent.withOpacity(0.3),
                       child: child,
                     );
-                  } else if (prefState.showEyeCandy) {
-                    final commentBackgroundColorOpacity =
-                        Theme.of(context).brightness == Brightness.dark
-                            ? 0.03
-                            : 0.15;
-
-                    return Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          left: BorderSide(
-                            color: color.withOpacity(0.5),
-                            //color: Colors.grey.withOpacity(0.5),
-                          ),
-                        ),
-                        color: color.withOpacity(commentBackgroundColorOpacity),
-                      ),
-                      child: child,
-                    );
                   }
 
-                  return child;
+                  final commentBackgroundColorOpacity =
+                      Theme.of(context).brightness == Brightness.dark
+                          ? 0.03
+                          : 0.15;
+                  final borderColor = prefState.showCommentBorder
+                      ? color.withOpacity(0.5)
+                      : Colors.transparent;
+                  final commentColor = prefState.showEyeCandy
+                      ? color.withOpacity(commentBackgroundColorOpacity)
+                      : Colors.transparent;
+
+                  return Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        left: BorderSide(
+                          color: borderColor,
+                        ),
+                      ),
+                      color: commentColor,
+                    ),
+                    child: child,
+                  );
                 },
               );
             },

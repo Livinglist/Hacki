@@ -211,6 +211,18 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   activeColor: Colors.orange,
                                 ),
                                 SwitchListTile(
+                                  title: const Text('Show Comment Outlines'),
+                                  subtitle: const Text('Be nice to your eyes.'),
+                                  value: preferenceState.showCommentBorder,
+                                  onChanged: (val) {
+                                    HapticFeedback.lightImpact();
+                                    context
+                                        .read<PreferenceCubit>()
+                                        .toggleCommentBorderMode();
+                                  },
+                                  activeColor: Colors.orange,
+                                ),
+                                SwitchListTile(
                                   title: const Text('Eye Candy'),
                                   subtitle: const Text('Some sort of magic.'),
                                   value: preferenceState.showEyeCandy,

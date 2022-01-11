@@ -20,10 +20,12 @@ class StorageRepository {
   /// navigated to web view first. Defaults to false.
   static const String _navigationModeKey = 'navigationModeKey';
 
+  static const String _commentBorderModeKey = 'commentBorderModeKey';
   static const String _eyeCandyModeKey = 'eyeCandyKey';
 
   static const bool _displayModeDefaultValue = true;
   static const bool _navigationModeDefaultValue = true;
+  static const bool _commentBorderModeDefaultValue = true;
   static const bool _eyeCandyModeDefaultValue = false;
 
   final Future<SharedPreferences> _prefs;
@@ -43,6 +45,9 @@ class StorageRepository {
 
   Future<bool> get shouldShowWebFirst async => _prefs.then((prefs) =>
       prefs.getBool(_navigationModeKey) ?? _navigationModeDefaultValue);
+
+  Future<bool> get shouldCommentBorder async => _prefs.then((prefs) =>
+      prefs.getBool(_commentBorderModeKey) ?? _commentBorderModeDefaultValue);
 
   Future<bool> get shouldShowEyeCandy async => _prefs.then(
       (prefs) => prefs.getBool(_eyeCandyModeKey) ?? _eyeCandyModeDefaultValue);
@@ -77,6 +82,13 @@ class StorageRepository {
     final currentMode =
         prefs.getBool(_navigationModeKey) ?? _navigationModeDefaultValue;
     await prefs.setBool(_navigationModeKey, !currentMode);
+  }
+
+  Future<void> toggleCommentBorderMode() async {
+    final prefs = await _prefs;
+    final currentMode =
+        prefs.getBool(_commentBorderModeKey) ?? _commentBorderModeDefaultValue;
+    await prefs.setBool(_commentBorderModeKey, !currentMode);
   }
 
   Future<void> toggleEyeCandyMode() async {
