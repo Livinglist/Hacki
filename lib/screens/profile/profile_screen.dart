@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
@@ -33,11 +34,20 @@ class _ProfileScreenState extends State<ProfileScreen>
   final refreshControllerFav = RefreshController();
   final scrollController = ScrollController(initialScrollOffset: 80);
 
-  PageType _pageType = PageType.fav;
+  PageType pageType = PageType.fav;
+
+  final magicWords = <String>[
+    'to be a lord.',
+    'to conquer the world.',
+    'to be over the rainbow!',
+    'to bless humanity with long-lasting peace.',
+    'to save the world',
+  ];
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final magicWord = (magicWords..shuffle()).first;
     return BlocBuilder<PreferenceCubit, PreferenceState>(
       builder: (context, preferenceState) {
         return BlocBuilder<AuthBloc, AuthState>(
@@ -63,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                     return Stack(
                       children: [
                         if (!authState.isLoggedIn &&
-                            _pageType == PageType.history)
+                            pageType == PageType.history)
                           Positioned.fill(
                             child: Column(
                               children: [
@@ -86,7 +96,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                           top: 50,
                           child: Offstage(
                             offstage: !authState.isLoggedIn ||
-                                _pageType != PageType.history,
+                                pageType != PageType.history,
                             child: ItemsListView<Item>(
                               showWebPreview: false,
                               refreshController: refreshControllerHistory,
@@ -123,7 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                         Positioned.fill(
                           top: 50,
                           child: Offstage(
-                            offstage: _pageType != PageType.fav,
+                            offstage: pageType != PageType.fav,
                             child: ItemsListView<Story>(
                               showWebPreview:
                                   preferenceState.showComplexStoryTile,
@@ -146,24 +156,44 @@ class _ProfileScreenState extends State<ProfileScreen>
                         Positioned.fill(
                           top: 50,
                           child: Offstage(
-                            offstage: _pageType != PageType.search,
+                            offstage: pageType != PageType.search,
                             child: const SearchScreen(),
                           ),
                         ),
                         Positioned.fill(
                           top: 50,
                           child: Offstage(
-                            offstage: _pageType != PageType.settings,
+                            offstage: pageType != PageType.settings,
                             child: Column(
                               children: [
+                                ListTile(
+                                  title: Text(authState.isLoggedIn
+                                      ? 'Log Out'
+                                      : 'Log In'),
+                                  subtitle: Text(
+                                    authState.isLoggedIn
+                                        ? authState.username
+                                        : magicWord,
+                                  ),
+                                  onTap: () {
+                                    if (authState.isLoggedIn) {
+                                      onLogoutTapped();
+                                    } else {
+                                      onLoginTapped();
+                                    }
+                                  },
+                                ),
                                 SwitchListTile(
                                   title: const Text('Complex Story Tile'),
                                   subtitle: const Text(
                                       'show web preview in story tile.'),
                                   value: preferenceState.showComplexStoryTile,
-                                  onChanged: (val) => context
-                                      .read<PreferenceCubit>()
-                                      .toggleDisplayMode(),
+                                  onChanged: (val) {
+                                    HapticFeedback.lightImpact();
+                                    context
+                                        .read<PreferenceCubit>()
+                                        .toggleDisplayMode();
+                                  },
                                   activeColor: Colors.orange,
                                 ),
                                 SwitchListTile(
@@ -172,29 +202,29 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       'show web page first after tapping'
                                       ' on story.'),
                                   value: preferenceState.showWebFirst,
-                                  onChanged: (val) => context
-                                      .read<PreferenceCubit>()
-                                      .toggleNavigationMode(),
+                                  onChanged: (val) {
+                                    HapticFeedback.lightImpact();
+                                    context
+                                        .read<PreferenceCubit>()
+                                        .toggleNavigationMode();
+                                  },
                                   activeColor: Colors.orange,
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.topLeft,
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            controller: scrollController,
-                            child: Row(
-                              children: [
-                                const SizedBox(
-                                  width: 12,
+                                SwitchListTile(
+                                  title: const Text('Eye Candy'),
+                                  subtitle: const Text('Some sort of magic.'),
+                                  value: preferenceState.showEyeCandy,
+                                  onChanged: (val) {
+                                    HapticFeedback.lightImpact();
+                                    context
+                                        .read<PreferenceCubit>()
+                                        .toggleEyeCandyMode();
+                                  },
+                                  activeColor: Colors.orange,
                                 ),
-                                ActionChip(
-                                  label: const Text('About'),
-                                  elevation: 4,
-                                  onPressed: () {
+                                ListTile(
+                                  title: const Text('About'),
+                                  onTap: () {
                                     showAboutDialog(
                                       context: context,
                                       applicationName: 'Hacki',
@@ -215,21 +245,17 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     );
                                   },
                                 ),
-                                const SizedBox(
-                                  width: 12,
-                                ),
-                                if (authState.isLoggedIn)
-                                  ActionChip(
-                                    label: const Text('Log out'),
-                                    elevation: 4,
-                                    onPressed: onLogoutTapped,
-                                  )
-                                else
-                                  ActionChip(
-                                    label: const Text('Log in'),
-                                    elevation: 4,
-                                    onPressed: onLoginTapped,
-                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            controller: scrollController,
+                            child: Row(
+                              children: [
                                 const SizedBox(
                                   width: 12,
                                 ),
@@ -238,11 +264,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     'Favorite',
                                   ),
                                   elevation: 4,
-                                  selected: _pageType == PageType.fav,
+                                  selected: pageType == PageType.fav,
                                   onSelected: (val) {
                                     if (val) {
                                       setState(() {
-                                        _pageType = PageType.fav;
+                                        pageType = PageType.fav;
                                       });
                                     }
                                   },
@@ -256,11 +282,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     'Submitted',
                                   ),
                                   elevation: 4,
-                                  selected: _pageType == PageType.history,
+                                  selected: pageType == PageType.history,
                                   onSelected: (val) {
                                     if (val) {
                                       setState(() {
-                                        _pageType = PageType.history;
+                                        pageType = PageType.history;
                                       });
                                     }
                                   },
@@ -274,11 +300,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     'Search',
                                   ),
                                   elevation: 4,
-                                  selected: _pageType == PageType.search,
+                                  selected: pageType == PageType.search,
                                   onSelected: (val) {
                                     if (val) {
                                       setState(() {
-                                        _pageType = PageType.search;
+                                        pageType = PageType.search;
                                       });
                                     }
                                   },
@@ -292,18 +318,15 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     'Settings',
                                   ),
                                   elevation: 4,
-                                  selected: _pageType == PageType.settings,
+                                  selected: pageType == PageType.settings,
                                   onSelected: (val) {
                                     if (val) {
                                       setState(() {
-                                        _pageType = PageType.settings;
+                                        pageType = PageType.settings;
                                       });
                                     }
                                   },
                                   selectedColor: Colors.orange,
-                                ),
-                                const SizedBox(
-                                  width: 130,
                                 ),
                               ],
                             ),

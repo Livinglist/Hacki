@@ -35,122 +35,148 @@ class _CommentTileState extends State<CommentTile> {
       create: (_) => CommentsCubit(commentIds: widget.comment.kids),
       child: BlocBuilder<CommentsCubit, CommentsState>(
         builder: (context, state) {
-          return BlocBuilder<BlocklistCubit, BlocklistState>(
-            builder: (context, blocklistState) {
-              const r = 255;
-              var g = widget.level * 40 < 255
-                  ? 152
-                  : (widget.level * 20).clamp(0, 255);
-              var b = (widget.level * 40).clamp(0, 255);
+          return BlocBuilder<PreferenceCubit, PreferenceState>(
+            builder: (context, prefState) {
+              return BlocBuilder<BlocklistCubit, BlocklistState>(
+                builder: (context, blocklistState) {
+                  const r = 255;
+                  var g = widget.level * 40 < 255
+                      ? 152
+                      : (widget.level * 20).clamp(0, 255);
+                  var b = (widget.level * 40).clamp(0, 255);
 
-              if (g == 255 && b == 255) {
-                g = (widget.level * 30 - 255).clamp(0, 255);
-                b = (widget.level * 40 - 255).clamp(0, 255);
-              }
+                  if (g == 255 && b == 255) {
+                    g = (widget.level * 30 - 255).clamp(0, 255);
+                    b = (widget.level * 40 - 255).clamp(0, 255);
+                  }
 
-              final child = InkWell(
-                onTap: () => widget.onTap(widget.comment),
-                onLongPress: () => widget.onLongPress(widget.comment),
-                child: Padding(
-                  padding: EdgeInsets.zero,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding:
-                            const EdgeInsets.only(left: 6, right: 6, top: 6),
-                        child: Row(
-                          children: [
-                            Text(
-                              widget.comment.by,
-                              style: TextStyle(
-                                //255, 152, 0
-                                color: Color.fromRGBO(
-                                  r,
-                                  g,
-                                  b,
-                                  1,
+                  const orange = Color.fromRGBO(255, 152, 0, 1);
+                  final color = Color.fromRGBO(
+                    r,
+                    g,
+                    b,
+                    1,
+                  );
+
+                  final child = InkWell(
+                    onTap: () => widget.onTap(widget.comment),
+                    onLongPress: () => widget.onLongPress(widget.comment),
+                    child: Padding(
+                      padding: EdgeInsets.zero,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 6, right: 6, top: 6),
+                            child: Row(
+                              children: [
+                                Text(
+                                  widget.comment.by,
+                                  style: TextStyle(
+                                    //255, 152, 0
+                                    color:
+                                        prefState.showEyeCandy ? orange : color,
+                                  ),
+                                ),
+                                const Spacer(),
+                                Text(
+                                  widget.comment.postedDate,
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (widget.comment.deleted)
+                            const Center(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 12),
+                                child: Text(
+                                  'deleted',
+                                  style: TextStyle(color: Colors.grey),
                                 ),
                               ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              widget.comment.postedDate,
-                              style: const TextStyle(
-                                color: Colors.grey,
+                            )
+                          else if (blocklistState.blocklist
+                              .contains(widget.comment.by))
+                            const Center(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 12),
+                                child: Text(
+                                  'blocked',
+                                  style: TextStyle(color: Colors.white30),
+                                ),
+                              ),
+                            )
+                          else
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                left: 8,
+                                right: 8,
+                                top: 6,
+                                bottom: 12,
+                              ),
+                              child: Linkify(
+                                key: ObjectKey(widget.comment),
+                                text: widget.comment.text,
+                                onOpen: (link) => LinkUtil.launchUrl(link.url),
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                      if (widget.comment.deleted)
-                        const Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 12),
-                            child: Text(
-                              'deleted',
-                              style: TextStyle(color: Colors.grey),
+                          const Divider(
+                            height: 0,
+                          ),
+                          if (widget.loadKids)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 12),
+                              child: Column(
+                                children: state.comments
+                                    .map((e) => FadeIn(
+                                          child: CommentTile(
+                                            comment: e,
+                                            myUsername: widget.myUsername,
+                                            onTap: widget.onTap,
+                                            onLongPress: widget.onLongPress,
+                                            level: widget.level + 1,
+                                          ),
+                                        ))
+                                    .toList(),
+                              ),
                             ),
-                          ),
-                        )
-                      else if (blocklistState.blocklist
-                          .contains(widget.comment.by))
-                        const Center(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 12),
-                            child: Text(
-                              'blocked',
-                              style: TextStyle(color: Colors.white30),
-                            ),
-                          ),
-                        )
-                      else
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 8,
-                            right: 8,
-                            top: 6,
-                            bottom: 12,
-                          ),
-                          child: Linkify(
-                            key: ObjectKey(widget.comment),
-                            text: widget.comment.text,
-                            onOpen: (link) => LinkUtil.launchUrl(link.url),
-                          ),
-                        ),
-                      const Divider(
-                        height: 0,
+                        ],
                       ),
-                      if (widget.loadKids)
-                        Padding(
-                          padding: const EdgeInsets.only(left: 12),
-                          child: Column(
-                            children: state.comments
-                                .map((e) => FadeIn(
-                                      child: CommentTile(
-                                        comment: e,
-                                        myUsername: widget.myUsername,
-                                        onTap: widget.onTap,
-                                        onLongPress: widget.onLongPress,
-                                        level: widget.level + 1,
-                                      ),
-                                    ))
-                                .toList(),
+                    ),
+                  );
+
+                  if (widget.myUsername == widget.comment.by) {
+                    return Material(
+                      color: Colors.orangeAccent.withOpacity(0.3),
+                      child: child,
+                    );
+                  } else if (prefState.showEyeCandy) {
+                    final commentBackgroundColorOpacity =
+                        Theme.of(context).brightness == Brightness.dark
+                            ? 0.03
+                            : 0.15;
+
+                    return Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          left: BorderSide(
+                            color: color.withOpacity(0.5),
+                            //color: Colors.grey.withOpacity(0.5),
                           ),
                         ),
-                    ],
-                  ),
-                ),
+                        color: color.withOpacity(commentBackgroundColorOpacity),
+                      ),
+                      child: child,
+                    );
+                  }
+
+                  return child;
+                },
               );
-
-              if (widget.myUsername == widget.comment.by) {
-                return Material(
-                  color: Colors.orangeAccent.withOpacity(0.3),
-                  child: child,
-                );
-              }
-
-              return child;
             },
           );
         },

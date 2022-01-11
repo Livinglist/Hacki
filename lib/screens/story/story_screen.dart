@@ -118,6 +118,8 @@ class _StoryScreenState extends State<StoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final topPadding =
+        MediaQuery.of(context).padding.top.toDouble() + kToolbarHeight;
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, authState) {
         return BlocConsumer<PostCubit, PostState>(
@@ -162,9 +164,11 @@ class _StoryScreenState extends State<StoryScreen> {
                   builder: (context, favState) {
                     final isFav = favState.favIds.contains(widget.story.id);
                     return Scaffold(
+                      extendBodyBehindAppBar: true,
                       resizeToAvoidBottomInset: true,
                       appBar: AppBar(
-                        backgroundColor: Colors.transparent,
+                        backgroundColor:
+                            Theme.of(context).canvasColor.withOpacity(0.4),
                         elevation: 0,
                         actions: [
                           IconButton(
@@ -230,8 +234,9 @@ class _StoryScreenState extends State<StoryScreen> {
                             child: SmartRefresher(
                               scrollController: scrollController,
                               enablePullUp: true,
-                              header: const WaterDropMaterialHeader(
+                              header: WaterDropMaterialHeader(
                                 backgroundColor: Colors.orange,
+                                offset: topPadding,
                               ),
                               footer: CustomFooter(
                                 loadStyle: LoadStyle.ShowWhenLoading,
@@ -268,6 +273,9 @@ class _StoryScreenState extends State<StoryScreen> {
                               child: ListView(
                                 primary: false,
                                 children: [
+                                  SizedBox(
+                                    height: topPadding,
+                                  ),
                                   InkWell(
                                     onTap: () {
                                       setState(() {

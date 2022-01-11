@@ -20,8 +20,11 @@ class StorageRepository {
   /// navigated to web view first. Defaults to false.
   static const String _navigationModeKey = 'navigationModeKey';
 
+  static const String _eyeCandyModeKey = 'eyeCandyKey';
+
   static const bool _displayModeDefaultValue = true;
   static const bool _navigationModeDefaultValue = true;
+  static const bool _eyeCandyModeDefaultValue = false;
 
   final Future<SharedPreferences> _prefs;
   final FlutterSecureStorage _secureStorage;
@@ -40,6 +43,9 @@ class StorageRepository {
 
   Future<bool> get shouldShowWebFirst async => _prefs.then((prefs) =>
       prefs.getBool(_navigationModeKey) ?? _navigationModeDefaultValue);
+
+  Future<bool> get shouldShowEyeCandy async => _prefs.then(
+      (prefs) => prefs.getBool(_eyeCandyModeKey) ?? _eyeCandyModeDefaultValue);
 
   Future<List<int>> favList({required String of}) =>
       _prefs.then((prefs) => ((prefs.getStringList('') ?? <String>[])
@@ -71,6 +77,13 @@ class StorageRepository {
     final currentMode =
         prefs.getBool(_navigationModeKey) ?? _navigationModeDefaultValue;
     await prefs.setBool(_navigationModeKey, !currentMode);
+  }
+
+  Future<void> toggleEyeCandyMode() async {
+    final prefs = await _prefs;
+    final currentMode =
+        prefs.getBool(_eyeCandyModeKey) ?? _eyeCandyModeDefaultValue;
+    await prefs.setBool(_eyeCandyModeKey, !currentMode);
   }
 
   Future<void> addFav({required String username, required int id}) async {
