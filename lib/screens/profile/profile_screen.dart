@@ -12,6 +12,7 @@ import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/items_list_view.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/utils/utils.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 enum PageType {
@@ -212,7 +213,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 ),
                                 SwitchListTile(
                                   title: const Text('Show Comment Outlines'),
-                                  subtitle: const Text('Be nice to your eyes.'),
+                                  subtitle: const Text('be nice to your eyes.'),
                                   value: preferenceState.showCommentBorder,
                                   onChanged: (val) {
                                     HapticFeedback.lightImpact();
@@ -224,18 +225,27 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 ),
                                 SwitchListTile(
                                   title: const Text('Eye Candy'),
-                                  subtitle: const Text('Some sort of magic.'),
+                                  subtitle: const Text('some sort of magic.'),
                                   value: preferenceState.showEyeCandy,
                                   onChanged: (val) {
                                     HapticFeedback.lightImpact();
                                     context
                                         .read<PreferenceCubit>()
                                         .toggleEyeCandyMode();
+
+                                    final inAppReview = InAppReview.instance;
+                                    inAppReview.isAvailable().then((available) {
+                                      if (available) {
+                                        inAppReview.requestReview();
+                                      }
+                                    });
                                   },
                                   activeColor: Colors.orange,
                                 ),
                                 ListTile(
                                   title: const Text('About'),
+                                  subtitle:
+                                      const Text('nothing interesting here.'),
                                   onTap: () {
                                     showAboutDialog(
                                       context: context,
