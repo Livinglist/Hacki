@@ -153,7 +153,7 @@ class StoriesRepository {
         return null;
       }
       final json = val as Map<String, dynamic>;
-      final submitted = (json['submitted'] as List).cast<int>();
+      final submitted = (json['submitted'] as List? ?? <dynamic>[]).cast<int>();
       return submitted;
     });
 
