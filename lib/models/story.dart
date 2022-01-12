@@ -65,9 +65,9 @@ class Story extends Item {
           url: json['url'] as String? ?? '',
           kids: (json['kids'] as List?)?.cast<int>() ?? [],
           text: json['text'] as String? ?? '',
-          dead: false,
+          dead: json['dead'] as bool? ?? false,
           parts: [],
-          deleted: false,
+          deleted: json['deleted'] as bool? ?? false,
           parent: 0,
           poll: 0,
         );

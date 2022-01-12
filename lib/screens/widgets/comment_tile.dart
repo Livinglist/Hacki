@@ -99,6 +99,16 @@ class _CommentTileState extends State<CommentTile> {
                                 ),
                               ),
                             )
+                          else if (widget.comment.dead)
+                            const Center(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 12),
+                                child: Text(
+                                  'dead',
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                              ),
+                            )
                           else if (blocklistState.blocklist
                               .contains(widget.comment.by))
                             const Center(

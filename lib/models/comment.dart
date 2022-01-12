@@ -38,7 +38,7 @@ class Comment extends Item {
           deleted: json['deleted'] as bool? ?? false,
           score: 0,
           descendants: 0,
-          dead: false,
+          dead: json['dead'] as bool? ?? false,
           parts: [],
           poll: 0,
           title: '',

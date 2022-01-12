@@ -101,7 +101,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                             child: ItemsListView<Item>(
                               showWebPreview: false,
                               refreshController: refreshControllerHistory,
-                              items: historyState.submittedItems,
+                              items: historyState.submittedItems
+                                  .where((e) => !e.dead && !e.deleted)
+                                  .toList(),
                               onRefresh: () {
                                 context.read<HistoryCubit>().refresh();
                               },
@@ -250,7 +252,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     showAboutDialog(
                                       context: context,
                                       applicationName: 'Hacki',
-                                      applicationVersion: '0.0.4',
+                                      applicationVersion: '0.0.5',
                                       applicationIcon: Image.asset(
                                         'images/hacki_icon.png',
                                         height: 96,
