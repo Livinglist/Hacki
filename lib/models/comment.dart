@@ -29,12 +29,12 @@ class Comment extends Item {
 
   Comment.fromJson(Map<String, dynamic> json)
       : super(
-          id: json['id'] as int,
-          time: json['time'] as int,
+          id: json['id'] as int? ?? 0,
+          time: json['time'] as int? ?? 0,
           by: json['by'] as String? ?? '',
           text: json['text'] as String? ?? '',
           kids: (json['kids'] as List?)?.cast<int>() ?? [],
-          parent: json['parent'] as int,
+          parent: json['parent'] as int? ?? 0,
           deleted: json['deleted'] as bool? ?? false,
           score: 0,
           descendants: 0,
