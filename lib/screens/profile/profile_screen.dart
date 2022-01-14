@@ -252,7 +252,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     showAboutDialog(
                                       context: context,
                                       applicationName: 'Hacki',
-                                      applicationVersion: '0.0.5',
+                                      applicationVersion: '0.0.6',
                                       applicationIcon: Image.asset(
                                         'images/hacki_icon.png',
                                         height: 96,

@@ -170,9 +170,10 @@ class _CommentTileState extends State<CommentTile> {
                       Theme.of(context).brightness == Brightness.dark
                           ? 0.03
                           : 0.15;
-                  final borderColor = prefState.showCommentBorder
-                      ? color.withOpacity(0.5)
-                      : Colors.transparent;
+                  final borderColor =
+                      prefState.showCommentBorder && widget.level != 0
+                          ? color.withOpacity(0.5)
+                          : Colors.transparent;
                   final commentColor = prefState.showEyeCandy
                       ? color.withOpacity(commentBackgroundColorOpacity)
                       : Colors.transparent;
