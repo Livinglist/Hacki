@@ -25,6 +25,7 @@ class Comment extends Item {
           poll: 0,
           title: '',
           url: '',
+          type: '',
         );
 
   Comment.fromJson(Map<String, dynamic> json)
@@ -43,6 +44,7 @@ class Comment extends Item {
           poll: 0,
           title: '',
           url: '',
+          type: '',
         );
 
   String get postedDate =>

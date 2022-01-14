@@ -41,6 +41,7 @@ class SearchRepository {
         by: by,
         title: title,
         url: url,
+        type: '',
         kids: [],
       );
       yield story;

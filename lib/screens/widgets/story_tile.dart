@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/models.dart';
-import 'package:hacki/screens/widgets/link_preview/link_preview.dart';
 import 'package:hacki/screens/widgets/link_preview/link_view.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:html/parser.dart';

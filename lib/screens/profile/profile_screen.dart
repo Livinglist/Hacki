@@ -9,7 +9,6 @@ import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart';
-import 'package:hacki/screens/widgets/items_list_view.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:in_app_review/in_app_review.dart';

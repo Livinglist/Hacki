@@ -33,6 +33,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
+  final cacheService = locator.get<CacheService>();
   final refreshControllerTop = RefreshController();
   final refreshControllerNew = RefreshController();
   final refreshControllerAsk = RefreshController();
@@ -71,8 +72,6 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    final cacheService = locator.get<CacheService>();
-
     return BlocBuilder<PreferenceCubit, PreferenceState>(
       builder: (context, preferenceState) {
         return BlocConsumer<StoriesBloc, StoriesState>(
@@ -224,17 +223,7 @@ class _HomeScreenState extends State<HomeScreen>
                               .read<StoriesBloc>()
                               .add(StoriesLoadMore(type: StoryType.top));
                         },
-                        onTap: (story) {
-                          HackiApp.navigatorKey.currentState!.pushNamed(
-                              StoryScreen.routeName,
-                              arguments: StoryScreenArgs(story: story));
-
-                          if (preferenceState.showWebFirst &&
-                              cacheService.isFirstTimeReading(story.id)) {
-                            LinkUtil.launchUrl(story.url);
-                            cacheService.store(story.id);
-                          }
-                        },
+                        onTap: onStoryTapped,
                       ),
                       ItemsListView<Story>(
                         showWebPreview: preferenceState.showComplexStoryTile,
@@ -251,17 +240,7 @@ class _HomeScreenState extends State<HomeScreen>
                               .read<StoriesBloc>()
                               .add(StoriesLoadMore(type: StoryType.latest));
                         },
-                        onTap: (story) {
-                          HackiApp.navigatorKey.currentState!.pushNamed(
-                              StoryScreen.routeName,
-                              arguments: StoryScreenArgs(story: story));
-
-                          if (preferenceState.showWebFirst &&
-                              cacheService.isFirstTimeReading(story.id)) {
-                            LinkUtil.launchUrl(story.url);
-                            cacheService.store(story.id);
-                          }
-                        },
+                        onTap: onStoryTapped,
                       ),
                       ItemsListView<Story>(
                         showWebPreview: preferenceState.showComplexStoryTile,
@@ -278,17 +257,7 @@ class _HomeScreenState extends State<HomeScreen>
                               .read<StoriesBloc>()
                               .add(StoriesLoadMore(type: StoryType.ask));
                         },
-                        onTap: (story) {
-                          HackiApp.navigatorKey.currentState!.pushNamed(
-                              StoryScreen.routeName,
-                              arguments: StoryScreenArgs(story: story));
-
-                          if (preferenceState.showWebFirst &&
-                              cacheService.isFirstTimeReading(story.id)) {
-                            LinkUtil.launchUrl(story.url);
-                            cacheService.store(story.id);
-                          }
-                        },
+                        onTap: onStoryTapped,
                       ),
                       ItemsListView<Story>(
                         showWebPreview: preferenceState.showComplexStoryTile,
@@ -305,17 +274,7 @@ class _HomeScreenState extends State<HomeScreen>
                               .read<StoriesBloc>()
                               .add(StoriesLoadMore(type: StoryType.show));
                         },
-                        onTap: (story) {
-                          HackiApp.navigatorKey.currentState!.pushNamed(
-                              StoryScreen.routeName,
-                              arguments: StoryScreenArgs(story: story));
-
-                          if (preferenceState.showWebFirst &&
-                              cacheService.isFirstTimeReading(story.id)) {
-                            LinkUtil.launchUrl(story.url);
-                            cacheService.store(story.id);
-                          }
-                        },
+                        onTap: onStoryTapped,
                       ),
                       ItemsListView<Story>(
                         showWebPreview: preferenceState.showComplexStoryTile,
@@ -332,7 +291,7 @@ class _HomeScreenState extends State<HomeScreen>
                               .read<StoriesBloc>()
                               .add(StoriesLoadMore(type: StoryType.jobs));
                         },
-                        onTap: (story) => LinkUtil.launchUrl(story.url),
+                        onTap: onStoryTapped,
                       ),
                       const ProfileScreen(),
                     ],
@@ -344,5 +303,24 @@ class _HomeScreenState extends State<HomeScreen>
         );
       },
     );
+  }
+
+  void onStoryTapped(Story story) {
+    final showWebFirst = context.read<PreferenceCubit>().state.showWebFirst;
+
+    // If a story is a job story and it has a link to the job posting,
+    // it would be better to just navigate to the web page.
+    final isJobWithLink = story.type == 'job' && story.url.isNotEmpty;
+
+    if (!isJobWithLink) {
+      HackiApp.navigatorKey.currentState!.pushNamed(StoryScreen.routeName,
+          arguments: StoryScreenArgs(story: story));
+    }
+
+    if (isJobWithLink ||
+        (showWebFirst && cacheService.isFirstTimeReading(story.id))) {
+      LinkUtil.launchUrl(story.url);
+      cacheService.store(story.id);
+    }
   }
 }

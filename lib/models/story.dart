@@ -17,6 +17,7 @@ class Story extends Item {
     required int time,
     required String by,
     required String title,
+    required String type,
     required String url,
     required List<int> kids,
   }) : super(
@@ -28,6 +29,7 @@ class Story extends Item {
           title: title,
           url: url,
           kids: kids,
+          type: type,
           dead: false,
           parts: [],
           deleted: false,
@@ -52,6 +54,7 @@ class Story extends Item {
           parent: 0,
           poll: 0,
           text: '',
+          type: '',
         );
 
   Story.fromJson(Map<String, dynamic> json)
@@ -66,8 +69,9 @@ class Story extends Item {
           kids: (json['kids'] as List?)?.cast<int>() ?? [],
           text: json['text'] as String? ?? '',
           dead: json['dead'] as bool? ?? false,
-          parts: [],
           deleted: json['deleted'] as bool? ?? false,
+          type: json['type'] as String? ?? '',
+          parts: [],
           parent: 0,
           poll: 0,
         );

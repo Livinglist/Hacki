@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 /// Circular progress indicator with color.
 /// Changing `colorScheme`'s `primary` color doesn't work because it changes

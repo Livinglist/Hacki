@@ -12,6 +12,7 @@ abstract class Item {
     required this.url,
     required this.score,
     required this.title,
+    required this.type,
     required this.parts,
     required this.descendants,
   });
@@ -32,6 +33,7 @@ abstract class Item {
   final String text;
   final String url;
   final String title;
+  final String type;
 
   final List<int> kids;
   final List<int> parts;
