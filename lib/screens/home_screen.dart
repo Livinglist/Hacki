@@ -108,6 +108,7 @@ class _HomeScreenState extends State<HomeScreen>
               child: DefaultTabController(
                 length: 6,
                 child: Scaffold(
+                  resizeToAvoidBottomInset: false,
                   appBar: PreferredSize(
                     preferredSize: const Size(0, 48),
                     child: Column(

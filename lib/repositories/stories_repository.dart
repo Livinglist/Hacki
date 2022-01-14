@@ -60,6 +60,9 @@ class StoriesRepository {
           final story = Story.fromJson(json);
           return story;
         } else if (json['type'] == 'comment') {
+          final text = json['text'] as String? ?? '';
+          final parsedText = _parseHtml(text);
+          json['text'] = parsedText;
           final comment = Comment.fromJson(json);
           return comment;
         }
@@ -99,22 +102,7 @@ class StoriesRepository {
       }
       final json = val as Map<String, dynamic>;
       final text = json['text'] as String? ?? '';
-      final parsedText = HtmlUnescape()
-          .convert(text)
-          .replaceAll('<p>', '\n')
-          .replaceAllMapped(
-            RegExp(r'\<i\>(.*?)\<\/i\>'),
-            (Match match) => '*${match[1]}*',
-          )
-          .replaceAllMapped(
-            RegExp(r'\<pre\>\<code\>(.*?)\<\/code\>\<\/pre\>', dotAll: true),
-            (Match match) => match[1]?.trimRight() ?? '',
-          )
-          .replaceAllMapped(
-            RegExp(r'\<a href=\"(.*?)\".*?\>.*?\<\/a\>'),
-            (Match match) => match[1] ?? '',
-          )
-          .replaceAll('\n', '\n\n');
+      final parsedText = _parseHtml(text);
       json['text'] = parsedText;
 
       final comment = Comment.fromJson(json);
@@ -169,5 +157,24 @@ class StoriesRepository {
     } while (item is Comment);
 
     return item as Story;
+  }
+
+  String _parseHtml(String text) {
+    return HtmlUnescape()
+        .convert(text)
+        .replaceAll('<p>', '\n')
+        .replaceAllMapped(
+          RegExp(r'\<i\>(.*?)\<\/i\>'),
+          (Match match) => '*${match[1]}*',
+        )
+        .replaceAllMapped(
+          RegExp(r'\<pre\>\<code\>(.*?)\<\/code\>\<\/pre\>', dotAll: true),
+          (Match match) => match[1]?.trimRight() ?? '',
+        )
+        .replaceAllMapped(
+          RegExp(r'\<a href=\"(.*?)\".*?\>.*?\<\/a\>'),
+          (Match match) => match[1] ?? '',
+        )
+        .replaceAll('\n', '\n\n');
   }
 }

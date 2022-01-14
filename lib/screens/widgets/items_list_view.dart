@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/custom_circular_progress_indicator.dart';
 import 'package:hacki/screens/widgets/story_tile.dart';
@@ -103,30 +103,32 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                               direction: Axis.horizontal,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Flexible(
-                                  flex: 7,
-                                  child: Html(
-                                    data: e.text,
-                                    onLinkTap: (link, _, __, ___) =>
-                                        LinkUtil.launchUrl(link ?? ''),
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 8,
+                                      horizontal: 6,
+                                    ),
+                                    child: Linkify(
+                                      text: e.text,
+                                      maxLines: 4,
+                                      onOpen: (link) =>
+                                          LinkUtil.launchUrl(link.url),
+                                    ),
                                   ),
                                 ),
-                                Flexible(
-                                  flex: 3,
-                                  child: Row(
-                                    children: [
-                                      const Spacer(),
-                                      Text(
-                                        e.postedDate,
-                                        style: const TextStyle(
-                                          color: Colors.grey,
-                                        ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      e.postedDate,
+                                      style: const TextStyle(
+                                        color: Colors.grey,
                                       ),
-                                      const SizedBox(
-                                        width: 12,
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                    const SizedBox(
+                                      width: 12,
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
