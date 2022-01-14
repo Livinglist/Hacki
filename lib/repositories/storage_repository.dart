@@ -57,6 +57,8 @@ class StorageRepository {
             ..addAll(prefs.getStringList(of) ?? <String>[]))
           .map(int.parse)
           .toSet()
+          .toList()
+          .reversed
           .toList());
 
   Future<void> setAuth(
