@@ -78,4 +78,23 @@ class Story extends Item {
 
   String get postedDate =>
       DateTime.fromMillisecondsSinceEpoch(time * 1000).toReadableString();
+
+  @override
+  List<Object?> get props => [
+        id,
+        score,
+        descendants,
+        time,
+        by,
+        title,
+        url,
+        kids,
+        dead,
+        parts,
+        deleted,
+        parent,
+        poll,
+        text,
+        type,
+      ];
 }

@@ -1,5 +1,7 @@
-abstract class Item {
-  Item({
+import 'package:equatable/equatable.dart';
+
+abstract class Item extends Equatable {
+  const Item({
     required this.id,
     required this.deleted,
     required this.by,

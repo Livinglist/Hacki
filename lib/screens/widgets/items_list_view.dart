@@ -67,6 +67,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
               return [
                 FadeIn(
                   child: StoryTile(
+                    key: ObjectKey(e),
                     story: e,
                     onTap: () => onTap(e),
                     showWebPreview: showWebPreview,
