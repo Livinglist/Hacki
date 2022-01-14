@@ -206,6 +206,7 @@ class _HomeScreenState extends State<HomeScreen>
                     ),
                   ),
                   body: TabBarView(
+                    physics: const NeverScrollableScrollPhysics(),
                     controller: tabController,
                     children: [
                       ItemsListView<Story>(
