@@ -42,7 +42,7 @@ class SearchRepository {
         title: title,
         url: url,
         type: '',
-        kids: [],
+        kids: const [],
       );
       yield story;
     }

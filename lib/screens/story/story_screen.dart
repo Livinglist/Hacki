@@ -34,8 +34,8 @@ class StoryScreen extends StatefulWidget {
       builder: (context) => BlocProvider<PostCubit>(
         create: (context) => PostCubit(),
         child: BlocProvider<CommentsCubit>(
-          create: (_) => CommentsCubit(
-            story: args.story,
+          create: (_) => CommentsCubit<Story>(
+            item: args.story,
           ),
           child: StoryScreen(
             story: args.story,

@@ -7,38 +7,44 @@ enum CommentsStatus {
   failure,
 }
 
-class CommentsState extends Equatable {
+class CommentsState<T extends Item> extends Equatable {
   const CommentsState({
-    required this.story,
+    required this.item,
     required this.comments,
     required this.status,
+    required this.collapsed,
   });
 
   CommentsState.init()
-      : story = Story.empty(),
+      : item = null,
         comments = [],
-        status = CommentsStatus.init;
+        status = CommentsStatus.init,
+        collapsed = false;
 
-  final Story story;
+  final T? item;
   final List<Comment> comments;
   final CommentsStatus status;
+  final bool collapsed;
 
   CommentsState copyWith({
-    Story? story,
+    T? item,
     List<Comment>? comments,
     CommentsStatus? status,
+    bool? collapsed,
   }) {
     return CommentsState(
-      story: story ?? this.story,
+      item: item ?? this.item,
       comments: comments ?? this.comments,
       status: status ?? this.status,
+      collapsed: collapsed ?? this.collapsed,
     );
   }
 
   @override
   List<Object?> get props => [
-        story,
+        item,
         comments,
         status,
+        collapsed,
       ];
 }

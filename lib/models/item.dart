@@ -19,6 +19,23 @@ abstract class Item extends Equatable {
     required this.descendants,
   });
 
+  Item.empty()
+      : id = 0,
+        score = 0,
+        descendants = 0,
+        time = 0,
+        by = '',
+        title = '',
+        url = '',
+        kids = [],
+        dead = false,
+        parts = [],
+        deleted = false,
+        parent = 0,
+        poll = 0,
+        text = '',
+        type = '';
+
   final int id;
   final int time;
   final int poll;

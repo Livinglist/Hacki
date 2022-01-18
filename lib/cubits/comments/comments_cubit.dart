@@ -7,28 +7,27 @@ import 'package:hacki/services/cache_service.dart';
 
 part 'comments_state.dart';
 
-class CommentsCubit extends Cubit<CommentsState> {
+class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
   CommentsCubit(
-      {Story? story,
-      List<int>? commentIds,
+      {T? item,
       CacheService? cacheService,
       StoriesRepository? storiesRepository})
       : _cacheService = cacheService ?? locator.get<CacheService>(),
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
-        assert(story != null || commentIds != null),
-        super(CommentsState.init()) {
-    init(story?.kids ?? commentIds!, story);
+        super(CommentsState<T>.init()) {
+    init(item!);
   }
 
   final CacheService _cacheService;
   final StoriesRepository _storiesRepository;
 
-  Future<void> init(List<int> commentIds, Story? story) async {
-    if (story != null) {
+  Future<void> init(T item) async {
+    if (item is Story) {
+      final story = item;
       final updatedStory = await _storiesRepository.fetchStoryById(story.id);
 
-      emit(state.copyWith(story: updatedStory));
+      emit(state.copyWith(item: updatedStory));
 
       for (final id in updatedStory.kids) {
         final cachedComment = _cacheService.getComment(id);
@@ -46,7 +45,14 @@ class CommentsCubit extends Cubit<CommentsState> {
         status: CommentsStatus.loaded,
       ));
     } else {
-      for (final id in commentIds) {
+      final comment = item;
+
+      emit(state.copyWith(
+        item: item,
+        collapsed: _cacheService.isCollapsed(item.id),
+      ));
+
+      for (final id in comment.kids) {
         final cachedComment = _cacheService.getComment(id);
         if (cachedComment != null) {
           emit(state.copyWith(
@@ -67,8 +73,8 @@ class CommentsCubit extends Cubit<CommentsState> {
   Future<void> refresh() async {
     emit(state.copyWith(status: CommentsStatus.loading, comments: []));
 
-    final updatedStory =
-        await _storiesRepository.fetchStoryById(state.story.id);
+    final story = (state.item as Story?)!;
+    final updatedStory = await _storiesRepository.fetchStoryById(story.id);
 
     for (final id in updatedStory.kids) {
       final cachedComment = _cacheService.getComment(id);
@@ -83,9 +89,14 @@ class CommentsCubit extends Cubit<CommentsState> {
     }
 
     emit(state.copyWith(
-      story: updatedStory,
+      item: updatedStory,
       status: CommentsStatus.loaded,
     ));
+  }
+
+  void collapse() {
+    _cacheService.updateCollapsedComments(state.item!.id);
+    emit(state.copyWith(collapsed: !state.collapsed));
   }
 
   void _onCommentFetched(Comment? comment) {

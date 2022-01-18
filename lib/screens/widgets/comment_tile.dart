@@ -6,7 +6,7 @@ import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/utils/utils.dart';
 
-class CommentTile extends StatefulWidget {
+class CommentTile extends StatelessWidget {
   const CommentTile({
     Key? key,
     required this.myUsername,
@@ -25,14 +25,9 @@ class CommentTile extends StatefulWidget {
   final Function(Comment) onLongPress;
 
   @override
-  _CommentTileState createState() => _CommentTileState();
-}
-
-class _CommentTileState extends State<CommentTile> {
-  @override
   Widget build(BuildContext context) {
     return BlocProvider<CommentsCubit>(
-      create: (_) => CommentsCubit(commentIds: widget.comment.kids),
+      create: (_) => CommentsCubit<Comment>(item: comment),
       child: BlocBuilder<CommentsCubit, CommentsState>(
         builder: (context, state) {
           return BlocBuilder<PreferenceCubit, PreferenceState>(
@@ -40,14 +35,12 @@ class _CommentTileState extends State<CommentTile> {
               return BlocBuilder<BlocklistCubit, BlocklistState>(
                 builder: (context, blocklistState) {
                   const r = 255;
-                  var g = widget.level * 40 < 255
-                      ? 152
-                      : (widget.level * 20).clamp(0, 255);
-                  var b = (widget.level * 40).clamp(0, 255);
+                  var g = level * 40 < 255 ? 152 : (level * 20).clamp(0, 255);
+                  var b = (level * 40).clamp(0, 255);
 
                   if (g == 255 && b == 255) {
-                    g = (widget.level * 30 - 255).clamp(0, 255);
-                    b = (widget.level * 40 - 255).clamp(0, 255);
+                    g = (level * 30 - 255).clamp(0, 255);
+                    b = (level * 40 - 255).clamp(0, 255);
                   }
 
                   const orange = Color.fromRGBO(255, 152, 0, 1);
@@ -59,8 +52,11 @@ class _CommentTileState extends State<CommentTile> {
                   );
 
                   final child = InkWell(
-                    onTap: () => widget.onTap(widget.comment),
-                    onLongPress: () => widget.onLongPress(widget.comment),
+                    onTap: () => onTap(comment),
+                    onLongPress: () => onLongPress(comment),
+                    onDoubleTap: () {
+                      context.read<CommentsCubit>().collapse();
+                    },
                     child: Padding(
                       padding: EdgeInsets.zero,
                       child: Column(
@@ -72,7 +68,7 @@ class _CommentTileState extends State<CommentTile> {
                             child: Row(
                               children: [
                                 Text(
-                                  widget.comment.by,
+                                  comment.by,
                                   style: TextStyle(
                                     //255, 152, 0
                                     color:
@@ -81,7 +77,7 @@ class _CommentTileState extends State<CommentTile> {
                                 ),
                                 const Spacer(),
                                 Text(
-                                  widget.comment.postedDate,
+                                  comment.postedDate,
                                   style: const TextStyle(
                                     color: Colors.grey,
                                   ),
@@ -89,7 +85,7 @@ class _CommentTileState extends State<CommentTile> {
                               ],
                             ),
                           ),
-                          if (widget.comment.deleted)
+                          if (comment.deleted)
                             const Center(
                               child: Padding(
                                 padding: EdgeInsets.symmetric(vertical: 12),
@@ -99,7 +95,7 @@ class _CommentTileState extends State<CommentTile> {
                                 ),
                               ),
                             )
-                          else if (widget.comment.dead)
+                          else if (comment.dead)
                             const Center(
                               child: Padding(
                                 padding: EdgeInsets.symmetric(vertical: 12),
@@ -110,13 +106,23 @@ class _CommentTileState extends State<CommentTile> {
                               ),
                             )
                           else if (blocklistState.blocklist
-                              .contains(widget.comment.by))
+                              .contains(comment.by))
                             const Center(
                               child: Padding(
                                 padding: EdgeInsets.symmetric(vertical: 12),
                                 child: Text(
                                   'blocked',
-                                  style: TextStyle(color: Colors.white30),
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                              ),
+                            )
+                          else if (state.collapsed)
+                            const Center(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 12),
+                                child: Text(
+                                  'collapsed',
+                                  style: TextStyle(color: Colors.grey),
                                 ),
                               ),
                             )
@@ -129,15 +135,15 @@ class _CommentTileState extends State<CommentTile> {
                                 bottom: 12,
                               ),
                               child: Linkify(
-                                key: ObjectKey(widget.comment),
-                                text: widget.comment.text,
+                                key: ObjectKey(comment),
+                                text: comment.text,
                                 onOpen: (link) => LinkUtil.launchUrl(link.url),
                               ),
                             ),
                           const Divider(
                             height: 0,
                           ),
-                          if (widget.loadKids)
+                          if (loadKids && !state.collapsed)
                             Padding(
                               padding: const EdgeInsets.only(left: 12),
                               child: Column(
@@ -145,10 +151,10 @@ class _CommentTileState extends State<CommentTile> {
                                     .map((e) => FadeIn(
                                           child: CommentTile(
                                             comment: e,
-                                            myUsername: widget.myUsername,
-                                            onTap: widget.onTap,
-                                            onLongPress: widget.onLongPress,
-                                            level: widget.level + 1,
+                                            myUsername: myUsername,
+                                            onTap: onTap,
+                                            onLongPress: onLongPress,
+                                            level: level + 1,
                                           ),
                                         ))
                                     .toList(),
@@ -159,7 +165,7 @@ class _CommentTileState extends State<CommentTile> {
                     ),
                   );
 
-                  if (widget.myUsername == widget.comment.by) {
+                  if (myUsername == comment.by) {
                     return Material(
                       color: Colors.orangeAccent.withOpacity(0.3),
                       child: child,
@@ -170,10 +176,9 @@ class _CommentTileState extends State<CommentTile> {
                       Theme.of(context).brightness == Brightness.dark
                           ? 0.03
                           : 0.15;
-                  final borderColor =
-                      prefState.showCommentBorder && widget.level != 0
-                          ? color.withOpacity(0.5)
-                          : Colors.transparent;
+                  final borderColor = prefState.showCommentBorder && level != 0
+                      ? color.withOpacity(0.5)
+                      : Colors.transparent;
                   final commentColor = prefState.showEyeCandy
                       ? color.withOpacity(commentBackgroundColorOpacity)
                       : Colors.transparent;
