@@ -21,13 +21,13 @@ class CommentsState<T extends Item> extends Equatable {
         status = CommentsStatus.init,
         collapsed = false;
 
-  final T? item;
+  final Item? item;
   final List<Comment> comments;
   final CommentsStatus status;
   final bool collapsed;
 
   CommentsState copyWith({
-    T? item,
+    Item? item,
     List<Comment>? comments,
     CommentsStatus? status,
     bool? collapsed,
