@@ -9,14 +9,14 @@ part 'comments_state.dart';
 
 class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
   CommentsCubit(
-      {T? item,
+      {required T item,
       CacheService? cacheService,
       StoriesRepository? storiesRepository})
       : _cacheService = cacheService ?? locator.get<CacheService>(),
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
         super(CommentsState.init()) {
-    init(item!);
+    init(item);
   }
 
   final CacheService _cacheService;
