@@ -15,7 +15,7 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
       : _cacheService = cacheService ?? locator.get<CacheService>(),
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
-        super(CommentsState<T>.init()) {
+        super(CommentsState.init()) {
     init(item!);
   }
 

@@ -7,7 +7,7 @@ enum CommentsStatus {
   failure,
 }
 
-class CommentsState<T extends Item> extends Equatable {
+class CommentsState extends Equatable {
   const CommentsState({
     required this.item,
     required this.comments,
