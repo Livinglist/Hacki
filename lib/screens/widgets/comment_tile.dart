@@ -122,7 +122,7 @@ class CommentTile extends StatelessWidget {
                                 padding: EdgeInsets.symmetric(vertical: 12),
                                 child: Text(
                                   'collapsed',
-                                  style: TextStyle(color: Colors.grey),
+                                  style: TextStyle(color: Colors.orangeAccent),
                                 ),
                               ),
                             )
