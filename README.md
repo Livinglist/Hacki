@@ -12,9 +12,11 @@ You can:
 - Log in using your Hacker News account.
 - Browse stories from various categories.
 - Leave comments on stories.
-- Mark stories as favorite.
+- Mark stories as favorite (not in sync with your Hacker News favorites).
 - Browse comments and stories you have posted in the past.
 - Search for stories on Hacker News.
+- Double tap to collapse a comment.
+- In-app notifications when there's new replies to your stories or comments.
 
 
 <p align="center">
