@@ -38,7 +38,7 @@ class NotificationCubit extends Cubit<NotificationState> {
   final SembastRepository _sembastRepository;
   String? _username;
 
-  static const _refreshDuration = Duration(minutes: 3);
+  static const _refreshDuration = Duration(minutes: 1);
   static const _subscriptionUpperLimit = 15;
   static const _pageSize = 20;
 
