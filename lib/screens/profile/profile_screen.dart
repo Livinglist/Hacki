@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
@@ -8,6 +9,7 @@ import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
+import 'package:hacki/screens/profile/widgets/widgets.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/utils/utils.dart';
@@ -19,6 +21,7 @@ enum PageType {
   history,
   settings,
   search,
+  notification,
 }
 
 class ProfileScreen extends StatefulWidget {
@@ -32,9 +35,10 @@ class _ProfileScreenState extends State<ProfileScreen>
     with AutomaticKeepAliveClientMixin {
   final refreshControllerHistory = RefreshController();
   final refreshControllerFav = RefreshController();
-  final scrollController = ScrollController(initialScrollOffset: 80);
+  final refreshControllerNotification = RefreshController();
+  final scrollController = ScrollController();
 
-  PageType pageType = PageType.fav;
+  PageType pageType = PageType.notification;
 
   final magicWords = <String>[
     'to be a lord.',
@@ -52,52 +56,44 @@ class _ProfileScreenState extends State<ProfileScreen>
       builder: (context, preferenceState) {
         return BlocBuilder<AuthBloc, AuthState>(
           builder: (context, authState) {
-            return BlocConsumer<HistoryCubit, HistoryState>(
-              listener: (context, historyState) {
-                if (historyState.status == HistoryStatus.loaded) {
-                  refreshControllerHistory
-                    ..refreshCompleted()
-                    ..loadComplete();
-                }
-              },
-              builder: (context, historyState) {
-                return BlocConsumer<FavCubit, FavState>(
-                  listener: (context, favState) {
-                    if (favState.status == FavStatus.loaded) {
-                      refreshControllerFav
-                        ..refreshCompleted()
-                        ..loadComplete();
-                    }
-                  },
-                  builder: (context, favState) {
-                    return Stack(
-                      children: [
-                        if (!authState.isLoggedIn &&
-                            pageType == PageType.history)
-                          Positioned.fill(
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 120,
-                                ),
-                                ElevatedButton(
-                                  onPressed: onLoginTapped,
-                                  style: ElevatedButton.styleFrom(
-                                      primary: Colors.deepOrange),
-                                  child: const Text(
-                                    'Log in',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                )
-                              ],
+            return BlocBuilder<NotificationCubit, NotificationState>(
+              builder: (context, notificationState) {
+                return Stack(
+                  children: [
+                    if (!authState.isLoggedIn && pageType == PageType.history)
+                      Positioned.fill(
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 120,
                             ),
-                          ),
-                        Positioned.fill(
-                          top: 50,
-                          child: Offstage(
-                            offstage: !authState.isLoggedIn ||
-                                pageType != PageType.history,
-                            child: ItemsListView<Item>(
+                            ElevatedButton(
+                              onPressed: onLoginTapped,
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.deepOrange),
+                              child: const Text(
+                                'Log in',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    Positioned.fill(
+                      top: 50,
+                      child: Offstage(
+                        offstage: !authState.isLoggedIn ||
+                            pageType != PageType.history,
+                        child: BlocConsumer<HistoryCubit, HistoryState>(
+                          listener: (context, historyState) {
+                            if (historyState.status == HistoryStatus.loaded) {
+                              refreshControllerHistory
+                                ..refreshCompleted()
+                                ..loadComplete();
+                            }
+                          },
+                          builder: (context, historyState) {
+                            return ItemsListView<Item>(
                               showWebPreview: false,
                               refreshController: refreshControllerHistory,
                               items: historyState.submittedItems
@@ -117,8 +113,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 } else if (item is Comment) {
                                   locator
                                       .get<StoriesRepository>()
-                                      .fetchParentStory(
-                                          id: item.parent.toString())
+                                      .fetchParentStory(id: item.parent)
                                       .then((story) {
                                     if (story != null && mounted) {
                                       HackiApp.navigatorKey.currentState!
@@ -129,14 +124,25 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   });
                                 }
                               },
-                            ),
-                          ),
+                            );
+                          },
                         ),
-                        Positioned.fill(
-                          top: 50,
-                          child: Offstage(
-                            offstage: pageType != PageType.fav,
-                            child: ItemsListView<Story>(
+                      ),
+                    ),
+                    Positioned.fill(
+                      top: 50,
+                      child: Offstage(
+                        offstage: pageType != PageType.fav,
+                        child: BlocConsumer<FavCubit, FavState>(
+                          listener: (context, favState) {
+                            if (favState.status == FavStatus.loaded) {
+                              refreshControllerFav
+                                ..refreshCompleted()
+                                ..loadComplete();
+                            }
+                          },
+                          builder: (context, favState) {
+                            return ItemsListView<Story>(
                               showWebPreview:
                                   preferenceState.showComplexStoryTile,
                               refreshController: refreshControllerFav,
@@ -152,212 +158,289 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     StoryScreen.routeName,
                                     arguments: StoryScreenArgs(story: story));
                               },
-                            ),
-                          ),
+                            );
+                          },
                         ),
-                        Positioned.fill(
-                          top: 50,
-                          child: Offstage(
-                            offstage: pageType != PageType.search,
-                            child: const SearchScreen(),
-                          ),
-                        ),
-                        Positioned.fill(
-                          top: 50,
-                          child: Offstage(
-                            offstage: pageType != PageType.settings,
-                            child: Column(
-                              children: [
-                                ListTile(
-                                  title: Text(authState.isLoggedIn
-                                      ? 'Log Out'
-                                      : 'Log In'),
-                                  subtitle: Text(
-                                    authState.isLoggedIn
-                                        ? authState.username
-                                        : magicWord,
+                      ),
+                    ),
+                    Positioned.fill(
+                      top: 50,
+                      child: Offstage(
+                        offstage: pageType != PageType.search,
+                        child: const SearchScreen(),
+                      ),
+                    ),
+                    Positioned.fill(
+                      top: 50,
+                      child: Offstage(
+                        offstage: pageType != PageType.notification,
+                        child: InboxView(
+                          refreshController: refreshControllerNotification,
+                          unreadCommentsIds:
+                              notificationState.unreadCommentsIds,
+                          comments: notificationState.comments,
+                          onCommentTapped: (comment) {
+                            locator
+                                .get<StoriesRepository>()
+                                .fetchParentStory(id: comment.parent)
+                                .then((story) {
+                              if (story != null && mounted) {
+                                context
+                                    .read<NotificationCubit>()
+                                    .markAsRead(comment);
+                                HackiApp.navigatorKey.currentState!.pushNamed(
+                                  StoryScreen.routeName,
+                                  arguments: StoryScreenArgs(
+                                    story: story,
                                   ),
-                                  onTap: () {
-                                    if (authState.isLoggedIn) {
-                                      onLogoutTapped();
-                                    } else {
-                                      onLoginTapped();
-                                    }
-                                  },
-                                ),
-                                SwitchListTile(
-                                  title: const Text('Complex Story Tile'),
-                                  subtitle: const Text(
-                                      'show web preview in story tile.'),
-                                  value: preferenceState.showComplexStoryTile,
-                                  onChanged: (val) {
-                                    HapticFeedback.lightImpact();
-                                    context
-                                        .read<PreferenceCubit>()
-                                        .toggleDisplayMode();
-                                  },
-                                  activeColor: Colors.orange,
-                                ),
-                                SwitchListTile(
-                                  title: const Text('Show Web Page First'),
-                                  subtitle: const Text(
-                                      'show web page first after tapping'
+                                );
+                              }
+                            });
+                          },
+                          onMarkAllAsReadTapped: () {
+                            context.read<NotificationCubit>().markAllAsRead();
+                          },
+                          onLoadMore: () {
+                            context.read<NotificationCubit>().loadMore();
+                          },
+                        ),
+                      ),
+                    ),
+                    Positioned.fill(
+                      top: 50,
+                      child: Offstage(
+                        offstage: pageType != PageType.settings,
+                        child: Column(
+                          children: [
+                            ListTile(
+                              title: Text(
+                                  authState.isLoggedIn ? 'Log Out' : 'Log In'),
+                              subtitle: Text(
+                                authState.isLoggedIn
+                                    ? authState.username
+                                    : magicWord,
+                              ),
+                              onTap: () {
+                                if (authState.isLoggedIn) {
+                                  onLogoutTapped();
+                                } else {
+                                  onLoginTapped();
+                                }
+                              },
+                            ),
+                            SwitchListTile(
+                              title: const Text('Complex Story Tile'),
+                              subtitle:
+                                  const Text('show web preview in story tile.'),
+                              value: preferenceState.showComplexStoryTile,
+                              onChanged: (val) {
+                                HapticFeedback.lightImpact();
+                                context
+                                    .read<PreferenceCubit>()
+                                    .toggleDisplayMode();
+                              },
+                              activeColor: Colors.orange,
+                            ),
+                            SwitchListTile(
+                              title: const Text('Show Web Page First'),
+                              subtitle:
+                                  const Text('show web page first after tapping'
                                       ' on story.'),
-                                  value: preferenceState.showWebFirst,
-                                  onChanged: (val) {
-                                    HapticFeedback.lightImpact();
-                                    context
-                                        .read<PreferenceCubit>()
-                                        .toggleNavigationMode();
-                                  },
-                                  activeColor: Colors.orange,
-                                ),
-                                SwitchListTile(
-                                  title: const Text('Show Comment Outlines'),
-                                  subtitle: const Text('be nice to your eyes.'),
-                                  value: preferenceState.showCommentBorder,
-                                  onChanged: (val) {
-                                    HapticFeedback.lightImpact();
-                                    context
-                                        .read<PreferenceCubit>()
-                                        .toggleCommentBorderMode();
-                                  },
-                                  activeColor: Colors.orange,
-                                ),
-                                SwitchListTile(
-                                  title: const Text('Eye Candy'),
-                                  subtitle: const Text('some sort of magic.'),
-                                  value: preferenceState.showEyeCandy,
-                                  onChanged: (val) {
-                                    HapticFeedback.lightImpact();
-                                    context
-                                        .read<PreferenceCubit>()
-                                        .toggleEyeCandyMode();
+                              value: preferenceState.showWebFirst,
+                              onChanged: (val) {
+                                HapticFeedback.lightImpact();
+                                context
+                                    .read<PreferenceCubit>()
+                                    .toggleNavigationMode();
+                              },
+                              activeColor: Colors.orange,
+                            ),
+                            SwitchListTile(
+                              title: const Text('Show Comment Outlines'),
+                              subtitle: const Text('be nice to your eyes.'),
+                              value: preferenceState.showCommentBorder,
+                              onChanged: (val) {
+                                HapticFeedback.lightImpact();
+                                context
+                                    .read<PreferenceCubit>()
+                                    .toggleCommentBorderMode();
+                              },
+                              activeColor: Colors.orange,
+                            ),
+                            SwitchListTile(
+                              title: const Text('Eye Candy'),
+                              subtitle: const Text('some sort of magic.'),
+                              value: preferenceState.showEyeCandy,
+                              onChanged: (val) {
+                                HapticFeedback.lightImpact();
+                                context
+                                    .read<PreferenceCubit>()
+                                    .toggleEyeCandyMode();
 
-                                    final inAppReview = InAppReview.instance;
-                                    inAppReview.isAvailable().then((available) {
-                                      if (available) {
-                                        inAppReview.requestReview();
-                                      }
-                                    });
-                                  },
-                                  activeColor: Colors.orange,
-                                ),
-                                ListTile(
-                                  title: const Text('About'),
-                                  subtitle:
-                                      const Text('nothing interesting here.'),
-                                  onTap: () {
-                                    showAboutDialog(
-                                      context: context,
-                                      applicationName: 'Hacki',
-                                      applicationVersion: '0.0.7',
-                                      applicationIcon: Image.asset(
-                                        'images/hacki_icon.png',
-                                        height: 96,
-                                        width: 96,
+                                final inAppReview = InAppReview.instance;
+                                inAppReview.isAvailable().then((available) {
+                                  if (available) {
+                                    inAppReview.requestReview();
+                                  }
+                                });
+                              },
+                              activeColor: Colors.orange,
+                            ),
+                            ListTile(
+                              title: const Text('About'),
+                              subtitle: const Text('nothing interesting here.'),
+                              onTap: () {
+                                showAboutDialog(
+                                  context: context,
+                                  applicationName: 'Hacki',
+                                  applicationVersion: 'v0.0.8',
+                                  applicationIcon: Image.asset(
+                                    'images/hacki_icon.png',
+                                    height: 50,
+                                    width: 50,
+                                  ),
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: () => LinkUtil.launchUrl(
+                                          'https://livinglist.github.io'),
+                                      child: Row(
+                                        children: const [
+                                          Icon(
+                                            FontAwesomeIcons.addressCard,
+                                          ),
+                                          SizedBox(
+                                            width: 12,
+                                          ),
+                                          Text('Developer'),
+                                        ],
                                       ),
-                                      applicationLegalese: '2022 Jiaqi Feng',
-                                      children: [
-                                        TextButton(
-                                          onPressed: () => LinkUtil.launchUrl(
-                                              'https://github.com/Livinglist/Hacki'),
-                                          child: const Text('Source Code'),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                ),
-                              ],
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () => LinkUtil.launchUrl(
+                                          'https://github.com/Livinglist/Hacki'),
+                                      child: Row(
+                                        children: const [
+                                          Icon(
+                                            FontAwesomeIcons.github,
+                                          ),
+                                          SizedBox(
+                                            width: 12,
+                                          ),
+                                          Text('Source Code'),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
                             ),
-                          ),
+                          ],
                         ),
-                        Align(
-                          alignment: Alignment.topLeft,
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            controller: scrollController,
-                            child: Row(
-                              children: [
-                                const SizedBox(
-                                  width: 12,
-                                ),
-                                FilterChip(
-                                  label: const Text(
-                                    'Favorite',
-                                  ),
-                                  elevation: 4,
-                                  selected: pageType == PageType.fav,
-                                  onSelected: (val) {
-                                    if (val) {
-                                      setState(() {
-                                        pageType = PageType.fav;
-                                      });
-                                    }
-                                  },
-                                  selectedColor: Colors.orange,
-                                ),
-                                const SizedBox(
-                                  width: 12,
-                                ),
-                                FilterChip(
-                                  label: const Text(
-                                    'Submitted',
-                                  ),
-                                  elevation: 4,
-                                  selected: pageType == PageType.history,
-                                  onSelected: (val) {
-                                    if (val) {
-                                      setState(() {
-                                        pageType = PageType.history;
-                                      });
-                                    }
-                                  },
-                                  selectedColor: Colors.orange,
-                                ),
-                                const SizedBox(
-                                  width: 12,
-                                ),
-                                FilterChip(
-                                  label: const Text(
-                                    'Search',
-                                  ),
-                                  elevation: 4,
-                                  selected: pageType == PageType.search,
-                                  onSelected: (val) {
-                                    if (val) {
-                                      setState(() {
-                                        pageType = PageType.search;
-                                      });
-                                    }
-                                  },
-                                  selectedColor: Colors.orange,
-                                ),
-                                const SizedBox(
-                                  width: 12,
-                                ),
-                                FilterChip(
-                                  label: const Text(
-                                    'Settings',
-                                  ),
-                                  elevation: 4,
-                                  selected: pageType == PageType.settings,
-                                  onSelected: (val) {
-                                    if (val) {
-                                      setState(() {
-                                        pageType = PageType.settings;
-                                      });
-                                    }
-                                  },
-                                  selectedColor: Colors.orange,
-                                ),
-                              ],
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        controller: scrollController,
+                        child: Row(
+                          children: [
+                            const SizedBox(
+                              width: 12,
                             ),
-                          ),
+                            FilterChip(
+                              label: Text(
+                                'Inbox : '
+                                '${notificationState.unreadCommentsIds.length}',
+                              ),
+                              elevation: 4,
+                              selected: pageType == PageType.notification,
+                              onSelected: (val) {
+                                if (val) {
+                                  setState(() {
+                                    pageType = PageType.notification;
+                                  });
+                                }
+                              },
+                              selectedColor: Colors.orange,
+                            ),
+                            const SizedBox(
+                              width: 12,
+                            ),
+                            FilterChip(
+                              label: const Text(
+                                'Favorite',
+                              ),
+                              elevation: 4,
+                              selected: pageType == PageType.fav,
+                              onSelected: (val) {
+                                if (val) {
+                                  setState(() {
+                                    pageType = PageType.fav;
+                                  });
+                                }
+                              },
+                              selectedColor: Colors.orange,
+                            ),
+                            const SizedBox(
+                              width: 12,
+                            ),
+                            FilterChip(
+                              label: const Text(
+                                'Submitted',
+                              ),
+                              elevation: 4,
+                              selected: pageType == PageType.history,
+                              onSelected: (val) {
+                                if (val) {
+                                  setState(() {
+                                    pageType = PageType.history;
+                                  });
+                                }
+                              },
+                              selectedColor: Colors.orange,
+                            ),
+                            const SizedBox(
+                              width: 12,
+                            ),
+                            FilterChip(
+                              label: const Text(
+                                'Search',
+                              ),
+                              elevation: 4,
+                              selected: pageType == PageType.search,
+                              onSelected: (val) {
+                                if (val) {
+                                  setState(() {
+                                    pageType = PageType.search;
+                                  });
+                                }
+                              },
+                              selectedColor: Colors.orange,
+                            ),
+                            const SizedBox(
+                              width: 12,
+                            ),
+                            FilterChip(
+                              label: const Text(
+                                'Settings',
+                              ),
+                              elevation: 4,
+                              selected: pageType == PageType.settings,
+                              onSelected: (val) {
+                                if (val) {
+                                  setState(() {
+                                    pageType = PageType.settings;
+                                  });
+                                }
+                              },
+                              selectedColor: Colors.orange,
+                            ),
+                          ],
                         ),
-                      ],
-                    );
-                  },
+                      ),
+                    ),
+                  ],
                 );
               },
             );

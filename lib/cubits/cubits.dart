@@ -2,6 +2,7 @@ export 'blocklist/blocklist_cubit.dart';
 export 'comments/comments_cubit.dart';
 export 'fav/fav_cubit.dart';
 export 'history/history_cubit.dart';
+export 'notification/notification_cubit.dart';
 export 'post/post_cubit.dart';
 export 'preference/preference_cubit.dart';
 export 'search/search_cubit.dart';

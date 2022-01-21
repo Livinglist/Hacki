@@ -93,9 +93,9 @@ class StoriesRepository {
     }
   }
 
-  Future<Comment?> fetchCommentBy({required String commentId}) async {
+  Future<Comment?> fetchCommentBy({required int id}) async {
     final comment = await _firebaseClient
-        .get('${_baseUrl}item/$commentId.json')
+        .get('${_baseUrl}item/$id.json')
         .then((dynamic val) {
       if (val == null) {
         return null;
@@ -112,7 +112,7 @@ class StoriesRepository {
     return comment;
   }
 
-  Future<Item?> fetchItemBy({required String id}) async {
+  Future<Item?> fetchItemBy({required int id}) async {
     final item = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
         .then((dynamic val) {
@@ -148,11 +148,11 @@ class StoriesRepository {
     return submitted;
   }
 
-  Future<Story?> fetchParentStory({required String id}) async {
+  Future<Story?> fetchParentStory({required int id}) async {
     Item? item;
 
     do {
-      item = await fetchItemBy(id: item?.parent.toString() ?? id);
+      item = await fetchItemBy(id: item?.parent ?? id);
       if (item == null) return null;
     } while (item is Comment);
 

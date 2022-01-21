@@ -21,7 +21,6 @@ class HackiApp extends StatelessWidget {
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -39,11 +38,15 @@ class HackiApp extends StatelessWidget {
         ),
         BlocProvider<HistoryCubit>(
           lazy: false,
-          create: (context) => HistoryCubit(authBloc: context.read<AuthBloc>()),
+          create: (context) => HistoryCubit(
+            authBloc: context.read<AuthBloc>(),
+          ),
         ),
         BlocProvider<FavCubit>(
           lazy: false,
-          create: (context) => FavCubit(authBloc: context.read<AuthBloc>()),
+          create: (context) => FavCubit(
+            authBloc: context.read<AuthBloc>(),
+          ),
         ),
         BlocProvider<BlocklistCubit>(
           lazy: false,
@@ -53,6 +56,12 @@ class HackiApp extends StatelessWidget {
           lazy: false,
           create: (context) => SearchCubit(),
         ),
+        BlocProvider(
+          lazy: false,
+          create: (context) => NotificationCubit(
+            authBloc: context.read<AuthBloc>(),
+          ),
+        ),
       ],
       child: FeatureDiscovery(
         child: MaterialApp(
@@ -61,7 +70,10 @@ class HackiApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.orange,
           ),
-          darkTheme: ThemeData.dark(),
+          darkTheme: ThemeData(
+            brightness: Brightness.dark,
+            primarySwatch: Colors.orange,
+          ),
           navigatorKey: navigatorKey,
           onGenerateRoute: CustomRouter.onGenerateRoute,
           initialRoute: HomeScreen.routeName,

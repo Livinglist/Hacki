@@ -50,6 +50,17 @@ class Comment extends Item {
   String get postedDate =>
       DateTime.fromMillisecondsSinceEpoch(time * 1000).toReadableString();
 
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'id': id,
+        'time': time,
+        'by': by,
+        'text': text,
+        'kids': kids,
+        'parent': parent,
+        'deleted': deleted,
+        'dead': dead,
+      };
+
   @override
   List<Object?> get props => [
         id,

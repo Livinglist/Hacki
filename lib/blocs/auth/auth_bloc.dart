@@ -11,7 +11,13 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({
     AuthRepository? authRepository,
+    StorageRepository? storageRepository,
+    SembastRepository? sembastRepository,
   })  : _authRepository = authRepository ?? locator.get<AuthRepository>(),
+        _storageRepository =
+            storageRepository ?? locator.get<StorageRepository>(),
+        _sembastRepository =
+            sembastRepository ?? locator.get<SembastRepository>(),
         super(const AuthState.init()) {
     on<AuthInitialize>(onInitialize);
     on<AuthLogin>(onLogin);
@@ -22,6 +28,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   final AuthRepository _authRepository;
+  final StorageRepository _storageRepository;
+  final SembastRepository _sembastRepository;
 
   Future<void> onInitialize(
       AuthInitialize event, Emitter<AuthState> emit) async {
@@ -79,5 +87,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     ));
 
     await _authRepository.logout();
+    await _storageRepository.updateUnreadCommentsIdsKey([]);
+    await _sembastRepository.deleteAll();
   }
 }

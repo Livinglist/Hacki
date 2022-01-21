@@ -14,14 +14,15 @@ class StorageRepository {
 
   /// The key of a boolean value deciding whether or not the story
   /// tile should display link preview. Defaults to true.
-  static const String _displayModeKey = 'displayModeKey';
+  static const String _displayModeKey = 'displayMode';
 
   /// The key of a boolean value deciding whether or not user should be
   /// navigated to web view first. Defaults to false.
-  static const String _navigationModeKey = 'navigationModeKey';
+  static const String _navigationModeKey = 'navigationMode';
 
-  static const String _commentBorderModeKey = 'commentBorderModeKey';
-  static const String _eyeCandyModeKey = 'eyeCandyKey';
+  static const String _commentBorderModeKey = 'commentBorderMode';
+  static const String _eyeCandyModeKey = 'eyeCandy';
+  static const String _unreadCommentsIdsKey = 'unreadCommentsIds';
 
   static const bool _displayModeDefaultValue = true;
   static const bool _navigationModeDefaultValue = true;
@@ -51,6 +52,15 @@ class StorageRepository {
 
   Future<bool> get shouldShowEyeCandy async => _prefs.then(
       (prefs) => prefs.getBool(_eyeCandyModeKey) ?? _eyeCandyModeDefaultValue);
+
+  Future<List<int>> get unreadCommentsIds async => _prefs.then((prefs) =>
+      prefs.getStringList(_eyeCandyModeKey)?.map(int.parse).toList() ?? []);
+
+  Future<List<int>?> kids({required String of}) {
+    final itemId = of;
+    return _prefs
+        .then((prefs) => prefs.getStringList(itemId)?.map(int.parse).toList());
+  }
 
   Future<List<int>> favList({required String of}) =>
       _prefs.then((prefs) => ((prefs.getStringList('') ?? <String>[])
@@ -119,5 +129,21 @@ class StorageRepository {
   Future<void> setBlocklist(List<String> usernames) async {
     final prefs = await _prefs;
     await prefs.setStringList(_blocklistKey, usernames);
+  }
+
+  Future<void> updateUnreadCommentsIdsKey(List<int> ids) async {
+    final prefs = await _prefs;
+    await prefs.setStringList(
+      _unreadCommentsIdsKey,
+      ids.map((e) => e.toString()).toList(),
+    );
+  }
+
+  Future<void> updateKidsOf({
+    required String id,
+    required List<int> kids,
+  }) async {
+    final prefs = await _prefs;
+    await prefs.setStringList(id, kids.map((e) => e.toString()).toList());
   }
 }

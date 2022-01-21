@@ -13,5 +13,6 @@ Future<void> setUpLocator() async {
     ..registerSingleton<SearchRepository>(SearchRepository())
     ..registerSingleton<AuthRepository>(AuthRepository())
     ..registerSingleton<PostRepository>(PostRepository())
+    ..registerSingleton<SembastRepository>(SembastRepository())
     ..registerSingleton<CacheService>(CacheService());
 }

@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -192,12 +193,38 @@ class _HomeScreenState extends State<HomeScreen>
                                   'posted in the past.',
                                   style: TextStyle(fontSize: 16),
                                 ),
-                                child: Icon(
-                                  Icons.person,
-                                  size: 16,
-                                  color: currentIndex == 5
-                                      ? Colors.orange
-                                      : Colors.grey,
+                                child: BlocBuilder<NotificationCubit,
+                                    NotificationState>(
+                                  builder: (context, state) {
+                                    if (state.unreadCommentsIds.isEmpty) {
+                                      return Icon(
+                                        Icons.person,
+                                        size: 16,
+                                        color: currentIndex == 5
+                                            ? Colors.orange
+                                            : Colors.grey,
+                                      );
+                                    } else {
+                                      return Badge(
+                                        borderRadius:
+                                            BorderRadius.circular(100),
+                                        badgeContent: Container(
+                                          height: 3,
+                                          width: 3,
+                                          decoration: const BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: Colors.white),
+                                        ),
+                                        child: Icon(
+                                          Icons.person,
+                                          size: 16,
+                                          color: currentIndex == 5
+                                              ? Colors.orange
+                                              : Colors.grey,
+                                        ),
+                                      );
+                                    }
+                                  },
                                 ),
                               ),
                             ),

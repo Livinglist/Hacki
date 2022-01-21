@@ -8,7 +8,7 @@ environment:
 
 dependencies:
   algolia: ^1.0.1
-  badges: ^2.0.1
+  badges: ^2.0.2
   bloc: ^7.0.0
   cached_network_image: ^3.2.0
   collection:
@@ -29,6 +29,7 @@ dependencies:
   flutter_riverpod: ^0.14.0+3
   flutter_secure_storage: ^5.0.2
   flutter_typeahead: ^3.2.1
+  font_awesome_flutter: ^9.2.0
   gbk_codec: ^0.4.0
   get_it: 7.2.0
   html: ^0.15.0
@@ -38,7 +39,10 @@ dependencies:
   intl: ^0.17.0
   objectid: ^2.0.0
   package_info: ^2.0.2
+  path: ^1.8.0
+  path_provider: ^2.0.8
   pull_to_refresh: ^2.0.0
+  sembast: ^3.1.1+1
   shared_preferences: ^2.0.11
   shimmer: ^2.0.0
   universal_platform: ^1.0.0+1

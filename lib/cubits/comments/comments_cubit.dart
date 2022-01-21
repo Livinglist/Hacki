@@ -36,7 +36,7 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
               comments: List.from(state.comments)..add(cachedComment)));
         } else {
           await _storiesRepository
-              .fetchCommentBy(commentId: id.toString())
+              .fetchCommentBy(id: id)
               .then(_onCommentFetched);
         }
       }
@@ -59,7 +59,7 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
               comments: List.from(state.comments)..add(cachedComment)));
         } else {
           await _storiesRepository
-              .fetchCommentBy(commentId: id.toString())
+              .fetchCommentBy(id: id)
               .then(_onCommentFetched);
         }
       }
@@ -82,9 +82,7 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
         emit(state.copyWith(
             comments: List.from(state.comments)..add(cachedComment)));
       } else {
-        await _storiesRepository
-            .fetchCommentBy(commentId: id.toString())
-            .then(_onCommentFetched);
+        await _storiesRepository.fetchCommentBy(id: id).then(_onCommentFetched);
       }
     }
 
