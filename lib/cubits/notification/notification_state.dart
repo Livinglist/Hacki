@@ -40,7 +40,6 @@ class NotificationState extends Equatable {
     int? offset,
     NotificationStatus? status,
   }) {
-    print('NotificationState ${unreadCommentsIds ?? this.unreadCommentsIds}');
     return NotificationState(
       comments: comments ?? this.comments,
       allCommentsIds: allCommentsIds ?? this.allCommentsIds,
@@ -63,7 +62,6 @@ class NotificationState extends Equatable {
   }
 
   NotificationState copyWithNewUnreadComment({required Comment comment}) {
-    print(([comment.id, ...unreadCommentsIds]..sort()).reversed.toList());
     return NotificationState(
       comments: [comment, ...comments]
         ..sort((lhs, rhs) => rhs.time.compareTo(lhs.time)),
