@@ -54,7 +54,8 @@ class StorageRepository {
       (prefs) => prefs.getBool(_eyeCandyModeKey) ?? _eyeCandyModeDefaultValue);
 
   Future<List<int>> get unreadCommentsIds async => _prefs.then((prefs) =>
-      prefs.getStringList(_eyeCandyModeKey)?.map(int.parse).toList() ?? []);
+      prefs.getStringList(_unreadCommentsIdsKey)?.map(int.parse).toList() ??
+      []);
 
   Future<List<int>?> kids({required String of}) {
     final itemId = of;
@@ -131,7 +132,7 @@ class StorageRepository {
     await prefs.setStringList(_blocklistKey, usernames);
   }
 
-  Future<void> updateUnreadCommentsIdsKey(List<int> ids) async {
+  Future<void> updateUnreadCommentsIds(List<int> ids) async {
     final prefs = await _prefs;
     await prefs.setStringList(
       _unreadCommentsIdsKey,

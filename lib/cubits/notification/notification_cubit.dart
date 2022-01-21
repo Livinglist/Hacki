@@ -87,7 +87,7 @@ class NotificationCubit extends Cubit<NotificationState> {
                 final diff = {...kids}.difference({...previousKids});
 
                 for (final newCommentId in diff) {
-                  await _storageRepository.updateUnreadCommentsIdsKey([
+                  await _storageRepository.updateUnreadCommentsIds([
                     newCommentId,
                     ...state.unreadCommentsIds,
                   ]);
@@ -113,14 +113,14 @@ class NotificationCubit extends Cubit<NotificationState> {
   void markAsRead(Comment comment) {
     if (state.unreadCommentsIds.contains(comment.id)) {
       final updatedUnreadIds = [...state.unreadCommentsIds]..remove(comment.id);
-      _storageRepository.updateUnreadCommentsIdsKey(updatedUnreadIds);
+      _storageRepository.updateUnreadCommentsIds(updatedUnreadIds);
       emit(state.copyWith(unreadCommentsIds: updatedUnreadIds));
     }
   }
 
   void markAllAsRead() {
     emit(state.copyWith(unreadCommentsIds: []));
-    _storageRepository.updateUnreadCommentsIdsKey([]);
+    _storageRepository.updateUnreadCommentsIds([]);
   }
 
   Future<void> loadMore() async {

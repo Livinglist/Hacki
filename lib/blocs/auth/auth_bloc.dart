@@ -87,7 +87,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     ));
 
     await _authRepository.logout();
-    await _storageRepository.updateUnreadCommentsIdsKey([]);
+    await _storageRepository.updateUnreadCommentsIds([]);
     await _sembastRepository.deleteAll();
   }
 }
