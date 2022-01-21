@@ -129,13 +129,16 @@ class NotificationCubit extends Cubit<NotificationState> {
     final currentPage = state.currentPage + 1;
     final lower = currentPage * _pageSize + state.offset;
     final upper = min(lower + _pageSize, state.allCommentsIds.length);
-    final commentsToBeLoaded = state.allCommentsIds.sublist(lower, upper);
 
-    for (final id in commentsToBeLoaded) {
-      var comment = await _sembastRepository.getComment(id: id);
-      comment ??= await _storiesRepository.fetchCommentBy(id: id);
-      if (comment != null) {
-        emit(state.copyWith(comments: [...state.comments, comment]));
+    if (lower < upper) {
+      final commentsToBeLoaded = state.allCommentsIds.sublist(lower, upper);
+
+      for (final id in commentsToBeLoaded) {
+        var comment = await _sembastRepository.getComment(id: id);
+        comment ??= await _storiesRepository.fetchCommentBy(id: id);
+        if (comment != null) {
+          emit(state.copyWith(comments: [...state.comments, comment]));
+        }
       }
     }
 
