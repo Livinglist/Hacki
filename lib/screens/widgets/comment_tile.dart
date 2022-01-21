@@ -63,6 +63,7 @@ class CommentTile extends StatelessWidget {
                             context.read<CommentsCubit>().collapse();
                           },
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Padding(
                                 padding: const EdgeInsets.only(
