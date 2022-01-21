@@ -139,6 +139,9 @@ class NotificationCubit extends Cubit<NotificationState> {
       }
     }
 
-    emit(state.copyWith(status: NotificationStatus.loaded));
+    emit(state.copyWith(
+      status: NotificationStatus.loaded,
+      currentPage: currentPage,
+    ));
   }
 }

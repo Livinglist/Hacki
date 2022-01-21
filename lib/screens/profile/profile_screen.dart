@@ -56,7 +56,12 @@ class _ProfileScreenState extends State<ProfileScreen>
       builder: (context, preferenceState) {
         return BlocBuilder<AuthBloc, AuthState>(
           builder: (context, authState) {
-            return BlocBuilder<NotificationCubit, NotificationState>(
+            return BlocConsumer<NotificationCubit, NotificationState>(
+              listener: (context, notificationState) {
+                if (notificationState.status == NotificationStatus.loaded) {
+                  refreshControllerNotification.loadComplete();
+                }
+              },
               builder: (context, notificationState) {
                 return Stack(
                   children: [
@@ -435,6 +440,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 }
                               },
                               selectedColor: Colors.orange,
+                            ),
+                            const SizedBox(
+                              width: 12,
                             ),
                           ],
                         ),
