@@ -59,7 +59,9 @@ class _ProfileScreenState extends State<ProfileScreen>
             return BlocConsumer<NotificationCubit, NotificationState>(
               listener: (context, notificationState) {
                 if (notificationState.status == NotificationStatus.loaded) {
-                  refreshControllerNotification.loadComplete();
+                  refreshControllerNotification
+                    ..refreshCompleted()
+                    ..loadComplete();
                 }
               },
               builder: (context, notificationState) {
@@ -208,6 +210,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                           onLoadMore: () {
                             context.read<NotificationCubit>().loadMore();
                           },
+                          onRefresh: () {
+                            context.read<NotificationCubit>().refresh();
+                          },
                         ),
                       ),
                     ),
@@ -232,6 +237,23 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   onLoginTapped();
                                 }
                               },
+                            ),
+                            SwitchListTile(
+                              title: const Text('Notification on New Reply'),
+                              subtitle: const Text(
+                                'Hacki scans for new replies to your 15 '
+                                'most recent comments or stories '
+                                'every 1 minute while the app is '
+                                'running in the foreground.',
+                              ),
+                              value: preferenceState.showNotification,
+                              onChanged: (val) {
+                                HapticFeedback.lightImpact();
+                                context
+                                    .read<PreferenceCubit>()
+                                    .toggleNotificationMode();
+                              },
+                              activeColor: Colors.orange,
                             ),
                             SwitchListTile(
                               title: const Text('Complex Story Tile'),

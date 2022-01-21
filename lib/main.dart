@@ -60,6 +60,7 @@ class HackiApp extends StatelessWidget {
           lazy: false,
           create: (context) => NotificationCubit(
             authBloc: context.read<AuthBloc>(),
+            preferenceCubit: context.read<PreferenceCubit>(),
           ),
         ),
       ],

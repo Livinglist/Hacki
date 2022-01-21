@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hacki/blocs/auth/auth_bloc.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 
@@ -13,10 +14,12 @@ part 'notification_state.dart';
 class NotificationCubit extends Cubit<NotificationState> {
   NotificationCubit({
     required AuthBloc authBloc,
+    required PreferenceCubit preferenceCubit,
     StoriesRepository? storiesRepository,
     StorageRepository? storageRepository,
     SembastRepository? sembastRepository,
   })  : _authBloc = authBloc,
+        _preferenceCubit = preferenceCubit,
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
         _storageRepository =
@@ -26,23 +29,43 @@ class NotificationCubit extends Cubit<NotificationState> {
         super(NotificationState.init()) {
     _authBloc.stream.listen((authState) {
       if (authState.isLoggedIn && authState.username != _username) {
-        init();
+        // Get the user setting.
+        _storageRepository.shouldShowNotification.then((showNotification) {
+          if (showNotification) {
+            init();
+          }
+        });
+
+        // Listen for setting changes in the future.
+        _preferenceCubit.stream.listen((prefState) {
+          final isActive = _timer?.isActive ?? false;
+          if (prefState.showNotification && !isActive) {
+            init();
+          } else if (!prefState.showNotification) {
+            _timer?.cancel();
+          }
+        });
+
         _username = authState.username;
       }
     });
   }
 
   final AuthBloc _authBloc;
+  final PreferenceCubit _preferenceCubit;
   final StoriesRepository _storiesRepository;
   final StorageRepository _storageRepository;
   final SembastRepository _sembastRepository;
   String? _username;
+  Timer? _timer;
 
   static const _refreshDuration = Duration(minutes: 1);
   static const _subscriptionUpperLimit = 15;
   static const _pageSize = 20;
 
   Future<void> init() async {
+    emit(NotificationState.init());
+
     await _sembastRepository.getIdsOfCommentsRepliedToMe().then((commentIds) {
       emit(state.copyWith(allCommentsIds: commentIds));
     });
@@ -64,50 +87,12 @@ class NotificationCubit extends Cubit<NotificationState> {
       }
     }
 
-    Timer.periodic(_refreshDuration, (timer) {
-      _storiesRepository
-          .fetchSubmitted(of: _authBloc.state.username)
-          .then((submittedItems) {
-        if (submittedItems != null) {
-          final subscribedItems = submittedItems.sublist(
-            0,
-            min(_subscriptionUpperLimit, submittedItems.length),
-          );
-
-          for (final id in subscribedItems) {
-            _storiesRepository.fetchItemBy(id: id).then((item) async {
-              final kids = item?.kids ?? <int>[];
-              final previousKids =
-                  await _storageRepository.kids(of: id.toString());
-
-              await _storageRepository.updateKidsOf(
-                  id: id.toString(), kids: kids);
-
-              if (previousKids != null && previousKids.length != kids.length) {
-                final diff = {...kids}.difference({...previousKids});
-
-                for (final newCommentId in diff) {
-                  await _storageRepository.updateUnreadCommentsIds([
-                    newCommentId,
-                    ...state.unreadCommentsIds,
-                  ]);
-                  await _storiesRepository
-                      .fetchCommentBy(id: newCommentId)
-                      .then((comment) {
-                    if (comment != null && !comment.dead && !comment.deleted) {
-                      _sembastRepository
-                        ..saveComment(comment)
-                        ..updateIdsOfCommentsRepliedToMe(comment.id);
-                      emit(state.copyWithNewUnreadComment(comment: comment));
-                    }
-                  });
-                }
-              }
-            });
-          }
-        }
-      });
-    });
+    await _fetchReplies().whenComplete(() {
+      emit(state.copyWith(
+        status: NotificationStatus.loaded,
+      ));
+      _initializeTimer();
+    }).onError((error, stackTrace) => _initializeTimer());
   }
 
   void markAsRead(Comment comment) {
@@ -121,6 +106,32 @@ class NotificationCubit extends Cubit<NotificationState> {
   void markAllAsRead() {
     emit(state.copyWith(unreadCommentsIds: []));
     _storageRepository.updateUnreadCommentsIds([]);
+  }
+
+  Future<void> refresh() async {
+    if (_authBloc.state.isLoggedIn && _preferenceCubit.state.showNotification) {
+      emit(state.copyWith(
+        status: NotificationStatus.loading,
+      ));
+
+      _timer?.cancel();
+
+      await _fetchReplies().whenComplete(() {
+        emit(state.copyWith(
+          status: NotificationStatus.loaded,
+        ));
+        _initializeTimer();
+      }).onError((error, stackTrace) {
+        emit(state.copyWith(
+          status: NotificationStatus.loaded,
+        ));
+        _initializeTimer();
+      });
+    } else {
+      emit(state.copyWith(
+        status: NotificationStatus.loaded,
+      ));
+    }
   }
 
   Future<void> loadMore() async {
@@ -146,5 +157,56 @@ class NotificationCubit extends Cubit<NotificationState> {
       status: NotificationStatus.loaded,
       currentPage: currentPage,
     ));
+  }
+
+  void _initializeTimer() {
+    _timer?.cancel();
+    _timer = Timer.periodic(_refreshDuration, (timer) => _fetchReplies());
+  }
+
+  Future<void> _fetchReplies() {
+    return _storiesRepository
+        .fetchSubmitted(of: _authBloc.state.username)
+        .then((submittedItems) async {
+      if (submittedItems != null) {
+        final subscribedItems = submittedItems.sublist(
+          0,
+          min(_subscriptionUpperLimit, submittedItems.length),
+        );
+
+        for (final id in subscribedItems) {
+          await _storiesRepository.fetchItemBy(id: id).then((item) async {
+            final kids = item?.kids ?? [];
+            final previousKids = (await _sembastRepository.kids(of: id)) ?? [];
+
+            await _sembastRepository.updateKidsOf(id: id, kids: kids);
+
+            if (previousKids.length != kids.length) {
+              final diff = {...kids}.difference({...previousKids});
+
+              for (final newCommentId in diff) {
+                await _storageRepository.updateUnreadCommentsIds([
+                  newCommentId,
+                  ...state.unreadCommentsIds,
+                ]..sort((lhs, rhs) => rhs.compareTo(lhs)));
+                await _storiesRepository
+                    .fetchCommentBy(id: newCommentId)
+                    .then((comment) {
+                  if (comment != null && !comment.dead && !comment.deleted) {
+                    _sembastRepository
+                      ..saveComment(comment)
+                      ..updateIdsOfCommentsRepliedToMe(comment.id);
+
+                    // Add comment fetched to comments
+                    // and its id to unreadCommentsIds and allCommentsIds,
+                    emit(state.copyWithNewUnreadComment(comment: comment));
+                  }
+                });
+              }
+            }
+          });
+        }
+      }
+    });
   }
 }

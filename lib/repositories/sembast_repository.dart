@@ -70,7 +70,7 @@ class SembastRepository {
       list = _idsOfCommentsRepliedToMe!;
     }
 
-    final updatedList = {id, ...list}.toList();
+    final updatedList = ({id, ...list}.toList()..sort()).reversed.toList();
     _idsOfCommentsRepliedToMe = updatedList;
 
     return store.record(_idsOfCommentsRepliedToMeKey).put(db, updatedList);
@@ -104,6 +104,24 @@ class SembastRepository {
     });
 
     return comments;
+  }
+
+  Future<List<dynamic>> updateKidsOf({
+    required int id,
+    required List<int> kids,
+  }) async {
+    final db = _database ?? await initializeDatabase();
+    final store = StoreRef<int, List>.main();
+    return store.record(id).put(db, kids);
+  }
+
+  Future<List<int>?> kids({required int of}) async {
+    final itemId = of;
+    final db = _database ?? await initializeDatabase();
+    final store = StoreRef<int, List>.main();
+    final snapshot = await store.record(itemId).getSnapshot(db);
+    final kids = snapshot?.value.cast<int>();
+    return kids;
   }
 
   Future<FileSystemEntity> deleteAll() async {

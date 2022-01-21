@@ -12,6 +12,8 @@ class StorageRepository {
   static const String _passwordKey = 'password';
   static const String _blocklistKey = 'blocklist';
 
+  static const String _notificationModeKey = 'notificationMode';
+
   /// The key of a boolean value deciding whether or not the story
   /// tile should display link preview. Defaults to true.
   static const String _displayModeKey = 'displayMode';
@@ -24,6 +26,7 @@ class StorageRepository {
   static const String _eyeCandyModeKey = 'eyeCandy';
   static const String _unreadCommentsIdsKey = 'unreadCommentsIds';
 
+  static const bool _notificationModeDefaultValue = true;
   static const bool _displayModeDefaultValue = true;
   static const bool _navigationModeDefaultValue = true;
   static const bool _commentBorderModeDefaultValue = true;
@@ -41,6 +44,9 @@ class StorageRepository {
   Future<List<String>> get blocklist async =>
       _prefs.then((prefs) => prefs.getStringList(_blocklistKey) ?? []);
 
+  Future<bool> get shouldShowNotification async => _prefs.then((prefs) =>
+      prefs.getBool(_notificationModeKey) ?? _notificationModeDefaultValue);
+
   Future<bool> get shouldShowComplexStoryTile async => _prefs.then(
       (prefs) => prefs.getBool(_displayModeKey) ?? _displayModeDefaultValue);
 
@@ -56,12 +62,6 @@ class StorageRepository {
   Future<List<int>> get unreadCommentsIds async => _prefs.then((prefs) =>
       prefs.getStringList(_unreadCommentsIdsKey)?.map(int.parse).toList() ??
       []);
-
-  Future<List<int>?> kids({required String of}) {
-    final itemId = of;
-    return _prefs
-        .then((prefs) => prefs.getStringList(itemId)?.map(int.parse).toList());
-  }
 
   Future<List<int>> favList({required String of}) =>
       _prefs.then((prefs) => ((prefs.getStringList('') ?? <String>[])
@@ -81,6 +81,13 @@ class StorageRepository {
   Future<void> removeAuth() async {
     await _secureStorage.delete(key: _usernameKey);
     await _secureStorage.delete(key: _passwordKey);
+  }
+
+  Future<void> toggleNotificationMode() async {
+    final prefs = await _prefs;
+    final currentMode =
+        prefs.getBool(_notificationModeKey) ?? _notificationModeDefaultValue;
+    await prefs.setBool(_notificationModeKey, !currentMode);
   }
 
   Future<void> toggleDisplayMode() async {
@@ -138,13 +145,5 @@ class StorageRepository {
       _unreadCommentsIdsKey,
       ids.map((e) => e.toString()).toList(),
     );
-  }
-
-  Future<void> updateKidsOf({
-    required String id,
-    required List<int> kids,
-  }) async {
-    final prefs = await _prefs;
-    await prefs.setStringList(id, kids.map((e) => e.toString()).toList());
   }
 }

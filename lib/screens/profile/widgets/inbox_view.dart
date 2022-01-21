@@ -15,6 +15,7 @@ class InboxView extends StatelessWidget {
     required this.onCommentTapped,
     required this.onMarkAllAsReadTapped,
     required this.onLoadMore,
+    required this.onRefresh,
   }) : super(key: key);
 
   final RefreshController refreshController;
@@ -23,6 +24,7 @@ class InboxView extends StatelessWidget {
   final Function(Comment) onCommentTapped;
   final VoidCallback onMarkAllAsReadTapped;
   final VoidCallback onLoadMore;
+  final VoidCallback onRefresh;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +41,6 @@ class InboxView extends StatelessWidget {
         Expanded(
           child: SmartRefresher(
             enablePullUp: true,
-            enablePullDown: false,
             header: const WaterDropMaterialHeader(
               backgroundColor: Colors.orange,
             ),
@@ -70,6 +71,7 @@ class InboxView extends StatelessWidget {
             ),
             controller: refreshController,
             onLoading: onLoadMore,
+            onRefresh: onRefresh,
             child: ListView(
               children: [
                 ...comments.map((e) {
