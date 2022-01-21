@@ -51,117 +51,124 @@ class CommentTile extends StatelessWidget {
                     1,
                   );
 
-                  final child = InkWell(
-                    onTap: () => onTap(comment),
-                    onLongPress: () => onLongPress(comment),
-                    onDoubleTap: () {
-                      context.read<CommentsCubit>().collapse();
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.zero,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                  final child = Padding(
+                    padding: EdgeInsets.zero,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        InkWell(
+                          onTap: () => onTap(comment),
+                          onLongPress: () => onLongPress(comment),
+                          onDoubleTap: () {
+                            context.read<CommentsCubit>().collapse();
+                          },
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 6, right: 6, top: 6),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      comment.by,
+                                      style: TextStyle(
+                                        //255, 152, 0
+                                        color: prefState.showEyeCandy
+                                            ? orange
+                                            : color,
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    Text(
+                                      comment.postedDate,
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              if (comment.deleted)
+                                const Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 12),
+                                    child: Text(
+                                      'deleted',
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                  ),
+                                )
+                              else if (comment.dead)
+                                const Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 12),
+                                    child: Text(
+                                      'dead',
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                  ),
+                                )
+                              else if (blocklistState.blocklist
+                                  .contains(comment.by))
+                                const Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 12),
+                                    child: Text(
+                                      'blocked',
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                  ),
+                                )
+                              else if (state.collapsed)
+                                const Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 12),
+                                    child: Text(
+                                      'collapsed',
+                                      style:
+                                          TextStyle(color: Colors.orangeAccent),
+                                    ),
+                                  ),
+                                )
+                              else
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 8,
+                                    right: 8,
+                                    top: 6,
+                                    bottom: 12,
+                                  ),
+                                  child: Linkify(
+                                    key: ObjectKey(comment),
+                                    text: comment.text,
+                                    onOpen: (link) =>
+                                        LinkUtil.launchUrl(link.url),
+                                  ),
+                                ),
+                              const Divider(
+                                height: 0,
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (loadKids && !state.collapsed)
                           Padding(
-                            padding: const EdgeInsets.only(
-                                left: 6, right: 6, top: 6),
-                            child: Row(
-                              children: [
-                                Text(
-                                  comment.by,
-                                  style: TextStyle(
-                                    //255, 152, 0
-                                    color:
-                                        prefState.showEyeCandy ? orange : color,
-                                  ),
-                                ),
-                                const Spacer(),
-                                Text(
-                                  comment.postedDate,
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
+                            padding: const EdgeInsets.only(left: 12),
+                            child: Column(
+                              children: state.comments
+                                  .map((e) => FadeIn(
+                                        child: CommentTile(
+                                          comment: e,
+                                          myUsername: myUsername,
+                                          onTap: onTap,
+                                          onLongPress: onLongPress,
+                                          level: level + 1,
+                                        ),
+                                      ))
+                                  .toList(),
                             ),
                           ),
-                          if (comment.deleted)
-                            const Center(
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 12),
-                                child: Text(
-                                  'deleted',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                              ),
-                            )
-                          else if (comment.dead)
-                            const Center(
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 12),
-                                child: Text(
-                                  'dead',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                              ),
-                            )
-                          else if (blocklistState.blocklist
-                              .contains(comment.by))
-                            const Center(
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 12),
-                                child: Text(
-                                  'blocked',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                              ),
-                            )
-                          else if (state.collapsed)
-                            const Center(
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 12),
-                                child: Text(
-                                  'collapsed',
-                                  style: TextStyle(color: Colors.orangeAccent),
-                                ),
-                              ),
-                            )
-                          else
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 8,
-                                right: 8,
-                                top: 6,
-                                bottom: 12,
-                              ),
-                              child: Linkify(
-                                key: ObjectKey(comment),
-                                text: comment.text,
-                                onOpen: (link) => LinkUtil.launchUrl(link.url),
-                              ),
-                            ),
-                          const Divider(
-                            height: 0,
-                          ),
-                          if (loadKids && !state.collapsed)
-                            Padding(
-                              padding: const EdgeInsets.only(left: 12),
-                              child: Column(
-                                children: state.comments
-                                    .map((e) => FadeIn(
-                                          child: CommentTile(
-                                            comment: e,
-                                            myUsername: myUsername,
-                                            onTap: onTap,
-                                            onLongPress: onLongPress,
-                                            level: level + 1,
-                                          ),
-                                        ))
-                                    .toList(),
-                              ),
-                            ),
-                        ],
-                      ),
+                      ],
                     ),
                   );
 
