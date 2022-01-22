@@ -16,7 +16,7 @@ You can:
 - Browse comments and stories you have posted in the past.
 - Search for stories on Hacker News.
 - Double tap to collapse a comment.
-- In-app notifications when there's new replies to your stories or comments.
+- In-app notifications when there are new replies to your stories or comments.
 
 
 <p align="center">
