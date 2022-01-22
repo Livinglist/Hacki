@@ -47,6 +47,8 @@ class NotificationCubit extends Cubit<NotificationState> {
         });
 
         _username = authState.username;
+      } else if (!authState.isLoggedIn) {
+        emit(NotificationState.init());
       }
     });
   }
