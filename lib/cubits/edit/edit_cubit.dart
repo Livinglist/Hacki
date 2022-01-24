@@ -41,10 +41,11 @@ class EditCubit extends Cubit<EditState> {
   void onTextChanged(String text) {
     emit(state.copyWith(text: text));
     if (state.replyingTo != null) {
+      final id = state.replyingTo?.id;
       _debouncer.run(() {
         _cacheService.cacheDraft(
           text: text,
-          replyingTo: state.replyingTo!.id,
+          replyingTo: id!,
         );
       });
     }

@@ -90,7 +90,10 @@ class _ReplyBoxState extends State<ReplyBox> {
                       Icons.close,
                       color: Colors.orange,
                     ),
-                    onPressed: widget.onCloseTapped,
+                    onPressed: () {
+                      widget.onCloseTapped();
+                      expanded = false;
+                    },
                   ),
                 ],
                 if (widget.isLoading)
@@ -114,7 +117,10 @@ class _ReplyBoxState extends State<ReplyBox> {
                       Icons.send,
                       color: Colors.orange,
                     ),
-                    onPressed: widget.onSendTapped,
+                    onPressed: () {
+                      widget.onSendTapped();
+                      expanded = false;
+                    },
                   ),
               ],
             ),
