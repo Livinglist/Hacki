@@ -18,7 +18,7 @@ class PostCubit extends Cubit<PostState> {
     final successful = await _postRepository.comment(parentId: to, text: text);
 
     // final successful =
-    //     await Future<bool>.delayed(const Duration(seconds: 2), () => false);
+    //     await Future<bool>.delayed(const Duration(seconds: 2), () => true);
 
     if (successful) {
       emit(state.copyWith(status: PostStatus.successful));

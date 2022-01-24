@@ -107,6 +107,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   .where((e) => !e.dead && !e.deleted)
                                   .toList(),
                               onRefresh: () {
+                                HapticFeedback.lightImpact();
                                 context.read<HistoryCubit>().refresh();
                               },
                               onLoadMore: () {
@@ -155,6 +156,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               refreshController: refreshControllerFav,
                               items: favState.favStories,
                               onRefresh: () {
+                                HapticFeedback.lightImpact();
                                 context.read<FavCubit>().refresh();
                               },
                               onLoadMore: () {
@@ -211,6 +213,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             context.read<NotificationCubit>().loadMore();
                           },
                           onRefresh: () {
+                            HapticFeedback.lightImpact();
                             context.read<NotificationCubit>().refresh();
                           },
                         ),
@@ -320,7 +323,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 showAboutDialog(
                                   context: context,
                                   applicationName: 'Hacki',
-                                  applicationVersion: 'v0.0.8',
+                                  applicationVersion: 'v0.0.9',
                                   applicationIcon: Image.asset(
                                     'images/hacki_icon.png',
                                     height: 50,

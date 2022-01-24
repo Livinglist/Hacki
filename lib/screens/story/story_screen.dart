@@ -10,6 +10,7 @@ import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/screens/story/widgets/widgets.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
@@ -31,15 +32,22 @@ class StoryScreen extends StatefulWidget {
   static Route route(StoryScreenArgs args) {
     return MaterialPageRoute<StoryScreen>(
       settings: const RouteSettings(name: routeName),
-      builder: (context) => BlocProvider<PostCubit>(
-        create: (context) => PostCubit(),
-        child: BlocProvider<CommentsCubit>(
-          create: (_) => CommentsCubit<Story>(
-            item: args.story,
+      builder: (context) => MultiBlocProvider(
+        providers: [
+          BlocProvider<PostCubit>(
+            create: (context) => PostCubit(),
           ),
-          child: StoryScreen(
-            story: args.story,
+          BlocProvider<CommentsCubit>(
+            create: (_) => CommentsCubit<Story>(
+              item: args.story,
+            ),
           ),
+          BlocProvider<EditCubit>(
+            create: (context) => EditCubit(),
+          ),
+        ],
+        child: StoryScreen(
+          story: args.story,
         ),
       ),
     );
@@ -78,8 +86,6 @@ class _StoryScreenState extends State<StoryScreen> {
     '(─‿‿─)',
     '(¬‿¬)',
   ];
-  Item? _replyingTo;
-  bool _showReplyBox = false;
 
   @override
   void initState() {
@@ -98,10 +104,7 @@ class _StoryScreenState extends State<StoryScreen> {
     scrollController.addListener(() {
       FocusScope.of(context).requestFocus(FocusNode());
       if (commentEditingController.text.isEmpty) {
-        setState(() {
-          _showReplyBox = false;
-          _replyingTo = null;
-        });
+        context.read<EditCubit>().onScrolled();
       }
     });
   }
@@ -119,27 +122,27 @@ class _StoryScreenState extends State<StoryScreen> {
   Widget build(BuildContext context) {
     final topPadding =
         MediaQuery.of(context).padding.top.toDouble() + kToolbarHeight;
+    final editCubit = context.read<EditCubit>();
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, authState) {
         return BlocConsumer<PostCubit, PostState>(
           listener: (context, postState) {
             if (postState.status == PostStatus.successful) {
-              setState(() {
-                _replyingTo = null;
-                _showReplyBox = false;
-              });
+              editCubit.onReplySubmittedSuccessfully();
               focusNode.unfocus();
               HapticFeedback.lightImpact();
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content:
-                    Text('Comment submitted! ${(happyFaces..shuffle()).first}'),
+                content: Text(
+                  'Comment submitted! ${(happyFaces..shuffle()).first}',
+                ),
                 backgroundColor: Colors.orange,
               ));
               context.read<PostCubit>().reset();
             } else if (postState.status == PostStatus.failure) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text(
-                    'Something went wrong...${(sadFaces..shuffle()).first}'),
+                  'Something went wrong...${(sadFaces..shuffle()).first}',
+                ),
                 backgroundColor: Colors.orange,
                 action: SnackBarAction(
                     label: 'Okay',
@@ -159,9 +162,27 @@ class _StoryScreenState extends State<StoryScreen> {
                 }
               },
               builder: (context, state) {
-                return BlocBuilder<FavCubit, FavState>(
-                  builder: (context, favState) {
-                    final isFav = favState.favIds.contains(widget.story.id);
+                return BlocConsumer<EditCubit, EditState>(
+                  listenWhen: (previous, current) {
+                    return previous.replyingTo != current.replyingTo;
+                  },
+                  listener: (context, editState) {
+                    if (editState.replyingTo != null) {
+                      if (editState.text == null) {
+                        commentEditingController.clear();
+                      } else {
+                        final text = editState.text!;
+                        commentEditingController
+                          ..text = text
+                          ..selection = TextSelection.fromPosition(
+                              TextPosition(offset: text.length));
+                      }
+                    } else {
+                      commentEditingController.clear();
+                    }
+                  },
+                  builder: (context, editState) {
+                    final replyingTo = editCubit.state.replyingTo;
                     return Scaffold(
                       extendBodyBehindAppBar: true,
                       resizeToAvoidBottomInset: true,
@@ -170,37 +191,47 @@ class _StoryScreenState extends State<StoryScreen> {
                             Theme.of(context).canvasColor.withOpacity(0.4),
                         elevation: 0,
                         actions: [
-                          IconButton(
-                            icon: DescribedFeatureOverlay(
-                              targetColor: Theme.of(context).primaryColor,
-                              tapTarget: Icon(
-                                isFav ? Icons.favorite : Icons.favorite_border,
-                                color: Colors.white,
-                              ),
-                              featureId: Constants.featureAddStoryToFavList,
-                              title: const Text('Fav a Story'),
-                              description: const Text(
-                                'Save this article for later.',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              child: Icon(
-                                isFav ? Icons.favorite : Icons.favorite_border,
-                                color: isFav
-                                    ? Colors.orange
-                                    : Theme.of(context).iconTheme.color,
-                              ),
-                            ),
-                            onPressed: () {
-                              HapticFeedback.lightImpact();
-                              if (isFav) {
-                                context
-                                    .read<FavCubit>()
-                                    .removeFav(widget.story.id);
-                              } else {
-                                context
-                                    .read<FavCubit>()
-                                    .addFav(widget.story.id);
-                              }
+                          BlocBuilder<FavCubit, FavState>(
+                            builder: (context, favState) {
+                              final isFav =
+                                  favState.favIds.contains(widget.story.id);
+                              return IconButton(
+                                icon: DescribedFeatureOverlay(
+                                  targetColor: Theme.of(context).primaryColor,
+                                  tapTarget: Icon(
+                                    isFav
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    color: Colors.white,
+                                  ),
+                                  featureId: Constants.featureAddStoryToFavList,
+                                  title: const Text('Fav a Story'),
+                                  description: const Text(
+                                    'Save this article for later.',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  child: Icon(
+                                    isFav
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    color: isFav
+                                        ? Colors.orange
+                                        : Theme.of(context).iconTheme.color,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  HapticFeedback.lightImpact();
+                                  if (isFav) {
+                                    context
+                                        .read<FavCubit>()
+                                        .removeFav(widget.story.id);
+                                  } else {
+                                    context
+                                        .read<FavCubit>()
+                                        .addFav(widget.story.id);
+                                  }
+                                },
+                              );
                             },
                           ),
                           IconButton(
@@ -227,264 +258,167 @@ class _StoryScreenState extends State<StoryScreen> {
                           ),
                         ],
                       ),
-                      body: Stack(
-                        children: [
-                          Positioned.fill(
-                            child: SmartRefresher(
-                              scrollController: scrollController,
-                              enablePullUp: true,
-                              header: WaterDropMaterialHeader(
-                                backgroundColor: Colors.orange,
-                                offset: topPadding,
-                              ),
-                              footer: CustomFooter(
-                                loadStyle: LoadStyle.ShowWhenLoading,
-                                builder: (context, mode) {
-                                  Widget body;
-                                  if (mode == LoadStatus.idle) {
-                                    body = const Text('');
-                                  } else if (mode == LoadStatus.loading) {
-                                    body = const Text('');
-                                  } else if (mode == LoadStatus.failed) {
-                                    body = const Text(
-                                      '',
-                                    );
-                                  } else if (mode == LoadStatus.canLoading) {
-                                    body = const Text(
-                                      '',
-                                    );
-                                  } else {
-                                    body = const Text('');
+                      body: SmartRefresher(
+                        scrollController: scrollController,
+                        enablePullUp: true,
+                        header: WaterDropMaterialHeader(
+                          backgroundColor: Colors.orange,
+                          offset: topPadding,
+                        ),
+                        footer: CustomFooter(
+                          loadStyle: LoadStyle.ShowWhenLoading,
+                          builder: (context, mode) {
+                            Widget body;
+                            if (mode == LoadStatus.idle) {
+                              body = const Text('');
+                            } else if (mode == LoadStatus.loading) {
+                              body = const Text('');
+                            } else if (mode == LoadStatus.failed) {
+                              body = const Text(
+                                '',
+                              );
+                            } else if (mode == LoadStatus.canLoading) {
+                              body = const Text(
+                                '',
+                              );
+                            } else {
+                              body = const Text('');
+                            }
+                            return SizedBox(
+                              height: 55,
+                              child: Center(child: body),
+                            );
+                          },
+                        ),
+                        controller: refreshController,
+                        onRefresh: () {
+                          HapticFeedback.lightImpact();
+                          locator.get<CacheService>().resetComments();
+                          context.read<CommentsCubit>().refresh();
+                        },
+                        onLoading: () {},
+                        child: ListView(
+                          primary: false,
+                          children: [
+                            SizedBox(
+                              height: topPadding,
+                            ),
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  if (widget.story != replyingTo) {
+                                    commentEditingController.clear();
                                   }
-                                  return SizedBox(
-                                    height: 55,
-                                    child: Center(child: body),
-                                  );
-                                },
-                              ),
-                              controller: refreshController,
-                              onRefresh: () {
-                                HapticFeedback.lightImpact();
-                                locator.get<CacheService>().resetComments();
-                                context.read<CommentsCubit>().refresh();
+                                  editCubit.onItemTapped(widget.story);
+                                  focusNode.requestFocus();
+                                });
                               },
-                              onLoading: () {},
-                              child: ListView(
-                                primary: false,
+                              child: Column(
                                 children: [
-                                  SizedBox(
-                                    height: topPadding,
-                                  ),
-                                  InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        if (widget.story != _replyingTo) {
-                                          commentEditingController.clear();
-                                        }
-                                        setState(() {
-                                          _showReplyBox = true;
-                                          _replyingTo = widget.story;
-                                        });
-                                        focusNode.requestFocus();
-                                      });
-                                    },
-                                    child: Column(
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      left: 6,
+                                      right: 6,
+                                    ),
+                                    child: Row(
                                       children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                            left: 6,
-                                            right: 6,
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                widget.story.by,
-                                                style: const TextStyle(
-                                                  color: Colors.orange,
-                                                ),
-                                              ),
-                                              const Spacer(),
-                                              Text(
-                                                widget.story.postedDate,
-                                                style: const TextStyle(
-                                                  color: Colors.grey,
-                                                ),
-                                              ),
-                                            ],
+                                        Text(
+                                          widget.story.by,
+                                          style: const TextStyle(
+                                            color: Colors.orange,
                                           ),
                                         ),
-                                        InkWell(
-                                          onTap: () => LinkUtil.launchUrl(
-                                              widget.story.url),
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                              left: 6,
-                                              right: 6,
-                                              bottom: 12,
-                                              top: 12,
-                                            ),
-                                            child: Text(
-                                              widget.story.title,
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.bold),
-                                            ),
+                                        const Spacer(),
+                                        Text(
+                                          widget.story.postedDate,
+                                          style: const TextStyle(
+                                            color: Colors.grey,
                                           ),
                                         ),
-                                        if (widget.story.text.isNotEmpty)
-                                          Html(
-                                            data: widget.story.text,
-                                            onLinkTap: (link, _, __, ___) =>
-                                                LinkUtil.launchUrl(link ?? ''),
-                                          ),
                                       ],
                                     ),
                                   ),
-                                  const Divider(
-                                    height: 0,
-                                  ),
-                                  if (state.comments.isEmpty &&
-                                      state.status ==
-                                          CommentsStatus.loaded) ...[
-                                    const SizedBox(
-                                      height: 240,
-                                    ),
-                                    const Center(
+                                  InkWell(
+                                    onTap: () =>
+                                        LinkUtil.launchUrl(widget.story.url),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                        left: 6,
+                                        right: 6,
+                                        bottom: 12,
+                                        top: 12,
+                                      ),
                                       child: Text(
-                                        'Nothing yet',
-                                        style: TextStyle(color: Colors.white30),
-                                      ),
-                                    ),
-                                  ],
-                                  ...state.comments.map(
-                                    (e) => FadeIn(
-                                      child: CommentTile(
-                                        comment: e,
-                                        myUsername: authState.isLoggedIn
-                                            ? authState.username
-                                            : null,
-                                        onTap: (cmt) {
-                                          if (cmt != _replyingTo) {
-                                            commentEditingController.clear();
-                                          }
-
-                                          setState(() {
-                                            _showReplyBox = true;
-                                            _replyingTo = cmt;
-                                          });
-                                          focusNode.requestFocus();
-                                        },
-                                        onLongPress: onLongPressed,
+                                        widget.story.title,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold),
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: 120,
-                                  ),
+                                  if (widget.story.text.isNotEmpty)
+                                    Html(
+                                      data: widget.story.text,
+                                      onLinkTap: (link, _, __, ___) =>
+                                          LinkUtil.launchUrl(link ?? ''),
+                                    ),
                                 ],
                               ),
                             ),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            height: 70,
-                            child: Offstage(
-                              offstage: !_showReplyBox,
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black54,
-                                      offset: Offset(0, 20), //(x,y)
-                                      blurRadius: 40,
-                                    ),
-                                  ],
+                            const Divider(
+                              height: 0,
+                            ),
+                            if (state.comments.isEmpty &&
+                                state.status == CommentsStatus.loaded) ...[
+                              const SizedBox(
+                                height: 240,
+                              ),
+                              const Center(
+                                child: Text(
+                                  'Nothing yet',
+                                  style: TextStyle(color: Colors.white30),
                                 ),
-                                child: Material(
-                                  child: Flex(
-                                    direction: Axis.horizontal,
-                                    children: [
-                                      const SizedBox(
-                                        width: 16,
-                                      ),
-                                      Flexible(
-                                        flex: 9,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 16),
-                                          child: TextField(
-                                            focusNode: focusNode,
-                                            controller:
-                                                commentEditingController,
-                                            maxLines: 10,
-                                            decoration: InputDecoration(
-                                              alignLabelWithHint: true,
-                                              contentPadding: EdgeInsets.zero,
-                                              hintText: _replyingTo == null
-                                                  ? ''
-                                                  : 'Replying '
-                                                      '${_replyingTo!.by}',
-                                              hintStyle: const TextStyle(
-                                                color: Colors.grey,
-                                              ),
-                                              focusedBorder: InputBorder.none,
-                                              border: InputBorder.none,
-                                            ),
-                                            keyboardType:
-                                                TextInputType.multiline,
-                                            textInputAction:
-                                                TextInputAction.newline,
-                                          ),
-                                        ),
-                                      ),
-                                      if (_replyingTo != null &&
-                                          postState.status !=
-                                              PostStatus.loading)
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.close,
-                                            color: Colors.orange,
-                                          ),
-                                          onPressed: () {
-                                            commentEditingController.clear();
-                                            setState(() {
-                                              _showReplyBox = false;
-                                              _replyingTo = null;
-                                            });
-                                            focusNode.unfocus();
-                                          },
-                                        ),
-                                      if (postState.status ==
-                                          PostStatus.loading)
-                                        const SizedBox(
-                                          height: 24,
-                                          width: 24,
-                                          child: CircularProgressIndicator(
-                                            color: Colors.orange,
-                                            strokeWidth: 2,
-                                          ),
-                                        )
-                                      else
-                                        Flexible(
-                                          child: IconButton(
-                                            icon: const Icon(
-                                              Icons.send,
-                                              color: Colors.orange,
-                                            ),
-                                            onPressed: onSendTapped,
-                                          ),
-                                        ),
-                                      const SizedBox(
-                                        width: 16,
-                                      ),
-                                    ],
-                                  ),
+                              ),
+                            ],
+                            ...state.comments.map(
+                              (e) => FadeIn(
+                                child: CommentTile(
+                                  comment: e,
+                                  myUsername: authState.isLoggedIn
+                                      ? authState.username
+                                      : null,
+                                  onTap: (cmt) {
+                                    if (cmt != replyingTo) {
+                                      commentEditingController.clear();
+                                    }
+
+                                    editCubit.onItemTapped(cmt);
+                                    focusNode.requestFocus();
+                                  },
+                                  onLongPress: onLongPressed,
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(
+                              height: 240,
+                            ),
+                          ],
+                        ),
+                      ),
+                      bottomSheet: Offstage(
+                        offstage: !editCubit.state.showReplyBox,
+                        child: ReplyBox(
+                          focusNode: focusNode,
+                          textEditingController: commentEditingController,
+                          replyingTo: replyingTo,
+                          isLoading: postState.status == PostStatus.loading,
+                          onSendTapped: onSendTapped,
+                          onCloseTapped: () {
+                            editCubit.onReplyBoxClosed();
+                            commentEditingController.clear();
+                            focusNode.unfocus();
+                          },
+                          onChanged: editCubit.onTextChanged,
+                        ),
                       ),
                     );
                   },
@@ -692,6 +626,7 @@ class _StoryScreenState extends State<StoryScreen> {
   void onSendTapped() {
     final authBloc = context.read<AuthBloc>();
     final postCubit = context.read<PostCubit>();
+    final replyingTo = context.read<EditCubit>().state.replyingTo;
 
     if (authBloc.state.isLoggedIn) {
       final text = commentEditingController.text;
@@ -699,8 +634,8 @@ class _StoryScreenState extends State<StoryScreen> {
         return;
       }
 
-      if (_replyingTo != null) {
-        postCubit.post(text: text, to: _replyingTo!.id);
+      if (replyingTo != null) {
+        postCubit.post(text: text, to: replyingTo.id);
       }
     } else {
       final usernameController = TextEditingController();
