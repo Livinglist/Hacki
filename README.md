@@ -16,6 +16,7 @@ You can:
 - Browse comments and stories you have posted in the past.
 - Search for stories on Hacker News.
 - Double tap to collapse a comment.
+- Long press to vote on a comment or story.
 - Get in-app notification when there is new reply to your stories or comments.
 
 
