@@ -8,31 +8,33 @@ enum AuthStatus {
 
 class AuthState extends Equatable {
   const AuthState({
-    required this.username,
+    required this.user,
     required this.isLoggedIn,
     required this.status,
     required this.agreedToEULA,
   });
 
-  const AuthState.init()
-      : username = '',
+  AuthState.init()
+      : user = User.empty(),
         isLoggedIn = false,
         status = AuthStatus.loaded,
         agreedToEULA = false;
 
-  final String username;
+  final User user;
   final bool isLoggedIn;
   final bool agreedToEULA;
   final AuthStatus status;
 
+  String get username => user.id;
+
   AuthState copyWith({
-    String? username,
+    User? user,
     bool? isLoggedIn,
     bool? agreedToEULA,
     AuthStatus? status,
   }) {
     return AuthState(
-      username: username ?? this.username,
+      user: user ?? this.user,
       isLoggedIn: isLoggedIn ?? this.isLoggedIn,
       agreedToEULA: agreedToEULA ?? this.agreedToEULA,
       status: status ?? this.status,
@@ -41,7 +43,7 @@ class AuthState extends Equatable {
 
   @override
   List<Object?> get props => [
-        username,
+        user,
         isLoggedIn,
         agreedToEULA,
         status,

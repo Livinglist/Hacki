@@ -70,3 +70,51 @@ class FlagPostData with PostDataMixin {
     };
   }
 }
+
+class FavoritePostData with PostDataMixin {
+  FavoritePostData({
+    required this.acct,
+    required this.pw,
+    required this.id,
+    this.un,
+  });
+
+  final String acct;
+  final String pw;
+  final int id;
+  final String? un;
+
+  @override
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'acct': acct,
+      'pw': pw,
+      'id': id,
+      'un': un,
+    };
+  }
+}
+
+class VotePostData with PostDataMixin {
+  VotePostData({
+    required this.acct,
+    required this.pw,
+    required this.id,
+    required this.how,
+  });
+
+  final String acct;
+  final String pw;
+  final int id;
+  final String how;
+
+  @override
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'acct': acct,
+      'pw': pw,
+      'id': id,
+      'how': how,
+    };
+  }
+}

@@ -52,7 +52,7 @@ class HistoryCubit extends Cubit<HistoryState> {
     final len = state.submittedIds.length;
     emit(state.copyWith(currentPage: currentPage + 1));
     final lower = _pageSize * (currentPage + 1);
-    var upper = _pageSize + _pageSize * (currentPage + 1);
+    var upper = _pageSize + lower;
 
     if (len > lower) {
       if (len < upper) {

@@ -60,7 +60,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     final len = state.storyIdsByType[event.type]!.length;
     emit(state.copyWithCurrentPageUpdated(of: event.type, to: currentPage + 1));
     final lower = _pageSize * (currentPage + 1);
-    var upper = _pageSize + _pageSize * (currentPage + 1);
+    var upper = _pageSize + lower;
 
     if (len > lower) {
       if (len < upper) {

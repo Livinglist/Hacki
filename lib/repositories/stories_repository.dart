@@ -10,6 +10,18 @@ class StoriesRepository {
   final FirebaseClient _firebaseClient;
   static const _baseUrl = 'https://hacker-news.firebaseio.com/v0/';
 
+  Future<User> fetchUserById({required String userId}) async {
+    final user = await _firebaseClient
+        .get('${_baseUrl}user/$userId.json')
+        .then((dynamic val) {
+      final json = val as Map<String, dynamic>;
+      final user = User.fromJson(json);
+      return user;
+    });
+
+    return user;
+  }
+
   Future<List<int>> fetchStoryIds({required StoryType of}) async {
     final suffix = () {
       switch (of) {

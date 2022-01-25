@@ -72,6 +72,13 @@ class StorageRepository {
           .reversed
           .toList());
 
+  Future<bool?> vote({required int submittedTo, required String from}) async {
+    final prefs = await _prefs;
+    final key = _getVoteKey(from, submittedTo);
+    final vote = prefs.getBool(key);
+    return vote;
+  }
+
   Future<void> setAuth(
       {required String username, required String password}) async {
     await _secureStorage.write(key: _usernameKey, value: username);
@@ -120,7 +127,8 @@ class StorageRepository {
 
   Future<void> addFav({required String username, required int id}) async {
     final prefs = await _prefs;
-    final favListInString = prefs.getStringList(username) ?? <String>[];
+    final key = _getFavKey(username);
+    final favListInString = prefs.getStringList(key) ?? <String>[];
     final favList = favListInString.map(int.parse).toList()..add(id);
     await prefs.setStringList(
         username, favList.map((e) => e.toString()).toSet().toList());
@@ -128,13 +136,33 @@ class StorageRepository {
 
   Future<void> removeFav({required String username, required int id}) async {
     final prefs = await _prefs;
-    final favListInString = prefs.getStringList(username) ?? <String>[];
+    final key = _getFavKey(username);
+    final favListInString = prefs.getStringList(key) ?? <String>[];
     final favList = favListInString.map(int.parse).toList()..remove(id);
     await prefs.setStringList(
         username, favList.map((e) => e.toString()).toList());
   }
 
-  Future<void> setBlocklist(List<String> usernames) async {
+  Future<void> addVote({
+    required String username,
+    required int id,
+    required bool vote,
+  }) async {
+    final prefs = await _prefs;
+    final key = _getVoteKey(username, id);
+    await prefs.setBool(key, vote);
+  }
+
+  Future<void> removeVote({
+    required String username,
+    required int id,
+  }) async {
+    final prefs = await _prefs;
+    final key = _getVoteKey(username, id);
+    await prefs.remove(key);
+  }
+
+  Future<void> updateBlocklist(List<String> usernames) async {
     final prefs = await _prefs;
     await prefs.setStringList(_blocklistKey, usernames);
   }
@@ -146,4 +174,8 @@ class StorageRepository {
       ids.map((e) => e.toString()).toList(),
     );
   }
+
+  String _getFavKey(String username) => 'fav_$username';
+
+  String _getVoteKey(String username, int id) => 'vote_$username-$id';
 }

@@ -12,13 +12,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({
     AuthRepository? authRepository,
     StorageRepository? storageRepository,
+    StoriesRepository? storiesRepository,
     SembastRepository? sembastRepository,
   })  : _authRepository = authRepository ?? locator.get<AuthRepository>(),
         _storageRepository =
             storageRepository ?? locator.get<StorageRepository>(),
+        _storiesRepository =
+            storiesRepository ?? locator.get<StoriesRepository>(),
         _sembastRepository =
             sembastRepository ?? locator.get<SembastRepository>(),
-        super(const AuthState.init()) {
+        super(AuthState.init()) {
     on<AuthInitialize>(onInitialize);
     on<AuthLogin>(onLogin);
     on<AuthLogout>(onLogout);
@@ -29,22 +32,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   final AuthRepository _authRepository;
   final StorageRepository _storageRepository;
+  final StoriesRepository _storiesRepository;
   final SembastRepository _sembastRepository;
 
   Future<void> onInitialize(
       AuthInitialize event, Emitter<AuthState> emit) async {
     await _authRepository.loggedIn.then((loggedIn) async {
       if (loggedIn) {
-        await _authRepository.username.then((username) {
-          emit(state.copyWith(
-            isLoggedIn: true,
-            username: username,
-          ));
-        });
+        final username = await _authRepository.username;
+        final user = await _storiesRepository.fetchUserById(userId: username!);
+
+        emit(state.copyWith(
+          isLoggedIn: true,
+          user: user,
+        ));
       } else {
         emit(state.copyWith(
           isLoggedIn: false,
-          username: '',
         ));
       }
     });
@@ -69,8 +73,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         username: event.username, password: event.password);
 
     if (successful) {
+      final user =
+          await _storiesRepository.fetchUserById(userId: event.username);
       emit(state.copyWith(
-        username: event.username,
+        user: user,
         isLoggedIn: true,
         status: AuthStatus.loaded,
       ));
@@ -81,7 +87,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> onLogout(AuthLogout event, Emitter<AuthState> emit) async {
     emit(state.copyWith(
-      username: '',
+      user: User.empty(),
       isLoggedIn: false,
       agreedToEULA: false,
     ));

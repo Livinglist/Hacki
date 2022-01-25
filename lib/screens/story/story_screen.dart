@@ -4,6 +4,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
+import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
@@ -16,7 +17,13 @@ import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-enum _MenuAction { block, flag, cancel }
+enum _MenuAction {
+  upvote,
+  downvote,
+  block,
+  flag,
+  cancel,
+}
 
 class StoryScreenArgs {
   StoryScreenArgs({required this.story});
@@ -313,6 +320,7 @@ class _StoryScreenState extends State<StoryScreen> {
                                   focusNode.requestFocus();
                                 });
                               },
+                              onLongPress: () => onLongPressed(widget.story),
                               child: Column(
                                 children: [
                                   Padding(
@@ -437,47 +445,128 @@ class _StoryScreenState extends State<StoryScreen> {
     showModalBottomSheet<_MenuAction>(
         context: context,
         builder: (context) {
-          return Container(
-            height: 180,
-            color: Theme.of(context).canvasColor,
-            child: Material(
-              color: Colors.transparent,
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.local_police),
-                    title: const Text(
-                      'Flag',
+          return BlocProvider(
+            create: (context) => VoteCubit(
+              item: item,
+              authBloc: context.read<AuthBloc>(),
+            ),
+            child: BlocConsumer<VoteCubit, VoteState>(
+              listenWhen: (previous, current) {
+                return previous.status != current.status;
+              },
+              listener: (context, voteState) {
+                if (voteState.status == VoteStatus.submitted) {
+                  showSnackBar(content: 'Vote submitted successfully.');
+                } else if (voteState.status == VoteStatus.canceled) {
+                  showSnackBar(content: 'Vote canceled.');
+                } else if (voteState.status == VoteStatus.failure) {
+                  showSnackBar(content: 'Something went wrong...');
+                } else if (voteState.status ==
+                    VoteStatus.failureKarmaBelowThreshold) {
+                  showSnackBar(
+                      content:
+                          "You can't downvote because you are karmaly broke.");
+                } else if (voteState.status == VoteStatus.failureNotLoggedIn) {
+                  showSnackBar(
+                    content: 'Not logged in, no voting! (;｀O´)o',
+                    withLoginAction: true,
+                  );
+                } else if (voteState.status == VoteStatus.failureBeHumble) {
+                  showSnackBar(content: 'No voting on your own post! (;｀O´)o');
+                }
+
+                Navigator.pop(
+                  context,
+                  _MenuAction.upvote,
+                );
+              },
+              builder: (context, voteState) {
+                final upvoted = voteState.vote == Vote.up;
+                final downvoted = voteState.vote == Vote.down;
+                return Container(
+                  height: 300,
+                  color: Theme.of(context).canvasColor,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Column(
+                      children: [
+                        ListTile(
+                          leading: Icon(
+                            FeatherIcons.chevronUp,
+                            color: upvoted ? Colors.orange : null,
+                          ),
+                          title: Text(
+                            upvoted ? 'Upvoted' : 'Upvote',
+                            style: upvoted
+                                ? const TextStyle(color: Colors.orange)
+                                : null,
+                          ),
+                          onTap: context.read<VoteCubit>().upvote,
+                        ),
+                        ListTile(
+                          leading: Icon(
+                            FeatherIcons.chevronDown,
+                            color: downvoted ? Colors.orange : null,
+                          ),
+                          title: Text(
+                            downvoted ? 'Downvoted' : 'Downvote',
+                            style: downvoted
+                                ? const TextStyle(color: Colors.orange)
+                                : null,
+                          ),
+                          onTap: context.read<VoteCubit>().downvote,
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.local_police),
+                          title: const Text(
+                            'Flag',
+                          ),
+                          onTap: () => Navigator.pop(
+                            context,
+                            _MenuAction.flag,
+                          ),
+                        ),
+                        ListTile(
+                          leading: Icon(isBlocked
+                              ? Icons.visibility
+                              : Icons.visibility_off),
+                          title: Text(
+                            isBlocked ? 'Unblock' : 'Block',
+                          ),
+                          onTap: () => Navigator.pop(
+                            context,
+                            _MenuAction.block,
+                          ),
+                        ),
+                        ListTile(
+                          leading: const Icon(Icons.close),
+                          title: const Text(
+                            'Cancel',
+                          ),
+                          onTap: () => Navigator.pop(
+                            context,
+                            _MenuAction.cancel,
+                          ),
+                        ),
+                      ],
                     ),
-                    onTap: () => Navigator.pop(context, _MenuAction.flag),
                   ),
-                  ListTile(
-                    leading: Icon(
-                        isBlocked ? Icons.visibility : Icons.visibility_off),
-                    title: Text(
-                      isBlocked ? 'Unblock' : 'Block',
-                    ),
-                    onTap: () => Navigator.pop(context, _MenuAction.block),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.close),
-                    title: const Text(
-                      'Cancel',
-                    ),
-                    onTap: () => Navigator.pop(context, _MenuAction.cancel),
-                  ),
-                ],
-              ),
+                );
+              },
             ),
           );
         }).then((action) {
       if (action != null) {
         switch (action) {
+          case _MenuAction.upvote:
+            break;
+          case _MenuAction.downvote:
+            break;
           case _MenuAction.flag:
-            showFlagPopup(item);
+            onFlagTapped(item);
             break;
           case _MenuAction.block:
-            showBlockPopup(item, isBlocked);
+            onBlockTapped(item, isBlocked);
             break;
           case _MenuAction.cancel:
         }
@@ -485,7 +574,7 @@ class _StoryScreenState extends State<StoryScreen> {
     });
   }
 
-  void showFlagPopup(Item item) {
+  void onFlagTapped(Item item) {
     showDialog<bool>(
         context: context,
         builder: (context) {
@@ -551,7 +640,7 @@ class _StoryScreenState extends State<StoryScreen> {
     });
   }
 
-  void showBlockPopup(Item item, bool isBlocked) {
+  void onBlockTapped(Item item, bool isBlocked) {
     showDialog<bool>(
         context: context,
         builder: (context) {
@@ -638,194 +727,215 @@ class _StoryScreenState extends State<StoryScreen> {
         postCubit.post(text: text, to: replyingTo.id);
       }
     } else {
-      final usernameController = TextEditingController();
-      final passwordController = TextEditingController();
-      final sadFace = (sadFaces..shuffle()).first;
-      final happyFace = (happyFaces..shuffle()).first;
-      showDialog<void>(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return BlocConsumer<AuthBloc, AuthState>(
-            listener: (context, state) {
-              if (state.isLoggedIn) {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Logged in successfully! $happyFace'),
-                    backgroundColor: Colors.orange,
+      onLoginTapped();
+    }
+  }
+
+  void onLoginTapped() {
+    final usernameController = TextEditingController();
+    final passwordController = TextEditingController();
+    final sadFace = (sadFaces..shuffle()).first;
+    final happyFace = (happyFaces..shuffle()).first;
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return BlocConsumer<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state.isLoggedIn) {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Logged in successfully! $happyFace'),
+                  backgroundColor: Colors.orange,
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            return SimpleDialog(
+              children: [
+                if (state.status == AuthStatus.loading)
+                  const SizedBox(
+                    height: 36,
+                    width: 36,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.orange,
+                      ),
+                    ),
+                  )
+                else if (!state.isLoggedIn) ...[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                    ),
+                    child: TextField(
+                      controller: usernameController,
+                      cursorColor: Colors.orange,
+                      autocorrect: false,
+                      decoration: const InputDecoration(
+                        hintText: 'Username',
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.orange),
+                        ),
+                      ),
+                    ),
                   ),
-                );
-              }
-            },
-            builder: (context, state) {
-              return SimpleDialog(
-                children: [
-                  if (state.status == AuthStatus.loading)
-                    const SizedBox(
-                      height: 36,
-                      width: 36,
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.orange,
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                    ),
+                    child: TextField(
+                      controller: passwordController,
+                      cursorColor: Colors.orange,
+                      obscureText: true,
+                      autocorrect: false,
+                      decoration: const InputDecoration(
+                        hintText: 'Password',
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.orange),
                         ),
                       ),
-                    )
-                  else if (!state.isLoggedIn) ...[
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  if (state.status == AuthStatus.failure)
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 18,
+                      padding: const EdgeInsets.only(
+                        left: 18,
                       ),
-                      child: TextField(
-                        controller: usernameController,
-                        cursorColor: Colors.orange,
-                        autocorrect: false,
-                        decoration: const InputDecoration(
-                          hintText: 'Username',
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.orange),
-                          ),
+                      child: Text(
+                        'Something went wrong... $sadFace',
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 18,
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          state.agreedToEULA
+                              ? Icons.check_box
+                              : Icons.check_box_outline_blank,
+                          color: state.agreedToEULA
+                              ? Colors.deepOrange
+                              : Colors.grey,
+                        ),
+                        onPressed: () => context
+                            .read<AuthBloc>()
+                            .add(AuthToggleAgreeToEULA()),
                       ),
-                      child: TextField(
-                        controller: passwordController,
-                        cursorColor: Colors.orange,
-                        obscureText: true,
-                        autocorrect: false,
-                        decoration: const InputDecoration(
-                          hintText: 'Password',
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.orange),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    if (state.status == AuthStatus.failure)
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          left: 18,
-                        ),
-                        child: Text(
-                          'Something went wrong... $sadFace',
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            state.agreedToEULA
-                                ? Icons.check_box
-                                : Icons.check_box_outline_blank,
-                            color: state.agreedToEULA
-                                ? Colors.deepOrange
-                                : Colors.grey,
-                          ),
-                          onPressed: () => context
-                              .read<AuthBloc>()
-                              .add(AuthToggleAgreeToEULA()),
-                        ),
-                        Text.rich(
-                          TextSpan(
-                            children: [
-                              const TextSpan(
-                                text: 'I agree to ',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                ),
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            const TextSpan(
+                              text: 'I agree to ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
                               ),
-                              WidgetSpan(
-                                child: Transform.translate(
-                                  offset: const Offset(0, 1),
-                                  child: TapDownWrapper(
-                                    onTap: () => LinkUtil.launchUrl(
-                                        Constants.endUserAgreementLink),
-                                    child: const Text(
-                                      'End User Agreement',
-                                      style: TextStyle(
-                                        color: Colors.deepOrange,
-                                        decoration: TextDecoration.underline,
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                            ),
+                            WidgetSpan(
+                              child: Transform.translate(
+                                offset: const Offset(0, 1),
+                                child: TapDownWrapper(
+                                  onTap: () => LinkUtil.launchUrl(
+                                      Constants.endUserAgreementLink),
+                                  child: const Text(
+                                    'End User Agreement',
+                                    style: TextStyle(
+                                      color: Colors.deepOrange,
+                                      decoration: TextDecoration.underline,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ),
                               ),
-                            ],
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      right: 12,
+                    ),
+                    child: ButtonBar(
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(
+                              color: Colors.red,
+                            ),
                           ),
-                        )
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (state.agreedToEULA) {
+                              final username = usernameController.text;
+                              final password = passwordController.text;
+                              if (username.isNotEmpty && password.isNotEmpty) {
+                                context.read<AuthBloc>().add(AuthLogin(
+                                      username: username,
+                                      password: password,
+                                    ));
+                              }
+                            }
+                          },
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(
+                              state.agreedToEULA
+                                  ? Colors.deepOrange
+                                  : Colors.grey,
+                            ),
+                          ),
+                          child: const Text(
+                            'Log in',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        right: 12,
-                      ),
-                      child: ButtonBar(
-                        children: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text(
-                              'Cancel',
-                              style: TextStyle(
-                                color: Colors.red,
-                              ),
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              if (state.agreedToEULA) {
-                                final username = usernameController.text;
-                                final password = passwordController.text;
-                                if (username.isNotEmpty &&
-                                    password.isNotEmpty) {
-                                  context.read<AuthBloc>().add(AuthLogin(
-                                        username: username,
-                                        password: password,
-                                      ));
-                                }
-                              }
-                            },
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(
-                                state.agreedToEULA
-                                    ? Colors.deepOrange
-                                    : Colors.grey,
-                              ),
-                            ),
-                            child: const Text(
-                              'Log in',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                  ),
                 ],
-              );
-            },
-          );
-        },
-      );
-    }
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void showSnackBar({required String content, bool withLoginAction = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          content,
+        ),
+        backgroundColor: Colors.orange,
+        action: withLoginAction
+            ? SnackBarAction(
+                label: 'Log in',
+                textColor: Colors.black,
+                onPressed: onLoginTapped,
+              )
+            : null,
+      ),
+    );
   }
 }

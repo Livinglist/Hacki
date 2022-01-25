@@ -23,12 +23,12 @@ class BlocklistCubit extends Cubit<BlocklistState> {
   void addToBlocklist(String username) {
     final updated = List<String>.from(state.blocklist)..add(username);
     emit(state.copyWith(blocklist: updated));
-    _storageRepository.setBlocklist(updated);
+    _storageRepository.updateBlocklist(updated);
   }
 
   void removeFromBlocklist(String username) {
     final updated = List<String>.from(state.blocklist)..remove(username);
     emit(state.copyWith(blocklist: updated));
-    _storageRepository.setBlocklist(updated);
+    _storageRepository.updateBlocklist(updated);
   }
 }

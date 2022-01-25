@@ -67,6 +67,57 @@ class AuthRepository {
     return _performDefaultPost(uri, data);
   }
 
+  Future<bool> favorite({
+    required int id,
+    required bool favorite,
+  }) async {
+    final uri = Uri.https(authority, 'fave');
+    final username = await _storageRepository.username;
+    final password = await _storageRepository.password;
+    final PostDataMixin data = FavoritePostData(
+      acct: username!,
+      pw: password!,
+      id: id,
+      un: favorite ? null : 't',
+    );
+
+    return _performDefaultPost(uri, data);
+  }
+
+  Future<bool> upvote({
+    required int id,
+    required bool upvote,
+  }) async {
+    final uri = Uri.https(authority, 'vote');
+    final username = await _storageRepository.username;
+    final password = await _storageRepository.password;
+    final PostDataMixin data = VotePostData(
+      acct: username!,
+      pw: password!,
+      id: id,
+      how: upvote ? 'up' : 'un',
+    );
+
+    return _performDefaultPost(uri, data);
+  }
+
+  Future<bool> downvote({
+    required int id,
+    required bool downvote,
+  }) async {
+    final uri = Uri.https(authority, 'vote');
+    final username = await _storageRepository.username;
+    final password = await _storageRepository.password;
+    final PostDataMixin data = VotePostData(
+      acct: username!,
+      pw: password!,
+      id: id,
+      how: downvote ? 'down' : 'un',
+    );
+
+    return _performDefaultPost(uri, data);
+  }
+
   Future<bool> _performDefaultPost(
     Uri uri,
     PostDataMixin data, {

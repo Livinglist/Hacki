@@ -7,3 +7,4 @@ export 'notification/notification_cubit.dart';
 export 'post/post_cubit.dart';
 export 'preference/preference_cubit.dart';
 export 'search/search_cubit.dart';
+export 'vote/vote_cubit.dart';

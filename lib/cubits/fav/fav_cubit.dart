@@ -10,9 +10,11 @@ part 'fav_state.dart';
 class FavCubit extends Cubit<FavState> {
   FavCubit({
     required AuthBloc authBloc,
+    AuthRepository? authRepository,
     StorageRepository? storageRepository,
     StoriesRepository? storiesRepository,
   })  : _authBloc = authBloc,
+        _authRepository = authRepository ?? locator.get<AuthRepository>(),
         _storageRepository =
             storageRepository ?? locator.get<StorageRepository>(),
         _storiesRepository =
@@ -22,6 +24,7 @@ class FavCubit extends Cubit<FavState> {
   }
 
   final AuthBloc _authBloc;
+  final AuthRepository _authRepository;
   final StorageRepository _storageRepository;
   final StoriesRepository _storiesRepository;
   static const _pageSize = 20;
@@ -52,21 +55,32 @@ class FavCubit extends Cubit<FavState> {
     });
   }
 
-  void addFav(int id) {
+  Future<void> addFav(int id) async {
     final username = _authBloc.state.username;
 
-    _storageRepository.addFav(username: username, id: id);
+    await _storageRepository.addFav(username: username, id: id);
+
     emit(
       state.copyWith(
         favIds: List<int>.from(state.favIds)..add(id),
       ),
     );
+
+    final story = await _storiesRepository.fetchStoryById(id);
+
+    emit(state.copyWith(
+        favStories: List<Story>.from(state.favStories)..insert(0, story)));
+
+    if (_authBloc.state.isLoggedIn) {
+      await _authRepository.favorite(id: id, favorite: true);
+    }
   }
 
   void removeFav(int id) {
     final username = _authBloc.state.username;
 
     _storageRepository.removeFav(username: username, id: id);
+
     emit(
       state.copyWith(
         favIds: List<int>.from(state.favIds)..remove(id),
@@ -74,6 +88,10 @@ class FavCubit extends Cubit<FavState> {
           ..removeWhere((e) => e.id == id),
       ),
     );
+
+    if (_authBloc.state.isLoggedIn) {
+      _authRepository.favorite(id: id, favorite: false);
+    }
   }
 
   void loadMore() {
@@ -82,7 +100,7 @@ class FavCubit extends Cubit<FavState> {
     final len = state.favIds.length;
     emit(state.copyWith(currentPage: currentPage + 1));
     final lower = _pageSize * (currentPage + 1);
-    var upper = _pageSize + _pageSize * (currentPage + 1);
+    var upper = _pageSize + lower;
 
     if (len > lower) {
       if (len < upper) {
@@ -123,14 +141,6 @@ class FavCubit extends Cubit<FavState> {
         emit(state.copyWith(status: FavStatus.loaded));
       });
     });
-  }
-
-  void reset() {
-    emit(state.copyWith(
-      favIds: [],
-      favStories: [],
-      currentPage: 0,
-    ));
   }
 
   void _onStoryLoaded(Story story) {
