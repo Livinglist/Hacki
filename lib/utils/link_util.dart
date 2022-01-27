@@ -5,7 +5,11 @@ class LinkUtil {
     final url = Uri.encodeFull(link);
     canLaunch(url).then((val) {
       if (val) {
-        launch(url);
+        launch(
+          url,
+          forceWebView: true,
+          enableJavaScript: true,
+        );
       }
     });
   }
