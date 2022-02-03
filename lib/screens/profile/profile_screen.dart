@@ -388,7 +388,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 'Inbox : '
                                 '${notificationState.unreadCommentsIds.length}',
                               ),
-                              elevation: 4,
                               selected: pageType == PageType.notification,
                               onSelected: (val) {
                                 if (val) {
@@ -406,7 +405,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                               label: const Text(
                                 'Favorite',
                               ),
-                              elevation: 4,
                               selected: pageType == PageType.fav,
                               onSelected: (val) {
                                 if (val) {
@@ -424,7 +422,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                               label: const Text(
                                 'Submitted',
                               ),
-                              elevation: 4,
                               selected: pageType == PageType.history,
                               onSelected: (val) {
                                 if (val) {
@@ -442,7 +439,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                               label: const Text(
                                 'Search',
                               ),
-                              elevation: 4,
                               selected: pageType == PageType.search,
                               onSelected: (val) {
                                 if (val) {
@@ -460,7 +456,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                               label: const Text(
                                 'Settings',
                               ),
-                              elevation: 4,
                               selected: pageType == PageType.settings,
                               onSelected: (val) {
                                 if (val) {
