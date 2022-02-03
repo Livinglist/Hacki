@@ -15,8 +15,6 @@ Future main() async {
 
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
 
-  print(savedThemeMode);
-
   runApp(HackiApp(
     savedThemeMode: savedThemeMode,
   ));
