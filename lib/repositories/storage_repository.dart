@@ -65,7 +65,7 @@ class StorageRepository {
 
   Future<List<int>> favList({required String of}) =>
       _prefs.then((prefs) => ((prefs.getStringList('') ?? <String>[])
-            ..addAll(prefs.getStringList(of) ?? <String>[]))
+            ..addAll(prefs.getStringList(_getFavKey(of)) ?? <String>[]))
           .map(int.parse)
           .toSet()
           .toList()
@@ -131,7 +131,7 @@ class StorageRepository {
     final favListInString = prefs.getStringList(key) ?? <String>[];
     final favList = favListInString.map(int.parse).toList()..add(id);
     await prefs.setStringList(
-        username, favList.map((e) => e.toString()).toSet().toList());
+        key, favList.map((e) => e.toString()).toSet().toList());
   }
 
   Future<void> removeFav({required String username, required int id}) async {
@@ -139,8 +139,7 @@ class StorageRepository {
     final key = _getFavKey(username);
     final favListInString = prefs.getStringList(key) ?? <String>[];
     final favList = favListInString.map(int.parse).toList()..remove(id);
-    await prefs.setStringList(
-        username, favList.map((e) => e.toString()).toList());
+    await prefs.setStringList(key, favList.map((e) => e.toString()).toList());
   }
 
   Future<void> addVote({

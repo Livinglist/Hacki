@@ -124,6 +124,7 @@ class FavCubit extends Cubit<FavState> {
 
   void refresh() {
     final username = _authBloc.state.username;
+
     emit(state.copyWith(
       status: FavStatus.loading,
       currentPage: 0,
