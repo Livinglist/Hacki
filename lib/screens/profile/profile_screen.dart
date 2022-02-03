@@ -383,11 +383,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                             const SizedBox(
                               width: 12,
                             ),
-                            FilterChip(
-                              label: Text(
-                                'Inbox : '
-                                '${notificationState.unreadCommentsIds.length}',
-                              ),
+                            CustomChip(
+                              label: 'Inbox : '
+                                  '${notificationState.unreadCommentsIds.length}',
                               selected: pageType == PageType.notification,
                               onSelected: (val) {
                                 if (val) {
@@ -396,15 +394,12 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   });
                                 }
                               },
-                              selectedColor: Colors.orange,
                             ),
                             const SizedBox(
                               width: 12,
                             ),
-                            FilterChip(
-                              label: const Text(
-                                'Favorite',
-                              ),
+                            CustomChip(
+                              label: 'Favorite',
                               selected: pageType == PageType.fav,
                               onSelected: (val) {
                                 if (val) {
@@ -413,15 +408,12 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   });
                                 }
                               },
-                              selectedColor: Colors.orange,
                             ),
                             const SizedBox(
                               width: 12,
                             ),
-                            FilterChip(
-                              label: const Text(
-                                'Submitted',
-                              ),
+                            CustomChip(
+                              label: 'Submitted',
                               selected: pageType == PageType.history,
                               onSelected: (val) {
                                 if (val) {
@@ -430,15 +422,12 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   });
                                 }
                               },
-                              selectedColor: Colors.orange,
                             ),
                             const SizedBox(
                               width: 12,
                             ),
-                            FilterChip(
-                              label: const Text(
-                                'Search',
-                              ),
+                            CustomChip(
+                              label: 'Search',
                               selected: pageType == PageType.search,
                               onSelected: (val) {
                                 if (val) {
@@ -447,15 +436,12 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   });
                                 }
                               },
-                              selectedColor: Colors.orange,
                             ),
                             const SizedBox(
                               width: 12,
                             ),
-                            FilterChip(
-                              label: const Text(
-                                'Settings',
-                              ),
+                            CustomChip(
+                              label: 'Settings',
                               selected: pageType == PageType.settings,
                               onSelected: (val) {
                                 if (val) {
@@ -464,7 +450,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   });
                                 }
                               },
-                              selectedColor: Colors.orange,
                             ),
                             const SizedBox(
                               width: 12,
