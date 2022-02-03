@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -195,9 +197,12 @@ class _StoryScreenState extends State<StoryScreen> {
                       resizeToAvoidBottomInset: true,
                       appBar: AppBar(
                         backgroundColor:
-                            Theme.of(context).canvasColor.withOpacity(0.4),
+                            Theme.of(context).canvasColor.withOpacity(0.6),
                         elevation: 0,
                         actions: [
+                          ScrollUpIconButton(
+                            scrollController: scrollController,
+                          ),
                           BlocBuilder<FavCubit, FavState>(
                             builder: (context, favState) {
                               final isFav =

@@ -1,3 +1,4 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -317,13 +318,17 @@ class _ProfileScreenState extends State<ProfileScreen>
                               activeColor: Colors.orange,
                             ),
                             ListTile(
+                              title: const Text('Theme'),
+                              onTap: showThemeSettingDialog,
+                            ),
+                            ListTile(
                               title: const Text('About'),
                               subtitle: const Text('nothing interesting here.'),
                               onTap: () {
                                 showAboutDialog(
                                   context: context,
                                   applicationName: 'Hacki',
-                                  applicationVersion: 'v0.0.9',
+                                  applicationVersion: 'v0.1.0',
                                   applicationIcon: Image.asset(
                                     'images/hacki_icon.png',
                                     height: 50,
@@ -481,6 +486,39 @@ class _ProfileScreenState extends State<ProfileScreen>
         );
       },
     );
+  }
+
+  void showThemeSettingDialog() {
+    showDialog<void>(
+        context: context,
+        builder: (_) {
+          final themeMode = AdaptiveTheme.of(context).mode;
+          return AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                RadioListTile(
+                  value: AdaptiveThemeMode.light,
+                  groupValue: themeMode,
+                  onChanged: (val) => AdaptiveTheme.of(context).setLight(),
+                  title: const Text('Light'),
+                ),
+                RadioListTile(
+                  value: AdaptiveThemeMode.dark,
+                  groupValue: themeMode,
+                  onChanged: (val) => AdaptiveTheme.of(context).setDark(),
+                  title: const Text('Dark'),
+                ),
+                RadioListTile(
+                  value: AdaptiveThemeMode.system,
+                  groupValue: themeMode,
+                  onChanged: (val) => AdaptiveTheme.of(context).setSystem(),
+                  title: const Text('System'),
+                ),
+              ],
+            ),
+          );
+        });
   }
 
   void onLoginTapped() {

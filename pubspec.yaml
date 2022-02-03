@@ -1,12 +1,13 @@
 name: hacki
 description: A Very Good Project created by Very Good CLI.
-version: 0.0.9+4
+version: 0.1.0+1
 publish_to: none
 
 environment:
   sdk: ">=2.14.0 <3.0.0"
 
 dependencies:
+  adaptive_theme: ^2.3.0
   algolia: ^1.0.1
   badges: ^2.0.2
   bloc: ^7.0.0

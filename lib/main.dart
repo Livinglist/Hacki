@@ -1,3 +1,4 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,74 +13,92 @@ Future main() async {
 
   await setUpLocator();
 
-  runApp(const HackiApp());
+  final savedThemeMode = await AdaptiveTheme.getThemeMode();
+
+  print(savedThemeMode);
+
+  runApp(HackiApp(
+    savedThemeMode: savedThemeMode,
+  ));
 }
 
 class HackiApp extends StatelessWidget {
-  const HackiApp({Key? key}) : super(key: key);
+  const HackiApp({
+    Key? key,
+    this.savedThemeMode,
+  }) : super(key: key);
+
+  final AdaptiveThemeMode? savedThemeMode;
 
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<StoriesBloc>(
-          create: (context) => StoriesBloc(),
-        ),
-        BlocProvider<AuthBloc>(
-          lazy: false,
-          create: (context) => AuthBloc(),
-        ),
-        BlocProvider<PreferenceCubit>(
-          lazy: false,
-          create: (context) => PreferenceCubit(),
-        ),
-        BlocProvider<HistoryCubit>(
-          lazy: false,
-          create: (context) => HistoryCubit(
-            authBloc: context.read<AuthBloc>(),
-          ),
-        ),
-        BlocProvider<FavCubit>(
-          lazy: false,
-          create: (context) => FavCubit(
-            authBloc: context.read<AuthBloc>(),
-          ),
-        ),
-        BlocProvider<BlocklistCubit>(
-          lazy: false,
-          create: (context) => BlocklistCubit(),
-        ),
-        BlocProvider<SearchCubit>(
-          lazy: false,
-          create: (context) => SearchCubit(),
-        ),
-        BlocProvider(
-          lazy: false,
-          create: (context) => NotificationCubit(
-            authBloc: context.read<AuthBloc>(),
-            preferenceCubit: context.read<PreferenceCubit>(),
-          ),
-        ),
-      ],
-      child: FeatureDiscovery(
-        child: MaterialApp(
-          title: 'Hacki',
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            primarySwatch: Colors.orange,
-          ),
-          darkTheme: ThemeData(
-            brightness: Brightness.dark,
-            primarySwatch: Colors.orange,
-          ),
-          navigatorKey: navigatorKey,
-          onGenerateRoute: CustomRouter.onGenerateRoute,
-          initialRoute: HomeScreen.routeName,
-        ),
+    return AdaptiveTheme(
+      light: ThemeData(
+        primarySwatch: Colors.orange,
       ),
+      dark: ThemeData(
+        brightness: Brightness.dark,
+        primarySwatch: Colors.orange,
+      ),
+      initial: savedThemeMode ?? AdaptiveThemeMode.system,
+      builder: (theme, darkTheme) {
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider<StoriesBloc>(
+              create: (context) => StoriesBloc(),
+            ),
+            BlocProvider<AuthBloc>(
+              lazy: false,
+              create: (context) => AuthBloc(),
+            ),
+            BlocProvider<PreferenceCubit>(
+              lazy: false,
+              create: (context) => PreferenceCubit(),
+            ),
+            BlocProvider<HistoryCubit>(
+              lazy: false,
+              create: (context) => HistoryCubit(
+                authBloc: context.read<AuthBloc>(),
+              ),
+            ),
+            BlocProvider<FavCubit>(
+              lazy: false,
+              create: (context) => FavCubit(
+                authBloc: context.read<AuthBloc>(),
+              ),
+            ),
+            BlocProvider<BlocklistCubit>(
+              lazy: false,
+              create: (context) => BlocklistCubit(),
+            ),
+            BlocProvider<SearchCubit>(
+              lazy: false,
+              create: (context) => SearchCubit(),
+            ),
+            BlocProvider(
+              lazy: false,
+              create: (context) => NotificationCubit(
+                authBloc: context.read<AuthBloc>(),
+                preferenceCubit: context.read<PreferenceCubit>(),
+              ),
+            ),
+          ],
+          child: FeatureDiscovery(
+            child: MaterialApp(
+              title: 'Hacki',
+              debugShowCheckedModeBanner: false,
+              theme: theme,
+              darkTheme: darkTheme,
+              navigatorKey: navigatorKey,
+              onGenerateRoute: CustomRouter.onGenerateRoute,
+              initialRoute: HomeScreen.routeName,
+            ),
+          ),
+        );
+      },
     );
   }
 }
