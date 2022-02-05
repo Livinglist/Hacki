@@ -66,8 +66,8 @@ class StorageRepository {
       prefs.getStringList(_unreadCommentsIdsKey)?.map(int.parse).toList() ??
       []);
 
-  Future<List<int>> favList({required String of}) =>
-      _prefs.then((prefs) => ((prefs.getStringList('') ?? <String>[])
+  Future<List<int>> favList({required String of}) => _prefs.then((prefs) =>
+      ((prefs.getStringList(_getFavKey('')) ?? <String>[])
             ..addAll(prefs.getStringList(_getFavKey(of)) ?? <String>[]))
           .map(int.parse)
           .toSet()
