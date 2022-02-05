@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/custom_circular_progress_indicator.dart';
 import 'package:hacki/screens/widgets/story_tile.dart';
@@ -15,31 +18,59 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     required this.onTap,
     required this.refreshController,
     this.enablePullDown = true,
+    this.pinnable = false,
     this.onRefresh,
     this.onLoadMore,
-  }) : super(key: key);
+    this.onPinned,
+    this.header,
+  })  : assert(!pinnable || (pinnable && onPinned != null)),
+        super(key: key);
 
   final bool showWebPreview;
   final bool enablePullDown;
+
+  /// Whether story tiles can be pinned to the top.
+  final bool pinnable;
   final List<T> items;
+  final Widget? header;
   final RefreshController? refreshController;
   final VoidCallback? onRefresh;
   final VoidCallback? onLoadMore;
+  final ValueChanged<Story>? onPinned;
   final Function(T) onTap;
 
   @override
   Widget build(BuildContext context) {
     final child = ListView(
       children: [
+        if (header != null) header!,
         ...items.map((e) {
           if (e is Story) {
             return [
               FadeIn(
-                child: StoryTile(
-                  key: ObjectKey(e),
-                  story: e,
-                  onTap: () => onTap(e),
-                  showWebPreview: showWebPreview,
+                child: Slidable(
+                  startActionPane: pinnable
+                      ? ActionPane(
+                          motion: const BehindMotion(),
+                          children: [
+                            SlidableAction(
+                              onPressed: (_) => onPinned?.call(e),
+                              backgroundColor: Colors.orange,
+                              foregroundColor: Colors.white,
+                              icon: showWebPreview
+                                  ? Icons.vertical_align_top
+                                  : null,
+                              label: 'Pin to top',
+                            ),
+                          ],
+                        )
+                      : null,
+                  child: StoryTile(
+                    key: ObjectKey(e),
+                    story: e,
+                    onTap: () => onTap(e),
+                    showWebPreview: showWebPreview,
+                  ),
                 ),
               ),
               if (!showWebPreview)

@@ -11,7 +11,7 @@ class StorageRepository {
   static const String _usernameKey = 'username';
   static const String _passwordKey = 'password';
   static const String _blocklistKey = 'blocklist';
-
+  static const String _pinnedStoriesIdsKey = 'pinnedStoriesIds';
   static const String _notificationModeKey = 'notificationMode';
 
   /// The key of a boolean value deciding whether or not the story
@@ -43,6 +43,9 @@ class StorageRepository {
 
   Future<List<String>> get blocklist async =>
       _prefs.then((prefs) => prefs.getStringList(_blocklistKey) ?? []);
+
+  Future<List<int>> get pinnedStoriesIds async => _prefs.then((prefs) =>
+      prefs.getStringList(_pinnedStoriesIdsKey)?.map(int.parse).toList() ?? []);
 
   Future<bool> get shouldShowNotification async => _prefs.then((prefs) =>
       prefs.getBool(_notificationModeKey) ?? _notificationModeDefaultValue);
@@ -164,6 +167,14 @@ class StorageRepository {
   Future<void> updateBlocklist(List<String> usernames) async {
     final prefs = await _prefs;
     await prefs.setStringList(_blocklistKey, usernames);
+  }
+
+  Future<void> updatePinnedStoriesIds(List<int> ids) async {
+    final prefs = await _prefs;
+    await prefs.setStringList(
+      _pinnedStoriesIdsKey,
+      ids.map((e) => e.toString()).toList(),
+    );
   }
 
   Future<void> updateUnreadCommentsIds(List<int> ids) async {

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fadein/flutter_fadein.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
@@ -75,6 +77,51 @@ class _HomeScreenState extends State<HomeScreen>
   Widget build(BuildContext context) {
     return BlocBuilder<PreferenceCubit, PreferenceState>(
       builder: (context, preferenceState) {
+        final pinnedStories = BlocBuilder<PinCubit, PinState>(
+          builder: (context, state) {
+            return Column(
+              children: [
+                for (final story in state.pinnedStories)
+                  FadeIn(
+                    child: Slidable(
+                      startActionPane: ActionPane(
+                        motion: const BehindMotion(),
+                        children: [
+                          SlidableAction(
+                            onPressed: (_) =>
+                                context.read<PinCubit>().unpinStory(story),
+                            backgroundColor: Colors.red,
+                            foregroundColor: Colors.white,
+                            icon: preferenceState.showComplexStoryTile
+                                ? Icons.close
+                                : null,
+                            label: 'Unpin',
+                          ),
+                        ],
+                      ),
+                      child: Container(
+                        color: Colors.orangeAccent.withOpacity(0.2),
+                        child: StoryTile(
+                          key: ObjectKey(story),
+                          story: story,
+                          onTap: () => onStoryTapped(story),
+                          showWebPreview: preferenceState.showComplexStoryTile,
+                        ),
+                      ),
+                    ),
+                  ),
+                if (state.pinnedStories.isNotEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12),
+                    child: Divider(
+                      color: Colors.orangeAccent,
+                    ),
+                  ),
+              ],
+            );
+          },
+        );
+
         return BlocConsumer<StoriesBloc, StoriesState>(
           listener: (context, state) {
             if (state.statusByType[StoryType.top] == StoriesStatus.loaded) {
@@ -240,6 +287,7 @@ class _HomeScreenState extends State<HomeScreen>
                     controller: tabController,
                     children: [
                       ItemsListView<Story>(
+                        pinnable: true,
                         showWebPreview: preferenceState.showComplexStoryTile,
                         refreshController: refreshControllerTop,
                         items: state.storiesByType[StoryType.top]!,
@@ -255,8 +303,11 @@ class _HomeScreenState extends State<HomeScreen>
                               .add(StoriesLoadMore(type: StoryType.top));
                         },
                         onTap: onStoryTapped,
+                        onPinned: context.read<PinCubit>().pinStory,
+                        header: pinnedStories,
                       ),
                       ItemsListView<Story>(
+                        pinnable: true,
                         showWebPreview: preferenceState.showComplexStoryTile,
                         refreshController: refreshControllerNew,
                         items: state.storiesByType[StoryType.latest]!,
@@ -272,8 +323,11 @@ class _HomeScreenState extends State<HomeScreen>
                               .add(StoriesLoadMore(type: StoryType.latest));
                         },
                         onTap: onStoryTapped,
+                        onPinned: context.read<PinCubit>().pinStory,
+                        header: pinnedStories,
                       ),
                       ItemsListView<Story>(
+                        pinnable: true,
                         showWebPreview: preferenceState.showComplexStoryTile,
                         refreshController: refreshControllerAsk,
                         items: state.storiesByType[StoryType.ask]!,
@@ -289,8 +343,11 @@ class _HomeScreenState extends State<HomeScreen>
                               .add(StoriesLoadMore(type: StoryType.ask));
                         },
                         onTap: onStoryTapped,
+                        onPinned: context.read<PinCubit>().pinStory,
+                        header: pinnedStories,
                       ),
                       ItemsListView<Story>(
+                        pinnable: true,
                         showWebPreview: preferenceState.showComplexStoryTile,
                         refreshController: refreshControllerShow,
                         items: state.storiesByType[StoryType.show]!,
@@ -306,8 +363,11 @@ class _HomeScreenState extends State<HomeScreen>
                               .add(StoriesLoadMore(type: StoryType.show));
                         },
                         onTap: onStoryTapped,
+                        onPinned: context.read<PinCubit>().pinStory,
+                        header: pinnedStories,
                       ),
                       ItemsListView<Story>(
+                        pinnable: true,
                         showWebPreview: preferenceState.showComplexStoryTile,
                         refreshController: refreshControllerJobs,
                         items: state.storiesByType[StoryType.jobs]!,
@@ -323,6 +383,8 @@ class _HomeScreenState extends State<HomeScreen>
                               .add(StoriesLoadMore(type: StoryType.jobs));
                         },
                         onTap: onStoryTapped,
+                        onPinned: context.read<PinCubit>().pinStory,
+                        header: pinnedStories,
                       ),
                       const ProfileScreen(),
                     ],

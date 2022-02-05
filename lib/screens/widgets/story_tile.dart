@@ -112,7 +112,7 @@ class StoryTile extends StatelessWidget {
                   ),
                 ),
                 errorImage: Constants.hackerNewsLogoLink,
-                backgroundColor: Theme.of(context).canvasColor,
+                backgroundColor: Colors.transparent,
                 borderRadius: 0,
                 removeElevation: true,
                 bodyMaxLines: 4,
@@ -165,9 +165,15 @@ class StoryTile extends StatelessWidget {
               const SizedBox(
                 height: 8,
               ),
-              Text(
-                story.title,
-                style: const TextStyle(fontSize: 15),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      story.title,
+                      style: const TextStyle(fontSize: 15),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(
                 height: 8,

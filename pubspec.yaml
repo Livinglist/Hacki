@@ -29,6 +29,7 @@ dependencies:
   flutter_linkify: ^5.0.2
   flutter_riverpod: ^0.14.0+3
   flutter_secure_storage: ^5.0.2
+  flutter_slidable: ^1.2.0
   flutter_typeahead: ^3.2.1
   font_awesome_flutter: ^9.2.0
   gbk_codec: ^0.4.0

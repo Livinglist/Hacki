@@ -76,12 +76,16 @@ class HackiApp extends StatelessWidget {
               lazy: false,
               create: (context) => SearchCubit(),
             ),
-            BlocProvider(
+            BlocProvider<NotificationCubit>(
               lazy: false,
               create: (context) => NotificationCubit(
                 authBloc: context.read<AuthBloc>(),
                 preferenceCubit: context.read<PreferenceCubit>(),
               ),
+            ),
+            BlocProvider<PinCubit>(
+              lazy: false,
+              create: (context) => PinCubit(),
             ),
           ],
           child: FeatureDiscovery(
