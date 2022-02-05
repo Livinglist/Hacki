@@ -40,7 +40,8 @@ class PinCubit extends Cubit<PinState> {
   void unpinStory(Story story) {
     emit(state.copyWith(
       pinnedStoriesIds: [...state.pinnedStoriesIds]..remove(story.id),
-      pinnedStories: [...state.pinnedStories]..remove(story),
+      pinnedStories: [...state.pinnedStories]
+        ..removeWhere((e) => e.id == story.id),
     ));
     _storageRepository.updatePinnedStoriesIds(state.pinnedStoriesIds);
   }
