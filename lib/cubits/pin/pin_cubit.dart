@@ -30,18 +30,19 @@ class PinCubit extends Cubit<PinState> {
   }
 
   void pinStory(Story story) {
-    emit(state.copyWith(
-      pinnedStoriesIds: {story.id, ...state.pinnedStoriesIds}.toList(),
-      pinnedStories: {story, ...state.pinnedStories}.toList(),
-    ));
-    _storageRepository.updatePinnedStoriesIds(state.pinnedStoriesIds);
+    if (!state.pinnedStoriesIds.contains(story.id)) {
+      emit(state.copyWith(
+        pinnedStoriesIds: {story.id, ...state.pinnedStoriesIds}.toList(),
+        pinnedStories: {story, ...state.pinnedStories}.toList(),
+      ));
+      _storageRepository.updatePinnedStoriesIds(state.pinnedStoriesIds);
+    }
   }
 
   void unpinStory(Story story) {
     emit(state.copyWith(
       pinnedStoriesIds: [...state.pinnedStoriesIds]..remove(story.id),
-      pinnedStories: [...state.pinnedStories]
-        ..removeWhere((e) => e.id == story.id),
+      pinnedStories: [...state.pinnedStories]..remove(story),
     ));
     _storageRepository.updatePinnedStoriesIds(state.pinnedStoriesIds);
   }

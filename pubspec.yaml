@@ -1,6 +1,6 @@
 name: hacki
 description: A Very Good Project created by Very Good CLI.
-version: 0.1.1+10
+version: 0.1.1+11
 publish_to: none
 
 environment:
