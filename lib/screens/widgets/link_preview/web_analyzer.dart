@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:isolate';
 
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:fast_gbk/fast_gbk.dart';
+import 'package:flutter/foundation.dart';
 import 'package:html/dom.dart' hide Text;
 import 'package:html/parser.dart' as parser;
 import 'package:http/http.dart';
@@ -116,54 +116,49 @@ class WebAnalyzer {
 
   static Future<InfoBase?> _getInfoByIsolate(
       String? url, bool multimedia) async {
-    final sender = ReceivePort();
-    final isolate = await Isolate.spawn(_isolate, sender.sendPort);
-    final sendPort = await sender.first as SendPort;
-    final answer = ReceivePort();
-
-    sendPort.send([answer.sendPort, url, multimedia]);
-    final res = await answer.first as List<String?>?;
+    final res = await compute(_isolate, <dynamic>[url, multimedia]);
 
     InfoBase? info;
     if (res != null) {
       if (res[0] == '0') {
         info = WebInfo(
-            title: res[1], description: res[2], icon: res[3], image: res[4]);
+            title: res[1] as String,
+            description: res[2] as String,
+            icon: res[3] as String,
+            image: res[4] as String);
       } else if (res[0] == '1') {
-        info = WebVideoInfo(image: res[1]);
+        info = WebVideoInfo(image: res[1] as String);
       } else if (res[0] == '2') {
-        info = WebImageInfo(image: res[1]);
+        info = WebImageInfo(image: res[1] as String);
       }
     }
-
-    sender.close();
-    answer.close();
-    isolate.kill(priority: Isolate.immediate);
 
     return info;
   }
 
-  static void _isolate(SendPort sendPort) {
-    final port = ReceivePort();
-    sendPort.send(port.sendPort);
-    port.listen((dynamic message) async {
-      final sender = (message as List<dynamic>)[0] as SendPort;
-      final url = message[1] as String;
-      final multimedia = message[2] as bool;
+  static Future<List<dynamic>?> _isolate(dynamic message) async {
+    //ignore: avoid_dynamic_calls
+    final url = message[0] as String;
+    //ignore: avoid_dynamic_calls
+    final multimedia = message[1] as bool;
 
-      final info = await _getInfo(url, multimedia);
+    final info = await _getInfo(url, multimedia);
 
-      if (info is WebInfo) {
-        sender.send(['0', info.title, info.description, info.icon, info.image]);
-      } else if (info is WebVideoInfo) {
-        sender.send(['1', info.image]);
-      } else if (info is WebImageInfo) {
-        sender.send(['2', info.image]);
-      } else {
-        sender.send(null);
-      }
-      port.close();
-    });
+    if (info is WebInfo) {
+      return <dynamic>[
+        '0',
+        info.title,
+        info.description,
+        info.icon,
+        info.image
+      ];
+    } else if (info is WebVideoInfo) {
+      return <dynamic>['1', info.image];
+    } else if (info is WebImageInfo) {
+      return <dynamic>['2', info.image];
+    } else {
+      return null;
+    }
   }
 
   static bool _certificateCheck(X509Certificate cert, String host, int port) =>
