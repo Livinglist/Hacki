@@ -53,7 +53,9 @@ class SembastRepository {
     final store = StoreRef<dynamic, dynamic>.main();
     final snapshot =
         await store.record(_idsOfCommentsRepliedToMeKey).getSnapshot(db);
-    return (snapshot?.value as List? ?? <int>[]).cast<int>();
+    final repliedToMe = (snapshot?.value as List? ?? <int>[]).cast<int>();
+    _idsOfCommentsRepliedToMe = repliedToMe;
+    return repliedToMe;
   }
 
   Future<void> updateIdsOfCommentsRepliedToMe(int id) async {

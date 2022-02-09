@@ -78,6 +78,7 @@ class NotificationCubit extends Cubit<NotificationState> {
 
     final commentsToBeLoaded = state.allCommentsIds
         .sublist(0, min(state.allCommentsIds.length, _pageSize));
+
     for (final id in commentsToBeLoaded) {
       var comment = await _sembastRepository.getComment(id: id);
       comment ??= await _storiesRepository.fetchCommentBy(id: id);
@@ -183,9 +184,9 @@ class NotificationCubit extends Cubit<NotificationState> {
 
             await _sembastRepository.updateKidsOf(id: id, kids: kids);
 
-            if (previousKids.length != kids.length) {
-              final diff = {...kids}.difference({...previousKids});
+            final diff = {...kids}.difference({...previousKids});
 
+            if (diff.isNotEmpty) {
               for (final newCommentId in diff) {
                 await _storageRepository.updateUnreadCommentsIds([
                   newCommentId,
