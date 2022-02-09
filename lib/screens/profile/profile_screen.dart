@@ -385,6 +385,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             ),
                             CustomChip(
                               label: 'Inbox : '
+                                  //ignore: lines_longer_than_80_chars
                                   '${notificationState.unreadCommentsIds.length}',
                               selected: pageType == PageType.notification,
                               onSelected: (val) {
