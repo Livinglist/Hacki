@@ -1,3 +1,4 @@
+import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
@@ -181,7 +182,7 @@ class _ReplyBoxState extends State<ReplyBox> {
             left: 12,
             right: 12,
             top: 24,
-            bottom: 96,
+            bottom: 12,
           ),
           color: Theme.of(context).canvasColor,
           child: Padding(
@@ -191,18 +192,48 @@ class _ReplyBoxState extends State<ReplyBox> {
               top: 12,
               bottom: 12,
             ),
-            child: Scrollbar(
-              isAlwaysShown: true,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 6),
-                child: SingleChildScrollView(
-                  child: SelectableLinkify(
-                    scrollPhysics: const NeverScrollableScrollPhysics(),
-                    text: widget.replyingTo?.text ?? '',
-                    onOpen: (link) => LinkUtil.launchUrl(link.url),
+            child: Column(
+              children: [
+                Material(
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.close,
+                          color: Colors.orange,
+                          size: 18,
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      const Spacer(),
+                      TextButton(
+                        child: const Text('Copy All'),
+                        onPressed: () => FlutterClipboard.copy(
+                          widget.replyingTo?.text ?? '',
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 16,
+                      ),
+                    ],
                   ),
                 ),
-              ),
+                Expanded(
+                  child: Scrollbar(
+                    isAlwaysShown: true,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 6),
+                      child: SingleChildScrollView(
+                        child: SelectableLinkify(
+                          scrollPhysics: const NeverScrollableScrollPhysics(),
+                          text: widget.replyingTo?.text ?? '',
+                          onOpen: (link) => LinkUtil.launchUrl(link.url),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         );
