@@ -6,6 +6,7 @@ import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart';
 
 Future main() async {
@@ -13,9 +14,11 @@ Future main() async {
 
   await setUpLocator();
 
+  final useTrueDarkMode = await StorageRepository.getTrueDarkMode();
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
 
   runApp(HackiApp(
+    useTrueDarkMode: useTrueDarkMode,
     savedThemeMode: savedThemeMode,
   ));
 }
@@ -23,9 +26,11 @@ Future main() async {
 class HackiApp extends StatelessWidget {
   const HackiApp({
     Key? key,
+    required this.useTrueDarkMode,
     this.savedThemeMode,
   }) : super(key: key);
 
+  final bool useTrueDarkMode;
   final AdaptiveThemeMode? savedThemeMode;
 
   static final GlobalKey<NavigatorState> navigatorKey =
@@ -43,6 +48,11 @@ class HackiApp extends StatelessWidget {
       ),
       initial: savedThemeMode ?? AdaptiveThemeMode.system,
       builder: (theme, darkTheme) {
+        final trueDarkTheme = ThemeData(
+          brightness: Brightness.dark,
+          primarySwatch: Colors.orange,
+          canvasColor: Colors.black,
+        );
         return MultiBlocProvider(
           providers: [
             BlocProvider<StoriesBloc>(
@@ -88,16 +98,22 @@ class HackiApp extends StatelessWidget {
               create: (context) => PinCubit(),
             ),
           ],
-          child: FeatureDiscovery(
-            child: MaterialApp(
-              title: 'Hacki',
-              debugShowCheckedModeBanner: false,
-              theme: theme,
-              darkTheme: darkTheme,
-              navigatorKey: navigatorKey,
-              onGenerateRoute: CustomRouter.onGenerateRoute,
-              initialRoute: HomeScreen.routeName,
-            ),
+          child: BlocBuilder<PreferenceCubit, PreferenceState>(
+            buildWhen: (previous, current) =>
+                previous.useTrueDark != current.useTrueDark,
+            builder: (context, prefState) {
+              return FeatureDiscovery(
+                child: MaterialApp(
+                  title: 'Hacki',
+                  debugShowCheckedModeBanner: false,
+                  theme: prefState.useTrueDark ? trueDarkTheme : theme,
+                  darkTheme: prefState.useTrueDark ? trueDarkTheme : darkTheme,
+                  navigatorKey: navigatorKey,
+                  onGenerateRoute: CustomRouter.onGenerateRoute,
+                  initialRoute: HomeScreen.routeName,
+                ),
+              );
+            },
           ),
         );
       },

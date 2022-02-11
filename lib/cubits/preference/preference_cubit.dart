@@ -26,6 +26,8 @@ class PreferenceCubit extends Cubit<PreferenceState> {
         .then((value) => emit(state.copyWith(showCommentBorder: value)));
     _storageRepository.shouldShowEyeCandy
         .then((value) => emit(state.copyWith(showEyeCandy: value)));
+    _storageRepository.trueDarkMode
+        .then((value) => emit(state.copyWith(useTrueDark: value)));
   }
 
   void toggleNotificationMode() {
@@ -51,5 +53,10 @@ class PreferenceCubit extends Cubit<PreferenceState> {
   void toggleEyeCandyMode() {
     emit(state.copyWith(showEyeCandy: !state.showEyeCandy));
     _storageRepository.toggleEyeCandyMode();
+  }
+
+  void toggleTrueDarkMode() {
+    emit(state.copyWith(useTrueDark: !state.useTrueDark));
+    _storageRepository.toggleTrueDarkMode();
   }
 }

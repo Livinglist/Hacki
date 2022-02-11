@@ -224,152 +224,184 @@ class _ProfileScreenState extends State<ProfileScreen>
                       top: 50,
                       child: Offstage(
                         offstage: pageType != PageType.settings,
-                        child: Column(
-                          children: [
-                            ListTile(
-                              title: Text(
-                                  authState.isLoggedIn ? 'Log Out' : 'Log In'),
-                              subtitle: Text(
-                                authState.isLoggedIn
-                                    ? authState.username
-                                    : magicWord,
-                              ),
-                              onTap: () {
-                                if (authState.isLoggedIn) {
-                                  onLogoutTapped();
-                                } else {
-                                  onLoginTapped();
-                                }
-                              },
-                            ),
-                            SwitchListTile(
-                              title: const Text('Notification on New Reply'),
-                              subtitle: const Text(
-                                'Hacki scans for new replies to your 15 '
-                                'most recent comments or stories '
-                                'every 1 minute while the app is '
-                                'running in the foreground.',
-                              ),
-                              value: preferenceState.showNotification,
-                              onChanged: (val) {
-                                HapticFeedback.lightImpact();
-                                context
-                                    .read<PreferenceCubit>()
-                                    .toggleNotificationMode();
-                              },
-                              activeColor: Colors.orange,
-                            ),
-                            SwitchListTile(
-                              title: const Text('Complex Story Tile'),
-                              subtitle:
-                                  const Text('show web preview in story tile.'),
-                              value: preferenceState.showComplexStoryTile,
-                              onChanged: (val) {
-                                HapticFeedback.lightImpact();
-                                context
-                                    .read<PreferenceCubit>()
-                                    .toggleDisplayMode();
-                              },
-                              activeColor: Colors.orange,
-                            ),
-                            SwitchListTile(
-                              title: const Text('Show Web Page First'),
-                              subtitle:
-                                  const Text('show web page first after tapping'
-                                      ' on story.'),
-                              value: preferenceState.showWebFirst,
-                              onChanged: (val) {
-                                HapticFeedback.lightImpact();
-                                context
-                                    .read<PreferenceCubit>()
-                                    .toggleNavigationMode();
-                              },
-                              activeColor: Colors.orange,
-                            ),
-                            SwitchListTile(
-                              title: const Text('Show Comment Outlines'),
-                              subtitle: const Text('be nice to your eyes.'),
-                              value: preferenceState.showCommentBorder,
-                              onChanged: (val) {
-                                HapticFeedback.lightImpact();
-                                context
-                                    .read<PreferenceCubit>()
-                                    .toggleCommentBorderMode();
-                              },
-                              activeColor: Colors.orange,
-                            ),
-                            SwitchListTile(
-                              title: const Text('Eye Candy'),
-                              subtitle: const Text('some sort of magic.'),
-                              value: preferenceState.showEyeCandy,
-                              onChanged: (val) {
-                                HapticFeedback.lightImpact();
-                                context
-                                    .read<PreferenceCubit>()
-                                    .toggleEyeCandyMode();
-
-                                final inAppReview = InAppReview.instance;
-                                inAppReview.isAvailable().then((available) {
-                                  if (available) {
-                                    inAppReview.requestReview();
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              ListTile(
+                                title: Text(authState.isLoggedIn
+                                    ? 'Log Out'
+                                    : 'Log In'),
+                                subtitle: Text(
+                                  authState.isLoggedIn
+                                      ? authState.username
+                                      : magicWord,
+                                ),
+                                onTap: () {
+                                  if (authState.isLoggedIn) {
+                                    onLogoutTapped();
+                                  } else {
+                                    onLoginTapped();
                                   }
-                                });
-                              },
-                              activeColor: Colors.orange,
-                            ),
-                            ListTile(
-                              title: const Text('Theme'),
-                              onTap: showThemeSettingDialog,
-                            ),
-                            ListTile(
-                              title: const Text('About'),
-                              subtitle: const Text('nothing interesting here.'),
-                              onTap: () {
-                                showAboutDialog(
-                                  context: context,
-                                  applicationName: 'Hacki',
-                                  applicationVersion: 'v0.1.2',
-                                  applicationIcon: Image.asset(
-                                    'images/hacki_icon.png',
-                                    height: 50,
-                                    width: 50,
+                                },
+                              ),
+                              SwitchListTile(
+                                title: const Text('Notification on New Reply'),
+                                subtitle: const Text(
+                                  'Hacki scans for new replies to your 15 '
+                                  'most recent comments or stories '
+                                  'every 1 minute while the app is '
+                                  'running in the foreground.',
+                                ),
+                                value: preferenceState.showNotification,
+                                onChanged: (val) {
+                                  HapticFeedback.lightImpact();
+                                  context
+                                      .read<PreferenceCubit>()
+                                      .toggleNotificationMode();
+                                },
+                                activeColor: Colors.orange,
+                              ),
+                              SwitchListTile(
+                                title: const Text('Complex Story Tile'),
+                                subtitle: const Text(
+                                    'show web preview in story tile.'),
+                                value: preferenceState.showComplexStoryTile,
+                                onChanged: (val) {
+                                  HapticFeedback.lightImpact();
+                                  context
+                                      .read<PreferenceCubit>()
+                                      .toggleDisplayMode();
+                                },
+                                activeColor: Colors.orange,
+                              ),
+                              SwitchListTile(
+                                title: const Text('Show Web Page First'),
+                                subtitle: const Text(
+                                    'show web page first after tapping'
+                                    ' on story.'),
+                                value: preferenceState.showWebFirst,
+                                onChanged: (val) {
+                                  HapticFeedback.lightImpact();
+                                  context
+                                      .read<PreferenceCubit>()
+                                      .toggleNavigationMode();
+                                },
+                                activeColor: Colors.orange,
+                              ),
+                              SwitchListTile(
+                                title: const Text('Show Comment Outlines'),
+                                subtitle: const Text('be nice to your eyes.'),
+                                value: preferenceState.showCommentBorder,
+                                onChanged: (val) {
+                                  HapticFeedback.lightImpact();
+                                  context
+                                      .read<PreferenceCubit>()
+                                      .toggleCommentBorderMode();
+                                },
+                                activeColor: Colors.orange,
+                              ),
+                              SwitchListTile(
+                                title: const Text('Eye Candy'),
+                                subtitle: const Text('some sort of magic.'),
+                                value: preferenceState.showEyeCandy,
+                                onChanged: (val) {
+                                  HapticFeedback.lightImpact();
+                                  context
+                                      .read<PreferenceCubit>()
+                                      .toggleEyeCandyMode();
+
+                                  final inAppReview = InAppReview.instance;
+                                  inAppReview.isAvailable().then((available) {
+                                    if (available) {
+                                      inAppReview.requestReview();
+                                    }
+                                  });
+                                },
+                                activeColor: Colors.orange,
+                              ),
+                              SwitchListTile(
+                                title: const Text('True Dark Mode'),
+                                subtitle: const Text('real dark.'),
+                                value: preferenceState.useTrueDark,
+                                onChanged: (val) {
+                                  HapticFeedback.lightImpact();
+                                  context
+                                      .read<PreferenceCubit>()
+                                      .toggleTrueDarkMode();
+
+                                  final inAppReview = InAppReview.instance;
+                                  inAppReview.isAvailable().then((available) {
+                                    if (available) {
+                                      inAppReview.requestReview();
+                                    }
+                                  });
+                                },
+                                activeColor: Colors.orange,
+                              ),
+                              ListTile(
+                                title: Text(
+                                  'Theme',
+                                  style: TextStyle(
+                                    decoration: preferenceState.useTrueDark
+                                        ? TextDecoration.lineThrough
+                                        : null,
                                   ),
-                                  children: [
-                                    ElevatedButton(
-                                      onPressed: () => LinkUtil.launchUrl(
-                                          'https://livinglist.github.io'),
-                                      child: Row(
-                                        children: const [
-                                          Icon(
-                                            FontAwesomeIcons.addressCard,
-                                          ),
-                                          SizedBox(
-                                            width: 12,
-                                          ),
-                                          Text('Developer'),
-                                        ],
-                                      ),
+                                ),
+                                onTap: () => showThemeSettingDialog(
+                                    useTrueDarkMode:
+                                        preferenceState.useTrueDark),
+                              ),
+                              ListTile(
+                                title: const Text('About'),
+                                subtitle:
+                                    const Text('nothing interesting here.'),
+                                onTap: () {
+                                  showAboutDialog(
+                                    context: context,
+                                    applicationName: 'Hacki',
+                                    applicationVersion: 'v0.1.3',
+                                    applicationIcon: Image.asset(
+                                      'images/hacki_icon.png',
+                                      height: 50,
+                                      width: 50,
                                     ),
-                                    ElevatedButton(
-                                      onPressed: () => LinkUtil.launchUrl(
-                                          'https://github.com/Livinglist/Hacki'),
-                                      child: Row(
-                                        children: const [
-                                          Icon(
-                                            FontAwesomeIcons.github,
-                                          ),
-                                          SizedBox(
-                                            width: 12,
-                                          ),
-                                          Text('Source Code'),
-                                        ],
+                                    children: [
+                                      ElevatedButton(
+                                        onPressed: () => LinkUtil.launchUrl(
+                                            'https://livinglist.github.io'),
+                                        child: Row(
+                                          children: const [
+                                            Icon(
+                                              FontAwesomeIcons.addressCard,
+                                            ),
+                                            SizedBox(
+                                              width: 12,
+                                            ),
+                                            Text('Developer'),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                );
-                              },
-                            ),
-                          ],
+                                      ElevatedButton(
+                                        onPressed: () => LinkUtil.launchUrl(
+                                            'https://github.com/Livinglist/Hacki'),
+                                        child: Row(
+                                          children: const [
+                                            Icon(
+                                              FontAwesomeIcons.github,
+                                            ),
+                                            SizedBox(
+                                              width: 12,
+                                            ),
+                                            Text('Source Code'),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -469,7 +501,16 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  void showThemeSettingDialog() {
+  void showThemeSettingDialog({bool useTrueDarkMode = false}) {
+    if (useTrueDarkMode) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Can't choose theme when using true dark mode."),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
     showDialog<void>(
         context: context,
         builder: (_) {

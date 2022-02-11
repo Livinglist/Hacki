@@ -13,6 +13,7 @@ class StorageRepository {
   static const String _blocklistKey = 'blocklist';
   static const String _pinnedStoriesIdsKey = 'pinnedStoriesIds';
   static const String _notificationModeKey = 'notificationMode';
+  static const String _trueDarkModeKey = 'trueDarkMode';
 
   /// The key of a boolean value deciding whether or not the story
   /// tile should display link preview. Defaults to true.
@@ -31,6 +32,12 @@ class StorageRepository {
   static const bool _navigationModeDefaultValue = true;
   static const bool _commentBorderModeDefaultValue = true;
   static const bool _eyeCandyModeDefaultValue = false;
+  static const bool _trueDarkModeDefaultValue = false;
+
+  static Future<bool> getTrueDarkMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_trueDarkModeKey) ?? _trueDarkModeDefaultValue;
+  }
 
   final Future<SharedPreferences> _prefs;
   final FlutterSecureStorage _secureStorage;
@@ -61,6 +68,9 @@ class StorageRepository {
 
   Future<bool> get shouldShowEyeCandy async => _prefs.then(
       (prefs) => prefs.getBool(_eyeCandyModeKey) ?? _eyeCandyModeDefaultValue);
+
+  Future<bool> get trueDarkMode async => _prefs.then(
+      (prefs) => prefs.getBool(_trueDarkModeKey) ?? _trueDarkModeDefaultValue);
 
   Future<List<int>> get unreadCommentsIds async => _prefs.then((prefs) =>
       prefs.getStringList(_unreadCommentsIdsKey)?.map(int.parse).toList() ??
@@ -126,6 +136,13 @@ class StorageRepository {
     final currentMode =
         prefs.getBool(_eyeCandyModeKey) ?? _eyeCandyModeDefaultValue;
     await prefs.setBool(_eyeCandyModeKey, !currentMode);
+  }
+
+  Future<void> toggleTrueDarkMode() async {
+    final prefs = await _prefs;
+    final currentMode =
+        prefs.getBool(_trueDarkModeKey) ?? _trueDarkModeDefaultValue;
+    await prefs.setBool(_trueDarkModeKey, !currentMode);
   }
 
   Future<void> addFav({required String username, required int id}) async {
