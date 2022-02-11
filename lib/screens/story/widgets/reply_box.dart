@@ -181,15 +181,15 @@ class _ReplyBoxState extends State<ReplyBox> {
           margin: const EdgeInsets.only(
             left: 12,
             right: 12,
-            top: 24,
-            bottom: 12,
+            top: 64,
+            bottom: 64,
           ),
           color: Theme.of(context).canvasColor,
           child: Padding(
             padding: const EdgeInsets.only(
               left: 12,
               right: 6,
-              top: 12,
+              top: 6,
               bottom: 12,
             ),
             child: Column(
@@ -197,13 +197,9 @@ class _ReplyBoxState extends State<ReplyBox> {
                 Material(
                   child: Row(
                     children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.close,
-                          color: Colors.orange,
-                          size: 18,
-                        ),
-                        onPressed: () => Navigator.pop(context),
+                      Text(
+                        widget.replyingTo?.by ?? '',
+                        style: const TextStyle(color: Colors.grey),
                       ),
                       const Spacer(),
                       TextButton(
@@ -212,9 +208,17 @@ class _ReplyBoxState extends State<ReplyBox> {
                           widget.replyingTo?.text ?? '',
                         ),
                       ),
-                      const SizedBox(
-                        width: 16,
+                      IconButton(
+                        icon: const Icon(
+                          Icons.close,
+                          color: Colors.orange,
+                          size: 18,
+                        ),
+                        onPressed: () => Navigator.pop(context),
                       ),
+                      const SizedBox(
+                        width: 6,
+                      )
                     ],
                   ),
                 ),
