@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:hacki/models/item.dart';
+import 'package:hacki/utils/link_util.dart';
 
 class ReplyBox extends StatefulWidget {
   const ReplyBox({
@@ -71,7 +73,21 @@ class _ReplyBoxState extends State<ReplyBox> {
                 ),
                 const Spacer(),
                 if (widget.replyingTo != null && !widget.isLoading) ...[
+                  AnimatedOpacity(
+                    opacity: expanded ? 1 : 0,
+                    duration: const Duration(milliseconds: 300),
+                    child: IconButton(
+                      key: const Key('quote'),
+                      icon: const Icon(
+                        FeatherIcons.code,
+                        color: Colors.orange,
+                        size: 18,
+                      ),
+                      onPressed: expanded ? showTextPopup : null,
+                    ),
+                  ),
                   IconButton(
+                    key: const Key('expand'),
                     icon: Icon(
                       expanded
                           ? FeatherIcons.minimize2
@@ -86,6 +102,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                     },
                   ),
                   IconButton(
+                    key: const Key('close'),
                     icon: const Icon(
                       Icons.close,
                       color: Colors.orange,
@@ -113,6 +130,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                   )
                 else
                   IconButton(
+                    key: const Key('send'),
                     icon: const Icon(
                       Icons.send,
                       color: Colors.orange,
@@ -150,6 +168,45 @@ class _ReplyBoxState extends State<ReplyBox> {
           ],
         ),
       ),
+    );
+  }
+
+  void showTextPopup() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (_) {
+        return Container(
+          margin: const EdgeInsets.only(
+            left: 12,
+            right: 12,
+            top: 24,
+            bottom: 96,
+          ),
+          color: Theme.of(context).canvasColor,
+          child: Padding(
+            padding: const EdgeInsets.only(
+              left: 12,
+              right: 6,
+              top: 12,
+              bottom: 12,
+            ),
+            child: Scrollbar(
+              isAlwaysShown: true,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 6),
+                child: SingleChildScrollView(
+                  child: SelectableLinkify(
+                    scrollPhysics: const NeverScrollableScrollPhysics(),
+                    text: widget.replyingTo?.text ?? '',
+                    onOpen: (link) => LinkUtil.launchUrl(link.url),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
