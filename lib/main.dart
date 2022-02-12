@@ -6,7 +6,6 @@ import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
-import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart';
 
 Future main() async {
@@ -14,11 +13,9 @@ Future main() async {
 
   await setUpLocator();
 
-  final useTrueDarkMode = await StorageRepository.getTrueDarkMode();
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
 
   runApp(HackiApp(
-    useTrueDarkMode: useTrueDarkMode,
     savedThemeMode: savedThemeMode,
   ));
 }
@@ -26,11 +23,9 @@ Future main() async {
 class HackiApp extends StatelessWidget {
   const HackiApp({
     Key? key,
-    required this.useTrueDarkMode,
     this.savedThemeMode,
   }) : super(key: key);
 
-  final bool useTrueDarkMode;
   final AdaptiveThemeMode? savedThemeMode;
 
   static final GlobalKey<NavigatorState> navigatorKey =
@@ -38,67 +33,67 @@ class HackiApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptiveTheme(
-      light: ThemeData(
-        primarySwatch: Colors.orange,
-      ),
-      dark: ThemeData(
-        brightness: Brightness.dark,
-        primarySwatch: Colors.orange,
-      ),
-      initial: savedThemeMode ?? AdaptiveThemeMode.system,
-      builder: (theme, darkTheme) {
-        final trueDarkTheme = ThemeData(
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<StoriesBloc>(
+          create: (context) => StoriesBloc(),
+        ),
+        BlocProvider<AuthBloc>(
+          lazy: false,
+          create: (context) => AuthBloc(),
+        ),
+        BlocProvider<PreferenceCubit>(
+          lazy: false,
+          create: (context) => PreferenceCubit(),
+        ),
+        BlocProvider<HistoryCubit>(
+          lazy: false,
+          create: (context) => HistoryCubit(
+            authBloc: context.read<AuthBloc>(),
+          ),
+        ),
+        BlocProvider<FavCubit>(
+          lazy: false,
+          create: (context) => FavCubit(
+            authBloc: context.read<AuthBloc>(),
+          ),
+        ),
+        BlocProvider<BlocklistCubit>(
+          lazy: false,
+          create: (context) => BlocklistCubit(),
+        ),
+        BlocProvider<SearchCubit>(
+          lazy: false,
+          create: (context) => SearchCubit(),
+        ),
+        BlocProvider<NotificationCubit>(
+          lazy: false,
+          create: (context) => NotificationCubit(
+            authBloc: context.read<AuthBloc>(),
+            preferenceCubit: context.read<PreferenceCubit>(),
+          ),
+        ),
+        BlocProvider<PinCubit>(
+          lazy: false,
+          create: (context) => PinCubit(),
+        ),
+      ],
+      child: AdaptiveTheme(
+        light: ThemeData(
+          primarySwatch: Colors.orange,
+        ),
+        dark: ThemeData(
           brightness: Brightness.dark,
           primarySwatch: Colors.orange,
-          canvasColor: Colors.black,
-        );
-        return MultiBlocProvider(
-          providers: [
-            BlocProvider<StoriesBloc>(
-              create: (context) => StoriesBloc(),
-            ),
-            BlocProvider<AuthBloc>(
-              lazy: false,
-              create: (context) => AuthBloc(),
-            ),
-            BlocProvider<PreferenceCubit>(
-              lazy: false,
-              create: (context) => PreferenceCubit(),
-            ),
-            BlocProvider<HistoryCubit>(
-              lazy: false,
-              create: (context) => HistoryCubit(
-                authBloc: context.read<AuthBloc>(),
-              ),
-            ),
-            BlocProvider<FavCubit>(
-              lazy: false,
-              create: (context) => FavCubit(
-                authBloc: context.read<AuthBloc>(),
-              ),
-            ),
-            BlocProvider<BlocklistCubit>(
-              lazy: false,
-              create: (context) => BlocklistCubit(),
-            ),
-            BlocProvider<SearchCubit>(
-              lazy: false,
-              create: (context) => SearchCubit(),
-            ),
-            BlocProvider<NotificationCubit>(
-              lazy: false,
-              create: (context) => NotificationCubit(
-                authBloc: context.read<AuthBloc>(),
-                preferenceCubit: context.read<PreferenceCubit>(),
-              ),
-            ),
-            BlocProvider<PinCubit>(
-              lazy: false,
-              create: (context) => PinCubit(),
-            ),
-          ],
-          child: BlocBuilder<PreferenceCubit, PreferenceState>(
+        ),
+        initial: savedThemeMode ?? AdaptiveThemeMode.system,
+        builder: (theme, darkTheme) {
+          final trueDarkTheme = ThemeData(
+            brightness: Brightness.dark,
+            primarySwatch: Colors.orange,
+            canvasColor: Colors.black,
+          );
+          return BlocBuilder<PreferenceCubit, PreferenceState>(
             buildWhen: (previous, current) =>
                 previous.useTrueDark != current.useTrueDark,
             builder: (context, prefState) {
@@ -114,9 +109,9 @@ class HackiApp extends StatelessWidget {
                 ),
               );
             },
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }

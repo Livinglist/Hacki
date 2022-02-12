@@ -9,7 +9,6 @@ void main() {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const HackiApp(
       savedThemeMode: AdaptiveThemeMode.light,
-      useTrueDarkMode: false,
     ));
 
     // Verify that our counter starts at 0.

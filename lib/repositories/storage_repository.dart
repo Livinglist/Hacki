@@ -34,11 +34,6 @@ class StorageRepository {
   static const bool _eyeCandyModeDefaultValue = false;
   static const bool _trueDarkModeDefaultValue = false;
 
-  static Future<bool> getTrueDarkMode() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_trueDarkModeKey) ?? _trueDarkModeDefaultValue;
-  }
-
   final Future<SharedPreferences> _prefs;
   final FlutterSecureStorage _secureStorage;
 
