@@ -386,11 +386,7 @@ class WebAnalyzer {
 
   static String? _analyzeImage(Document document, Uri uri) {
     final image = _getMetaContent(document, 'property', 'og:image');
-    return uri.host.contains('twitter.com')
-        ? 'https://github.com/sur950/any_link_preview/blob/master/lib/assets/twitter.png?raw=true'
-        : uri.host.contains('facebook.com')
-            ? 'https://github.com/sur950/any_link_preview/blob/master/lib/assets/facebook.jpg?raw=true'
-            : _handleUrl(uri, image);
+    return _handleUrl(uri, image);
   }
 
   static String? _handleUrl(Uri uri, String? source) {

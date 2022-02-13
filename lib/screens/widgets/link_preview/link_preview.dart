@@ -10,7 +10,7 @@ class LinkPreview extends StatefulWidget {
   const LinkPreview({
     Key? key,
     required this.link,
-    this.cache = const Duration(days: 30),
+    this.cache = const Duration(days: 1),
     this.titleStyle,
     this.bodyStyle,
     this.showMultimedia = true,
@@ -145,22 +145,6 @@ class _LinkPreviewState extends State<LinkPreview> {
       }
     }
   }
-
-  // Widget _buildPlaceHolder(Color color, double defaultHeight) {
-  //   return SizedBox(
-  //     height: defaultHeight,
-  //     child: LayoutBuilder(builder: (context, constraints) {
-  //       final layoutWidth = constraints.biggest.width;
-  //       final layoutHeight = constraints.biggest.height;
-  //
-  //       return Container(
-  //         color: color,
-  //         width: layoutWidth,
-  //         height: layoutHeight,
-  //       );
-  //     }),
-  //   );
-  // }
 
   Widget _buildLinkContainer(
     double _height, {
