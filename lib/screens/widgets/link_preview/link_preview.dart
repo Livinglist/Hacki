@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/screens/widgets/link_preview/link_view.dart';
 import 'package:hacki/screens/widgets/link_preview/web_analyzer.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -104,17 +105,14 @@ class _LinkPreviewState extends State<LinkPreview> {
 
   @override
   void initState() {
-    _errorImage = widget.errorImage ??
-        'https://github.com/sur950/any_link_preview/blob/master/lib/assets/giphy.gif?raw=true';
+    _errorImage = widget.errorImage ?? Constants.hackerNewsLogoLink;
     _errorTitle = widget.errorTitle ?? 'Something went wrong!';
     _errorBody = widget.errorBody ??
         'Oops! Unable to parse the url. We have '
             'sent feedback to our developers & '
             'we will try to fix this in our next release. Thanks!';
     _url = widget.link.trim();
-    // if (_url.contains("twitter.com")) {
-    //   _url = "https://publish.twitter.com/oembed?url=$_url";
-    // }
+
     _info = WebAnalyzer.getInfoFromCache(_url);
     if (_info == null) {
       _loading = true;

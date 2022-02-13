@@ -79,17 +79,17 @@ class WebAnalyzer {
 
     var info = getInfoFromCache(url);
     if (info != null) return info;
-    try {
-      // info = await _getInfo(url, multimedia);
-      info = await _getInfoByIsolate(url, multimedia);
+    //try {
+    // info = await _getInfo(url, multimedia);
+    info = await _getInfoByIsolate(url, multimedia);
 
-      if (info != null) {
-        info._timeout = DateTime.now().add(cache);
-        _map[url] = info;
-      }
-    } catch (e) {
-      //print('Get web error:$url, Error:$e');
+    if (info != null) {
+      info._timeout = DateTime.now().add(cache);
+      _map[url] = info;
     }
+    //} catch (e) {
+    //print('Get web error:$url, Error:$e');
+    //}
 
     // print("$url cost ${DateTime.now().difference(start).inMilliseconds}");
 
@@ -122,10 +122,11 @@ class WebAnalyzer {
     if (res != null) {
       if (res[0] == '0') {
         info = WebInfo(
-            title: res[1] as String,
-            description: res[2] as String,
-            icon: res[3] as String,
-            image: res[4] as String);
+          title: res[1] as String?,
+          description: res[2] as String?,
+          icon: res[3] as String?,
+          image: res[4] as String?,
+        );
       } else if (res[0] == '1') {
         info = WebVideoInfo(image: res[1] as String);
       } else if (res[0] == '2') {
