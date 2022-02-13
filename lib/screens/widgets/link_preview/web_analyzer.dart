@@ -79,17 +79,16 @@ class WebAnalyzer {
 
     var info = getInfoFromCache(url);
     if (info != null) return info;
-    //try {
-    // info = await _getInfo(url, multimedia);
-    info = await _getInfoByIsolate(url, multimedia);
+    try {
+      info = await _getInfoByIsolate(url, multimedia);
 
-    if (info != null) {
-      info._timeout = DateTime.now().add(cache);
-      _map[url] = info;
+      if (info != null) {
+        info._timeout = DateTime.now().add(cache);
+        _map[url] = info;
+      }
+    } catch (e) {
+      //print('Get web error:$url, Error:$e');
     }
-    //} catch (e) {
-    //print('Get web error:$url, Error:$e');
-    //}
 
     // print("$url cost ${DateTime.now().difference(start).inMilliseconds}");
 
