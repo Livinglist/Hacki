@@ -9,8 +9,9 @@ class SearchRepository {
   final Dio _dio;
 
   Stream<Story> search(String query, {int page = 0}) async* {
-    final response =
-        await _dio.get<Map<String, dynamic>>('$baseUrl$query&page=$page');
+    final url =
+        Uri.encodeFull('$baseUrl${Uri.encodeComponent(query)}&page=$page');
+    final response = await _dio.get<Map<String, dynamic>>(url);
     final data = response.data;
     if (data == null) return;
     final json = data;

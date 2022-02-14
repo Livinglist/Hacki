@@ -8,6 +8,7 @@ class PreferenceState extends Equatable {
     required this.showCommentBorder,
     required this.showEyeCandy,
     required this.useTrueDark,
+    required this.useReader,
   });
 
   const PreferenceState.init()
@@ -16,7 +17,8 @@ class PreferenceState extends Equatable {
         showWebFirst = false,
         showCommentBorder = false,
         showEyeCandy = false,
-        useTrueDark = false;
+        useTrueDark = false,
+        useReader = false;
 
   final bool showNotification;
   final bool showComplexStoryTile;
@@ -24,6 +26,7 @@ class PreferenceState extends Equatable {
   final bool showCommentBorder;
   final bool showEyeCandy;
   final bool useTrueDark;
+  final bool useReader;
 
   PreferenceState copyWith({
     bool? showNotification,
@@ -32,6 +35,7 @@ class PreferenceState extends Equatable {
     bool? showCommentBorder,
     bool? showEyeCandy,
     bool? useTrueDark,
+    bool? useReader,
   }) {
     return PreferenceState(
       showNotification: showNotification ?? this.showNotification,
@@ -40,6 +44,7 @@ class PreferenceState extends Equatable {
       showCommentBorder: showCommentBorder ?? this.showCommentBorder,
       showEyeCandy: showEyeCandy ?? this.showEyeCandy,
       useTrueDark: useTrueDark ?? this.useTrueDark,
+      useReader: useReader ?? this.useReader,
     );
   }
 
@@ -51,5 +56,6 @@ class PreferenceState extends Equatable {
         showCommentBorder,
         showEyeCandy,
         useTrueDark,
+        useReader,
       ];
 }

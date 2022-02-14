@@ -1,6 +1,6 @@
 name: hacki
 description: A Very Good Project created by Very Good CLI.
-version: 0.1.3+18
+version: 0.1.4+19
 publish_to: none
 
 environment:
@@ -27,11 +27,10 @@ dependencies:
   flutter_fadein: ^2.0.0
   flutter_feather_icons: 2.0.0+1
   flutter_html: ^2.2.1
+  flutter_inappwebview: ^5.3.2
   flutter_linkify: ^5.0.2
-  flutter_riverpod: ^0.14.0+3
   flutter_secure_storage: ^5.0.2
   flutter_slidable: ^1.2.0
-  flutter_typeahead: ^3.2.1
   font_awesome_flutter: ^9.2.0
   gbk_codec: ^0.4.0
   get_it: 7.2.0
@@ -40,8 +39,6 @@ dependencies:
   http: ^0.13.3
   in_app_review: ^2.0.3
   intl: ^0.17.0
-  objectid: ^2.0.0
-  package_info: ^2.0.2
   path: ^1.8.0
   path_provider: ^2.0.8
   pull_to_refresh: ^2.0.0

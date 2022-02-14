@@ -14,6 +14,7 @@ class StorageRepository {
   static const String _pinnedStoriesIdsKey = 'pinnedStoriesIds';
   static const String _notificationModeKey = 'notificationMode';
   static const String _trueDarkModeKey = 'trueDarkMode';
+  static const String _readerModeKey = 'readerMode';
 
   /// The key of a boolean value deciding whether or not the story
   /// tile should display link preview. Defaults to true.
@@ -24,7 +25,7 @@ class StorageRepository {
   static const String _navigationModeKey = 'navigationMode';
 
   static const String _commentBorderModeKey = 'commentBorderMode';
-  static const String _eyeCandyModeKey = 'eyeCandy';
+  static const String _eyeCandyModeKey = 'eyeCandyMode';
   static const String _unreadCommentsIdsKey = 'unreadCommentsIds';
 
   static const bool _notificationModeDefaultValue = true;
@@ -33,6 +34,7 @@ class StorageRepository {
   static const bool _commentBorderModeDefaultValue = true;
   static const bool _eyeCandyModeDefaultValue = false;
   static const bool _trueDarkModeDefaultValue = false;
+  static const bool _readerModeKeyDefaultValue = true;
 
   final Future<SharedPreferences> _prefs;
   final FlutterSecureStorage _secureStorage;
@@ -66,6 +68,9 @@ class StorageRepository {
 
   Future<bool> get trueDarkMode async => _prefs.then(
       (prefs) => prefs.getBool(_trueDarkModeKey) ?? _trueDarkModeDefaultValue);
+
+  Future<bool> get readerMode async => _prefs.then(
+      (prefs) => prefs.getBool(_readerModeKey) ?? _readerModeKeyDefaultValue);
 
   Future<List<int>> get unreadCommentsIds async => _prefs.then((prefs) =>
       prefs.getStringList(_unreadCommentsIdsKey)?.map(int.parse).toList() ??
@@ -138,6 +143,13 @@ class StorageRepository {
     final currentMode =
         prefs.getBool(_trueDarkModeKey) ?? _trueDarkModeDefaultValue;
     await prefs.setBool(_trueDarkModeKey, !currentMode);
+  }
+
+  Future<void> toggleReaderMode() async {
+    final prefs = await _prefs;
+    final currentMode =
+        prefs.getBool(_readerModeKey) ?? _readerModeKeyDefaultValue;
+    await prefs.setBool(_readerModeKey, !currentMode);
   }
 
   Future<void> addFav({required String username, required int id}) async {

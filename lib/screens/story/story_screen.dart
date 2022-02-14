@@ -350,8 +350,13 @@ class _StoryScreenState extends State<StoryScreen> {
                                     ),
                                   ),
                                   InkWell(
-                                    onTap: () =>
-                                        LinkUtil.launchUrl(widget.story.url),
+                                    onTap: () => LinkUtil.launchUrl(
+                                      widget.story.url,
+                                      useReader: context
+                                          .read<PreferenceCubit>()
+                                          .state
+                                          .useReader,
+                                    ),
                                     child: Padding(
                                       padding: const EdgeInsets.only(
                                         left: 6,
@@ -361,6 +366,7 @@ class _StoryScreenState extends State<StoryScreen> {
                                       ),
                                       child: Text(
                                         widget.story.title,
+                                        textAlign: TextAlign.center,
                                         style: const TextStyle(
                                             fontWeight: FontWeight.bold),
                                       ),

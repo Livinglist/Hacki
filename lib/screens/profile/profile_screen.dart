@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -289,6 +291,21 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 },
                                 activeColor: Colors.orange,
                               ),
+                              if (Platform.isIOS)
+                                SwitchListTile(
+                                  title: const Text('Use Reader'),
+                                  subtitle: const Text(
+                                      'enter reader mode in Safari directly'
+                                      ' when it is available.'),
+                                  value: preferenceState.useReader,
+                                  onChanged: (val) {
+                                    HapticFeedback.lightImpact();
+                                    context
+                                        .read<PreferenceCubit>()
+                                        .toggleReaderMode();
+                                  },
+                                  activeColor: Colors.orange,
+                                ),
                               SwitchListTile(
                                 title: const Text('Show Comment Outlines'),
                                 subtitle: const Text('be nice to your eyes.'),
@@ -360,7 +377,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   showAboutDialog(
                                     context: context,
                                     applicationName: 'Hacki',
-                                    applicationVersion: 'v0.1.3',
+                                    applicationVersion: 'v0.1.4',
                                     applicationIcon: Image.asset(
                                       'images/hacki_icon.png',
                                       height: 50,
@@ -400,6 +417,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     ],
                                   );
                                 },
+                              ),
+                              const SizedBox(
+                                height: 48,
                               ),
                             ],
                           ),

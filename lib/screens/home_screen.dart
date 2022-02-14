@@ -400,6 +400,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   void onStoryTapped(Story story) {
     final showWebFirst = context.read<PreferenceCubit>().state.showWebFirst;
+    final useReader = context.read<PreferenceCubit>().state.useReader;
 
     // If a story is a job story and it has a link to the job posting,
     // it would be better to just navigate to the web page.
@@ -412,7 +413,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     if (isJobWithLink ||
         (showWebFirst && cacheService.isFirstTimeReading(story.id))) {
-      LinkUtil.launchUrl(story.url);
+      LinkUtil.launchUrl(story.url, useReader: useReader);
       cacheService.store(story.id);
     }
   }
