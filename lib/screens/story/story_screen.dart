@@ -404,6 +404,10 @@ class _StoryScreenState extends State<StoryScreen> {
                                       ? authState.username
                                       : null,
                                   onTap: (cmt) {
+                                    if (cmt.deleted || cmt.dead) {
+                                      return;
+                                    }
+
                                     if (cmt != replyingTo) {
                                       commentEditingController.clear();
                                     }
