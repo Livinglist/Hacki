@@ -13,6 +13,7 @@ class CommentTile extends StatelessWidget {
     required this.comment,
     required this.onTap,
     required this.onLongPress,
+    required this.onStoryLinkTapped,
     this.loadKids = true,
     this.level = 0,
   }) : super(key: key);
@@ -23,6 +24,7 @@ class CommentTile extends StatelessWidget {
   final bool loadKids;
   final Function(Comment) onTap;
   final Function(Comment) onLongPress;
+  final Function(String) onStoryLinkTapped;
 
   @override
   Widget build(BuildContext context) {
@@ -142,8 +144,14 @@ class CommentTile extends StatelessWidget {
                                   child: Linkify(
                                     key: ObjectKey(comment),
                                     text: comment.text,
-                                    onOpen: (link) =>
-                                        LinkUtil.launchUrl(link.url),
+                                    onOpen: (link) {
+                                      if (link.url.contains(
+                                          'news.ycombinator.com/item')) {
+                                        onStoryLinkTapped(link.url);
+                                      } else {
+                                        LinkUtil.launchUrl(link.url);
+                                      }
+                                    },
                                   ),
                                 ),
                               const Divider(
@@ -157,15 +165,18 @@ class CommentTile extends StatelessWidget {
                             padding: const EdgeInsets.only(left: 12),
                             child: Column(
                               children: state.comments
-                                  .map((e) => FadeIn(
-                                        child: CommentTile(
-                                          comment: e,
-                                          myUsername: myUsername,
-                                          onTap: onTap,
-                                          onLongPress: onLongPress,
-                                          level: level + 1,
-                                        ),
-                                      ))
+                                  .map(
+                                    (e) => FadeIn(
+                                      child: CommentTile(
+                                        comment: e,
+                                        myUsername: myUsername,
+                                        onTap: onTap,
+                                        onLongPress: onLongPress,
+                                        level: level + 1,
+                                        onStoryLinkTapped: onStoryLinkTapped,
+                                      ),
+                                    ),
+                                  )
                                   .toList(),
                             ),
                           ),

@@ -3,12 +3,12 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LinkUtil {
-  static final browser = ChromeSafariBrowser();
+  static final _browser = ChromeSafariBrowser();
 
   static void launchUrl(String link, {bool useReader = false}) {
     canLaunch(link).then((val) {
       if (val) {
-        browser.open(
+        _browser.open(
           url: Uri.parse(link),
           options: ChromeSafariBrowserClassOptions(
             ios: IOSSafariOptions(

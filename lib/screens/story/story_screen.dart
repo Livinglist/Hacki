@@ -10,7 +10,9 @@ import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/story/widgets/widgets.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
@@ -416,6 +418,30 @@ class _StoryScreenState extends State<StoryScreen> {
                                     focusNode.requestFocus();
                                   },
                                   onLongPress: onLongPressed,
+                                  onStoryLinkTapped: (link) {
+                                    final regex = RegExp(r'\d+$');
+                                    final match = regex.stringMatch(link) ?? '';
+                                    final id = int.tryParse(match);
+                                    if (id != null) {
+                                      locator
+                                          .get<StoriesRepository>()
+                                          .fetchParentStory(id: id)
+                                          .then((story) {
+                                        if (mounted) {
+                                          if (story != null) {
+                                            HackiApp.navigatorKey.currentState!
+                                                .pushNamed(
+                                              StoryScreen.routeName,
+                                              arguments:
+                                                  StoryScreenArgs(story: story),
+                                            );
+                                          } else {}
+                                        }
+                                      });
+                                    } else {
+                                      LinkUtil.launchUrl(link);
+                                    }
+                                  },
                                 ),
                               ),
                             ),
