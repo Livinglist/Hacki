@@ -168,7 +168,7 @@ class _LinkPreviewState extends State<LinkPreview> {
         url: widget.link,
         title: title!,
         description: desc!,
-        imageUri: image!,
+        imageUri: image,
         onTap: _launchURL,
         titleTextStyle: widget.titleStyle,
         bodyTextStyle: widget.bodyStyle,
@@ -205,7 +205,9 @@ class _LinkPreviewState extends State<LinkPreview> {
         _height,
         title: _errorTitle,
         desc: _errorBody,
-        image: img.trim() == '' ? _errorImage : img,
+        image: widget.showMultimedia
+            ? (img.trim() == '' ? _errorImage : img)
+            : null,
       );
     } else {
       final info = _info as WebInfo?;
@@ -213,18 +215,20 @@ class _LinkPreviewState extends State<LinkPreview> {
           ? _buildLinkContainer(
               _height,
               title: _errorTitle,
-              image: _errorImage,
+              image: widget.showMultimedia ? _errorImage : null,
             )
           : _buildLinkContainer(_height,
               title: _errorTitle,
               desc: WebAnalyzer.isNotEmpty(info!.description)
                   ? info.description
                   : _errorBody,
-              image: WebAnalyzer.isNotEmpty(info.image)
-                  ? info.image
-                  : WebAnalyzer.isNotEmpty(info.icon)
-                      ? info.icon
-                      : _errorImage,
+              image: widget.showMultimedia
+                  ? (WebAnalyzer.isNotEmpty(info.image)
+                      ? info.image
+                      : WebAnalyzer.isNotEmpty(info.icon)
+                          ? info.icon
+                          : _errorImage)
+                  : null,
               isIcon: !WebAnalyzer.isNotEmpty(info.image));
     }
 

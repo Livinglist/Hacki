@@ -8,8 +8,8 @@ class LinkView extends StatelessWidget {
     required this.url,
     required this.title,
     required this.description,
-    required this.imageUri,
     required this.onTap,
+    this.imageUri,
     this.titleTextStyle,
     this.bodyTextStyle,
     this.showMultiMedia = true,
@@ -23,7 +23,7 @@ class LinkView extends StatelessWidget {
   final String url;
   final String title;
   final String description;
-  final String imageUri;
+  final String? imageUri;
   final Function(String) onTap;
   final TextStyle? titleTextStyle;
   final TextStyle? bodyTextStyle;
@@ -81,7 +81,7 @@ class LinkView extends StatelessWidget {
               if (showMultiMedia)
                 Expanded(
                   flex: 2,
-                  child: imageUri == ''
+                  child: imageUri?.isEmpty ?? true
                       ? Container(color: bgColor ?? Colors.grey)
                       : Padding(
                           padding: const EdgeInsets.only(
@@ -90,7 +90,7 @@ class LinkView extends StatelessWidget {
                             bottom: 5,
                           ),
                           child: CachedNetworkImage(
-                            imageUrl: imageUri,
+                            imageUrl: imageUri!,
                             fit: isIcon ? BoxFit.scaleDown : BoxFit.cover,
                             errorWidget: (context, _, dynamic __) {
                               return CachedNetworkImage(

@@ -106,6 +106,7 @@ class _HomeScreenState extends State<HomeScreen>
                           story: story,
                           onTap: () => onStoryTapped(story),
                           showWebPreview: preferenceState.showComplexStoryTile,
+                          showMultimedia: preferenceState.showImage,
                         ),
                       ),
                     ),
@@ -289,6 +290,7 @@ class _HomeScreenState extends State<HomeScreen>
                       ItemsListView<Story>(
                         pinnable: true,
                         showWebPreview: preferenceState.showComplexStoryTile,
+                        showMultimedia: preferenceState.showImage,
                         refreshController: refreshControllerTop,
                         items: state.storiesByType[StoryType.top]!,
                         onRefresh: () {
@@ -309,6 +311,7 @@ class _HomeScreenState extends State<HomeScreen>
                       ItemsListView<Story>(
                         pinnable: true,
                         showWebPreview: preferenceState.showComplexStoryTile,
+                        showMultimedia: preferenceState.showImage,
                         refreshController: refreshControllerNew,
                         items: state.storiesByType[StoryType.latest]!,
                         onRefresh: () {
@@ -329,6 +332,7 @@ class _HomeScreenState extends State<HomeScreen>
                       ItemsListView<Story>(
                         pinnable: true,
                         showWebPreview: preferenceState.showComplexStoryTile,
+                        showMultimedia: preferenceState.showImage,
                         refreshController: refreshControllerAsk,
                         items: state.storiesByType[StoryType.ask]!,
                         onRefresh: () {
@@ -349,6 +353,7 @@ class _HomeScreenState extends State<HomeScreen>
                       ItemsListView<Story>(
                         pinnable: true,
                         showWebPreview: preferenceState.showComplexStoryTile,
+                        showMultimedia: preferenceState.showImage,
                         refreshController: refreshControllerShow,
                         items: state.storiesByType[StoryType.show]!,
                         onRefresh: () {
@@ -369,6 +374,7 @@ class _HomeScreenState extends State<HomeScreen>
                       ItemsListView<Story>(
                         pinnable: true,
                         showWebPreview: preferenceState.showComplexStoryTile,
+                        showMultimedia: preferenceState.showImage,
                         refreshController: refreshControllerJobs,
                         items: state.storiesByType[StoryType.jobs]!,
                         onRefresh: () {

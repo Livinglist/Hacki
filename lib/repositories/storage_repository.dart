@@ -15,6 +15,7 @@ class StorageRepository {
   static const String _notificationModeKey = 'notificationMode';
   static const String _trueDarkModeKey = 'trueDarkMode';
   static const String _readerModeKey = 'readerMode';
+  static const String _imageModeKey = 'imageMode';
 
   /// The key of a boolean value deciding whether or not the story
   /// tile should display link preview. Defaults to true.
@@ -35,6 +36,7 @@ class StorageRepository {
   static const bool _eyeCandyModeDefaultValue = false;
   static const bool _trueDarkModeDefaultValue = false;
   static const bool _readerModeKeyDefaultValue = true;
+  static const bool _imageModeKeyDefaultValue = true;
 
   final Future<SharedPreferences> _prefs;
   final FlutterSecureStorage _secureStorage;
@@ -71,6 +73,9 @@ class StorageRepository {
 
   Future<bool> get readerMode async => _prefs.then(
       (prefs) => prefs.getBool(_readerModeKey) ?? _readerModeKeyDefaultValue);
+
+  Future<bool> get imageMode async => _prefs.then(
+      (prefs) => prefs.getBool(_imageModeKey) ?? _imageModeKeyDefaultValue);
 
   Future<List<int>> get unreadCommentsIds async => _prefs.then((prefs) =>
       prefs.getStringList(_unreadCommentsIdsKey)?.map(int.parse).toList() ??
@@ -150,6 +155,13 @@ class StorageRepository {
     final currentMode =
         prefs.getBool(_readerModeKey) ?? _readerModeKeyDefaultValue;
     await prefs.setBool(_readerModeKey, !currentMode);
+  }
+
+  Future<void> toggleImageMode() async {
+    final prefs = await _prefs;
+    final currentMode =
+        prefs.getBool(_imageModeKey) ?? _imageModeKeyDefaultValue;
+    await prefs.setBool(_imageModeKey, !currentMode);
   }
 
   Future<void> addFav({required String username, required int id}) async {
