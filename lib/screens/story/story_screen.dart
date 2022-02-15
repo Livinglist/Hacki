@@ -449,6 +449,10 @@ class _StoryScreenState extends State<StoryScreen> {
   }
 
   void onLongPressed(Item item) {
+    if (item.dead || item.deleted) {
+      return;
+    }
+
     final isBlocked =
         context.read<BlocklistCubit>().state.blocklist.contains(item.by);
     showModalBottomSheet<_MenuAction>(
