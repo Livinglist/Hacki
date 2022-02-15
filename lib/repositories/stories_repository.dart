@@ -1,4 +1,5 @@
 import 'package:firebase/firebase_io.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hacki/models/models.dart';
 import 'package:html_unescape/html_unescape.dart';
 
@@ -62,7 +63,7 @@ class StoriesRepository {
     for (final id in ids) {
       final item = await _firebaseClient
           .get('${_baseUrl}item/$id.json')
-          .then((dynamic val) {
+          .then((dynamic val) async {
         if (val == null) {
           return null;
         }
@@ -73,7 +74,7 @@ class StoriesRepository {
           return story;
         } else if (json['type'] == 'comment') {
           final text = json['text'] as String? ?? '';
-          final parsedText = _parseHtml(text);
+          final parsedText = await compute<String, String>(_parseHtml, text);
           json['text'] = parsedText;
           final comment = Comment.fromJson(json);
           return comment;
@@ -108,13 +109,13 @@ class StoriesRepository {
   Future<Comment?> fetchCommentBy({required int id}) async {
     final comment = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
-        .then((dynamic val) {
+        .then((dynamic val) async {
       if (val == null) {
         return null;
       }
       final json = val as Map<String, dynamic>;
       final text = json['text'] as String? ?? '';
-      final parsedText = _parseHtml(text);
+      final parsedText = await compute<String, String>(_parseHtml, text);
       json['text'] = parsedText;
 
       final comment = Comment.fromJson(json);
@@ -171,7 +172,7 @@ class StoriesRepository {
     return item as Story;
   }
 
-  String _parseHtml(String text) {
+  static String _parseHtml(String text) {
     return HtmlUnescape()
         .convert(text)
         .replaceAll('<p>', '\n')
