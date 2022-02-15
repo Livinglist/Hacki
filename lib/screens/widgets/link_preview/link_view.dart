@@ -99,7 +99,7 @@ class LinkView extends StatelessWidget {
                         : CachedNetworkImage(
                             imageUrl: imageUri!,
                             fit: isIcon ? BoxFit.scaleDown : BoxFit.cover,
-                            memCacheHeight: layoutHeight.toInt() * 2,
+                            memCacheHeight: layoutHeight.toInt() * 4,
                             errorWidget: (context, _, dynamic __) {
                               return Image.asset(
                                 Constants.hackerNewsLogoPath,

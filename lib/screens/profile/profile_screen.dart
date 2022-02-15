@@ -106,7 +106,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                           builder: (context, historyState) {
                             return ItemsListView<Item>(
                               showWebPreview: false,
-                              showMultimedia: false,
                               refreshController: refreshControllerHistory,
                               items: historyState.submittedItems
                                   .where((e) => !e.dead && !e.deleted)
@@ -158,7 +157,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                             return ItemsListView<Story>(
                               showWebPreview:
                                   preferenceState.showComplexStoryTile,
-                              showMultimedia: preferenceState.showImage,
                               refreshController: refreshControllerFav,
                               items: favState.favStories,
                               onRefresh: () {
@@ -278,40 +276,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       .toggleDisplayMode();
                                 },
                                 activeColor: Colors.orange,
-                              ),
-                              SwitchListTile(
-                                title: Text(
-                                  'Show Image',
-                                  style: TextStyle(
-                                    decoration:
-                                        preferenceState.showComplexStoryTile
-                                            ? null
-                                            : TextDecoration.lineThrough,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  'show preview image in'
-                                  ' the complex story tile.',
-                                  style: TextStyle(
-                                    decoration:
-                                        preferenceState.showComplexStoryTile
-                                            ? null
-                                            : TextDecoration.lineThrough,
-                                  ),
-                                ),
-                                value: preferenceState.showImage,
-                                onChanged: (val) {
-                                  if (preferenceState.showComplexStoryTile) {
-                                    HapticFeedback.lightImpact();
-                                    context
-                                        .read<PreferenceCubit>()
-                                        .toggleImageMode();
-                                  }
-                                },
-                                activeColor:
-                                    preferenceState.showComplexStoryTile
-                                        ? Colors.orange
-                                        : null,
                               ),
                               SwitchListTile(
                                 title: const Text('Show Web Page First'),

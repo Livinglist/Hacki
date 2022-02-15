@@ -13,11 +13,9 @@ class StoryTile extends StatelessWidget {
     required this.showWebPreview,
     required this.story,
     required this.onTap,
-    this.showMultimedia = true,
   }) : super(key: key);
 
   final bool showWebPreview;
-  final bool showMultimedia;
   final Story story;
   final VoidCallback onTap;
 
@@ -35,7 +33,6 @@ class StoryTile extends StatelessWidget {
             ),
             child: AbsorbPointer(
               child: LinkPreview(
-                showMultimedia: showMultimedia,
                 link: story.url.isNotEmpty ? story.url : 's',
                 placeholderWidget: FadeIn(
                   child: SizedBox(
@@ -46,22 +43,21 @@ class StoryTile extends StatelessWidget {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          if (showMultimedia)
-                            Expanded(
-                              flex: 2,
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                  right: 5,
-                                  bottom: 5,
-                                  top: 5,
-                                ),
-                                child: Container(
-                                  height: height,
-                                  width: height,
-                                  color: Colors.white,
-                                ),
+                          Expanded(
+                            flex: 2,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                right: 5,
+                                bottom: 5,
+                                top: 5,
+                              ),
+                              child: Container(
+                                height: height,
+                                width: height,
+                                color: Colors.white,
                               ),
                             ),
+                          ),
                           Expanded(
                             flex: 4,
                             child: Padding(
@@ -147,7 +143,6 @@ class StoryTile extends StatelessWidget {
                   onTap: (_) {},
                   url: '',
                   imagePath: Constants.hackerNewsLogoPath,
-                  showMultiMedia: showMultimedia,
                   bodyMaxLines: 4,
                   titleTextStyle: TextStyle(
                     color: Theme.of(context).textTheme.subtitle1!.color,

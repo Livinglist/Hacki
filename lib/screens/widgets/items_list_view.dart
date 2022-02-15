@@ -12,7 +12,6 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   const ItemsListView({
     Key? key,
     required this.showWebPreview,
-    required this.showMultimedia,
     required this.items,
     required this.onTap,
     required this.refreshController,
@@ -26,7 +25,6 @@ class ItemsListView<T extends Item> extends StatelessWidget {
         super(key: key);
 
   final bool showWebPreview;
-  final bool showMultimedia;
   final bool enablePullDown;
 
   /// Whether story tiles can be pinned to the top.
@@ -70,7 +68,6 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                     story: e,
                     onTap: () => onTap(e),
                     showWebPreview: showWebPreview,
-                    showMultimedia: showMultimedia,
                   ),
                 ),
               ),

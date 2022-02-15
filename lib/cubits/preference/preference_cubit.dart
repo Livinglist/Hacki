@@ -30,8 +30,6 @@ class PreferenceCubit extends Cubit<PreferenceState> {
         .then((value) => emit(state.copyWith(useTrueDark: value)));
     _storageRepository.readerMode
         .then((value) => emit(state.copyWith(useReader: value)));
-    _storageRepository.imageMode
-        .then((value) => emit(state.copyWith(showImage: value)));
   }
 
   void toggleNotificationMode() {
@@ -67,10 +65,5 @@ class PreferenceCubit extends Cubit<PreferenceState> {
   void toggleReaderMode() {
     emit(state.copyWith(useReader: !state.useReader));
     _storageRepository.toggleReaderMode();
-  }
-
-  void toggleImageMode() {
-    emit(state.copyWith(showImage: !state.showImage));
-    _storageRepository.toggleImageMode();
   }
 }

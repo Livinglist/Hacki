@@ -105,7 +105,6 @@ class _SearchScreenState extends State<SearchScreen> {
                                       child: StoryTile(
                                           showWebPreview:
                                               prefState.showComplexStoryTile,
-                                          showMultimedia: prefState.showImage,
                                           story: e,
                                           onTap: () {
                                             HackiApp.navigatorKey.currentState!
