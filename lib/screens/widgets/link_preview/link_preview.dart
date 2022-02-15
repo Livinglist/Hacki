@@ -10,7 +10,7 @@ class LinkPreview extends StatefulWidget {
   const LinkPreview({
     Key? key,
     required this.link,
-    this.cache = const Duration(days: 1),
+    this.cache = const Duration(days: 30),
     this.titleStyle,
     this.bodyStyle,
     this.showMultimedia = true,

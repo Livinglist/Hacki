@@ -17,6 +17,10 @@ class EditCubit extends Cubit<EditState> {
   final Debouncer _debouncer;
 
   void onItemTapped(Item item) {
+    if (item.dead || item.deleted) {
+      return;
+    }
+
     emit(EditState(
       replyingTo: item,
       text: _cacheService.getDraft(replyingTo: item.id),
