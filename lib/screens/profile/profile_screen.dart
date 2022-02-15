@@ -415,7 +415,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     applicationName: 'Hacki',
                                     applicationVersion: 'v0.1.4',
                                     applicationIcon: Image.asset(
-                                      'images/hacki_icon.png',
+                                      Constants.hackiIconPath,
                                       height: 50,
                                       width: 50,
                                     ),

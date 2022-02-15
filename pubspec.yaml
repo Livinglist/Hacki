@@ -61,5 +61,6 @@ flutter:
 
   assets:
     - images/hacki_icon.png
+    - images/hacker_news_logo.png
 
 

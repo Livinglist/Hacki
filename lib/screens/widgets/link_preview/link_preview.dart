@@ -150,7 +150,7 @@ class _LinkPreviewState extends State<LinkPreview> {
     double _height, {
     String? title = '',
     String? desc = '',
-    String? image = '',
+    String? imageUri = '',
     bool isIcon = false,
   }) {
     return Container(
@@ -168,7 +168,7 @@ class _LinkPreviewState extends State<LinkPreview> {
         url: widget.link,
         title: title!,
         description: desc!,
-        imageUri: image,
+        imageUri: imageUri,
         onTap: _launchURL,
         titleTextStyle: widget.titleStyle,
         bodyTextStyle: widget.bodyStyle,
@@ -205,7 +205,7 @@ class _LinkPreviewState extends State<LinkPreview> {
         _height,
         title: _errorTitle,
         desc: _errorBody,
-        image: widget.showMultimedia
+        imageUri: widget.showMultimedia
             ? (img.trim() == '' ? _errorImage : img)
             : null,
       );
@@ -215,14 +215,14 @@ class _LinkPreviewState extends State<LinkPreview> {
           ? _buildLinkContainer(
               _height,
               title: _errorTitle,
-              image: widget.showMultimedia ? _errorImage : null,
+              imageUri: widget.showMultimedia ? _errorImage : null,
             )
           : _buildLinkContainer(_height,
               title: _errorTitle,
               desc: WebAnalyzer.isNotEmpty(info!.description)
                   ? info.description
                   : _errorBody,
-              image: widget.showMultimedia
+              imageUri: widget.showMultimedia
                   ? (WebAnalyzer.isNotEmpty(info.image)
                       ? info.image
                       : WebAnalyzer.isNotEmpty(info.icon)

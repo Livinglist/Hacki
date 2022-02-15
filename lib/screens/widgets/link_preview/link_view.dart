@@ -10,6 +10,7 @@ class LinkView extends StatelessWidget {
     required this.description,
     required this.onTap,
     this.imageUri,
+    this.imagePath,
     this.titleTextStyle,
     this.bodyTextStyle,
     this.showMultiMedia = true,
@@ -18,12 +19,15 @@ class LinkView extends StatelessWidget {
     this.isIcon = false,
     this.bgColor,
     this.radius = 0,
-  }) : super(key: key);
+  })  : assert(!showMultiMedia ||
+            (showMultiMedia && (imageUri != null || imagePath != null))),
+        super(key: key);
 
   final String url;
   final String title;
   final String description;
   final String? imageUri;
+  final String? imagePath;
   final Function(String) onTap;
   final TextStyle? titleTextStyle;
   final TextStyle? bodyTextStyle;
@@ -81,25 +85,29 @@ class LinkView extends StatelessWidget {
               if (showMultiMedia)
                 Expanded(
                   flex: 2,
-                  child: imageUri?.isEmpty ?? true
-                      ? Container(color: bgColor ?? Colors.grey)
-                      : Padding(
-                          padding: const EdgeInsets.only(
-                            right: 5,
-                            top: 5,
-                            bottom: 5,
-                          ),
-                          child: CachedNetworkImage(
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      right: 5,
+                      top: 5,
+                      bottom: 5,
+                    ),
+                    child: (imageUri?.isEmpty ?? true) && imagePath != null
+                        ? Image.asset(
+                            imagePath!,
+                            fit: isIcon ? BoxFit.scaleDown : BoxFit.cover,
+                          )
+                        : CachedNetworkImage(
                             imageUrl: imageUri!,
                             fit: isIcon ? BoxFit.scaleDown : BoxFit.cover,
+                            memCacheHeight: layoutHeight.toInt() * 2,
                             errorWidget: (context, _, dynamic __) {
-                              return CachedNetworkImage(
-                                imageUrl: Constants.hackerNewsLogoLink,
+                              return Image.asset(
+                                Constants.hackerNewsLogoPath,
                                 fit: BoxFit.cover,
                               );
                             },
                           ),
-                        ),
+                  ),
                 )
               else
                 const SizedBox(width: 5),
