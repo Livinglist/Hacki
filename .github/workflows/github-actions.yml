@@ -1,17 +1,30 @@
-name: Flutter Build Actions
-on: [push]
+name: Releases
+
+on: 
+  push:
+    tags:
+    - '*'
+  
 jobs:
-  Flutter-Build:
-    runs-on: macos-latest
+  releases:
+    name: release apk
+    runs-on: ubuntu-latest
+    env:
+      JAVA_VERSION: "11.0"
+      FLUTTER_VERSION: "2.0.0"
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-java@v2
+      - uses: actions/setup-java@v1
         with:
-          distribution: 'zulu'
-          java-version: '17'
-      - uses: subosito/flutter-action@v2
+          java-version: $
+      - uses: subosito/flutter-action@v1
         with:
-          flutter-version: '2.10.1'
+          flutter-version: $
       - run: flutter pub get
-      - run: flutter build appbundle
-
+      - run: flutter analyze
+      - run: flutter test
+      - run: flutter build apk --release
+      - uses: ncipollo/release-action@v2
+        with:
+         artifacts: "build/app/outputs/flutter-apk/*.apk"
+         token: $
