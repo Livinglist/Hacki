@@ -21,6 +21,7 @@ You can:
 - Long press to vote on a comment or story.
 - Swipe to right to pin a story to top.
 - Get in-app notification when there is new reply to your stories or comments.
+- And more...
 
 
 <p align="center">
