@@ -18,9 +18,10 @@ jobs:
         with:
           distribution: 'temurin' # See 'Supported distributions' for available options
           java-version: '17'
-      - uses: subosito/flutter-action@v1
+      - uses: subosito/flutter-action@v2
         with:
-          flutter-version: $
+          flutter-version: '2.10.1'
+          channel: 'stable'
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter test
