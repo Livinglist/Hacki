@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
+
+import 'package:flutter/foundation.dart';
 
 class Debouncer {
   Debouncer({

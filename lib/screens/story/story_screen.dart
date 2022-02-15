@@ -76,6 +76,7 @@ class _StoryScreenState extends State<StoryScreen> {
     initialRefreshStatus: RefreshStatus.refreshing,
   );
   final focusNode = FocusNode();
+  final throttle = Throttle(delay: const Duration(seconds: 2));
   final sadFaces = <String>[
     'ಥ_ಥ',
     '(╯°□°）╯︵ ┻━┻',
@@ -124,6 +125,7 @@ class _StoryScreenState extends State<StoryScreen> {
     refreshController.dispose();
     commentEditingController.dispose();
     scrollController.dispose();
+    throttle.dispose();
     super.dispose();
   }
 
@@ -423,20 +425,23 @@ class _StoryScreenState extends State<StoryScreen> {
                                     final match = regex.stringMatch(link) ?? '';
                                     final id = int.tryParse(match);
                                     if (id != null) {
-                                      locator
-                                          .get<StoriesRepository>()
-                                          .fetchParentStory(id: id)
-                                          .then((story) {
-                                        if (mounted) {
-                                          if (story != null) {
-                                            HackiApp.navigatorKey.currentState!
-                                                .pushNamed(
-                                              StoryScreen.routeName,
-                                              arguments:
-                                                  StoryScreenArgs(story: story),
-                                            );
-                                          } else {}
-                                        }
+                                      throttle.run(() {
+                                        locator
+                                            .get<StoriesRepository>()
+                                            .fetchParentStory(id: id)
+                                            .then((story) {
+                                          if (mounted) {
+                                            if (story != null) {
+                                              HackiApp
+                                                  .navigatorKey.currentState!
+                                                  .pushNamed(
+                                                StoryScreen.routeName,
+                                                arguments: StoryScreenArgs(
+                                                    story: story),
+                                              );
+                                            } else {}
+                                          }
+                                        });
                                       });
                                     } else {
                                       LinkUtil.launchUrl(link);
