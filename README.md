@@ -8,7 +8,8 @@ A simple Hacker News reader made with Flutter.
 [![Visits Badge](https://badges.pufler.dev/visits/livinglist/Hacki)](https://badges.pufler.dev)
 [![GitHub](https://img.shields.io/github/stars/livinglist/Hacki?style=social)](https://img.shields.io/github/stars/livinglist/Hacki?style=social)
 [![style: effective dart](https://img.shields.io/badge/style-effective_dart-40c4ff.svg)](https://pub.dev/packages/effective_dart)
-[<img src="https://img.shields.io/liberapay/patrons/jfeng_for_open_source.svg?logo=liberapay">](https://liberapay.com/jfeng_for_open_source/donate)
+
+<noscript><a href="https://liberapay.com/jfeng_for_open_source/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a></noscript>
 
 
 You can:
