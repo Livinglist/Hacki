@@ -11,6 +11,8 @@ A simple Hacker News reader made with Flutter.
 
 <noscript><a href="https://liberapay.com/jfeng_for_open_source/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a></noscript>
 
+[<img src="images/app_store_badge.png" height="50">](https://apps.apple.com/us/app/hacki/id1602043763) [<img src="images/google_play_badge.png" height="50">](https://play.google.com/store/apps/details?id=com.jiaqifeng.hacki&hl=en_US&gl=US)
+
 
 Features:
 - Log in using your Hacker News account.
