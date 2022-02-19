@@ -1,6 +1,6 @@
 name: hacki
-description: A Very Good Project created by Very Good CLI.
-version: 0.1.4+19
+description: A Hacker News reader.
+version: 0.1.5+20
 publish_to: none
 
 environment:

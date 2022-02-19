@@ -15,8 +15,9 @@ A simple Hacker News reader made with Flutter.
 You can:
 - Log in using your Hacker News account.
 - Browse stories from various categories.
-- Leave comments on stories.
-- Mark stories as favorite.
+- Submit new link.
+- Leave comment.
+- Mark story as favorite.
 - Browse comments and stories you have posted in the past.
 - Search for stories on Hacker News.
 - Double tap to collapse a comment.
