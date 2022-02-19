@@ -27,11 +27,20 @@ class _SubmitScreenState extends State<SubmitScreen> {
   final textEditingController = TextEditingController();
 
   @override
+  void dispose() {
+    super.dispose();
+    titleEditingController.dispose();
+    urlEditingController.dispose();
+    textEditingController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocConsumer<SubmitCubit, SubmitState>(
       listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
         if (state.status == SubmitStatus.submitted) {
+          Navigator.pop(context);
           showSnackBar(
             content: 'Post submitted successfully.',
           );
@@ -123,6 +132,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
                   controller: titleEditingController,
                   cursorColor: Colors.orange,
                   autocorrect: false,
+                  maxLength: 80,
                   decoration: const InputDecoration(
                     hintText: 'Title',
                     focusedBorder: UnderlineInputBorder(
