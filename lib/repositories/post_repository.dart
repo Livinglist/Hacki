@@ -42,6 +42,72 @@ class PostRepository {
     );
   }
 
+  Future<bool> submit({
+    required String title,
+    String? url,
+    String? text,
+  }) async {
+    final username = await _storageRepository.username;
+    final password = await _storageRepository.password;
+
+    if (username == null || password == null) {
+      return false;
+    }
+
+    final formResponse = await _getFormResponse(
+      username: username,
+      password: password,
+      path: 'submitlink',
+    );
+    final formValues = HtmlUtil.getHiddenFormValues(formResponse.data);
+
+    if (formValues == null || formValues.isEmpty) {
+      return false;
+    }
+
+    final cookie = formResponse.headers.value(HttpHeaders.setCookieHeader);
+
+    final uri = Uri.https(authority, 'r');
+    final PostDataMixin data = SubmitPostData(
+      fnid: formValues['fnid']!,
+      fnop: formValues['fnop']!,
+      title: title,
+      url: url,
+      text: text,
+    );
+
+    return _performDefaultPost(
+      uri,
+      data,
+      cookie: cookie,
+      validateLocation: (String? location) => location == '/newest',
+    );
+  }
+
+  Future<Response<List<int>>> _getFormResponse({
+    required String username,
+    required String password,
+    required String path,
+    int? id,
+  }) async {
+    final uri = Uri.https(
+      authority,
+      path,
+      <String, dynamic>{if (id != null) 'id': id.toString()},
+    );
+    final PostDataMixin data = FormPostData(
+      acct: username,
+      pw: password,
+      id: id,
+    );
+    return _performPost(
+      uri,
+      data,
+      responseType: ResponseType.bytes,
+      validateStatus: (int? status) => status == HttpStatus.ok,
+    );
+  }
+
   Future<bool> _performDefaultPost(
     Uri uri,
     PostDataMixin data, {

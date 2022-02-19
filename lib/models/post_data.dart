@@ -118,3 +118,51 @@ class VotePostData with PostDataMixin {
     };
   }
 }
+
+class SubmitPostData with PostDataMixin {
+  SubmitPostData({
+    required this.fnid,
+    required this.fnop,
+    required this.title,
+    this.url,
+    this.text,
+  }) : assert((url != null && text == null) || (url == null && text != null));
+
+  final String fnid;
+  final String fnop;
+  final String title;
+  final String? url;
+  final String? text;
+
+  @override
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'fnid': fnid,
+      'fnop': fnop,
+      'title': title,
+      'url': url,
+      'text': text,
+    };
+  }
+}
+
+class FormPostData with PostDataMixin {
+  FormPostData({
+    required this.acct,
+    required this.pw,
+    this.id,
+  });
+
+  final String acct;
+  final String pw;
+  final int? id;
+
+  @override
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'acct': acct,
+      'pw': pw,
+      'id': id,
+    };
+  }
+}

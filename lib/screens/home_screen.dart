@@ -225,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen>
                               ),
                             ),
                             Tab(
-                              icon: DescribedFeatureOverlay(
+                              child: DescribedFeatureOverlay(
                                 targetColor: Theme.of(context).primaryColor,
                                 tapTarget: const Icon(
                                   Icons.person,
@@ -239,7 +239,9 @@ class _HomeScreenState extends State<HomeScreen>
                                   'to check out stories and comments you have '
                                   'posted in the past, and get in-app '
                                   'notification when there is new reply to '
-                                  'your comments or stories',
+                                  'your comments or stories.\n\nAlso, you can '
+                                  'long press here to submit a new link to '
+                                  'Hacker News.',
                                   style: TextStyle(fontSize: 16),
                                 ),
                                 child: BlocBuilder<NotificationCubit,

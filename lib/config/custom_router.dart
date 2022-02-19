@@ -12,6 +12,8 @@ class CustomRouter {
         return HomeScreen.route();
       case StoryScreen.routeName:
         return StoryScreen.route(settings.arguments! as StoryScreenArgs);
+      case SubmitScreen.routeName:
+        return SubmitScreen.route();
       default:
         return _errorRoute();
     }

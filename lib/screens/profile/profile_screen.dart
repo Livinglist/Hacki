@@ -377,7 +377,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   showAboutDialog(
                                     context: context,
                                     applicationName: 'Hacki',
-                                    applicationVersion: 'v0.1.4',
+                                    applicationVersion: 'v0.1.5',
                                     applicationIcon: Image.asset(
                                       Constants.hackiIconPath,
                                       height: 50,
@@ -433,6 +433,33 @@ class _ProfileScreenState extends State<ProfileScreen>
                         controller: scrollController,
                         child: Row(
                           children: [
+                            const SizedBox(
+                              width: 12,
+                            ),
+                            CustomChip(
+                              label: 'Submit',
+                              selected: false,
+                              onSelected: (val) {
+                                if (authState.isLoggedIn) {
+                                  HackiApp.navigatorKey.currentState
+                                      ?.pushNamed(SubmitScreen.routeName);
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: const Text(
+                                        'You need to log in first.',
+                                      ),
+                                      backgroundColor: Colors.orange,
+                                      action: SnackBarAction(
+                                        label: 'Log in',
+                                        textColor: Colors.black,
+                                        onPressed: onLoginTapped,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
                             const SizedBox(
                               width: 12,
                             ),
