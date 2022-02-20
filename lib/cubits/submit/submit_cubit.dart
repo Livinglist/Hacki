@@ -35,11 +35,9 @@ class SubmitCubit extends Cubit<SubmitState> {
         text: state.text,
       )
           .then((successful) {
-        if (successful) {
-          emit(state.copyWith(status: SubmitStatus.submitted));
-        } else {
-          emit(state.copyWith(status: SubmitStatus.failure));
-        }
+        emit(state.copyWith(status: SubmitStatus.submitted));
+      }).onError((error, stackTrace) {
+        emit(state.copyWith(status: SubmitStatus.failure));
       });
     }
   }
