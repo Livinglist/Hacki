@@ -1,0 +1,13 @@
+Features:
+- Log in using your Hacker News account.
+- Browse stories from various categories.
+- Submit links.
+- Leave comments on stories.
+- Mark stories as favorite.
+- Browse comments and stories you have posted in the past.
+- Search for stories on Hacker News.
+- Double tap to collapse a comment.
+- Long press to vote on a comment or story.
+- Swipe to right to pin a story to top.
+- Get in-app notification when there is new reply to your stories or comments.
+- And more...
