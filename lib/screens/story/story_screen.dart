@@ -107,6 +107,7 @@ class _StoryScreenState extends State<StoryScreen> {
         const <String>{
           Constants.featureAddStoryToFavList,
           Constants.featureOpenStoryInWebView,
+          Constants.featurePinToTop,
         },
       );
     });
@@ -205,6 +206,52 @@ class _StoryScreenState extends State<StoryScreen> {
                           ScrollUpIconButton(
                             scrollController: scrollController,
                           ),
+                          BlocBuilder<PinCubit, PinState>(
+                            builder: (context, pinState) {
+                              final pinned = pinState.pinnedStoriesIds
+                                  .contains(widget.story.id);
+                              return IconButton(
+                                icon: DescribedFeatureOverlay(
+                                  barrierDismissible: false,
+                                  overflowMode: OverflowMode.extendBackground,
+                                  targetColor: Theme.of(context).primaryColor,
+                                  tapTarget: Icon(
+                                    pinned
+                                        ? Icons.vertical_align_top
+                                        : Icons.vertical_align_top_outlined,
+                                    color: Colors.white,
+                                  ),
+                                  featureId: Constants.featurePinToTop,
+                                  title: const Text('Pin a Story'),
+                                  description: const Text(
+                                    'Pin this story to the top of your home '
+                                    'screen so that you can come back later.',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  child: Icon(
+                                    pinned
+                                        ? Icons.vertical_align_top
+                                        : Icons.vertical_align_top_outlined,
+                                    color: pinned
+                                        ? Colors.orange
+                                        : Theme.of(context).iconTheme.color,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  HapticFeedback.lightImpact();
+                                  if (pinned) {
+                                    context
+                                        .read<PinCubit>()
+                                        .unpinStory(widget.story);
+                                  } else {
+                                    context
+                                        .read<PinCubit>()
+                                        .pinStory(widget.story);
+                                  }
+                                },
+                              );
+                            },
+                          ),
                           BlocBuilder<FavCubit, FavState>(
                             builder: (context, favState) {
                               final isFav =
@@ -223,7 +270,7 @@ class _StoryScreenState extends State<StoryScreen> {
                                   featureId: Constants.featureAddStoryToFavList,
                                   title: const Text('Fav a Story'),
                                   description: const Text(
-                                    'Save this article for later.',
+                                    'Add it to your favorites.',
                                     style: TextStyle(fontSize: 16),
                                   ),
                                   child: Icon(

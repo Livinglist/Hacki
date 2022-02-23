@@ -54,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen>
     //   Constants.featureLogIn,
     //   Constants.featureAddStoryToFavList,
     //   Constants.featureOpenStoryInWebView,
+    //   Constants.featurePinToTop,
     // ]);
 
     SchedulerBinding.instance?.addPostFrameCallback((_) {

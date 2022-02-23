@@ -11,4 +11,5 @@ class Constants {
   static const String featureAddStoryToFavList = 'add_story_to_fav_list';
   static const String featureOpenStoryInWebView = 'open_story_in_web_view';
   static const String featureLogIn = 'log_in';
+  static const String featurePinToTop = 'pin_to_top';
 }
