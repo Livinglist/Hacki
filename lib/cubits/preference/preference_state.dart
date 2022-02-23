@@ -5,7 +5,6 @@ class PreferenceState extends Equatable {
     required this.showNotification,
     required this.showComplexStoryTile,
     required this.showWebFirst,
-    required this.showCommentBorder,
     required this.showEyeCandy,
     required this.useTrueDark,
     required this.useReader,
@@ -15,7 +14,6 @@ class PreferenceState extends Equatable {
       : showNotification = false,
         showComplexStoryTile = false,
         showWebFirst = false,
-        showCommentBorder = false,
         showEyeCandy = false,
         useTrueDark = false,
         useReader = false;
@@ -23,7 +21,6 @@ class PreferenceState extends Equatable {
   final bool showNotification;
   final bool showComplexStoryTile;
   final bool showWebFirst;
-  final bool showCommentBorder;
   final bool showEyeCandy;
   final bool useTrueDark;
   final bool useReader;
@@ -32,7 +29,6 @@ class PreferenceState extends Equatable {
     bool? showNotification,
     bool? showComplexStoryTile,
     bool? showWebFirst,
-    bool? showCommentBorder,
     bool? showEyeCandy,
     bool? useTrueDark,
     bool? useReader,
@@ -41,7 +37,6 @@ class PreferenceState extends Equatable {
       showNotification: showNotification ?? this.showNotification,
       showComplexStoryTile: showComplexStoryTile ?? this.showComplexStoryTile,
       showWebFirst: showWebFirst ?? this.showWebFirst,
-      showCommentBorder: showCommentBorder ?? this.showCommentBorder,
       showEyeCandy: showEyeCandy ?? this.showEyeCandy,
       useTrueDark: useTrueDark ?? this.useTrueDark,
       useReader: useReader ?? this.useReader,
@@ -53,7 +48,6 @@ class PreferenceState extends Equatable {
         showNotification,
         showComplexStoryTile,
         showWebFirst,
-        showCommentBorder,
         showEyeCandy,
         useTrueDark,
         useReader,

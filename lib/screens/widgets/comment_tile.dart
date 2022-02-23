@@ -195,9 +195,8 @@ class CommentTile extends StatelessWidget {
                       Theme.of(context).brightness == Brightness.dark
                           ? 0.03
                           : 0.15;
-                  final borderColor = prefState.showCommentBorder && level != 0
-                      ? color.withOpacity(0.5)
-                      : Colors.transparent;
+                  final borderColor =
+                      level != 0 ? color.withOpacity(0.5) : Colors.transparent;
                   final commentColor = prefState.showEyeCandy
                       ? color.withOpacity(commentBackgroundColorOpacity)
                       : Colors.transparent;

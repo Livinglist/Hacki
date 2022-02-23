@@ -22,8 +22,6 @@ class PreferenceCubit extends Cubit<PreferenceState> {
         .then((value) => emit(state.copyWith(showComplexStoryTile: value)));
     _storageRepository.shouldShowWebFirst
         .then((value) => emit(state.copyWith(showWebFirst: value)));
-    _storageRepository.shouldCommentBorder
-        .then((value) => emit(state.copyWith(showCommentBorder: value)));
     _storageRepository.shouldShowEyeCandy
         .then((value) => emit(state.copyWith(showEyeCandy: value)));
     _storageRepository.trueDarkMode
@@ -45,11 +43,6 @@ class PreferenceCubit extends Cubit<PreferenceState> {
   void toggleNavigationMode() {
     emit(state.copyWith(showWebFirst: !state.showWebFirst));
     _storageRepository.toggleNavigationMode();
-  }
-
-  void toggleCommentBorderMode() {
-    emit(state.copyWith(showCommentBorder: !state.showCommentBorder));
-    _storageRepository.toggleCommentBorderMode();
   }
 
   void toggleEyeCandyMode() {
