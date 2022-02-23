@@ -211,6 +211,8 @@ class _StoryScreenState extends State<StoryScreen> {
                                   favState.favIds.contains(widget.story.id);
                               return IconButton(
                                 icon: DescribedFeatureOverlay(
+                                  barrierDismissible: false,
+                                  overflowMode: OverflowMode.extendBackground,
                                   targetColor: Theme.of(context).primaryColor,
                                   tapTarget: Icon(
                                     isFav
@@ -250,6 +252,8 @@ class _StoryScreenState extends State<StoryScreen> {
                           ),
                           IconButton(
                             icon: DescribedFeatureOverlay(
+                              barrierDismissible: false,
+                              overflowMode: OverflowMode.extendBackground,
                               targetColor: Theme.of(context).primaryColor,
                               tapTarget: const Icon(
                                 Icons.stream,

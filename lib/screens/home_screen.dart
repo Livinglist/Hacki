@@ -50,11 +50,11 @@ class _HomeScreenState extends State<HomeScreen>
     super.initState();
 
     // This is for testing only.
-    // FeatureDiscovery.clearPreferences(context, [
-    //   Constants.featureLogIn,
-    //   Constants.featureAddStoryToFavList,
-    //   Constants.featureOpenStoryInWebView,
-    // ]);
+    FeatureDiscovery.clearPreferences(context, [
+      Constants.featureLogIn,
+      Constants.featureAddStoryToFavList,
+      Constants.featureOpenStoryInWebView,
+    ]);
 
     SchedulerBinding.instance?.addPostFrameCallback((_) {
       FeatureDiscovery.discoverFeatures(
@@ -226,6 +226,8 @@ class _HomeScreenState extends State<HomeScreen>
                             ),
                             Tab(
                               child: DescribedFeatureOverlay(
+                                barrierDismissible: false,
+                                overflowMode: OverflowMode.extendBackground,
                                 targetColor: Theme.of(context).primaryColor,
                                 tapTarget: const Icon(
                                   Icons.person,
