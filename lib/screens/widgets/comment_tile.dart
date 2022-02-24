@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/utils/utils.dart';
@@ -11,8 +13,8 @@ class CommentTile extends StatelessWidget {
     Key? key,
     required this.myUsername,
     required this.comment,
-    required this.onTap,
-    required this.onLongPress,
+    required this.onReplyTapped,
+    required this.onMoreTapped,
     required this.onStoryLinkTapped,
     this.loadKids = true,
     this.level = 0,
@@ -22,8 +24,8 @@ class CommentTile extends StatelessWidget {
   final Comment comment;
   final int level;
   final bool loadKids;
-  final Function(Comment) onTap;
-  final Function(Comment) onLongPress;
+  final Function(Comment) onReplyTapped;
+  final Function(Comment) onMoreTapped;
   final Function(String) onStoryLinkTapped;
 
   @override
@@ -58,37 +60,56 @@ class CommentTile extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        InkWell(
-                          onTap: () => onTap(comment),
-                          onLongPress: () => onLongPress(comment),
-                          onDoubleTap: () {
-                            context.read<CommentsCubit>().collapse();
-                          },
+                        Slidable(
+                          startActionPane: ActionPane(
+                            motion: const BehindMotion(),
+                            children: [
+                              SlidableAction(
+                                onPressed: (_) => onReplyTapped(comment),
+                                backgroundColor: Colors.orange,
+                                foregroundColor: Colors.white,
+                                icon: Icons.message,
+                                label: 'Reply',
+                              ),
+                              SlidableAction(
+                                onPressed: (_) => onMoreTapped(comment),
+                                backgroundColor: Colors.orange,
+                                foregroundColor: Colors.white,
+                                icon: Icons.more_horiz,
+                                label: 'More',
+                              ),
+                            ],
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 6, right: 6, top: 6),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      comment.by,
-                                      style: TextStyle(
-                                        //255, 152, 0
-                                        color: prefState.showEyeCandy
-                                            ? orange
-                                            : color,
+                              GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTap: () =>
+                                    context.read<CommentsCubit>().collapse(),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 6, right: 6, top: 6),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        comment.by,
+                                        style: TextStyle(
+                                          //255, 152, 0
+                                          color: prefState.showEyeCandy
+                                              ? orange
+                                              : color,
+                                        ),
                                       ),
-                                    ),
-                                    const Spacer(),
-                                    Text(
-                                      comment.postedDate,
-                                      style: const TextStyle(
-                                        color: Colors.grey,
+                                      const Spacer(),
+                                      Text(
+                                        comment.postedDate,
+                                        style: const TextStyle(
+                                          color: Colors.grey,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                               if (comment.deleted)
@@ -141,7 +162,7 @@ class CommentTile extends StatelessWidget {
                                     top: 6,
                                     bottom: 12,
                                   ),
-                                  child: Linkify(
+                                  child: SelectableLinkify(
                                     key: ObjectKey(comment),
                                     text: comment.text,
                                     onOpen: (link) {
@@ -170,8 +191,8 @@ class CommentTile extends StatelessWidget {
                                       child: CommentTile(
                                         comment: e,
                                         myUsername: myUsername,
-                                        onTap: onTap,
-                                        onLongPress: onLongPress,
+                                        onReplyTapped: onReplyTapped,
+                                        onMoreTapped: onMoreTapped,
                                         level: level + 1,
                                         onStoryLinkTapped: onStoryLinkTapped,
                                       ),

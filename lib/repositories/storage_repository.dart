@@ -12,6 +12,8 @@ class StorageRepository {
   static const String _passwordKey = 'password';
   static const String _blocklistKey = 'blocklist';
   static const String _pinnedStoriesIdsKey = 'pinnedStoriesIds';
+  static const String _unreadCommentsIdsKey = 'unreadCommentsIds';
+
   static const String _notificationModeKey = 'notificationMode';
   static const String _trueDarkModeKey = 'trueDarkMode';
   static const String _readerModeKey = 'readerMode';
@@ -24,17 +26,14 @@ class StorageRepository {
   /// navigated to web view first. Defaults to false.
   static const String _navigationModeKey = 'navigationMode';
 
-  static const String _commentBorderModeKey = 'commentBorderMode';
   static const String _eyeCandyModeKey = 'eyeCandyMode';
-  static const String _unreadCommentsIdsKey = 'unreadCommentsIds';
 
   static const bool _notificationModeDefaultValue = true;
   static const bool _displayModeDefaultValue = true;
   static const bool _navigationModeDefaultValue = true;
-  static const bool _commentBorderModeDefaultValue = true;
   static const bool _eyeCandyModeDefaultValue = false;
   static const bool _trueDarkModeDefaultValue = false;
-  static const bool _readerModeKeyDefaultValue = true;
+  static const bool _readerModeDefaultValue = true;
 
   final Future<SharedPreferences> _prefs;
   final FlutterSecureStorage _secureStorage;
@@ -60,9 +59,6 @@ class StorageRepository {
   Future<bool> get shouldShowWebFirst async => _prefs.then((prefs) =>
       prefs.getBool(_navigationModeKey) ?? _navigationModeDefaultValue);
 
-  Future<bool> get shouldCommentBorder async => _prefs.then((prefs) =>
-      prefs.getBool(_commentBorderModeKey) ?? _commentBorderModeDefaultValue);
-
   Future<bool> get shouldShowEyeCandy async => _prefs.then(
       (prefs) => prefs.getBool(_eyeCandyModeKey) ?? _eyeCandyModeDefaultValue);
 
@@ -70,7 +66,7 @@ class StorageRepository {
       (prefs) => prefs.getBool(_trueDarkModeKey) ?? _trueDarkModeDefaultValue);
 
   Future<bool> get readerMode async => _prefs.then(
-      (prefs) => prefs.getBool(_readerModeKey) ?? _readerModeKeyDefaultValue);
+      (prefs) => prefs.getBool(_readerModeKey) ?? _readerModeDefaultValue);
 
   Future<List<int>> get unreadCommentsIds async => _prefs.then((prefs) =>
       prefs.getStringList(_unreadCommentsIdsKey)?.map(int.parse).toList() ??
@@ -124,13 +120,6 @@ class StorageRepository {
     await prefs.setBool(_navigationModeKey, !currentMode);
   }
 
-  Future<void> toggleCommentBorderMode() async {
-    final prefs = await _prefs;
-    final currentMode =
-        prefs.getBool(_commentBorderModeKey) ?? _commentBorderModeDefaultValue;
-    await prefs.setBool(_commentBorderModeKey, !currentMode);
-  }
-
   Future<void> toggleEyeCandyMode() async {
     final prefs = await _prefs;
     final currentMode =
@@ -148,7 +137,7 @@ class StorageRepository {
   Future<void> toggleReaderMode() async {
     final prefs = await _prefs;
     final currentMode =
-        prefs.getBool(_readerModeKey) ?? _readerModeKeyDefaultValue;
+        prefs.getBool(_readerModeKey) ?? _readerModeDefaultValue;
     await prefs.setBool(_readerModeKey, !currentMode);
   }
 
