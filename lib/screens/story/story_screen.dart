@@ -232,8 +232,9 @@ class _StoryScreenState extends State<StoryScreen> {
                                       featureId: Constants.featurePinToTop,
                                       title: const Text('Pin a Story'),
                                       description: const Text(
-                                        'Pin this story to the top of your home '
-                                        'screen so that you can come back later.',
+                                        'Pin this story to the top of your '
+                                        'home screen so that you can come'
+                                        ' back later.',
                                         style: TextStyle(fontSize: 16),
                                       ),
                                       child: Icon(
