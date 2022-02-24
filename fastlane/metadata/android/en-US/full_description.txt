@@ -6,8 +6,8 @@ Features:
 - Mark stories as favorite.
 - Browse comments and stories you have posted in the past.
 - Search for stories on Hacker News.
-- Double tap to collapse a comment.
-- Long press to vote on a comment or story.
-- Swipe to right to pin a story to top.
+- Collapse comments.
+- Vote on comments or stories.
+- Pin stories to the top of home page.
 - Get in-app notification when there is new reply to your stories or comments.
 - And more...
