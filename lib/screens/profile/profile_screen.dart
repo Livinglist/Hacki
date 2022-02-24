@@ -19,7 +19,7 @@ import 'package:hacki/utils/utils.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-enum PageType {
+enum _PageType {
   fav,
   history,
   settings,
@@ -41,7 +41,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   final refreshControllerNotification = RefreshController();
   final scrollController = ScrollController();
 
-  PageType pageType = PageType.notification;
+  _PageType pageType = _PageType.notification;
 
   final magicWords = <String>[
     'to be a lord.',
@@ -71,7 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               builder: (context, notificationState) {
                 return Stack(
                   children: [
-                    if (!authState.isLoggedIn && pageType == PageType.history)
+                    if (!authState.isLoggedIn && pageType == _PageType.history)
                       Positioned.fill(
                         child: Column(
                           children: [
@@ -94,7 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       top: 50,
                       child: Offstage(
                         offstage: !authState.isLoggedIn ||
-                            pageType != PageType.history,
+                            pageType != _PageType.history,
                         child: BlocConsumer<HistoryCubit, HistoryState>(
                           listener: (context, historyState) {
                             if (historyState.status == HistoryStatus.loaded) {
@@ -144,7 +144,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                     Positioned.fill(
                       top: 50,
                       child: Offstage(
-                        offstage: pageType != PageType.fav,
+                        offstage: pageType != _PageType.fav,
                         child: BlocConsumer<FavCubit, FavState>(
                           listener: (context, favState) {
                             if (favState.status == FavStatus.loaded) {
@@ -179,14 +179,14 @@ class _ProfileScreenState extends State<ProfileScreen>
                     Positioned.fill(
                       top: 50,
                       child: Offstage(
-                        offstage: pageType != PageType.search,
+                        offstage: pageType != _PageType.search,
                         child: const SearchScreen(),
                       ),
                     ),
                     Positioned.fill(
                       top: 50,
                       child: Offstage(
-                        offstage: pageType != PageType.notification,
+                        offstage: pageType != _PageType.notification,
                         child: InboxView(
                           refreshController: refreshControllerNotification,
                           unreadCommentsIds:
@@ -226,7 +226,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                     Positioned.fill(
                       top: 50,
                       child: Offstage(
-                        offstage: pageType != PageType.settings,
+                        offstage: pageType != _PageType.settings,
                         child: SingleChildScrollView(
                           child: Column(
                             children: [
@@ -307,18 +307,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   activeColor: Colors.orange,
                                 ),
                               SwitchListTile(
-                                title: const Text('Show Comment Outlines'),
-                                subtitle: const Text('be nice to your eyes.'),
-                                value: preferenceState.showCommentBorder,
-                                onChanged: (val) {
-                                  HapticFeedback.lightImpact();
-                                  context
-                                      .read<PreferenceCubit>()
-                                      .toggleCommentBorderMode();
-                                },
-                                activeColor: Colors.orange,
-                              ),
-                              SwitchListTile(
                                 title: const Text('Eye Candy'),
                                 subtitle: const Text('some sort of magic.'),
                                 value: preferenceState.showEyeCandy,
@@ -377,7 +365,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   showAboutDialog(
                                     context: context,
                                     applicationName: 'Hacki',
-                                    applicationVersion: 'v0.1.6',
+                                    applicationVersion: 'v0.1.7',
                                     applicationIcon: Image.asset(
                                       Constants.hackiIconPath,
                                       height: 50,
@@ -467,11 +455,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                               label: 'Inbox : '
                                   //ignore: lines_longer_than_80_chars
                                   '${notificationState.unreadCommentsIds.length}',
-                              selected: pageType == PageType.notification,
+                              selected: pageType == _PageType.notification,
                               onSelected: (val) {
                                 if (val) {
                                   setState(() {
-                                    pageType = PageType.notification;
+                                    pageType = _PageType.notification;
                                   });
                                 }
                               },
@@ -481,11 +469,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                             ),
                             CustomChip(
                               label: 'Favorite',
-                              selected: pageType == PageType.fav,
+                              selected: pageType == _PageType.fav,
                               onSelected: (val) {
                                 if (val) {
                                   setState(() {
-                                    pageType = PageType.fav;
+                                    pageType = _PageType.fav;
                                   });
                                 }
                               },
@@ -495,11 +483,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                             ),
                             CustomChip(
                               label: 'Submitted',
-                              selected: pageType == PageType.history,
+                              selected: pageType == _PageType.history,
                               onSelected: (val) {
                                 if (val) {
                                   setState(() {
-                                    pageType = PageType.history;
+                                    pageType = _PageType.history;
                                   });
                                 }
                               },
@@ -509,11 +497,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                             ),
                             CustomChip(
                               label: 'Search',
-                              selected: pageType == PageType.search,
+                              selected: pageType == _PageType.search,
                               onSelected: (val) {
                                 if (val) {
                                   setState(() {
-                                    pageType = PageType.search;
+                                    pageType = _PageType.search;
                                   });
                                 }
                               },
@@ -523,11 +511,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                             ),
                             CustomChip(
                               label: 'Settings',
-                              selected: pageType == PageType.settings,
+                              selected: pageType == _PageType.settings,
                               onSelected: (val) {
                                 if (val) {
                                   setState(() {
-                                    pageType = PageType.settings;
+                                    pageType = _PageType.settings;
                                   });
                                 }
                               },

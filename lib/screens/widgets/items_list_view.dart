@@ -56,7 +56,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                               backgroundColor: Colors.orange,
                               foregroundColor: Colors.white,
                               icon: showWebPreview
-                                  ? Icons.vertical_align_top
+                                  ? Icons.push_pin_outlined
                                   : null,
                               label: 'Pin to top',
                             ),

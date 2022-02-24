@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -105,6 +107,7 @@ class _StoryScreenState extends State<StoryScreen> {
       FeatureDiscovery.discoverFeatures(
         context,
         const <String>{
+          Constants.featurePinToTop,
           Constants.featureAddStoryToFavList,
           Constants.featureOpenStoryInWebView,
         },
@@ -205,12 +208,69 @@ class _StoryScreenState extends State<StoryScreen> {
                           ScrollUpIconButton(
                             scrollController: scrollController,
                           ),
+                          BlocBuilder<PinCubit, PinState>(
+                            builder: (context, pinState) {
+                              final pinned = pinState.pinnedStoriesIds
+                                  .contains(widget.story.id);
+                              return Transform.rotate(
+                                angle: pi / 4,
+                                child: Transform.translate(
+                                  offset: const Offset(2, 0),
+                                  child: IconButton(
+                                    icon: DescribedFeatureOverlay(
+                                      barrierDismissible: false,
+                                      overflowMode:
+                                          OverflowMode.extendBackground,
+                                      targetColor:
+                                          Theme.of(context).primaryColor,
+                                      tapTarget: Icon(
+                                        pinned
+                                            ? Icons.push_pin
+                                            : Icons.push_pin_outlined,
+                                        color: Colors.white,
+                                      ),
+                                      featureId: Constants.featurePinToTop,
+                                      title: const Text('Pin a Story'),
+                                      description: const Text(
+                                        'Pin this story to the top of your '
+                                        'home screen so that you can come'
+                                        ' back later.',
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                      child: Icon(
+                                        pinned
+                                            ? Icons.push_pin
+                                            : Icons.push_pin_outlined,
+                                        color: pinned
+                                            ? Colors.orange
+                                            : Theme.of(context).iconTheme.color,
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      HapticFeedback.lightImpact();
+                                      if (pinned) {
+                                        context
+                                            .read<PinCubit>()
+                                            .unpinStory(widget.story);
+                                      } else {
+                                        context
+                                            .read<PinCubit>()
+                                            .pinStory(widget.story);
+                                      }
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                           BlocBuilder<FavCubit, FavState>(
                             builder: (context, favState) {
                               final isFav =
                                   favState.favIds.contains(widget.story.id);
                               return IconButton(
                                 icon: DescribedFeatureOverlay(
+                                  barrierDismissible: false,
+                                  overflowMode: OverflowMode.extendBackground,
                                   targetColor: Theme.of(context).primaryColor,
                                   tapTarget: Icon(
                                     isFav
@@ -221,7 +281,7 @@ class _StoryScreenState extends State<StoryScreen> {
                                   featureId: Constants.featureAddStoryToFavList,
                                   title: const Text('Fav a Story'),
                                   description: const Text(
-                                    'Save this article for later.',
+                                    'Add it to your favorites.',
                                     style: TextStyle(fontSize: 16),
                                   ),
                                   child: Icon(
@@ -250,6 +310,8 @@ class _StoryScreenState extends State<StoryScreen> {
                           ),
                           IconButton(
                             icon: DescribedFeatureOverlay(
+                              barrierDismissible: false,
+                              overflowMode: OverflowMode.extendBackground,
                               targetColor: Theme.of(context).primaryColor,
                               tapTarget: const Icon(
                                 Icons.stream,
@@ -327,7 +389,7 @@ class _StoryScreenState extends State<StoryScreen> {
                                   focusNode.requestFocus();
                                 });
                               },
-                              onLongPress: () => onLongPressed(widget.story),
+                              onLongPress: () => onMorePressed(widget.story),
                               child: Column(
                                 children: [
                                   Padding(
@@ -407,7 +469,8 @@ class _StoryScreenState extends State<StoryScreen> {
                                   myUsername: authState.isLoggedIn
                                       ? authState.username
                                       : null,
-                                  onTap: (cmt) {
+                                  onReplyTapped: (cmt) {
+                                    HapticFeedback.lightImpact();
                                     if (cmt.deleted || cmt.dead) {
                                       return;
                                     }
@@ -419,7 +482,7 @@ class _StoryScreenState extends State<StoryScreen> {
                                     editCubit.onItemTapped(cmt);
                                     focusNode.requestFocus();
                                   },
-                                  onLongPress: onLongPressed,
+                                  onMoreTapped: onMorePressed,
                                   onStoryLinkTapped: (link) {
                                     final regex = RegExp(r'\d+$');
                                     final match = regex.stringMatch(link) ?? '';
@@ -483,7 +546,9 @@ class _StoryScreenState extends State<StoryScreen> {
     );
   }
 
-  void onLongPressed(Item item) {
+  void onMorePressed(Item item) {
+    HapticFeedback.lightImpact();
+
     if (item.dead || item.deleted) {
       return;
     }
