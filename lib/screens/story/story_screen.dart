@@ -107,9 +107,9 @@ class _StoryScreenState extends State<StoryScreen> {
       FeatureDiscovery.discoverFeatures(
         context,
         const <String>{
+          Constants.featurePinToTop,
           Constants.featureAddStoryToFavList,
           Constants.featureOpenStoryInWebView,
-          Constants.featurePinToTop,
         },
       );
     });
