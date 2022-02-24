@@ -1,6 +1,6 @@
 name: hacki
 description: A Hacker News reader.
-version: 0.1.7+23
+version: 0.1.7+24
 publish_to: none
 
 environment:

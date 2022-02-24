@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -52,7 +53,10 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                           motion: const BehindMotion(),
                           children: [
                             SlidableAction(
-                              onPressed: (_) => onPinned?.call(e),
+                              onPressed: (_) {
+                                HapticFeedback.lightImpact();
+                                onPinned?.call(e);
+                              },
                               backgroundColor: Colors.orange,
                               foregroundColor: Colors.white,
                               icon: showWebPreview

@@ -89,8 +89,10 @@ class _HomeScreenState extends State<HomeScreen>
                         motion: const BehindMotion(),
                         children: [
                           SlidableAction(
-                            onPressed: (_) =>
-                                context.read<PinCubit>().unpinStory(story),
+                            onPressed: (_) {
+                              HapticFeedback.lightImpact();
+                              context.read<PinCubit>().unpinStory(story);
+                            },
                             backgroundColor: Colors.red,
                             foregroundColor: Colors.white,
                             icon: preferenceState.showComplexStoryTile
