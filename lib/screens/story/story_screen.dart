@@ -391,7 +391,7 @@ class _StoryScreenState extends State<StoryScreen> {
                                         if (widget.story != replyingTo) {
                                           commentEditingController.clear();
                                         }
-                                        editCubit.onItemTapped(widget.story);
+                                        editCubit.onReplyTapped(widget.story);
                                         focusNode.requestFocus();
                                       });
                                     },
@@ -499,7 +499,20 @@ class _StoryScreenState extends State<StoryScreen> {
                                       commentEditingController.clear();
                                     }
 
-                                    editCubit.onItemTapped(cmt);
+                                    editCubit.onReplyTapped(cmt);
+                                    focusNode.requestFocus();
+                                  },
+                                  onEditTapped: (cmt) {
+                                    HapticFeedback.lightImpact();
+                                    if (cmt.deleted || cmt.dead) {
+                                      return;
+                                    }
+
+                                    if (cmt != replyingTo) {
+                                      commentEditingController.clear();
+                                    }
+
+                                    editCubit.onEditTapped(cmt);
                                     focusNode.requestFocus();
                                   },
                                   onMoreTapped: onMorePressed,
@@ -851,7 +864,9 @@ class _StoryScreenState extends State<StoryScreen> {
   void onSendTapped() {
     final authBloc = context.read<AuthBloc>();
     final postCubit = context.read<PostCubit>();
-    final replyingTo = context.read<EditCubit>().state.replyingTo;
+    final editState = context.read<EditCubit>().state;
+    final replyingTo = editState.replyingTo;
+    final itemEdited = editState.itemBeingEdited;
 
     if (authBloc.state.isLoggedIn) {
       final text = commentEditingController.text;
@@ -859,7 +874,9 @@ class _StoryScreenState extends State<StoryScreen> {
         return;
       }
 
-      if (replyingTo != null) {
+      if (itemEdited != null) {
+        postCubit.edit(text: text, id: itemEdited.id);
+      } else if (replyingTo != null) {
         postCubit.post(text: text, to: replyingTo.id);
       }
     } else {
