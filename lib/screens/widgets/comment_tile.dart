@@ -72,7 +72,6 @@ class CommentTile extends StatelessWidget {
                                 backgroundColor: Colors.orange,
                                 foregroundColor: Colors.white,
                                 icon: Icons.message,
-                                label: 'Reply',
                               ),
                               if (context.read<AuthBloc>().state.user.id ==
                                   comment.by)
@@ -81,14 +80,12 @@ class CommentTile extends StatelessWidget {
                                   backgroundColor: Colors.orange,
                                   foregroundColor: Colors.white,
                                   icon: Icons.edit,
-                                  label: 'Edit',
                                 ),
                               SlidableAction(
                                 onPressed: (_) => onMoreTapped(comment),
                                 backgroundColor: Colors.orange,
                                 foregroundColor: Colors.white,
                                 icon: Icons.more_horiz,
-                                label: 'More',
                               ),
                             ],
                           ),

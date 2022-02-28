@@ -311,6 +311,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 value: preferenceState.markReadStories,
                                 onChanged: (val) {
                                   HapticFeedback.lightImpact();
+
+                                  if (!val) {
+                                    context.read<CacheCubit>().deleteAll();
+                                  }
+
                                   context
                                       .read<PreferenceCubit>()
                                       .toggleMarkReadStoriesMode();

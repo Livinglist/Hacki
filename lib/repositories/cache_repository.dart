@@ -24,8 +24,8 @@ class CacheRepository {
     return allReads;
   }
 
-  Future<void> deleteAll() async {
+  Future<int> deleteAll() async {
     final box = await _box;
-    return box.deleteFromDisk();
+    return box.clear();
   }
 }

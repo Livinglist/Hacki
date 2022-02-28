@@ -399,7 +399,6 @@ class _StoryScreenState extends State<StoryScreen> {
                                     backgroundColor: Colors.orange,
                                     foregroundColor: Colors.white,
                                     icon: Icons.message,
-                                    label: 'Reply',
                                   ),
                                   SlidableAction(
                                     onPressed: (_) =>
@@ -407,7 +406,6 @@ class _StoryScreenState extends State<StoryScreen> {
                                     backgroundColor: Colors.orange,
                                     foregroundColor: Colors.white,
                                     icon: Icons.more_horiz,
-                                    label: 'More',
                                   ),
                                 ],
                               ),
