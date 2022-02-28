@@ -143,15 +143,13 @@ class _StoryScreenState extends State<StoryScreen> {
         return BlocConsumer<PostCubit, PostState>(
           listener: (context, postState) {
             if (postState.status == PostStatus.successful) {
-              editCubit.onReplySubmittedSuccessfully();
+              final verb =
+                  editCubit.state.replyingTo == null ? 'updated' : 'submitted';
+              final msg = 'Comment $verb! ${(happyFaces..shuffle()).first}';
               focusNode.unfocus();
               HapticFeedback.lightImpact();
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(
-                  'Comment submitted! ${(happyFaces..shuffle()).first}',
-                ),
-                backgroundColor: Colors.orange,
-              ));
+              showSnackBar(content: msg);
+              editCubit.onReplySubmittedSuccessfully();
               context.read<PostCubit>().reset();
             } else if (postState.status == PostStatus.failure) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -179,10 +177,12 @@ class _StoryScreenState extends State<StoryScreen> {
               builder: (context, state) {
                 return BlocConsumer<EditCubit, EditState>(
                   listenWhen: (previous, current) {
-                    return previous.replyingTo != current.replyingTo;
+                    return previous.replyingTo != current.replyingTo ||
+                        previous.itemBeingEdited != current.itemBeingEdited;
                   },
                   listener: (context, editState) {
-                    if (editState.replyingTo != null) {
+                    if (editState.replyingTo != null ||
+                        editState.itemBeingEdited != null) {
                       if (editState.text == null) {
                         commentEditingController.clear();
                       } else {
@@ -198,6 +198,7 @@ class _StoryScreenState extends State<StoryScreen> {
                   },
                   builder: (context, editState) {
                     final replyingTo = editCubit.state.replyingTo;
+                    final editing = editCubit.state.itemBeingEdited;
                     return Scaffold(
                       extendBodyBehindAppBar: true,
                       resizeToAvoidBottomInset: true,
@@ -507,11 +508,7 @@ class _StoryScreenState extends State<StoryScreen> {
                                     if (cmt.deleted || cmt.dead) {
                                       return;
                                     }
-
-                                    if (cmt != replyingTo) {
-                                      commentEditingController.clear();
-                                    }
-
+                                    commentEditingController.clear();
                                     editCubit.onEditTapped(cmt);
                                     focusNode.requestFocus();
                                   },
@@ -557,6 +554,7 @@ class _StoryScreenState extends State<StoryScreen> {
                         child: ReplyBox(
                           focusNode: focusNode,
                           textEditingController: commentEditingController,
+                          editing: editing,
                           replyingTo: replyingTo,
                           isLoading: postState.status == PostStatus.loading,
                           onSendTapped: onSendTapped,
@@ -781,10 +779,7 @@ class _StoryScreenState extends State<StoryScreen> {
         }).then((yesTapped) {
       if (yesTapped ?? false) {
         context.read<AuthBloc>().add(AuthFlag(item: item));
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Comment flagged!'),
-          backgroundColor: Colors.orange,
-        ));
+        showSnackBar(content: 'Comment flagged!');
       }
     });
   }
@@ -853,10 +848,7 @@ class _StoryScreenState extends State<StoryScreen> {
         } else {
           context.read<BlocklistCubit>().addToBlocklist(item.by);
         }
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('User ${isBlocked ? 'unblocked' : 'blocked'}!'),
-          backgroundColor: Colors.orange,
-        ));
+        showSnackBar(content: 'User ${isBlocked ? 'unblocked' : 'blocked'}!');
       }
     });
   }
@@ -897,12 +889,7 @@ class _StoryScreenState extends State<StoryScreen> {
           listener: (context, state) {
             if (state.isLoggedIn) {
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Logged in successfully! $happyFace'),
-                  backgroundColor: Colors.orange,
-                ),
-              );
+              showSnackBar(content: 'Logged in successfully! $happyFace');
             }
           },
           builder: (context, state) {

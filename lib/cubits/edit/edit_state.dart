@@ -16,7 +16,7 @@ class EditState extends Equatable {
   final Item? replyingTo;
   final Item? itemBeingEdited;
 
-  bool get showReplyBox => replyingTo != null;
+  bool get showReplyBox => replyingTo != null || itemBeingEdited != null;
 
   EditState copyWith({String? text}) {
     return EditState(

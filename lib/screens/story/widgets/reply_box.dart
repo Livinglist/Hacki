@@ -11,6 +11,7 @@ class ReplyBox extends StatefulWidget {
     required this.focusNode,
     required this.textEditingController,
     required this.replyingTo,
+    required this.editing,
     required this.onSendTapped,
     required this.onCloseTapped,
     required this.onChanged,
@@ -20,6 +21,7 @@ class ReplyBox extends StatefulWidget {
   final FocusNode focusNode;
   final TextEditingController textEditingController;
   final Item? replyingTo;
+  final Item? editing;
   final VoidCallback onSendTapped;
   final VoidCallback onCloseTapped;
   final ValueChanged<String> onChanged;
@@ -66,42 +68,44 @@ class _ReplyBoxState extends State<ReplyBox> {
                   ),
                   child: Text(
                     widget.replyingTo == null
-                        ? ''
+                        ? 'Editing'
                         : 'Replying '
                             '${widget.replyingTo?.by}',
                     style: const TextStyle(color: Colors.grey),
                   ),
                 ),
                 const Spacer(),
-                if (widget.replyingTo != null && !widget.isLoading) ...[
-                  AnimatedOpacity(
-                    opacity: expanded ? 1 : 0,
-                    duration: const Duration(milliseconds: 300),
-                    child: IconButton(
-                      key: const Key('quote'),
-                      icon: const Icon(
-                        FeatherIcons.code,
+                if (!widget.isLoading) ...[
+                  if (widget.replyingTo != null) ...[
+                    AnimatedOpacity(
+                      opacity: expanded ? 1 : 0,
+                      duration: const Duration(milliseconds: 300),
+                      child: IconButton(
+                        key: const Key('quote'),
+                        icon: const Icon(
+                          FeatherIcons.code,
+                          color: Colors.orange,
+                          size: 18,
+                        ),
+                        onPressed: expanded ? showTextPopup : null,
+                      ),
+                    ),
+                    IconButton(
+                      key: const Key('expand'),
+                      icon: Icon(
+                        expanded
+                            ? FeatherIcons.minimize2
+                            : FeatherIcons.maximize2,
                         color: Colors.orange,
                         size: 18,
                       ),
-                      onPressed: expanded ? showTextPopup : null,
+                      onPressed: () {
+                        setState(() {
+                          expanded = !expanded;
+                        });
+                      },
                     ),
-                  ),
-                  IconButton(
-                    key: const Key('expand'),
-                    icon: Icon(
-                      expanded
-                          ? FeatherIcons.minimize2
-                          : FeatherIcons.maximize2,
-                      color: Colors.orange,
-                      size: 18,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        expanded = !expanded;
-                      });
-                    },
-                  ),
+                  ],
                   IconButton(
                     key: const Key('close'),
                     icon: const Icon(

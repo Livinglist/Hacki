@@ -31,9 +31,6 @@ class PostCubit extends Cubit<PostState> {
     emit(state.copyWith(status: PostStatus.loading));
     final successful = await _postRepository.edit(id: id, text: text);
 
-    // final successful =
-    //     await Future<bool>.delayed(const Duration(seconds: 2), () => true);
-
     if (successful) {
       emit(state.copyWith(status: PostStatus.successful));
     } else {
