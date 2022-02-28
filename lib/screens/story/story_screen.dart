@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
@@ -379,17 +380,36 @@ class _StoryScreenState extends State<StoryScreen> {
                             SizedBox(
                               height: topPadding,
                             ),
-                            InkWell(
-                              onTap: () {
-                                setState(() {
-                                  if (widget.story != replyingTo) {
-                                    commentEditingController.clear();
-                                  }
-                                  editCubit.onItemTapped(widget.story);
-                                  focusNode.requestFocus();
-                                });
-                              },
-                              onLongPress: () => onMorePressed(widget.story),
+                            Slidable(
+                              startActionPane: ActionPane(
+                                motion: const BehindMotion(),
+                                children: [
+                                  SlidableAction(
+                                    onPressed: (_) {
+                                      HapticFeedback.lightImpact();
+                                      setState(() {
+                                        if (widget.story != replyingTo) {
+                                          commentEditingController.clear();
+                                        }
+                                        editCubit.onItemTapped(widget.story);
+                                        focusNode.requestFocus();
+                                      });
+                                    },
+                                    backgroundColor: Colors.orange,
+                                    foregroundColor: Colors.white,
+                                    icon: Icons.message,
+                                    label: 'Reply',
+                                  ),
+                                  SlidableAction(
+                                    onPressed: (_) =>
+                                        onMorePressed(widget.story),
+                                    backgroundColor: Colors.orange,
+                                    foregroundColor: Colors.white,
+                                    icon: Icons.more_horiz,
+                                    label: 'More',
+                                  ),
+                                ],
+                              ),
                               child: Column(
                                 children: [
                                   Padding(
@@ -614,6 +634,9 @@ class _StoryScreenState extends State<StoryScreen> {
                                 ? const TextStyle(color: Colors.orange)
                                 : null,
                           ),
+                          subtitle: item is Story
+                              ? Text(item.score.toString())
+                              : null,
                           onTap: context.read<VoteCubit>().upvote,
                         ),
                         ListTile(

@@ -7,9 +7,15 @@ import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/screens/screens.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  final tempDir = await getTemporaryDirectory();
+  final tempPath = tempDir.path;
+  Hive.init(tempPath);
 
   await setUpLocator();
 
@@ -76,6 +82,10 @@ class HackiApp extends StatelessWidget {
         BlocProvider<PinCubit>(
           lazy: false,
           create: (context) => PinCubit(),
+        ),
+        BlocProvider<CacheCubit>(
+          lazy: false,
+          create: (context) => CacheCubit(),
         ),
       ],
       child: AdaptiveTheme(

@@ -1,6 +1,6 @@
 name: hacki
 description: A Hacker News reader.
-version: 0.1.7+24
+version: 0.1.8+25
 publish_to: none
 
 environment:
@@ -34,6 +34,7 @@ dependencies:
   font_awesome_flutter: ^9.2.0
   gbk_codec: ^0.4.0
   get_it: 7.2.0
+  hive: ^2.0.6
   html: ^0.15.0
   html_unescape: ^2.0.0
   http: ^0.13.3

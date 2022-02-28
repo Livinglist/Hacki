@@ -1,3 +1,5 @@
+// ignore_for_file: lines_longer_than_80_chars
+
 import 'package:badges/badges.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
@@ -77,6 +79,8 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PreferenceCubit, PreferenceState>(
+      buildWhen: (previous, current) =>
+          previous.showComplexStoryTile != current.showComplexStoryTile,
       builder: (context, preferenceState) {
         final pinnedStories = BlocBuilder<PinCubit, PinState>(
           builder: (context, state) {
@@ -154,246 +158,271 @@ class _HomeScreenState extends State<HomeScreen>
             }
           },
           builder: (context, state) {
-            return DefaultTabController(
-              length: 6,
-              child: Scaffold(
-                resizeToAvoidBottomInset: false,
-                appBar: PreferredSize(
-                  preferredSize: const Size(0, 48),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: MediaQuery.of(context).padding.top,
-                      ),
-                      TabBar(
-                        isScrollable: true,
-                        controller: tabController,
-                        indicatorColor: Colors.orange,
-                        tabs: [
-                          Tab(
-                            child: Text(
-                              'TOP',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: currentIndex == 0
-                                    ? Colors.orange
-                                    : Colors.grey,
-                              ),
-                            ),
+            return BlocBuilder<CacheCubit, CacheState>(
+              builder: (context, cacheState) {
+                return DefaultTabController(
+                  length: 6,
+                  child: Scaffold(
+                    resizeToAvoidBottomInset: false,
+                    appBar: PreferredSize(
+                      preferredSize: const Size(0, 48),
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: MediaQuery.of(context).padding.top,
                           ),
-                          Tab(
-                            child: Text(
-                              'NEW',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: currentIndex == 1
-                                    ? Colors.orange
-                                    : Colors.grey,
+                          TabBar(
+                            isScrollable: true,
+                            controller: tabController,
+                            indicatorColor: Colors.orange,
+                            tabs: [
+                              Tab(
+                                child: Text(
+                                  'TOP',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: currentIndex == 0
+                                        ? Colors.orange
+                                        : Colors.grey,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          Tab(
-                            child: Text(
-                              'ASK',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: currentIndex == 2
-                                    ? Colors.orange
-                                    : Colors.grey,
+                              Tab(
+                                child: Text(
+                                  'NEW',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: currentIndex == 1
+                                        ? Colors.orange
+                                        : Colors.grey,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          Tab(
-                            child: Text(
-                              'SHOW',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: currentIndex == 3
-                                    ? Colors.orange
-                                    : Colors.grey,
+                              Tab(
+                                child: Text(
+                                  'ASK',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: currentIndex == 2
+                                        ? Colors.orange
+                                        : Colors.grey,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          Tab(
-                            child: Text(
-                              'JOBS',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: currentIndex == 4
-                                    ? Colors.orange
-                                    : Colors.grey,
+                              Tab(
+                                child: Text(
+                                  'SHOW',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: currentIndex == 3
+                                        ? Colors.orange
+                                        : Colors.grey,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          Tab(
-                            child: DescribedFeatureOverlay(
-                              barrierDismissible: false,
-                              overflowMode: OverflowMode.extendBackground,
-                              targetColor: Theme.of(context).primaryColor,
-                              tapTarget: const Icon(
-                                Icons.person,
-                                size: 16,
-                                color: Colors.white,
+                              Tab(
+                                child: Text(
+                                  'JOBS',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: currentIndex == 4
+                                        ? Colors.orange
+                                        : Colors.grey,
+                                  ),
+                                ),
                               ),
-                              featureId: Constants.featureLogIn,
-                              title: const Text(''),
-                              description: const Text(
-                                'Log in using your Hacker News account '
-                                'to check out stories and comments you have '
-                                'posted in the past, and get in-app '
-                                'notification when there is new reply to '
-                                'your comments or stories.\n\nAlso, you can '
-                                'long press here to submit a new link to '
-                                'Hacker News.',
-                                style: TextStyle(fontSize: 16),
+                              Tab(
+                                child: DescribedFeatureOverlay(
+                                  barrierDismissible: false,
+                                  overflowMode: OverflowMode.extendBackground,
+                                  targetColor: Theme.of(context).primaryColor,
+                                  tapTarget: const Icon(
+                                    Icons.person,
+                                    size: 16,
+                                    color: Colors.white,
+                                  ),
+                                  featureId: Constants.featureLogIn,
+                                  title: const Text(''),
+                                  description: const Text(
+                                    'Log in using your Hacker News account '
+                                    'to check out stories and comments you have '
+                                    'posted in the past, and get in-app '
+                                    'notification when there is new reply to '
+                                    'your comments or stories.\n\nAlso, you can '
+                                    'long press here to submit a new link to '
+                                    'Hacker News.',
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  child: BlocBuilder<NotificationCubit,
+                                      NotificationState>(
+                                    builder: (context, state) {
+                                      if (state.unreadCommentsIds.isEmpty) {
+                                        return Icon(
+                                          Icons.person,
+                                          size: 16,
+                                          color: currentIndex == 5
+                                              ? Colors.orange
+                                              : Colors.grey,
+                                        );
+                                      } else {
+                                        return Badge(
+                                          borderRadius:
+                                              BorderRadius.circular(100),
+                                          badgeContent: Container(
+                                            height: 3,
+                                            width: 3,
+                                            decoration: const BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: Colors.white),
+                                          ),
+                                          child: Icon(
+                                            Icons.person,
+                                            size: 16,
+                                            color: currentIndex == 5
+                                                ? Colors.orange
+                                                : Colors.grey,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
                               ),
-                              child: BlocBuilder<NotificationCubit,
-                                  NotificationState>(
-                                builder: (context, state) {
-                                  if (state.unreadCommentsIds.isEmpty) {
-                                    return Icon(
-                                      Icons.person,
-                                      size: 16,
-                                      color: currentIndex == 5
-                                          ? Colors.orange
-                                          : Colors.grey,
-                                    );
-                                  } else {
-                                    return Badge(
-                                      borderRadius: BorderRadius.circular(100),
-                                      badgeContent: Container(
-                                        height: 3,
-                                        width: 3,
-                                        decoration: const BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Colors.white),
-                                      ),
-                                      child: Icon(
-                                        Icons.person,
-                                        size: 16,
-                                        color: currentIndex == 5
-                                            ? Colors.orange
-                                            : Colors.grey,
-                                      ),
-                                    );
-                                  }
-                                },
-                              ),
-                            ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
+                    ),
+                    body: TabBarView(
+                      physics: const NeverScrollableScrollPhysics(),
+                      controller: tabController,
+                      children: [
+                        ItemsListView<Story>(
+                          pinnable: true,
+                          markReadStories: context
+                              .read<PreferenceCubit>()
+                              .state
+                              .markReadStories,
+                          showWebPreview: preferenceState.showComplexStoryTile,
+                          refreshController: refreshControllerTop,
+                          items: state.storiesByType[StoryType.top]!,
+                          onRefresh: () {
+                            HapticFeedback.lightImpact();
+                            context
+                                .read<StoriesBloc>()
+                                .add(StoriesRefresh(type: StoryType.top));
+                          },
+                          onLoadMore: () {
+                            context
+                                .read<StoriesBloc>()
+                                .add(StoriesLoadMore(type: StoryType.top));
+                          },
+                          onTap: onStoryTapped,
+                          onPinned: context.read<PinCubit>().pinStory,
+                          header: pinnedStories,
+                        ),
+                        ItemsListView<Story>(
+                          pinnable: true,
+                          markReadStories: context
+                              .read<PreferenceCubit>()
+                              .state
+                              .markReadStories,
+                          showWebPreview: preferenceState.showComplexStoryTile,
+                          refreshController: refreshControllerNew,
+                          items: state.storiesByType[StoryType.latest]!,
+                          onRefresh: () {
+                            HapticFeedback.lightImpact();
+                            context
+                                .read<StoriesBloc>()
+                                .add(StoriesRefresh(type: StoryType.latest));
+                          },
+                          onLoadMore: () {
+                            context
+                                .read<StoriesBloc>()
+                                .add(StoriesLoadMore(type: StoryType.latest));
+                          },
+                          onTap: onStoryTapped,
+                          onPinned: context.read<PinCubit>().pinStory,
+                          header: pinnedStories,
+                        ),
+                        ItemsListView<Story>(
+                          pinnable: true,
+                          markReadStories: context
+                              .read<PreferenceCubit>()
+                              .state
+                              .markReadStories,
+                          showWebPreview: preferenceState.showComplexStoryTile,
+                          refreshController: refreshControllerAsk,
+                          items: state.storiesByType[StoryType.ask]!,
+                          onRefresh: () {
+                            HapticFeedback.lightImpact();
+                            context
+                                .read<StoriesBloc>()
+                                .add(StoriesRefresh(type: StoryType.ask));
+                          },
+                          onLoadMore: () {
+                            context
+                                .read<StoriesBloc>()
+                                .add(StoriesLoadMore(type: StoryType.ask));
+                          },
+                          onTap: onStoryTapped,
+                          onPinned: context.read<PinCubit>().pinStory,
+                          header: pinnedStories,
+                        ),
+                        ItemsListView<Story>(
+                          pinnable: true,
+                          markReadStories: context
+                              .read<PreferenceCubit>()
+                              .state
+                              .markReadStories,
+                          showWebPreview: preferenceState.showComplexStoryTile,
+                          refreshController: refreshControllerShow,
+                          items: state.storiesByType[StoryType.show]!,
+                          onRefresh: () {
+                            HapticFeedback.lightImpact();
+                            context
+                                .read<StoriesBloc>()
+                                .add(StoriesRefresh(type: StoryType.show));
+                          },
+                          onLoadMore: () {
+                            context
+                                .read<StoriesBloc>()
+                                .add(StoriesLoadMore(type: StoryType.show));
+                          },
+                          onTap: onStoryTapped,
+                          onPinned: context.read<PinCubit>().pinStory,
+                          header: pinnedStories,
+                        ),
+                        ItemsListView<Story>(
+                          pinnable: true,
+                          markReadStories: context
+                              .read<PreferenceCubit>()
+                              .state
+                              .markReadStories,
+                          showWebPreview: preferenceState.showComplexStoryTile,
+                          refreshController: refreshControllerJobs,
+                          items: state.storiesByType[StoryType.jobs]!,
+                          onRefresh: () {
+                            HapticFeedback.lightImpact();
+                            context
+                                .read<StoriesBloc>()
+                                .add(StoriesRefresh(type: StoryType.jobs));
+                          },
+                          onLoadMore: () {
+                            context
+                                .read<StoriesBloc>()
+                                .add(StoriesLoadMore(type: StoryType.jobs));
+                          },
+                          onTap: onStoryTapped,
+                          onPinned: context.read<PinCubit>().pinStory,
+                          header: pinnedStories,
+                        ),
+                        const ProfileScreen(),
+                      ],
+                    ),
                   ),
-                ),
-                body: TabBarView(
-                  physics: const NeverScrollableScrollPhysics(),
-                  controller: tabController,
-                  children: [
-                    ItemsListView<Story>(
-                      pinnable: true,
-                      showWebPreview: preferenceState.showComplexStoryTile,
-                      refreshController: refreshControllerTop,
-                      items: state.storiesByType[StoryType.top]!,
-                      onRefresh: () {
-                        HapticFeedback.lightImpact();
-                        context
-                            .read<StoriesBloc>()
-                            .add(StoriesRefresh(type: StoryType.top));
-                      },
-                      onLoadMore: () {
-                        context
-                            .read<StoriesBloc>()
-                            .add(StoriesLoadMore(type: StoryType.top));
-                      },
-                      onTap: onStoryTapped,
-                      onPinned: context.read<PinCubit>().pinStory,
-                      header: pinnedStories,
-                    ),
-                    ItemsListView<Story>(
-                      pinnable: true,
-                      showWebPreview: preferenceState.showComplexStoryTile,
-                      refreshController: refreshControllerNew,
-                      items: state.storiesByType[StoryType.latest]!,
-                      onRefresh: () {
-                        HapticFeedback.lightImpact();
-                        context
-                            .read<StoriesBloc>()
-                            .add(StoriesRefresh(type: StoryType.latest));
-                      },
-                      onLoadMore: () {
-                        context
-                            .read<StoriesBloc>()
-                            .add(StoriesLoadMore(type: StoryType.latest));
-                      },
-                      onTap: onStoryTapped,
-                      onPinned: context.read<PinCubit>().pinStory,
-                      header: pinnedStories,
-                    ),
-                    ItemsListView<Story>(
-                      pinnable: true,
-                      showWebPreview: preferenceState.showComplexStoryTile,
-                      refreshController: refreshControllerAsk,
-                      items: state.storiesByType[StoryType.ask]!,
-                      onRefresh: () {
-                        HapticFeedback.lightImpact();
-                        context
-                            .read<StoriesBloc>()
-                            .add(StoriesRefresh(type: StoryType.ask));
-                      },
-                      onLoadMore: () {
-                        context
-                            .read<StoriesBloc>()
-                            .add(StoriesLoadMore(type: StoryType.ask));
-                      },
-                      onTap: onStoryTapped,
-                      onPinned: context.read<PinCubit>().pinStory,
-                      header: pinnedStories,
-                    ),
-                    ItemsListView<Story>(
-                      pinnable: true,
-                      showWebPreview: preferenceState.showComplexStoryTile,
-                      refreshController: refreshControllerShow,
-                      items: state.storiesByType[StoryType.show]!,
-                      onRefresh: () {
-                        HapticFeedback.lightImpact();
-                        context
-                            .read<StoriesBloc>()
-                            .add(StoriesRefresh(type: StoryType.show));
-                      },
-                      onLoadMore: () {
-                        context
-                            .read<StoriesBloc>()
-                            .add(StoriesLoadMore(type: StoryType.show));
-                      },
-                      onTap: onStoryTapped,
-                      onPinned: context.read<PinCubit>().pinStory,
-                      header: pinnedStories,
-                    ),
-                    ItemsListView<Story>(
-                      pinnable: true,
-                      showWebPreview: preferenceState.showComplexStoryTile,
-                      refreshController: refreshControllerJobs,
-                      items: state.storiesByType[StoryType.jobs]!,
-                      onRefresh: () {
-                        HapticFeedback.lightImpact();
-                        context
-                            .read<StoriesBloc>()
-                            .add(StoriesRefresh(type: StoryType.jobs));
-                      },
-                      onLoadMore: () {
-                        context
-                            .read<StoriesBloc>()
-                            .add(StoriesLoadMore(type: StoryType.jobs));
-                      },
-                      onTap: onStoryTapped,
-                      onPinned: context.read<PinCubit>().pinStory,
-                      header: pinnedStories,
-                    ),
-                    const ProfileScreen(),
-                  ],
-                ),
-              ),
+                );
+              },
             );
           },
         );
@@ -419,5 +448,7 @@ class _HomeScreenState extends State<HomeScreen>
       LinkUtil.launchUrl(story.url, useReader: useReader);
       cacheService.store(story.id);
     }
+
+    context.read<CacheCubit>().markStoryAsRead(story.id);
   }
 }

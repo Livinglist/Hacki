@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
@@ -84,8 +85,10 @@ class CommentTile extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 behavior: HitTestBehavior.opaque,
-                                onTap: () =>
-                                    context.read<CommentsCubit>().collapse(),
+                                onTap: () {
+                                  HapticFeedback.lightImpact();
+                                  context.read<CommentsCubit>().collapse();
+                                },
                                 child: Padding(
                                   padding: const EdgeInsets.only(
                                       left: 6, right: 6, top: 6),

@@ -10,12 +10,14 @@ import 'package:shimmer/shimmer.dart';
 class StoryTile extends StatelessWidget {
   const StoryTile({
     Key? key,
+    this.wasRead = false,
     required this.showWebPreview,
     required this.story,
     required this.onTap,
   }) : super(key: key);
 
   final bool showWebPreview;
+  final bool wasRead;
   final Story story;
   final VoidCallback onTap;
 
@@ -118,7 +120,9 @@ class StoryTile extends StatelessWidget {
                 bodyMaxLines: 4,
                 errorTitle: story.title,
                 titleStyle: TextStyle(
-                  color: Theme.of(context).textTheme.subtitle1!.color,
+                  color: wasRead
+                      ? Colors.grey[500]
+                      : Theme.of(context).textTheme.subtitle1!.color,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -170,7 +174,11 @@ class StoryTile extends StatelessWidget {
                   Expanded(
                     child: Text(
                       story.title,
-                      style: const TextStyle(fontSize: 15),
+                      style: TextStyle(
+                        color: wasRead ? Colors.grey[500] : null,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],

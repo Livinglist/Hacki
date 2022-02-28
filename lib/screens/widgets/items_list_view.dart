@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/custom_circular_progress_indicator.dart';
 import 'package:hacki/screens/widgets/story_tile.dart';
@@ -18,6 +20,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     required this.refreshController,
     this.enablePullDown = true,
     this.pinnable = false,
+    this.markReadStories = false,
     this.onRefresh,
     this.onLoadMore,
     this.onPinned,
@@ -27,6 +30,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
 
   final bool showWebPreview;
   final bool enablePullDown;
+  final bool markReadStories;
 
   /// Whether story tiles can be pinned to the top.
   final bool pinnable;
@@ -44,6 +48,8 @@ class ItemsListView<T extends Item> extends StatelessWidget {
       children: [
         if (header != null) header!,
         ...items.map((e) {
+          final wasRead =
+              context.read<CacheCubit>().state.storiesReadStatus[e.id] ?? false;
           if (e is Story) {
             return [
               FadeIn(
@@ -72,6 +78,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                     story: e,
                     onTap: () => onTap(e),
                     showWebPreview: showWebPreview,
+                    wasRead: markReadStories && wasRead,
                   ),
                 ),
               ),
