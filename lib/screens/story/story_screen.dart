@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
@@ -142,15 +143,13 @@ class _StoryScreenState extends State<StoryScreen> {
         return BlocConsumer<PostCubit, PostState>(
           listener: (context, postState) {
             if (postState.status == PostStatus.successful) {
-              editCubit.onReplySubmittedSuccessfully();
+              final verb =
+                  editCubit.state.replyingTo == null ? 'updated' : 'submitted';
+              final msg = 'Comment $verb! ${(happyFaces..shuffle()).first}';
               focusNode.unfocus();
               HapticFeedback.lightImpact();
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(
-                  'Comment submitted! ${(happyFaces..shuffle()).first}',
-                ),
-                backgroundColor: Colors.orange,
-              ));
+              showSnackBar(content: msg);
+              editCubit.onReplySubmittedSuccessfully();
               context.read<PostCubit>().reset();
             } else if (postState.status == PostStatus.failure) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -178,10 +177,12 @@ class _StoryScreenState extends State<StoryScreen> {
               builder: (context, state) {
                 return BlocConsumer<EditCubit, EditState>(
                   listenWhen: (previous, current) {
-                    return previous.replyingTo != current.replyingTo;
+                    return previous.replyingTo != current.replyingTo ||
+                        previous.itemBeingEdited != current.itemBeingEdited;
                   },
                   listener: (context, editState) {
-                    if (editState.replyingTo != null) {
+                    if (editState.replyingTo != null ||
+                        editState.itemBeingEdited != null) {
                       if (editState.text == null) {
                         commentEditingController.clear();
                       } else {
@@ -197,6 +198,7 @@ class _StoryScreenState extends State<StoryScreen> {
                   },
                   builder: (context, editState) {
                     final replyingTo = editCubit.state.replyingTo;
+                    final editing = editCubit.state.itemBeingEdited;
                     return Scaffold(
                       extendBodyBehindAppBar: true,
                       resizeToAvoidBottomInset: true,
@@ -379,17 +381,34 @@ class _StoryScreenState extends State<StoryScreen> {
                             SizedBox(
                               height: topPadding,
                             ),
-                            InkWell(
-                              onTap: () {
-                                setState(() {
-                                  if (widget.story != replyingTo) {
-                                    commentEditingController.clear();
-                                  }
-                                  editCubit.onItemTapped(widget.story);
-                                  focusNode.requestFocus();
-                                });
-                              },
-                              onLongPress: () => onMorePressed(widget.story),
+                            Slidable(
+                              startActionPane: ActionPane(
+                                motion: const BehindMotion(),
+                                children: [
+                                  SlidableAction(
+                                    onPressed: (_) {
+                                      HapticFeedback.lightImpact();
+                                      setState(() {
+                                        if (widget.story != replyingTo) {
+                                          commentEditingController.clear();
+                                        }
+                                        editCubit.onReplyTapped(widget.story);
+                                        focusNode.requestFocus();
+                                      });
+                                    },
+                                    backgroundColor: Colors.orange,
+                                    foregroundColor: Colors.white,
+                                    icon: Icons.message,
+                                  ),
+                                  SlidableAction(
+                                    onPressed: (_) =>
+                                        onMorePressed(widget.story),
+                                    backgroundColor: Colors.orange,
+                                    foregroundColor: Colors.white,
+                                    icon: Icons.more_horiz,
+                                  ),
+                                ],
+                              ),
                               child: Column(
                                 children: [
                                   Padding(
@@ -479,7 +498,16 @@ class _StoryScreenState extends State<StoryScreen> {
                                       commentEditingController.clear();
                                     }
 
-                                    editCubit.onItemTapped(cmt);
+                                    editCubit.onReplyTapped(cmt);
+                                    focusNode.requestFocus();
+                                  },
+                                  onEditTapped: (cmt) {
+                                    HapticFeedback.lightImpact();
+                                    if (cmt.deleted || cmt.dead) {
+                                      return;
+                                    }
+                                    commentEditingController.clear();
+                                    editCubit.onEditTapped(cmt);
                                     focusNode.requestFocus();
                                   },
                                   onMoreTapped: onMorePressed,
@@ -524,6 +552,7 @@ class _StoryScreenState extends State<StoryScreen> {
                         child: ReplyBox(
                           focusNode: focusNode,
                           textEditingController: commentEditingController,
+                          editing: editing,
                           replyingTo: replyingTo,
                           isLoading: postState.status == PostStatus.loading,
                           onSendTapped: onSendTapped,
@@ -614,6 +643,9 @@ class _StoryScreenState extends State<StoryScreen> {
                                 ? const TextStyle(color: Colors.orange)
                                 : null,
                           ),
+                          subtitle: item is Story
+                              ? Text(item.score.toString())
+                              : null,
                           onTap: context.read<VoteCubit>().upvote,
                         ),
                         ListTile(
@@ -745,10 +777,7 @@ class _StoryScreenState extends State<StoryScreen> {
         }).then((yesTapped) {
       if (yesTapped ?? false) {
         context.read<AuthBloc>().add(AuthFlag(item: item));
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Comment flagged!'),
-          backgroundColor: Colors.orange,
-        ));
+        showSnackBar(content: 'Comment flagged!');
       }
     });
   }
@@ -817,10 +846,7 @@ class _StoryScreenState extends State<StoryScreen> {
         } else {
           context.read<BlocklistCubit>().addToBlocklist(item.by);
         }
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('User ${isBlocked ? 'unblocked' : 'blocked'}!'),
-          backgroundColor: Colors.orange,
-        ));
+        showSnackBar(content: 'User ${isBlocked ? 'unblocked' : 'blocked'}!');
       }
     });
   }
@@ -828,7 +854,9 @@ class _StoryScreenState extends State<StoryScreen> {
   void onSendTapped() {
     final authBloc = context.read<AuthBloc>();
     final postCubit = context.read<PostCubit>();
-    final replyingTo = context.read<EditCubit>().state.replyingTo;
+    final editState = context.read<EditCubit>().state;
+    final replyingTo = editState.replyingTo;
+    final itemEdited = editState.itemBeingEdited;
 
     if (authBloc.state.isLoggedIn) {
       final text = commentEditingController.text;
@@ -836,7 +864,9 @@ class _StoryScreenState extends State<StoryScreen> {
         return;
       }
 
-      if (replyingTo != null) {
+      if (itemEdited != null) {
+        postCubit.edit(text: text, id: itemEdited.id);
+      } else if (replyingTo != null) {
         postCubit.post(text: text, to: replyingTo.id);
       }
     } else {
@@ -857,12 +887,7 @@ class _StoryScreenState extends State<StoryScreen> {
           listener: (context, state) {
             if (state.isLoggedIn) {
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Logged in successfully! $happyFace'),
-                  backgroundColor: Colors.orange,
-                ),
-              );
+              showSnackBar(content: 'Logged in successfully! $happyFace');
             }
           },
           builder: (context, state) {

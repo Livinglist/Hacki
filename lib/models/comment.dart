@@ -6,6 +6,7 @@ class Comment extends Item {
     required int id,
     required int time,
     required int parent,
+    required int score,
     required String by,
     required String text,
     required List<int> kids,
@@ -18,7 +19,7 @@ class Comment extends Item {
           kids: kids,
           parent: parent,
           deleted: deleted,
-          score: 0,
+          score: score,
           descendants: 0,
           dead: false,
           parts: [],
@@ -37,7 +38,7 @@ class Comment extends Item {
           kids: (json['kids'] as List?)?.cast<int>() ?? [],
           parent: json['parent'] as int? ?? 0,
           deleted: json['deleted'] as bool? ?? false,
-          score: 0,
+          score: json['score'] as int? ?? 0,
           descendants: 0,
           dead: json['dead'] as bool? ?? false,
           parts: [],
@@ -59,6 +60,7 @@ class Comment extends Item {
         'parent': parent,
         'deleted': deleted,
         'dead': dead,
+        'score': score,
       };
 
   @override

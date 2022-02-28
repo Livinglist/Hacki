@@ -25,8 +25,8 @@ class StorageRepository {
   /// The key of a boolean value deciding whether or not user should be
   /// navigated to web view first. Defaults to false.
   static const String _navigationModeKey = 'navigationMode';
-
   static const String _eyeCandyModeKey = 'eyeCandyMode';
+  static const String _markReadStoriesModeKey = 'markReadStoriesMode';
 
   static const bool _notificationModeDefaultValue = true;
   static const bool _displayModeDefaultValue = true;
@@ -34,6 +34,7 @@ class StorageRepository {
   static const bool _eyeCandyModeDefaultValue = false;
   static const bool _trueDarkModeDefaultValue = false;
   static const bool _readerModeDefaultValue = true;
+  static const bool _markReadStoriesModeDefaultValue = true;
 
   final Future<SharedPreferences> _prefs;
   final FlutterSecureStorage _secureStorage;
@@ -67,6 +68,10 @@ class StorageRepository {
 
   Future<bool> get readerMode async => _prefs.then(
       (prefs) => prefs.getBool(_readerModeKey) ?? _readerModeDefaultValue);
+
+  Future<bool> get markReadStories async => _prefs.then((prefs) =>
+      prefs.getBool(_markReadStoriesModeKey) ??
+      _markReadStoriesModeDefaultValue);
 
   Future<List<int>> get unreadCommentsIds async => _prefs.then((prefs) =>
       prefs.getStringList(_unreadCommentsIdsKey)?.map(int.parse).toList() ??
@@ -139,6 +144,13 @@ class StorageRepository {
     final currentMode =
         prefs.getBool(_readerModeKey) ?? _readerModeDefaultValue;
     await prefs.setBool(_readerModeKey, !currentMode);
+  }
+
+  Future<void> toggleMarkReadStoriesMode() async {
+    final prefs = await _prefs;
+    final currentMode = prefs.getBool(_markReadStoriesModeKey) ??
+        _markReadStoriesModeDefaultValue;
+    await prefs.setBool(_markReadStoriesModeKey, !currentMode);
   }
 
   Future<void> addFav({required String username, required int id}) async {

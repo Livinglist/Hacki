@@ -137,9 +137,9 @@ class WebAnalyzer {
   }
 
   static Future<List<dynamic>?> _isolate(dynamic message) async {
-    //ignore: avoid_dynamic_calls
+    // ignore: avoid_dynamic_calls
     final url = message[0] as String;
-    //ignore: avoid_dynamic_calls
+    // ignore: avoid_dynamic_calls
     final multimedia = message[1] as bool;
 
     final info = await _getInfo(url, multimedia);

@@ -16,10 +16,17 @@ class EditCubit extends Cubit<EditState> {
   final CacheService _cacheService;
   final Debouncer _debouncer;
 
-  void onItemTapped(Item item) {
+  void onReplyTapped(Item item) {
     emit(EditState(
       replyingTo: item,
       text: _cacheService.getDraft(replyingTo: item.id),
+    ));
+  }
+
+  void onEditTapped(Item itemToBeEdited) {
+    emit(EditState(
+      itemBeingEdited: itemToBeEdited,
+      text: itemToBeEdited.text,
     ));
   }
 

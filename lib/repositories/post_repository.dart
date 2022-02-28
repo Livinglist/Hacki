@@ -84,6 +84,45 @@ class PostRepository {
     );
   }
 
+  Future<bool> edit({
+    required int id,
+    String? text,
+  }) async {
+    final username = await _storageRepository.username;
+    final password = await _storageRepository.password;
+
+    if (username == null || password == null) {
+      return false;
+    }
+
+    final formResponse = await _getFormResponse(
+      username: username,
+      password: password,
+      id: id,
+      path: 'edit',
+    );
+    final formValues = HtmlUtil.getHiddenFormValues(formResponse.data);
+
+    if (formValues == null || formValues.isEmpty) {
+      return false;
+    }
+
+    final cookie = formResponse.headers.value(HttpHeaders.setCookieHeader);
+
+    final uri = Uri.https(authority, 'xedit');
+    final PostDataMixin data = EditPostData(
+      hmac: formValues['hmac']!,
+      id: id,
+      text: text,
+    );
+
+    return _performDefaultPost(
+      uri,
+      data,
+      cookie: cookie,
+    );
+  }
+
   Future<Response<List<int>>> _getFormResponse({
     required String username,
     required String password,

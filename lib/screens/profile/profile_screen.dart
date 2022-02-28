@@ -61,6 +61,8 @@ class _ProfileScreenState extends State<ProfileScreen>
         return BlocBuilder<AuthBloc, AuthState>(
           builder: (context, authState) {
             return BlocConsumer<NotificationCubit, NotificationState>(
+              listenWhen: (previous, current) =>
+                  previous.status != current.status,
               listener: (context, notificationState) {
                 if (notificationState.status == NotificationStatus.loaded) {
                   refreshControllerNotification
@@ -71,30 +73,10 @@ class _ProfileScreenState extends State<ProfileScreen>
               builder: (context, notificationState) {
                 return Stack(
                   children: [
-                    if (!authState.isLoggedIn && pageType == _PageType.history)
-                      Positioned.fill(
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 120,
-                            ),
-                            ElevatedButton(
-                              onPressed: onLoginTapped,
-                              style: ElevatedButton.styleFrom(
-                                  primary: Colors.deepOrange),
-                              child: const Text(
-                                'Log in',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
                     Positioned.fill(
                       top: 50,
                       child: Offstage(
-                        offstage: !authState.isLoggedIn ||
-                            pageType != _PageType.history,
+                        offstage: pageType != _PageType.history,
                         child: BlocConsumer<HistoryCubit, HistoryState>(
                           listener: (context, historyState) {
                             if (historyState.status == HistoryStatus.loaded) {
@@ -104,6 +86,14 @@ class _ProfileScreenState extends State<ProfileScreen>
                             }
                           },
                           builder: (context, historyState) {
+                            if (!authState.isLoggedIn ||
+                                historyState.submittedItems.isEmpty) {
+                              return const _CenteredMessageView(
+                                content: 'Your past comments and stories will '
+                                    'show up here.',
+                              );
+                            }
+
                             return ItemsListView<Item>(
                               showWebPreview: false,
                               refreshController: refreshControllerHistory,
@@ -154,6 +144,14 @@ class _ProfileScreenState extends State<ProfileScreen>
                             }
                           },
                           builder: (context, favState) {
+                            if (favState.favStories.isEmpty) {
+                              return const _CenteredMessageView(
+                                content:
+                                    'Your favorite stories will show up here.'
+                                    '\nThey will be synced to your Hacker '
+                                    'News account if you are logged in.',
+                              );
+                            }
                             return ItemsListView<Story>(
                               showWebPreview:
                                   preferenceState.showComplexStoryTile,
@@ -307,6 +305,24 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   activeColor: Colors.orange,
                                 ),
                               SwitchListTile(
+                                title: const Text('Mark Read Stories'),
+                                subtitle: const Text(
+                                    'grey out stories you have read.'),
+                                value: preferenceState.markReadStories,
+                                onChanged: (val) {
+                                  HapticFeedback.lightImpact();
+
+                                  if (!val) {
+                                    context.read<CacheCubit>().deleteAll();
+                                  }
+
+                                  context
+                                      .read<PreferenceCubit>()
+                                      .toggleMarkReadStoriesMode();
+                                },
+                                activeColor: Colors.orange,
+                              ),
+                              SwitchListTile(
                                 title: const Text('Eye Candy'),
                                 subtitle: const Text('some sort of magic.'),
                                 value: preferenceState.showEyeCandy,
@@ -365,7 +381,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   showAboutDialog(
                                     context: context,
                                     applicationName: 'Hacki',
-                                    applicationVersion: 'v0.1.7',
+                                    applicationVersion: 'v0.1.8',
                                     applicationIcon: Image.asset(
                                       Constants.hackiIconPath,
                                       height: 50,
@@ -453,7 +469,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             ),
                             CustomChip(
                               label: 'Inbox : '
-                                  //ignore: lines_longer_than_80_chars
+                                  // ignore: lines_longer_than_80_chars
                                   '${notificationState.unreadCommentsIds.length}',
                               selected: pageType == _PageType.notification,
                               onSelected: (val) {
@@ -840,4 +856,29 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   @override
   bool get wantKeepAlive => true;
+}
+
+class _CenteredMessageView extends StatelessWidget {
+  const _CenteredMessageView({
+    Key? key,
+    required this.content,
+  }) : super(key: key);
+
+  final String content;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(
+        top: 120,
+        left: 40,
+        right: 40,
+      ),
+      child: Text(
+        content,
+        textAlign: TextAlign.center,
+        style: const TextStyle(color: Colors.grey),
+      ),
+    );
+  }
 }

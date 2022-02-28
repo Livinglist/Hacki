@@ -146,6 +146,27 @@ class SubmitPostData with PostDataMixin {
   }
 }
 
+class EditPostData with PostDataMixin {
+  EditPostData({
+    required this.hmac,
+    required this.id,
+    this.text,
+  });
+
+  final String hmac;
+  final int id;
+  final String? text;
+
+  @override
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'hmac': hmac,
+      'id': id,
+      'text': text,
+    };
+  }
+}
+
 class FormPostData with PostDataMixin {
   FormPostData({
     required this.acct,

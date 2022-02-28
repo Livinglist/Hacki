@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:hacki/blocs/auth/auth_bloc.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/utils/utils.dart';
@@ -14,6 +16,7 @@ class CommentTile extends StatelessWidget {
     required this.comment,
     required this.onReplyTapped,
     required this.onMoreTapped,
+    required this.onEditTapped,
     required this.onStoryLinkTapped,
     this.loadKids = true,
     this.level = 0,
@@ -25,6 +28,7 @@ class CommentTile extends StatelessWidget {
   final bool loadKids;
   final Function(Comment) onReplyTapped;
   final Function(Comment) onMoreTapped;
+  final Function(Comment) onEditTapped;
   final Function(String) onStoryLinkTapped;
 
   @override
@@ -68,14 +72,20 @@ class CommentTile extends StatelessWidget {
                                 backgroundColor: Colors.orange,
                                 foregroundColor: Colors.white,
                                 icon: Icons.message,
-                                label: 'Reply',
                               ),
+                              if (context.read<AuthBloc>().state.user.id ==
+                                  comment.by)
+                                SlidableAction(
+                                  onPressed: (_) => onEditTapped(comment),
+                                  backgroundColor: Colors.orange,
+                                  foregroundColor: Colors.white,
+                                  icon: Icons.edit,
+                                ),
                               SlidableAction(
                                 onPressed: (_) => onMoreTapped(comment),
                                 backgroundColor: Colors.orange,
                                 foregroundColor: Colors.white,
                                 icon: Icons.more_horiz,
-                                label: 'More',
                               ),
                             ],
                           ),
@@ -84,8 +94,10 @@ class CommentTile extends StatelessWidget {
                             children: [
                               GestureDetector(
                                 behavior: HitTestBehavior.opaque,
-                                onTap: () =>
-                                    context.read<CommentsCubit>().collapse(),
+                                onTap: () {
+                                  HapticFeedback.lightImpact();
+                                  context.read<CommentsCubit>().collapse();
+                                },
                                 child: Padding(
                                   padding: const EdgeInsets.only(
                                       left: 6, right: 6, top: 6),
@@ -192,6 +204,7 @@ class CommentTile extends StatelessWidget {
                                         myUsername: myUsername,
                                         onReplyTapped: onReplyTapped,
                                         onMoreTapped: onMoreTapped,
+                                        onEditTapped: onEditTapped,
                                         level: level + 1,
                                         onStoryLinkTapped: onStoryLinkTapped,
                                       ),
