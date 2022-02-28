@@ -149,7 +149,9 @@ class StoryTile extends StatelessWidget {
                   imagePath: Constants.hackerNewsLogoPath,
                   bodyMaxLines: 4,
                   titleTextStyle: TextStyle(
-                    color: Theme.of(context).textTheme.subtitle1!.color,
+                    color: wasRead
+                        ? Colors.grey[500]
+                        : Theme.of(context).textTheme.subtitle1!.color,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
