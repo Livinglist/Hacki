@@ -1,6 +1,6 @@
-import 'package:firebase/firebase_io.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/services/services.dart';
 import 'package:html_unescape/html_unescape.dart';
 
 class StoriesRepository {
