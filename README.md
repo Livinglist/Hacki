@@ -1,6 +1,6 @@
 # Hacki for Hacker News
 
-A simple noiseless Hacker News reader made with Flutter.
+A simple noiseless Hacker News reader made with Flutter that is just enough.
 
 ![iOS](https://img.shields.io/badge/iOS-13%20-blue)
 [![App Store](https://img.shields.io/itunes/v/1602043763?label=App%20Store)](https://apps.apple.com/us/app/hacki/id1602043763)
