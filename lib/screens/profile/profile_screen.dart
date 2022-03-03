@@ -194,7 +194,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                           unreadCommentsIds:
                               notificationState.unreadCommentsIds,
                           comments: notificationState.comments,
-                          onCommentTapped: onCommentTapped,
+                          onCommentTapped: (cmt) {
+                            onCommentTapped(cmt, then: () {
+                              context.read<NotificationCubit>().markAsRead(cmt);
+                            });
+                          },
                           onMarkAllAsReadTapped: () {
                             context.read<NotificationCubit>().markAllAsRead();
                           },
@@ -582,22 +586,25 @@ class _ProfileScreenState extends State<ProfileScreen>
         });
   }
 
-  void onCommentTapped(Comment comment) {
+  void onCommentTapped(Comment comment, {VoidCallback? then}) {
     throttle.run(() {
       locator
           .get<StoriesRepository>()
           .fetchParentStoryWithComments(id: comment.parent)
           .then((tuple) {
         if (tuple != null && mounted) {
-          HackiApp.navigatorKey.currentState!.pushNamed(
-            StoryScreen.routeName,
-            arguments: StoryScreenArgs(
-              story: tuple.item1,
-              targetComments:
-                  tuple.item2.isEmpty ? [comment] : [comment, ...tuple.item2],
-              onlyShowTargetComment: true,
-            ),
-          );
+          HackiApp.navigatorKey.currentState!
+              .pushNamed(
+                StoryScreen.routeName,
+                arguments: StoryScreenArgs(
+                  story: tuple.item1,
+                  targetComments: tuple.item2.isEmpty
+                      ? [comment]
+                      : [comment, ...tuple.item2],
+                  onlyShowTargetComment: true,
+                ),
+              )
+              .then((_) => then?.call());
         }
       });
     });
