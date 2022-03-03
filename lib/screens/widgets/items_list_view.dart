@@ -6,8 +6,7 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
-import 'package:hacki/screens/widgets/custom_circular_progress_indicator.dart';
-import 'package:hacki/screens/widgets/story_tile.dart';
+import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
