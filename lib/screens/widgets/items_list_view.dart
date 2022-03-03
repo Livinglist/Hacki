@@ -21,6 +21,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.enablePullDown = true,
     this.pinnable = false,
     this.markReadStories = false,
+    this.useConsistentFontSize = false,
     this.onRefresh,
     this.onLoadMore,
     this.onPinned,
@@ -34,6 +35,10 @@ class ItemsListView<T extends Item> extends StatelessWidget {
 
   /// Whether story tiles can be pinned to the top.
   final bool pinnable;
+
+  /// Whether to use same font size for comment and story tiles.
+  final bool useConsistentFontSize;
+
   final List<T> items;
   final Widget? header;
   final RefreshController? refreshController;
@@ -79,6 +84,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                     onTap: () => onTap(e),
                     showWebPreview: showWebPreview,
                     wasRead: markReadStories && wasRead,
+                    simpleTileFontSize: useConsistentFontSize ? 14 : 16,
                   ),
                 ),
               ),

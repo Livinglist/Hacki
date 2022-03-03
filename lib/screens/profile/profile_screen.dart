@@ -108,6 +108,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
                             return ItemsListView<Item>(
                               showWebPreview: false,
+                              useConsistentFontSize: true,
                               refreshController: refreshControllerHistory,
                               items: historyState.submittedItems
                                   .where((e) => !e.dead && !e.deleted)

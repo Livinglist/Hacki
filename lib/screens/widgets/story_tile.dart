@@ -14,12 +14,14 @@ class StoryTile extends StatelessWidget {
     required this.showWebPreview,
     required this.story,
     required this.onTap,
+    this.simpleTileFontSize = 16,
   }) : super(key: key);
 
   final bool showWebPreview;
   final bool wasRead;
   final Story story;
   final VoidCallback onTap;
+  final double simpleTileFontSize;
 
   @override
   Widget build(BuildContext context) {
@@ -178,7 +180,7 @@ class StoryTile extends StatelessWidget {
                       story.title,
                       style: TextStyle(
                         color: wasRead ? Colors.grey[500] : null,
-                        fontSize: 15.5,
+                        fontSize: simpleTileFontSize,
                       ),
                     ),
                   ),
