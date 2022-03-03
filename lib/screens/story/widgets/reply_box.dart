@@ -76,20 +76,21 @@ class _ReplyBoxState extends State<ReplyBox> {
                 ),
                 const Spacer(),
                 if (!widget.isLoading) ...[
-                  if (widget.replyingTo != null) ...[
-                    AnimatedOpacity(
-                      opacity: expanded ? 1 : 0,
-                      duration: const Duration(milliseconds: 300),
-                      child: IconButton(
-                        key: const Key('quote'),
-                        icon: const Icon(
-                          FeatherIcons.code,
-                          color: Colors.orange,
-                          size: 18,
+                  ...[
+                    if (widget.replyingTo != null)
+                      AnimatedOpacity(
+                        opacity: expanded ? 1 : 0,
+                        duration: const Duration(milliseconds: 300),
+                        child: IconButton(
+                          key: const Key('quote'),
+                          icon: const Icon(
+                            FeatherIcons.code,
+                            color: Colors.orange,
+                            size: 18,
+                          ),
+                          onPressed: expanded ? showTextPopup : null,
                         ),
-                        onPressed: expanded ? showTextPopup : null,
                       ),
-                    ),
                     IconButton(
                       key: const Key('expand'),
                       icon: Icon(

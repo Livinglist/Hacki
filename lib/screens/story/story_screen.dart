@@ -497,7 +497,7 @@ class _StoryScreenState extends State<StoryScreen> {
                                 onPressed: () => context
                                     .read<CommentsCubit>()
                                     .loadAll(widget.story),
-                                child: const Text('View all the comments'),
+                                child: const Text('View all comments'),
                               ),
                               const Divider(
                                 height: 0,
