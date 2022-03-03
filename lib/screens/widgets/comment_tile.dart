@@ -1,10 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:hacki/blocs/auth/auth_bloc.dart';
+import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/utils/utils.dart';
@@ -19,22 +21,31 @@ class CommentTile extends StatelessWidget {
     required this.onEditTapped,
     required this.onStoryLinkTapped,
     this.loadKids = true,
+    this.onlyShowTargetComment = false,
     this.level = 0,
+    this.targetComments = const [],
   }) : super(key: key);
 
   final String? myUsername;
   final Comment comment;
   final int level;
   final bool loadKids;
+  final bool onlyShowTargetComment;
   final Function(Comment) onReplyTapped;
   final Function(Comment) onMoreTapped;
   final Function(Comment) onEditTapped;
   final Function(String) onStoryLinkTapped;
+  final List<Comment> targetComments;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<CommentsCubit>(
-      create: (_) => CommentsCubit<Comment>(item: comment),
+      lazy: false,
+      create: (_) => CommentsCubit<Comment>()
+        ..init(comment,
+            onlyShowTargetComment: onlyShowTargetComment,
+            targetComment:
+                targetComments.isNotEmpty ? targetComments.last : null),
       child: BlocBuilder<CommentsCubit, CommentsState>(
         builder: (context, state) {
           return BlocBuilder<PreferenceCubit, PreferenceState>(
@@ -201,6 +212,16 @@ class CommentTile extends StatelessWidget {
                                     (e) => FadeIn(
                                       child: CommentTile(
                                         comment: e,
+                                        onlyShowTargetComment:
+                                            onlyShowTargetComment &&
+                                                targetComments.length > 1,
+                                        targetComments: targetComments
+                                                .isNotEmpty
+                                            ? targetComments.sublist(
+                                                0,
+                                                max(targetComments.length - 1,
+                                                    0))
+                                            : [],
                                         myUsername: myUsername,
                                         onReplyTapped: onReplyTapped,
                                         onMoreTapped: onMoreTapped,

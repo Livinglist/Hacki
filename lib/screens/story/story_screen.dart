@@ -31,13 +31,21 @@ enum _MenuAction {
 }
 
 class StoryScreenArgs {
-  StoryScreenArgs({required this.story});
+  StoryScreenArgs({
+    required this.story,
+    this.onlyShowTargetComment = false,
+    this.targetComments,
+  });
 
   final Story story;
+  final bool onlyShowTargetComment;
+  final List<Comment>? targetComments;
 }
 
 class StoryScreen extends StatefulWidget {
-  const StoryScreen({Key? key, required this.story}) : super(key: key);
+  const StoryScreen(
+      {Key? key, required this.story, required this.parentComments})
+      : super(key: key);
 
   static const String routeName = '/story';
 
@@ -50,9 +58,12 @@ class StoryScreen extends StatefulWidget {
             create: (context) => PostCubit(),
           ),
           BlocProvider<CommentsCubit>(
-            create: (_) => CommentsCubit<Story>(
-              item: args.story,
-            ),
+            create: (_) => CommentsCubit<Story>()
+              ..init(
+                args.story,
+                onlyShowTargetComment: args.onlyShowTargetComment,
+                targetComment: args.targetComments?.last,
+              ),
           ),
           BlocProvider<EditCubit>(
             create: (context) => EditCubit(),
@@ -60,12 +71,14 @@ class StoryScreen extends StatefulWidget {
         ],
         child: StoryScreen(
           story: args.story,
+          parentComments: args.targetComments ?? [],
         ),
       ),
     );
   }
 
   final Story story;
+  final List<Comment> parentComments;
 
   @override
   _StoryScreenState createState() => _StoryScreenState();
@@ -338,7 +351,8 @@ class _StoryScreenState extends State<StoryScreen> {
                       ),
                       body: SmartRefresher(
                         scrollController: scrollController,
-                        enablePullUp: true,
+                        enablePullUp: !state.onlyShowTargetComment,
+                        enablePullDown: !state.onlyShowTargetComment,
                         header: WaterDropMaterialHeader(
                           backgroundColor: Colors.orange,
                           offset: topPadding,
@@ -458,17 +472,37 @@ class _StoryScreenState extends State<StoryScreen> {
                                     ),
                                   ),
                                   if (widget.story.text.isNotEmpty)
-                                    Html(
-                                      data: widget.story.text,
-                                      onLinkTap: (link, _, __, ___) =>
-                                          LinkUtil.launchUrl(link ?? ''),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                      ),
+                                      child: SelectableHtml(
+                                        data: widget.story.text,
+                                        onLinkTap: (link, _, __, ___) =>
+                                            LinkUtil.launchUrl(link ?? ''),
+                                      ),
                                     ),
                                 ],
                               ),
                             ),
+                            if (widget.story.text.isNotEmpty)
+                              const SizedBox(
+                                height: 8,
+                              ),
                             const Divider(
                               height: 0,
                             ),
+                            if (state.onlyShowTargetComment) ...[
+                              TextButton(
+                                onPressed: () => context
+                                    .read<CommentsCubit>()
+                                    .loadAll(widget.story),
+                                child: const Text('View all comments'),
+                              ),
+                              const Divider(
+                                height: 0,
+                              ),
+                            ],
                             if (state.comments.isEmpty &&
                                 state.status == CommentsStatus.loaded) ...[
                               const SizedBox(
@@ -485,6 +519,11 @@ class _StoryScreenState extends State<StoryScreen> {
                               (e) => FadeIn(
                                 child: CommentTile(
                                   comment: e,
+                                  onlyShowTargetComment:
+                                      state.onlyShowTargetComment,
+                                  targetComments: widget.parentComments.sublist(
+                                      0,
+                                      max(widget.parentComments.length - 1, 0)),
                                   myUsername: authState.isLoggedIn
                                       ? authState.username
                                       : null,

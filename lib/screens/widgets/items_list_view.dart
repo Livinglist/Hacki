@@ -6,8 +6,7 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
-import 'package:hacki/screens/widgets/custom_circular_progress_indicator.dart';
-import 'package:hacki/screens/widgets/story_tile.dart';
+import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -21,6 +20,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.enablePullDown = true,
     this.pinnable = false,
     this.markReadStories = false,
+    this.useConsistentFontSize = false,
     this.onRefresh,
     this.onLoadMore,
     this.onPinned,
@@ -34,6 +34,10 @@ class ItemsListView<T extends Item> extends StatelessWidget {
 
   /// Whether story tiles can be pinned to the top.
   final bool pinnable;
+
+  /// Whether to use same font size for comment and story tiles.
+  final bool useConsistentFontSize;
+
   final List<T> items;
   final Widget? header;
   final RefreshController? refreshController;
@@ -79,6 +83,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                     onTap: () => onTap(e),
                     showWebPreview: showWebPreview,
                     wasRead: markReadStories && wasRead,
+                    simpleTileFontSize: useConsistentFontSize ? 14 : 16,
                   ),
                 ),
               ),

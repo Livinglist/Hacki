@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/services/services.dart';
 import 'package:html_unescape/html_unescape.dart';
+import 'package:tuple/tuple.dart';
 
 class StoriesRepository {
   StoriesRepository({
@@ -128,7 +129,7 @@ class StoriesRepository {
   Future<Item?> fetchItemBy({required int id}) async {
     final item = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
-        .then((dynamic val) {
+        .then((dynamic val) async {
       if (val == null) {
         return null;
       }
@@ -138,6 +139,9 @@ class StoriesRepository {
         final story = Story.fromJson(json);
         return story;
       } else if (json['type'] == 'comment') {
+        final text = json['text'] as String? ?? '';
+        final parsedText = await compute<String, String>(_parseHtml, text);
+        json['text'] = parsedText;
         final comment = Comment.fromJson(json);
         return comment;
       }
@@ -170,6 +174,22 @@ class StoriesRepository {
     } while (item is Comment);
 
     return item as Story;
+  }
+
+  Future<Tuple2<Story, List<Comment>>?> fetchParentStoryWithComments(
+      {required int id}) async {
+    Item? item;
+    final parentComments = <Comment>[];
+
+    do {
+      item = await fetchItemBy(id: item?.parent ?? id);
+      if (item is Comment) {
+        parentComments.add(item);
+      }
+      if (item == null) return null;
+    } while (item is Comment);
+
+    return Tuple2<Story, List<Comment>>(item as Story, parentComments);
   }
 
   static String _parseHtml(String text) {
