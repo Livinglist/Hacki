@@ -178,7 +178,7 @@ class StoryTile extends StatelessWidget {
                       story.title,
                       style: TextStyle(
                         color: wasRead ? Colors.grey[500] : null,
-                        fontSize: 16,
+                        fontSize: 15.5,
                       ),
                     ),
                   ),

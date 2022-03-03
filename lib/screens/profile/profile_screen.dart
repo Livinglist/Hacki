@@ -40,6 +40,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   final refreshControllerFav = RefreshController();
   final refreshControllerNotification = RefreshController();
   final scrollController = ScrollController();
+  final throttle = Throttle(delay: const Duration(seconds: 2));
 
   _PageType pageType = _PageType.notification;
 
@@ -51,6 +52,16 @@ class _ProfileScreenState extends State<ProfileScreen>
     'to save the world',
     'to infinity and beyond!',
   ];
+
+  @override
+  void dispose() {
+    super.dispose();
+    refreshControllerHistory.dispose();
+    refreshControllerFav.dispose();
+    refreshControllerNotification.dispose();
+    scrollController.dispose();
+    throttle.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,8 +97,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                             }
                           },
                           builder: (context, historyState) {
-                            if (!authState.isLoggedIn ||
-                                historyState.submittedItems.isEmpty) {
+                            if ((!authState.isLoggedIn ||
+                                    historyState.submittedItems.isEmpty) &&
+                                historyState.status != HistoryStatus.loading) {
                               return const _CenteredMessageView(
                                 content: 'Your past comments and stories will '
                                     'show up here.',
@@ -113,17 +125,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       StoryScreen.routeName,
                                       arguments: StoryScreenArgs(story: item));
                                 } else if (item is Comment) {
-                                  locator
-                                      .get<StoriesRepository>()
-                                      .fetchParentStory(id: item.parent)
-                                      .then((story) {
-                                    if (story != null && mounted) {
-                                      HackiApp.navigatorKey.currentState!
-                                          .pushNamed(StoryScreen.routeName,
-                                              arguments: StoryScreenArgs(
-                                                  story: story));
-                                    }
-                                  });
+                                  onCommentTapped(item);
                                 }
                               },
                             );
@@ -144,7 +146,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                             }
                           },
                           builder: (context, favState) {
-                            if (favState.favStories.isEmpty) {
+                            if (favState.favStories.isEmpty &&
+                                favState.status != FavStatus.loading) {
                               return const _CenteredMessageView(
                                 content:
                                     'Your favorite stories will show up here.'
@@ -190,24 +193,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                           unreadCommentsIds:
                               notificationState.unreadCommentsIds,
                           comments: notificationState.comments,
-                          onCommentTapped: (comment) {
-                            locator
-                                .get<StoriesRepository>()
-                                .fetchParentStory(id: comment.parent)
-                                .then((story) {
-                              if (story != null && mounted) {
-                                context
-                                    .read<NotificationCubit>()
-                                    .markAsRead(comment);
-                                HackiApp.navigatorKey.currentState!.pushNamed(
-                                  StoryScreen.routeName,
-                                  arguments: StoryScreenArgs(
-                                    story: story,
-                                  ),
-                                );
-                              }
-                            });
-                          },
+                          onCommentTapped: onCommentTapped,
                           onMarkAllAsReadTapped: () {
                             context.read<NotificationCubit>().markAllAsRead();
                           },
@@ -381,7 +367,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   showAboutDialog(
                                     context: context,
                                     applicationName: 'Hacki',
-                                    applicationVersion: 'v0.1.8',
+                                    applicationVersion: 'v0.1.9',
                                     applicationIcon: Image.asset(
                                       Constants.hackiIconPath,
                                       height: 50,
@@ -593,6 +579,27 @@ class _ProfileScreenState extends State<ProfileScreen>
             ),
           );
         });
+  }
+
+  void onCommentTapped(Comment comment) {
+    throttle.run(() {
+      locator
+          .get<StoriesRepository>()
+          .fetchParentStoryWithComments(id: comment.parent)
+          .then((tuple) {
+        if (tuple != null && mounted) {
+          HackiApp.navigatorKey.currentState!.pushNamed(
+            StoryScreen.routeName,
+            arguments: StoryScreenArgs(
+              story: tuple.item1,
+              targetComments:
+                  tuple.item2.isEmpty ? [comment] : [comment, ...tuple.item2],
+              onlyShowTargetComment: true,
+            ),
+          );
+        }
+      });
+    });
   }
 
   void onLoginTapped() {

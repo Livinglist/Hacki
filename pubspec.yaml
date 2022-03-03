@@ -1,6 +1,6 @@
 name: hacki
 description: A Hacker News reader.
-version: 0.1.8+25
+version: 0.1.9+26
 publish_to: none
 
 environment:
@@ -44,6 +44,7 @@ dependencies:
   sembast: ^3.1.1+1
   shared_preferences: ^2.0.11
   shimmer: ^2.0.0
+  tuple: ^2.0.0
   universal_platform: ^1.0.0+1
   url_launcher: ^6.0.10
 

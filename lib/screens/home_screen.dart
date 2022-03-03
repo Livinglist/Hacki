@@ -248,9 +248,7 @@ class _HomeScreenState extends State<HomeScreen>
                                     'to check out stories and comments you have '
                                     'posted in the past, and get in-app '
                                     'notification when there is new reply to '
-                                    'your comments or stories.\n\nAlso, you can '
-                                    'long press here to submit a new link to '
-                                    'Hacker News.',
+                                    'your comments or stories.',
                                     style: TextStyle(fontSize: 16),
                                   ),
                                   child: BlocBuilder<NotificationCubit,

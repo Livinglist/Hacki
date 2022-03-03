@@ -13,30 +13,36 @@ class CommentsState extends Equatable {
     required this.comments,
     required this.status,
     required this.collapsed,
+    required this.onlyShowTargetComment,
   });
 
   CommentsState.init()
       : item = null,
         comments = [],
         status = CommentsStatus.init,
-        collapsed = false;
+        collapsed = false,
+        onlyShowTargetComment = false;
 
   final Item? item;
   final List<Comment> comments;
   final CommentsStatus status;
   final bool collapsed;
+  final bool onlyShowTargetComment;
 
   CommentsState copyWith({
     Item? item,
     List<Comment>? comments,
     CommentsStatus? status,
     bool? collapsed,
+    bool? onlyShowTargetComment,
   }) {
     return CommentsState(
       item: item ?? this.item,
       comments: comments ?? this.comments,
       status: status ?? this.status,
       collapsed: collapsed ?? this.collapsed,
+      onlyShowTargetComment:
+          onlyShowTargetComment ?? this.onlyShowTargetComment,
     );
   }
 
@@ -46,5 +52,6 @@ class CommentsState extends Equatable {
         comments,
         status,
         collapsed,
+        onlyShowTargetComment,
       ];
 }

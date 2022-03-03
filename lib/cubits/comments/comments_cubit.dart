@@ -8,21 +8,31 @@ import 'package:hacki/services/cache_service.dart';
 part 'comments_state.dart';
 
 class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
-  CommentsCubit(
-      {required T item,
-      CacheService? cacheService,
-      StoriesRepository? storiesRepository})
-      : _cacheService = cacheService ?? locator.get<CacheService>(),
+  CommentsCubit({
+    CacheService? cacheService,
+    StoriesRepository? storiesRepository,
+  })  : _cacheService = cacheService ?? locator.get<CacheService>(),
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
-        super(CommentsState.init()) {
-    init(item);
-  }
+        super(CommentsState.init());
 
   final CacheService _cacheService;
   final StoriesRepository _storiesRepository;
 
-  Future<void> init(T item) async {
+  Future<void> init(
+    T item, {
+    bool onlyShowTargetComment = false,
+    Comment? targetComment,
+  }) async {
+    if (onlyShowTargetComment) {
+      emit(state.copyWith(
+        item: item,
+        comments: targetComment != null ? [targetComment] : [],
+        onlyShowTargetComment: true,
+      ));
+      return;
+    }
+
     if (item is Story) {
       final story = item;
       final updatedStory = await _storiesRepository.fetchStoryById(story.id);
@@ -95,6 +105,14 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
   void collapse() {
     _cacheService.updateCollapsedComments(state.item!.id);
     emit(state.copyWith(collapsed: !state.collapsed));
+  }
+
+  void loadAll(T item) {
+    emit(state.copyWith(
+      onlyShowTargetComment: false,
+      comments: [],
+    ));
+    init(item);
   }
 
   void _onCommentFetched(Comment? comment) {

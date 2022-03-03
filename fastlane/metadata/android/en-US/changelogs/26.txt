@@ -1,0 +1,1 @@
+- Tapping on comments in notification and history screen will lead you directly to the comment.
