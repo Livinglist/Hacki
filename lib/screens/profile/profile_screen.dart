@@ -367,7 +367,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     children: [
                                       ElevatedButton(
                                         onPressed: () => LinkUtil.launchUrl(
-                                            Constants.portfolioLink),
+                                          Constants.portfolioLink,
+                                        ),
                                         child: Row(
                                           children: const [
                                             Icon(
@@ -382,7 +383,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       ),
                                       ElevatedButton(
                                         onPressed: () => LinkUtil.launchUrl(
-                                            Constants.githubLink),
+                                          Constants.githubLink,
+                                        ),
                                         child: Row(
                                           children: const [
                                             Icon(
@@ -397,11 +399,14 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       ),
                                       ElevatedButton(
                                         onPressed: () => LinkUtil.launchUrl(
-                                            Constants.appStoreLine),
+                                          Platform.isIOS
+                                              ? Constants.appStoreLink
+                                              : Constants.googlePlayLink,
+                                        ),
                                         child: Row(
                                           children: const [
                                             Icon(
-                                              FontAwesomeIcons.github,
+                                              Icons.thumb_up,
                                             ),
                                             SizedBox(
                                               width: 12,
