@@ -46,6 +46,7 @@ class StoriesListView extends StatelessWidget {
           builder: (context, state) {
             return ItemsListView<Story>(
               pinnable: true,
+              showOfflineBanner: true,
               markReadStories:
                   context.read<PreferenceCubit>().state.markReadStories,
               showWebPreview: preferenceState.showComplexStoryTile,

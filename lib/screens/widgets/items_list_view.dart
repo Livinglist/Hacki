@@ -21,6 +21,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.pinnable = false,
     this.markReadStories = false,
     this.useConsistentFontSize = false,
+    this.showOfflineBanner = false,
     this.onRefresh,
     this.onLoadMore,
     this.onPinned,
@@ -31,6 +32,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   final bool showWebPreview;
   final bool enablePullDown;
   final bool markReadStories;
+  final bool showOfflineBanner;
 
   /// Whether story tiles can be pinned to the top.
   final bool pinnable;
@@ -50,9 +52,10 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   Widget build(BuildContext context) {
     final child = ListView(
       children: [
-        const OfflineBanner(
-          showExitButton: true,
-        ),
+        if (showOfflineBanner)
+          const OfflineBanner(
+            showExitButton: true,
+          ),
         if (header != null) header!,
         ...items.map((e) {
           final wasRead =

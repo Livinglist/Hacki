@@ -28,7 +28,35 @@ class OfflineBanner extends StatelessWidget {
               if (showExitButton)
                 TextButton(
                   onPressed: () {
-                    context.read<StoriesBloc>().add(StoriesExitOffline());
+                    showDialog<bool>(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('Exit offline mode?'),
+                            actions: [
+                              TextButton(
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(false),
+                                  child: const Text('Cancel')),
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true),
+                                child: const Text(
+                                  'Yes',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        }).then((value) {
+                      if (value ?? false) {
+                        context.read<StoriesBloc>().add(StoriesExitOffline());
+                        context.read<AuthBloc>().add(AuthInitialize());
+                      }
+                    });
                   },
                   child: const Text('Exit'),
                 )
