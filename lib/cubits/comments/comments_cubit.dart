@@ -12,11 +12,12 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
     CacheService? cacheService,
     CacheRepository? cacheRepository,
     StoriesRepository? storiesRepository,
+    required bool offlineReading,
   })  : _cacheService = cacheService ?? locator.get<CacheService>(),
         _cacheRepository = cacheRepository ?? locator.get<CacheRepository>(),
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
-        super(CommentsState.init());
+        super(CommentsState.init(offlineReading: offlineReading));
 
   final CacheService _cacheService;
   final CacheRepository _cacheRepository;
@@ -36,11 +37,9 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
       return;
     }
 
-    final offlineReading = await _cacheRepository.hasCachedStories;
-
     if (item is Story) {
       final story = item;
-      final updatedStory = offlineReading
+      final updatedStory = state.offlineReading
           ? story
           : await _storiesRepository.fetchStoryBy(story.id);
 
@@ -51,14 +50,16 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
         if (cachedComment != null) {
           emit(state.copyWith(
               comments: List.from(state.comments)..add(cachedComment)));
-        } else if (offlineReading) {
-          await _cacheRepository
-              .getCachedComment(id: id)
-              .then(_onCommentFetched);
         } else {
-          await _storiesRepository
-              .fetchCommentBy(id: id)
-              .then(_onCommentFetched);
+          if (state.offlineReading) {
+            await _cacheRepository
+                .getCachedComment(id: id)
+                .then(_onCommentFetched);
+          } else {
+            await _storiesRepository
+                .fetchCommentBy(id: id)
+                .then(_onCommentFetched);
+          }
         }
       }
 
@@ -78,14 +79,16 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
         if (cachedComment != null) {
           emit(state.copyWith(
               comments: List.from(state.comments)..add(cachedComment)));
-        } else if (offlineReading) {
-          await _cacheRepository
-              .getCachedComment(id: id)
-              .then(_onCommentFetched);
         } else {
-          await _storiesRepository
-              .fetchCommentBy(id: id)
-              .then(_onCommentFetched);
+          if (state.offlineReading) {
+            await _cacheRepository
+                .getCachedComment(id: id)
+                .then(_onCommentFetched);
+          } else {
+            await _storiesRepository
+                .fetchCommentBy(id: id)
+                .then(_onCommentFetched);
+          }
         }
       }
 

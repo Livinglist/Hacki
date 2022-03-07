@@ -367,7 +367,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     children: [
                                       ElevatedButton(
                                         onPressed: () => LinkUtil.launchUrl(
-                                            'https://livinglist.github.io'),
+                                            Constants.portfolioLink),
                                         child: Row(
                                           children: const [
                                             Icon(
@@ -382,7 +382,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       ),
                                       ElevatedButton(
                                         onPressed: () => LinkUtil.launchUrl(
-                                            'https://github.com/Livinglist/Hacki'),
+                                            Constants.githubLink),
                                         child: Row(
                                           children: const [
                                             Icon(
@@ -392,6 +392,21 @@ class _ProfileScreenState extends State<ProfileScreen>
                                               width: 12,
                                             ),
                                             Text('Source Code'),
+                                          ],
+                                        ),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () => LinkUtil.launchUrl(
+                                            Constants.appStoreLine),
+                                        child: Row(
+                                          children: const [
+                                            Icon(
+                                              FontAwesomeIcons.github,
+                                            ),
+                                            SizedBox(
+                                              width: 12,
+                                            ),
+                                            Text('Like the App?'),
                                           ],
                                         ),
                                       ),

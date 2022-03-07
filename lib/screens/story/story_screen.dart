@@ -58,7 +58,9 @@ class StoryScreen extends StatefulWidget {
             create: (context) => PostCubit(),
           ),
           BlocProvider<CommentsCubit>(
-            create: (_) => CommentsCubit<Story>()
+            create: (_) => CommentsCubit<Story>(
+                offlineReading:
+                    context.read<StoriesBloc>().state.offlineReading)
               ..init(
                 args.story,
                 onlyShowTargetComment: args.onlyShowTargetComment,
@@ -274,7 +276,10 @@ class _StoryScreenState extends State<StoryScreen> {
                             SizedBox(
                               height: topPadding,
                             ),
-                            const OfflineBanner(),
+                            const Padding(
+                              padding: EdgeInsets.only(bottom: 6),
+                              child: OfflineBanner(),
+                            ),
                             Slidable(
                               startActionPane: ActionPane(
                                 motion: const BehindMotion(),

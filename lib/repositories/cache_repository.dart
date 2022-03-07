@@ -6,14 +6,14 @@ class CacheRepository {
     Future<Box<bool>>? readStoryIdBox,
     Future<Box<List<int>>>? storyIdBox,
     Future<Box<Map<dynamic, dynamic>>>? storyBox,
-    Future<Box<Map<dynamic, dynamic>>>? commentBox,
+    Future<LazyBox<Map<dynamic, dynamic>>>? commentBox,
   })  : _readStoryIdBox =
             readStoryIdBox ?? Hive.openBox<bool>(_readStoryIdBoxName),
         _storyIdBox = storyIdBox ?? Hive.openBox<List<int>>(_storyIdBoxName),
         _storyBox =
             storyBox ?? Hive.openBox<Map<dynamic, dynamic>>(_storyBoxName),
-        _commentBox =
-            commentBox ?? Hive.openBox<Map<dynamic, dynamic>>(_commentBoxName);
+        _commentBox = commentBox ??
+            Hive.openLazyBox<Map<dynamic, dynamic>>(_commentBoxName);
 
   static const _readStoryIdBoxName = 'readStoryIdBox';
   static const _storyIdBoxName = 'storyIdBox';
@@ -22,7 +22,7 @@ class CacheRepository {
   final Future<Box<bool>> _readStoryIdBox;
   final Future<Box<List<int>>> _storyIdBox;
   final Future<Box<Map<dynamic, dynamic>>> _storyBox;
-  final Future<Box<Map<dynamic, dynamic>>> _commentBox;
+  final Future<LazyBox<Map<dynamic, dynamic>>> _commentBox;
 
   Future<bool> get hasCachedStories => _storyBox.then((box) => box.isNotEmpty);
 
@@ -94,7 +94,7 @@ class CacheRepository {
 
   Future<Comment?> getCachedComment({required int id}) async {
     final box = await _commentBox;
-    final json = box.get(id.toString());
+    final json = await box.get(id.toString());
     if (json == null) {
       return null;
     }
