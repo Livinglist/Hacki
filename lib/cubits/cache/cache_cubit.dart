@@ -22,11 +22,11 @@ class CacheCubit extends Cubit<CacheState> {
 
   void markStoryAsRead(int id) {
     emit(state.copyWithStoryMarkedAsRead(id: id));
-    _cacheRepository.cacheReadStory(id: id);
+    _cacheRepository.cacheReadStoryId(id: id);
   }
 
   void deleteAll() {
     emit(CacheState.init());
-    _cacheRepository.deleteAll();
+    _cacheRepository.deleteAllReadStoryIds();
   }
 }

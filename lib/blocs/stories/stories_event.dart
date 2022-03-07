@@ -37,6 +37,16 @@ class StoriesLoadMore extends StoriesEvent {
   List<Object?> get props => [type];
 }
 
+class StoriesDownload extends StoriesEvent {
+  @override
+  List<Object?> get props => [];
+}
+
+class StoriesExitOffline extends StoriesEvent {
+  @override
+  List<Object?> get props => [];
+}
+
 class StoryLoaded extends StoriesEvent {
   StoryLoaded({required this.story, required this.type});
 

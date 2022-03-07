@@ -40,7 +40,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     await _authRepository.loggedIn.then((loggedIn) async {
       if (loggedIn) {
         final username = await _authRepository.username;
-        final user = await _storiesRepository.fetchUserById(userId: username!);
+        final user = await _storiesRepository.fetchUserBy(userId: username!);
 
         emit(state.copyWith(
           isLoggedIn: true,
@@ -73,8 +73,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         username: event.username, password: event.password);
 
     if (successful) {
-      final user =
-          await _storiesRepository.fetchUserById(userId: event.username);
+      final user = await _storiesRepository.fetchUserBy(userId: event.username);
       emit(state.copyWith(
         user: user,
         isLoggedIn: true,

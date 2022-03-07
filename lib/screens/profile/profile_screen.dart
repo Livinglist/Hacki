@@ -16,7 +16,6 @@ import 'package:hacki/screens/profile/widgets/widgets.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/utils/utils.dart';
-import 'package:in_app_review/in_app_review.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 enum _PageType {
@@ -100,7 +99,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             if ((!authState.isLoggedIn ||
                                     historyState.submittedItems.isEmpty) &&
                                 historyState.status != HistoryStatus.loading) {
-                              return const _CenteredMessageView(
+                              return const CenteredMessageView(
                                 content: 'Your past comments and stories will '
                                     'show up here.',
                               );
@@ -149,7 +148,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                           builder: (context, favState) {
                             if (favState.favStories.isEmpty &&
                                 favState.status != FavStatus.loading) {
-                              return const _CenteredMessageView(
+                              return const CenteredMessageView(
                                 content:
                                     'Your favorite stories will show up here.'
                                     '\nThey will be synced to your Hacker '
@@ -236,6 +235,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   }
                                 },
                               ),
+                              const OfflineListTile(),
                               SwitchListTile(
                                 title: const Text('Notification on New Reply'),
                                 subtitle: const Text(
@@ -322,13 +322,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   context
                                       .read<PreferenceCubit>()
                                       .toggleEyeCandyMode();
-
-                                  final inAppReview = InAppReview.instance;
-                                  inAppReview.isAvailable().then((available) {
-                                    if (available) {
-                                      inAppReview.requestReview();
-                                    }
-                                  });
                                 },
                                 activeColor: Colors.orange,
                               ),
@@ -341,13 +334,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   context
                                       .read<PreferenceCubit>()
                                       .toggleTrueDarkMode();
-
-                                  final inAppReview = InAppReview.instance;
-                                  inAppReview.isAvailable().then((available) {
-                                    if (available) {
-                                      inAppReview.requestReview();
-                                    }
-                                  });
                                 },
                                 activeColor: Colors.orange,
                               ),
@@ -372,7 +358,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   showAboutDialog(
                                     context: context,
                                     applicationName: 'Hacki',
-                                    applicationVersion: 'v0.1.9',
+                                    applicationVersion: 'v0.2.0',
                                     applicationIcon: Image.asset(
                                       Constants.hackiIconPath,
                                       height: 50,
@@ -871,29 +857,4 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   @override
   bool get wantKeepAlive => true;
-}
-
-class _CenteredMessageView extends StatelessWidget {
-  const _CenteredMessageView({
-    Key? key,
-    required this.content,
-  }) : super(key: key);
-
-  final String content;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(
-        top: 120,
-        left: 40,
-        right: 40,
-      ),
-      child: Text(
-        content,
-        textAlign: TextAlign.center,
-        style: const TextStyle(color: Colors.grey),
-      ),
-    );
-  }
 }

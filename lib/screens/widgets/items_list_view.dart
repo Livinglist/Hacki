@@ -50,6 +50,9 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   Widget build(BuildContext context) {
     final child = ListView(
       children: [
+        const OfflineBanner(
+          showExitButton: true,
+        ),
         if (header != null) header!,
         ...items.map((e) {
           final wasRead =

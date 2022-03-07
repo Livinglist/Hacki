@@ -79,6 +79,23 @@ class Story extends Item {
   String get postedDate =>
       DateTime.fromMillisecondsSinceEpoch(time * 1000).toReadableString();
 
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'descendants': descendants,
+      'id': id,
+      'score': score,
+      'time': time,
+      'by': by,
+      'title': title,
+      'url': url,
+      'kids': kids,
+      'text': text,
+      'dead': dead,
+      'deleted': deleted,
+      'type': type,
+    };
+  }
+
   @override
   List<Object?> get props => [
         id,
