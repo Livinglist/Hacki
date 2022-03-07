@@ -64,7 +64,7 @@ class StoriesListView extends StatelessWidget {
               },
               onTap: onStoryTapped,
               onPinned: context.read<PinCubit>().pinStory,
-              header: header,
+              header: state.offlineReading ? null : header,
             );
           },
         );
