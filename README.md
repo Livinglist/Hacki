@@ -26,6 +26,7 @@ Features:
 - Vote on comments or stories.
 - Pin stories to the top of home page.
 - Get in-app notification when there is new reply to your stories or comments.
+- Download stories for offline reading.
 - And more...
 
 
@@ -41,6 +42,7 @@ Features:
    <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/152301588-070ded9a-117a-48d8-bad4-9f77d54d98df.png"> 
    <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/152301590-5383200c-db73-487d-8742-57ccbbbf04e8.png"> 
    <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/153973720-8a6aad44-7df3-4deb-8465-8c88b5e5f587.png"> 
-   <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/153973715-a33018d2-d3b1-4bfa-be39-56f5e3c4830b.png"> 
+   <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/157003000-15671cf0-9470-4a89-b123-f63ca70a970f.png"> 
 </p>
+
 
