@@ -1,6 +1,17 @@
 part of 'stories_bloc.dart';
 
-enum StoriesStatus { loading, loaded }
+enum StoriesStatus {
+  initial,
+  loading,
+  loaded,
+}
+
+enum StoriesDownloadStatus {
+  initial,
+  downloading,
+  finished,
+  failure,
+}
 
 class StoriesState extends Equatable {
   const StoriesState({
@@ -8,6 +19,8 @@ class StoriesState extends Equatable {
     required this.storyIdsByType,
     required this.statusByType,
     required this.currentPageByType,
+    required this.offlineReading,
+    required this.downloadStatus,
   });
 
   const StoriesState.init({
@@ -26,11 +39,11 @@ class StoriesState extends Equatable {
       StoryType.jobs: [],
     },
     this.statusByType = const <StoryType, StoriesStatus>{
-      StoryType.top: StoriesStatus.loaded,
-      StoryType.latest: StoriesStatus.loaded,
-      StoryType.ask: StoriesStatus.loaded,
-      StoryType.show: StoriesStatus.loaded,
-      StoryType.jobs: StoriesStatus.loaded,
+      StoryType.top: StoriesStatus.initial,
+      StoryType.latest: StoriesStatus.initial,
+      StoryType.ask: StoriesStatus.initial,
+      StoryType.show: StoriesStatus.initial,
+      StoryType.jobs: StoriesStatus.initial,
     },
     this.currentPageByType = const <StoryType, int>{
       StoryType.top: 0,
@@ -39,24 +52,31 @@ class StoriesState extends Equatable {
       StoryType.show: 0,
       StoryType.jobs: 0,
     },
-  });
+  })  : offlineReading = false,
+        downloadStatus = StoriesDownloadStatus.initial;
 
   final Map<StoryType, List<Story>> storiesByType;
   final Map<StoryType, List<int>> storyIdsByType;
   final Map<StoryType, StoriesStatus> statusByType;
   final Map<StoryType, int> currentPageByType;
+  final StoriesDownloadStatus downloadStatus;
+  final bool offlineReading;
 
   StoriesState copyWith({
     Map<StoryType, List<Story>>? storiesByType,
     Map<StoryType, List<int>>? storyIdsByType,
     Map<StoryType, StoriesStatus>? statusByType,
     Map<StoryType, int>? currentPageByType,
+    StoriesDownloadStatus? downloadStatus,
+    bool? offlineReading,
   }) {
     return StoriesState(
       storiesByType: storiesByType ?? this.storiesByType,
       storyIdsByType: storyIdsByType ?? this.storyIdsByType,
       statusByType: statusByType ?? this.statusByType,
       currentPageByType: currentPageByType ?? this.currentPageByType,
+      offlineReading: offlineReading ?? this.offlineReading,
+      downloadStatus: downloadStatus ?? this.downloadStatus,
     );
   }
 
@@ -71,6 +91,8 @@ class StoriesState extends Equatable {
       storyIdsByType: storyIdsByType,
       statusByType: statusByType,
       currentPageByType: currentPageByType,
+      offlineReading: offlineReading,
+      downloadStatus: downloadStatus,
     );
   }
 
@@ -85,6 +107,8 @@ class StoriesState extends Equatable {
       storyIdsByType: newMap,
       statusByType: statusByType,
       currentPageByType: currentPageByType,
+      offlineReading: offlineReading,
+      downloadStatus: downloadStatus,
     );
   }
 
@@ -99,6 +123,8 @@ class StoriesState extends Equatable {
       storyIdsByType: storyIdsByType,
       statusByType: newMap,
       currentPageByType: currentPageByType,
+      offlineReading: offlineReading,
+      downloadStatus: downloadStatus,
     );
   }
 
@@ -113,6 +139,8 @@ class StoriesState extends Equatable {
       storyIdsByType: storyIdsByType,
       statusByType: statusByType,
       currentPageByType: newMap,
+      offlineReading: offlineReading,
+      downloadStatus: downloadStatus,
     );
   }
 
@@ -130,6 +158,8 @@ class StoriesState extends Equatable {
       storyIdsByType: newStoryIdsMap,
       statusByType: newStatusMap,
       currentPageByType: newCurrentPageMap,
+      offlineReading: offlineReading,
+      downloadStatus: downloadStatus,
     );
   }
 
@@ -139,5 +169,7 @@ class StoriesState extends Equatable {
         storyIdsByType,
         statusByType,
         currentPageByType,
+        offlineReading,
+        downloadStatus,
       ];
 }

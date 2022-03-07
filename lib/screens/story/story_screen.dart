@@ -58,7 +58,9 @@ class StoryScreen extends StatefulWidget {
             create: (context) => PostCubit(),
           ),
           BlocProvider<CommentsCubit>(
-            create: (_) => CommentsCubit<Story>()
+            create: (_) => CommentsCubit<Story>(
+                offlineReading:
+                    context.read<StoriesBloc>().state.offlineReading)
               ..init(
                 args.story,
                 onlyShowTargetComment: args.onlyShowTargetComment,
@@ -223,130 +225,9 @@ class _StoryScreenState extends State<StoryScreen> {
                           ScrollUpIconButton(
                             scrollController: scrollController,
                           ),
-                          BlocBuilder<PinCubit, PinState>(
-                            builder: (context, pinState) {
-                              final pinned = pinState.pinnedStoriesIds
-                                  .contains(widget.story.id);
-                              return Transform.rotate(
-                                angle: pi / 4,
-                                child: Transform.translate(
-                                  offset: const Offset(2, 0),
-                                  child: IconButton(
-                                    icon: DescribedFeatureOverlay(
-                                      barrierDismissible: false,
-                                      overflowMode:
-                                          OverflowMode.extendBackground,
-                                      targetColor:
-                                          Theme.of(context).primaryColor,
-                                      tapTarget: Icon(
-                                        pinned
-                                            ? Icons.push_pin
-                                            : Icons.push_pin_outlined,
-                                        color: Colors.white,
-                                      ),
-                                      featureId: Constants.featurePinToTop,
-                                      title: const Text('Pin a Story'),
-                                      description: const Text(
-                                        'Pin this story to the top of your '
-                                        'home screen so that you can come'
-                                        ' back later.',
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                      child: Icon(
-                                        pinned
-                                            ? Icons.push_pin
-                                            : Icons.push_pin_outlined,
-                                        color: pinned
-                                            ? Colors.orange
-                                            : Theme.of(context).iconTheme.color,
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      HapticFeedback.lightImpact();
-                                      if (pinned) {
-                                        context
-                                            .read<PinCubit>()
-                                            .unpinStory(widget.story);
-                                      } else {
-                                        context
-                                            .read<PinCubit>()
-                                            .pinStory(widget.story);
-                                      }
-                                    },
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                          BlocBuilder<FavCubit, FavState>(
-                            builder: (context, favState) {
-                              final isFav =
-                                  favState.favIds.contains(widget.story.id);
-                              return IconButton(
-                                icon: DescribedFeatureOverlay(
-                                  barrierDismissible: false,
-                                  overflowMode: OverflowMode.extendBackground,
-                                  targetColor: Theme.of(context).primaryColor,
-                                  tapTarget: Icon(
-                                    isFav
-                                        ? Icons.favorite
-                                        : Icons.favorite_border,
-                                    color: Colors.white,
-                                  ),
-                                  featureId: Constants.featureAddStoryToFavList,
-                                  title: const Text('Fav a Story'),
-                                  description: const Text(
-                                    'Add it to your favorites.',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                  child: Icon(
-                                    isFav
-                                        ? Icons.favorite
-                                        : Icons.favorite_border,
-                                    color: isFav
-                                        ? Colors.orange
-                                        : Theme.of(context).iconTheme.color,
-                                  ),
-                                ),
-                                onPressed: () {
-                                  HapticFeedback.lightImpact();
-                                  if (isFav) {
-                                    context
-                                        .read<FavCubit>()
-                                        .removeFav(widget.story.id);
-                                  } else {
-                                    context
-                                        .read<FavCubit>()
-                                        .addFav(widget.story.id);
-                                  }
-                                },
-                              );
-                            },
-                          ),
-                          IconButton(
-                            icon: DescribedFeatureOverlay(
-                              barrierDismissible: false,
-                              overflowMode: OverflowMode.extendBackground,
-                              targetColor: Theme.of(context).primaryColor,
-                              tapTarget: const Icon(
-                                Icons.stream,
-                                color: Colors.white,
-                              ),
-                              featureId: Constants.featureOpenStoryInWebView,
-                              title: const Text('Open in Browser'),
-                              description: const Text(
-                                'Want more than just reading and replying? '
-                                'You can tap here to open this story in a '
-                                'browser.',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              child: const Icon(
-                                Icons.stream,
-                              ),
-                            ),
-                            onPressed: () => LinkUtil.launchUrl(
-                                'https://news.ycombinator.com/item?id=${widget.story.id}'),
-                          ),
+                          PinIconButton(story: widget.story),
+                          FavIconButton(storyId: widget.story.id),
+                          LinkIconButton(storyId: widget.story.id),
                         ],
                       ),
                       body: SmartRefresher(
@@ -394,6 +275,10 @@ class _StoryScreenState extends State<StoryScreen> {
                           children: [
                             SizedBox(
                               height: topPadding,
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.only(bottom: 6),
+                              child: OfflineBanner(),
                             ),
                             Slidable(
                               startActionPane: ActionPane(

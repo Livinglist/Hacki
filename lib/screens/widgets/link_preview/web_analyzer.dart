@@ -12,16 +12,34 @@ import 'package:http/io_client.dart';
 
 abstract class InfoBase {
   late DateTime _timeout;
+
+  Map<String, dynamic> toJson();
 }
 
 /// Web Information
 class WebInfo extends InfoBase {
   WebInfo({this.title, this.icon, this.description, this.image});
 
+  WebInfo.fromJson(Map<String, dynamic> json)
+      : title = json['title'] as String?,
+        icon = json['icon'] as String?,
+        description = json['description'] as String?,
+        image = json['image'] as String?;
+
   final String? title;
   final String? icon;
   final String? description;
   final String? image;
+
+  @override
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'title': title,
+      'icon': icon,
+      'description': description,
+      'image': image,
+    };
+  }
 }
 
 /// Image Information
@@ -29,6 +47,13 @@ class WebImageInfo extends InfoBase {
   WebImageInfo({this.image});
 
   final String? image;
+
+  @override
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'image': image,
+    };
+  }
 }
 
 /// Video Information

@@ -12,7 +12,7 @@ class StoriesRepository {
   final FirebaseClient _firebaseClient;
   static const _baseUrl = 'https://hacker-news.firebaseio.com/v0/';
 
-  Future<User> fetchUserById({required String userId}) async {
+  Future<User> fetchUserBy({required String userId}) async {
     final user = await _firebaseClient
         .get('${_baseUrl}user/$userId.json')
         .then((dynamic val) {
@@ -48,7 +48,7 @@ class StoriesRepository {
     return ids;
   }
 
-  Future<Story> fetchStoryById(int id) async {
+  Future<Story> fetchStoryBy(int id) async {
     final story = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
         .then((dynamic val) {
@@ -190,6 +190,16 @@ class StoriesRepository {
     } while (item is Comment);
 
     return Tuple2<Story, List<Comment>>(item as Story, parentComments);
+  }
+
+  Stream<Comment?> fetchAllChildrenComments({required List<int> ids}) async* {
+    for (final id in ids) {
+      final comment = await fetchCommentBy(id: id);
+      if (comment != null) {
+        yield comment;
+        yield* fetchAllChildrenComments(ids: comment.kids);
+      }
+    }
   }
 
   static String _parseHtml(String text) {
