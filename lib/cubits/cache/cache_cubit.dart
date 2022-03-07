@@ -25,7 +25,7 @@ class CacheCubit extends Cubit<CacheState> {
     _cacheRepository.cacheReadStoryId(id: id);
   }
 
-  void deleteAll() {
+  void deleteAllReadStoryIds() {
     emit(CacheState.init());
     _cacheRepository.deleteAllReadStoryIds();
   }

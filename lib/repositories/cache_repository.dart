@@ -121,10 +121,4 @@ class CacheRepository {
     final box = await _commentBox;
     return box.clear();
   }
-
-  Future<int> deleteAll() async {
-    final storyIdBox = await _readStoryIdBox;
-    final storyBox = await _storyBox;
-    return storyIdBox.clear().then((_) => storyBox.clear());
-  }
 }

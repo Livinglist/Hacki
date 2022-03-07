@@ -304,7 +304,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   HapticFeedback.lightImpact();
 
                                   if (!val) {
-                                    context.read<CacheCubit>().deleteAll();
+                                    context
+                                        .read<CacheCubit>()
+                                        .deleteAllReadStoryIds();
                                   }
 
                                   context
