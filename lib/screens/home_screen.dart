@@ -129,206 +129,178 @@ class _HomeScreenState extends State<HomeScreen>
           },
         );
 
-        return BlocListener<StoriesBloc, StoriesState>(
-          listenWhen: (previous, current) =>
-              previous.statusByType != current.statusByType,
-          listener: (context, state) {
-            print(state.statusByType[StoryType.top]);
-            if (state.statusByType[StoryType.top] == StoriesStatus.loaded) {
-              refreshControllerTop
-                ..refreshCompleted(resetFooterState: true)
-                ..loadComplete();
-            }
-            if (state.statusByType[StoryType.latest] == StoriesStatus.loaded) {
-              refreshControllerNew
-                ..refreshCompleted(resetFooterState: true)
-                ..loadComplete();
-            }
-            if (state.statusByType[StoryType.ask] == StoriesStatus.loaded) {
-              refreshControllerAsk
-                ..refreshCompleted(resetFooterState: true)
-                ..loadComplete();
-            }
-            if (state.statusByType[StoryType.show] == StoriesStatus.loaded) {
-              refreshControllerShow
-                ..refreshCompleted(resetFooterState: true)
-                ..loadComplete();
-            }
-            if (state.statusByType[StoryType.jobs] == StoriesStatus.loaded) {
-              refreshControllerJobs
-                ..refreshCompleted(resetFooterState: true)
-                ..loadComplete();
-            }
-          },
-          child: BlocBuilder<CacheCubit, CacheState>(
-            builder: (context, cacheState) {
-              return DefaultTabController(
-                length: 6,
-                child: Scaffold(
-                  resizeToAvoidBottomInset: false,
-                  appBar: PreferredSize(
-                    preferredSize: const Size(0, 48),
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: MediaQuery.of(context).padding.top,
-                        ),
-                        TabBar(
-                          isScrollable: true,
-                          controller: tabController,
-                          indicatorColor: Colors.orange,
-                          tabs: [
-                            Tab(
-                              child: Text(
-                                'TOP',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: currentIndex == 0
-                                      ? Colors.orange
-                                      : Colors.grey,
-                                ),
+        return BlocBuilder<CacheCubit, CacheState>(
+          builder: (context, cacheState) {
+            return DefaultTabController(
+              length: 6,
+              child: Scaffold(
+                resizeToAvoidBottomInset: false,
+                appBar: PreferredSize(
+                  preferredSize: const Size(0, 48),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).padding.top,
+                      ),
+                      TabBar(
+                        isScrollable: true,
+                        controller: tabController,
+                        indicatorColor: Colors.orange,
+                        tabs: [
+                          Tab(
+                            child: Text(
+                              'TOP',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: currentIndex == 0
+                                    ? Colors.orange
+                                    : Colors.grey,
                               ),
                             ),
-                            Tab(
-                              child: Text(
-                                'NEW',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: currentIndex == 1
-                                      ? Colors.orange
-                                      : Colors.grey,
-                                ),
+                          ),
+                          Tab(
+                            child: Text(
+                              'NEW',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: currentIndex == 1
+                                    ? Colors.orange
+                                    : Colors.grey,
                               ),
                             ),
-                            Tab(
-                              child: Text(
-                                'ASK',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: currentIndex == 2
-                                      ? Colors.orange
-                                      : Colors.grey,
-                                ),
+                          ),
+                          Tab(
+                            child: Text(
+                              'ASK',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: currentIndex == 2
+                                    ? Colors.orange
+                                    : Colors.grey,
                               ),
                             ),
-                            Tab(
-                              child: Text(
-                                'SHOW',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: currentIndex == 3
-                                      ? Colors.orange
-                                      : Colors.grey,
-                                ),
+                          ),
+                          Tab(
+                            child: Text(
+                              'SHOW',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: currentIndex == 3
+                                    ? Colors.orange
+                                    : Colors.grey,
                               ),
                             ),
-                            Tab(
-                              child: Text(
-                                'JOBS',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: currentIndex == 4
-                                      ? Colors.orange
-                                      : Colors.grey,
-                                ),
+                          ),
+                          Tab(
+                            child: Text(
+                              'JOBS',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: currentIndex == 4
+                                    ? Colors.orange
+                                    : Colors.grey,
                               ),
                             ),
-                            Tab(
-                              child: DescribedFeatureOverlay(
-                                barrierDismissible: false,
-                                overflowMode: OverflowMode.extendBackground,
-                                targetColor: Theme.of(context).primaryColor,
-                                tapTarget: const Icon(
-                                  Icons.person,
-                                  size: 16,
-                                  color: Colors.white,
-                                ),
-                                featureId: Constants.featureLogIn,
-                                title: const Text(''),
-                                description: const Text(
-                                  'Log in using your Hacker News account '
-                                  'to check out stories and comments you have '
-                                  'posted in the past, and get in-app '
-                                  'notification when there is new reply to '
-                                  'your comments or stories.',
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                                child: BlocBuilder<NotificationCubit,
-                                    NotificationState>(
-                                  builder: (context, state) {
-                                    if (state.unreadCommentsIds.isEmpty) {
-                                      return Icon(
+                          ),
+                          Tab(
+                            child: DescribedFeatureOverlay(
+                              barrierDismissible: false,
+                              overflowMode: OverflowMode.extendBackground,
+                              targetColor: Theme.of(context).primaryColor,
+                              tapTarget: const Icon(
+                                Icons.person,
+                                size: 16,
+                                color: Colors.white,
+                              ),
+                              featureId: Constants.featureLogIn,
+                              title: const Text(''),
+                              description: const Text(
+                                'Log in using your Hacker News account '
+                                'to check out stories and comments you have '
+                                'posted in the past, and get in-app '
+                                'notification when there is new reply to '
+                                'your comments or stories.',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              child: BlocBuilder<NotificationCubit,
+                                  NotificationState>(
+                                builder: (context, state) {
+                                  if (state.unreadCommentsIds.isEmpty) {
+                                    return Icon(
+                                      Icons.person,
+                                      size: 16,
+                                      color: currentIndex == 5
+                                          ? Colors.orange
+                                          : Colors.grey,
+                                    );
+                                  } else {
+                                    return Badge(
+                                      borderRadius: BorderRadius.circular(100),
+                                      badgeContent: Container(
+                                        height: 3,
+                                        width: 3,
+                                        decoration: const BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.white),
+                                      ),
+                                      child: Icon(
                                         Icons.person,
                                         size: 16,
                                         color: currentIndex == 5
                                             ? Colors.orange
                                             : Colors.grey,
-                                      );
-                                    } else {
-                                      return Badge(
-                                        borderRadius:
-                                            BorderRadius.circular(100),
-                                        badgeContent: Container(
-                                          height: 3,
-                                          width: 3,
-                                          decoration: const BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: Colors.white),
-                                        ),
-                                        child: Icon(
-                                          Icons.person,
-                                          size: 16,
-                                          color: currentIndex == 5
-                                              ? Colors.orange
-                                              : Colors.grey,
-                                        ),
-                                      );
-                                    }
-                                  },
-                                ),
+                                      ),
+                                    );
+                                  }
+                                },
                               ),
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  body: TabBarView(
-                    physics: const NeverScrollableScrollPhysics(),
-                    controller: tabController,
-                    children: [
-                      StoriesListView(
-                        refreshController: refreshControllerTop,
-                        storyType: StoryType.top,
-                        header: pinnedStories,
+                          ),
+                        ],
                       ),
-                      StoriesListView(
-                        refreshController: refreshControllerNew,
-                        storyType: StoryType.latest,
-                        header: pinnedStories,
-                      ),
-                      StoriesListView(
-                        refreshController: refreshControllerAsk,
-                        storyType: StoryType.ask,
-                        header: pinnedStories,
-                      ),
-                      StoriesListView(
-                        refreshController: refreshControllerShow,
-                        storyType: StoryType.show,
-                        header: pinnedStories,
-                      ),
-                      StoriesListView(
-                        refreshController: refreshControllerJobs,
-                        storyType: StoryType.jobs,
-                        header: pinnedStories,
-                      ),
-                      const ProfileScreen(),
                     ],
                   ),
                 ),
-              );
-            },
-          ),
+                body: TabBarView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  controller: tabController,
+                  children: [
+                    StoriesListView(
+                      storyType: StoryType.top,
+                      header: pinnedStories,
+                      onStoryTapped: onStoryTapped,
+                      refreshController: refreshControllerTop,
+                    ),
+                    StoriesListView(
+                      storyType: StoryType.latest,
+                      header: pinnedStories,
+                      onStoryTapped: onStoryTapped,
+                      refreshController: refreshControllerNew,
+                    ),
+                    StoriesListView(
+                      storyType: StoryType.ask,
+                      header: pinnedStories,
+                      onStoryTapped: onStoryTapped,
+                      refreshController: refreshControllerAsk,
+                    ),
+                    StoriesListView(
+                      storyType: StoryType.show,
+                      header: pinnedStories,
+                      onStoryTapped: onStoryTapped,
+                      refreshController: refreshControllerShow,
+                    ),
+                    StoriesListView(
+                      storyType: StoryType.jobs,
+                      header: pinnedStories,
+                      onStoryTapped: onStoryTapped,
+                      refreshController: refreshControllerJobs,
+                    ),
+                    const ProfileScreen(),
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
     );

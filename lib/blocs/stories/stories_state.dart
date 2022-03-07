@@ -1,6 +1,10 @@
 part of 'stories_bloc.dart';
 
-enum StoriesStatus { loading, loaded }
+enum StoriesStatus {
+  initial,
+  loading,
+  loaded,
+}
 
 enum StoriesDownloadStatus {
   initial,
@@ -35,11 +39,11 @@ class StoriesState extends Equatable {
       StoryType.jobs: [],
     },
     this.statusByType = const <StoryType, StoriesStatus>{
-      StoryType.top: StoriesStatus.loaded,
-      StoryType.latest: StoriesStatus.loaded,
-      StoryType.ask: StoriesStatus.loaded,
-      StoryType.show: StoriesStatus.loaded,
-      StoryType.jobs: StoriesStatus.loaded,
+      StoryType.top: StoriesStatus.initial,
+      StoryType.latest: StoriesStatus.initial,
+      StoryType.ask: StoriesStatus.initial,
+      StoryType.show: StoriesStatus.initial,
+      StoryType.jobs: StoriesStatus.initial,
     },
     this.currentPageByType = const <StoryType, int>{
       StoryType.top: 0,

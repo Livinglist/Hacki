@@ -65,12 +65,16 @@ class CacheRepository {
 
     for (final id in ids) {
       final json = box.get(id.toString());
+
       if (json == null) {
         continue;
       }
+
       final story = Story.fromJson(json.cast<String, dynamic>());
       yield story;
     }
+
+    return;
   }
 
   Future<Story?> getCachedStory({required int id}) async {
@@ -95,7 +99,6 @@ class CacheRepository {
       return null;
     }
     final comment = Comment.fromJson(json.cast<String, dynamic>());
-    print(comment);
     return comment;
   }
 

@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
-import 'package:hacki/screens/widgets/custom_circular_progress_indicator.dart';
+import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:wakelock/wakelock.dart';
 
 class OfflineListTile extends StatelessWidget {
   const OfflineListTile({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<StoriesBloc, StoriesState>(
+    return BlocConsumer<StoriesBloc, StoriesState>(
+      listenWhen: (previous, current) =>
+          previous.downloadStatus != current.downloadStatus,
+      listener: (context, state) {
+        if (state.downloadStatus == StoriesDownloadStatus.failure) {
+          Wakelock.disable();
+        }
+      },
       buildWhen: (previous, current) =>
           previous.downloadStatus != current.downloadStatus,
       builder: (context, state) {
@@ -19,9 +27,8 @@ class OfflineListTile extends StatelessWidget {
             downloading ? 'Downloading All Stories...' : 'Download All Stories',
           ),
           subtitle: const Text(
-            'download latest stories and comments '
-            "for offline reading. (web page won't be "
-            'downloaded)',
+            'download all latest stories that have at least one comment '
+            "for offline reading. (web page won't be downloaded)",
           ),
           trailing: downloading
               ? const SizedBox(
@@ -32,6 +39,7 @@ class OfflineListTile extends StatelessWidget {
               : const Icon(Icons.download),
           isThreeLine: true,
           onTap: () {
+            Wakelock.enable();
             context.read<StoriesBloc>().add(StoriesDownload());
           },
         );

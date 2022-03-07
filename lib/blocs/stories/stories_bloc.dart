@@ -75,6 +75,11 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
 
   Future<void> onRefresh(
       StoriesRefresh event, Emitter<StoriesState> emit) async {
+    emit(state.copyWithStatusUpdated(
+      of: event.type,
+      to: StoriesStatus.loading,
+    ));
+
     if (state.offlineReading) {
       emit(state.copyWithStatusUpdated(
         of: event.type,
@@ -87,6 +92,11 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   }
 
   void onLoadMore(StoriesLoadMore event, Emitter<StoriesState> emit) {
+    emit(state.copyWithStatusUpdated(
+      of: event.type,
+      to: StoriesStatus.loading,
+    ));
+
     final currentPage = state.currentPageByType[event.type]!;
     final len = state.storyIdsByType[event.type]!.length;
     emit(state.copyWithCurrentPageUpdated(of: event.type, to: currentPage + 1));
@@ -110,6 +120,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
             story: story,
             type: event.type,
           ));
+        }).onDone(() {
+          add(StoriesLoaded(type: event.type));
         });
       } else {
         _storiesRepository
@@ -123,6 +135,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
             story: story,
             type: event.type,
           ));
+        }).onDone(() {
+          add(StoriesLoaded(type: event.type));
         });
       }
     } else {
@@ -133,14 +147,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
 
   void onStoryLoaded(StoryLoaded event, Emitter<StoriesState> emit) {
     emit(state.copyWithStoryAdded(of: event.type, story: event.story));
-    if (state.storiesByType[event.type]!.length % _pageSize == 0) {
-      emit(
-        state.copyWithStatusUpdated(
-          of: event.type,
-          to: StoriesStatus.loaded,
-        ),
-      );
-    }
   }
 
   void onStoriesLoaded(StoriesLoaded event, Emitter<StoriesState> emit) {
@@ -171,20 +177,28 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
 
     final allIds = [...topIds, ...newIds, ...askIds, ...showIds, ...jobIds];
 
-    _storiesRepository.fetchStoriesStream(ids: allIds).listen((story) async {
-      await _cacheRepository.cacheStory(story: story);
-      _storiesRepository
-          .fetchAllChildrenComments(ids: story.kids)
-          .listen((comment) async {
-        if (comment != null) {
-          await _cacheRepository.cacheComment(comment: comment);
+    try {
+      _storiesRepository.fetchStoriesStream(ids: allIds).listen((story) async {
+        if (story.kids.isNotEmpty) {
+          await _cacheRepository.cacheStory(story: story);
+          _storiesRepository
+              .fetchAllChildrenComments(ids: story.kids)
+              .listen((comment) async {
+            if (comment != null) {
+              await _cacheRepository.cacheComment(comment: comment);
+            }
+          });
         }
+      }).onDone(() {
+        emit(state.copyWith(
+          downloadStatus: StoriesDownloadStatus.finished,
+        ));
       });
-    }).onDone(() {
+    } catch (_) {
       emit(state.copyWith(
-        downloadStatus: StoriesDownloadStatus.finished,
+        downloadStatus: StoriesDownloadStatus.failure,
       ));
-    });
+    }
   }
 
   Future<void> onExitOffline(

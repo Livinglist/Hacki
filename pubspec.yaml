@@ -44,6 +44,7 @@ dependencies:
   tuple: ^2.0.0
   universal_platform: ^1.0.0+1
   url_launcher: ^6.0.10
+  wakelock: ^0.6.1+2
 
 dev_dependencies:
   bloc_test: ^8.1.0
