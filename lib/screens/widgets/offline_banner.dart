@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
+import 'package:hacki/cubits/cubits.dart';
 
 class OfflineBanner extends StatelessWidget {
   const OfflineBanner({
@@ -55,6 +56,7 @@ class OfflineBanner extends StatelessWidget {
                       if (value ?? false) {
                         context.read<StoriesBloc>().add(StoriesExitOffline());
                         context.read<AuthBloc>().add(AuthInitialize());
+                        context.read<PinCubit>().init();
                       }
                     });
                   },

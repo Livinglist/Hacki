@@ -6,7 +6,10 @@ extension DateTimeExtension on DateTime {
       final gap = now.year - year;
       return '$gap year${gap == 1 ? '' : 's'} ago';
     } else if (diff.inDays > 30) {
-      final gap = (now.month - month).clamp(1, 12);
+      var gap = now.month - month;
+      if (gap <= 0) {
+        gap = now.month + (12 - month);
+      }
       return '$gap month${gap == 1 ? '' : 's'} ago';
     } else if (diff.inDays >= 1) {
       if (diff.inHours <= 24) {

@@ -6,7 +6,7 @@ class Constants {
   static const String portfolioLink = 'https://livinglist.github.io';
   static const String githubLink = 'https://github.com/Livinglist/Hacki';
   static const String appStoreLink =
-      'https://apps.apple.com/us/app/hacki/id1602043763';
+      'https://apps.apple.com/us/app/hacki/id1602043763?action=write-review';
   static const String googlePlayLink =
       'https://play.google.com/store/apps/details?id=com.jiaqifeng.hacki&hl=en_US&gl=US';
 
