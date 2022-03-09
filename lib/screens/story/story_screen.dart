@@ -229,7 +229,6 @@ class _StoryScreenState extends State<StoryScreen> {
                   ),
                   body: SmartRefresher(
                     scrollController: scrollController,
-                    physics: const ClampingScrollPhysics(),
                     enablePullUp: !state.onlyShowTargetComment,
                     enablePullDown: !state.onlyShowTargetComment,
                     header: WaterDropMaterialHeader(
