@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hacki/config/locator.dart';
@@ -26,8 +24,6 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
   final CacheRepository _cacheRepository;
   final StoriesRepository _storiesRepository;
 
-  static const _pageSize = 10;
-
   Future<void> init({
     bool onlyShowTargetComment = false,
     Comment? targetComment,
@@ -50,10 +46,7 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
 
       emit(state.copyWith(item: updatedStory));
 
-      final commentsToBeLoaded = updatedStory.kids
-          .sublist(0, min(updatedStory.kids.length, _pageSize));
-
-      for (final id in commentsToBeLoaded) {
+      for (final id in updatedStory.kids) {
         final cachedComment = _cacheService.getComment(id);
         if (cachedComment != null) {
           emit(state.copyWith(
@@ -113,14 +106,12 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
 
     if (offlineReading) {
       emit(state.copyWith(
-        currentPage: 0,
         status: CommentsStatus.loaded,
       ));
       return;
     }
 
     emit(state.copyWith(
-      currentPage: 0,
       status: CommentsStatus.loading,
       comments: [],
     ));
@@ -128,10 +119,7 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
     final story = (state.item as Story?)!;
     final updatedStory = await _storiesRepository.fetchStoryBy(story.id);
 
-    final commentsToBeLoaded =
-        updatedStory.kids.sublist(0, min(updatedStory.kids.length, _pageSize));
-
-    for (final id in commentsToBeLoaded) {
+    for (final id in updatedStory.kids) {
       final cachedComment = _cacheService.getComment(id);
       if (cachedComment != null) {
         emit(state.copyWith(
@@ -153,45 +141,6 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
 
     emit(state.copyWith(
       item: updatedStory,
-      status: CommentsStatus.loaded,
-    ));
-  }
-
-  Future loadMore() async {
-    if (state.comments.length == state.item.kids.length) return;
-
-    emit(state.copyWith(
-      status: CommentsStatus.loading,
-    ));
-
-    final currentPage = state.currentPage + 1;
-    final lower = currentPage * _pageSize;
-    final upper = min(lower + _pageSize, state.item.kids.length);
-
-    if (lower < upper) {
-      final commentsToBeLoaded = state.item.kids.sublist(lower, upper);
-
-      for (final id in commentsToBeLoaded) {
-        final cachedComment = _cacheService.getComment(id);
-        if (cachedComment != null) {
-          emit(state.copyWith(
-              comments: List.from(state.comments)..add(cachedComment)));
-        } else {
-          if (state.offlineReading) {
-            await _cacheRepository
-                .getCachedComment(id: id)
-                .then(_onCommentFetched);
-          } else {
-            await _storiesRepository
-                .fetchCommentBy(id: id)
-                .then(_onCommentFetched);
-          }
-        }
-      }
-    }
-
-    emit(state.copyWith(
-      currentPage: currentPage,
       status: CommentsStatus.loaded,
     ));
   }

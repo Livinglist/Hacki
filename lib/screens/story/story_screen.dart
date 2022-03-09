@@ -266,9 +266,7 @@ class _StoryScreenState extends State<StoryScreen> {
                       locator.get<CacheService>().resetComments();
                       context.read<CommentsCubit>().refresh();
                     },
-                    onLoading: () {
-                      context.read<CommentsCubit>().loadMore();
-                    },
+                    onLoading: () {},
                     child: ListView(
                       primary: false,
                       children: [
