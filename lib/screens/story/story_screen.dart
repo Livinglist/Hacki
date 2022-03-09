@@ -466,10 +466,9 @@ class _StoryScreenState extends State<StoryScreen> {
                             ),
                           ),
                         ),
-                        if (state.comments.length == state.item.kids.length)
-                          const SizedBox(
-                            height: 240,
-                          ),
+                        const SizedBox(
+                          height: 240,
+                        ),
                       ],
                     ),
                   ),
