@@ -209,31 +209,28 @@ class CommentTile extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.only(left: 12),
                             child: Column(
-                              children: state.comments
-                                  .map(
-                                    (e) => FadeIn(
-                                      child: CommentTile(
-                                        comment: e,
-                                        onlyShowTargetComment:
-                                            onlyShowTargetComment &&
-                                                targetComments.length > 1,
-                                        targetComments: targetComments
-                                                .isNotEmpty
-                                            ? targetComments.sublist(
-                                                0,
-                                                max(targetComments.length - 1,
-                                                    0))
-                                            : [],
-                                        myUsername: myUsername,
-                                        onReplyTapped: onReplyTapped,
-                                        onMoreTapped: onMoreTapped,
-                                        onEditTapped: onEditTapped,
-                                        level: level + 1,
-                                        onStoryLinkTapped: onStoryLinkTapped,
-                                      ),
+                              children: [
+                                ...state.comments.map(
+                                  (e) => FadeIn(
+                                    child: CommentTile(
+                                      comment: e,
+                                      onlyShowTargetComment:
+                                          onlyShowTargetComment &&
+                                              targetComments.length > 1,
+                                      targetComments: targetComments.isNotEmpty
+                                          ? targetComments.sublist(0,
+                                              max(targetComments.length - 1, 0))
+                                          : [],
+                                      myUsername: myUsername,
+                                      onReplyTapped: onReplyTapped,
+                                      onMoreTapped: onMoreTapped,
+                                      onEditTapped: onEditTapped,
+                                      level: level + 1,
+                                      onStoryLinkTapped: onStoryLinkTapped,
                                     ),
-                                  )
-                                  .toList(),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                       ],

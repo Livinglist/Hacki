@@ -471,12 +471,6 @@ class _StoryScreenState extends State<StoryScreen> {
                         if (state.comments.length == state.item.kids.length)
                           const SizedBox(
                             height: 240,
-                            child: Center(
-                              child: Text(
-                                'The End',
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ),
                           ),
                       ],
                     ),
