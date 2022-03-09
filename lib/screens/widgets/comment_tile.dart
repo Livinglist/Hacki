@@ -43,10 +43,11 @@ class CommentTile extends StatelessWidget {
       lazy: false,
       create: (_) => CommentsCubit<Comment>(
         offlineReading: context.read<StoriesBloc>().state.offlineReading,
-      )..init(comment,
+        item: comment,
+      )..init(
           onlyShowTargetComment: onlyShowTargetComment,
-          targetComment:
-              targetComments.isNotEmpty ? targetComments.last : null),
+          targetComment: targetComments.isNotEmpty ? targetComments.last : null,
+        ),
       child: BlocBuilder<CommentsCubit, CommentsState>(
         builder: (context, state) {
           return BlocBuilder<PreferenceCubit, PreferenceState>(

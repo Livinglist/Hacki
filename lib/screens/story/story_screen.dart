@@ -59,10 +59,9 @@ class StoryScreen extends StatefulWidget {
           ),
           BlocProvider<CommentsCubit>(
             create: (_) => CommentsCubit<Story>(
-                offlineReading:
-                    context.read<StoriesBloc>().state.offlineReading)
-              ..init(
-                args.story,
+              offlineReading: context.read<StoriesBloc>().state.offlineReading,
+              item: args.story,
+            )..init(
                 onlyShowTargetComment: args.onlyShowTargetComment,
                 targetComment: args.targetComments?.last,
               ),
@@ -155,7 +154,7 @@ class _StoryScreenState extends State<StoryScreen> {
     final editCubit = context.read<EditCubit>();
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, authState) {
-        return BlocConsumer<PostCubit, PostState>(
+        return BlocListener<PostCubit, PostState>(
           listener: (context, postState) {
             if (postState.status == PostStatus.successful) {
               final verb =
@@ -180,320 +179,342 @@ class _StoryScreenState extends State<StoryScreen> {
               context.read<PostCubit>().reset();
             }
           },
-          builder: (context, postState) {
-            return BlocConsumer<CommentsCubit, CommentsState>(
-              listener: (context, state) {
-                if (state.status == CommentsStatus.loaded) {
-                  refreshController
-                    ..refreshCompleted()
-                    ..loadComplete();
-                }
-              },
-              builder: (context, state) {
-                return BlocConsumer<EditCubit, EditState>(
-                  listenWhen: (previous, current) {
-                    return previous.replyingTo != current.replyingTo ||
-                        previous.itemBeingEdited != current.itemBeingEdited;
-                  },
-                  listener: (context, editState) {
-                    if (editState.replyingTo != null ||
-                        editState.itemBeingEdited != null) {
-                      if (editState.text == null) {
-                        commentEditingController.clear();
-                      } else {
-                        final text = editState.text!;
-                        commentEditingController
-                          ..text = text
-                          ..selection = TextSelection.fromPosition(
-                              TextPosition(offset: text.length));
-                      }
-                    } else {
+          child: BlocConsumer<CommentsCubit, CommentsState>(
+            listenWhen: (previous, current) =>
+                previous.status != current.status,
+            listener: (context, state) {
+              if (state.status == CommentsStatus.loaded) {
+                refreshController
+                  ..refreshCompleted()
+                  ..loadComplete();
+              }
+            },
+            builder: (context, state) {
+              return BlocListener<EditCubit, EditState>(
+                listenWhen: (previous, current) {
+                  return previous.replyingTo != current.replyingTo ||
+                      previous.itemBeingEdited != current.itemBeingEdited;
+                },
+                listener: (context, editState) {
+                  if (editState.replyingTo != null ||
+                      editState.itemBeingEdited != null) {
+                    if (editState.text == null) {
                       commentEditingController.clear();
+                    } else {
+                      final text = editState.text!;
+                      commentEditingController
+                        ..text = text
+                        ..selection = TextSelection.fromPosition(
+                            TextPosition(offset: text.length));
                     }
-                  },
-                  builder: (context, editState) {
-                    final replyingTo = editCubit.state.replyingTo;
-                    final editing = editCubit.state.itemBeingEdited;
-                    return Scaffold(
-                      extendBodyBehindAppBar: true,
-                      resizeToAvoidBottomInset: true,
-                      appBar: AppBar(
-                        backgroundColor:
-                            Theme.of(context).canvasColor.withOpacity(0.6),
-                        elevation: 0,
-                        actions: [
-                          ScrollUpIconButton(
-                            scrollController: scrollController,
-                          ),
-                          PinIconButton(story: widget.story),
-                          FavIconButton(storyId: widget.story.id),
-                          LinkIconButton(storyId: widget.story.id),
-                        ],
-                      ),
-                      body: SmartRefresher(
+                  } else {
+                    commentEditingController.clear();
+                  }
+                },
+                child: Scaffold(
+                  extendBodyBehindAppBar: true,
+                  resizeToAvoidBottomInset: true,
+                  appBar: AppBar(
+                    backgroundColor:
+                        Theme.of(context).canvasColor.withOpacity(0.6),
+                    elevation: 0,
+                    actions: [
+                      ScrollUpIconButton(
                         scrollController: scrollController,
-                        enablePullUp: !state.onlyShowTargetComment,
-                        enablePullDown: !state.onlyShowTargetComment,
-                        header: WaterDropMaterialHeader(
-                          backgroundColor: Colors.orange,
-                          offset: topPadding,
+                      ),
+                      PinIconButton(story: widget.story),
+                      FavIconButton(storyId: widget.story.id),
+                      LinkIconButton(storyId: widget.story.id),
+                    ],
+                  ),
+                  body: SmartRefresher(
+                    scrollController: scrollController,
+                    physics: const ClampingScrollPhysics(),
+                    enablePullUp: !state.onlyShowTargetComment,
+                    enablePullDown: !state.onlyShowTargetComment,
+                    header: WaterDropMaterialHeader(
+                      backgroundColor: Colors.orange,
+                      offset: topPadding,
+                    ),
+                    footer: CustomFooter(
+                      loadStyle: LoadStyle.ShowWhenLoading,
+                      builder: (context, mode) {
+                        Widget body;
+                        if (mode == LoadStatus.idle) {
+                          body = const Text('');
+                        } else if (mode == LoadStatus.loading) {
+                          body = const Text('');
+                        } else if (mode == LoadStatus.failed) {
+                          body = const Text(
+                            '',
+                          );
+                        } else if (mode == LoadStatus.canLoading) {
+                          body = const Text(
+                            '',
+                          );
+                        } else {
+                          body = const Text('');
+                        }
+                        return SizedBox(
+                          height: 55,
+                          child: Center(child: body),
+                        );
+                      },
+                    ),
+                    controller: refreshController,
+                    onRefresh: () {
+                      HapticFeedback.lightImpact();
+                      locator.get<CacheService>().resetComments();
+                      context.read<CommentsCubit>().refresh();
+                    },
+                    onLoading: () {
+                      context.read<CommentsCubit>().loadMore();
+                    },
+                    child: ListView(
+                      primary: false,
+                      children: [
+                        SizedBox(
+                          height: topPadding,
                         ),
-                        footer: CustomFooter(
-                          loadStyle: LoadStyle.ShowWhenLoading,
-                          builder: (context, mode) {
-                            Widget body;
-                            if (mode == LoadStatus.idle) {
-                              body = const Text('');
-                            } else if (mode == LoadStatus.loading) {
-                              body = const Text('');
-                            } else if (mode == LoadStatus.failed) {
-                              body = const Text(
-                                '',
-                              );
-                            } else if (mode == LoadStatus.canLoading) {
-                              body = const Text(
-                                '',
-                              );
-                            } else {
-                              body = const Text('');
-                            }
-                            return SizedBox(
-                              height: 55,
-                              child: Center(child: body),
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 6),
+                          child: OfflineBanner(),
+                        ),
+                        Slidable(
+                          startActionPane: ActionPane(
+                            motion: const BehindMotion(),
+                            children: [
+                              SlidableAction(
+                                onPressed: (_) {
+                                  HapticFeedback.lightImpact();
+
+                                  if (widget.story !=
+                                      context
+                                          .read<EditCubit>()
+                                          .state
+                                          .replyingTo) {
+                                    commentEditingController.clear();
+                                  }
+                                  editCubit.onReplyTapped(widget.story);
+                                  focusNode.requestFocus();
+                                },
+                                backgroundColor: Colors.orange,
+                                foregroundColor: Colors.white,
+                                icon: Icons.message,
+                              ),
+                              SlidableAction(
+                                onPressed: (_) => onMorePressed(widget.story),
+                                backgroundColor: Colors.orange,
+                                foregroundColor: Colors.white,
+                                icon: Icons.more_horiz,
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 6,
+                                  right: 6,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      widget.story.by,
+                                      style: const TextStyle(
+                                        color: Colors.orange,
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    Text(
+                                      widget.story.postedDate,
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () => LinkUtil.launchUrl(
+                                  widget.story.url,
+                                  useReader: context
+                                      .read<PreferenceCubit>()
+                                      .state
+                                      .useReader,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 6,
+                                    right: 6,
+                                    bottom: 12,
+                                    top: 12,
+                                  ),
+                                  child: Text(
+                                    widget.story.title,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                              if (widget.story.text.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                  ),
+                                  child: SelectableHtml(
+                                    data: widget.story.text,
+                                    onLinkTap: (link, _, __, ___) =>
+                                        LinkUtil.launchUrl(link ?? ''),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                        if (widget.story.text.isNotEmpty)
+                          const SizedBox(
+                            height: 8,
+                          ),
+                        const Divider(
+                          height: 0,
+                        ),
+                        if (state.onlyShowTargetComment) ...[
+                          TextButton(
+                            onPressed: () => context
+                                .read<CommentsCubit>()
+                                .loadAll(widget.story),
+                            child: const Text('View all comments'),
+                          ),
+                          const Divider(
+                            height: 0,
+                          ),
+                        ],
+                        if (state.comments.isEmpty &&
+                            state.status == CommentsStatus.loaded) ...[
+                          const SizedBox(
+                            height: 240,
+                          ),
+                          const Center(
+                            child: Text(
+                              'Nothing yet',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                        ],
+                        ...state.comments.map(
+                          (e) => FadeIn(
+                            child: CommentTile(
+                              comment: e,
+                              onlyShowTargetComment:
+                                  state.onlyShowTargetComment,
+                              targetComments: widget.parentComments.sublist(
+                                  0, max(widget.parentComments.length - 1, 0)),
+                              myUsername: authState.isLoggedIn
+                                  ? authState.username
+                                  : null,
+                              onReplyTapped: (cmt) {
+                                HapticFeedback.lightImpact();
+                                if (cmt.deleted || cmt.dead) {
+                                  return;
+                                }
+
+                                if (cmt !=
+                                    context
+                                        .read<EditCubit>()
+                                        .state
+                                        .replyingTo) {
+                                  commentEditingController.clear();
+                                }
+
+                                editCubit.onReplyTapped(cmt);
+                                focusNode.requestFocus();
+                              },
+                              onEditTapped: (cmt) {
+                                HapticFeedback.lightImpact();
+                                if (cmt.deleted || cmt.dead) {
+                                  return;
+                                }
+                                commentEditingController.clear();
+                                editCubit.onEditTapped(cmt);
+                                focusNode.requestFocus();
+                              },
+                              onMoreTapped: onMorePressed,
+                              onStoryLinkTapped: (link) {
+                                final regex = RegExp(r'\d+$');
+                                final match = regex.stringMatch(link) ?? '';
+                                final id = int.tryParse(match);
+                                if (id != null) {
+                                  throttle.run(() {
+                                    locator
+                                        .get<StoriesRepository>()
+                                        .fetchParentStory(id: id)
+                                        .then((story) {
+                                      if (mounted) {
+                                        if (story != null) {
+                                          HackiApp.navigatorKey.currentState!
+                                              .pushNamed(
+                                            StoryScreen.routeName,
+                                            arguments:
+                                                StoryScreenArgs(story: story),
+                                          );
+                                        } else {}
+                                      }
+                                    });
+                                  });
+                                } else {
+                                  LinkUtil.launchUrl(link);
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+                        if (state.comments.length == state.item.kids.length)
+                          const SizedBox(
+                            height: 240,
+                            child: Center(
+                              child: Text(
+                                'The End',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  bottomSheet: Offstage(
+                    offstage: !editCubit.state.showReplyBox,
+                    child: BlocBuilder<PostCubit, PostState>(
+                      builder: (context, postState) {
+                        return BlocBuilder<EditCubit, EditState>(
+                          buildWhen: (previous, current) =>
+                              previous.itemBeingEdited !=
+                                  current.itemBeingEdited ||
+                              previous.replyingTo != current.replyingTo,
+                          builder: (context, editState) {
+                            return ReplyBox(
+                              focusNode: focusNode,
+                              textEditingController: commentEditingController,
+                              editing: editState.itemBeingEdited,
+                              replyingTo: editState.replyingTo,
+                              isLoading: postState.status == PostStatus.loading,
+                              onSendTapped: onSendTapped,
+                              onCloseTapped: () {
+                                editCubit.onReplyBoxClosed();
+                                commentEditingController.clear();
+                                focusNode.unfocus();
+                              },
+                              onChanged: editCubit.onTextChanged,
                             );
                           },
-                        ),
-                        controller: refreshController,
-                        onRefresh: () {
-                          HapticFeedback.lightImpact();
-                          locator.get<CacheService>().resetComments();
-                          context.read<CommentsCubit>().refresh();
-                        },
-                        onLoading: () {},
-                        child: ListView(
-                          primary: false,
-                          children: [
-                            SizedBox(
-                              height: topPadding,
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.only(bottom: 6),
-                              child: OfflineBanner(),
-                            ),
-                            Slidable(
-                              startActionPane: ActionPane(
-                                motion: const BehindMotion(),
-                                children: [
-                                  SlidableAction(
-                                    onPressed: (_) {
-                                      HapticFeedback.lightImpact();
-                                      setState(() {
-                                        if (widget.story != replyingTo) {
-                                          commentEditingController.clear();
-                                        }
-                                        editCubit.onReplyTapped(widget.story);
-                                        focusNode.requestFocus();
-                                      });
-                                    },
-                                    backgroundColor: Colors.orange,
-                                    foregroundColor: Colors.white,
-                                    icon: Icons.message,
-                                  ),
-                                  SlidableAction(
-                                    onPressed: (_) =>
-                                        onMorePressed(widget.story),
-                                    backgroundColor: Colors.orange,
-                                    foregroundColor: Colors.white,
-                                    icon: Icons.more_horiz,
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                      left: 6,
-                                      right: 6,
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          widget.story.by,
-                                          style: const TextStyle(
-                                            color: Colors.orange,
-                                          ),
-                                        ),
-                                        const Spacer(),
-                                        Text(
-                                          widget.story.postedDate,
-                                          style: const TextStyle(
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  InkWell(
-                                    onTap: () => LinkUtil.launchUrl(
-                                      widget.story.url,
-                                      useReader: context
-                                          .read<PreferenceCubit>()
-                                          .state
-                                          .useReader,
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                        left: 6,
-                                        right: 6,
-                                        bottom: 12,
-                                        top: 12,
-                                      ),
-                                      child: Text(
-                                        widget.story.title,
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  ),
-                                  if (widget.story.text.isNotEmpty)
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                      ),
-                                      child: SelectableHtml(
-                                        data: widget.story.text,
-                                        onLinkTap: (link, _, __, ___) =>
-                                            LinkUtil.launchUrl(link ?? ''),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                            if (widget.story.text.isNotEmpty)
-                              const SizedBox(
-                                height: 8,
-                              ),
-                            const Divider(
-                              height: 0,
-                            ),
-                            if (state.onlyShowTargetComment) ...[
-                              TextButton(
-                                onPressed: () => context
-                                    .read<CommentsCubit>()
-                                    .loadAll(widget.story),
-                                child: const Text('View all comments'),
-                              ),
-                              const Divider(
-                                height: 0,
-                              ),
-                            ],
-                            if (state.comments.isEmpty &&
-                                state.status == CommentsStatus.loaded) ...[
-                              const SizedBox(
-                                height: 240,
-                              ),
-                              const Center(
-                                child: Text(
-                                  'Nothing yet',
-                                  style: TextStyle(color: Colors.white30),
-                                ),
-                              ),
-                            ],
-                            ...state.comments.map(
-                              (e) => FadeIn(
-                                child: CommentTile(
-                                  comment: e,
-                                  onlyShowTargetComment:
-                                      state.onlyShowTargetComment,
-                                  targetComments: widget.parentComments.sublist(
-                                      0,
-                                      max(widget.parentComments.length - 1, 0)),
-                                  myUsername: authState.isLoggedIn
-                                      ? authState.username
-                                      : null,
-                                  onReplyTapped: (cmt) {
-                                    HapticFeedback.lightImpact();
-                                    if (cmt.deleted || cmt.dead) {
-                                      return;
-                                    }
-
-                                    if (cmt != replyingTo) {
-                                      commentEditingController.clear();
-                                    }
-
-                                    editCubit.onReplyTapped(cmt);
-                                    focusNode.requestFocus();
-                                  },
-                                  onEditTapped: (cmt) {
-                                    HapticFeedback.lightImpact();
-                                    if (cmt.deleted || cmt.dead) {
-                                      return;
-                                    }
-                                    commentEditingController.clear();
-                                    editCubit.onEditTapped(cmt);
-                                    focusNode.requestFocus();
-                                  },
-                                  onMoreTapped: onMorePressed,
-                                  onStoryLinkTapped: (link) {
-                                    final regex = RegExp(r'\d+$');
-                                    final match = regex.stringMatch(link) ?? '';
-                                    final id = int.tryParse(match);
-                                    if (id != null) {
-                                      throttle.run(() {
-                                        locator
-                                            .get<StoriesRepository>()
-                                            .fetchParentStory(id: id)
-                                            .then((story) {
-                                          if (mounted) {
-                                            if (story != null) {
-                                              HackiApp
-                                                  .navigatorKey.currentState!
-                                                  .pushNamed(
-                                                StoryScreen.routeName,
-                                                arguments: StoryScreenArgs(
-                                                    story: story),
-                                              );
-                                            } else {}
-                                          }
-                                        });
-                                      });
-                                    } else {
-                                      LinkUtil.launchUrl(link);
-                                    }
-                                  },
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 240,
-                            ),
-                          ],
-                        ),
-                      ),
-                      bottomSheet: Offstage(
-                        offstage: !editCubit.state.showReplyBox,
-                        child: ReplyBox(
-                          focusNode: focusNode,
-                          textEditingController: commentEditingController,
-                          editing: editing,
-                          replyingTo: replyingTo,
-                          isLoading: postState.status == PostStatus.loading,
-                          onSendTapped: onSendTapped,
-                          onCloseTapped: () {
-                            editCubit.onReplyBoxClosed();
-                            commentEditingController.clear();
-                            focusNode.unfocus();
-                          },
-                          onChanged: editCubit.onTextChanged,
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
-            );
-          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
         );
       },
     );

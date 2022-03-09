@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/cubits/cubits.dart';
 
@@ -41,6 +42,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
       listener: (context, state) {
         if (state.status == SubmitStatus.submitted) {
           Navigator.pop(context);
+          HapticFeedback.lightImpact();
           showSnackBar(
             content: 'Post submitted successfully.',
           );
