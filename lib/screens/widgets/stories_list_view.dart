@@ -7,22 +7,39 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-class StoriesListView extends StatelessWidget {
+class StoriesListView extends StatefulWidget {
   const StoriesListView({
     Key? key,
     required this.storyType,
     required this.header,
     required this.onStoryTapped,
-    required this.refreshController,
   }) : super(key: key);
 
   final StoryType storyType;
   final Widget header;
   final ValueChanged<Story> onStoryTapped;
-  final RefreshController refreshController;
+
+  @override
+  State<StoriesListView> createState() => _StoriesListViewState();
+}
+
+class _StoriesListViewState extends State<StoriesListView>
+    with AutomaticKeepAliveClientMixin {
+  final refreshController = RefreshController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    refreshController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+    final storyType = widget.storyType;
+    final header = widget.header;
+    final onStoryTapped = widget.onStoryTapped;
+
     return BlocBuilder<PreferenceCubit, PreferenceState>(
       buildWhen: (previous, current) =>
           previous.showComplexStoryTile != current.showComplexStoryTile,
@@ -72,4 +89,7 @@ class StoriesListView extends StatelessWidget {
       },
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

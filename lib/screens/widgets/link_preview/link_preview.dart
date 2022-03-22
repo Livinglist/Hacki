@@ -184,7 +184,8 @@ class _LinkPreviewState extends State<LinkPreview> {
 
   @override
   Widget build(BuildContext context) {
-    const _height = 140.0;
+    final _height =
+        (MediaQuery.of(context).size.height * 0.14).clamp(118.0, 140.0);
     final loadingWidget = widget.placeholderWidget ??
         Container(
           height: _height,

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:equatable/equatable.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -31,8 +32,8 @@ enum _MenuAction {
   cancel,
 }
 
-class StoryScreenArgs {
-  StoryScreenArgs({
+class StoryScreenArgs extends Equatable {
+  const StoryScreenArgs({
     required this.story,
     this.onlyShowTargetComment = false,
     this.targetComments,
@@ -41,6 +42,13 @@ class StoryScreenArgs {
   final Story story;
   final bool onlyShowTargetComment;
   final List<Comment>? targetComments;
+
+  @override
+  List<Object?> get props => [
+        story,
+        onlyShowTargetComment,
+        targetComments,
+      ];
 }
 
 class StoryScreen extends StatefulWidget {
@@ -82,9 +90,9 @@ class StoryScreen extends StatefulWidget {
     );
   }
 
-  static Widget build(Story story) {
+  static Widget build(StoryScreenArgs args) {
     return MultiBlocProvider(
-      key: ValueKey(story),
+      key: ValueKey(args),
       providers: [
         BlocProvider<PostCubit>(
           create: (context) => PostCubit(),
@@ -92,16 +100,19 @@ class StoryScreen extends StatefulWidget {
         BlocProvider<CommentsCubit>(
           create: (context) => CommentsCubit<Story>(
             offlineReading: context.read<StoriesBloc>().state.offlineReading,
-            item: story,
-          )..init(),
+            item: args.story,
+          )..init(
+              onlyShowTargetComment: args.onlyShowTargetComment,
+              targetComment: args.targetComments?.last,
+            ),
         ),
         BlocProvider<EditCubit>(
           create: (context) => EditCubit(),
         ),
       ],
       child: StoryScreen(
-        story: story,
-        parentComments: const [],
+        story: args.story,
+        parentComments: args.targetComments ?? [],
         splitViewEnabled: true,
       ),
     );
@@ -498,6 +509,7 @@ class _StoryScreenState extends State<StoryScreen> {
                               left: 0,
                               right: 0,
                               child: ReplyBox(
+                                splitViewEnabled: true,
                                 focusNode: focusNode,
                                 textEditingController: commentEditingController,
                                 onSendTapped: onSendTapped,
@@ -682,6 +694,7 @@ class _StoryScreenState extends State<StoryScreen> {
             onBlockTapped(item, isBlocked);
             break;
           case _MenuAction.cancel:
+            break;
         }
       }
     });
@@ -979,7 +992,10 @@ class _StoryScreenState extends State<StoryScreen> {
                     child: ButtonBar(
                       children: [
                         TextButton(
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            context.read<AuthBloc>().add(AuthInitialize());
+                          },
                           child: const Text(
                             'Cancel',
                             style: TextStyle(

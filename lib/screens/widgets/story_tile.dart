@@ -26,7 +26,8 @@ class StoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (showWebPreview) {
-      const height = 140.0;
+      final height =
+          (MediaQuery.of(context).size.height * 0.14).clamp(118.0, 140.0);
 
       if (story.url.isNotEmpty) {
         return TapDownWrapper(

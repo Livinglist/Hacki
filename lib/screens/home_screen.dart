@@ -18,7 +18,6 @@ import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -266,35 +265,30 @@ class _HomeScreenState extends State<HomeScreen>
                       storyType: StoryType.top,
                       header: pinnedStories,
                       onStoryTapped: onStoryTapped,
-                      refreshController: RefreshController(),
                     ),
                     StoriesListView(
                       key: const ValueKey(StoryType.latest),
                       storyType: StoryType.latest,
                       header: pinnedStories,
                       onStoryTapped: onStoryTapped,
-                      refreshController: RefreshController(),
                     ),
                     StoriesListView(
                       key: const ValueKey(StoryType.ask),
                       storyType: StoryType.ask,
                       header: pinnedStories,
                       onStoryTapped: onStoryTapped,
-                      refreshController: RefreshController(),
                     ),
                     StoriesListView(
                       key: const ValueKey(StoryType.show),
                       storyType: StoryType.show,
                       header: pinnedStories,
                       onStoryTapped: onStoryTapped,
-                      refreshController: RefreshController(),
                     ),
                     StoriesListView(
                       key: const ValueKey(StoryType.jobs),
                       storyType: StoryType.jobs,
                       header: pinnedStories,
                       onStoryTapped: onStoryTapped,
-                      refreshController: RefreshController(),
                     ),
                     const ProfileScreen(),
                   ],
@@ -339,8 +333,8 @@ class _HomeScreenState extends State<HomeScreen>
                   left: homeScreenWidth,
                   child: BlocBuilder<SplitViewCubit, SplitViewState>(
                     builder: (context, state) {
-                      if (state.story != null) {
-                        return StoryScreen.build(state.story!);
+                      if (state.storyScreenArgs != null) {
+                        return StoryScreen.build(state.storyScreenArgs!);
                       }
 
                       return Material(
@@ -374,11 +368,14 @@ class _HomeScreenState extends State<HomeScreen>
     final isJobWithLink = story.type == 'job' && story.url.isNotEmpty;
 
     if (!isJobWithLink) {
+      final args = StoryScreenArgs(story: story);
       if (splitViewEnabled) {
-        context.read<SplitViewCubit>().updateStory(story);
+        context.read<SplitViewCubit>().updateStoryScreenArgs(args);
       } else {
-        HackiApp.navigatorKey.currentState?.pushNamed(StoryScreen.routeName,
-            arguments: StoryScreenArgs(story: story));
+        HackiApp.navigatorKey.currentState?.pushNamed(
+          StoryScreen.routeName,
+          arguments: args,
+        );
       }
     }
 
