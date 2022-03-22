@@ -10,6 +10,7 @@ import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/main.dart';
@@ -19,6 +20,8 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:responsive_builder/responsive_builder.dart';
+import 'package:hacki/main.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -78,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PreferenceCubit, PreferenceState>(
+    final homeScreen = BlocBuilder<PreferenceCubit, PreferenceState>(
       buildWhen: (previous, current) =>
           previous.showComplexStoryTile != current.showComplexStoryTile,
       builder: (context, preferenceState) {
@@ -304,6 +307,42 @@ class _HomeScreenState extends State<HomeScreen>
         );
       },
     );
+
+    return ScreenTypeLayout.builder(
+      mobile: (context) {
+        context.read<SplitViewCubit>().disableSplitView();
+        return homeScreen;
+      },
+      tablet: (context) {
+        context.read<SplitViewCubit>().enableSplitView();
+        return Stack(
+          children: [
+            Positioned(
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: 380,
+              child: homeScreen,
+            ),
+            Positioned(
+              right: 0,
+              top: 0,
+              bottom: 0,
+              left: 380,
+              child: BlocBuilder<SplitViewCubit, SplitViewState>(
+                builder: (context, state) {
+                  if (state.story != null) {
+                    return StoryScreen.build(state.story!);
+                  }
+
+                  return Container();
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void onStoryTapped(Story story) {
@@ -311,14 +350,19 @@ class _HomeScreenState extends State<HomeScreen>
     final useReader = context.read<PreferenceCubit>().state.useReader;
     final offlineReading = context.read<StoriesBloc>().state.offlineReading;
     final firstTimeReading = cacheService.isFirstTimeReading(story.id);
+    final splitViewEnabled = context.read<SplitViewCubit>().state.enabled;
 
     // If a story is a job story and it has a link to the job posting,
     // it would be better to just navigate to the web page.
     final isJobWithLink = story.type == 'job' && story.url.isNotEmpty;
 
     if (!isJobWithLink) {
-      HackiApp.navigatorKey.currentState!.pushNamed(StoryScreen.routeName,
-          arguments: StoryScreenArgs(story: story));
+      if (splitViewEnabled) {
+        context.read<SplitViewCubit>().updateStory(story);
+      } else {
+        HackiApp.navigatorKey.currentState?.pushNamed(StoryScreen.routeName,
+            arguments: StoryScreenArgs(story: story));
+      }
     }
 
     if (!offlineReading &&

@@ -43,9 +43,12 @@ class StoryScreenArgs {
 }
 
 class StoryScreen extends StatefulWidget {
-  const StoryScreen(
-      {Key? key, required this.story, required this.parentComments})
-      : super(key: key);
+  const StoryScreen({
+    Key? key,
+    this.isSplitView = false,
+    required this.story,
+    required this.parentComments,
+  }) : super(key: key);
 
   static const String routeName = '/story';
 
@@ -78,6 +81,31 @@ class StoryScreen extends StatefulWidget {
     );
   }
 
+  static Widget build(Story story) {
+    return MultiBlocProvider(
+      key: ValueKey(story),
+      providers: [
+        BlocProvider<PostCubit>(
+          create: (context) => PostCubit(),
+        ),
+        BlocProvider<CommentsCubit>(
+          create: (context) => CommentsCubit<Story>(
+            offlineReading: context.read<StoriesBloc>().state.offlineReading,
+            item: story,
+          )..init(),
+        ),
+        BlocProvider<EditCubit>(
+          create: (context) => EditCubit(),
+        ),
+      ],
+      child: StoryScreen(
+        story: story,
+        parentComments: const [],
+      ),
+    );
+  }
+
+  final bool isSplitView;
   final Story story;
   final List<Comment> parentComments;
 

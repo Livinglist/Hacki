@@ -38,6 +38,7 @@ dependencies:
   path: ^1.8.0
   path_provider: ^2.0.8
   pull_to_refresh: ^2.0.0
+  responsive_builder: ^0.4.2
   sembast: ^3.1.1+1
   shared_preferences: ^2.0.11
   shimmer: ^2.0.0
