@@ -1,7 +1,9 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/item.dart';
 import 'package:hacki/utils/link_util.dart';
 
@@ -45,16 +47,21 @@ class _ReplyBoxState extends State<ReplyBox> {
       duration: const Duration(milliseconds: 200),
       decoration: BoxDecoration(
         boxShadow: [
-          BoxShadow(
-            color: expanded ? Colors.transparent : Colors.black54,
-            offset: const Offset(0, 20), //(x,y)
-            blurRadius: 40,
-          ),
+          if (!context.read<SplitViewCubit>().state.enabled)
+            BoxShadow(
+              color: expanded ? Colors.transparent : Colors.black54,
+              offset: const Offset(0, 20), //(x,y)
+              blurRadius: 4,
+            ),
         ],
       ),
       child: Material(
         child: Column(
           children: [
+            if (context.read<SplitViewCubit>().state.enabled)
+              const Divider(
+                height: 0,
+              ),
             AnimatedContainer(
               height: expanded ? topPadding : 0,
               duration: const Duration(milliseconds: 200),

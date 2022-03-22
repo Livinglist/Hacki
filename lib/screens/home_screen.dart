@@ -10,7 +10,6 @@ import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
-import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/main.dart';
@@ -21,7 +20,6 @@ import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import 'package:hacki/main.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -321,21 +319,28 @@ class _HomeScreenState extends State<HomeScreen>
               left: 0,
               top: 0,
               bottom: 0,
-              width: 380,
+              width: 428,
               child: homeScreen,
             ),
             Positioned(
               right: 0,
               top: 0,
               bottom: 0,
-              left: 380,
+              left: 428,
               child: BlocBuilder<SplitViewCubit, SplitViewState>(
                 builder: (context, state) {
                   if (state.story != null) {
                     return StoryScreen.build(state.story!);
                   }
 
-                  return Container();
+                  return Material(
+                    child: Container(
+                      color: Theme.of(context).canvasColor,
+                      child: const Center(
+                        child: Text('Tap on story tile to view comments.'),
+                      ),
+                    ),
+                  );
                 },
               ),
             ),

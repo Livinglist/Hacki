@@ -9,6 +9,7 @@ import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
@@ -447,18 +448,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   HackiApp.navigatorKey.currentState
                                       ?.pushNamed(SubmitScreen.routeName);
                                 } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: const Text(
-                                        'You need to log in first.',
-                                      ),
-                                      backgroundColor: Colors.orange,
-                                      action: SnackBarAction(
-                                        label: 'Log in',
-                                        textColor: Colors.black,
-                                        onPressed: onLoginTapped,
-                                      ),
-                                    ),
+                                  showSnackBar(
+                                    content: 'You need to log in first.',
+                                    label: 'Log in',
+                                    action: onLoginTapped,
                                   );
                                 }
                               },
@@ -554,11 +547,8 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   void showThemeSettingDialog({bool useTrueDarkMode = false}) {
     if (useTrueDarkMode) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Can't choose theme when using true dark mode."),
-          backgroundColor: Colors.orange,
-        ),
+      showSnackBar(
+        content: "Can't choose theme when using true dark mode.",
       );
       return;
     }
@@ -630,12 +620,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           listener: (context, state) {
             if (state.isLoggedIn) {
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Logged in successfully!'),
-                  backgroundColor: Colors.orange,
-                ),
-              );
+              showSnackBar(content: 'Logged in successfully!');
             }
           },
           builder: (context, state) {

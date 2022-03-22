@@ -1,4 +1,4 @@
-class Constants {
+abstract class Constants {
   static const String endUserAgreementLink =
       'https://www.termsfeed.com/live/c1417f5c-a48b-4bd7-93b2-9cd4577bfc45';
   static const String hackerNewsLogoLink =

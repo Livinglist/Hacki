@@ -91,22 +91,26 @@ class LinkView extends StatelessWidget {
                       top: 5,
                       bottom: 5,
                     ),
-                    child: (imageUri?.isEmpty ?? true) && imagePath != null
-                        ? Image.asset(
-                            imagePath!,
-                            fit: isIcon ? BoxFit.scaleDown : BoxFit.cover,
-                          )
-                        : CachedNetworkImage(
-                            imageUrl: imageUri!,
-                            fit: isIcon ? BoxFit.scaleDown : BoxFit.cover,
-                            memCacheHeight: layoutHeight.toInt() * 4,
-                            errorWidget: (context, _, dynamic __) {
-                              return Image.asset(
-                                Constants.hackerNewsLogoPath,
-                                fit: BoxFit.cover,
-                              );
-                            },
-                          ),
+                    child: SizedBox(
+                      height: layoutHeight,
+                      width: layoutHeight,
+                      child: (imageUri?.isEmpty ?? true) && imagePath != null
+                          ? Image.asset(
+                              imagePath!,
+                              fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
+                            )
+                          : CachedNetworkImage(
+                              imageUrl: imageUri!,
+                              fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
+                              memCacheHeight: layoutHeight.toInt() * 4,
+                              errorWidget: (context, _, dynamic __) {
+                                return Image.asset(
+                                  Constants.hackerNewsLogoPath,
+                                  fit: BoxFit.cover,
+                                );
+                              },
+                            ),
+                    ),
                   ),
                 )
               else

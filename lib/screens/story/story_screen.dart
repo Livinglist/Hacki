@@ -13,6 +13,7 @@ import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
@@ -194,16 +195,12 @@ class _StoryScreenState extends State<StoryScreen> {
               editCubit.onReplySubmittedSuccessfully();
               context.read<PostCubit>().reset();
             } else if (postState.status == PostStatus.failure) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(
-                  'Something went wrong...${(sadFaces..shuffle()).first}',
-                ),
-                backgroundColor: Colors.orange,
-                action: SnackBarAction(
-                    label: 'Okay',
-                    onPressed: () =>
-                        ScaffoldMessenger.of(context).hideCurrentSnackBar()),
-              ));
+              showSnackBar(
+                content:
+                    'Something went wrong...${(sadFaces..shuffle()).first}',
+                label: 'Okay',
+                action: ScaffoldMessenger.of(context).hideCurrentSnackBar,
+              );
               context.read<PostCubit>().reset();
             }
           },
@@ -500,34 +497,42 @@ class _StoryScreenState extends State<StoryScreen> {
                       ],
                     ),
                   ),
-                  bottomSheet: Offstage(
-                    offstage: !editCubit.state.showReplyBox,
-                    child: BlocBuilder<PostCubit, PostState>(
-                      builder: (context, postState) {
-                        return BlocBuilder<EditCubit, EditState>(
-                          buildWhen: (previous, current) =>
-                              previous.itemBeingEdited !=
-                                  current.itemBeingEdited ||
-                              previous.replyingTo != current.replyingTo,
-                          builder: (context, editState) {
-                            return ReplyBox(
-                              focusNode: focusNode,
-                              textEditingController: commentEditingController,
-                              editing: editState.itemBeingEdited,
-                              replyingTo: editState.replyingTo,
-                              isLoading: postState.status == PostStatus.loading,
-                              onSendTapped: onSendTapped,
-                              onCloseTapped: () {
-                                editCubit.onReplyBoxClosed();
-                                commentEditingController.clear();
-                                focusNode.unfocus();
+                  bottomSheet: BlocBuilder<EditCubit, EditState>(
+                    buildWhen: (previous, current) =>
+                        previous.showReplyBox != current.showReplyBox,
+                    builder: (context, editState) {
+                      return Offstage(
+                        offstage: !editState.showReplyBox,
+                        child: BlocBuilder<PostCubit, PostState>(
+                          builder: (context, postState) {
+                            return BlocBuilder<EditCubit, EditState>(
+                              buildWhen: (previous, current) =>
+                                  previous.itemBeingEdited !=
+                                      current.itemBeingEdited ||
+                                  previous.replyingTo != current.replyingTo,
+                              builder: (context, editState) {
+                                return ReplyBox(
+                                  focusNode: focusNode,
+                                  textEditingController:
+                                      commentEditingController,
+                                  editing: editState.itemBeingEdited,
+                                  replyingTo: editState.replyingTo,
+                                  isLoading:
+                                      postState.status == PostStatus.loading,
+                                  onSendTapped: onSendTapped,
+                                  onCloseTapped: () {
+                                    editCubit.onReplyBoxClosed();
+                                    commentEditingController.clear();
+                                    focusNode.unfocus();
+                                  },
+                                  onChanged: editCubit.onTextChanged,
+                                );
                               },
-                              onChanged: editCubit.onTextChanged,
                             );
                           },
-                        );
-                      },
-                    ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               );
@@ -574,7 +579,8 @@ class _StoryScreenState extends State<StoryScreen> {
                 } else if (voteState.status == VoteStatus.failureNotLoggedIn) {
                   showSnackBar(
                     content: 'Not logged in, no voting! (;｀O´)o',
-                    withLoginAction: true,
+                    action: onLoginTapped,
+                    label: 'Log in',
                   );
                 } else if (voteState.status == VoteStatus.failureBeHumble) {
                   showSnackBar(content: 'No voting on your own post! (;｀O´)o');
@@ -1019,24 +1025,6 @@ class _StoryScreenState extends State<StoryScreen> {
           },
         );
       },
-    );
-  }
-
-  void showSnackBar({required String content, bool withLoginAction = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          content,
-        ),
-        backgroundColor: Colors.orange,
-        action: withLoginAction
-            ? SnackBarAction(
-                label: 'Log in',
-                textColor: Colors.black,
-                onPressed: onLoginTapped,
-              )
-            : null,
-      ),
     );
   }
 }
