@@ -273,10 +273,11 @@ class _StoryScreenState extends State<StoryScreen> {
                     SizedBox(
                       height: topPadding,
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 6),
-                      child: OfflineBanner(),
-                    ),
+                    if (!widget.splitViewEnabled)
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 6),
+                        child: OfflineBanner(),
+                      ),
                     Slidable(
                       startActionPane: ActionPane(
                         motion: const BehindMotion(),
