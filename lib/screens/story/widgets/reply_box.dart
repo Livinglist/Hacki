@@ -222,53 +222,70 @@ class _ReplyBoxState extends State<ReplyBox> {
       barrierDismissible: true,
       builder: (_) {
         return AlertDialog(
-          content: Column(
-            children: [
-              Row(
-                children: [
-                  Text(
-                    replyingTo?.by ?? '',
-                    style: const TextStyle(color: Colors.grey),
-                  ),
-                  const Spacer(),
-                  TextButton(
-                    child: const Text('Copy All'),
-                    onPressed: () => FlutterClipboard.copy(
-                      replyingTo?.text ?? '',
-                    ).then((_) => HapticFeedback.selectionClick()),
-                  ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.close,
-                      color: Colors.orange,
-                      size: 18,
-                    ),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  const SizedBox(
-                    width: 6,
-                  )
-                ],
+            insetPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 24,
+            ),
+            contentPadding: EdgeInsets.zero,
+            content: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: 500,
+                maxHeight: 500,
               ),
-              Expanded(
-                child: Scrollbar(
-                  isAlwaysShown: true,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 6),
-                    child: SingleChildScrollView(
-                      child: SelectableHtml(
-                        scrollPhysics: const NeverScrollableScrollPhysics(),
-                        data: replyingTo?.text ?? '',
-                        onLinkTap: (link, _, __, ___) =>
-                            LinkUtil.launchUrl(link!),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 12,
+                      top: 6,
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          replyingTo?.by ?? '',
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                        const Spacer(),
+                        TextButton(
+                          child: const Text('Copy All'),
+                          onPressed: () => FlutterClipboard.copy(
+                            replyingTo?.text ?? '',
+                          ).then((_) => HapticFeedback.selectionClick()),
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.close,
+                            color: Colors.orange,
+                            size: 18,
+                          ),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Scrollbar(
+                      isAlwaysShown: true,
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          left: 12,
+                          right: 6,
+                          top: 6,
+                        ),
+                        child: SingleChildScrollView(
+                          child: SelectableHtml(
+                            scrollPhysics: const NeverScrollableScrollPhysics(),
+                            data: replyingTo?.text ?? '',
+                            onLinkTap: (link, _, __, ___) =>
+                                LinkUtil.launchUrl(link!),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-        );
+            ));
       },
     );
   }
