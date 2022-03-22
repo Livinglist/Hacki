@@ -40,11 +40,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   final cacheService = locator.get<CacheService>();
-  final refreshControllerTop = RefreshController();
-  final refreshControllerNew = RefreshController();
-  final refreshControllerAsk = RefreshController();
-  final refreshControllerShow = RefreshController();
-  final refreshControllerJobs = RefreshController();
   late final TabController tabController;
   int currentIndex = 0;
 
@@ -267,34 +262,39 @@ class _HomeScreenState extends State<HomeScreen>
                   controller: tabController,
                   children: [
                     StoriesListView(
+                      key: const ValueKey(StoryType.top),
                       storyType: StoryType.top,
                       header: pinnedStories,
                       onStoryTapped: onStoryTapped,
-                      refreshController: refreshControllerTop,
+                      refreshController: RefreshController(),
                     ),
                     StoriesListView(
+                      key: const ValueKey(StoryType.latest),
                       storyType: StoryType.latest,
                       header: pinnedStories,
                       onStoryTapped: onStoryTapped,
-                      refreshController: refreshControllerNew,
+                      refreshController: RefreshController(),
                     ),
                     StoriesListView(
+                      key: const ValueKey(StoryType.ask),
                       storyType: StoryType.ask,
                       header: pinnedStories,
                       onStoryTapped: onStoryTapped,
-                      refreshController: refreshControllerAsk,
+                      refreshController: RefreshController(),
                     ),
                     StoriesListView(
+                      key: const ValueKey(StoryType.show),
                       storyType: StoryType.show,
                       header: pinnedStories,
                       onStoryTapped: onStoryTapped,
-                      refreshController: refreshControllerShow,
+                      refreshController: RefreshController(),
                     ),
                     StoriesListView(
+                      key: const ValueKey(StoryType.jobs),
                       storyType: StoryType.jobs,
                       header: pinnedStories,
                       onStoryTapped: onStoryTapped,
-                      refreshController: refreshControllerJobs,
+                      refreshController: RefreshController(),
                     ),
                     const ProfileScreen(),
                   ],
@@ -312,39 +312,51 @@ class _HomeScreenState extends State<HomeScreen>
         return homeScreen;
       },
       tablet: (context) {
-        context.read<SplitViewCubit>().enableSplitView();
-        return Stack(
-          children: [
-            Positioned(
-              left: 0,
-              top: 0,
-              bottom: 0,
-              width: 428,
-              child: homeScreen,
-            ),
-            Positioned(
-              right: 0,
-              top: 0,
-              bottom: 0,
-              left: 428,
-              child: BlocBuilder<SplitViewCubit, SplitViewState>(
-                builder: (context, state) {
-                  if (state.story != null) {
-                    return StoryScreen.build(state.story!);
-                  }
+        return ResponsiveBuilder(
+          builder: (context, sizeInfo) {
+            const homeScreenWidth = 428.0;
 
-                  return Material(
-                    child: Container(
-                      color: Theme.of(context).canvasColor,
-                      child: const Center(
-                        child: Text('Tap on story tile to view comments.'),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
+            if (sizeInfo.screenSize.width < 750) {
+              context.read<SplitViewCubit>().disableSplitView();
+
+              return homeScreen;
+            }
+
+            context.read<SplitViewCubit>().enableSplitView();
+            return Stack(
+              children: [
+                Positioned(
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+                  width: homeScreenWidth,
+                  child: homeScreen,
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  left: homeScreenWidth,
+                  child: BlocBuilder<SplitViewCubit, SplitViewState>(
+                    builder: (context, state) {
+                      if (state.story != null) {
+                        return StoryScreen.build(state.story!);
+                      }
+
+                      return Material(
+                        child: Container(
+                          color: Theme.of(context).canvasColor,
+                          child: const Center(
+                            child: Text('Tap on story tile to view comments.'),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
         );
       },
     );

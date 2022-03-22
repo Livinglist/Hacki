@@ -47,19 +47,16 @@ class StoryTile extends StatelessWidget {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Expanded(
-                            flex: 2,
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                right: 5,
-                                bottom: 5,
-                                top: 5,
-                              ),
-                              child: Container(
-                                height: height,
-                                width: height,
-                                color: Colors.white,
-                              ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              right: 5,
+                              bottom: 5,
+                              top: 5,
+                            ),
+                            child: Container(
+                              height: height,
+                              width: height,
+                              color: Colors.white,
                             ),
                           ),
                           Expanded(

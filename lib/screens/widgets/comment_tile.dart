@@ -189,6 +189,11 @@ class CommentTile extends StatelessWidget {
                                   child: SelectableLinkify(
                                     key: ObjectKey(comment),
                                     text: comment.text,
+                                    style: TextStyle(
+                                      fontSize: MediaQuery.of(context)
+                                              .textScaleFactor *
+                                          15,
+                                    ),
                                     onOpen: (link) {
                                       if (link.url.contains(
                                           'news.ycombinator.com/item')) {

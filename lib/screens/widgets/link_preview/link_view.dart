@@ -83,34 +83,31 @@ class LinkView extends StatelessWidget {
           child: Row(
             children: <Widget>[
               if (showMultiMedia)
-                Expanded(
-                  flex: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      right: 5,
-                      top: 5,
-                      bottom: 5,
-                    ),
-                    child: SizedBox(
-                      height: layoutHeight,
-                      width: layoutHeight,
-                      child: (imageUri?.isEmpty ?? true) && imagePath != null
-                          ? Image.asset(
-                              imagePath!,
-                              fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
-                            )
-                          : CachedNetworkImage(
-                              imageUrl: imageUri!,
-                              fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
-                              memCacheHeight: layoutHeight.toInt() * 4,
-                              errorWidget: (context, _, dynamic __) {
-                                return Image.asset(
-                                  Constants.hackerNewsLogoPath,
-                                  fit: BoxFit.cover,
-                                );
-                              },
-                            ),
-                    ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                    right: 5,
+                    top: 5,
+                    bottom: 5,
+                  ),
+                  child: SizedBox(
+                    height: layoutHeight,
+                    width: layoutHeight,
+                    child: (imageUri?.isEmpty ?? true) && imagePath != null
+                        ? Image.asset(
+                            imagePath!,
+                            fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
+                          )
+                        : CachedNetworkImage(
+                            imageUrl: imageUri!,
+                            fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
+                            memCacheHeight: layoutHeight.toInt() * 4,
+                            errorWidget: (context, _, dynamic __) {
+                              return Image.asset(
+                                Constants.hackerNewsLogoPath,
+                                fit: BoxFit.cover,
+                              );
+                            },
+                          ),
                   ),
                 )
               else
