@@ -185,7 +185,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       top: 50,
                       child: Offstage(
                         offstage: pageType != _PageType.notification,
-                        child: notificationState.unreadCommentsIds.isEmpty
+                        child: notificationState.comments.isEmpty
                             ? const CenteredMessageView(
                                 content:
                                     'New replies to your comments or stories '
