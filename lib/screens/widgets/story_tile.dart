@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/config/constants.dart';
@@ -26,8 +28,11 @@ class StoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (showWebPreview) {
-      final height =
-          (MediaQuery.of(context).size.height * 0.14).clamp(118.0, 140.0);
+      final screenWidth = MediaQuery.of(context).size.width;
+      final showSmallerPreviewPic = Platform.isIOS && screenWidth < 800;
+      final height = showSmallerPreviewPic
+          ? 100.0
+          : (MediaQuery.of(context).size.height * 0.14).clamp(118.0, 140.0);
 
       if (story.url.isNotEmpty) {
         return TapDownWrapper(

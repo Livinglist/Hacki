@@ -308,15 +308,13 @@ class _HomeScreenState extends State<HomeScreen>
       tablet: (context) {
         return ResponsiveBuilder(
           builder: (context, sizeInfo) {
-            const homeScreenWidth = 428.0;
+            context.read<SplitViewCubit>().enableSplitView();
+            var homeScreenWidth = 428.0;
 
-            if (sizeInfo.screenSize.width < 750) {
-              context.read<SplitViewCubit>().disableSplitView();
-
-              return homeScreen;
+            if (sizeInfo.screenSize.width < homeScreenWidth * 2) {
+              homeScreenWidth = 345.0;
             }
 
-            context.read<SplitViewCubit>().enableSplitView();
             return Stack(
               children: [
                 Positioned(
