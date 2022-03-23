@@ -29,7 +29,8 @@ class StoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     if (showWebPreview) {
       final screenWidth = MediaQuery.of(context).size.width;
-      final showSmallerPreviewPic = Platform.isIOS && screenWidth < 800;
+      final showSmallerPreviewPic =
+          Platform.isIOS && screenWidth > 428.0 && screenWidth < 850;
       final height = showSmallerPreviewPic
           ? 100.0
           : (MediaQuery.of(context).size.height * 0.14).clamp(118.0, 140.0);
