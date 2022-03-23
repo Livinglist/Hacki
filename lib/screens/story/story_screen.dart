@@ -348,8 +348,12 @@ class _StoryScreenState extends State<StoryScreen> {
                               child: Text(
                                 widget.story.title,
                                 textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: widget.story.url.isNotEmpty
+                                      ? Colors.orange
+                                      : null,
+                                ),
                               ),
                             ),
                           ),
@@ -360,6 +364,21 @@ class _StoryScreenState extends State<StoryScreen> {
                               ),
                               child: SelectableHtml(
                                 data: widget.story.text,
+                                style: {
+                                  'body': Style(
+                                    fontSize: FontSize(
+                                      MediaQuery.of(context).textScaleFactor *
+                                          15,
+                                    ),
+                                  ),
+                                  'a': Style(
+                                    fontSize: FontSize(
+                                      MediaQuery.of(context).textScaleFactor *
+                                          15,
+                                    ),
+                                    color: Colors.orange,
+                                  ),
+                                },
                                 onLinkTap: (link, _, __, ___) =>
                                     LinkUtil.launchUrl(link ?? ''),
                               ),

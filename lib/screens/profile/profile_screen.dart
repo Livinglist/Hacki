@@ -185,27 +185,38 @@ class _ProfileScreenState extends State<ProfileScreen>
                       top: 50,
                       child: Offstage(
                         offstage: pageType != _PageType.notification,
-                        child: InboxView(
-                          refreshController: refreshControllerNotification,
-                          unreadCommentsIds:
-                              notificationState.unreadCommentsIds,
-                          comments: notificationState.comments,
-                          onCommentTapped: (cmt) {
-                            onCommentTapped(cmt, then: () {
-                              context.read<NotificationCubit>().markAsRead(cmt);
-                            });
-                          },
-                          onMarkAllAsReadTapped: () {
-                            context.read<NotificationCubit>().markAllAsRead();
-                          },
-                          onLoadMore: () {
-                            context.read<NotificationCubit>().loadMore();
-                          },
-                          onRefresh: () {
-                            HapticFeedback.lightImpact();
-                            context.read<NotificationCubit>().refresh();
-                          },
-                        ),
+                        child: notificationState.unreadCommentsIds.isEmpty
+                            ? const CenteredMessageView(
+                                content:
+                                    'New replies to your comments or stories '
+                                    'will show up here.',
+                              )
+                            : InboxView(
+                                refreshController:
+                                    refreshControllerNotification,
+                                unreadCommentsIds:
+                                    notificationState.unreadCommentsIds,
+                                comments: notificationState.comments,
+                                onCommentTapped: (cmt) {
+                                  onCommentTapped(cmt, then: () {
+                                    context
+                                        .read<NotificationCubit>()
+                                        .markAsRead(cmt);
+                                  });
+                                },
+                                onMarkAllAsReadTapped: () {
+                                  context
+                                      .read<NotificationCubit>()
+                                      .markAllAsRead();
+                                },
+                                onLoadMore: () {
+                                  context.read<NotificationCubit>().loadMore();
+                                },
+                                onRefresh: () {
+                                  HapticFeedback.lightImpact();
+                                  context.read<NotificationCubit>().refresh();
+                                },
+                              ),
                       ),
                     ),
                     Positioned.fill(

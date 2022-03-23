@@ -133,6 +133,9 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                                   child: Linkify(
                                     text: e.text,
                                     maxLines: 4,
+                                    linkStyle: const TextStyle(
+                                      color: Colors.orange,
+                                    ),
                                     onOpen: (link) =>
                                         LinkUtil.launchUrl(link.url),
                                   ),

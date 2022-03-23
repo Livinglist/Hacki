@@ -194,6 +194,12 @@ class CommentTile extends StatelessWidget {
                                               .textScaleFactor *
                                           15,
                                     ),
+                                    linkStyle: TextStyle(
+                                      fontSize: MediaQuery.of(context)
+                                              .textScaleFactor *
+                                          15,
+                                      color: Colors.orange,
+                                    ),
                                     onOpen: (link) {
                                       if (link.url.contains(
                                           'news.ycombinator.com/item')) {

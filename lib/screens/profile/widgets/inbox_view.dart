@@ -104,6 +104,13 @@ class InboxView extends StatelessWidget {
                                                     ? textColor
                                                     : Colors.grey,
                                           ),
+                                          linkStyle: TextStyle(
+                                            color:
+                                                unreadCommentsIds.contains(e.id)
+                                                    ? Colors.orange
+                                                    : Colors.orange
+                                                        .withOpacity(0.6),
+                                          ),
                                           maxLines: 4,
                                           onOpen: (link) =>
                                               LinkUtil.launchUrl(link.url),

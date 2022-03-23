@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/item.dart';
 
@@ -62,6 +64,12 @@ class Comment extends Item {
         'dead': dead,
         'score': score,
       };
+
+  @override
+  String toString() {
+    final prettyString = const JsonEncoder.withIndent('  ').convert(this);
+    return 'Comment $prettyString';
+  }
 
   @override
   List<Object?> get props => [

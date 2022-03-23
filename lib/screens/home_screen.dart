@@ -131,22 +131,25 @@ class _HomeScreenState extends State<HomeScreen>
               child: Scaffold(
                 resizeToAvoidBottomInset: false,
                 appBar: PreferredSize(
-                  preferredSize: const Size(0, 48),
+                  preferredSize: const Size(0, 40),
                   child: Column(
                     children: [
                       SizedBox(
-                        height: MediaQuery.of(context).padding.top,
+                        height: MediaQuery.of(context).padding.top - 8,
                       ),
                       TabBar(
                         isScrollable: true,
                         controller: tabController,
                         indicatorColor: Colors.orange,
+                        onTap: (_) {
+                          HapticFeedback.selectionClick();
+                        },
                         tabs: [
                           Tab(
                             child: Text(
                               'TOP',
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: currentIndex == 0 ? 14 : 10,
                                 color: currentIndex == 0
                                     ? Colors.orange
                                     : Colors.grey,
@@ -157,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen>
                             child: Text(
                               'NEW',
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: currentIndex == 1 ? 14 : 10,
                                 color: currentIndex == 1
                                     ? Colors.orange
                                     : Colors.grey,
@@ -168,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen>
                             child: Text(
                               'ASK',
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: currentIndex == 2 ? 14 : 10,
                                 color: currentIndex == 2
                                     ? Colors.orange
                                     : Colors.grey,
@@ -179,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen>
                             child: Text(
                               'SHOW',
                               style: TextStyle(
-                                fontSize: 13,
+                                fontSize: currentIndex == 3 ? 14 : 10,
                                 color: currentIndex == 3
                                     ? Colors.orange
                                     : Colors.grey,
@@ -190,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen>
                             child: Text(
                               'JOBS',
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: currentIndex == 4 ? 14 : 10,
                                 color: currentIndex == 4
                                     ? Colors.orange
                                     : Colors.grey,
@@ -219,34 +222,29 @@ class _HomeScreenState extends State<HomeScreen>
                               ),
                               child: BlocBuilder<NotificationCubit,
                                   NotificationState>(
+                                buildWhen: (previous, current) =>
+                                    previous.unreadCommentsIds.length !=
+                                    current.unreadCommentsIds.length,
                                 builder: (context, state) {
-                                  if (state.unreadCommentsIds.isEmpty) {
-                                    return Icon(
+                                  return Badge(
+                                    showBadge:
+                                        state.unreadCommentsIds.isNotEmpty,
+                                    borderRadius: BorderRadius.circular(100),
+                                    badgeContent: Container(
+                                      height: 3,
+                                      width: 3,
+                                      decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.white),
+                                    ),
+                                    child: Icon(
                                       Icons.person,
-                                      size: 16,
+                                      size: currentIndex == 5 ? 16 : 12,
                                       color: currentIndex == 5
                                           ? Colors.orange
                                           : Colors.grey,
-                                    );
-                                  } else {
-                                    return Badge(
-                                      borderRadius: BorderRadius.circular(100),
-                                      badgeContent: Container(
-                                        height: 3,
-                                        width: 3,
-                                        decoration: const BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Colors.white),
-                                      ),
-                                      child: Icon(
-                                        Icons.person,
-                                        size: 16,
-                                        color: currentIndex == 5
-                                            ? Colors.orange
-                                            : Colors.grey,
-                                      ),
-                                    );
-                                  }
+                                    ),
+                                  );
                                 },
                               ),
                             ),
@@ -330,6 +328,8 @@ class _HomeScreenState extends State<HomeScreen>
                   bottom: 0,
                   left: homeScreenWidth,
                   child: BlocBuilder<SplitViewCubit, SplitViewState>(
+                    buildWhen: (previous, current) =>
+                        previous.storyScreenArgs != current.storyScreenArgs,
                     builder: (context, state) {
                       if (state.storyScreenArgs != null) {
                         return StoryScreen.build(state.storyScreenArgs!);

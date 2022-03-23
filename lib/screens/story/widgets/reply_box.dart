@@ -276,6 +276,11 @@ class _ReplyBoxState extends State<ReplyBox> {
                           child: SelectableHtml(
                             scrollPhysics: const NeverScrollableScrollPhysics(),
                             data: replyingTo?.text ?? '',
+                            style: {
+                              'a': Style(
+                                color: Colors.orange,
+                              ),
+                            },
                             onLinkTap: (link, _, __, ___) =>
                                 LinkUtil.launchUrl(link!),
                           ),

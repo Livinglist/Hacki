@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/item.dart';
 
@@ -94,6 +96,12 @@ class Story extends Item {
       'deleted': deleted,
       'type': type,
     };
+  }
+
+  @override
+  String toString() {
+    final prettyString = const JsonEncoder.withIndent('  ').convert(this);
+    return 'Story $prettyString';
   }
 
   @override
