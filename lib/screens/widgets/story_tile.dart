@@ -123,7 +123,7 @@ class StoryTile extends StatelessWidget {
                 backgroundColor: Colors.transparent,
                 borderRadius: 0,
                 removeElevation: true,
-                bodyMaxLines: 4,
+                bodyMaxLines: height == 100 ? 3 : 4,
                 errorTitle: story.title,
                 titleStyle: TextStyle(
                   color: wasRead
