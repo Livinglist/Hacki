@@ -31,10 +31,10 @@ Features:
 
 
 <p align="center">
-   <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/159798148-45d08e4a-9ad1-4776-b752-95f41ff7d7c5.png"> 
-   <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/159798163-cbf776e2-f240-4477-89d3-33a175d53d40.png"> 
-   <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/159798168-4931f9c8-9b3a-42c3-8dbb-7709c302d010.png"> 
-   <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/159798173-106bcc5a-618b-4f94-b2f1-de7819c333c9.png"> 
+   <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/159799288-6e98352a-fe89-4a2e-8a74-c5782463a1e1.png"> 
+   <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/159799297-75b52eac-2066-4df9-bdfc-7c82bf7b81c8.png"> 
+   <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/159799302-860c61b8-abba-486a-9592-bc84a6af3232.png"> 
+   <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/159799305-308743d3-1c89-45de-9645-3b6ec789c282.png"> 
    <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/159798176-5212e9bf-296d-4d9b-ab48-19b741684c8a.png"> 
    <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/159798179-72edbe49-7444-4e54-a07c-fc1244447a74.png"> 
    <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/159798182-28397805-a7cc-4124-b65b-c02c80afbbec.png"> 
@@ -44,5 +44,4 @@ Features:
    <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/159798186-1457ae21-f1aa-40a4-9206-0f3a1e24653e.png"> 
    <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/159798187-4404adea-b2bc-472e-8568-2379e6db01a4.png"> 
 </p>
-
 
