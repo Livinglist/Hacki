@@ -141,6 +141,7 @@ class _HomeScreenState extends State<HomeScreen>
                         data: ThemeData(
                           highlightColor: Colors.transparent,
                           splashColor: Colors.transparent,
+                          primaryColor: Theme.of(context).primaryColor,
                         ),
                         child: TabBar(
                           isScrollable: true,

@@ -153,7 +153,7 @@ class StoryTile extends StatelessWidget {
                   onTap: (_) {},
                   url: '',
                   imagePath: Constants.hackerNewsLogoPath,
-                  bodyMaxLines: 4,
+                  bodyMaxLines: height == 100 ? 3 : 4,
                   titleTextStyle: TextStyle(
                     color: wasRead
                         ? Colors.grey[500]
