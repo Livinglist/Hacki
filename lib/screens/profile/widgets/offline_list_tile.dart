@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
@@ -22,6 +23,22 @@ class OfflineListTile extends StatelessWidget {
       builder: (context, state) {
         final downloading =
             state.downloadStatus == StoriesDownloadStatus.downloading;
+        final downloaded =
+            state.downloadStatus == StoriesDownloadStatus.finished;
+
+        final trailingWidget = () {
+          if (downloading) {
+            return const SizedBox(
+              height: 24,
+              width: 24,
+              child: CustomCircularProgressIndicator(),
+            );
+          } else if (downloaded) {
+            return const Icon(Icons.check_circle);
+          }
+          return const Icon(Icons.download);
+        }();
+
         return ListTile(
           title: Text(
             downloading ? 'Downloading All Stories...' : 'Download All Stories',
@@ -30,17 +47,15 @@ class OfflineListTile extends StatelessWidget {
             'download all latest stories that have at least one comment '
             "for offline reading. (web page won't be downloaded)",
           ),
-          trailing: downloading
-              ? const SizedBox(
-                  height: 24,
-                  width: 24,
-                  child: CustomCircularProgressIndicator(),
-                )
-              : const Icon(Icons.download),
+          trailing: trailingWidget,
           isThreeLine: true,
           onTap: () {
-            Wakelock.enable();
-            context.read<StoriesBloc>().add(StoriesDownload());
+            Connectivity().checkConnectivity().then((res) {
+              if (res != ConnectivityResult.none) {
+                Wakelock.enable();
+                context.read<StoriesBloc>().add(StoriesDownload());
+              }
+            });
           },
         );
       },

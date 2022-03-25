@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/config/constants.dart';
@@ -26,7 +28,12 @@ class StoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (showWebPreview) {
-      final height = (MediaQuery.of(context).size.height) * 0.15;
+      final screenWidth = MediaQuery.of(context).size.width;
+      final showSmallerPreviewPic =
+          Platform.isIOS && screenWidth > 428.0 && screenWidth < 850;
+      final height = showSmallerPreviewPic
+          ? 100.0
+          : (MediaQuery.of(context).size.height * 0.14).clamp(118.0, 140.0);
 
       if (story.url.isNotEmpty) {
         return TapDownWrapper(
@@ -47,19 +54,16 @@ class StoryTile extends StatelessWidget {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Expanded(
-                            flex: 2,
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                right: 5,
-                                bottom: 5,
-                                top: 5,
-                              ),
-                              child: Container(
-                                height: height,
-                                width: height,
-                                color: Colors.white,
-                              ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              right: 5,
+                              bottom: 5,
+                              top: 5,
+                            ),
+                            child: Container(
+                              height: height,
+                              width: height,
+                              color: Colors.white,
                             ),
                           ),
                           Expanded(
@@ -119,7 +123,7 @@ class StoryTile extends StatelessWidget {
                 backgroundColor: Colors.transparent,
                 borderRadius: 0,
                 removeElevation: true,
-                bodyMaxLines: 4,
+                bodyMaxLines: height == 100 ? 3 : 4,
                 errorTitle: story.title,
                 titleStyle: TextStyle(
                   color: wasRead
@@ -149,7 +153,7 @@ class StoryTile extends StatelessWidget {
                   onTap: (_) {},
                   url: '',
                   imagePath: Constants.hackerNewsLogoPath,
-                  bodyMaxLines: 4,
+                  bodyMaxLines: height == 100 ? 3 : 4,
                   titleTextStyle: TextStyle(
                     color: wasRead
                         ? Colors.grey[500]

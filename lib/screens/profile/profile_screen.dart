@@ -9,6 +9,7 @@ import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
@@ -121,9 +122,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                               },
                               onTap: (item) {
                                 if (item is Story) {
-                                  HackiApp.navigatorKey.currentState!.pushNamed(
-                                      StoryScreen.routeName,
-                                      arguments: StoryScreenArgs(story: item));
+                                  goToStoryScreen(
+                                      args: StoryScreenArgs(story: item));
                                 } else if (item is Comment) {
                                   onCommentTapped(item);
                                 }
@@ -167,11 +167,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                               onLoadMore: () {
                                 context.read<FavCubit>().loadMore();
                               },
-                              onTap: (story) {
-                                HackiApp.navigatorKey.currentState!.pushNamed(
-                                    StoryScreen.routeName,
-                                    arguments: StoryScreenArgs(story: story));
-                              },
+                              onTap: (story) => goToStoryScreen(
+                                  args: StoryScreenArgs(story: story)),
                             );
                           },
                         ),
@@ -188,27 +185,38 @@ class _ProfileScreenState extends State<ProfileScreen>
                       top: 50,
                       child: Offstage(
                         offstage: pageType != _PageType.notification,
-                        child: InboxView(
-                          refreshController: refreshControllerNotification,
-                          unreadCommentsIds:
-                              notificationState.unreadCommentsIds,
-                          comments: notificationState.comments,
-                          onCommentTapped: (cmt) {
-                            onCommentTapped(cmt, then: () {
-                              context.read<NotificationCubit>().markAsRead(cmt);
-                            });
-                          },
-                          onMarkAllAsReadTapped: () {
-                            context.read<NotificationCubit>().markAllAsRead();
-                          },
-                          onLoadMore: () {
-                            context.read<NotificationCubit>().loadMore();
-                          },
-                          onRefresh: () {
-                            HapticFeedback.lightImpact();
-                            context.read<NotificationCubit>().refresh();
-                          },
-                        ),
+                        child: notificationState.comments.isEmpty
+                            ? const CenteredMessageView(
+                                content:
+                                    'New replies to your comments or stories '
+                                    'will show up here.',
+                              )
+                            : InboxView(
+                                refreshController:
+                                    refreshControllerNotification,
+                                unreadCommentsIds:
+                                    notificationState.unreadCommentsIds,
+                                comments: notificationState.comments,
+                                onCommentTapped: (cmt) {
+                                  onCommentTapped(cmt, then: () {
+                                    context
+                                        .read<NotificationCubit>()
+                                        .markAsRead(cmt);
+                                  });
+                                },
+                                onMarkAllAsReadTapped: () {
+                                  context
+                                      .read<NotificationCubit>()
+                                      .markAllAsRead();
+                                },
+                                onLoadMore: () {
+                                  context.read<NotificationCubit>().loadMore();
+                                },
+                                onRefresh: () {
+                                  HapticFeedback.lightImpact();
+                                  context.read<NotificationCubit>().refresh();
+                                },
+                              ),
                       ),
                     ),
                     Positioned.fill(
@@ -360,7 +368,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   showAboutDialog(
                                     context: context,
                                     applicationName: 'Hacki',
-                                    applicationVersion: 'v0.2.0',
+                                    applicationVersion: 'v0.2.1',
                                     applicationIcon: Image.asset(
                                       Constants.hackiIconPath,
                                       height: 50,
@@ -447,18 +455,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   HackiApp.navigatorKey.currentState
                                       ?.pushNamed(SubmitScreen.routeName);
                                 } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: const Text(
-                                        'You need to log in first.',
-                                      ),
-                                      backgroundColor: Colors.orange,
-                                      action: SnackBarAction(
-                                        label: 'Log in',
-                                        textColor: Colors.black,
-                                        onPressed: onLoginTapped,
-                                      ),
-                                    ),
+                                  showSnackBar(
+                                    content: 'You need to log in first.',
+                                    label: 'Log in',
+                                    action: onLoginTapped,
                                   );
                                 }
                               },
@@ -554,11 +554,8 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   void showThemeSettingDialog({bool useTrueDarkMode = false}) {
     if (useTrueDarkMode) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Can't choose theme when using true dark mode."),
-          backgroundColor: Colors.orange,
-        ),
+      showSnackBar(
+        content: "Can't choose theme when using true dark mode.",
       );
       return;
     }
@@ -601,18 +598,14 @@ class _ProfileScreenState extends State<ProfileScreen>
           .fetchParentStoryWithComments(id: comment.parent)
           .then((tuple) {
         if (tuple != null && mounted) {
-          HackiApp.navigatorKey.currentState!
-              .pushNamed(
-                StoryScreen.routeName,
-                arguments: StoryScreenArgs(
-                  story: tuple.item1,
-                  targetComments: tuple.item2.isEmpty
-                      ? [comment]
-                      : [comment, ...tuple.item2],
-                  onlyShowTargetComment: true,
-                ),
-              )
-              .then((_) => then?.call());
+          goToStoryScreen(
+            args: StoryScreenArgs(
+              story: tuple.item1,
+              targetComments:
+                  tuple.item2.isEmpty ? [comment] : [comment, ...tuple.item2],
+              onlyShowTargetComment: true,
+            ),
+          )?.then((_) => then?.call());
         }
       });
     });
@@ -630,12 +623,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           listener: (context, state) {
             if (state.isLoggedIn) {
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Logged in successfully!'),
-                  backgroundColor: Colors.orange,
-                ),
-              );
+              showSnackBar(content: 'Logged in successfully!');
             }
           },
           builder: (context, state) {
@@ -759,7 +747,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                     child: ButtonBar(
                       children: [
                         TextButton(
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            context.read<AuthBloc>().add(AuthInitialize());
+                          },
                           child: const Text(
                             'Cancel',
                             style: TextStyle(

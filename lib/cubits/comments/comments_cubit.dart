@@ -24,6 +24,13 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
   final CacheRepository _cacheRepository;
   final StoriesRepository _storiesRepository;
 
+  @override
+  void emit(CommentsState state) {
+    if (!isClosed) {
+      super.emit(state);
+    }
+  }
+
   Future<void> init({
     bool onlyShowTargetComment = false,
     Comment? targetComment,
@@ -63,11 +70,10 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
           }
         }
       }
-      if (!isClosed) {
-        emit(state.copyWith(
-          status: CommentsStatus.loaded,
-        ));
-      }
+
+      emit(state.copyWith(
+        status: CommentsStatus.loaded,
+      ));
     } else {
       final comment = state.item as Comment;
 
@@ -93,11 +99,9 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
         }
       }
 
-      if (!isClosed) {
-        emit(state.copyWith(
-          status: CommentsStatus.loaded,
-        ));
-      }
+      emit(state.copyWith(
+        status: CommentsStatus.loaded,
+      ));
     }
   }
 
@@ -160,7 +164,7 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
   }
 
   void _onCommentFetched(Comment? comment) {
-    if (comment != null && !isClosed) {
+    if (comment != null) {
       _cacheService.cacheComment(comment);
       emit(state.copyWith(comments: List.from(state.comments)..add(comment)));
     }

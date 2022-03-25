@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class User {
   User({
     required this.about,
@@ -26,4 +28,10 @@ class User {
   final int delay;
   final String id;
   final int karma;
+
+  @override
+  String toString() {
+    final prettyString = const JsonEncoder.withIndent('  ').convert(this);
+    return 'User $prettyString';
+  }
 }

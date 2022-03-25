@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/extensions.dart';
 
 class SubmitScreen extends StatefulWidget {
   const SubmitScreen({Key? key}) : super(key: key);
@@ -198,14 +199,5 @@ class _SubmitScreenState extends State<SubmitScreen> {
     return titleEditingController.text.isNotEmpty &&
         (textEditingController.text.isNotEmpty ||
             urlEditingController.text.isNotEmpty);
-  }
-
-  void showSnackBar({required String content}) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(
-        content,
-      ),
-      backgroundColor: Colors.orange,
-    ));
   }
 }

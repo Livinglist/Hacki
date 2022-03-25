@@ -87,6 +87,10 @@ class HackiApp extends StatelessWidget {
           lazy: false,
           create: (context) => CacheCubit(),
         ),
+        BlocProvider<SplitViewCubit>(
+          lazy: false,
+          create: (context) => SplitViewCubit(),
+        ),
       ],
       child: AdaptiveTheme(
         light: ThemeData(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/cubits/cubits.dart';
-import 'package:hacki/main.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/utils/utils.dart';
@@ -31,6 +31,7 @@ class _SearchScreenState extends State<SearchScreen> {
           },
           builder: (context, state) {
             return Scaffold(
+              resizeToAvoidBottomInset: false,
               body: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -100,25 +101,24 @@ class _SearchScreenState extends State<SearchScreen> {
                       child: ListView(
                         children: [
                           ...state.results
-                              .map((e) => [
-                                    FadeIn(
-                                      child: StoryTile(
-                                          showWebPreview:
-                                              prefState.showComplexStoryTile,
-                                          story: e,
-                                          onTap: () {
-                                            HackiApp.navigatorKey.currentState!
-                                                .pushNamed(
-                                                    StoryScreen.routeName,
-                                                    arguments: StoryScreenArgs(
-                                                        story: e));
-                                          }),
-                                    ),
-                                    if (!prefState.showComplexStoryTile)
-                                      const Divider(
-                                        height: 0,
+                              .map(
+                                (e) => [
+                                  FadeIn(
+                                    child: StoryTile(
+                                      showWebPreview:
+                                          prefState.showComplexStoryTile,
+                                      story: e,
+                                      onTap: () => goToStoryScreen(
+                                        args: StoryScreenArgs(story: e),
                                       ),
-                                  ])
+                                    ),
+                                  ),
+                                  if (!prefState.showComplexStoryTile)
+                                    const Divider(
+                                      height: 0,
+                                    ),
+                                ],
+                              )
                               .expand((e) => e)
                               .toList(),
                           const SizedBox(
