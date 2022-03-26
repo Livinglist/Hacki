@@ -2,7 +2,6 @@
 
 A simple noiseless Hacker News reader made with Flutter that is just enough.
 
-![iOS](https://img.shields.io/badge/iOS-13%20-blue)
 [![App Store](https://img.shields.io/itunes/v/1602043763?label=App%20Store)](https://apps.apple.com/us/app/hacki/id1602043763)
 [![Play Store](https://img.shields.io/badge/Play%20Store--yellow)](https://play.google.com/store/apps/details?id=com.jiaqifeng.hacki&hl=en_US&gl=US)
 [![Visits Badge](https://badges.pufler.dev/visits/livinglist/Hacki)](https://badges.pufler.dev)
