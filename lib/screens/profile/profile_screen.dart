@@ -178,6 +178,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       top: 50,
                       child: Visibility(
                         visible: pageType == _PageType.search,
+                        maintainState: true,
                         child: const SearchScreen(),
                       ),
                     ),
