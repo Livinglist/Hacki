@@ -346,6 +346,13 @@ class _HomeScreenState extends State<HomeScreen>
                   child: homeScreen,
                 ),
                 Positioned(
+                  left: 24,
+                  bottom: 36,
+                  height: 40,
+                  width: homeScreenWidth - 24,
+                  child: const CountdownReminder(),
+                ),
+                Positioned(
                   right: 0,
                   top: 0,
                   bottom: 0,
