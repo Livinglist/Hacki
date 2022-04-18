@@ -40,8 +40,8 @@ class _ReplyBoxState extends State<ReplyBox> {
       buildWhen: (previous, current) =>
           previous.showReplyBox != current.showReplyBox,
       builder: (context, editState) {
-        return Offstage(
-          offstage: !editState.showReplyBox,
+        return Visibility(
+          visible: editState.showReplyBox,
           child: BlocBuilder<PostCubit, PostState>(
             builder: (context, postState) {
               return BlocBuilder<EditCubit, EditState>(

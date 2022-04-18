@@ -148,7 +148,9 @@ class _HomeScreenState extends State<HomeScreen>
                           controller: tabController,
                           indicatorColor: Colors.orange,
                           indicator: CircleTabIndicator(
-                              color: Colors.orange, radius: 2),
+                            color: Colors.orange,
+                            radius: 2,
+                          ),
                           indicatorPadding: const EdgeInsets.only(bottom: 8),
                           onTap: (_) {
                             HapticFeedback.selectionClick();
@@ -311,7 +313,18 @@ class _HomeScreenState extends State<HomeScreen>
     return ScreenTypeLayout.builder(
       mobile: (context) {
         context.read<SplitViewCubit>().disableSplitView();
-        return homeScreen;
+        return Stack(
+          children: [
+            Positioned.fill(child: homeScreen),
+            const Positioned(
+              left: 24,
+              right: 24,
+              bottom: 36,
+              height: 40,
+              child: CountdownReminder(),
+            ),
+          ],
+        );
       },
       tablet: (context) {
         return ResponsiveBuilder(
@@ -375,15 +388,24 @@ class _HomeScreenState extends State<HomeScreen>
     // it would be better to just navigate to the web page.
     final isJobWithLink = story.type == 'job' && story.url.isNotEmpty;
 
-    if (!isJobWithLink) {
+    if (isJobWithLink) {
+      context.read<ReminderCubit>().removeLastReadStoryId();
+    } else {
       final args = StoryScreenArgs(story: story);
+
+      context.read<ReminderCubit>().updateLastReadStoryId(story.id);
+
       if (splitViewEnabled) {
         context.read<SplitViewCubit>().updateStoryScreenArgs(args);
       } else {
-        HackiApp.navigatorKey.currentState?.pushNamed(
+        HackiApp.navigatorKey.currentState
+            ?.pushNamed(
           StoryScreen.routeName,
           arguments: args,
-        );
+        )
+            .whenComplete(() {
+          context.read<ReminderCubit>().removeLastReadStoryId();
+        });
       }
     }
 

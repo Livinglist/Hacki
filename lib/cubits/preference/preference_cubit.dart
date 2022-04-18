@@ -6,14 +6,14 @@ import 'package:hacki/repositories/repositories.dart';
 part 'preference_state.dart';
 
 class PreferenceCubit extends Cubit<PreferenceState> {
-  PreferenceCubit({StorageRepository? storageRepository})
+  PreferenceCubit({PreferenceRepository? storageRepository})
       : _storageRepository =
-            storageRepository ?? locator.get<StorageRepository>(),
+            storageRepository ?? locator.get<PreferenceRepository>(),
         super(const PreferenceState.init()) {
     init();
   }
 
-  final StorageRepository _storageRepository;
+  final PreferenceRepository _storageRepository;
 
   void init() {
     _storageRepository.shouldShowNotification

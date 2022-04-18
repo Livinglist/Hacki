@@ -10,15 +10,15 @@ import 'package:hacki/utils/service_exception.dart';
 class AuthRepository {
   AuthRepository({
     Dio? dio,
-    StorageRepository? storageRepository,
+    PreferenceRepository? storageRepository,
   })  : _dio = dio ?? Dio(),
         _storageRepository =
-            storageRepository ?? locator.get<StorageRepository>();
+            storageRepository ?? locator.get<PreferenceRepository>();
 
   static const String authority = 'news.ycombinator.com';
 
   final Dio _dio;
-  final StorageRepository _storageRepository;
+  final PreferenceRepository _storageRepository;
 
   Future<bool> get loggedIn async => _storageRepository.loggedIn;
 

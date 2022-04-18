@@ -8,6 +8,7 @@ export 'notification/notification_cubit.dart';
 export 'pin/pin_cubit.dart';
 export 'post/post_cubit.dart';
 export 'preference/preference_cubit.dart';
+export 'reminder/reminder_cubit.dart';
 export 'search/search_cubit.dart';
 export 'split_view/split_view_cubit.dart';
 export 'submit/submit_cubit.dart';
