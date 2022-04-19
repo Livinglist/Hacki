@@ -43,6 +43,8 @@ class _CountDownReminderState extends State<CountdownReminder>
           setState(() {
             isVisible = false;
           });
+
+          context.read<ReminderCubit>().onDismiss();
         }
       });
 
@@ -108,6 +110,8 @@ class _CountDownReminderState extends State<CountdownReminder>
                         context.read<ReminderCubit>().removeLastReadStoryId();
                       });
                     }
+
+                    context.read<ReminderCubit>().onDismiss();
                   },
                   child: Column(
                     children: [

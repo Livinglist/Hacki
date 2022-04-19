@@ -316,13 +316,14 @@ class _HomeScreenState extends State<HomeScreen>
         return Stack(
           children: [
             Positioned.fill(child: homeScreen),
-            const Positioned(
-              left: 24,
-              right: 24,
-              bottom: 36,
-              height: 40,
-              child: CountdownReminder(),
-            ),
+            if (!context.read<ReminderCubit>().state.hasShown)
+              const Positioned(
+                left: 24,
+                right: 24,
+                bottom: 36,
+                height: 40,
+                child: CountdownReminder(),
+              ),
           ],
         );
       },
@@ -345,13 +346,14 @@ class _HomeScreenState extends State<HomeScreen>
                   width: homeScreenWidth,
                   child: homeScreen,
                 ),
-                Positioned(
-                  left: 24,
-                  bottom: 36,
-                  height: 40,
-                  width: homeScreenWidth - 24,
-                  child: const CountdownReminder(),
-                ),
+                if (!context.read<ReminderCubit>().state.hasShown)
+                  Positioned(
+                    left: 24,
+                    bottom: 36,
+                    height: 40,
+                    width: homeScreenWidth - 24,
+                    child: const CountdownReminder(),
+                  ),
                 Positioned(
                   right: 0,
                   top: 0,
