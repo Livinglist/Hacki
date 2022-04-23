@@ -424,6 +424,7 @@ class _StoryScreenState extends State<StoryScreen> {
                               0, max(widget.parentComments.length - 1, 0)),
                           myUsername:
                               authState.isLoggedIn ? authState.username : null,
+                          opUsername: widget.story.by,
                           onReplyTapped: (cmt) {
                             HapticFeedback.lightImpact();
                             if (cmt.deleted || cmt.dead) {

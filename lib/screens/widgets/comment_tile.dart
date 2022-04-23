@@ -20,6 +20,7 @@ class CommentTile extends StatelessWidget {
     required this.onMoreTapped,
     required this.onEditTapped,
     required this.onStoryLinkTapped,
+    this.opUsername,
     this.loadKids = true,
     this.onlyShowTargetComment = false,
     this.level = 0,
@@ -27,6 +28,7 @@ class CommentTile extends StatelessWidget {
   }) : super(key: key);
 
   final String? myUsername;
+  final String? opUsername;
   final Comment comment;
   final int level;
   final bool loadKids;
@@ -119,12 +121,18 @@ class CommentTile extends StatelessWidget {
                                       Text(
                                         comment.by,
                                         style: TextStyle(
-                                          //255, 152, 0
                                           color: prefState.showEyeCandy
                                               ? orange
                                               : color,
                                         ),
                                       ),
+                                      if (comment.by == opUsername)
+                                        const Text(
+                                          ' - OP',
+                                          style: TextStyle(
+                                            color: orange,
+                                          ),
+                                        ),
                                       const Spacer(),
                                       Text(
                                         comment.postedDate,
@@ -233,6 +241,7 @@ class CommentTile extends StatelessWidget {
                                               max(targetComments.length - 1, 0))
                                           : [],
                                       myUsername: myUsername,
+                                      opUsername: opUsername,
                                       onReplyTapped: onReplyTapped,
                                       onMoreTapped: onMoreTapped,
                                       onEditTapped: onEditTapped,
