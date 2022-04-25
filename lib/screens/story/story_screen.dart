@@ -23,6 +23,7 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 
 enum _MenuAction {
   upvote,
@@ -563,54 +564,70 @@ class _StoryScreenState extends State<StoryScreen> {
     );
   }
 
-  void onTimeMachineActivated(Comment comment) =>
-      context.read<TimeMachineCubit>().activateTimeMachine(comment);
+  void onTimeMachineActivated(Comment comment) {
+    HapticFeedback.lightImpact();
+    context.read<TimeMachineCubit>().activateTimeMachine(comment);
+  }
 
   void showTimeMachine() {
+    final size = MediaQuery.of(context).size;
+    final deviceType = getDeviceType(size);
+    final widthFactor = deviceType != DeviceScreenType.mobile ? 0.6 : 0.9;
     showDialog<void>(
       context: context,
       builder: (context) {
         return BlocBuilder<TimeMachineCubit, TimeMachineState>(
           builder: (context, state) {
-            return AlertDialog(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 12,
-              ),
-              content: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.8,
-                width: MediaQuery.of(context).size.width * 0.8,
-                child: ListView(
-                  children: [
-                    Row(
+            return Center(
+              child: Material(
+                child: SizedBox(
+                  height: size.height * 0.8,
+                  width: size.width * widthFactor,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 12,
+                    ),
+                    child: Column(
                       children: [
-                        const SizedBox(
-                          width: 8,
+                        Row(
+                          children: [
+                            const SizedBox(
+                              width: 8,
+                            ),
+                            const Text('Parents:'),
+                            const Spacer(),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.close,
+                                size: 16,
+                              ),
+                              onPressed: () => Navigator.pop(context),
+                              padding: EdgeInsets.zero,
+                            ),
+                          ],
                         ),
-                        const Text('Parents:'),
-                        const Spacer(),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.close,
-                            size: 16,
+                        Expanded(
+                          child: ListView(
+                            children: [
+                              for (final c in state.parents) ...[
+                                CommentTile(
+                                  comment: c,
+                                  loadKids: false,
+                                  myUsername:
+                                      context.read<AuthBloc>().state.username,
+                                  onStoryLinkTapped: onStoryLinkTapped,
+                                ),
+                                const Divider(
+                                  height: 0,
+                                ),
+                              ],
+                            ],
                           ),
-                          onPressed: () => Navigator.pop(context),
-                          padding: EdgeInsets.zero,
                         ),
                       ],
                     ),
-                    for (final c in state.parents) ...[
-                      CommentTile(
-                        comment: c,
-                        loadKids: false,
-                        myUsername: context.read<AuthBloc>().state.username,
-                        onStoryLinkTapped: onStoryLinkTapped,
-                      ),
-                      const Divider(
-                        height: 0,
-                      ),
-                    ],
-                  ],
+                  ),
                 ),
               ),
             );

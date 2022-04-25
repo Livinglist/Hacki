@@ -35,7 +35,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   final PreferenceCubit _preferenceCubit;
   final CacheRepository _cacheRepository;
   final StoriesRepository _storiesRepository;
-  late final DeviceScreenType deviceScreenType;
+  DeviceScreenType? deviceScreenType;
   StreamSubscription? _streamSubscription;
   static const _smallPageSize = 10;
   static const _largePageSize = 20;
@@ -243,10 +243,16 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   int _getPageSize({required bool isComplexTile}) {
     var pageSize = isComplexTile ? _smallPageSize : _largePageSize;
 
-    if (deviceScreenType == DeviceScreenType.tablet) {
+    if (deviceScreenType != DeviceScreenType.mobile) {
       pageSize = isComplexTile ? _tabletSmallPageSize : _tabletLargePageSize;
     }
 
     return pageSize;
+  }
+
+  @override
+  Future<void> close() async {
+    await _streamSubscription?.cancel();
+    await super.close();
   }
 }
