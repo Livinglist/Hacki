@@ -27,6 +27,7 @@ Features:
 - Pin stories to the top of home page.
 - Get in-app notification when there is new reply to your stories or comments.
 - Download stories for offline reading.
+- Pick up where you left off.
 - And more...
 
 
