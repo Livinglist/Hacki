@@ -104,6 +104,10 @@ class _CountDownReminderState extends State<CountdownReminder>
                           .get<StoriesRepository>()
                           .fetchStoryBy(state.storyId!)
                           .then((story) {
+                        if (story == null) {
+                          showSnackBar(content: 'Something went wrong...');
+                          return;
+                        }
                         final args = StoryScreenArgs(story: story);
                         goToStoryScreen(args: args);
 

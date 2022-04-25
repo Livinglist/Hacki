@@ -36,7 +36,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> onInitialize(
       AuthInitialize event, Emitter<AuthState> emit) async {
-    await _authRepository.loggedIn.then((loggedIn) async {
+    await _authRepository.loggedIn.then((bool loggedIn) async {
       if (loggedIn) {
         final username = await _authRepository.username;
         final user = await _storiesRepository.fetchUserBy(userId: username!);

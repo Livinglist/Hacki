@@ -41,16 +41,18 @@ class HackiApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<PreferenceCubit>(
+          lazy: false,
+          create: (context) => PreferenceCubit(),
+        ),
         BlocProvider<StoriesBloc>(
-          create: (context) => StoriesBloc(),
+          create: (context) => StoriesBloc(
+            preferenceCubit: context.read<PreferenceCubit>(),
+          ),
         ),
         BlocProvider<AuthBloc>(
           lazy: false,
           create: (context) => AuthBloc(),
-        ),
-        BlocProvider<PreferenceCubit>(
-          lazy: false,
-          create: (context) => PreferenceCubit(),
         ),
         BlocProvider<HistoryCubit>(
           lazy: false,

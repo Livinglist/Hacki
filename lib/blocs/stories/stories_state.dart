@@ -21,6 +21,7 @@ class StoriesState extends Equatable {
     required this.currentPageByType,
     required this.offlineReading,
     required this.downloadStatus,
+    required this.currentPageSize,
   });
 
   const StoriesState.init({
@@ -53,7 +54,8 @@ class StoriesState extends Equatable {
       StoryType.jobs: 0,
     },
   })  : offlineReading = false,
-        downloadStatus = StoriesDownloadStatus.initial;
+        downloadStatus = StoriesDownloadStatus.initial,
+        currentPageSize = 0;
 
   final Map<StoryType, List<Story>> storiesByType;
   final Map<StoryType, List<int>> storyIdsByType;
@@ -61,6 +63,7 @@ class StoriesState extends Equatable {
   final Map<StoryType, int> currentPageByType;
   final StoriesDownloadStatus downloadStatus;
   final bool offlineReading;
+  final int currentPageSize;
 
   StoriesState copyWith({
     Map<StoryType, List<Story>>? storiesByType,
@@ -69,6 +72,7 @@ class StoriesState extends Equatable {
     Map<StoryType, int>? currentPageByType,
     StoriesDownloadStatus? downloadStatus,
     bool? offlineReading,
+    int? currentPageSize,
   }) {
     return StoriesState(
       storiesByType: storiesByType ?? this.storiesByType,
@@ -77,6 +81,7 @@ class StoriesState extends Equatable {
       currentPageByType: currentPageByType ?? this.currentPageByType,
       offlineReading: offlineReading ?? this.offlineReading,
       downloadStatus: downloadStatus ?? this.downloadStatus,
+      currentPageSize: currentPageSize ?? this.currentPageSize,
     );
   }
 
@@ -93,6 +98,7 @@ class StoriesState extends Equatable {
       currentPageByType: currentPageByType,
       offlineReading: offlineReading,
       downloadStatus: downloadStatus,
+      currentPageSize: currentPageSize,
     );
   }
 
@@ -109,6 +115,7 @@ class StoriesState extends Equatable {
       currentPageByType: currentPageByType,
       offlineReading: offlineReading,
       downloadStatus: downloadStatus,
+      currentPageSize: currentPageSize,
     );
   }
 
@@ -125,6 +132,7 @@ class StoriesState extends Equatable {
       currentPageByType: currentPageByType,
       offlineReading: offlineReading,
       downloadStatus: downloadStatus,
+      currentPageSize: currentPageSize,
     );
   }
 
@@ -141,6 +149,7 @@ class StoriesState extends Equatable {
       currentPageByType: newMap,
       offlineReading: offlineReading,
       downloadStatus: downloadStatus,
+      currentPageSize: currentPageSize,
     );
   }
 
@@ -160,6 +169,7 @@ class StoriesState extends Equatable {
       currentPageByType: newCurrentPageMap,
       offlineReading: offlineReading,
       downloadStatus: downloadStatus,
+      currentPageSize: currentPageSize,
     );
   }
 
@@ -171,5 +181,6 @@ class StoriesState extends Equatable {
         currentPageByType,
         offlineReading,
         downloadStatus,
+        currentPageSize,
       ];
 }

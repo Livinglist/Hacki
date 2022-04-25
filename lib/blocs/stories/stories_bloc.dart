@@ -3,21 +3,32 @@ import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 
 part 'stories_event.dart';
-
 part 'stories_state.dart';
 
 class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   StoriesBloc({
+    required PreferenceCubit preferenceCubit,
     CacheRepository? cacheRepository,
     StoriesRepository? storiesRepository,
-  })  : _cacheRepository = cacheRepository ?? locator.get<CacheRepository>(),
+  })  : _preferenceCubit = preferenceCubit,
+        _cacheRepository = cacheRepository ?? locator.get<CacheRepository>(),
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
         super(const StoriesState.init()) {
+    _preferenceCubit.stream.listen((event) {
+      final isComplexTile = event.showComplexStoryTile;
+      final pageSize = isComplexTile ? _smallPageSize : _largePageSize;
+
+      if (pageSize != state.currentPageSize) {
+        add(StoriesPageSizeChanged(pageSize: pageSize));
+      }
+    });
+
     on<StoriesInitialize>(onInitialize);
     on<StoriesRefresh>(onRefresh);
     on<StoriesLoadMore>(onLoadMore);
@@ -25,12 +36,31 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     on<StoriesLoaded>(onStoriesLoaded);
     on<StoriesDownload>(onDownload);
     on<StoriesExitOffline>(onExitOffline);
+    on<StoriesPageSizeChanged>(onPageSizeChanged);
     add(StoriesInitialize());
   }
 
+  final PreferenceCubit _preferenceCubit;
   final CacheRepository _cacheRepository;
   final StoriesRepository _storiesRepository;
-  static const _pageSize = 20;
+  static const _smallPageSize = 10;
+  static const _largePageSize = 20;
+
+  Future<void> onInitialize(
+      StoriesInitialize event, Emitter<StoriesState> emit) async {
+    final hasCachedStories = await _cacheRepository.hasCachedStories;
+    final isComplexTile = _preferenceCubit.state.showComplexStoryTile;
+    final pageSize = isComplexTile ? _smallPageSize : _largePageSize;
+    emit(state.copyWith(
+      offlineReading: hasCachedStories,
+      currentPageSize: pageSize,
+    ));
+    await loadStories(of: StoryType.top, emit: emit);
+    await loadStories(of: StoryType.latest, emit: emit);
+    await loadStories(of: StoryType.ask, emit: emit);
+    await loadStories(of: StoryType.show, emit: emit);
+    await loadStories(of: StoryType.jobs, emit: emit);
+  }
 
   Future<void> loadStories(
       {required StoryType of, required Emitter<StoriesState> emit}) async {
@@ -41,7 +71,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
           .copyWithCurrentPageUpdated(of: of, to: 0));
       _cacheRepository
           .getCachedStoriesStream(
-              ids: ids.sublist(0, min(ids.length, _pageSize)))
+              ids: ids.sublist(0, min(ids.length, state.currentPageSize)))
           .listen((story) {
         add(StoryLoaded(story: story, type: of));
       }).onDone(() {
@@ -53,24 +83,13 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
           .copyWithStoryIdsUpdated(of: of, to: ids)
           .copyWithCurrentPageUpdated(of: of, to: 0));
       _storiesRepository
-          .fetchStoriesStream(ids: ids.sublist(0, _pageSize))
+          .fetchStoriesStream(ids: ids.sublist(0, state.currentPageSize))
           .listen((story) {
         add(StoryLoaded(story: story, type: of));
       }).onDone(() {
         add(StoriesLoaded(type: of));
       });
     }
-  }
-
-  Future<void> onInitialize(
-      StoriesInitialize event, Emitter<StoriesState> emit) async {
-    final hasCachedStories = await _cacheRepository.hasCachedStories;
-    emit(state.copyWith(offlineReading: hasCachedStories));
-    await loadStories(of: StoryType.top, emit: emit);
-    await loadStories(of: StoryType.latest, emit: emit);
-    await loadStories(of: StoryType.ask, emit: emit);
-    await loadStories(of: StoryType.show, emit: emit);
-    await loadStories(of: StoryType.jobs, emit: emit);
   }
 
   Future<void> onRefresh(
@@ -100,8 +119,9 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     final currentPage = state.currentPageByType[event.type]!;
     final len = state.storyIdsByType[event.type]!.length;
     emit(state.copyWithCurrentPageUpdated(of: event.type, to: currentPage + 1));
-    final lower = _pageSize * (currentPage + 1);
-    var upper = _pageSize + lower;
+    final currentPageSize = state.currentPageSize;
+    final lower = currentPageSize * (currentPage + 1);
+    var upper = currentPageSize + lower;
 
     if (len > lower) {
       if (len < upper) {
@@ -199,6 +219,12 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         downloadStatus: StoriesDownloadStatus.failure,
       ));
     }
+  }
+
+  Future<void> onPageSizeChanged(
+      StoriesPageSizeChanged event, Emitter<StoriesState> emit) async {
+    emit(const StoriesState.init());
+    add(StoriesInitialize());
   }
 
   Future<void> onExitOffline(

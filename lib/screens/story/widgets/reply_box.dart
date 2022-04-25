@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/utils/link_util.dart';
 
@@ -273,16 +273,15 @@ class _ReplyBoxState extends State<ReplyBox> {
                           top: 6,
                         ),
                         child: SingleChildScrollView(
-                          child: SelectableHtml(
+                          child: SelectableLinkify(
                             scrollPhysics: const NeverScrollableScrollPhysics(),
-                            data: replyingTo?.text ?? '',
-                            style: {
-                              'a': Style(
-                                color: Colors.orange,
-                              ),
-                            },
-                            onLinkTap: (link, _, __, ___) =>
-                                LinkUtil.launchUrl(link!),
+                            linkStyle: TextStyle(
+                              fontSize:
+                                  MediaQuery.of(context).textScaleFactor * 15,
+                              color: Colors.orange,
+                            ),
+                            onOpen: (link) => LinkUtil.launchUrl(link.url),
+                            text: replyingTo?.text ?? '',
                           ),
                         ),
                       ),

@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
@@ -362,25 +362,28 @@ class _StoryScreenState extends State<StoryScreen> {
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 10,
                               ),
-                              child: SelectableHtml(
-                                data: widget.story.text,
-                                style: {
-                                  'body': Style(
-                                    fontSize: FontSize(
+                              child: SelectableLinkify(
+                                text: widget.story.text,
+                                style: TextStyle(
+                                  fontSize:
                                       MediaQuery.of(context).textScaleFactor *
                                           15,
-                                    ),
-                                  ),
-                                  'a': Style(
-                                    fontSize: FontSize(
+                                ),
+                                linkStyle: TextStyle(
+                                  fontSize:
                                       MediaQuery.of(context).textScaleFactor *
                                           15,
-                                    ),
-                                    color: Colors.orange,
-                                  ),
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.orange,
+                                ),
+                                onOpen: (link) {
+                                  if (link.url
+                                      .contains('news.ycombinator.com/item')) {
+                                    onStoryLinkTapped(link.url);
+                                  } else {
+                                    LinkUtil.launchUrl(link.url);
+                                  }
                                 },
-                                onLinkTap: (link, _, __, ___) =>
-                                    LinkUtil.launchUrl(link ?? ''),
                               ),
                             ),
                         ],
@@ -449,32 +452,7 @@ class _StoryScreenState extends State<StoryScreen> {
                             focusNode.requestFocus();
                           },
                           onMoreTapped: onMorePressed,
-                          onStoryLinkTapped: (link) {
-                            final regex = RegExp(r'\d+$');
-                            final match = regex.stringMatch(link) ?? '';
-                            final id = int.tryParse(match);
-                            if (id != null) {
-                              throttle.run(() {
-                                locator
-                                    .get<StoriesRepository>()
-                                    .fetchParentStory(id: id)
-                                    .then((story) {
-                                  if (mounted) {
-                                    if (story != null) {
-                                      HackiApp.navigatorKey.currentState!
-                                          .pushNamed(
-                                        StoryScreen.routeName,
-                                        arguments:
-                                            StoryScreenArgs(story: story),
-                                      );
-                                    } else {}
-                                  }
-                                });
-                              });
-                            } else {
-                              LinkUtil.launchUrl(link);
-                            }
-                          },
+                          onStoryLinkTapped: onStoryLinkTapped,
                         ),
                       ),
                     ),
@@ -573,6 +551,28 @@ class _StoryScreenState extends State<StoryScreen> {
         );
       },
     );
+  }
+
+  Future<void> onStoryLinkTapped(String link) async {
+    final regex = RegExp(r'\d+$');
+    final match = regex.stringMatch(link) ?? '';
+    final id = int.tryParse(match);
+    if (id != null) {
+      throttle.run(() {
+        locator.get<StoriesRepository>().fetchParentStory(id: id).then((story) {
+          if (mounted) {
+            if (story != null) {
+              HackiApp.navigatorKey.currentState!.pushNamed(
+                StoryScreen.routeName,
+                arguments: StoryScreenArgs(story: story),
+              );
+            } else {}
+          }
+        });
+      });
+    } else {
+      LinkUtil.launchUrl(link);
+    }
   }
 
   void onMorePressed(Item item) {

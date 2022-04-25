@@ -68,6 +68,8 @@ class FavCubit extends Cubit<FavState> {
 
     final story = await _storiesRepository.fetchStoryBy(id);
 
+    if (story == null) return;
+
     emit(state.copyWith(
         favStories: List<Story>.from(state.favStories)..insert(0, story)));
 

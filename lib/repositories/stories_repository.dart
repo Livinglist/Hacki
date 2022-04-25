@@ -48,11 +48,12 @@ class StoriesRepository {
     return ids;
   }
 
-  Future<Story> fetchStoryBy(int id) async {
+  Future<Story?> fetchStoryBy(int id) async {
     final story = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
-        .then((dynamic val) {
-      final json = val as Map<String, dynamic>;
+        .then((dynamic json) => _parseJson(json as Map<String, dynamic>?))
+        .then((Map<String, dynamic>? json) {
+      if (json == null) return null;
       final story = Story.fromJson(json);
       return story;
     });
@@ -64,19 +65,15 @@ class StoriesRepository {
     for (final id in ids) {
       final item = await _firebaseClient
           .get('${_baseUrl}item/$id.json')
-          .then((dynamic val) async {
-        if (val == null) {
-          return null;
-        }
-        final json = val as Map<String, dynamic>;
+          .then((dynamic json) => _parseJson(json as Map<String, dynamic>?))
+          .then((Map<String, dynamic>? json) async {
+        if (json == null) return null;
+
         final type = json['type'] as String;
         if (type == 'story' || type == 'job') {
           final story = Story.fromJson(json);
           return story;
         } else if (json['type'] == 'comment') {
-          final text = json['text'] as String? ?? '';
-          final parsedText = await compute<String, String>(_parseHtml, text);
-          json['text'] = parsedText;
           final comment = Comment.fromJson(json);
           return comment;
         }
@@ -92,11 +89,9 @@ class StoriesRepository {
     for (final id in ids) {
       final story = await _firebaseClient
           .get('${_baseUrl}item/$id.json')
-          .then((dynamic val) {
-        if (val == null) {
-          return null;
-        }
-        final json = val as Map<String, dynamic>;
+          .then((dynamic json) => _parseJson(json as Map<String, dynamic>?))
+          .then((Map<String, dynamic>? json) async {
+        if (json == null) return null;
         final story = Story.fromJson(json);
         return story;
       });
@@ -110,14 +105,9 @@ class StoriesRepository {
   Future<Comment?> fetchCommentBy({required int id}) async {
     final comment = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
-        .then((dynamic val) async {
-      if (val == null) {
-        return null;
-      }
-      final json = val as Map<String, dynamic>;
-      final text = json['text'] as String? ?? '';
-      final parsedText = await compute<String, String>(_parseHtml, text);
-      json['text'] = parsedText;
+        .then((dynamic json) => _parseJson(json as Map<String, dynamic>?))
+        .then((Map<String, dynamic>? json) async {
+      if (json == null) return null;
 
       final comment = Comment.fromJson(json);
       return comment;
@@ -129,19 +119,15 @@ class StoriesRepository {
   Future<Item?> fetchItemBy({required int id}) async {
     final item = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
-        .then((dynamic val) async {
-      if (val == null) {
-        return null;
-      }
-      final json = val as Map<String, dynamic>;
+        .then((dynamic json) => _parseJson(json as Map<String, dynamic>?))
+        .then((Map<String, dynamic>? json) {
+      if (json == null) return null;
+
       final type = json['type'] as String;
       if (type == 'story' || type == 'job') {
         final story = Story.fromJson(json);
         return story;
       } else if (json['type'] == 'comment') {
-        final text = json['text'] as String? ?? '';
-        final parsedText = await compute<String, String>(_parseHtml, text);
-        json['text'] = parsedText;
         final comment = Comment.fromJson(json);
         return comment;
       }
@@ -200,6 +186,14 @@ class StoriesRepository {
         yield* fetchAllChildrenComments(ids: comment.kids);
       }
     }
+  }
+
+  Future<Map<String, dynamic>?> _parseJson(Map<String, dynamic>? json) async {
+    if (json == null) return null;
+    final text = json['text'] as String? ?? '';
+    final parsedText = await compute<String, String>(_parseHtml, text);
+    json['text'] = parsedText;
+    return json;
   }
 
   static String _parseHtml(String text) {
