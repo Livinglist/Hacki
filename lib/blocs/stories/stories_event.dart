@@ -47,6 +47,15 @@ class StoriesExitOffline extends StoriesEvent {
   List<Object?> get props => [];
 }
 
+class StoriesPageSizeChanged extends StoriesEvent {
+  StoriesPageSizeChanged({required this.pageSize});
+
+  final int pageSize;
+
+  @override
+  List<Object?> get props => [pageSize];
+}
+
 class StoryLoaded extends StoriesEvent {
   StoryLoaded({required this.story, required this.type});
 

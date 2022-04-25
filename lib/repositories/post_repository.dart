@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/post_data.dart';
@@ -6,15 +7,15 @@ import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/utils/utils.dart';
 
 class PostRepository {
-  PostRepository({Dio? dio, StorageRepository? storageRepository})
+  PostRepository({Dio? dio, PreferenceRepository? storageRepository})
       : _dio = dio ?? Dio(),
         _storageRepository =
-            storageRepository ?? locator.get<StorageRepository>();
+            storageRepository ?? locator.get<PreferenceRepository>();
 
   static const String authority = 'news.ycombinator.com';
 
   final Dio _dio;
-  final StorageRepository _storageRepository;
+  final PreferenceRepository _storageRepository;
 
   Future<bool> comment({
     required int parentId,

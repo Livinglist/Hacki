@@ -5,18 +5,17 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 
 part 'auth_event.dart';
-
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({
     AuthRepository? authRepository,
-    StorageRepository? storageRepository,
+    PreferenceRepository? storageRepository,
     StoriesRepository? storiesRepository,
     SembastRepository? sembastRepository,
   })  : _authRepository = authRepository ?? locator.get<AuthRepository>(),
         _storageRepository =
-            storageRepository ?? locator.get<StorageRepository>(),
+            storageRepository ?? locator.get<PreferenceRepository>(),
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
         _sembastRepository =
@@ -31,13 +30,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   final AuthRepository _authRepository;
-  final StorageRepository _storageRepository;
+  final PreferenceRepository _storageRepository;
   final StoriesRepository _storiesRepository;
   final SembastRepository _sembastRepository;
 
   Future<void> onInitialize(
       AuthInitialize event, Emitter<AuthState> emit) async {
-    await _authRepository.loggedIn.then((loggedIn) async {
+    await _authRepository.loggedIn.then((bool loggedIn) async {
       if (loggedIn) {
         final username = await _authRepository.username;
         final user = await _storiesRepository.fetchUserBy(userId: username!);

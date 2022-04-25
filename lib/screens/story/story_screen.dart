@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
@@ -23,6 +23,7 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 
 enum _MenuAction {
   upvote,
@@ -195,27 +196,36 @@ class _StoryScreenState extends State<StoryScreen> {
     final editCubit = context.read<EditCubit>();
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, authState) {
-        return BlocListener<PostCubit, PostState>(
-          listener: (context, postState) {
-            if (postState.status == PostStatus.successful) {
-              final verb =
-                  editCubit.state.replyingTo == null ? 'updated' : 'submitted';
-              final msg = 'Comment $verb! ${(happyFaces..shuffle()).first}';
-              focusNode.unfocus();
-              HapticFeedback.lightImpact();
-              showSnackBar(content: msg);
-              editCubit.onReplySubmittedSuccessfully();
-              context.read<PostCubit>().reset();
-            } else if (postState.status == PostStatus.failure) {
-              showSnackBar(
-                content:
-                    'Something went wrong...${(sadFaces..shuffle()).first}',
-                label: 'Okay',
-                action: ScaffoldMessenger.of(context).hideCurrentSnackBar,
-              );
-              context.read<PostCubit>().reset();
-            }
-          },
+        return MultiBlocListener(
+          listeners: [
+            BlocListener<TimeMachineCubit, TimeMachineState>(
+              listenWhen: (previous, current) => current.parents.isNotEmpty,
+              listener: (context, postState) => showTimeMachine(),
+            ),
+            BlocListener<PostCubit, PostState>(
+              listener: (context, postState) {
+                if (postState.status == PostStatus.successful) {
+                  final verb = editCubit.state.replyingTo == null
+                      ? 'updated'
+                      : 'submitted';
+                  final msg = 'Comment $verb! ${(happyFaces..shuffle()).first}';
+                  focusNode.unfocus();
+                  HapticFeedback.lightImpact();
+                  showSnackBar(content: msg);
+                  editCubit.onReplySubmittedSuccessfully();
+                  context.read<PostCubit>().reset();
+                } else if (postState.status == PostStatus.failure) {
+                  showSnackBar(
+                    content:
+                        'Something went wrong...${(sadFaces..shuffle()).first}',
+                    label: 'Okay',
+                    action: ScaffoldMessenger.of(context).hideCurrentSnackBar,
+                  );
+                  context.read<PostCubit>().reset();
+                }
+              },
+            ),
+          ],
           child: BlocConsumer<CommentsCubit, CommentsState>(
             listenWhen: (previous, current) =>
                 previous.status != current.status,
@@ -362,25 +372,28 @@ class _StoryScreenState extends State<StoryScreen> {
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 10,
                               ),
-                              child: SelectableHtml(
-                                data: widget.story.text,
-                                style: {
-                                  'body': Style(
-                                    fontSize: FontSize(
+                              child: SelectableLinkify(
+                                text: widget.story.text,
+                                style: TextStyle(
+                                  fontSize:
                                       MediaQuery.of(context).textScaleFactor *
                                           15,
-                                    ),
-                                  ),
-                                  'a': Style(
-                                    fontSize: FontSize(
+                                ),
+                                linkStyle: TextStyle(
+                                  fontSize:
                                       MediaQuery.of(context).textScaleFactor *
                                           15,
-                                    ),
-                                    color: Colors.orange,
-                                  ),
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.orange,
+                                ),
+                                onOpen: (link) {
+                                  if (link.url
+                                      .contains('news.ycombinator.com/item')) {
+                                    onStoryLinkTapped(link.url);
+                                  } else {
+                                    LinkUtil.launchUrl(link.url);
+                                  }
                                 },
-                                onLinkTap: (link, _, __, ___) =>
-                                    LinkUtil.launchUrl(link ?? ''),
                               ),
                             ),
                         ],
@@ -424,6 +437,7 @@ class _StoryScreenState extends State<StoryScreen> {
                               0, max(widget.parentComments.length - 1, 0)),
                           myUsername:
                               authState.isLoggedIn ? authState.username : null,
+                          opUsername: widget.story.by,
                           onReplyTapped: (cmt) {
                             HapticFeedback.lightImpact();
                             if (cmt.deleted || cmt.dead) {
@@ -448,32 +462,8 @@ class _StoryScreenState extends State<StoryScreen> {
                             focusNode.requestFocus();
                           },
                           onMoreTapped: onMorePressed,
-                          onStoryLinkTapped: (link) {
-                            final regex = RegExp(r'\d+$');
-                            final match = regex.stringMatch(link) ?? '';
-                            final id = int.tryParse(match);
-                            if (id != null) {
-                              throttle.run(() {
-                                locator
-                                    .get<StoriesRepository>()
-                                    .fetchParentStory(id: id)
-                                    .then((story) {
-                                  if (mounted) {
-                                    if (story != null) {
-                                      HackiApp.navigatorKey.currentState!
-                                          .pushNamed(
-                                        StoryScreen.routeName,
-                                        arguments:
-                                            StoryScreenArgs(story: story),
-                                      );
-                                    } else {}
-                                  }
-                                });
-                              });
-                            } else {
-                              LinkUtil.launchUrl(link);
-                            }
-                          },
+                          onStoryLinkTapped: onStoryLinkTapped,
+                          onTimeMachineActivated: onTimeMachineActivated,
                         ),
                       ),
                     ),
@@ -572,6 +562,101 @@ class _StoryScreenState extends State<StoryScreen> {
         );
       },
     );
+  }
+
+  void onTimeMachineActivated(Comment comment) {
+    HapticFeedback.lightImpact();
+    context.read<TimeMachineCubit>().activateTimeMachine(comment);
+  }
+
+  void showTimeMachine() {
+    final size = MediaQuery.of(context).size;
+    final deviceType = getDeviceType(size);
+    final widthFactor = deviceType != DeviceScreenType.mobile ? 0.6 : 0.9;
+    showDialog<void>(
+      context: context,
+      builder: (context) {
+        return BlocBuilder<TimeMachineCubit, TimeMachineState>(
+          builder: (context, state) {
+            return Center(
+              child: Material(
+                child: SizedBox(
+                  height: size.height * 0.8,
+                  width: size.width * widthFactor,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 12,
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            const SizedBox(
+                              width: 8,
+                            ),
+                            const Text('Parents:'),
+                            const Spacer(),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.close,
+                                size: 16,
+                              ),
+                              onPressed: () => Navigator.pop(context),
+                              padding: EdgeInsets.zero,
+                            ),
+                          ],
+                        ),
+                        Expanded(
+                          child: ListView(
+                            children: [
+                              for (final c in state.parents) ...[
+                                CommentTile(
+                                  comment: c,
+                                  loadKids: false,
+                                  myUsername:
+                                      context.read<AuthBloc>().state.username,
+                                  onStoryLinkTapped: onStoryLinkTapped,
+                                ),
+                                const Divider(
+                                  height: 0,
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> onStoryLinkTapped(String link) async {
+    final regex = RegExp(r'\d+$');
+    final match = regex.stringMatch(link) ?? '';
+    final id = int.tryParse(match);
+    if (id != null) {
+      throttle.run(() {
+        locator.get<StoriesRepository>().fetchParentStory(id: id).then((story) {
+          if (mounted) {
+            if (story != null) {
+              HackiApp.navigatorKey.currentState!.pushNamed(
+                StoryScreen.routeName,
+                arguments: StoryScreenArgs(story: story),
+              );
+            } else {}
+          }
+        });
+      });
+    } else {
+      LinkUtil.launchUrl(link);
+    }
   }
 
   void onMorePressed(Item item) {

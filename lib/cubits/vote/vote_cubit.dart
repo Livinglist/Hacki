@@ -14,18 +14,18 @@ class VoteCubit extends Cubit<VoteState> {
     required Item item,
     required AuthBloc authBloc,
     AuthRepository? authRepository,
-    StorageRepository? storageRepository,
+    PreferenceRepository? storageRepository,
   })  : _authBloc = authBloc,
         _authRepository = authRepository ?? locator.get<AuthRepository>(),
         _storageRepository =
-            storageRepository ?? locator.get<StorageRepository>(),
+            storageRepository ?? locator.get<PreferenceRepository>(),
         super(VoteState.init(item: item)) {
     init();
   }
 
   final AuthBloc _authBloc;
   final AuthRepository _authRepository;
-  final StorageRepository _storageRepository;
+  final PreferenceRepository _storageRepository;
   static const _karmaThreshold = 501;
 
   Future<void> init() async {

@@ -67,7 +67,7 @@ class OfflineBanner extends StatelessWidget {
             ],
           );
         }
-        return const SizedBox();
+        return const SizedBox.shrink();
       },
     );
   }

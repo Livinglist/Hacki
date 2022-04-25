@@ -6,14 +6,14 @@ import 'package:hacki/repositories/repositories.dart';
 part 'blocklist_state.dart';
 
 class BlocklistCubit extends Cubit<BlocklistState> {
-  BlocklistCubit({StorageRepository? storageRepository})
+  BlocklistCubit({PreferenceRepository? storageRepository})
       : _storageRepository =
-            storageRepository ?? locator.get<StorageRepository>(),
+            storageRepository ?? locator.get<PreferenceRepository>(),
         super(BlocklistState.init()) {
     init();
   }
 
-  final StorageRepository _storageRepository;
+  final PreferenceRepository _storageRepository;
 
   void init() {
     _storageRepository.blocklist

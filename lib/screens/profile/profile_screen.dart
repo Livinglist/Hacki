@@ -86,8 +86,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                   children: [
                     Positioned.fill(
                       top: 50,
-                      child: Offstage(
-                        offstage: pageType != _PageType.history,
+                      child: Visibility(
+                        visible: pageType == _PageType.history,
                         child: BlocConsumer<HistoryCubit, HistoryState>(
                           listener: (context, historyState) {
                             if (historyState.status == HistoryStatus.loaded) {
@@ -135,8 +135,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                     ),
                     Positioned.fill(
                       top: 50,
-                      child: Offstage(
-                        offstage: pageType != _PageType.fav,
+                      child: Visibility(
+                        visible: pageType == _PageType.fav,
                         child: BlocConsumer<FavCubit, FavState>(
                           listener: (context, favState) {
                             if (favState.status == FavStatus.loaded) {
@@ -176,15 +176,16 @@ class _ProfileScreenState extends State<ProfileScreen>
                     ),
                     Positioned.fill(
                       top: 50,
-                      child: Offstage(
-                        offstage: pageType != _PageType.search,
+                      child: Visibility(
+                        visible: pageType == _PageType.search,
+                        maintainState: true,
                         child: const SearchScreen(),
                       ),
                     ),
                     Positioned.fill(
                       top: 50,
-                      child: Offstage(
-                        offstage: pageType != _PageType.notification,
+                      child: Visibility(
+                        visible: pageType == _PageType.notification,
                         child: notificationState.comments.isEmpty
                             ? const CenteredMessageView(
                                 content:
@@ -221,8 +222,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                     ),
                     Positioned.fill(
                       top: 50,
-                      child: Offstage(
-                        offstage: pageType != _PageType.settings,
+                      child: Visibility(
+                        visible: pageType == _PageType.settings,
                         child: SingleChildScrollView(
                           child: Column(
                             children: [
@@ -368,7 +369,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   showAboutDialog(
                                     context: context,
                                     applicationName: 'Hacki',
-                                    applicationVersion: 'v0.2.1',
+                                    applicationVersion: 'v0.2.2',
                                     applicationIcon: Image.asset(
                                       Constants.hackiIconPath,
                                       height: 50,

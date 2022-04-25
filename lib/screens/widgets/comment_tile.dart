@@ -16,10 +16,12 @@ class CommentTile extends StatelessWidget {
     Key? key,
     required this.myUsername,
     required this.comment,
-    required this.onReplyTapped,
-    required this.onMoreTapped,
-    required this.onEditTapped,
     required this.onStoryLinkTapped,
+    this.onReplyTapped,
+    this.onMoreTapped,
+    this.onEditTapped,
+    this.onTimeMachineActivated,
+    this.opUsername,
     this.loadKids = true,
     this.onlyShowTargetComment = false,
     this.level = 0,
@@ -27,13 +29,15 @@ class CommentTile extends StatelessWidget {
   }) : super(key: key);
 
   final String? myUsername;
+  final String? opUsername;
   final Comment comment;
   final int level;
   final bool loadKids;
   final bool onlyShowTargetComment;
-  final Function(Comment) onReplyTapped;
-  final Function(Comment) onMoreTapped;
-  final Function(Comment) onEditTapped;
+  final Function(Comment)? onReplyTapped;
+  final Function(Comment)? onMoreTapped;
+  final Function(Comment)? onEditTapped;
+  final Function(Comment)? onTimeMachineActivated;
   final Function(String) onStoryLinkTapped;
   final List<Comment> targetComments;
 
@@ -77,31 +81,54 @@ class CommentTile extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Slidable(
-                          startActionPane: ActionPane(
-                            motion: const BehindMotion(),
-                            children: [
-                              SlidableAction(
-                                onPressed: (_) => onReplyTapped(comment),
-                                backgroundColor: Colors.orange,
-                                foregroundColor: Colors.white,
-                                icon: Icons.message,
-                              ),
-                              if (context.read<AuthBloc>().state.user.id ==
-                                  comment.by)
-                                SlidableAction(
-                                  onPressed: (_) => onEditTapped(comment),
-                                  backgroundColor: Colors.orange,
-                                  foregroundColor: Colors.white,
-                                  icon: Icons.edit,
-                                ),
-                              SlidableAction(
-                                onPressed: (_) => onMoreTapped(comment),
-                                backgroundColor: Colors.orange,
-                                foregroundColor: Colors.white,
-                                icon: Icons.more_horiz,
-                              ),
-                            ],
-                          ),
+                          startActionPane: loadKids
+                              ? ActionPane(
+                                  motion: const StretchMotion(),
+                                  children: [
+                                    SlidableAction(
+                                      onPressed: (_) =>
+                                          onReplyTapped?.call(comment),
+                                      backgroundColor: Colors.orange,
+                                      foregroundColor: Colors.white,
+                                      icon: Icons.message,
+                                    ),
+                                    if (context
+                                            .read<AuthBloc>()
+                                            .state
+                                            .user
+                                            .id ==
+                                        comment.by)
+                                      SlidableAction(
+                                        onPressed: (_) =>
+                                            onEditTapped?.call(comment),
+                                        backgroundColor: Colors.orange,
+                                        foregroundColor: Colors.white,
+                                        icon: Icons.edit,
+                                      ),
+                                    SlidableAction(
+                                      onPressed: (_) =>
+                                          onMoreTapped?.call(comment),
+                                      backgroundColor: Colors.orange,
+                                      foregroundColor: Colors.white,
+                                      icon: Icons.more_horiz,
+                                    ),
+                                  ],
+                                )
+                              : null,
+                          endActionPane: loadKids
+                              ? ActionPane(
+                                  motion: const StretchMotion(),
+                                  children: [
+                                    SlidableAction(
+                                      onPressed: (_) =>
+                                          onTimeMachineActivated?.call(comment),
+                                      backgroundColor: Colors.orange,
+                                      foregroundColor: Colors.white,
+                                      icon: Icons.av_timer,
+                                    ),
+                                  ],
+                                )
+                              : null,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -119,12 +146,18 @@ class CommentTile extends StatelessWidget {
                                       Text(
                                         comment.by,
                                         style: TextStyle(
-                                          //255, 152, 0
                                           color: prefState.showEyeCandy
                                               ? orange
                                               : color,
                                         ),
                                       ),
+                                      if (comment.by == opUsername)
+                                        const Text(
+                                          ' - OP',
+                                          style: TextStyle(
+                                            color: orange,
+                                          ),
+                                        ),
                                       const Spacer(),
                                       Text(
                                         comment.postedDate,
@@ -203,7 +236,7 @@ class CommentTile extends StatelessWidget {
                                     onOpen: (link) {
                                       if (link.url.contains(
                                           'news.ycombinator.com/item')) {
-                                        onStoryLinkTapped(link.url);
+                                        onStoryLinkTapped.call(link.url);
                                       } else {
                                         LinkUtil.launchUrl(link.url);
                                       }
@@ -233,11 +266,14 @@ class CommentTile extends StatelessWidget {
                                               max(targetComments.length - 1, 0))
                                           : [],
                                       myUsername: myUsername,
+                                      opUsername: opUsername,
                                       onReplyTapped: onReplyTapped,
                                       onMoreTapped: onMoreTapped,
                                       onEditTapped: onEditTapped,
                                       level: level + 1,
                                       onStoryLinkTapped: onStoryLinkTapped,
+                                      onTimeMachineActivated:
+                                          onTimeMachineActivated,
                                     ),
                                   ),
                                 ),
@@ -267,11 +303,13 @@ class CommentTile extends StatelessWidget {
 
                   return Container(
                     decoration: BoxDecoration(
-                      border: Border(
-                        left: BorderSide(
-                          color: borderColor,
-                        ),
-                      ),
+                      border: level != 0
+                          ? Border(
+                              left: BorderSide(
+                                color: borderColor,
+                              ),
+                            )
+                          : null,
                       color: commentColor,
                     ),
                     child: child,

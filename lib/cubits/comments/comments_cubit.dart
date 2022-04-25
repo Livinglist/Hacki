@@ -49,7 +49,7 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
       final story = state.item;
       final updatedStory = state.offlineReading
           ? story
-          : await _storiesRepository.fetchStoryBy(story.id);
+          : await _storiesRepository.fetchStoryBy(story.id) ?? story;
 
       emit(state.copyWith(item: updatedStory));
 
@@ -121,7 +121,8 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
     ));
 
     final story = (state.item as Story?)!;
-    final updatedStory = await _storiesRepository.fetchStoryBy(story.id);
+    final updatedStory =
+        await _storiesRepository.fetchStoryBy(story.id) ?? story;
 
     for (final id in updatedStory.kids) {
       final cachedComment = _cacheService.getComment(id);

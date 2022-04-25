@@ -1,127 +1,29 @@
 PODS:
-  - Firebase/Analytics (8.9.0):
-    - Firebase/Core
-  - Firebase/Core (8.9.0):
-    - Firebase/CoreOnly
-    - FirebaseAnalytics (~> 8.9.0)
-  - Firebase/CoreOnly (8.9.0):
-    - FirebaseCore (= 8.9.0)
-  - Firebase/RemoteConfig (8.9.0):
-    - Firebase/CoreOnly
-    - FirebaseRemoteConfig (~> 8.9.0)
-  - firebase_analytics (8.3.4):
-    - Firebase/Analytics (= 8.9.0)
-    - firebase_core
+  - connectivity_plus (0.0.1):
     - Flutter
-  - firebase_core (1.10.6):
-    - Firebase/CoreOnly (= 8.9.0)
-    - Flutter
-  - firebase_remote_config (0.11.0-2):
-    - Firebase/RemoteConfig (= 8.9.0)
-    - firebase_core
-    - Flutter
-  - FirebaseABTesting (8.10.0):
-    - FirebaseCore (~> 8.0)
-  - FirebaseAnalytics (8.9.1):
-    - FirebaseAnalytics/AdIdSupport (= 8.9.1)
-    - FirebaseCore (~> 8.0)
-    - FirebaseInstallations (~> 8.0)
-    - GoogleUtilities/AppDelegateSwizzler (~> 7.6)
-    - GoogleUtilities/MethodSwizzler (~> 7.6)
-    - GoogleUtilities/Network (~> 7.6)
-    - "GoogleUtilities/NSData+zlib (~> 7.6)"
-    - nanopb (~> 2.30908.0)
-  - FirebaseAnalytics/AdIdSupport (8.9.1):
-    - FirebaseCore (~> 8.0)
-    - FirebaseInstallations (~> 8.0)
-    - GoogleAppMeasurement (= 8.9.1)
-    - GoogleUtilities/AppDelegateSwizzler (~> 7.6)
-    - GoogleUtilities/MethodSwizzler (~> 7.6)
-    - GoogleUtilities/Network (~> 7.6)
-    - "GoogleUtilities/NSData+zlib (~> 7.6)"
-    - nanopb (~> 2.30908.0)
-  - FirebaseCore (8.9.0):
-    - FirebaseCoreDiagnostics (~> 8.0)
-    - GoogleUtilities/Environment (~> 7.6)
-    - GoogleUtilities/Logger (~> 7.6)
-  - FirebaseCoreDiagnostics (8.10.0):
-    - GoogleDataTransport (~> 9.1)
-    - GoogleUtilities/Environment (~> 7.6)
-    - GoogleUtilities/Logger (~> 7.6)
-    - nanopb (~> 2.30908.0)
-  - FirebaseInstallations (8.10.0):
-    - FirebaseCore (~> 8.0)
-    - GoogleUtilities/Environment (~> 7.6)
-    - GoogleUtilities/UserDefaults (~> 7.6)
-    - PromisesObjC (< 3.0, >= 1.2)
-  - FirebaseRemoteConfig (8.9.0):
-    - FirebaseABTesting (~> 8.0)
-    - FirebaseCore (~> 8.0)
-    - FirebaseInstallations (~> 8.0)
-    - GoogleUtilities/Environment (~> 7.6)
-    - "GoogleUtilities/NSData+zlib (~> 7.6)"
+    - ReachabilitySwift
   - Flutter (1.0.0)
-  - flutter_app_badger (0.0.1):
+  - flutter_inappwebview (0.0.1):
     - Flutter
-  - flutter_keyboard_visibility (0.0.1):
+    - flutter_inappwebview/Core (= 0.0.1)
+    - OrderedSet (~> 5.0)
+  - flutter_inappwebview/Core (0.0.1):
     - Flutter
-  - GoogleAppMeasurement (8.9.1):
-    - GoogleAppMeasurement/AdIdSupport (= 8.9.1)
-    - GoogleUtilities/AppDelegateSwizzler (~> 7.6)
-    - GoogleUtilities/MethodSwizzler (~> 7.6)
-    - GoogleUtilities/Network (~> 7.6)
-    - "GoogleUtilities/NSData+zlib (~> 7.6)"
-    - nanopb (~> 2.30908.0)
-  - GoogleAppMeasurement/AdIdSupport (8.9.1):
-    - GoogleAppMeasurement/WithoutAdIdSupport (= 8.9.1)
-    - GoogleUtilities/AppDelegateSwizzler (~> 7.6)
-    - GoogleUtilities/MethodSwizzler (~> 7.6)
-    - GoogleUtilities/Network (~> 7.6)
-    - "GoogleUtilities/NSData+zlib (~> 7.6)"
-    - nanopb (~> 2.30908.0)
-  - GoogleAppMeasurement/WithoutAdIdSupport (8.9.1):
-    - GoogleUtilities/AppDelegateSwizzler (~> 7.6)
-    - GoogleUtilities/MethodSwizzler (~> 7.6)
-    - GoogleUtilities/Network (~> 7.6)
-    - "GoogleUtilities/NSData+zlib (~> 7.6)"
-    - nanopb (~> 2.30908.0)
-  - GoogleDataTransport (9.1.2):
-    - GoogleUtilities/Environment (~> 7.2)
-    - nanopb (~> 2.30908.0)
-    - PromisesObjC (< 3.0, >= 1.2)
-  - GoogleUtilities/AppDelegateSwizzler (7.6.0):
-    - GoogleUtilities/Environment
-    - GoogleUtilities/Logger
-    - GoogleUtilities/Network
-  - GoogleUtilities/Environment (7.6.0):
-    - PromisesObjC (< 3.0, >= 1.2)
-  - GoogleUtilities/Logger (7.6.0):
-    - GoogleUtilities/Environment
-  - GoogleUtilities/MethodSwizzler (7.6.0):
-    - GoogleUtilities/Logger
-  - GoogleUtilities/Network (7.6.0):
-    - GoogleUtilities/Logger
-    - "GoogleUtilities/NSData+zlib"
-    - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (7.6.0)"
-  - GoogleUtilities/Reachability (7.6.0):
-    - GoogleUtilities/Logger
-  - GoogleUtilities/UserDefaults (7.6.0):
-    - GoogleUtilities/Logger
-  - in_app_review (0.2.0):
+    - OrderedSet (~> 5.0)
+  - flutter_secure_storage (3.3.1):
     - Flutter
-  - nanopb (2.30908.0):
-    - nanopb/decode (= 2.30908.0)
-    - nanopb/encode (= 2.30908.0)
-  - nanopb/decode (2.30908.0)
-  - nanopb/encode (2.30908.0)
-  - package_info (0.0.1):
+  - FMDB (2.7.5):
+    - FMDB/standard (= 2.7.5)
+  - FMDB/standard (2.7.5)
+  - OrderedSet (5.0.0)
+  - path_provider_ios (0.0.1):
     - Flutter
-  - PromisesObjC (2.0.0)
+  - ReachabilitySwift (5.0.0)
   - shared_preferences_ios (0.0.1):
     - Flutter
-  - sign_in_with_apple (0.0.1):
+  - sqflite (0.0.2):
     - Flutter
+    - FMDB (>= 2.7.5)
   - url_launcher_ios (0.0.1):
     - Flutter
   - video_player (0.0.1):
@@ -132,16 +34,13 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
-  - firebase_analytics (from `.symlinks/plugins/firebase_analytics/ios`)
-  - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
-  - firebase_remote_config (from `.symlinks/plugins/firebase_remote_config/ios`)
+  - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
   - Flutter (from `Flutter`)
-  - flutter_app_badger (from `.symlinks/plugins/flutter_app_badger/ios`)
-  - flutter_keyboard_visibility (from `.symlinks/plugins/flutter_keyboard_visibility/ios`)
-  - in_app_review (from `.symlinks/plugins/in_app_review/ios`)
-  - package_info (from `.symlinks/plugins/package_info/ios`)
+  - flutter_inappwebview (from `.symlinks/plugins/flutter_inappwebview/ios`)
+  - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
+  - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
   - shared_preferences_ios (from `.symlinks/plugins/shared_preferences_ios/ios`)
-  - sign_in_with_apple (from `.symlinks/plugins/sign_in_with_apple/ios`)
+  - sqflite (from `.symlinks/plugins/sqflite/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
   - video_player (from `.symlinks/plugins/video_player/ios`)
   - wakelock (from `.symlinks/plugins/wakelock/ios`)
@@ -149,40 +48,25 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - Firebase
-    - FirebaseABTesting
-    - FirebaseAnalytics
-    - FirebaseCore
-    - FirebaseCoreDiagnostics
-    - FirebaseInstallations
-    - FirebaseRemoteConfig
-    - GoogleAppMeasurement
-    - GoogleDataTransport
-    - GoogleUtilities
-    - nanopb
-    - PromisesObjC
+    - FMDB
+    - OrderedSet
+    - ReachabilitySwift
 
 EXTERNAL SOURCES:
-  firebase_analytics:
-    :path: ".symlinks/plugins/firebase_analytics/ios"
-  firebase_core:
-    :path: ".symlinks/plugins/firebase_core/ios"
-  firebase_remote_config:
-    :path: ".symlinks/plugins/firebase_remote_config/ios"
+  connectivity_plus:
+    :path: ".symlinks/plugins/connectivity_plus/ios"
   Flutter:
     :path: Flutter
-  flutter_app_badger:
-    :path: ".symlinks/plugins/flutter_app_badger/ios"
-  flutter_keyboard_visibility:
-    :path: ".symlinks/plugins/flutter_keyboard_visibility/ios"
-  in_app_review:
-    :path: ".symlinks/plugins/in_app_review/ios"
-  package_info:
-    :path: ".symlinks/plugins/package_info/ios"
+  flutter_inappwebview:
+    :path: ".symlinks/plugins/flutter_inappwebview/ios"
+  flutter_secure_storage:
+    :path: ".symlinks/plugins/flutter_secure_storage/ios"
+  path_provider_ios:
+    :path: ".symlinks/plugins/path_provider_ios/ios"
   shared_preferences_ios:
     :path: ".symlinks/plugins/shared_preferences_ios/ios"
-  sign_in_with_apple:
-    :path: ".symlinks/plugins/sign_in_with_apple/ios"
+  sqflite:
+    :path: ".symlinks/plugins/sqflite/ios"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
   video_player:
@@ -193,28 +77,16 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/webview_flutter_wkwebview/ios"
 
 SPEC CHECKSUMS:
-  Firebase: 13d8d96499e2635428d5bf0ec675df21f95d9a95
-  firebase_analytics: 7a7528bb2abf4ca22cff7a57bbf909dcab73e13d
-  firebase_core: c263d7daf1dc92fcd9895e6abdc04872b0ee07ff
-  firebase_remote_config: 64af2ad097186f4831a7095b2b03599276eb8a64
-  FirebaseABTesting: fc7255f7e96d3cf7a1131fd68636c47e312cef76
-  FirebaseAnalytics: 4ab446ce08a3fe52e8a4303dd997cf26276bf968
-  FirebaseCore: 599ee609343eaf4941bd188f85e3aa077ffe325b
-  FirebaseCoreDiagnostics: 56fb7216d87e0e6ec2feddefa9d8a392fe8b2c18
-  FirebaseInstallations: 830327b45345ffc859eaa9c17bcd5ae893fd5425
-  FirebaseRemoteConfig: a75c1bd44ebd3ed4ad3fa1ff09414a8b133be405
+  connectivity_plus: 413a8857dd5d9f1c399a39130850d02fe0feaf7e
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
-  flutter_app_badger: 65de4d6f0c34a891df49e6cfb8a1c0496426fa68
-  flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
-  GoogleAppMeasurement: 837649ad3987936c232f6717c5680216f6243d24
-  GoogleDataTransport: 629c20a4d363167143f30ea78320d5a7eb8bd940
-  GoogleUtilities: 684ee790a24f73ebb2d1d966e9711c203f2a4237
-  in_app_review: 4a97249f7a2f539a0f294c2d9196b7fe35e49541
-  nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
-  package_info: 873975fc26034f0b863a300ad47e7f1ac6c7ec62
-  PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
+  flutter_inappwebview: bfd58618f49dc62f2676de690fc6dcda1d6c3721
+  flutter_secure_storage: 7953c38a04c3fdbb00571bcd87d8e3b5ceb9daec
+  FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
+  OrderedSet: aaeb196f7fef5a9edf55d89760da9176ad40b93c
+  path_provider_ios: 14f3d2fd28c4fdb42f44e0f751d12861c43cee02
+  ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
   shared_preferences_ios: aef470a42dc4675a1cdd50e3158b42e3d1232b32
-  sign_in_with_apple: f3bf75217ea4c2c8b91823f225d70230119b8440
+  sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
   url_launcher_ios: 02f1989d4e14e998335b02b67a7590fa34f971af
   video_player: ecd305f42e9044793efd34846e1ce64c31ea6fcb
   wakelock: d0fc7c864128eac40eba1617cb5264d9c940b46f

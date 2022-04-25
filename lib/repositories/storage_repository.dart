@@ -1,8 +1,8 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class StorageRepository {
-  StorageRepository({
+class PreferenceRepository {
+  PreferenceRepository({
     Future<SharedPreferences>? prefs,
     FlutterSecureStorage? secureStorage,
   })  : _prefs = prefs ?? SharedPreferences.getInstance(),
@@ -13,6 +13,7 @@ class StorageRepository {
   static const String _blocklistKey = 'blocklist';
   static const String _pinnedStoriesIdsKey = 'pinnedStoriesIds';
   static const String _unreadCommentsIdsKey = 'unreadCommentsIds';
+  static const String _lastReadStoryIdKey = 'lastReadStoryId';
 
   static const String _notificationModeKey = 'notificationMode';
   static const String _trueDarkModeKey = 'trueDarkMode';
@@ -76,6 +77,14 @@ class StorageRepository {
   Future<List<int>> get unreadCommentsIds async => _prefs.then((prefs) =>
       prefs.getStringList(_unreadCommentsIdsKey)?.map(int.parse).toList() ??
       []);
+
+  Future<int?> get lastReadStoryId async => _prefs.then((prefs) {
+        final val = prefs.getString(_lastReadStoryIdKey);
+
+        if (val == null) return null;
+
+        return int.tryParse(val);
+      });
 
   Future<List<int>> favList({required String of}) => _prefs.then((prefs) =>
       ((prefs.getStringList(_getFavKey('')) ?? <String>[])
@@ -207,6 +216,14 @@ class StorageRepository {
     await prefs.setStringList(
       _unreadCommentsIdsKey,
       ids.map((e) => e.toString()).toList(),
+    );
+  }
+
+  Future<void> updateLastReadStoryId(int? id) async {
+    final prefs = await _prefs;
+    await prefs.setString(
+      _lastReadStoryIdKey,
+      id.toString(),
     );
   }
 
