@@ -303,11 +303,13 @@ class CommentTile extends StatelessWidget {
 
                   return Container(
                     decoration: BoxDecoration(
-                      border: Border(
-                        left: BorderSide(
-                          color: borderColor,
-                        ),
-                      ),
+                      border: level != 0
+                          ? Border(
+                              left: BorderSide(
+                                color: borderColor,
+                              ),
+                            )
+                          : null,
                       color: commentColor,
                     ),
                     child: child,
