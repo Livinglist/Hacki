@@ -72,6 +72,14 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    context.read<StoriesBloc>().deviceScreenType =
+        getDeviceType(MediaQuery.of(context).size);
+    context.read<StoriesBloc>().add(StoriesInitialize());
+  }
+
+  @override
   Widget build(BuildContext context) {
     final homeScreen = BlocBuilder<PreferenceCubit, PreferenceState>(
       buildWhen: (previous, current) =>

@@ -195,27 +195,36 @@ class _StoryScreenState extends State<StoryScreen> {
     final editCubit = context.read<EditCubit>();
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, authState) {
-        return BlocListener<PostCubit, PostState>(
-          listener: (context, postState) {
-            if (postState.status == PostStatus.successful) {
-              final verb =
-                  editCubit.state.replyingTo == null ? 'updated' : 'submitted';
-              final msg = 'Comment $verb! ${(happyFaces..shuffle()).first}';
-              focusNode.unfocus();
-              HapticFeedback.lightImpact();
-              showSnackBar(content: msg);
-              editCubit.onReplySubmittedSuccessfully();
-              context.read<PostCubit>().reset();
-            } else if (postState.status == PostStatus.failure) {
-              showSnackBar(
-                content:
-                    'Something went wrong...${(sadFaces..shuffle()).first}',
-                label: 'Okay',
-                action: ScaffoldMessenger.of(context).hideCurrentSnackBar,
-              );
-              context.read<PostCubit>().reset();
-            }
-          },
+        return MultiBlocListener(
+          listeners: [
+            BlocListener<TimeMachineCubit, TimeMachineState>(
+              listenWhen: (previous, current) => current.parents.isNotEmpty,
+              listener: (context, postState) => showTimeMachine(),
+            ),
+            BlocListener<PostCubit, PostState>(
+              listener: (context, postState) {
+                if (postState.status == PostStatus.successful) {
+                  final verb = editCubit.state.replyingTo == null
+                      ? 'updated'
+                      : 'submitted';
+                  final msg = 'Comment $verb! ${(happyFaces..shuffle()).first}';
+                  focusNode.unfocus();
+                  HapticFeedback.lightImpact();
+                  showSnackBar(content: msg);
+                  editCubit.onReplySubmittedSuccessfully();
+                  context.read<PostCubit>().reset();
+                } else if (postState.status == PostStatus.failure) {
+                  showSnackBar(
+                    content:
+                        'Something went wrong...${(sadFaces..shuffle()).first}',
+                    label: 'Okay',
+                    action: ScaffoldMessenger.of(context).hideCurrentSnackBar,
+                  );
+                  context.read<PostCubit>().reset();
+                }
+              },
+            ),
+          ],
           child: BlocConsumer<CommentsCubit, CommentsState>(
             listenWhen: (previous, current) =>
                 previous.status != current.status,
@@ -453,6 +462,7 @@ class _StoryScreenState extends State<StoryScreen> {
                           },
                           onMoreTapped: onMorePressed,
                           onStoryLinkTapped: onStoryLinkTapped,
+                          onTimeMachineActivated: onTimeMachineActivated,
                         ),
                       ),
                     ),
@@ -548,6 +558,63 @@ class _StoryScreenState extends State<StoryScreen> {
               );
             },
           ),
+        );
+      },
+    );
+  }
+
+  void onTimeMachineActivated(Comment comment) =>
+      context.read<TimeMachineCubit>().activateTimeMachine(comment);
+
+  void showTimeMachine() {
+    showDialog<void>(
+      context: context,
+      builder: (context) {
+        return BlocBuilder<TimeMachineCubit, TimeMachineState>(
+          builder: (context, state) {
+            return AlertDialog(
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 12,
+              ),
+              content: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.8,
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: ListView(
+                  children: [
+                    Row(
+                      children: [
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        const Text('Parents:'),
+                        const Spacer(),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.close,
+                            size: 16,
+                          ),
+                          onPressed: () => Navigator.pop(context),
+                          padding: EdgeInsets.zero,
+                        ),
+                      ],
+                    ),
+                    for (final c in state.parents) ...[
+                      CommentTile(
+                        comment: c,
+                        loadKids: false,
+                        myUsername: context.read<AuthBloc>().state.username,
+                        onStoryLinkTapped: onStoryLinkTapped,
+                      ),
+                      const Divider(
+                        height: 0,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
     );

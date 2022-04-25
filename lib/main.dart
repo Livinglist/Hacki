@@ -97,6 +97,10 @@ class HackiApp extends StatelessWidget {
           lazy: false,
           create: (context) => ReminderCubit()..init(),
         ),
+        BlocProvider<TimeMachineCubit>(
+          lazy: false,
+          create: (context) => TimeMachineCubit(),
+        ),
       ],
       child: AdaptiveTheme(
         light: ThemeData(

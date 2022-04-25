@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:bloc/bloc.dart';
@@ -6,6 +7,7 @@ import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 
 part 'stories_event.dart';
 part 'stories_state.dart';
@@ -20,15 +22,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
         super(const StoriesState.init()) {
-    _preferenceCubit.stream.listen((event) {
-      final isComplexTile = event.showComplexStoryTile;
-      final pageSize = isComplexTile ? _smallPageSize : _largePageSize;
-
-      if (pageSize != state.currentPageSize) {
-        add(StoriesPageSizeChanged(pageSize: pageSize));
-      }
-    });
-
     on<StoriesInitialize>(onInitialize);
     on<StoriesRefresh>(onRefresh);
     on<StoriesLoadMore>(onLoadMore);
@@ -37,20 +30,31 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     on<StoriesDownload>(onDownload);
     on<StoriesExitOffline>(onExitOffline);
     on<StoriesPageSizeChanged>(onPageSizeChanged);
-    add(StoriesInitialize());
   }
 
   final PreferenceCubit _preferenceCubit;
   final CacheRepository _cacheRepository;
   final StoriesRepository _storiesRepository;
+  late final DeviceScreenType deviceScreenType;
+  StreamSubscription? _streamSubscription;
   static const _smallPageSize = 10;
   static const _largePageSize = 20;
+  static const _tabletSmallPageSize = 15;
+  static const _tabletLargePageSize = 25;
 
   Future<void> onInitialize(
       StoriesInitialize event, Emitter<StoriesState> emit) async {
+    _streamSubscription ??= _preferenceCubit.stream.listen((event) {
+      final isComplexTile = event.showComplexStoryTile;
+      final pageSize = _getPageSize(isComplexTile: isComplexTile);
+
+      if (pageSize != state.currentPageSize) {
+        add(StoriesPageSizeChanged(pageSize: pageSize));
+      }
+    });
     final hasCachedStories = await _cacheRepository.hasCachedStories;
     final isComplexTile = _preferenceCubit.state.showComplexStoryTile;
-    final pageSize = isComplexTile ? _smallPageSize : _largePageSize;
+    final pageSize = _getPageSize(isComplexTile: isComplexTile);
     emit(state.copyWith(
       offlineReading: hasCachedStories,
       currentPageSize: pageSize,
@@ -234,5 +238,15 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     await _cacheRepository.deleteAllComments();
     emit(state.copyWith(offlineReading: false));
     add(StoriesInitialize());
+  }
+
+  int _getPageSize({required bool isComplexTile}) {
+    var pageSize = isComplexTile ? _smallPageSize : _largePageSize;
+
+    if (deviceScreenType == DeviceScreenType.tablet) {
+      pageSize = isComplexTile ? _tabletSmallPageSize : _tabletLargePageSize;
+    }
+
+    return pageSize;
   }
 }
