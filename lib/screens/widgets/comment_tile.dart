@@ -1,9 +1,6 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
@@ -23,9 +20,7 @@ class CommentTile extends StatelessWidget {
     this.onTimeMachineActivated,
     this.opUsername,
     this.loadKids = true,
-    this.onlyShowTargetComment = false,
     this.level = 0,
-    this.targetComments = const [],
   }) : super(key: key);
 
   final String? myUsername;
@@ -33,13 +28,11 @@ class CommentTile extends StatelessWidget {
   final Comment comment;
   final int level;
   final bool loadKids;
-  final bool onlyShowTargetComment;
   final Function(Comment)? onReplyTapped;
   final Function(Comment)? onMoreTapped;
   final Function(Comment)? onEditTapped;
   final Function(Comment)? onTimeMachineActivated;
   final Function(String) onStoryLinkTapped;
-  final List<Comment> targetComments;
 
   @override
   Widget build(BuildContext context) {
@@ -48,32 +41,15 @@ class CommentTile extends StatelessWidget {
       create: (_) => CommentsCubit<Comment>(
         offlineReading: context.read<StoriesBloc>().state.offlineReading,
         item: comment,
-      )..init(
-          onlyShowTargetComment: onlyShowTargetComment,
-          targetComment: targetComments.isNotEmpty ? targetComments.last : null,
-        ),
+      )..init(),
       child: BlocBuilder<CommentsCubit, CommentsState>(
         builder: (context, state) {
           return BlocBuilder<PreferenceCubit, PreferenceState>(
             builder: (context, prefState) {
               return BlocBuilder<BlocklistCubit, BlocklistState>(
                 builder: (context, blocklistState) {
-                  const r = 255;
-                  var g = level * 40 < 255 ? 152 : (level * 20).clamp(0, 255);
-                  var b = (level * 40).clamp(0, 255);
-
-                  if (g == 255 && b == 255) {
-                    g = (level * 30 - 255).clamp(0, 255);
-                    b = (level * 40 - 255).clamp(0, 255);
-                  }
-
                   const orange = Color.fromRGBO(255, 152, 0, 1);
-                  final color = Color.fromRGBO(
-                    r,
-                    g,
-                    b,
-                    1,
-                  );
+                  final color = _getColor(level);
 
                   final child = Padding(
                     padding: EdgeInsets.zero,
@@ -249,71 +225,39 @@ class CommentTile extends StatelessWidget {
                             ],
                           ),
                         ),
-                        if (loadKids && !state.collapsed)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 12),
-                            child: Column(
-                              children: [
-                                ...state.comments.map(
-                                  (e) => FadeIn(
-                                    child: CommentTile(
-                                      comment: e,
-                                      onlyShowTargetComment:
-                                          onlyShowTargetComment &&
-                                              targetComments.length > 1,
-                                      targetComments: targetComments.isNotEmpty
-                                          ? targetComments.sublist(0,
-                                              max(targetComments.length - 1, 0))
-                                          : [],
-                                      myUsername: myUsername,
-                                      opUsername: opUsername,
-                                      onReplyTapped: onReplyTapped,
-                                      onMoreTapped: onMoreTapped,
-                                      onEditTapped: onEditTapped,
-                                      level: level + 1,
-                                      onStoryLinkTapped: onStoryLinkTapped,
-                                      onTimeMachineActivated:
-                                          onTimeMachineActivated,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
                       ],
                     ),
                   );
-
-                  if (myUsername == comment.by) {
-                    return Material(
-                      color: Colors.orangeAccent.withOpacity(0.3),
-                      child: child,
-                    );
-                  }
 
                   final commentBackgroundColorOpacity =
                       Theme.of(context).brightness == Brightness.dark
                           ? 0.03
                           : 0.15;
-                  final borderColor =
-                      level != 0 ? color.withOpacity(0.5) : Colors.transparent;
+
                   final commentColor = prefState.showEyeCandy
                       ? color.withOpacity(commentBackgroundColorOpacity)
                       : Colors.transparent;
 
-                  return Container(
-                    decoration: BoxDecoration(
-                      border: level != 0
-                          ? Border(
-                              left: BorderSide(
-                                color: borderColor,
-                              ),
-                            )
-                          : null,
-                      color: commentColor,
-                    ),
-                    child: child,
-                  );
+                  Widget? wrapper = child;
+                  for (final i
+                      in List.generate(level, (index) => level - index)) {
+                    final wrapperBorderColor = _getColor(i);
+                    wrapper = Container(
+                      margin: const EdgeInsets.only(left: 12),
+                      decoration: BoxDecoration(
+                        border: i != 0
+                            ? Border(
+                                left: BorderSide(
+                                  color: wrapperBorderColor,
+                                ),
+                              )
+                            : null,
+                        color: commentColor,
+                      ),
+                      child: wrapper,
+                    );
+                  }
+                  return wrapper!;
                 },
               );
             },
@@ -321,5 +265,25 @@ class CommentTile extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Color _getColor(int level) {
+    const r = 255;
+    var g = level * 40 < 255 ? 152 : (level * 20).clamp(0, 255);
+    var b = (level * 40).clamp(0, 255);
+
+    if (g == 255 && b == 255) {
+      g = (level * 30 - 255).clamp(0, 255);
+      b = (level * 40 - 255).clamp(0, 255);
+    }
+
+    final color = Color.fromRGBO(
+      r,
+      g,
+      b,
+      1,
+    );
+
+    return color;
   }
 }

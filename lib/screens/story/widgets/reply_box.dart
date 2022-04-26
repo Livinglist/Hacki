@@ -38,174 +38,165 @@ class _ReplyBoxState extends State<ReplyBox> {
     expandedHeight ??= MediaQuery.of(context).size.height;
     return BlocBuilder<EditCubit, EditState>(
       buildWhen: (previous, current) =>
-          previous.showReplyBox != current.showReplyBox,
+          previous.showReplyBox != current.showReplyBox ||
+          previous.itemBeingEdited != current.itemBeingEdited ||
+          previous.replyingTo != current.replyingTo,
       builder: (context, editState) {
         return Visibility(
           visible: editState.showReplyBox,
           child: BlocBuilder<PostCubit, PostState>(
             builder: (context, postState) {
-              return BlocBuilder<EditCubit, EditState>(
-                buildWhen: (previous, current) =>
-                    previous.itemBeingEdited != current.itemBeingEdited ||
-                    previous.replyingTo != current.replyingTo,
-                builder: (context, editState) {
-                  final replyingTo = editState.replyingTo;
-                  final isLoading = postState.status == PostStatus.loading;
+              final replyingTo = editState.replyingTo;
+              final isLoading = postState.status == PostStatus.loading;
 
-                  return Padding(
-                    padding: EdgeInsets.only(
-                      bottom: expanded
-                          ? 0
-                          : widget.splitViewEnabled
-                              ? MediaQuery.of(context).viewInsets.bottom
-                              : 0,
-                    ),
-                    child: AnimatedContainer(
-                      height: expanded ? expandedHeight : 100,
-                      duration: const Duration(milliseconds: 200),
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          if (!context.read<SplitViewCubit>().state.enabled)
-                            BoxShadow(
-                              color: expanded
-                                  ? Colors.transparent
-                                  : Colors.black26,
-                              blurRadius: 40,
-                            ),
-                        ],
-                      ),
-                      child: Material(
-                        child: Column(
+              return Padding(
+                padding: EdgeInsets.only(
+                  bottom: expanded
+                      ? 0
+                      : widget.splitViewEnabled
+                          ? MediaQuery.of(context).viewInsets.bottom
+                          : 0,
+                ),
+                child: AnimatedContainer(
+                  height: expanded ? expandedHeight : 100,
+                  duration: const Duration(milliseconds: 200),
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      if (!context.read<SplitViewCubit>().state.enabled)
+                        BoxShadow(
+                          color: expanded ? Colors.transparent : Colors.black26,
+                          blurRadius: 40,
+                        ),
+                    ],
+                  ),
+                  child: Material(
+                    child: Column(
+                      children: [
+                        if (context.read<SplitViewCubit>().state.enabled)
+                          const Divider(
+                            height: 0,
+                          ),
+                        AnimatedContainer(
+                          height: expanded ? 36 : 0,
+                          duration: const Duration(milliseconds: 200),
+                        ),
+                        Row(
                           children: [
-                            if (context.read<SplitViewCubit>().state.enabled)
-                              const Divider(
-                                height: 0,
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
                               ),
-                            AnimatedContainer(
-                              height: expanded ? 36 : 0,
-                              duration: const Duration(milliseconds: 200),
+                              child: Text(
+                                replyingTo == null
+                                    ? 'Editing'
+                                    : 'Replying '
+                                        '${replyingTo.by}',
+                                style: const TextStyle(color: Colors.grey),
+                              ),
                             ),
-                            Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 8,
-                                  ),
-                                  child: Text(
-                                    replyingTo == null
-                                        ? 'Editing'
-                                        : 'Replying '
-                                            '${replyingTo.by}',
-                                    style: const TextStyle(color: Colors.grey),
-                                  ),
-                                ),
-                                const Spacer(),
-                                if (!isLoading) ...[
-                                  ...[
-                                    if (replyingTo != null)
-                                      AnimatedOpacity(
-                                        opacity: expanded ? 1 : 0,
-                                        duration:
-                                            const Duration(milliseconds: 300),
-                                        child: IconButton(
-                                          key: const Key('quote'),
-                                          icon: const Icon(
-                                            FeatherIcons.code,
-                                            color: Colors.orange,
-                                            size: 18,
-                                          ),
-                                          onPressed:
-                                              expanded ? showTextPopup : null,
-                                        ),
-                                      ),
-                                    IconButton(
-                                      key: const Key('expand'),
-                                      icon: Icon(
-                                        expanded
-                                            ? FeatherIcons.minimize2
-                                            : FeatherIcons.maximize2,
+                            const Spacer(),
+                            if (!isLoading) ...[
+                              ...[
+                                if (replyingTo != null)
+                                  AnimatedOpacity(
+                                    opacity: expanded ? 1 : 0,
+                                    duration: const Duration(milliseconds: 300),
+                                    child: IconButton(
+                                      key: const Key('quote'),
+                                      icon: const Icon(
+                                        FeatherIcons.code,
                                         color: Colors.orange,
                                         size: 18,
                                       ),
-                                      onPressed: () {
-                                        setState(() {
-                                          expanded = !expanded;
-                                        });
-                                      },
+                                      onPressed:
+                                          expanded ? showTextPopup : null,
                                     ),
-                                  ],
-                                  IconButton(
-                                    key: const Key('close'),
-                                    icon: const Icon(
-                                      Icons.close,
-                                      color: Colors.orange,
-                                    ),
-                                    onPressed: () {
-                                      widget.onCloseTapped();
-                                      expanded = false;
-                                    },
                                   ),
-                                ],
-                                if (isLoading)
-                                  const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: 12,
-                                      horizontal: 16,
-                                    ),
-                                    child: SizedBox(
-                                      height: 24,
-                                      width: 24,
-                                      child: CircularProgressIndicator(
-                                        color: Colors.orange,
-                                        strokeWidth: 2,
-                                      ),
-                                    ),
-                                  )
-                                else
-                                  IconButton(
-                                    key: const Key('send'),
-                                    icon: const Icon(
-                                      Icons.send,
-                                      color: Colors.orange,
-                                    ),
-                                    onPressed: () {
-                                      widget.onSendTapped();
-                                      expanded = false;
-                                    },
+                                IconButton(
+                                  key: const Key('expand'),
+                                  icon: Icon(
+                                    expanded
+                                        ? FeatherIcons.minimize2
+                                        : FeatherIcons.maximize2,
+                                    color: Colors.orange,
+                                    size: 18,
                                   ),
-                              ],
-                            ),
-                            Expanded(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 16),
-                                child: TextField(
-                                  focusNode: widget.focusNode,
-                                  controller: widget.textEditingController,
-                                  maxLines: 100,
-                                  decoration: const InputDecoration(
-                                    alignLabelWithHint: true,
-                                    contentPadding: EdgeInsets.zero,
-                                    hintText: '...',
-                                    hintStyle: TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                    focusedBorder: InputBorder.none,
-                                    border: InputBorder.none,
-                                  ),
-                                  keyboardType: TextInputType.multiline,
-                                  textInputAction: TextInputAction.newline,
-                                  onChanged: widget.onChanged,
+                                  onPressed: () {
+                                    setState(() {
+                                      expanded = !expanded;
+                                    });
+                                  },
                                 ),
+                              ],
+                              IconButton(
+                                key: const Key('close'),
+                                icon: const Icon(
+                                  Icons.close,
+                                  color: Colors.orange,
+                                ),
+                                onPressed: () {
+                                  widget.onCloseTapped();
+                                  expanded = false;
+                                },
                               ),
-                            ),
+                            ],
+                            if (isLoading)
+                              const Padding(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 12,
+                                  horizontal: 16,
+                                ),
+                                child: SizedBox(
+                                  height: 24,
+                                  width: 24,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.orange,
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                              )
+                            else
+                              IconButton(
+                                key: const Key('send'),
+                                icon: const Icon(
+                                  Icons.send,
+                                  color: Colors.orange,
+                                ),
+                                onPressed: () {
+                                  widget.onSendTapped();
+                                  expanded = false;
+                                },
+                              ),
                           ],
                         ),
-                      ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: TextField(
+                              focusNode: widget.focusNode,
+                              controller: widget.textEditingController,
+                              maxLines: 100,
+                              decoration: const InputDecoration(
+                                alignLabelWithHint: true,
+                                contentPadding: EdgeInsets.zero,
+                                hintText: '...',
+                                hintStyle: TextStyle(
+                                  color: Colors.grey,
+                                ),
+                                focusedBorder: InputBorder.none,
+                                border: InputBorder.none,
+                              ),
+                              keyboardType: TextInputType.multiline,
+                              textInputAction: TextInputAction.newline,
+                              onChanged: widget.onChanged,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  );
-                },
+                  ),
+                ),
               );
             },
           ),

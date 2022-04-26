@@ -61,6 +61,37 @@ class StoriesRepository {
     return story;
   }
 
+  Stream<Comment> fetchCommentsStream({
+    required List<int> ids,
+    int pageSize = 20,
+    int totalCommentsFetched = 0,
+    int level = 0,
+  }) async* {
+    for (final id in ids) {
+      final comment = await _firebaseClient
+          .get('${_baseUrl}item/$id.json')
+          .then((dynamic json) => _parseJson(json as Map<String, dynamic>?))
+          .then((Map<String, dynamic>? json) async {
+        if (json == null) return null;
+
+        final comment = Comment.fromJson(json, level: level);
+        return comment;
+      });
+
+      if (comment != null) {
+        totalCommentsFetched++;
+        yield comment;
+
+        yield* fetchCommentsStream(
+          ids: comment.kids,
+          pageSize: pageSize,
+          totalCommentsFetched: totalCommentsFetched,
+          level: level + 1,
+        );
+      }
+    }
+  }
+
   Stream<Item> fetchItemsStream({required List<int> ids}) async* {
     for (final id in ids) {
       final item = await _firebaseClient
@@ -175,7 +206,15 @@ class StoriesRepository {
       if (item == null) return null;
     } while (item is Comment);
 
-    return Tuple2<Story, List<Comment>>(item as Story, parentComments);
+    for (var i = 0; i < parentComments.length; i++) {
+      parentComments[i] =
+          parentComments[i].copyWith(level: parentComments.length - i - 1);
+    }
+
+    return Tuple2<Story, List<Comment>>(
+      item as Story,
+      parentComments.reversed.toList(),
+    );
   }
 
   Stream<Comment?> fetchAllChildrenComments({required List<int> ids}) async* {
