@@ -71,7 +71,6 @@ class StoryScreen extends StatefulWidget {
               item: args.story,
             )..init(
                 onlyShowTargetComment: args.onlyShowTargetComment,
-                targetComment: args.targetComments?.last,
                 targetParents: args.targetComments,
               ),
           ),
@@ -88,20 +87,14 @@ class StoryScreen extends StatefulWidget {
     return MultiBlocProvider(
       key: ValueKey(args),
       providers: [
-        BlocProvider<PostCubit>(
-          create: (context) => PostCubit(),
-        ),
         BlocProvider<CommentsCubit>(
           create: (context) => CommentsCubit<Story>(
             offlineReading: context.read<StoriesBloc>().state.offlineReading,
             item: args.story,
           )..init(
               onlyShowTargetComment: args.onlyShowTargetComment,
-              targetComment: args.targetComments?.last,
+              targetParents: args.targetComments,
             ),
-        ),
-        BlocProvider<EditCubit>(
-          create: (context) => context.read<EditCubit>(),
         ),
       ],
       child: StoryScreen(
@@ -444,7 +437,8 @@ class _StoryScreenState extends State<StoryScreen> {
                           onTimeMachineActivated: onTimeMachineActivated,
                         ),
                       ),
-                    if (state.status == CommentsStatus.allLoaded)
+                    if (state.status == CommentsStatus.allLoaded &&
+                        state.comments.isNotEmpty)
                       SizedBox(
                         height: 240,
                         child: Center(
@@ -562,6 +556,7 @@ class _StoryScreenState extends State<StoryScreen> {
           builder: (context, state) {
             return Center(
               child: Material(
+                borderRadius: const BorderRadius.all(Radius.circular(4)),
                 child: SizedBox(
                   height: size.height * 0.8,
                   width: size.width * widthFactor,

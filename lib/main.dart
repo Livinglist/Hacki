@@ -112,9 +112,11 @@ class HackiApp extends StatelessWidget {
           create: (context) => TimeMachineCubit(),
         ),
         BlocProvider<PostCubit>(
+          lazy: false,
           create: (context) => PostCubit(),
         ),
         BlocProvider<EditCubit>(
+          lazy: false,
           create: (context) => EditCubit(),
         ),
       ],

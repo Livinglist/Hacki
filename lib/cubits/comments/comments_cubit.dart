@@ -38,7 +38,6 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
 
   Future<void> init({
     bool onlyShowTargetComment = false,
-    Comment? targetComment,
     List<Comment>? targetParents,
   }) async {
     if (onlyShowTargetComment) {
