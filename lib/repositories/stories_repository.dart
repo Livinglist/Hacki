@@ -63,8 +63,6 @@ class StoriesRepository {
 
   Stream<Comment> fetchCommentsStream({
     required List<int> ids,
-    int pageSize = 20,
-    int totalCommentsFetched = 0,
     int level = 0,
   }) async* {
     for (final id in ids) {
@@ -79,13 +77,10 @@ class StoriesRepository {
       });
 
       if (comment != null) {
-        totalCommentsFetched++;
         yield comment;
 
         yield* fetchCommentsStream(
           ids: comment.kids,
-          pageSize: pageSize,
-          totalCommentsFetched: totalCommentsFetched,
           level: level + 1,
         );
       }
