@@ -40,12 +40,21 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
     bool onlyShowTargetComment = false,
     List<Comment>? targetParents,
   }) async {
-    if (onlyShowTargetComment) {
+    if (onlyShowTargetComment && (targetParents?.isNotEmpty ?? false)) {
       emit(state.copyWith(
-        comments: targetParents != null ? [...targetParents] : [],
+        comments: targetParents,
         onlyShowTargetComment: true,
         status: CommentsStatus.loaded,
       ));
+
+      _streamSubscription = _storiesRepository
+          .fetchCommentsStream(
+            ids: targetParents!.last.kids,
+            level: targetParents.last.level + 1,
+          )
+          .listen(_onCommentFetched)
+        ..onDone(_onDone);
+
       return;
     }
 
