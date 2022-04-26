@@ -356,7 +356,6 @@ class _StoryScreenState extends State<StoryScreen> {
                                   fontSize:
                                       MediaQuery.of(context).textScaleFactor *
                                           15,
-                                  fontWeight: FontWeight.bold,
                                   color: Colors.orange,
                                 ),
                                 onOpen: (link) {
