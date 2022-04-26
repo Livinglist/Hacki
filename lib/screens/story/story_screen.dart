@@ -437,8 +437,9 @@ class _StoryScreenState extends State<StoryScreen> {
                           onTimeMachineActivated: onTimeMachineActivated,
                         ),
                       ),
-                    if (state.status == CommentsStatus.allLoaded &&
-                        state.comments.isNotEmpty)
+                    if ((state.status == CommentsStatus.allLoaded &&
+                            state.comments.isNotEmpty) ||
+                        state.onlyShowTargetComment)
                       SizedBox(
                         height: 240,
                         child: Center(

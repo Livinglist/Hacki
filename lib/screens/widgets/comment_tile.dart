@@ -237,11 +237,21 @@ class CommentTile extends StatelessWidget {
                   final commentColor = prefState.showEyeCandy
                       ? color.withOpacity(commentBackgroundColorOpacity)
                       : Colors.transparent;
+                  final isMyComment = myUsername == comment.by;
 
                   Widget? wrapper = child;
+
+                  if (isMyComment && level == 0) {
+                    return Container(
+                      color: Colors.orange.withOpacity(0.2),
+                      child: wrapper,
+                    );
+                  }
+
                   for (final i
                       in List.generate(level, (index) => level - index)) {
                     final wrapperBorderColor = _getColor(i);
+                    final shouldHighlight = isMyComment && i == level;
                     wrapper = Container(
                       margin: const EdgeInsets.only(left: 12),
                       decoration: BoxDecoration(
@@ -252,11 +262,14 @@ class CommentTile extends StatelessWidget {
                                 ),
                               )
                             : null,
-                        color: commentColor,
+                        color: shouldHighlight
+                            ? Colors.orange.withOpacity(0.2)
+                            : commentColor,
                       ),
                       child: wrapper,
                     );
                   }
+
                   return wrapper!;
                 },
               );
