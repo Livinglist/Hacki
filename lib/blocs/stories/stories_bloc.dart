@@ -10,7 +10,6 @@ import 'package:hacki/repositories/repositories.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 part 'stories_event.dart';
-
 part 'stories_state.dart';
 
 class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {

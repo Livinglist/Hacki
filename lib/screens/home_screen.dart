@@ -323,76 +323,13 @@ class _HomeScreenState extends State<HomeScreen>
     return ScreenTypeLayout.builder(
       mobile: (context) {
         context.read<SplitViewCubit>().disableSplitView();
-        return Stack(
-          children: [
-            Positioned.fill(child: homeScreen),
-            if (!context.read<ReminderCubit>().state.hasShown)
-              const Positioned(
-                left: 24,
-                right: 24,
-                bottom: 36,
-                height: 40,
-                child: CountdownReminder(),
-              ),
-          ],
+        return _MobileHomeScreenBuilder(
+          homeScreen: homeScreen,
         );
       },
-      tablet: (context) {
-        return ResponsiveBuilder(
-          builder: (context, sizeInfo) {
-            context.read<SplitViewCubit>().enableSplitView();
-            var homeScreenWidth = 428.0;
-
-            if (sizeInfo.screenSize.width < homeScreenWidth * 2) {
-              homeScreenWidth = 345.0;
-            }
-
-            return Stack(
-              children: [
-                Positioned(
-                  left: 0,
-                  top: 0,
-                  bottom: 0,
-                  width: homeScreenWidth,
-                  child: homeScreen,
-                ),
-                if (!context.read<ReminderCubit>().state.hasShown)
-                  Positioned(
-                    left: 24,
-                    bottom: 36,
-                    height: 40,
-                    width: homeScreenWidth - 24,
-                    child: const CountdownReminder(),
-                  ),
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  bottom: 0,
-                  left: homeScreenWidth,
-                  child: BlocBuilder<SplitViewCubit, SplitViewState>(
-                    buildWhen: (previous, current) =>
-                        previous.storyScreenArgs != current.storyScreenArgs,
-                    builder: (context, state) {
-                      if (state.storyScreenArgs != null) {
-                        return StoryScreen.build(state.storyScreenArgs!);
-                      }
-
-                      return Material(
-                        child: Container(
-                          color: Theme.of(context).canvasColor,
-                          child: const Center(
-                            child: Text('Tap on story tile to view comments.'),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      },
+      tablet: (context) => _TabletHomeScreenBuilder(
+        homeScreen: homeScreen,
+      ),
     );
   }
 
@@ -435,5 +372,106 @@ class _HomeScreenState extends State<HomeScreen>
     }
 
     context.read<CacheCubit>().markStoryAsRead(story.id);
+  }
+}
+
+class _MobileHomeScreenBuilder extends StatelessWidget {
+  const _MobileHomeScreenBuilder({
+    Key? key,
+    required this.homeScreen,
+  }) : super(key: key);
+
+  final Widget homeScreen;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Positioned.fill(child: homeScreen),
+        if (!context.read<ReminderCubit>().state.hasShown)
+          const Positioned(
+            left: 24,
+            right: 24,
+            bottom: 36,
+            height: 40,
+            child: CountdownReminder(),
+          ),
+      ],
+    );
+  }
+}
+
+class _TabletHomeScreenBuilder extends StatelessWidget {
+  const _TabletHomeScreenBuilder({
+    Key? key,
+    required this.homeScreen,
+  }) : super(key: key);
+
+  final Widget homeScreen;
+
+  @override
+  Widget build(BuildContext context) {
+    return ResponsiveBuilder(
+      builder: (context, sizeInfo) {
+        context.read<SplitViewCubit>().enableSplitView();
+        var homeScreenWidth = 428.0;
+
+        if (sizeInfo.screenSize.width < homeScreenWidth * 2) {
+          homeScreenWidth = 345.0;
+        }
+
+        return Stack(
+          children: [
+            Positioned(
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: homeScreenWidth,
+              child: homeScreen,
+            ),
+            Positioned(
+              left: 24,
+              bottom: 36,
+              height: 40,
+              width: homeScreenWidth - 24,
+              child: const CountdownReminder(),
+            ),
+            Positioned(
+              right: 0,
+              top: 0,
+              bottom: 0,
+              left: homeScreenWidth,
+              child: const _TabletStoryView(),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _TabletStoryView extends StatelessWidget {
+  const _TabletStoryView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<SplitViewCubit, SplitViewState>(
+      buildWhen: (previous, current) =>
+          previous.storyScreenArgs != current.storyScreenArgs,
+      builder: (context, state) {
+        if (state.storyScreenArgs != null) {
+          return StoryScreen.build(state.storyScreenArgs!);
+        }
+
+        return Material(
+          child: Container(
+            color: Theme.of(context).canvasColor,
+            child: const Center(
+              child: Text('Tap on story tile to view comments.'),
+            ),
+          ),
+        );
+      },
+    );
   }
 }
