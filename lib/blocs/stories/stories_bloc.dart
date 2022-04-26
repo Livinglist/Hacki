@@ -10,6 +10,7 @@ import 'package:hacki/repositories/repositories.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 part 'stories_event.dart';
+
 part 'stories_state.dart';
 
 class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
@@ -55,7 +56,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     final hasCachedStories = await _cacheRepository.hasCachedStories;
     final isComplexTile = _preferenceCubit.state.showComplexStoryTile;
     final pageSize = _getPageSize(isComplexTile: isComplexTile);
-    emit(state.copyWith(
+    emit(const StoriesState.init().copyWith(
       offlineReading: hasCachedStories,
       currentPageSize: pageSize,
     ));

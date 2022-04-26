@@ -268,6 +268,10 @@ class CommentTile extends StatelessWidget {
   }
 
   Color _getColor(int level) {
+    while (level >= 10) {
+      level = level - 10;
+    }
+
     const r = 255;
     var g = level * 40 < 255 ? 152 : (level * 20).clamp(0, 255);
     var b = (level * 40).clamp(0, 255);

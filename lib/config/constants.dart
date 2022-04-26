@@ -18,4 +18,25 @@ abstract class Constants {
   static const String featureOpenStoryInWebView = 'open_story_in_web_view';
   static const String featureLogIn = 'log_in';
   static const String featurePinToTop = 'pin_to_top';
+
+  static const List<String> happyFaces = <String>[
+    '(๑•̀ㅂ•́)و✧',
+    '( ͡• ͜ʖ ͡•)',
+    '( ͡~ ͜ʖ ͡°)',
+    '٩(˘◡˘)۶',
+    '(─‿‿─)',
+    '(¬‿¬)',
+  ];
+
+  static const List<String> sadFaces = <String>[
+    'ಥ_ಥ',
+    '(╯°□°）╯︵ ┻━┻',
+    r'¯\_(ツ)_/¯',
+    '( ͡° ͜ʖ ͡°)',
+    '(Θ︹Θ)',
+    '( ˘︹˘ )',
+    '(ㆆ_ㆆ)',
+    'ʕ•́ᴥ•̀ʔっ',
+    '(ㆆ_ㆆ)',
+  ];
 }

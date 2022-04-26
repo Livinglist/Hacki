@@ -22,6 +22,7 @@ class PinCubit extends Cubit<PinState> {
   final StoriesRepository _storiesRepository;
 
   void init() {
+    emit(PinState.init());
     _storageRepository.pinnedStoriesIds.then((ids) {
       emit(state.copyWith(pinnedStoriesIds: ids));
 

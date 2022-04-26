@@ -129,25 +129,7 @@ class _StoryScreenState extends State<StoryScreen> {
   );
   final focusNode = FocusNode();
   final throttle = Throttle(delay: const Duration(seconds: 2));
-  final sadFaces = <String>[
-    'ಥ_ಥ',
-    '(╯°□°）╯︵ ┻━┻',
-    r'¯\_(ツ)_/¯',
-    '( ͡° ͜ʖ ͡°)',
-    '(Θ︹Θ)',
-    '( ˘︹˘ )',
-    '(ㆆ_ㆆ)',
-    'ʕ•́ᴥ•̀ʔっ',
-    '(ㆆ_ㆆ)',
-  ];
-  final happyFaces = <String>[
-    '(๑•̀ㅂ•́)و✧',
-    '( ͡• ͜ʖ ͡•)',
-    '( ͡~ ͜ʖ ͡°)',
-    '٩(˘◡˘)۶',
-    '(─‿‿─)',
-    '(¬‿¬)',
-  ];
+  final happyFace = Constants.happyFaces.pickRandomly()!;
 
   @override
   void initState() {
@@ -201,7 +183,8 @@ class _StoryScreenState extends State<StoryScreen> {
                       context.read<EditCubit>().state.replyingTo == null
                           ? 'updated'
                           : 'submitted';
-                  final msg = 'Comment $verb! ${(happyFaces..shuffle()).first}';
+                  final msg =
+                      'Comment $verb! ${Constants.happyFaces.pickRandomly()}';
                   focusNode.unfocus();
                   HapticFeedback.lightImpact();
                   showSnackBar(content: msg);
@@ -209,8 +192,8 @@ class _StoryScreenState extends State<StoryScreen> {
                   context.read<PostCubit>().reset();
                 } else if (postState.status == PostStatus.failure) {
                   showSnackBar(
-                    content:
-                        'Something went wrong...${(sadFaces..shuffle()).first}',
+                    content: 'Something went wrong...'
+                        '${Constants.sadFaces.pickRandomly()}',
                     label: 'Okay',
                     action: ScaffoldMessenger.of(context).hideCurrentSnackBar,
                   );
@@ -414,7 +397,7 @@ class _StoryScreenState extends State<StoryScreen> {
                       ),
                     ],
                     if (state.comments.isEmpty &&
-                        state.status == CommentsStatus.loaded) ...[
+                        state.status == CommentsStatus.allLoaded) ...[
                       const SizedBox(
                         height: 240,
                       ),
@@ -459,6 +442,13 @@ class _StoryScreenState extends State<StoryScreen> {
                           onMoreTapped: onMorePressed,
                           onStoryLinkTapped: onStoryLinkTapped,
                           onTimeMachineActivated: onTimeMachineActivated,
+                        ),
+                      ),
+                    if (state.status == CommentsStatus.allLoaded)
+                      SizedBox(
+                        height: 240,
+                        child: Center(
+                          child: Text(happyFace),
                         ),
                       ),
                   ],
@@ -955,8 +945,8 @@ class _StoryScreenState extends State<StoryScreen> {
   void onLoginTapped() {
     final usernameController = TextEditingController();
     final passwordController = TextEditingController();
-    final sadFace = (sadFaces..shuffle()).first;
-    final happyFace = (happyFaces..shuffle()).first;
+    final sadFace = Constants.sadFaces.pickRandomly();
+    final happyFace = Constants.happyFaces.pickRandomly();
     showDialog<void>(
       context: context,
       barrierDismissible: false,

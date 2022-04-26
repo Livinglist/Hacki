@@ -90,6 +90,7 @@ class StoriesRepository {
         );
       }
     }
+    return;
   }
 
   Stream<Item> fetchItemsStream({required List<int> ids}) async* {

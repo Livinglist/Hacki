@@ -74,9 +74,11 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    context.read<StoriesBloc>().deviceScreenType =
-        getDeviceType(MediaQuery.of(context).size);
-    context.read<StoriesBloc>().add(StoriesInitialize());
+    final deviceType = getDeviceType(MediaQuery.of(context).size);
+    if (context.read<StoriesBloc>().deviceScreenType != deviceType) {
+      context.read<StoriesBloc>().deviceScreenType = deviceType;
+      context.read<StoriesBloc>().add(StoriesInitialize());
+    }
   }
 
   @override

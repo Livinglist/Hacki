@@ -21,6 +21,16 @@ Future main() async {
 
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
 
+  // BlocOverrides.runZoned(
+  //   () {
+  //     runApp(HackiApp(
+  //       savedThemeMode: savedThemeMode,
+  //     ));
+  //   },
+  //   blocObserver: CustomBlocObserver(),
+  // );
+
+  // Uncomment code below for running without logging.
   runApp(HackiApp(
     savedThemeMode: savedThemeMode,
   ));

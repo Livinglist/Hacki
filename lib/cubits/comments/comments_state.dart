@@ -4,6 +4,7 @@ enum CommentsStatus {
   init,
   loading,
   loaded,
+  allLoaded,
   failure,
 }
 
