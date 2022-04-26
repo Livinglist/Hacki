@@ -13,6 +13,7 @@ class Comment extends Item {
     required String text,
     required List<int> kids,
     required bool deleted,
+    required this.level,
   }) : super(
           id: id,
           time: time,
@@ -31,7 +32,7 @@ class Comment extends Item {
           type: '',
         );
 
-  Comment.fromJson(Map<String, dynamic> json)
+  Comment.fromJson(Map<String, dynamic> json, {this.level = 0})
       : super(
           id: json['id'] as int? ?? 0,
           time: json['time'] as int? ?? 0,
@@ -50,8 +51,24 @@ class Comment extends Item {
           type: '',
         );
 
+  final int level;
+
   String get postedDate =>
       DateTime.fromMillisecondsSinceEpoch(time * 1000).toReadableString();
+
+  Comment copyWith({int? level}) {
+    return Comment(
+      id: id,
+      time: time,
+      parent: parent,
+      score: score,
+      by: by,
+      text: text,
+      kids: kids,
+      deleted: deleted,
+      level: level ?? this.level,
+    );
+  }
 
   Map<String, dynamic> toJson() => <String, dynamic>{
         'id': id,
@@ -63,6 +80,7 @@ class Comment extends Item {
         'deleted': deleted,
         'dead': dead,
         'score': score,
+        'level': level,
       };
 
   @override

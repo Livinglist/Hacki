@@ -55,7 +55,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     final hasCachedStories = await _cacheRepository.hasCachedStories;
     final isComplexTile = _preferenceCubit.state.showComplexStoryTile;
     final pageSize = _getPageSize(isComplexTile: isComplexTile);
-    emit(state.copyWith(
+    emit(const StoriesState.init().copyWith(
       offlineReading: hasCachedStories,
       currentPageSize: pageSize,
     ));

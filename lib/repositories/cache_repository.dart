@@ -102,6 +102,23 @@ class CacheRepository {
     return comment;
   }
 
+  Stream<Comment> getCachedCommentsStream(
+      {required List<int> ids, int level = 0}) async* {
+    final box = await _commentBox;
+
+    for (final id in ids) {
+      final json = await box.get(id.toString());
+
+      if (json != null) {
+        final comment =
+            Comment.fromJson(json.cast<String, dynamic>(), level: level);
+
+        yield comment;
+        yield* getCachedCommentsStream(ids: comment.kids, level: level + 1);
+      }
+    }
+  }
+
   Future<int> deleteAllReadStoryIds() async {
     final box = await _readStoryIdBox;
     return box.clear();

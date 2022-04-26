@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hacki/config/locator.dart';
@@ -23,6 +25,9 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
   final CacheService _cacheService;
   final CacheRepository _cacheRepository;
   final StoriesRepository _storiesRepository;
+  StreamSubscription? _streamSubscription;
+
+  static const _pageSize = 20;
 
   @override
   void emit(CommentsState state) {
@@ -33,12 +38,13 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
 
   Future<void> init({
     bool onlyShowTargetComment = false,
-    Comment? targetComment,
+    List<Comment>? targetParents,
   }) async {
     if (onlyShowTargetComment) {
       emit(state.copyWith(
-        comments: targetComment != null ? [targetComment] : [],
+        comments: targetParents != null ? [...targetParents] : [],
         onlyShowTargetComment: true,
+        status: CommentsStatus.loaded,
       ));
       return;
     }
@@ -53,53 +59,20 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
 
       emit(state.copyWith(item: updatedStory));
 
-      for (final id in updatedStory.kids) {
-        final cachedComment = _cacheService.getComment(id);
-        if (cachedComment != null) {
-          emit(state.copyWith(
-              comments: List.from(state.comments)..add(cachedComment)));
-        } else {
-          if (state.offlineReading) {
-            await _cacheRepository
-                .getCachedComment(id: id)
-                .then(_onCommentFetched);
-          } else {
-            await _storiesRepository
-                .fetchCommentBy(id: id)
-                .then(_onCommentFetched);
-          }
-        }
+      if (state.offlineReading) {
+        _streamSubscription = _cacheRepository
+            .getCachedCommentsStream(ids: updatedStory.kids)
+            .listen(_onCommentFetched)
+          ..onDone(_onDone);
+      } else {
+        _streamSubscription = _storiesRepository
+            .fetchCommentsStream(ids: updatedStory.kids)
+            .listen(_onCommentFetched)
+          ..onDone(_onDone);
       }
-
-      emit(state.copyWith(
-        status: CommentsStatus.loaded,
-      ));
     } else {
-      final comment = state.item as Comment;
-
       emit(state.copyWith(
         collapsed: _cacheService.isCollapsed(state.item.id),
-      ));
-
-      for (final id in comment.kids) {
-        final cachedComment = _cacheService.getComment(id);
-        if (cachedComment != null) {
-          emit(state.copyWith(
-              comments: List.from(state.comments)..add(cachedComment)));
-        } else {
-          if (state.offlineReading) {
-            await _cacheRepository
-                .getCachedComment(id: id)
-                .then(_onCommentFetched);
-          } else {
-            await _storiesRepository
-                .fetchCommentBy(id: id)
-                .then(_onCommentFetched);
-          }
-        }
-      }
-
-      emit(state.copyWith(
         status: CommentsStatus.loaded,
       ));
     }
@@ -124,24 +97,16 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
     final updatedStory =
         await _storiesRepository.fetchStoryBy(story.id) ?? story;
 
-    for (final id in updatedStory.kids) {
-      final cachedComment = _cacheService.getComment(id);
-      if (cachedComment != null) {
-        emit(state.copyWith(
-            comments: List.from(state.comments)..add(cachedComment)));
-      } else {
-        final offlineReading = await _cacheRepository.hasCachedStories;
-
-        if (offlineReading) {
-          await _cacheRepository
-              .getCachedComment(id: id)
-              .then(_onCommentFetched);
-        } else {
-          await _storiesRepository
-              .fetchCommentBy(id: id)
-              .then(_onCommentFetched);
-        }
-      }
+    if (state.offlineReading) {
+      _streamSubscription = _cacheRepository
+          .getCachedCommentsStream(ids: updatedStory.kids)
+          .listen(_onCommentFetched)
+        ..onDone(_onDone);
+    } else {
+      _streamSubscription = _storiesRepository
+          .fetchCommentsStream(ids: updatedStory.kids)
+          .listen(_onCommentFetched)
+        ..onDone(_onDone);
     }
 
     emit(state.copyWith(
@@ -164,10 +129,43 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
     init();
   }
 
+  void loadMore() {
+    if (_streamSubscription != null) {
+      emit(state.copyWith(status: CommentsStatus.loading));
+      _streamSubscription?.resume();
+    }
+  }
+
+  void _onDone() {
+    _streamSubscription?.cancel();
+    _streamSubscription = null;
+    emit(state.copyWith(
+      status: CommentsStatus.allLoaded,
+    ));
+  }
+
   void _onCommentFetched(Comment? comment) {
     if (comment != null) {
       _cacheService.cacheComment(comment);
-      emit(state.copyWith(comments: List.from(state.comments)..add(comment)));
+      final updatedComments = [...state.comments, comment];
+      emit(state.copyWith(comments: updatedComments));
+
+      if (updatedComments.length >= _pageSize + _pageSize * state.currentPage &&
+          updatedComments.length <=
+              _pageSize * 2 + _pageSize * state.currentPage) {
+        _streamSubscription?.pause();
+
+        emit(state.copyWith(
+          currentPage: state.currentPage + 1,
+          status: CommentsStatus.loaded,
+        ));
+      }
     }
+  }
+
+  @override
+  Future<void> close() async {
+    await _streamSubscription?.cancel();
+    await super.close();
   }
 }

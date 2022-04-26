@@ -602,8 +602,12 @@ class _ProfileScreenState extends State<ProfileScreen>
           goToStoryScreen(
             args: StoryScreenArgs(
               story: tuple.item1,
-              targetComments:
-                  tuple.item2.isEmpty ? [comment] : [comment, ...tuple.item2],
+              targetComments: tuple.item2.isEmpty
+                  ? [comment]
+                  : [
+                      ...tuple.item2,
+                      comment.copyWith(level: tuple.item2.length)
+                    ],
               onlyShowTargetComment: true,
             ),
           )?.then((_) => then?.call());

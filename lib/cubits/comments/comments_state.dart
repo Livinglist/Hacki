@@ -4,6 +4,7 @@ enum CommentsStatus {
   init,
   loading,
   loaded,
+  allLoaded,
   failure,
 }
 
@@ -15,6 +16,7 @@ class CommentsState extends Equatable {
     required this.collapsed,
     required this.onlyShowTargetComment,
     required this.offlineReading,
+    required this.currentPage,
   });
 
   CommentsState.init({
@@ -23,7 +25,8 @@ class CommentsState extends Equatable {
   })  : comments = [],
         status = CommentsStatus.init,
         collapsed = false,
-        onlyShowTargetComment = false;
+        onlyShowTargetComment = false,
+        currentPage = 0;
 
   final Item item;
   final List<Comment> comments;
@@ -31,6 +34,7 @@ class CommentsState extends Equatable {
   final bool collapsed;
   final bool onlyShowTargetComment;
   final bool offlineReading;
+  final int currentPage;
 
   CommentsState copyWith({
     Item? item,
@@ -39,6 +43,7 @@ class CommentsState extends Equatable {
     bool? collapsed,
     bool? onlyShowTargetComment,
     bool? offlineReading,
+    int? currentPage,
   }) {
     return CommentsState(
       item: item ?? this.item,
@@ -48,6 +53,7 @@ class CommentsState extends Equatable {
       onlyShowTargetComment:
           onlyShowTargetComment ?? this.onlyShowTargetComment,
       offlineReading: offlineReading ?? this.offlineReading,
+      currentPage: currentPage ?? this.currentPage,
     );
   }
 
@@ -59,5 +65,6 @@ class CommentsState extends Equatable {
         collapsed,
         onlyShowTargetComment,
         offlineReading,
+        currentPage,
       ];
 }

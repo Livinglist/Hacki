@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:equatable/equatable.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
@@ -67,20 +65,14 @@ class StoryScreen extends StatefulWidget {
       settings: const RouteSettings(name: routeName),
       builder: (context) => MultiBlocProvider(
         providers: [
-          BlocProvider<PostCubit>(
-            create: (context) => PostCubit(),
-          ),
           BlocProvider<CommentsCubit>(
             create: (_) => CommentsCubit<Story>(
               offlineReading: context.read<StoriesBloc>().state.offlineReading,
               item: args.story,
             )..init(
                 onlyShowTargetComment: args.onlyShowTargetComment,
-                targetComment: args.targetComments?.last,
+                targetParents: args.targetComments,
               ),
-          ),
-          BlocProvider<EditCubit>(
-            create: (context) => EditCubit(),
           ),
         ],
         child: StoryScreen(
@@ -95,20 +87,14 @@ class StoryScreen extends StatefulWidget {
     return MultiBlocProvider(
       key: ValueKey(args),
       providers: [
-        BlocProvider<PostCubit>(
-          create: (context) => PostCubit(),
-        ),
         BlocProvider<CommentsCubit>(
           create: (context) => CommentsCubit<Story>(
             offlineReading: context.read<StoriesBloc>().state.offlineReading,
             item: args.story,
           )..init(
               onlyShowTargetComment: args.onlyShowTargetComment,
-              targetComment: args.targetComments?.last,
+              targetParents: args.targetComments,
             ),
-        ),
-        BlocProvider<EditCubit>(
-          create: (context) => EditCubit(),
         ),
       ],
       child: StoryScreen(
@@ -136,25 +122,7 @@ class _StoryScreenState extends State<StoryScreen> {
   );
   final focusNode = FocusNode();
   final throttle = Throttle(delay: const Duration(seconds: 2));
-  final sadFaces = <String>[
-    'ಥ_ಥ',
-    '(╯°□°）╯︵ ┻━┻',
-    r'¯\_(ツ)_/¯',
-    '( ͡° ͜ʖ ͡°)',
-    '(Θ︹Θ)',
-    '( ˘︹˘ )',
-    '(ㆆ_ㆆ)',
-    'ʕ•́ᴥ•̀ʔっ',
-    '(ㆆ_ㆆ)',
-  ];
-  final happyFaces = <String>[
-    '(๑•̀ㅂ•́)و✧',
-    '( ͡• ͜ʖ ͡•)',
-    '( ͡~ ͜ʖ ͡°)',
-    '٩(˘◡˘)۶',
-    '(─‿‿─)',
-    '(¬‿¬)',
-  ];
+  final happyFace = Constants.happyFaces.pickRandomly()!;
 
   @override
   void initState() {
@@ -193,7 +161,6 @@ class _StoryScreenState extends State<StoryScreen> {
   Widget build(BuildContext context) {
     final topPadding =
         MediaQuery.of(context).padding.top.toDouble() + kToolbarHeight;
-    final editCubit = context.read<EditCubit>();
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, authState) {
         return MultiBlocListener(
@@ -205,19 +172,21 @@ class _StoryScreenState extends State<StoryScreen> {
             BlocListener<PostCubit, PostState>(
               listener: (context, postState) {
                 if (postState.status == PostStatus.successful) {
-                  final verb = editCubit.state.replyingTo == null
-                      ? 'updated'
-                      : 'submitted';
-                  final msg = 'Comment $verb! ${(happyFaces..shuffle()).first}';
+                  final verb =
+                      context.read<EditCubit>().state.replyingTo == null
+                          ? 'updated'
+                          : 'submitted';
+                  final msg =
+                      'Comment $verb! ${Constants.happyFaces.pickRandomly()}';
                   focusNode.unfocus();
                   HapticFeedback.lightImpact();
                   showSnackBar(content: msg);
-                  editCubit.onReplySubmittedSuccessfully();
+                  context.read<EditCubit>().onReplySubmittedSuccessfully();
                   context.read<PostCubit>().reset();
                 } else if (postState.status == PostStatus.failure) {
                   showSnackBar(
-                    content:
-                        'Something went wrong...${(sadFaces..shuffle()).first}',
+                    content: 'Something went wrong...'
+                        '${Constants.sadFaces.pickRandomly()}',
                     label: 'Okay',
                     action: ScaffoldMessenger.of(context).hideCurrentSnackBar,
                   );
@@ -276,7 +245,9 @@ class _StoryScreenState extends State<StoryScreen> {
                   locator.get<CacheService>().resetComments();
                   context.read<CommentsCubit>().refresh();
                 },
-                onLoading: () {},
+                onLoading: () {
+                  context.read<CommentsCubit>().loadMore();
+                },
                 child: ListView(
                   primary: false,
                   children: [
@@ -300,7 +271,9 @@ class _StoryScreenState extends State<StoryScreen> {
                                   context.read<EditCubit>().state.replyingTo) {
                                 commentEditingController.clear();
                               }
-                              editCubit.onReplyTapped(widget.story);
+                              context
+                                  .read<EditCubit>()
+                                  .onReplyTapped(widget.story);
                               focusNode.requestFocus();
                             },
                             backgroundColor: Colors.orange,
@@ -417,7 +390,7 @@ class _StoryScreenState extends State<StoryScreen> {
                       ),
                     ],
                     if (state.comments.isEmpty &&
-                        state.status == CommentsStatus.loaded) ...[
+                        state.status == CommentsStatus.allLoaded) ...[
                       const SizedBox(
                         height: 240,
                       ),
@@ -428,13 +401,11 @@ class _StoryScreenState extends State<StoryScreen> {
                         ),
                       ),
                     ],
-                    ...state.comments.map(
-                      (e) => FadeIn(
+                    for (final e in state.comments)
+                      FadeIn(
                         child: CommentTile(
                           comment: e,
-                          onlyShowTargetComment: state.onlyShowTargetComment,
-                          targetComments: widget.parentComments.sublist(
-                              0, max(widget.parentComments.length - 1, 0)),
+                          level: e.level,
                           myUsername:
                               authState.isLoggedIn ? authState.username : null,
                           opUsername: widget.story.by,
@@ -449,7 +420,7 @@ class _StoryScreenState extends State<StoryScreen> {
                               commentEditingController.clear();
                             }
 
-                            editCubit.onReplyTapped(cmt);
+                            context.read<EditCubit>().onReplyTapped(cmt);
                             focusNode.requestFocus();
                           },
                           onEditTapped: (cmt) {
@@ -458,7 +429,7 @@ class _StoryScreenState extends State<StoryScreen> {
                               return;
                             }
                             commentEditingController.clear();
-                            editCubit.onEditTapped(cmt);
+                            context.read<EditCubit>().onEditTapped(cmt);
                             focusNode.requestFocus();
                           },
                           onMoreTapped: onMorePressed,
@@ -466,10 +437,14 @@ class _StoryScreenState extends State<StoryScreen> {
                           onTimeMachineActivated: onTimeMachineActivated,
                         ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 240,
-                    ),
+                    if (state.status == CommentsStatus.allLoaded &&
+                        state.comments.isNotEmpty)
+                      SizedBox(
+                        height: 240,
+                        child: Center(
+                          child: Text(happyFace),
+                        ),
+                      ),
                   ],
                 ),
               );
@@ -524,11 +499,12 @@ class _StoryScreenState extends State<StoryScreen> {
                                 textEditingController: commentEditingController,
                                 onSendTapped: onSendTapped,
                                 onCloseTapped: () {
-                                  editCubit.onReplyBoxClosed();
+                                  context.read<EditCubit>().onReplyBoxClosed();
                                   commentEditingController.clear();
                                   focusNode.unfocus();
                                 },
-                                onChanged: editCubit.onTextChanged,
+                                onChanged:
+                                    context.read<EditCubit>().onTextChanged,
                               ),
                             ),
                           ],
@@ -549,11 +525,11 @@ class _StoryScreenState extends State<StoryScreen> {
                           textEditingController: commentEditingController,
                           onSendTapped: onSendTapped,
                           onCloseTapped: () {
-                            editCubit.onReplyBoxClosed();
+                            context.read<EditCubit>().onReplyBoxClosed();
                             commentEditingController.clear();
                             focusNode.unfocus();
                           },
-                          onChanged: editCubit.onTextChanged,
+                          onChanged: context.read<EditCubit>().onTextChanged,
                         ),
                       ),
               );
@@ -580,6 +556,7 @@ class _StoryScreenState extends State<StoryScreen> {
           builder: (context, state) {
             return Center(
               child: Material(
+                borderRadius: const BorderRadius.all(Radius.circular(4)),
                 child: SizedBox(
                   height: size.height * 0.8,
                   width: size.width * widthFactor,
@@ -963,8 +940,8 @@ class _StoryScreenState extends State<StoryScreen> {
   void onLoginTapped() {
     final usernameController = TextEditingController();
     final passwordController = TextEditingController();
-    final sadFace = (sadFaces..shuffle()).first;
-    final happyFace = (happyFaces..shuffle()).first;
+    final sadFace = Constants.sadFaces.pickRandomly();
+    final happyFace = Constants.happyFaces.pickRandomly();
     showDialog<void>(
       context: context,
       barrierDismissible: false,

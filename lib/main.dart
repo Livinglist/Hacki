@@ -21,6 +21,16 @@ Future main() async {
 
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
 
+  // BlocOverrides.runZoned(
+  //   () {
+  //     runApp(HackiApp(
+  //       savedThemeMode: savedThemeMode,
+  //     ));
+  //   },
+  //   blocObserver: CustomBlocObserver(),
+  // );
+
+  // Uncomment code below for running without logging.
   runApp(HackiApp(
     savedThemeMode: savedThemeMode,
   ));
@@ -100,6 +110,14 @@ class HackiApp extends StatelessWidget {
         BlocProvider<TimeMachineCubit>(
           lazy: false,
           create: (context) => TimeMachineCubit(),
+        ),
+        BlocProvider<PostCubit>(
+          lazy: false,
+          create: (context) => PostCubit(),
+        ),
+        BlocProvider<EditCubit>(
+          lazy: false,
+          create: (context) => EditCubit(),
         ),
       ],
       child: AdaptiveTheme(
