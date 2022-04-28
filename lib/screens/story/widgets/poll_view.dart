@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/blocs/auth/auth_bloc.dart';
@@ -105,7 +106,10 @@ class PollView extends StatelessWidget {
                         child: Row(
                           children: <Widget>[
                             IconButton(
-                              onPressed: context.read<VoteCubit>().upvote,
+                              onPressed: () {
+                                HapticFeedback.lightImpact();
+                                context.read<VoteCubit>().upvote();
+                              },
                               icon: Icon(
                                 Icons.arrow_drop_up,
                                 color: voteState.vote == Vote.up
