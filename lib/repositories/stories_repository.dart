@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/services/services.dart';
-import 'package:html_unescape/html_unescape.dart';
+import 'package:hacki/utils/utils.dart';
 import 'package:tuple/tuple.dart';
 
 class StoriesRepository {
@@ -130,6 +130,23 @@ class StoriesRepository {
     }
   }
 
+  Stream<PollOption> fetchPollOptionsStream({required List<int> ids}) async* {
+    for (final int id in ids) {
+      final PollOption? option = await _firebaseClient
+          .get('${_baseUrl}item/$id.json')
+          .then((dynamic json) async {
+        if (json == null) return null;
+        final PollOption option =
+            PollOption.fromJson(json as Map<String, dynamic>);
+        return option;
+      });
+
+      if (option != null) {
+        yield option;
+      }
+    }
+  }
+
   Future<Comment?> fetchCommentBy({required int id}) async {
     final Comment? comment = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
@@ -230,27 +247,11 @@ class StoriesRepository {
   Future<Map<String, dynamic>?> _parseJson(Map<String, dynamic>? json) async {
     if (json == null) return null;
     final String text = json['text'] as String? ?? '';
-    final String parsedText = await compute<String, String>(_parseHtml, text);
+    final String parsedText = await compute<String, String>(
+      HtmlUtil.parseHtml,
+      text,
+    );
     json['text'] = parsedText;
     return json;
-  }
-
-  static String _parseHtml(String text) {
-    return HtmlUnescape()
-        .convert(text)
-        .replaceAll('<p>', '\n')
-        .replaceAllMapped(
-          RegExp(r'\<i\>(.*?)\<\/i\>'),
-          (Match match) => '*${match[1]}*',
-        )
-        .replaceAllMapped(
-          RegExp(r'\<pre\>\<code\>(.*?)\<\/code\>\<\/pre\>', dotAll: true),
-          (Match match) => match[1]?.trimRight() ?? '',
-        )
-        .replaceAllMapped(
-          RegExp(r'\<a href=\"(.*?)\".*?\>.*?\<\/a\>'),
-          (Match match) => match[1] ?? '',
-        )
-        .replaceAll('\n', '\n\n');
   }
 }

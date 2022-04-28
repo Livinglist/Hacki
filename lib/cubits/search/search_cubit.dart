@@ -44,6 +44,11 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   void _onStoryFetched(Story story) {
-    emit(state.copyWith(results: List<Story>.from(state.results)..add(story)));
+    emit(
+      state.copyWith(
+        results: List<Story>.from(state.results)..add(story),
+        status: SearchStatus.loaded,
+      ),
+    );
   }
 }

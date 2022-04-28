@@ -74,6 +74,11 @@ class StoryScreen extends StatefulWidget {
                 targetParents: args.targetComments,
               ),
           ),
+          if (args.story.isPoll)
+            BlocProvider<PollCubit>(
+              create: (BuildContext context) =>
+                  PollCubit()..init(story: args.story),
+            ),
         ],
         child: StoryScreen(
           story: args.story,
@@ -96,6 +101,11 @@ class StoryScreen extends StatefulWidget {
               targetParents: args.targetComments,
             ),
         ),
+        if (args.story.isPoll)
+          BlocProvider<PollCubit>(
+            create: (BuildContext context) =>
+                PollCubit()..init(story: args.story),
+          ),
       ],
       child: StoryScreen(
         story: args.story,
@@ -371,6 +381,11 @@ class _StoryScreenState extends State<StoryScreen> {
                                   }
                                 },
                               ),
+                            ),
+                          if (widget.story.isPoll)
+                            PollView(
+                              story: widget.story,
+                              onLoginTapped: onLoginTapped,
                             ),
                         ],
                       ),

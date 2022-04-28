@@ -10,7 +10,6 @@ abstract class Item extends Equatable {
     required this.dead,
     required this.parent,
     required this.kids,
-    required this.poll,
     required this.url,
     required this.score,
     required this.title,
@@ -32,13 +31,11 @@ abstract class Item extends Equatable {
         parts = <int>[],
         deleted = false,
         parent = 0,
-        poll = 0,
         text = '',
         type = '';
 
   final int id;
   final int time;
-  final int poll;
   final int score;
   final int parent;
 
@@ -56,4 +53,12 @@ abstract class Item extends Equatable {
 
   final List<int> kids;
   final List<int> parts;
+
+  bool get isPoll => type == 'poll';
+
+  bool get isStory => type == 'story';
+
+  bool get isJob => type == 'job';
+
+  bool get isComment => type == 'comment';
 }

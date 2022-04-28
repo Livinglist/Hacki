@@ -3,31 +3,24 @@ import 'dart:convert';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/item.dart';
 
-enum StoryType {
-  top,
-  latest,
-  ask,
-  show,
-  jobs,
-}
-
-class Story extends Item {
-  const Story({
-    required int descendants,
+class PollOption extends Item {
+  const PollOption({
     required int id,
     required int score,
     required int time,
+    required int parent,
     required String by,
     required String title,
+    required String text,
     required String type,
     required String url,
-    required String text,
     required List<int> kids,
     required List<int> parts,
+    required this.ratio,
   }) : super(
           id: id,
           score: score,
-          descendants: descendants,
+          descendants: 0,
           time: time,
           by: by,
           title: title,
@@ -37,12 +30,13 @@ class Story extends Item {
           dead: false,
           parts: parts,
           deleted: false,
-          parent: 0,
+          parent: parent,
           text: text,
         );
 
-  Story.empty()
-      : super(
+  PollOption.empty()
+      : ratio = 0,
+        super(
           id: 0,
           score: 0,
           descendants: 0,
@@ -59,26 +53,46 @@ class Story extends Item {
           type: '',
         );
 
-  Story.fromJson(Map<String, dynamic> json)
-      : super(
-          descendants: json['descendants'] as int? ?? 0,
+  PollOption.fromJson(Map<String, dynamic> json)
+      : ratio = 0,
+        super(
+          descendants: 0,
           id: json['id'] as int? ?? 0,
           score: json['score'] as int? ?? 0,
           time: json['time'] as int? ?? 0,
           by: json['by'] as String? ?? '',
           title: json['title'] as String? ?? '',
           url: json['url'] as String? ?? '',
-          kids: (json['kids'] as List<dynamic>?)?.cast<int>() ?? <int>[],
+          kids: <int>[],
           text: json['text'] as String? ?? '',
           dead: json['dead'] as bool? ?? false,
           deleted: json['deleted'] as bool? ?? false,
           type: json['type'] as String? ?? '',
-          parts: (json['parts'] as List<dynamic>?)?.cast<int>() ?? <int>[],
+          parts: <int>[],
           parent: 0,
         );
 
+  final double ratio;
+
   String get postedDate =>
       DateTime.fromMillisecondsSinceEpoch(time * 1000).toReadableString();
+
+  PollOption copyWith({double? ratio}) {
+    return PollOption(
+      id: id,
+      score: score,
+      time: time,
+      parent: parent,
+      by: by,
+      title: title,
+      text: text,
+      type: type,
+      url: url,
+      kids: kids,
+      parts: parts,
+      ratio: ratio ?? this.ratio,
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
@@ -95,6 +109,7 @@ class Story extends Item {
       'deleted': deleted,
       'type': type,
       'parts': parts,
+      'ratio': ratio,
     };
   }
 
@@ -102,7 +117,7 @@ class Story extends Item {
   String toString() {
     final String prettyString =
         const JsonEncoder.withIndent('  ').convert(this);
-    return 'Story $prettyString';
+    return 'PollOption $prettyString';
   }
 
   @override
@@ -113,7 +128,6 @@ class Story extends Item {
         time,
         by,
         title,
-        text,
         url,
         kids,
         dead,

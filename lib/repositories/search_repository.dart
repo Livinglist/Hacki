@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/utils/utils.dart';
 
 class SearchRepository {
   SearchRepository({Dio? dio}) : _dio = dio ?? Dio();
@@ -34,7 +36,15 @@ class SearchRepository {
       }
 
       final String url = hit['url'] as String? ?? '';
+      final String type =
+          title.toLowerCase().contains('poll:') ? 'poll' : 'story';
+      final String text = hit['story_text'] as String? ?? '';
+      final String parsedText = await compute<String, String>(
+        HtmlUtil.parseHtml,
+        text,
+      );
       final int id = int.parse(hit['objectID'] as String? ?? '0');
+
       final Story story = Story(
         descendants: 0,
         id: id,
@@ -42,9 +52,12 @@ class SearchRepository {
         time: createdAt,
         by: by,
         title: title,
+        text: parsedText,
         url: url,
-        type: '',
+        type: type,
+        // response doesn't contain kids and parts.
         kids: const <int>[],
+        parts: const <int>[],
       );
       yield story;
     }
