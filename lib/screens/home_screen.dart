@@ -354,7 +354,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     // If a story is a job story and it has a link to the job posting,
     // it would be better to just navigate to the web page.
-    final bool isJobWithLink = story.type == 'job' && story.url.isNotEmpty;
+    final bool isJobWithLink = story.isJob && story.url.isNotEmpty;
 
     if (isJobWithLink) {
       context.read<ReminderCubit>().removeLastReadStoryId();

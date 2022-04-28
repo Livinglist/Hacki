@@ -26,7 +26,6 @@ class Comment extends Item {
           descendants: 0,
           dead: false,
           parts: <int>[],
-          poll: 0,
           title: '',
           url: '',
           type: '',
@@ -45,7 +44,6 @@ class Comment extends Item {
           descendants: 0,
           dead: json['dead'] as bool? ?? false,
           parts: <int>[],
-          poll: 0,
           title: '',
           url: '',
           type: '',
@@ -104,7 +102,6 @@ class Comment extends Item {
         parts,
         deleted,
         parent,
-        poll,
         text,
         type,
       ];

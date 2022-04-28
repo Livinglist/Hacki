@@ -18,6 +18,7 @@ Features:
 - Browse stories from various categories.
 - Submit links.
 - Leave comments on stories.
+- View and participate in polls.
 - Mark stories as favorite.
 - Browse comments and stories you have posted in the past.
 - Search for stories on Hacker News.

@@ -3,6 +3,7 @@ Features:
 - Browse stories from various categories.
 - Submit links.
 - Leave comments on stories.
+- View and participate in polls.
 - Mark stories as favorite.
 - Browse comments and stories you have posted in the past.
 - Search for stories on Hacker News.
@@ -11,4 +12,5 @@ Features:
 - Pin stories to the top of home page.
 - Get in-app notification when there is new reply to your stories or comments.
 - Download stories for offline reading.
+- Pick up where you left off.
 - And more...
