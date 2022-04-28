@@ -27,7 +27,7 @@ extension StateExtension on State {
   }
 
   Future<void>? goToStoryScreen({required StoryScreenArgs args}) {
-    final splitViewEnabled = context.read<SplitViewCubit>().state.enabled;
+    final bool splitViewEnabled = context.read<SplitViewCubit>().state.enabled;
 
     if (splitViewEnabled) {
       context.read<SplitViewCubit>().updateStoryScreenArgs(args);
@@ -38,6 +38,6 @@ extension StateExtension on State {
       );
     }
 
-    return Future.value();
+    return Future<void>.value();
   }
 }

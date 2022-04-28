@@ -1,15 +1,16 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:hacki/main.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const HackiApp(
-      savedThemeMode: AdaptiveThemeMode.light,
-    ));
+    await tester.pumpWidget(
+      const HackiApp(
+        savedThemeMode: AdaptiveThemeMode.light,
+      ),
+    );
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

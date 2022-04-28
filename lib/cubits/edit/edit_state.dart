@@ -27,7 +27,7 @@ class EditState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         text,
         replyingTo,
         itemBeingEdited,

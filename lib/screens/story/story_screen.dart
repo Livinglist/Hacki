@@ -43,7 +43,7 @@ class StoryScreenArgs extends Equatable {
   final List<Comment>? targetComments;
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         story,
         onlyShowTargetComment,
         targetComments,
@@ -60,12 +60,12 @@ class StoryScreen extends StatefulWidget {
 
   static const String routeName = '/story';
 
-  static Route route(StoryScreenArgs args) {
+  static Route<dynamic> route(StoryScreenArgs args) {
     return MaterialPageRoute<StoryScreen>(
       settings: const RouteSettings(name: routeName),
-      builder: (context) => MultiBlocProvider(
-        providers: [
-          BlocProvider<CommentsCubit>(
+      builder: (BuildContext context) => MultiBlocProvider(
+        providers: <BlocProvider<dynamic>>[
+          BlocProvider<CommentsCubit<Story>>(
             create: (_) => CommentsCubit<Story>(
               offlineReading: context.read<StoriesBloc>().state.offlineReading,
               item: args.story,
@@ -77,7 +77,7 @@ class StoryScreen extends StatefulWidget {
         ],
         child: StoryScreen(
           story: args.story,
-          parentComments: args.targetComments ?? [],
+          parentComments: args.targetComments ?? <Comment>[],
         ),
       ),
     );
@@ -85,10 +85,10 @@ class StoryScreen extends StatefulWidget {
 
   static Widget build(StoryScreenArgs args) {
     return MultiBlocProvider(
-      key: ValueKey(args),
-      providers: [
-        BlocProvider<CommentsCubit>(
-          create: (context) => CommentsCubit<Story>(
+      key: ValueKey<StoryScreenArgs>(args),
+      providers: <BlocProvider<dynamic>>[
+        BlocProvider<CommentsCubit<Story>>(
+          create: (BuildContext context) => CommentsCubit<Story>(
             offlineReading: context.read<StoriesBloc>().state.offlineReading,
             item: args.story,
           )..init(
@@ -99,7 +99,7 @@ class StoryScreen extends StatefulWidget {
       ],
       child: StoryScreen(
         story: args.story,
-        parentComments: args.targetComments ?? [],
+        parentComments: args.targetComments ?? <Comment>[],
         splitViewEnabled: true,
       ),
     );
@@ -114,15 +114,16 @@ class StoryScreen extends StatefulWidget {
 }
 
 class _StoryScreenState extends State<StoryScreen> {
-  final commentEditingController = TextEditingController();
-  final scrollController = ScrollController();
-  final refreshController = RefreshController(
+  final TextEditingController commentEditingController =
+      TextEditingController();
+  final ScrollController scrollController = ScrollController();
+  final RefreshController refreshController = RefreshController(
     initialLoadStatus: LoadStatus.idle,
     initialRefreshStatus: RefreshStatus.refreshing,
   );
-  final focusNode = FocusNode();
-  final throttle = Throttle(delay: const Duration(seconds: 2));
-  final happyFace = Constants.happyFaces.pickRandomly()!;
+  final FocusNode focusNode = FocusNode();
+  final Throttle throttle = Throttle(delay: const Duration(seconds: 2));
+  final String happyFace = Constants.happyFaces.pickRandomly()!;
 
   @override
   void initState() {
@@ -159,24 +160,27 @@ class _StoryScreenState extends State<StoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final topPadding =
-        MediaQuery.of(context).padding.top.toDouble() + kToolbarHeight;
+    final double topPadding =
+        MediaQuery.of(context).padding.top + kToolbarHeight;
     return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, authState) {
+      builder: (BuildContext context, AuthState authState) {
         return MultiBlocListener(
-          listeners: [
+          listeners: <BlocListener<dynamic, dynamic>>[
             BlocListener<TimeMachineCubit, TimeMachineState>(
-              listenWhen: (previous, current) => current.parents.isNotEmpty,
-              listener: (context, postState) => showTimeMachine(),
+              listenWhen:
+                  (TimeMachineState previous, TimeMachineState current) =>
+                      current.parents.isNotEmpty,
+              listener: (BuildContext context, TimeMachineState postState) =>
+                  showTimeMachine(),
             ),
             BlocListener<PostCubit, PostState>(
-              listener: (context, postState) {
+              listener: (BuildContext context, PostState postState) {
                 if (postState.status == PostStatus.successful) {
-                  final verb =
+                  final String verb =
                       context.read<EditCubit>().state.replyingTo == null
                           ? 'updated'
                           : 'submitted';
-                  final msg =
+                  final String msg =
                       'Comment $verb! ${Constants.happyFaces.pickRandomly()}';
                   focusNode.unfocus();
                   HapticFeedback.lightImpact();
@@ -195,18 +199,18 @@ class _StoryScreenState extends State<StoryScreen> {
               },
             ),
           ],
-          child: BlocConsumer<CommentsCubit, CommentsState>(
-            listenWhen: (previous, current) =>
+          child: BlocConsumer<CommentsCubit<Story>, CommentsState>(
+            listenWhen: (CommentsState previous, CommentsState current) =>
                 previous.status != current.status,
-            listener: (context, state) {
+            listener: (BuildContext context, CommentsState state) {
               if (state.status == CommentsStatus.loaded) {
                 refreshController
                   ..refreshCompleted()
                   ..loadComplete();
               }
             },
-            builder: (context, state) {
-              final mainView = SmartRefresher(
+            builder: (BuildContext context, CommentsState state) {
+              final SmartRefresher mainView = SmartRefresher(
                 scrollController: scrollController,
                 enablePullUp: !state.onlyShowTargetComment,
                 enablePullDown: !state.onlyShowTargetComment,
@@ -216,7 +220,7 @@ class _StoryScreenState extends State<StoryScreen> {
                 ),
                 footer: CustomFooter(
                   loadStyle: LoadStyle.ShowWhenLoading,
-                  builder: (context, mode) {
+                  builder: (BuildContext context, LoadStatus? mode) {
                     Widget body;
                     if (mode == LoadStatus.idle) {
                       body = const Text('');
@@ -243,14 +247,14 @@ class _StoryScreenState extends State<StoryScreen> {
                 onRefresh: () {
                   HapticFeedback.lightImpact();
                   locator.get<CacheService>().resetComments();
-                  context.read<CommentsCubit>().refresh();
+                  context.read<CommentsCubit<Story>>().refresh();
                 },
                 onLoading: () {
-                  context.read<CommentsCubit>().loadMore();
+                  context.read<CommentsCubit<Story>>().loadMore();
                 },
                 child: ListView(
                   primary: false,
-                  children: [
+                  children: <Widget>[
                     SizedBox(
                       height: topPadding,
                     ),
@@ -262,7 +266,7 @@ class _StoryScreenState extends State<StoryScreen> {
                     Slidable(
                       startActionPane: ActionPane(
                         motion: const BehindMotion(),
-                        children: [
+                        children: <Widget>[
                           SlidableAction(
                             onPressed: (_) {
                               HapticFeedback.lightImpact();
@@ -289,14 +293,14 @@ class _StoryScreenState extends State<StoryScreen> {
                         ],
                       ),
                       child: Column(
-                        children: [
+                        children: <Widget>[
                           Padding(
                             padding: const EdgeInsets.only(
                               left: 6,
                               right: 6,
                             ),
                             child: Row(
-                              children: [
+                              children: <Widget>[
                                 Text(
                                   widget.story.by,
                                   style: const TextStyle(
@@ -358,7 +362,7 @@ class _StoryScreenState extends State<StoryScreen> {
                                           15,
                                   color: Colors.orange,
                                 ),
-                                onOpen: (link) {
+                                onOpen: (LinkableElement link) {
                                   if (link.url
                                       .contains('news.ycombinator.com/item')) {
                                     onStoryLinkTapped(link.url);
@@ -378,10 +382,11 @@ class _StoryScreenState extends State<StoryScreen> {
                     const Divider(
                       height: 0,
                     ),
-                    if (state.onlyShowTargetComment) ...[
+                    if (state.onlyShowTargetComment) ...<Widget>[
                       TextButton(
-                        onPressed: () =>
-                            context.read<CommentsCubit>().loadAll(widget.story),
+                        onPressed: () => context
+                            .read<CommentsCubit<Story>>()
+                            .loadAll(widget.story),
                         child: const Text('View all comments'),
                       ),
                       const Divider(
@@ -389,7 +394,7 @@ class _StoryScreenState extends State<StoryScreen> {
                       ),
                     ],
                     if (state.comments.isEmpty &&
-                        state.status == CommentsStatus.allLoaded) ...[
+                        state.status == CommentsStatus.allLoaded) ...<Widget>[
                       const SizedBox(
                         height: 240,
                       ),
@@ -400,7 +405,7 @@ class _StoryScreenState extends State<StoryScreen> {
                         ),
                       ),
                     ],
-                    for (final e in state.comments)
+                    for (final Comment e in state.comments)
                       FadeIn(
                         child: CommentTile(
                           comment: e,
@@ -408,7 +413,7 @@ class _StoryScreenState extends State<StoryScreen> {
                           myUsername:
                               authState.isLoggedIn ? authState.username : null,
                           opUsername: widget.story.by,
-                          onReplyTapped: (cmt) {
+                          onReplyTapped: (Comment cmt) {
                             HapticFeedback.lightImpact();
                             if (cmt.deleted || cmt.dead) {
                               return;
@@ -422,7 +427,7 @@ class _StoryScreenState extends State<StoryScreen> {
                             context.read<EditCubit>().onReplyTapped(cmt);
                             focusNode.requestFocus();
                           },
-                          onEditTapped: (cmt) {
+                          onEditTapped: (Comment cmt) {
                             HapticFeedback.lightImpact();
                             if (cmt.deleted || cmt.dead) {
                               return;
@@ -450,21 +455,22 @@ class _StoryScreenState extends State<StoryScreen> {
               );
 
               return BlocListener<EditCubit, EditState>(
-                listenWhen: (previous, current) {
+                listenWhen: (EditState previous, EditState current) {
                   return previous.replyingTo != current.replyingTo ||
                       previous.itemBeingEdited != current.itemBeingEdited;
                 },
-                listener: (context, editState) {
+                listener: (BuildContext context, EditState editState) {
                   if (editState.replyingTo != null ||
                       editState.itemBeingEdited != null) {
                     if (editState.text == null) {
                       commentEditingController.clear();
                     } else {
-                      final text = editState.text!;
+                      final String text = editState.text!;
                       commentEditingController
                         ..text = text
                         ..selection = TextSelection.fromPosition(
-                            TextPosition(offset: text.length));
+                          TextPosition(offset: text.length),
+                        );
                     }
                   } else {
                     commentEditingController.clear();
@@ -473,7 +479,7 @@ class _StoryScreenState extends State<StoryScreen> {
                 child: widget.splitViewEnabled
                     ? Material(
                         child: Stack(
-                          children: [
+                          children: <Widget>[
                             Positioned.fill(
                               child: mainView,
                             ),
@@ -546,14 +552,15 @@ class _StoryScreenState extends State<StoryScreen> {
   }
 
   void showTimeMachine() {
-    final size = MediaQuery.of(context).size;
-    final deviceType = getDeviceType(size);
-    final widthFactor = deviceType != DeviceScreenType.mobile ? 0.6 : 0.9;
+    final Size size = MediaQuery.of(context).size;
+    final DeviceScreenType deviceType = getDeviceType(size);
+    final double widthFactor =
+        deviceType != DeviceScreenType.mobile ? 0.6 : 0.9;
     showDialog<void>(
       context: context,
-      builder: (context) {
+      builder: (BuildContext context) {
         return BlocBuilder<TimeMachineCubit, TimeMachineState>(
-          builder: (context, state) {
+          builder: (BuildContext context, TimeMachineState state) {
             return Center(
               child: Material(
                 borderRadius: const BorderRadius.all(Radius.circular(4)),
@@ -566,9 +573,9 @@ class _StoryScreenState extends State<StoryScreen> {
                       vertical: 12,
                     ),
                     child: Column(
-                      children: [
+                      children: <Widget>[
                         Row(
-                          children: [
+                          children: <Widget>[
                             const SizedBox(
                               width: 8,
                             ),
@@ -586,8 +593,9 @@ class _StoryScreenState extends State<StoryScreen> {
                         ),
                         Expanded(
                           child: ListView(
-                            children: [
-                              for (final c in state.parents) ...[
+                            children: <Widget>[
+                              for (final Comment c
+                                  in state.parents) ...<Widget>[
                                 CommentTile(
                                   comment: c,
                                   loadKids: false,
@@ -615,12 +623,15 @@ class _StoryScreenState extends State<StoryScreen> {
   }
 
   Future<void> onStoryLinkTapped(String link) async {
-    final regex = RegExp(r'\d+$');
-    final match = regex.stringMatch(link) ?? '';
-    final id = int.tryParse(match);
+    final RegExp regex = RegExp(r'\d+$');
+    final String match = regex.stringMatch(link) ?? '';
+    final int? id = int.tryParse(match);
     if (id != null) {
       throttle.run(() {
-        locator.get<StoriesRepository>().fetchParentStory(id: id).then((story) {
+        locator
+            .get<StoriesRepository>()
+            .fetchParentStory(id: id)
+            .then((Story? story) {
           if (mounted) {
             if (story != null) {
               HackiApp.navigatorKey.currentState!.pushNamed(
@@ -643,126 +654,126 @@ class _StoryScreenState extends State<StoryScreen> {
       return;
     }
 
-    final isBlocked =
+    final bool isBlocked =
         context.read<BlocklistCubit>().state.blocklist.contains(item.by);
     showModalBottomSheet<_MenuAction>(
-        context: context,
-        builder: (context) {
-          return BlocProvider(
-            create: (context) => VoteCubit(
-              item: item,
-              authBloc: context.read<AuthBloc>(),
-            ),
-            child: BlocConsumer<VoteCubit, VoteState>(
-              listenWhen: (previous, current) {
-                return previous.status != current.status;
-              },
-              listener: (context, voteState) {
-                if (voteState.status == VoteStatus.submitted) {
-                  showSnackBar(content: 'Vote submitted successfully.');
-                } else if (voteState.status == VoteStatus.canceled) {
-                  showSnackBar(content: 'Vote canceled.');
-                } else if (voteState.status == VoteStatus.failure) {
-                  showSnackBar(content: 'Something went wrong...');
-                } else if (voteState.status ==
-                    VoteStatus.failureKarmaBelowThreshold) {
-                  showSnackBar(
-                      content:
-                          "You can't downvote because you are karmaly broke.");
-                } else if (voteState.status == VoteStatus.failureNotLoggedIn) {
-                  showSnackBar(
-                    content: 'Not logged in, no voting! (;｀O´)o',
-                    action: onLoginTapped,
-                    label: 'Log in',
-                  );
-                } else if (voteState.status == VoteStatus.failureBeHumble) {
-                  showSnackBar(content: 'No voting on your own post! (;｀O´)o');
-                }
+      context: context,
+      builder: (BuildContext context) {
+        return BlocProvider<VoteCubit>(
+          create: (BuildContext context) => VoteCubit(
+            item: item,
+            authBloc: context.read<AuthBloc>(),
+          ),
+          child: BlocConsumer<VoteCubit, VoteState>(
+            listenWhen: (VoteState previous, VoteState current) {
+              return previous.status != current.status;
+            },
+            listener: (BuildContext context, VoteState voteState) {
+              if (voteState.status == VoteStatus.submitted) {
+                showSnackBar(content: 'Vote submitted successfully.');
+              } else if (voteState.status == VoteStatus.canceled) {
+                showSnackBar(content: 'Vote canceled.');
+              } else if (voteState.status == VoteStatus.failure) {
+                showSnackBar(content: 'Something went wrong...');
+              } else if (voteState.status ==
+                  VoteStatus.failureKarmaBelowThreshold) {
+                showSnackBar(
+                  content: "You can't downvote because you are karmaly broke.",
+                );
+              } else if (voteState.status == VoteStatus.failureNotLoggedIn) {
+                showSnackBar(
+                  content: 'Not logged in, no voting! (;｀O´)o',
+                  action: onLoginTapped,
+                  label: 'Log in',
+                );
+              } else if (voteState.status == VoteStatus.failureBeHumble) {
+                showSnackBar(content: 'No voting on your own post! (;｀O´)o');
+              }
 
-                Navigator.pop(
-                  context,
-                  _MenuAction.upvote,
-                );
-              },
-              builder: (context, voteState) {
-                final upvoted = voteState.vote == Vote.up;
-                final downvoted = voteState.vote == Vote.down;
-                return Container(
-                  height: 300,
-                  color: Theme.of(context).canvasColor,
-                  child: Material(
-                    color: Colors.transparent,
-                    child: Column(
-                      children: [
-                        ListTile(
-                          leading: Icon(
-                            FeatherIcons.chevronUp,
-                            color: upvoted ? Colors.orange : null,
-                          ),
-                          title: Text(
-                            upvoted ? 'Upvoted' : 'Upvote',
-                            style: upvoted
-                                ? const TextStyle(color: Colors.orange)
-                                : null,
-                          ),
-                          subtitle: item is Story
-                              ? Text(item.score.toString())
+              Navigator.pop(
+                context,
+                _MenuAction.upvote,
+              );
+            },
+            builder: (BuildContext context, VoteState voteState) {
+              final bool upvoted = voteState.vote == Vote.up;
+              final bool downvoted = voteState.vote == Vote.down;
+              return Container(
+                height: 300,
+                color: Theme.of(context).canvasColor,
+                child: Material(
+                  color: Colors.transparent,
+                  child: Column(
+                    children: <Widget>[
+                      ListTile(
+                        leading: Icon(
+                          FeatherIcons.chevronUp,
+                          color: upvoted ? Colors.orange : null,
+                        ),
+                        title: Text(
+                          upvoted ? 'Upvoted' : 'Upvote',
+                          style: upvoted
+                              ? const TextStyle(color: Colors.orange)
                               : null,
-                          onTap: context.read<VoteCubit>().upvote,
                         ),
-                        ListTile(
-                          leading: Icon(
-                            FeatherIcons.chevronDown,
-                            color: downvoted ? Colors.orange : null,
-                          ),
-                          title: Text(
-                            downvoted ? 'Downvoted' : 'Downvote',
-                            style: downvoted
-                                ? const TextStyle(color: Colors.orange)
-                                : null,
-                          ),
-                          onTap: context.read<VoteCubit>().downvote,
+                        subtitle:
+                            item is Story ? Text(item.score.toString()) : null,
+                        onTap: context.read<VoteCubit>().upvote,
+                      ),
+                      ListTile(
+                        leading: Icon(
+                          FeatherIcons.chevronDown,
+                          color: downvoted ? Colors.orange : null,
                         ),
-                        ListTile(
-                          leading: const Icon(Icons.local_police),
-                          title: const Text(
-                            'Flag',
-                          ),
-                          onTap: () => Navigator.pop(
-                            context,
-                            _MenuAction.flag,
-                          ),
+                        title: Text(
+                          downvoted ? 'Downvoted' : 'Downvote',
+                          style: downvoted
+                              ? const TextStyle(color: Colors.orange)
+                              : null,
                         ),
-                        ListTile(
-                          leading: Icon(isBlocked
-                              ? Icons.visibility
-                              : Icons.visibility_off),
-                          title: Text(
-                            isBlocked ? 'Unblock' : 'Block',
-                          ),
-                          onTap: () => Navigator.pop(
-                            context,
-                            _MenuAction.block,
-                          ),
+                        onTap: context.read<VoteCubit>().downvote,
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.local_police),
+                        title: const Text(
+                          'Flag',
                         ),
-                        ListTile(
-                          leading: const Icon(Icons.close),
-                          title: const Text(
-                            'Cancel',
-                          ),
-                          onTap: () => Navigator.pop(
-                            context,
-                            _MenuAction.cancel,
-                          ),
+                        onTap: () => Navigator.pop(
+                          context,
+                          _MenuAction.flag,
                         ),
-                      ],
-                    ),
+                      ),
+                      ListTile(
+                        leading: Icon(
+                          isBlocked ? Icons.visibility : Icons.visibility_off,
+                        ),
+                        title: Text(
+                          isBlocked ? 'Unblock' : 'Block',
+                        ),
+                        onTap: () => Navigator.pop(
+                          context,
+                          _MenuAction.block,
+                        ),
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.close),
+                        title: const Text(
+                          'Cancel',
+                        ),
+                        onTap: () => Navigator.pop(
+                          context,
+                          _MenuAction.cancel,
+                        ),
+                      ),
+                    ],
                   ),
-                );
-              },
-            ),
-          );
-        }).then((action) {
+                ),
+              );
+            },
+          ),
+        );
+      },
+    ).then((_MenuAction? action) {
       if (action != null) {
         switch (action) {
           case _MenuAction.upvote:
@@ -773,7 +784,7 @@ class _StoryScreenState extends State<StoryScreen> {
             onFlagTapped(item);
             break;
           case _MenuAction.block:
-            onBlockTapped(item, isBlocked);
+            onBlockTapped(item, isBlocked: isBlocked);
             break;
           case _MenuAction.cancel:
             break;
@@ -784,60 +795,61 @@ class _StoryScreenState extends State<StoryScreen> {
 
   void onFlagTapped(Item item) {
     showDialog<bool>(
-        context: context,
-        builder: (context) {
-          return SimpleDialog(
-            title: const Text('Flag this comment?'),
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 24,
-                  right: 12,
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text('Flag this comment?'),
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 24,
+                right: 12,
+              ),
+              child: Text(
+                'Flag this comment posted by ${item.by}?',
+                style: const TextStyle(
+                  color: Colors.grey,
                 ),
-                child: Text(
-                  'Flag this comment posted by ${item.by}?',
-                  style: const TextStyle(
-                    color: Colors.grey,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                right: 12,
+              ),
+              child: ButtonBar(
+                children: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(
+                        color: Colors.red,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                  right: 12,
-                ),
-                child: ButtonBar(
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(
-                          color: Colors.red,
-                        ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.deepOrange),
+                    ),
+                    child: const Text(
+                      'Yes',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context, true);
-                      },
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.deepOrange),
-                      ),
-                      child: const Text(
-                        'Yes',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          );
-        }).then((yesTapped) {
+            ),
+          ],
+        );
+      },
+    ).then((bool? yesTapped) {
       if (yesTapped ?? false) {
         context.read<AuthBloc>().add(AuthFlag(item: item));
         showSnackBar(content: 'Comment flagged!');
@@ -845,64 +857,65 @@ class _StoryScreenState extends State<StoryScreen> {
     });
   }
 
-  void onBlockTapped(Item item, bool isBlocked) {
+  void onBlockTapped(Item item, {required bool isBlocked}) {
     showDialog<bool>(
-        context: context,
-        builder: (context) {
-          return SimpleDialog(
-            title: Text('${isBlocked ? 'Unblock' : 'Block'} this user?'),
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 24,
-                  right: 12,
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: Text('${isBlocked ? 'Unblock' : 'Block'} this user?'),
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 24,
+                right: 12,
+              ),
+              child: Text(
+                'Do you want to ${isBlocked ? 'unblock' : 'block'} ${item.by}'
+                ' and ${isBlocked ? 'display' : 'hide'} '
+                'comments posted by this user?',
+                style: const TextStyle(
+                  color: Colors.grey,
                 ),
-                child: Text(
-                  'Do you want to ${isBlocked ? 'unblock' : 'block'} ${item.by}'
-                  ' and ${isBlocked ? 'display' : 'hide'} '
-                  'comments posted by this user?',
-                  style: const TextStyle(
-                    color: Colors.grey,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                right: 12,
+              ),
+              child: ButtonBar(
+                children: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(
+                        color: Colors.red,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                  right: 12,
-                ),
-                child: ButtonBar(
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(
-                          color: Colors.red,
-                        ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.deepOrange),
+                    ),
+                    child: const Text(
+                      'Yes',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context, true);
-                      },
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.deepOrange),
-                      ),
-                      child: const Text(
-                        'Yes',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          );
-        }).then((yesTapped) {
+            ),
+          ],
+        );
+      },
+    ).then((bool? yesTapped) {
       if (yesTapped ?? false) {
         if (isBlocked) {
           context.read<BlocklistCubit>().removeFromBlocklist(item.by);
@@ -915,14 +928,14 @@ class _StoryScreenState extends State<StoryScreen> {
   }
 
   void onSendTapped() {
-    final authBloc = context.read<AuthBloc>();
-    final postCubit = context.read<PostCubit>();
-    final editState = context.read<EditCubit>().state;
-    final replyingTo = editState.replyingTo;
-    final itemEdited = editState.itemBeingEdited;
+    final AuthBloc authBloc = context.read<AuthBloc>();
+    final PostCubit postCubit = context.read<PostCubit>();
+    final EditState editState = context.read<EditCubit>().state;
+    final Item? replyingTo = editState.replyingTo;
+    final Item? itemEdited = editState.itemBeingEdited;
 
     if (authBloc.state.isLoggedIn) {
-      final text = commentEditingController.text;
+      final String text = commentEditingController.text;
       if (text.isEmpty) {
         return;
       }
@@ -938,24 +951,24 @@ class _StoryScreenState extends State<StoryScreen> {
   }
 
   void onLoginTapped() {
-    final usernameController = TextEditingController();
-    final passwordController = TextEditingController();
-    final sadFace = Constants.sadFaces.pickRandomly();
-    final happyFace = Constants.happyFaces.pickRandomly();
+    final TextEditingController usernameController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+    final String? sadFace = Constants.sadFaces.pickRandomly();
+    final String? happyFace = Constants.happyFaces.pickRandomly();
     showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (context) {
+      builder: (BuildContext context) {
         return BlocConsumer<AuthBloc, AuthState>(
-          listener: (context, state) {
+          listener: (BuildContext context, AuthState state) {
             if (state.isLoggedIn) {
               Navigator.pop(context);
               showSnackBar(content: 'Logged in successfully! $happyFace');
             }
           },
-          builder: (context, state) {
+          builder: (BuildContext context, AuthState state) {
             return SimpleDialog(
-              children: [
+              children: <Widget>[
                 if (state.status == AuthStatus.loading)
                   const SizedBox(
                     height: 36,
@@ -966,7 +979,7 @@ class _StoryScreenState extends State<StoryScreen> {
                       ),
                     ),
                   )
-                else if (!state.isLoggedIn) ...[
+                else if (!state.isLoggedIn) ...<Widget>[
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 18,
@@ -1022,7 +1035,7 @@ class _StoryScreenState extends State<StoryScreen> {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                    children: <Widget>[
                       IconButton(
                         icon: Icon(
                           state.agreedToEULA
@@ -1038,7 +1051,7 @@ class _StoryScreenState extends State<StoryScreen> {
                       ),
                       Text.rich(
                         TextSpan(
-                          children: [
+                          children: <InlineSpan>[
                             const TextSpan(
                               text: 'I agree to ',
                               style: TextStyle(
@@ -1050,7 +1063,8 @@ class _StoryScreenState extends State<StoryScreen> {
                                 offset: const Offset(0, 1),
                                 child: TapDownWrapper(
                                   onTap: () => LinkUtil.launchUrl(
-                                      Constants.endUserAgreementLink),
+                                    Constants.endUserAgreementLink,
+                                  ),
                                   child: const Text(
                                     'End User Agreement',
                                     style: TextStyle(
@@ -1072,7 +1086,7 @@ class _StoryScreenState extends State<StoryScreen> {
                       right: 12,
                     ),
                     child: ButtonBar(
-                      children: [
+                      children: <Widget>[
                         TextButton(
                           onPressed: () {
                             Navigator.pop(context);
@@ -1088,13 +1102,15 @@ class _StoryScreenState extends State<StoryScreen> {
                         ElevatedButton(
                           onPressed: () {
                             if (state.agreedToEULA) {
-                              final username = usernameController.text;
-                              final password = passwordController.text;
+                              final String username = usernameController.text;
+                              final String password = passwordController.text;
                               if (username.isNotEmpty && password.isNotEmpty) {
-                                context.read<AuthBloc>().add(AuthLogin(
-                                      username: username,
-                                      password: password,
-                                    ));
+                                context.read<AuthBloc>().add(
+                                      AuthLogin(
+                                        username: username,
+                                        password: password,
+                                      ),
+                                    );
                               }
                             }
                           },

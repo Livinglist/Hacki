@@ -15,7 +15,10 @@ class PostCubit extends Cubit<PostState> {
 
   Future<void> post({required String text, required int to}) async {
     emit(state.copyWith(status: PostStatus.loading));
-    final successful = await _postRepository.comment(parentId: to, text: text);
+    final bool successful = await _postRepository.comment(
+      parentId: to,
+      text: text,
+    );
 
     // final successful =
     //     await Future<bool>.delayed(const Duration(seconds: 2), () => true);
@@ -29,7 +32,7 @@ class PostCubit extends Cubit<PostState> {
 
   Future<void> edit({required String text, required int id}) async {
     emit(state.copyWith(status: PostStatus.loading));
-    final successful = await _postRepository.edit(id: id, text: text);
+    final bool successful = await _postRepository.edit(id: id, text: text);
 
     if (successful) {
       emit(state.copyWith(status: PostStatus.successful));

@@ -22,7 +22,7 @@ class CommentsState extends Equatable {
   CommentsState.init({
     required this.offlineReading,
     required this.item,
-  })  : comments = [],
+  })  : comments = <Comment>[],
         status = CommentsStatus.init,
         collapsed = false,
         onlyShowTargetComment = false,
@@ -58,7 +58,7 @@ class CommentsState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         item,
         comments,
         status,

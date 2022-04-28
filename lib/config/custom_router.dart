@@ -6,7 +6,7 @@ import 'package:hacki/screens/screens.dart';
 /// Handle named routing.
 class CustomRouter {
   /// Top level routing.
-  static Route onGenerateRoute(RouteSettings settings) {
+  static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case HomeScreen.routeName:
         return HomeScreen.route();
@@ -20,7 +20,7 @@ class CustomRouter {
   }
 
   /// Nested routing for bottom navigation bar.
-  static Route onGenerateNestedRoute(RouteSettings settings) {
+  static Route<dynamic> onGenerateNestedRoute(RouteSettings settings) {
     switch (settings.name) {
       case StoryScreen.routeName:
         return StoryScreen.route(settings.arguments! as StoryScreenArgs);
@@ -32,7 +32,7 @@ class CustomRouter {
   }
 
   /// Error route.
-  static Route _errorRoute() {
+  static Route<dynamic> _errorRoute() {
     return MaterialPageRoute<dynamic>(
       settings: const RouteSettings(name: '/error'),
       builder: (_) => Scaffold(

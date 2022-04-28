@@ -35,33 +35,42 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SembastRepository _sembastRepository;
 
   Future<void> onInitialize(
-      AuthInitialize event, Emitter<AuthState> emit) async {
+    AuthInitialize event,
+    Emitter<AuthState> emit,
+  ) async {
     await _authRepository.loggedIn.then((bool loggedIn) async {
       if (loggedIn) {
-        final username = await _authRepository.username;
-        final user = await _storiesRepository.fetchUserBy(userId: username!);
+        final String? username = await _authRepository.username;
+        final User user =
+            await _storiesRepository.fetchUserBy(userId: username!);
 
-        emit(state.copyWith(
-          isLoggedIn: true,
-          user: user,
-        ));
+        emit(
+          state.copyWith(
+            isLoggedIn: true,
+            user: user,
+          ),
+        );
       } else {
-        emit(state.copyWith(
-          status: AuthStatus.loaded,
-          isLoggedIn: false,
-        ));
+        emit(
+          state.copyWith(
+            status: AuthStatus.loaded,
+            isLoggedIn: false,
+          ),
+        );
       }
     });
   }
 
   Future<void> onToggleAgreeToEULA(
-      AuthToggleAgreeToEULA event, Emitter<AuthState> emit) async {
+    AuthToggleAgreeToEULA event,
+    Emitter<AuthState> emit,
+  ) async {
     emit(state.copyWith(agreedToEULA: !state.agreedToEULA));
   }
 
   Future<void> onFlag(AuthFlag event, Emitter<AuthState> emit) async {
     if (state.isLoggedIn) {
-      final flagged = event.item.dead;
+      final bool flagged = event.item.dead;
       await _authRepository.flag(id: event.item.id, flag: !flagged);
     }
   }
@@ -69,30 +78,37 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> onLogin(AuthLogin event, Emitter<AuthState> emit) async {
     emit(state.copyWith(status: AuthStatus.loading));
 
-    final successful = await _authRepository.login(
-        username: event.username, password: event.password);
+    final bool successful = await _authRepository.login(
+      username: event.username,
+      password: event.password,
+    );
 
     if (successful) {
-      final user = await _storiesRepository.fetchUserBy(userId: event.username);
-      emit(state.copyWith(
-        user: user,
-        isLoggedIn: true,
-        status: AuthStatus.loaded,
-      ));
+      final User user =
+          await _storiesRepository.fetchUserBy(userId: event.username);
+      emit(
+        state.copyWith(
+          user: user,
+          isLoggedIn: true,
+          status: AuthStatus.loaded,
+        ),
+      );
     } else {
       emit(state.copyWith(status: AuthStatus.failure));
     }
   }
 
   Future<void> onLogout(AuthLogout event, Emitter<AuthState> emit) async {
-    emit(state.copyWith(
-      user: User.empty(),
-      isLoggedIn: false,
-      agreedToEULA: false,
-    ));
+    emit(
+      state.copyWith(
+        user: User.empty(),
+        isLoggedIn: false,
+        agreedToEULA: false,
+      ),
+    );
 
     await _authRepository.logout();
-    await _storageRepository.updateUnreadCommentsIds([]);
+    await _storageRepository.updateUnreadCommentsIds(<int>[]);
     await _sembastRepository.deleteAll();
   }
 }

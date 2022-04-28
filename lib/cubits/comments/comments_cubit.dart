@@ -25,9 +25,9 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
   final CacheService _cacheService;
   final CacheRepository _cacheRepository;
   final StoriesRepository _storiesRepository;
-  StreamSubscription? _streamSubscription;
+  StreamSubscription<Comment>? _streamSubscription;
 
-  static const _pageSize = 20;
+  static const int _pageSize = 20;
 
   @override
   void emit(CommentsState state) {
@@ -41,11 +41,13 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
     List<Comment>? targetParents,
   }) async {
     if (onlyShowTargetComment && (targetParents?.isNotEmpty ?? false)) {
-      emit(state.copyWith(
-        comments: targetParents,
-        onlyShowTargetComment: true,
-        status: CommentsStatus.loaded,
-      ));
+      emit(
+        state.copyWith(
+          comments: targetParents,
+          onlyShowTargetComment: true,
+          status: CommentsStatus.loaded,
+        ),
+      );
 
       _streamSubscription = _storiesRepository
           .fetchCommentsStream(
@@ -61,8 +63,8 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
     emit(state.copyWith(status: CommentsStatus.loading));
 
     if (state.item is Story) {
-      final story = state.item;
-      final updatedStory = state.offlineReading
+      final Item story = state.item;
+      final Item updatedStory = state.offlineReading
           ? story
           : await _storiesRepository.fetchStoryBy(story.id) ?? story;
 
@@ -80,30 +82,36 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
           ..onDone(_onDone);
       }
     } else {
-      emit(state.copyWith(
-        collapsed: _cacheService.isCollapsed(state.item.id),
-        status: CommentsStatus.loaded,
-      ));
+      emit(
+        state.copyWith(
+          collapsed: _cacheService.isCollapsed(state.item.id),
+          status: CommentsStatus.loaded,
+        ),
+      );
     }
   }
 
   Future<void> refresh() async {
-    final offlineReading = await _cacheRepository.hasCachedStories;
+    final bool offlineReading = await _cacheRepository.hasCachedStories;
 
     if (offlineReading) {
-      emit(state.copyWith(
-        status: CommentsStatus.loaded,
-      ));
+      emit(
+        state.copyWith(
+          status: CommentsStatus.loaded,
+        ),
+      );
       return;
     }
 
-    emit(state.copyWith(
-      status: CommentsStatus.loading,
-      comments: [],
-    ));
+    emit(
+      state.copyWith(
+        status: CommentsStatus.loading,
+        comments: <Comment>[],
+      ),
+    );
 
-    final story = (state.item as Story?)!;
-    final updatedStory =
+    final Story story = (state.item as Story?)!;
+    final Story updatedStory =
         await _storiesRepository.fetchStoryBy(story.id) ?? story;
 
     if (state.offlineReading) {
@@ -118,10 +126,12 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
         ..onDone(_onDone);
     }
 
-    emit(state.copyWith(
-      item: updatedStory,
-      status: CommentsStatus.loaded,
-    ));
+    emit(
+      state.copyWith(
+        item: updatedStory,
+        status: CommentsStatus.loaded,
+      ),
+    );
   }
 
   void collapse() {
@@ -130,11 +140,13 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
   }
 
   void loadAll(T item) {
-    emit(state.copyWith(
-      onlyShowTargetComment: false,
-      comments: [],
-      item: item,
-    ));
+    emit(
+      state.copyWith(
+        onlyShowTargetComment: false,
+        comments: <Comment>[],
+        item: item,
+      ),
+    );
     init();
   }
 
@@ -148,15 +160,20 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
   void _onDone() {
     _streamSubscription?.cancel();
     _streamSubscription = null;
-    emit(state.copyWith(
-      status: CommentsStatus.allLoaded,
-    ));
+    emit(
+      state.copyWith(
+        status: CommentsStatus.allLoaded,
+      ),
+    );
   }
 
   void _onCommentFetched(Comment? comment) {
     if (comment != null) {
       _cacheService.cacheComment(comment);
-      final updatedComments = [...state.comments, comment];
+      final List<Comment> updatedComments = <Comment>[
+        ...state.comments,
+        comment
+      ];
       emit(state.copyWith(comments: updatedComments));
 
       if (updatedComments.length >= _pageSize + _pageSize * state.currentPage &&
@@ -164,10 +181,12 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
               _pageSize * 2 + _pageSize * state.currentPage) {
         _streamSubscription?.pause();
 
-        emit(state.copyWith(
-          currentPage: state.currentPage + 1,
-          status: CommentsStatus.loaded,
-        ));
+        emit(
+          state.copyWith(
+            currentPage: state.currentPage + 1,
+            status: CommentsStatus.loaded,
+          ),
+        );
       }
     }
   }

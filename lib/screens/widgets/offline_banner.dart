@@ -14,9 +14,9 @@ class OfflineBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<StoriesBloc, StoriesState>(
-      buildWhen: (previous, current) =>
+      buildWhen: (StoriesState previous, StoriesState current) =>
           previous.offlineReading != current.offlineReading,
-      builder: (context, state) {
+      builder: (BuildContext context, StoriesState state) {
         if (state.offlineReading) {
           return MaterialBanner(
             content: Text(
@@ -25,34 +25,34 @@ class OfflineBanner extends StatelessWidget {
               textAlign: showExitButton ? TextAlign.left : TextAlign.center,
             ),
             backgroundColor: Colors.orangeAccent.withOpacity(0.3),
-            actions: [
+            actions: <Widget>[
               if (showExitButton)
                 TextButton(
                   onPressed: () {
                     showDialog<bool>(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: const Text('Exit offline mode?'),
-                            actions: [
-                              TextButton(
-                                  onPressed: () =>
-                                      Navigator.of(context).pop(false),
-                                  child: const Text('Cancel')),
-                              TextButton(
-                                onPressed: () =>
-                                    Navigator.of(context).pop(true),
-                                child: const Text(
-                                  'Yes',
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                  ),
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Exit offline mode?'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(false),
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(true),
+                              child: const Text(
+                                'Yes',
+                                style: TextStyle(
+                                  color: Colors.red,
                                 ),
                               ),
-                            ],
-                          );
-                        }).then((value) {
+                            ),
+                          ],
+                        );
+                      },
+                    ).then((bool? value) {
                       if (value ?? false) {
                         context.read<StoriesBloc>().add(StoriesExitOffline());
                         context.read<AuthBloc>().add(AuthInitialize());

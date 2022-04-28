@@ -20,24 +20,31 @@ class HistoryCubit extends Cubit<HistoryState> {
 
   final AuthBloc _authBloc;
   final StoriesRepository _storiesRepository;
-  static const _pageSize = 20;
+  static const int _pageSize = 20;
 
   void init() {
-    _authBloc.stream.listen((authState) {
+    _authBloc.stream.listen((AuthState authState) {
       if (authState.isLoggedIn) {
-        final username = authState.username;
+        final String username = authState.username;
 
-        _storiesRepository.fetchSubmitted(of: username).then((submittedIds) {
-          emit(state.copyWith(
-            submittedIds: submittedIds,
-            submittedItems: [],
-            currentPage: 0,
-          ));
+        _storiesRepository
+            .fetchSubmitted(of: username)
+            .then((List<int>? submittedIds) {
+          emit(
+            state.copyWith(
+              submittedIds: submittedIds,
+              submittedItems: <Item>[],
+              currentPage: 0,
+            ),
+          );
           if (submittedIds != null) {
             _storiesRepository
                 .fetchItemsStream(
-                    ids: submittedIds.sublist(
-                        0, _pageSize.clamp(0, submittedIds.length)))
+                  ids: submittedIds.sublist(
+                    0,
+                    _pageSize.clamp(0, submittedIds.length),
+                  ),
+                )
                 .listen(_onItemLoaded);
           }
         });
@@ -48,11 +55,11 @@ class HistoryCubit extends Cubit<HistoryState> {
 
   void loadMore() {
     emit(state.copyWith(status: HistoryStatus.loading));
-    final currentPage = state.currentPage;
-    final len = state.submittedIds.length;
+    final int currentPage = state.currentPage;
+    final int len = state.submittedIds.length;
     emit(state.copyWith(currentPage: currentPage + 1));
-    final lower = _pageSize * (currentPage + 1);
-    var upper = _pageSize + lower;
+    final int lower = _pageSize * (currentPage + 1);
+    int upper = _pageSize + lower;
 
     if (len > lower) {
       if (len < upper) {
@@ -61,10 +68,11 @@ class HistoryCubit extends Cubit<HistoryState> {
 
       _storiesRepository
           .fetchItemsStream(
-              ids: state.submittedIds.sublist(
-            lower,
-            upper,
-          ))
+            ids: state.submittedIds.sublist(
+              lower,
+              upper,
+            ),
+          )
           .listen(_onItemLoaded)
           .onDone(() {
         emit(state.copyWith(status: HistoryStatus.loaded));
@@ -75,21 +83,28 @@ class HistoryCubit extends Cubit<HistoryState> {
   }
 
   void refresh() {
-    final username = _authBloc.state.username;
-    emit(state.copyWith(
-      status: HistoryStatus.loading,
-      currentPage: 0,
-      submittedIds: [],
-      submittedItems: [],
-    ));
+    final String username = _authBloc.state.username;
+    emit(
+      state.copyWith(
+        status: HistoryStatus.loading,
+        currentPage: 0,
+        submittedIds: <int>[],
+        submittedItems: <Item>[],
+      ),
+    );
 
-    _storiesRepository.fetchSubmitted(of: username).then((submittedIds) {
+    _storiesRepository
+        .fetchSubmitted(of: username)
+        .then((List<int>? submittedIds) {
       emit(state.copyWith(submittedIds: submittedIds));
       if (submittedIds != null) {
         _storiesRepository
             .fetchItemsStream(
-                ids: submittedIds.sublist(
-                    0, _pageSize.clamp(0, submittedIds.length)))
+              ids: submittedIds.sublist(
+                0,
+                _pageSize.clamp(0, submittedIds.length),
+              ),
+            )
             .listen(_onItemLoaded)
             .onDone(() {
           emit(state.copyWith(status: HistoryStatus.loaded));
@@ -99,15 +114,20 @@ class HistoryCubit extends Cubit<HistoryState> {
   }
 
   void reset() {
-    emit(state.copyWith(
-      submittedIds: [],
-      submittedItems: [],
-      currentPage: 0,
-    ));
+    emit(
+      state.copyWith(
+        submittedIds: <int>[],
+        submittedItems: <Item>[],
+        currentPage: 0,
+      ),
+    );
   }
 
   void _onItemLoaded(Item item) {
-    emit(state.copyWith(
-        submittedItems: List<Item>.from(state.submittedItems)..add(item)));
+    emit(
+      state.copyWith(
+        submittedItems: List<Item>.from(state.submittedItems)..add(item),
+      ),
+    );
   }
 }

@@ -24,7 +24,7 @@ class StoriesListView extends StatefulWidget {
 }
 
 class _StoriesListViewState extends State<StoriesListView> {
-  final refreshController = RefreshController();
+  final RefreshController refreshController = RefreshController();
 
   @override
   void dispose() {
@@ -34,31 +34,31 @@ class _StoriesListViewState extends State<StoriesListView> {
 
   @override
   Widget build(BuildContext context) {
-    final storyType = widget.storyType;
-    final header = widget.header;
-    final onStoryTapped = widget.onStoryTapped;
+    final StoryType storyType = widget.storyType;
+    final Widget header = widget.header;
+    final ValueChanged<Story> onStoryTapped = widget.onStoryTapped;
 
     return BlocBuilder<PreferenceCubit, PreferenceState>(
-      buildWhen: (previous, current) =>
+      buildWhen: (PreferenceState previous, PreferenceState current) =>
           previous.showComplexStoryTile != current.showComplexStoryTile,
-      builder: (context, preferenceState) {
+      builder: (BuildContext context, PreferenceState preferenceState) {
         return BlocConsumer<StoriesBloc, StoriesState>(
-          listenWhen: (previous, current) =>
+          listenWhen: (StoriesState previous, StoriesState current) =>
               previous.statusByType[storyType] !=
               current.statusByType[storyType],
-          listener: (context, state) {
+          listener: (BuildContext context, StoriesState state) {
             if (state.statusByType[storyType] == StoriesStatus.loaded) {
               refreshController
                 ..refreshCompleted(resetFooterState: true)
                 ..loadComplete();
             }
           },
-          buildWhen: (previous, current) =>
+          buildWhen: (StoriesState previous, StoriesState current) =>
               (current.currentPageByType[storyType] == 0 &&
                   previous.currentPageByType[storyType] == 0) ||
               (previous.storiesByType[storyType]!.length !=
                   current.storiesByType[storyType]!.length),
-          builder: (context, state) {
+          builder: (BuildContext context, StoriesState state) {
             return ItemsListView<Story>(
               pinnable: true,
               showOfflineBanner: true,

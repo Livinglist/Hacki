@@ -16,18 +16,21 @@ class BlocklistCubit extends Cubit<BlocklistState> {
   final PreferenceRepository _storageRepository;
 
   void init() {
-    _storageRepository.blocklist
-        .then((blocklist) => emit(state.copyWith(blocklist: blocklist)));
+    _storageRepository.blocklist.then(
+      (List<String> blocklist) => emit(state.copyWith(blocklist: blocklist)),
+    );
   }
 
   void addToBlocklist(String username) {
-    final updated = List<String>.from(state.blocklist)..add(username);
+    final List<String> updated = List<String>.from(state.blocklist)
+      ..add(username);
     emit(state.copyWith(blocklist: updated));
     _storageRepository.updateBlocklist(updated);
   }
 
   void removeFromBlocklist(String username) {
-    final updated = List<String>.from(state.blocklist)..remove(username);
+    final List<String> updated = List<String>.from(state.blocklist)
+      ..remove(username);
     emit(state.copyWith(blocklist: updated));
     _storageRepository.updateBlocklist(updated);
   }

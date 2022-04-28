@@ -16,8 +16,8 @@ class FavState extends Equatable {
   });
 
   FavState.init()
-      : favIds = [],
-        favStories = [],
+      : favIds = <int>[],
+        favStories = <Story>[],
         status = FavStatus.init,
         currentPage = 0;
 
@@ -41,7 +41,7 @@ class FavState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         favIds,
         favStories,
         status,

@@ -1,12 +1,12 @@
 extension DateTimeExtension on DateTime {
   String toReadableString() {
-    final now = DateTime.now();
-    final diff = now.difference(this);
+    final DateTime now = DateTime.now();
+    final Duration diff = now.difference(this);
     if (diff.inDays > 365) {
-      final gap = now.year - year;
+      final int gap = now.year - year;
       return '$gap year${gap == 1 ? '' : 's'} ago';
     } else if (diff.inDays > 30) {
-      var gap = now.month - month;
+      int gap = now.month - month;
       if (gap == 0) {
         gap = 1;
       } else if (gap < 0) {

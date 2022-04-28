@@ -4,26 +4,28 @@ import 'package:hacki/models/models.dart';
 class SearchRepository {
   SearchRepository({Dio? dio}) : _dio = dio ?? Dio();
 
-  static const String baseUrl = 'http://hn.algolia.com/api/v1/search?query=';
+  static const String _baseUrl = 'http://hn.algolia.com/api/v1/search?query=';
 
   final Dio _dio;
 
   Stream<Story> search(String query, {int page = 0}) async* {
-    final url = '$baseUrl${Uri.encodeComponent(query)}&page=$page';
-    final response = await _dio.get<Map<String, dynamic>>(url);
-    final data = response.data;
+    final String url = '$_baseUrl${Uri.encodeComponent(query)}&page=$page';
+    final Response<Map<String, dynamic>> response =
+        await _dio.get<Map<String, dynamic>>(url);
+    final Map<String, dynamic>? data = response.data;
     if (data == null) return;
-    final json = data;
-    final hits = (json['hits'] as List).cast<Map<String, dynamic>>();
+    final Map<String, dynamic> json = data;
+    final List<Map<String, dynamic>> hits =
+        (json['hits'] as List<dynamic>).cast<Map<String, dynamic>>();
 
     if (hits.isEmpty) {
       return;
     }
 
-    for (final hit in hits) {
-      final by = hit['author'] as String? ?? '';
-      final title = hit['title'] as String? ?? '';
-      final createdAt = hit['created_at_i'] as int? ?? 0;
+    for (final Map<String, dynamic> hit in hits) {
+      final String by = hit['author'] as String? ?? '';
+      final String title = hit['title'] as String? ?? '';
+      final int createdAt = hit['created_at_i'] as int? ?? 0;
 
       // Getting rid of comments, only keeping stories for convenience.
       // Don't judge me.
@@ -31,9 +33,9 @@ class SearchRepository {
         continue;
       }
 
-      final url = hit['url'] as String? ?? '';
-      final id = int.parse(hit['objectID'] as String? ?? '0');
-      final story = Story(
+      final String url = hit['url'] as String? ?? '';
+      final int id = int.parse(hit['objectID'] as String? ?? '0');
+      final Story story = Story(
         descendants: 0,
         id: id,
         score: 0,
@@ -42,7 +44,7 @@ class SearchRepository {
         title: title,
         url: url,
         type: '',
-        kids: const [],
+        kids: const <int>[],
       );
       yield story;
     }

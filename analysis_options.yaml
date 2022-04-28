@@ -1,4 +1,8 @@
-include: package:very_good_analysis/analysis_options.2.3.0.yaml
+include: package:very_good_analysis/analysis_options.2.4.0.yaml
 linter:
   rules:
+    parameter_assignments: false
     public_member_api_docs: false
+    library_private_types_in_public_api: false
+    omit_local_variable_types: false
+    always_specify_types: true

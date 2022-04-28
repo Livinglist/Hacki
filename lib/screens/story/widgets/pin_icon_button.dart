@@ -19,8 +19,8 @@ class PinIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PinCubit, PinState>(
-      builder: (context, pinState) {
-        final pinned = pinState.pinnedStoriesIds.contains(story.id);
+      builder: (BuildContext context, PinState pinState) {
+        final bool pinned = pinState.pinnedStoriesIds.contains(story.id);
         return Transform.rotate(
           angle: pi / 4,
           child: Transform.translate(

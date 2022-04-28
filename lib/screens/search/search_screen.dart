@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
+import 'package:hacki/models/story.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/utils/utils.dart';
@@ -16,25 +17,25 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  final refreshController = RefreshController();
-  final debouncer = Debouncer(delay: const Duration(seconds: 1));
+  final RefreshController refreshController = RefreshController();
+  final Debouncer debouncer = Debouncer(delay: const Duration(seconds: 1));
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PreferenceCubit, PreferenceState>(
-      builder: (context, prefState) {
+      builder: (BuildContext context, PreferenceState prefState) {
         return BlocConsumer<SearchCubit, SearchState>(
-          listener: (context, state) {
+          listener: (BuildContext context, SearchState state) {
             if (state.status == SearchStatus.loaded) {
               refreshController.loadComplete();
             }
           },
-          builder: (context, state) {
+          builder: (BuildContext context, SearchState state) {
             return Scaffold(
               resizeToAvoidBottomInset: false,
               body: Column(
                 mainAxisSize: MainAxisSize.min,
-                children: [
+                children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: TextField(
@@ -46,7 +47,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           borderSide: BorderSide(color: Colors.orange),
                         ),
                       ),
-                      onChanged: (val) {
+                      onChanged: (String val) {
                         if (val.isNotEmpty) {
                           debouncer.run(() {
                             context.read<SearchCubit>().search(val);
@@ -55,7 +56,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       },
                     ),
                   ),
-                  if (state.status == SearchStatus.loading) ...[
+                  if (state.status == SearchStatus.loading) ...<Widget>[
                     const SizedBox(
                       height: 100,
                     ),
@@ -70,7 +71,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                       footer: CustomFooter(
                         loadStyle: LoadStyle.ShowWhenLoading,
-                        builder: (context, mode) {
+                        builder: (BuildContext context, LoadStatus? mode) {
                           Widget body;
                           if (mode == LoadStatus.idle) {
                             body = const Text('');
@@ -99,10 +100,10 @@ class _SearchScreenState extends State<SearchScreen> {
                         context.read<SearchCubit>().loadMore();
                       },
                       child: ListView(
-                        children: [
+                        children: <Widget>[
                           ...state.results
                               .map(
-                                (e) => [
+                                (Story e) => <Widget>[
                                   FadeIn(
                                     child: StoryTile(
                                       showWebPreview:
@@ -119,7 +120,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     ),
                                 ],
                               )
-                              .expand((e) => e)
+                              .expand((List<Widget> e) => e)
                               .toList(),
                           const SizedBox(
                             height: 40,

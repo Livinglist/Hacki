@@ -28,8 +28,8 @@ class _ScrollUpIconButtonState extends State<ScrollUpIconButton> {
   @override
   Widget build(BuildContext context) {
     if (widget.scrollController.hasClients) {
-      final curPos = widget.scrollController.offset;
-      final opacity = curPos / 1000;
+      final double curPos = widget.scrollController.offset;
+      final double opacity = curPos / 1000;
       return Opacity(
         opacity: opacity.clamp(0, 1),
         child: IconButton(
@@ -39,7 +39,7 @@ class _ScrollUpIconButtonState extends State<ScrollUpIconButton> {
             size: 26,
           ),
           onPressed: () {
-            final curPos = widget.scrollController.offset;
+            final double curPos = widget.scrollController.offset;
             widget.scrollController.animateTo(
               0,
               curve: Curves.bounceOut,

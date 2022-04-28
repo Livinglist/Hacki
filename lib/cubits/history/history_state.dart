@@ -16,8 +16,8 @@ class HistoryState extends Equatable {
   });
 
   HistoryState.init()
-      : submittedIds = [],
-        submittedItems = [],
+      : submittedIds = <int>[],
+        submittedItems = <Item>[],
         status = HistoryStatus.init,
         currentPage = 0;
 
@@ -41,7 +41,7 @@ class HistoryState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         submittedIds,
         submittedItems,
         status,

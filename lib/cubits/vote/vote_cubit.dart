@@ -26,23 +26,25 @@ class VoteCubit extends Cubit<VoteState> {
   final AuthBloc _authBloc;
   final AuthRepository _authRepository;
   final PreferenceRepository _storageRepository;
-  static const _karmaThreshold = 501;
+  static const int _karmaThreshold = 501;
 
   Future<void> init() async {
-    final vote = await _storageRepository.vote(
+    final bool? vote = await _storageRepository.vote(
       submittedTo: state.item.id,
       from: _authBloc.state.username,
     );
 
-    final parsedVote = vote == null
+    final Vote? parsedVote = vote == null
         ? null
         : vote
             ? Vote.up
             : Vote.down;
 
-    emit(state.copyWith(
-      vote: parsedVote,
-    ));
+    emit(
+      state.copyWith(
+        vote: parsedVote,
+      ),
+    );
   }
 
   Future<void> upvote() async {
@@ -57,26 +59,32 @@ class VoteCubit extends Cubit<VoteState> {
     }
 
     if (state.vote == null || state.vote == Vote.down) {
-      final success = await _authRepository.upvote(
+      final bool success = await _authRepository.upvote(
         id: state.item.id,
         upvote: true,
       );
 
       if (success) {
-        emit(state.copyWith(
-          vote: Vote.up,
-          status: VoteStatus.submitted,
-        ));
+        emit(
+          state.copyWith(
+            vote: Vote.up,
+            status: VoteStatus.submitted,
+          ),
+        );
 
-        unawaited(_storageRepository.addVote(
-          username: _authBloc.state.username,
-          id: state.item.id,
-          vote: true,
-        ));
+        unawaited(
+          _storageRepository.addVote(
+            username: _authBloc.state.username,
+            id: state.item.id,
+            vote: true,
+          ),
+        );
       } else {
-        emit(state.copyWith(
-          status: VoteStatus.failure,
-        ));
+        emit(
+          state.copyWith(
+            status: VoteStatus.failure,
+          ),
+        );
       }
     } else {
       await _authRepository.upvote(id: state.item.id, upvote: false);
@@ -85,9 +93,11 @@ class VoteCubit extends Cubit<VoteState> {
         id: state.item.id,
       );
 
-      emit(state.copyWithVoteRemoved(
-        status: VoteStatus.canceled,
-      ));
+      emit(
+        state.copyWithVoteRemoved(
+          status: VoteStatus.canceled,
+        ),
+      );
     }
   }
 
@@ -104,7 +114,7 @@ class VoteCubit extends Cubit<VoteState> {
 
     if (_authBloc.state.user.karma >= _karmaThreshold) {
       if (state.vote == null || state.vote == Vote.up) {
-        final success =
+        final bool success =
             await _authRepository.downvote(id: state.item.id, downvote: true);
 
         if (success) {
@@ -114,10 +124,12 @@ class VoteCubit extends Cubit<VoteState> {
             vote: false,
           );
 
-          emit(state.copyWith(
-            vote: Vote.down,
-            status: VoteStatus.submitted,
-          ));
+          emit(
+            state.copyWith(
+              vote: Vote.down,
+              status: VoteStatus.submitted,
+            ),
+          );
         }
       } else {
         await _authRepository.downvote(id: state.item.id, downvote: false);
@@ -126,9 +138,11 @@ class VoteCubit extends Cubit<VoteState> {
           id: state.item.id,
         );
 
-        emit(state.copyWithVoteRemoved(
-          status: VoteStatus.canceled,
-        ));
+        emit(
+          state.copyWithVoteRemoved(
+            status: VoteStatus.canceled,
+          ),
+        );
       }
     } else {
       emit(state.copyWith(status: VoteStatus.failureKarmaBelowThreshold));

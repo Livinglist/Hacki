@@ -16,8 +16,8 @@ class FavIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<FavCubit, FavState>(
-      builder: (context, favState) {
-        final isFav = favState.favIds.contains(storyId);
+      builder: (BuildContext context, FavState favState) {
+        final bool isFav = favState.favIds.contains(storyId);
         return IconButton(
           icon: DescribedFeatureOverlay(
             barrierDismissible: false,

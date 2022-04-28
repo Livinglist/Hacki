@@ -33,7 +33,7 @@ class Story extends Item {
           kids: kids,
           type: type,
           dead: false,
-          parts: [],
+          parts: <int>[],
           deleted: false,
           parent: 0,
           poll: 0,
@@ -49,9 +49,9 @@ class Story extends Item {
           by: '',
           title: '',
           url: '',
-          kids: [],
+          kids: <int>[],
           dead: false,
-          parts: [],
+          parts: <int>[],
           deleted: false,
           parent: 0,
           poll: 0,
@@ -68,12 +68,12 @@ class Story extends Item {
           by: json['by'] as String? ?? '',
           title: json['title'] as String? ?? '',
           url: json['url'] as String? ?? '',
-          kids: (json['kids'] as List?)?.cast<int>() ?? [],
+          kids: (json['kids'] as List<dynamic>?)?.cast<int>() ?? <int>[],
           text: json['text'] as String? ?? '',
           dead: json['dead'] as bool? ?? false,
           deleted: json['deleted'] as bool? ?? false,
           type: json['type'] as String? ?? '',
-          parts: [],
+          parts: <int>[],
           parent: 0,
           poll: 0,
         );
@@ -100,12 +100,13 @@ class Story extends Item {
 
   @override
   String toString() {
-    final prettyString = const JsonEncoder.withIndent('  ').convert(this);
+    final String prettyString =
+        const JsonEncoder.withIndent('  ').convert(this);
     return 'Story $prettyString';
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         id,
         score,
         descendants,

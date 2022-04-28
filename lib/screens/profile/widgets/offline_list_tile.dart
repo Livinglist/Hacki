@@ -11,22 +11,22 @@ class OfflineListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<StoriesBloc, StoriesState>(
-      listenWhen: (previous, current) =>
+      listenWhen: (StoriesState previous, StoriesState current) =>
           previous.downloadStatus != current.downloadStatus,
-      listener: (context, state) {
+      listener: (BuildContext context, StoriesState state) {
         if (state.downloadStatus == StoriesDownloadStatus.failure) {
           Wakelock.disable();
         }
       },
-      buildWhen: (previous, current) =>
+      buildWhen: (StoriesState previous, StoriesState current) =>
           previous.downloadStatus != current.downloadStatus,
-      builder: (context, state) {
-        final downloading =
+      builder: (BuildContext context, StoriesState state) {
+        final bool downloading =
             state.downloadStatus == StoriesDownloadStatus.downloading;
-        final downloaded =
+        final bool downloaded =
             state.downloadStatus == StoriesDownloadStatus.finished;
 
-        final trailingWidget = () {
+        final Widget trailingWidget = () {
           if (downloading) {
             return const SizedBox(
               height: 24,
@@ -50,7 +50,7 @@ class OfflineListTile extends StatelessWidget {
           trailing: trailingWidget,
           isThreeLine: true,
           onTap: () {
-            Connectivity().checkConnectivity().then((res) {
+            Connectivity().checkConnectivity().then((ConnectivityResult res) {
               if (res != ConnectivityResult.none) {
                 Wakelock.enable();
                 context.read<StoriesBloc>().add(StoriesDownload());

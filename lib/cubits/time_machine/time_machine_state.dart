@@ -3,7 +3,7 @@ part of 'time_machine_cubit.dart';
 class TimeMachineState extends Equatable {
   const TimeMachineState({required this.parents});
 
-  TimeMachineState.init() : parents = [];
+  TimeMachineState.init() : parents = <Comment>[];
 
   final List<Comment> parents;
 
@@ -14,5 +14,5 @@ class TimeMachineState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [parents];
+  List<Object?> get props => <Object?>[parents];
 }

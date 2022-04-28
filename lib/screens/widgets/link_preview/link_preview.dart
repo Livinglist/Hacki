@@ -135,7 +135,7 @@ class _LinkPreviewState extends State<LinkPreview> {
     }
   }
 
-  Future _launchURL(String url) async {
+  Future<void> _launchURL(String url) async {
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -159,13 +159,13 @@ class _LinkPreviewState extends State<LinkPreview> {
         color: widget.backgroundColor,
         borderRadius: BorderRadius.circular(widget.borderRadius ?? 12),
         boxShadow: widget.removeElevation
-            ? []
+            ? <BoxShadow>[]
             : widget.boxShadow ??
-                [const BoxShadow(blurRadius: 3, color: Colors.grey)],
+                <BoxShadow>[const BoxShadow(blurRadius: 3, color: Colors.grey)],
       ),
       height: _height,
       child: LinkView(
-        key: widget.key ?? Key(widget.link.toString()),
+        key: widget.key ?? Key(widget.link),
         url: widget.link,
         title: title!,
         description: desc!,
@@ -185,13 +185,13 @@ class _LinkPreviewState extends State<LinkPreview> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final showSmallerPreviewPic =
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool showSmallerPreviewPic =
         Platform.isIOS && screenWidth > 428.0 && screenWidth < 850;
-    final _height = showSmallerPreviewPic
+    final double _height = showSmallerPreviewPic
         ? 100.0
         : (MediaQuery.of(context).size.height * 0.14).clamp(118.0, 140.0);
-    final loadingWidget = widget.placeholderWidget ??
+    final Widget loadingWidget = widget.placeholderWidget ??
         Container(
           height: _height,
           width: MediaQuery.of(context).size.width,
@@ -206,7 +206,7 @@ class _LinkPreviewState extends State<LinkPreview> {
     Widget loadedWidget;
 
     if (_info is WebImageInfo) {
-      final img = (_info as WebImageInfo?)?.image ?? '';
+      final String img = (_info as WebImageInfo?)?.image ?? '';
       loadedWidget = _buildLinkContainer(
         _height,
         title: _errorTitle,
@@ -216,14 +216,15 @@ class _LinkPreviewState extends State<LinkPreview> {
             : null,
       );
     } else {
-      final info = _info as WebInfo?;
+      final WebInfo? info = _info as WebInfo?;
       loadedWidget = _info == null
           ? _buildLinkContainer(
               _height,
               title: _errorTitle,
               imageUri: widget.showMultimedia ? _errorImage : null,
             )
-          : _buildLinkContainer(_height,
+          : _buildLinkContainer(
+              _height,
               title: _errorTitle,
               desc: WebAnalyzer.isNotEmpty(info!.description)
                   ? info.description
@@ -235,7 +236,8 @@ class _LinkPreviewState extends State<LinkPreview> {
                           ? info.icon
                           : _errorImage)
                   : null,
-              isIcon: !WebAnalyzer.isNotEmpty(info.image));
+              isIcon: !WebAnalyzer.isNotEmpty(info.image),
+            );
     }
 
     return AnimatedCrossFade(

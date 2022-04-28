@@ -31,7 +31,8 @@ class User {
 
   @override
   String toString() {
-    final prettyString = const JsonEncoder.withIndent('  ').convert(this);
+    final String prettyString =
+        const JsonEncoder.withIndent('  ').convert(this);
     return 'User $prettyString';
   }
 }

@@ -12,7 +12,7 @@ class PostRepository {
         _storageRepository =
             storageRepository ?? locator.get<PreferenceRepository>();
 
-  static const String authority = 'news.ycombinator.com';
+  static const String _authority = 'news.ycombinator.com';
 
   final Dio _dio;
   final PreferenceRepository _storageRepository;
@@ -21,9 +21,9 @@ class PostRepository {
     required int parentId,
     required String text,
   }) async {
-    final username = await _storageRepository.username;
-    final password = await _storageRepository.password;
-    final uri = Uri.https(authority, 'comment');
+    final String? username = await _storageRepository.username;
+    final String? password = await _storageRepository.password;
+    final Uri uri = Uri.https(_authority, 'comment');
 
     if (username == null || password == null) {
       return false;
@@ -48,27 +48,29 @@ class PostRepository {
     String? url,
     String? text,
   }) async {
-    final username = await _storageRepository.username;
-    final password = await _storageRepository.password;
+    final String? username = await _storageRepository.username;
+    final String? password = await _storageRepository.password;
 
     if (username == null || password == null) {
       return false;
     }
 
-    final formResponse = await _getFormResponse(
+    final Response<List<int>> formResponse = await _getFormResponse(
       username: username,
       password: password,
       path: 'submitlink',
     );
-    final formValues = HtmlUtil.getHiddenFormValues(formResponse.data);
+    final Map<String, String>? formValues =
+        HtmlUtil.getHiddenFormValues(formResponse.data);
 
     if (formValues == null || formValues.isEmpty) {
       return false;
     }
 
-    final cookie = formResponse.headers.value(HttpHeaders.setCookieHeader);
+    final String? cookie =
+        formResponse.headers.value(HttpHeaders.setCookieHeader);
 
-    final uri = Uri.https(authority, 'r');
+    final Uri uri = Uri.https(_authority, 'r');
     final PostDataMixin data = SubmitPostData(
       fnid: formValues['fnid']!,
       fnop: formValues['fnop']!,
@@ -89,28 +91,30 @@ class PostRepository {
     required int id,
     String? text,
   }) async {
-    final username = await _storageRepository.username;
-    final password = await _storageRepository.password;
+    final String? username = await _storageRepository.username;
+    final String? password = await _storageRepository.password;
 
     if (username == null || password == null) {
       return false;
     }
 
-    final formResponse = await _getFormResponse(
+    final Response<List<int>> formResponse = await _getFormResponse(
       username: username,
       password: password,
       id: id,
       path: 'edit',
     );
-    final formValues = HtmlUtil.getHiddenFormValues(formResponse.data);
+    final Map<String, String>? formValues =
+        HtmlUtil.getHiddenFormValues(formResponse.data);
 
     if (formValues == null || formValues.isEmpty) {
       return false;
     }
 
-    final cookie = formResponse.headers.value(HttpHeaders.setCookieHeader);
+    final String? cookie =
+        formResponse.headers.value(HttpHeaders.setCookieHeader);
 
-    final uri = Uri.https(authority, 'xedit');
+    final Uri uri = Uri.https(_authority, 'xedit');
     final PostDataMixin data = EditPostData(
       hmac: formValues['hmac']!,
       id: id,
@@ -130,8 +134,8 @@ class PostRepository {
     required String path,
     int? id,
   }) async {
-    final uri = Uri.https(
-      authority,
+    final Uri uri = Uri.https(
+      _authority,
       path,
       <String, dynamic>{if (id != null) 'id': id.toString()},
     );
@@ -155,7 +159,7 @@ class PostRepository {
     bool Function(String?)? validateLocation,
   }) async {
     try {
-      final response = await _performPost<void>(
+      final Response<void> response = await _performPost<void>(
         uri,
         data,
         cookie: cookie,

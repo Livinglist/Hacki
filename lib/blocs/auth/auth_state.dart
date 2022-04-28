@@ -42,7 +42,7 @@ class AuthState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         user,
         isLoggedIn,
         agreedToEULA,

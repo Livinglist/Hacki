@@ -14,10 +14,10 @@ class TimeMachineCubit extends Cubit<TimeMachineState> {
   final CacheService _cacheService;
 
   void activateTimeMachine(Comment comment) {
-    emit(state.copyWith(parents: []));
+    emit(state.copyWith(parents: <Comment>[]));
 
-    final parents = <Comment>[];
-    var parent = _cacheService.getComment(comment.parent);
+    final List<Comment> parents = <Comment>[];
+    Comment? parent = _cacheService.getComment(comment.parent);
 
     while (parent != null) {
       parents.insert(0, parent);

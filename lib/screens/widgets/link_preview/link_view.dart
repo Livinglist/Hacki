@@ -19,8 +19,11 @@ class LinkView extends StatelessWidget {
     this.isIcon = false,
     this.bgColor,
     this.radius = 0,
-  })  : assert(!showMultiMedia ||
-            (showMultiMedia && (imageUri != null || imagePath != null))),
+  })  : assert(
+          !showMultiMedia ||
+              (showMultiMedia && (imageUri != null || imagePath != null)),
+          'imageUri or imagePath cannot be null when showMultiMedia is true',
+        ),
         super(key: key);
 
   final String url;
@@ -39,7 +42,7 @@ class LinkView extends StatelessWidget {
   final Color? bgColor;
 
   double computeTitleFontSize(double width) {
-    var size = width * 0.13;
+    double size = width * 0.13;
     if (size > 15) {
       size = 15;
     }
@@ -51,7 +54,7 @@ class LinkView extends StatelessWidget {
   }
 
   int computeBodyLines(double layoutHeight) {
-    var lines = 1;
+    int lines = 1;
     if (layoutHeight > 40) {
       lines += (layoutHeight - 40.0) ~/ 15.0;
     }
@@ -61,17 +64,17 @@ class LinkView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) {
-        final layoutWidth = constraints.biggest.width;
-        final layoutHeight = constraints.biggest.height;
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final double layoutWidth = constraints.biggest.width;
+        final double layoutHeight = constraints.biggest.height;
 
-        final _titleFontSize = titleTextStyle ??
+        final TextStyle _titleFontSize = titleTextStyle ??
             TextStyle(
               fontSize: computeTitleFontSize(layoutWidth),
               color: Colors.black,
               fontWeight: FontWeight.bold,
             );
-        final _bodyFontSize = bodyTextStyle ??
+        final TextStyle _bodyFontSize = bodyTextStyle ??
             TextStyle(
               fontSize: computeTitleFontSize(layoutWidth) - 1,
               color: Colors.grey,
@@ -101,7 +104,7 @@ class LinkView extends StatelessWidget {
                             imageUrl: imageUri!,
                             fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
                             memCacheHeight: layoutHeight.toInt() * 4,
-                            errorWidget: (context, _, dynamic __) {
+                            errorWidget: (BuildContext context, _, dynamic __) {
                               return Image.asset(
                                 Constants.hackerNewsLogoPath,
                                 fit: BoxFit.cover,
@@ -120,9 +123,13 @@ class LinkView extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       _buildTitleContainer(
-                          _titleFontSize, computeTitleLines(layoutHeight)),
+                        _titleFontSize,
+                        computeTitleLines(layoutHeight),
+                      ),
                       _buildBodyContainer(
-                          _bodyFontSize, computeBodyLines(layoutHeight))
+                        _bodyFontSize,
+                        computeBodyLines(layoutHeight),
+                      )
                     ],
                   ),
                 ),

@@ -4,7 +4,7 @@ abstract class AuthEvent extends Equatable {}
 
 class AuthInitialize extends AuthEvent {
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class AuthLogin extends AuthEvent {
@@ -17,7 +17,7 @@ class AuthLogin extends AuthEvent {
   final String password;
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         username,
         password,
       ];
@@ -25,7 +25,7 @@ class AuthLogin extends AuthEvent {
 
 class AuthToggleAgreeToEULA extends AuthEvent {
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class AuthFlag extends AuthEvent {
@@ -34,10 +34,10 @@ class AuthFlag extends AuthEvent {
   final Item item;
 
   @override
-  List<Object?> get props => [item];
+  List<Object?> get props => <Object?>[item];
 }
 
 class AuthLogout extends AuthEvent {
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }

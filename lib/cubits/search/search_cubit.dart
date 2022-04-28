@@ -14,23 +14,27 @@ class SearchCubit extends Cubit<SearchState> {
   final SearchRepository _searchRepository;
 
   void search(String query) {
-    emit(state.copyWith(
-      results: [],
-      currentPage: 0,
-      status: SearchStatus.loading,
-      query: query,
-    ));
+    emit(
+      state.copyWith(
+        results: <Story>[],
+        currentPage: 0,
+        status: SearchStatus.loading,
+        query: query,
+      ),
+    );
     _searchRepository.search(query).listen(_onStoryFetched).onDone(() {
       emit(state.copyWith(status: SearchStatus.loaded));
     });
   }
 
   void loadMore() {
-    final updatedPage = state.currentPage + 1;
-    emit(state.copyWith(
-      status: SearchStatus.loadingMore,
-      currentPage: updatedPage,
-    ));
+    final int updatedPage = state.currentPage + 1;
+    emit(
+      state.copyWith(
+        status: SearchStatus.loadingMore,
+        currentPage: updatedPage,
+      ),
+    );
     _searchRepository
         .search(state.query, page: updatedPage)
         .listen(_onStoryFetched)

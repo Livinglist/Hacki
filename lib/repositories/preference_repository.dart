@@ -46,64 +46,97 @@ class PreferenceRepository {
 
   Future<String?> get password async => _secureStorage.read(key: _passwordKey);
 
-  Future<List<String>> get blocklist async =>
-      _prefs.then((prefs) => prefs.getStringList(_blocklistKey) ?? []);
+  Future<List<String>> get blocklist async => _prefs.then(
+        (SharedPreferences prefs) =>
+            prefs.getStringList(_blocklistKey) ?? <String>[],
+      );
 
-  Future<List<int>> get pinnedStoriesIds async => _prefs.then((prefs) =>
-      prefs.getStringList(_pinnedStoriesIdsKey)?.map(int.parse).toList() ?? []);
+  Future<List<int>> get pinnedStoriesIds async => _prefs.then(
+        (SharedPreferences prefs) =>
+            prefs
+                .getStringList(_pinnedStoriesIdsKey)
+                ?.map(int.parse)
+                .toList() ??
+            <int>[],
+      );
 
-  Future<bool> get shouldShowNotification async => _prefs.then((prefs) =>
-      prefs.getBool(_notificationModeKey) ?? _notificationModeDefaultValue);
+  Future<bool> get shouldShowNotification async => _prefs.then(
+        (SharedPreferences prefs) =>
+            prefs.getBool(_notificationModeKey) ??
+            _notificationModeDefaultValue,
+      );
 
   Future<bool> get shouldShowComplexStoryTile async => _prefs.then(
-      (prefs) => prefs.getBool(_displayModeKey) ?? _displayModeDefaultValue);
+        (SharedPreferences prefs) =>
+            prefs.getBool(_displayModeKey) ?? _displayModeDefaultValue,
+      );
 
-  Future<bool> get shouldShowWebFirst async => _prefs.then((prefs) =>
-      prefs.getBool(_navigationModeKey) ?? _navigationModeDefaultValue);
+  Future<bool> get shouldShowWebFirst async => _prefs.then(
+        (SharedPreferences prefs) =>
+            prefs.getBool(_navigationModeKey) ?? _navigationModeDefaultValue,
+      );
 
   Future<bool> get shouldShowEyeCandy async => _prefs.then(
-      (prefs) => prefs.getBool(_eyeCandyModeKey) ?? _eyeCandyModeDefaultValue);
+        (SharedPreferences prefs) =>
+            prefs.getBool(_eyeCandyModeKey) ?? _eyeCandyModeDefaultValue,
+      );
 
   Future<bool> get trueDarkMode async => _prefs.then(
-      (prefs) => prefs.getBool(_trueDarkModeKey) ?? _trueDarkModeDefaultValue);
+        (SharedPreferences prefs) =>
+            prefs.getBool(_trueDarkModeKey) ?? _trueDarkModeDefaultValue,
+      );
 
   Future<bool> get readerMode async => _prefs.then(
-      (prefs) => prefs.getBool(_readerModeKey) ?? _readerModeDefaultValue);
+        (SharedPreferences prefs) =>
+            prefs.getBool(_readerModeKey) ?? _readerModeDefaultValue,
+      );
 
-  Future<bool> get markReadStories async => _prefs.then((prefs) =>
-      prefs.getBool(_markReadStoriesModeKey) ??
-      _markReadStoriesModeDefaultValue);
+  Future<bool> get markReadStories async => _prefs.then(
+        (SharedPreferences prefs) =>
+            prefs.getBool(_markReadStoriesModeKey) ??
+            _markReadStoriesModeDefaultValue,
+      );
 
-  Future<List<int>> get unreadCommentsIds async => _prefs.then((prefs) =>
-      prefs.getStringList(_unreadCommentsIdsKey)?.map(int.parse).toList() ??
-      []);
+  Future<List<int>> get unreadCommentsIds async => _prefs.then(
+        (SharedPreferences prefs) =>
+            prefs
+                .getStringList(_unreadCommentsIdsKey)
+                ?.map(int.parse)
+                .toList() ??
+            <int>[],
+      );
 
-  Future<int?> get lastReadStoryId async => _prefs.then((prefs) {
-        final val = prefs.getString(_lastReadStoryIdKey);
+  Future<int?> get lastReadStoryId async =>
+      _prefs.then((SharedPreferences prefs) {
+        final String? val = prefs.getString(_lastReadStoryIdKey);
 
         if (val == null) return null;
 
         return int.tryParse(val);
       });
 
-  Future<List<int>> favList({required String of}) => _prefs.then((prefs) =>
-      ((prefs.getStringList(_getFavKey('')) ?? <String>[])
-            ..addAll(prefs.getStringList(_getFavKey(of)) ?? <String>[]))
-          .map(int.parse)
-          .toSet()
-          .toList()
-          .reversed
-          .toList());
+  Future<List<int>> favList({required String of}) => _prefs.then(
+        (SharedPreferences prefs) =>
+            ((prefs.getStringList(_getFavKey('')) ?? <String>[])
+                  ..addAll(prefs.getStringList(_getFavKey(of)) ?? <String>[]))
+                .map(int.parse)
+                .toSet()
+                .toList()
+                .reversed
+                .toList(),
+      );
 
   Future<bool?> vote({required int submittedTo, required String from}) async {
-    final prefs = await _prefs;
-    final key = _getVoteKey(from, submittedTo);
-    final vote = prefs.getBool(key);
+    final SharedPreferences prefs = await _prefs;
+    final String key = _getVoteKey(from, submittedTo);
+    final bool? vote = prefs.getBool(key);
     return vote;
   }
 
-  Future<void> setAuth(
-      {required String username, required String password}) async {
+  Future<void> setAuth({
+    required String username,
+    required String password,
+  }) async {
     await _secureStorage.write(key: _usernameKey, value: username);
     await _secureStorage.write(key: _passwordKey, value: password);
   }
@@ -114,69 +147,75 @@ class PreferenceRepository {
   }
 
   Future<void> toggleNotificationMode() async {
-    final prefs = await _prefs;
-    final currentMode =
+    final SharedPreferences prefs = await _prefs;
+    final bool currentMode =
         prefs.getBool(_notificationModeKey) ?? _notificationModeDefaultValue;
     await prefs.setBool(_notificationModeKey, !currentMode);
   }
 
   Future<void> toggleDisplayMode() async {
-    final prefs = await _prefs;
-    final currentMode =
+    final SharedPreferences prefs = await _prefs;
+    final bool currentMode =
         prefs.getBool(_displayModeKey) ?? _displayModeDefaultValue;
     await prefs.setBool(_displayModeKey, !currentMode);
   }
 
   Future<void> toggleNavigationMode() async {
-    final prefs = await _prefs;
-    final currentMode =
+    final SharedPreferences prefs = await _prefs;
+    final bool currentMode =
         prefs.getBool(_navigationModeKey) ?? _navigationModeDefaultValue;
     await prefs.setBool(_navigationModeKey, !currentMode);
   }
 
   Future<void> toggleEyeCandyMode() async {
-    final prefs = await _prefs;
-    final currentMode =
+    final SharedPreferences prefs = await _prefs;
+    final bool currentMode =
         prefs.getBool(_eyeCandyModeKey) ?? _eyeCandyModeDefaultValue;
     await prefs.setBool(_eyeCandyModeKey, !currentMode);
   }
 
   Future<void> toggleTrueDarkMode() async {
-    final prefs = await _prefs;
-    final currentMode =
+    final SharedPreferences prefs = await _prefs;
+    final bool currentMode =
         prefs.getBool(_trueDarkModeKey) ?? _trueDarkModeDefaultValue;
     await prefs.setBool(_trueDarkModeKey, !currentMode);
   }
 
   Future<void> toggleReaderMode() async {
-    final prefs = await _prefs;
-    final currentMode =
+    final SharedPreferences prefs = await _prefs;
+    final bool currentMode =
         prefs.getBool(_readerModeKey) ?? _readerModeDefaultValue;
     await prefs.setBool(_readerModeKey, !currentMode);
   }
 
   Future<void> toggleMarkReadStoriesMode() async {
-    final prefs = await _prefs;
-    final currentMode = prefs.getBool(_markReadStoriesModeKey) ??
+    final SharedPreferences prefs = await _prefs;
+    final bool currentMode = prefs.getBool(_markReadStoriesModeKey) ??
         _markReadStoriesModeDefaultValue;
     await prefs.setBool(_markReadStoriesModeKey, !currentMode);
   }
 
   Future<void> addFav({required String username, required int id}) async {
-    final prefs = await _prefs;
-    final key = _getFavKey(username);
-    final favListInString = prefs.getStringList(key) ?? <String>[];
-    final favList = favListInString.map(int.parse).toList()..add(id);
+    final SharedPreferences prefs = await _prefs;
+    final String key = _getFavKey(username);
+    final List<String> favListInString = prefs.getStringList(key) ?? <String>[];
+    final List<int> favList = favListInString.map(int.parse).toList()..add(id);
     await prefs.setStringList(
-        key, favList.map((e) => e.toString()).toSet().toList());
+      key,
+      favList.map((int e) => e.toString()).toSet().toList(),
+    );
   }
 
   Future<void> removeFav({required String username, required int id}) async {
-    final prefs = await _prefs;
-    final key = _getFavKey(username);
-    final favListInString = prefs.getStringList(key) ?? <String>[];
-    final favList = favListInString.map(int.parse).toList()..remove(id);
-    await prefs.setStringList(key, favList.map((e) => e.toString()).toList());
+    final SharedPreferences prefs = await _prefs;
+    final String key = _getFavKey(username);
+    final List<String> favListInString = prefs.getStringList(key) ?? <String>[];
+    final List<int> favList = favListInString.map(int.parse).toList()
+      ..remove(id);
+    await prefs.setStringList(
+      key,
+      favList.map((int e) => e.toString()).toList(),
+    );
   }
 
   Future<void> addVote({
@@ -184,8 +223,8 @@ class PreferenceRepository {
     required int id,
     required bool vote,
   }) async {
-    final prefs = await _prefs;
-    final key = _getVoteKey(username, id);
+    final SharedPreferences prefs = await _prefs;
+    final String key = _getVoteKey(username, id);
     await prefs.setBool(key, vote);
   }
 
@@ -193,34 +232,34 @@ class PreferenceRepository {
     required String username,
     required int id,
   }) async {
-    final prefs = await _prefs;
-    final key = _getVoteKey(username, id);
+    final SharedPreferences prefs = await _prefs;
+    final String key = _getVoteKey(username, id);
     await prefs.remove(key);
   }
 
   Future<void> updateBlocklist(List<String> usernames) async {
-    final prefs = await _prefs;
+    final SharedPreferences prefs = await _prefs;
     await prefs.setStringList(_blocklistKey, usernames);
   }
 
   Future<void> updatePinnedStoriesIds(List<int> ids) async {
-    final prefs = await _prefs;
+    final SharedPreferences prefs = await _prefs;
     await prefs.setStringList(
       _pinnedStoriesIdsKey,
-      ids.map((e) => e.toString()).toList(),
+      ids.map((int e) => e.toString()).toList(),
     );
   }
 
   Future<void> updateUnreadCommentsIds(List<int> ids) async {
-    final prefs = await _prefs;
+    final SharedPreferences prefs = await _prefs;
     await prefs.setStringList(
       _unreadCommentsIdsKey,
-      ids.map((e) => e.toString()).toList(),
+      ids.map((int e) => e.toString()).toList(),
     );
   }
 
   Future<void> updateLastReadStoryId(int? id) async {
-    final prefs = await _prefs;
+    final SharedPreferences prefs = await _prefs;
     await prefs.setString(
       _lastReadStoryIdKey,
       id.toString(),

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/models/item.dart';
 import 'package:hacki/utils/link_util.dart';
 
 class ReplyBox extends StatefulWidget {
@@ -37,17 +38,17 @@ class _ReplyBoxState extends State<ReplyBox> {
   Widget build(BuildContext context) {
     expandedHeight ??= MediaQuery.of(context).size.height;
     return BlocBuilder<EditCubit, EditState>(
-      buildWhen: (previous, current) =>
+      buildWhen: (EditState previous, EditState current) =>
           previous.showReplyBox != current.showReplyBox ||
           previous.itemBeingEdited != current.itemBeingEdited ||
           previous.replyingTo != current.replyingTo,
-      builder: (context, editState) {
+      builder: (BuildContext context, EditState editState) {
         return Visibility(
           visible: editState.showReplyBox,
           child: BlocBuilder<PostCubit, PostState>(
-            builder: (context, postState) {
-              final replyingTo = editState.replyingTo;
-              final isLoading = postState.status == PostStatus.loading;
+            builder: (BuildContext context, PostState postState) {
+              final Item? replyingTo = editState.replyingTo;
+              final bool isLoading = postState.status == PostStatus.loading;
 
               return Padding(
                 padding: EdgeInsets.only(
@@ -61,7 +62,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                   height: expanded ? expandedHeight : 100,
                   duration: const Duration(milliseconds: 200),
                   decoration: BoxDecoration(
-                    boxShadow: [
+                    boxShadow: <BoxShadow>[
                       if (!context.read<SplitViewCubit>().state.enabled)
                         BoxShadow(
                           color: expanded ? Colors.transparent : Colors.black26,
@@ -71,7 +72,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                   ),
                   child: Material(
                     child: Column(
-                      children: [
+                      children: <Widget>[
                         if (context.read<SplitViewCubit>().state.enabled)
                           const Divider(
                             height: 0,
@@ -81,7 +82,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                           duration: const Duration(milliseconds: 200),
                         ),
                         Row(
-                          children: [
+                          children: <Widget>[
                             Padding(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 12,
@@ -96,8 +97,8 @@ class _ReplyBoxState extends State<ReplyBox> {
                               ),
                             ),
                             const Spacer(),
-                            if (!isLoading) ...[
-                              ...[
+                            if (!isLoading) ...<Widget>[
+                              ...<Widget>[
                                 if (replyingTo != null)
                                   AnimatedOpacity(
                                     opacity: expanded ? 1 : 0,
@@ -206,81 +207,83 @@ class _ReplyBoxState extends State<ReplyBox> {
   }
 
   void showTextPopup() {
-    final replyingTo = context.read<EditCubit>().state.replyingTo;
+    final Item? replyingTo = context.read<EditCubit>().state.replyingTo;
 
     showDialog<void>(
       context: context,
       barrierDismissible: true,
       builder: (_) {
         return AlertDialog(
-            insetPadding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 24,
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 24,
+          ),
+          contentPadding: EdgeInsets.zero,
+          content: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxWidth: 500,
+              maxHeight: 500,
             ),
-            contentPadding: EdgeInsets.zero,
-            content: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 500,
-                maxHeight: 500,
-              ),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      left: 12,
-                      top: 6,
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          replyingTo?.by ?? '',
-                          style: const TextStyle(color: Colors.grey),
-                        ),
-                        const Spacer(),
-                        TextButton(
-                          child: const Text('Copy All'),
-                          onPressed: () => FlutterClipboard.copy(
-                            replyingTo?.text ?? '',
-                          ).then((_) => HapticFeedback.selectionClick()),
-                        ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.close,
-                            color: Colors.orange,
-                            size: 18,
-                          ),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                      ],
-                    ),
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 12,
+                    top: 6,
                   ),
-                  Expanded(
-                    child: Scrollbar(
-                      isAlwaysShown: true,
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          left: 12,
-                          right: 6,
-                          top: 6,
+                  child: Row(
+                    children: <Widget>[
+                      Text(
+                        replyingTo?.by ?? '',
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                      const Spacer(),
+                      TextButton(
+                        child: const Text('Copy All'),
+                        onPressed: () => FlutterClipboard.copy(
+                          replyingTo?.text ?? '',
+                        ).then((_) => HapticFeedback.selectionClick()),
+                      ),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.close,
+                          color: Colors.orange,
+                          size: 18,
                         ),
-                        child: SingleChildScrollView(
-                          child: SelectableLinkify(
-                            scrollPhysics: const NeverScrollableScrollPhysics(),
-                            linkStyle: TextStyle(
-                              fontSize:
-                                  MediaQuery.of(context).textScaleFactor * 15,
-                              color: Colors.orange,
-                            ),
-                            onOpen: (link) => LinkUtil.launchUrl(link.url),
-                            text: replyingTo?.text ?? '',
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Scrollbar(
+                    isAlwaysShown: true,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        left: 12,
+                        right: 6,
+                        top: 6,
+                      ),
+                      child: SingleChildScrollView(
+                        child: SelectableLinkify(
+                          scrollPhysics: const NeverScrollableScrollPhysics(),
+                          linkStyle: TextStyle(
+                            fontSize:
+                                MediaQuery.of(context).textScaleFactor * 15,
+                            color: Colors.orange,
                           ),
+                          onOpen: (LinkableElement link) =>
+                              LinkUtil.launchUrl(link.url),
+                          text: replyingTo?.text ?? '',
                         ),
                       ),
                     ),
                   ),
-                ],
-              ),
-            ));
+                ),
+              ],
+            ),
+          ),
+        );
       },
     );
   }

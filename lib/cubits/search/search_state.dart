@@ -18,7 +18,7 @@ class SearchState extends Equatable {
   SearchState.init()
       : query = '',
         status = SearchStatus.initial,
-        results = [],
+        results = <Story>[],
         currentPage = 0;
 
   final String query;
@@ -41,7 +41,7 @@ class SearchState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         query,
         status,
         results,

@@ -2,12 +2,12 @@ part of 'stories_bloc.dart';
 
 abstract class StoriesEvent extends Equatable {
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class StoriesInitialize extends StoriesEvent {
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class StoriesLoaded extends StoriesEvent {
@@ -16,7 +16,7 @@ class StoriesLoaded extends StoriesEvent {
   final StoryType type;
 
   @override
-  List<Object?> get props => [type];
+  List<Object?> get props => <Object?>[type];
 }
 
 class StoriesRefresh extends StoriesEvent {
@@ -25,7 +25,7 @@ class StoriesRefresh extends StoriesEvent {
   final StoryType type;
 
   @override
-  List<Object?> get props => [type];
+  List<Object?> get props => <Object?>[type];
 }
 
 class StoriesLoadMore extends StoriesEvent {
@@ -34,17 +34,17 @@ class StoriesLoadMore extends StoriesEvent {
   final StoryType type;
 
   @override
-  List<Object?> get props => [type];
+  List<Object?> get props => <Object?>[type];
 }
 
 class StoriesDownload extends StoriesEvent {
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class StoriesExitOffline extends StoriesEvent {
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => <Object?>[];
 }
 
 class StoriesPageSizeChanged extends StoriesEvent {
@@ -53,7 +53,7 @@ class StoriesPageSizeChanged extends StoriesEvent {
   final int pageSize;
 
   @override
-  List<Object?> get props => [pageSize];
+  List<Object?> get props => <Object?>[pageSize];
 }
 
 class StoryLoaded extends StoriesEvent {
@@ -63,5 +63,5 @@ class StoryLoaded extends StoriesEvent {
   final StoryType type;
 
   @override
-  List<Object?> get props => [story, type];
+  List<Object?> get props => <Object?>[story, type];
 }

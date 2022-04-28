@@ -26,7 +26,10 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.onLoadMore,
     this.onPinned,
     this.header,
-  })  : assert(!pinnable || (pinnable && onPinned != null)),
+  })  : assert(
+          !pinnable || (pinnable && onPinned != null),
+          'onPinned cannot be null when pinnable is true',
+        ),
         super(key: key);
 
   final bool showWebPreview;
@@ -50,24 +53,24 @@ class ItemsListView<T extends Item> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final child = ListView(
-      children: [
+    final ListView child = ListView(
+      children: <Widget>[
         if (showOfflineBanner)
           const OfflineBanner(
             showExitButton: true,
           ),
         if (header != null) header!,
-        ...items.map((e) {
-          final wasRead =
+        ...items.map((T e) {
+          final bool wasRead =
               context.read<CacheCubit>().state.storiesReadStatus[e.id] ?? false;
           if (e is Story) {
-            return [
+            return <Widget>[
               FadeIn(
                 child: Slidable(
                   startActionPane: pinnable
                       ? ActionPane(
                           motion: const BehindMotion(),
-                          children: [
+                          children: <Widget>[
                             SlidableAction(
                               onPressed: (_) {
                                 HapticFeedback.lightImpact();
@@ -99,7 +102,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                 ),
             ];
           } else if (e is Comment) {
-            return [
+            return <Widget>[
               FadeIn(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 6),
@@ -109,7 +112,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                       padding: EdgeInsets.zero,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                        children: <Widget>[
                           if (e.deleted)
                             const Center(
                               child: Padding(
@@ -123,7 +126,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                           Flex(
                             direction: Axis.horizontal,
                             mainAxisSize: MainAxisSize.min,
-                            children: [
+                            children: <Widget>[
                               Expanded(
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -136,13 +139,13 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                                     linkStyle: const TextStyle(
                                       color: Colors.orange,
                                     ),
-                                    onOpen: (link) =>
+                                    onOpen: (LinkableElement link) =>
                                         LinkUtil.launchUrl(link.url),
                                   ),
                                 ),
                               ),
                               Row(
-                                children: [
+                                children: <Widget>[
                                   Text(
                                     e.postedDate,
                                     style: const TextStyle(
@@ -171,8 +174,8 @@ class ItemsListView<T extends Item> extends StatelessWidget {
             ];
           }
 
-          return [Container()];
-        }).expand((element) => element),
+          return <Widget>[Container()];
+        }).expand((List<Widget> element) => element),
         const SizedBox(
           height: 40,
         ),
@@ -191,7 +194,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
       ),
       footer: CustomFooter(
         loadStyle: LoadStyle.ShowWhenLoading,
-        builder: (context, mode) {
+        builder: (BuildContext context, LoadStatus? mode) {
           Widget body;
           if (mode == LoadStatus.idle) {
             body = const Text('');

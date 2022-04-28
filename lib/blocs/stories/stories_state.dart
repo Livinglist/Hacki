@@ -26,18 +26,18 @@ class StoriesState extends Equatable {
 
   const StoriesState.init({
     this.storiesByType = const <StoryType, List<Story>>{
-      StoryType.top: [],
-      StoryType.latest: [],
-      StoryType.ask: [],
-      StoryType.show: [],
-      StoryType.jobs: [],
+      StoryType.top: <Story>[],
+      StoryType.latest: <Story>[],
+      StoryType.ask: <Story>[],
+      StoryType.show: <Story>[],
+      StoryType.jobs: <Story>[],
     },
     this.storyIdsByType = const <StoryType, List<int>>{
-      StoryType.top: [],
-      StoryType.latest: [],
-      StoryType.ask: [],
-      StoryType.show: [],
-      StoryType.jobs: [],
+      StoryType.top: <int>[],
+      StoryType.latest: <int>[],
+      StoryType.ask: <int>[],
+      StoryType.show: <int>[],
+      StoryType.jobs: <int>[],
     },
     this.statusByType = const <StoryType, StoriesStatus>{
       StoryType.top: StoriesStatus.initial,
@@ -89,7 +89,8 @@ class StoriesState extends Equatable {
     required StoryType of,
     required Story story,
   }) {
-    final newMap = Map<StoryType, List<Story>>.from(storiesByType);
+    final Map<StoryType, List<Story>> newMap =
+        Map<StoryType, List<Story>>.from(storiesByType);
     newMap[of] = List<Story>.from(newMap[of]!)..add(story);
     return StoriesState(
       storiesByType: newMap,
@@ -106,7 +107,8 @@ class StoriesState extends Equatable {
     required StoryType of,
     required List<int> to,
   }) {
-    final newMap = Map<StoryType, List<int>>.from(storyIdsByType);
+    final Map<StoryType, List<int>> newMap =
+        Map<StoryType, List<int>>.from(storyIdsByType);
     newMap[of] = to;
     return StoriesState(
       storiesByType: storiesByType,
@@ -123,7 +125,8 @@ class StoriesState extends Equatable {
     required StoryType of,
     required StoriesStatus to,
   }) {
-    final newMap = Map<StoryType, StoriesStatus>.from(statusByType);
+    final Map<StoryType, StoriesStatus> newMap =
+        Map<StoryType, StoriesStatus>.from(statusByType);
     newMap[of] = to;
     return StoriesState(
       storiesByType: storiesByType,
@@ -140,7 +143,8 @@ class StoriesState extends Equatable {
     required StoryType of,
     required int to,
   }) {
-    final newMap = Map<StoryType, int>.from(currentPageByType);
+    final Map<StoryType, int> newMap =
+        Map<StoryType, int>.from(currentPageByType);
     newMap[of] = to;
     return StoriesState(
       storiesByType: storiesByType,
@@ -154,13 +158,17 @@ class StoriesState extends Equatable {
   }
 
   StoriesState copyWithRefreshed({required StoryType of}) {
-    final newStoriesMap = Map<StoryType, List<Story>>.from(storiesByType);
-    newStoriesMap[of] = [];
-    final newStoryIdsMap = Map<StoryType, List<int>>.from(storyIdsByType);
-    newStoryIdsMap[of] = [];
-    final newStatusMap = Map<StoryType, StoriesStatus>.from(statusByType);
+    final Map<StoryType, List<Story>> newStoriesMap =
+        Map<StoryType, List<Story>>.from(storiesByType);
+    newStoriesMap[of] = <Story>[];
+    final Map<StoryType, List<int>> newStoryIdsMap =
+        Map<StoryType, List<int>>.from(storyIdsByType);
+    newStoryIdsMap[of] = <int>[];
+    final Map<StoryType, StoriesStatus> newStatusMap =
+        Map<StoryType, StoriesStatus>.from(statusByType);
     newStatusMap[of] = StoriesStatus.loading;
-    final newCurrentPageMap = Map<StoryType, int>.from(currentPageByType);
+    final Map<StoryType, int> newCurrentPageMap =
+        Map<StoryType, int>.from(currentPageByType);
     newCurrentPageMap[of] = 0;
     return StoriesState(
       storiesByType: newStoriesMap,
@@ -174,7 +182,7 @@ class StoriesState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         storiesByType,
         storyIdsByType,
         statusByType,

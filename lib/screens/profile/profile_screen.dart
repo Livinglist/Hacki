@@ -18,6 +18,7 @@ import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:tuple/tuple.dart';
 
 enum _PageType {
   fav,
@@ -36,15 +37,15 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen>
     with AutomaticKeepAliveClientMixin {
-  final refreshControllerHistory = RefreshController();
-  final refreshControllerFav = RefreshController();
-  final refreshControllerNotification = RefreshController();
-  final scrollController = ScrollController();
-  final throttle = Throttle(delay: const Duration(seconds: 2));
+  final RefreshController refreshControllerHistory = RefreshController();
+  final RefreshController refreshControllerFav = RefreshController();
+  final RefreshController refreshControllerNotification = RefreshController();
+  final ScrollController scrollController = ScrollController();
+  final Throttle throttle = Throttle(delay: const Duration(seconds: 2));
 
   _PageType pageType = _PageType.notification;
 
-  final magicWords = <String>[
+  final List<String> magicWords = <String>[
     'to be a lord.',
     'to conquer the world.',
     'to be over the rainbow!',
@@ -66,37 +67,46 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final magicWord = (magicWords..shuffle()).first;
+    final String magicWord = (magicWords..shuffle()).first;
     return BlocBuilder<PreferenceCubit, PreferenceState>(
-      builder: (context, preferenceState) {
+      builder: (BuildContext context, PreferenceState preferenceState) {
         return BlocBuilder<AuthBloc, AuthState>(
-          builder: (context, authState) {
+          builder: (BuildContext context, AuthState authState) {
             return BlocConsumer<NotificationCubit, NotificationState>(
-              listenWhen: (previous, current) =>
-                  previous.status != current.status,
-              listener: (context, notificationState) {
+              listenWhen:
+                  (NotificationState previous, NotificationState current) =>
+                      previous.status != current.status,
+              listener:
+                  (BuildContext context, NotificationState notificationState) {
                 if (notificationState.status == NotificationStatus.loaded) {
                   refreshControllerNotification
                     ..refreshCompleted()
                     ..loadComplete();
                 }
               },
-              builder: (context, notificationState) {
+              builder:
+                  (BuildContext context, NotificationState notificationState) {
                 return Stack(
-                  children: [
+                  children: <Widget>[
                     Positioned.fill(
                       top: 50,
                       child: Visibility(
                         visible: pageType == _PageType.history,
                         child: BlocConsumer<HistoryCubit, HistoryState>(
-                          listener: (context, historyState) {
+                          listener: (
+                            BuildContext context,
+                            HistoryState historyState,
+                          ) {
                             if (historyState.status == HistoryStatus.loaded) {
                               refreshControllerHistory
                                 ..refreshCompleted()
                                 ..loadComplete();
                             }
                           },
-                          builder: (context, historyState) {
+                          builder: (
+                            BuildContext context,
+                            HistoryState historyState,
+                          ) {
                             if ((!authState.isLoggedIn ||
                                     historyState.submittedItems.isEmpty) &&
                                 historyState.status != HistoryStatus.loading) {
@@ -111,7 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               useConsistentFontSize: true,
                               refreshController: refreshControllerHistory,
                               items: historyState.submittedItems
-                                  .where((e) => !e.dead && !e.deleted)
+                                  .where((Item e) => !e.dead && !e.deleted)
                                   .toList(),
                               onRefresh: () {
                                 HapticFeedback.lightImpact();
@@ -120,10 +130,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                               onLoadMore: () {
                                 context.read<HistoryCubit>().loadMore();
                               },
-                              onTap: (item) {
+                              onTap: (Item item) {
                                 if (item is Story) {
                                   goToStoryScreen(
-                                      args: StoryScreenArgs(story: item));
+                                    args: StoryScreenArgs(story: item),
+                                  );
                                 } else if (item is Comment) {
                                   onCommentTapped(item);
                                 }
@@ -138,14 +149,14 @@ class _ProfileScreenState extends State<ProfileScreen>
                       child: Visibility(
                         visible: pageType == _PageType.fav,
                         child: BlocConsumer<FavCubit, FavState>(
-                          listener: (context, favState) {
+                          listener: (BuildContext context, FavState favState) {
                             if (favState.status == FavStatus.loaded) {
                               refreshControllerFav
                                 ..refreshCompleted()
                                 ..loadComplete();
                             }
                           },
-                          builder: (context, favState) {
+                          builder: (BuildContext context, FavState favState) {
                             if (favState.favStories.isEmpty &&
                                 favState.status != FavStatus.loading) {
                               return const CenteredMessageView(
@@ -167,8 +178,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                               onLoadMore: () {
                                 context.read<FavCubit>().loadMore();
                               },
-                              onTap: (story) => goToStoryScreen(
-                                  args: StoryScreenArgs(story: story)),
+                              onTap: (Story story) => goToStoryScreen(
+                                args: StoryScreenArgs(story: story),
+                              ),
                             );
                           },
                         ),
@@ -198,12 +210,15 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 unreadCommentsIds:
                                     notificationState.unreadCommentsIds,
                                 comments: notificationState.comments,
-                                onCommentTapped: (cmt) {
-                                  onCommentTapped(cmt, then: () {
-                                    context
-                                        .read<NotificationCubit>()
-                                        .markAsRead(cmt);
-                                  });
+                                onCommentTapped: (Comment cmt) {
+                                  onCommentTapped(
+                                    cmt,
+                                    then: () {
+                                      context
+                                          .read<NotificationCubit>()
+                                          .markAsRead(cmt);
+                                    },
+                                  );
                                 },
                                 onMarkAllAsReadTapped: () {
                                   context
@@ -226,11 +241,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                         visible: pageType == _PageType.settings,
                         child: SingleChildScrollView(
                           child: Column(
-                            children: [
+                            children: <Widget>[
                               ListTile(
-                                title: Text(authState.isLoggedIn
-                                    ? 'Log Out'
-                                    : 'Log In'),
+                                title: Text(
+                                  authState.isLoggedIn ? 'Log Out' : 'Log In',
+                                ),
                                 subtitle: Text(
                                   authState.isLoggedIn
                                       ? authState.username
@@ -254,7 +269,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   'running in the foreground.',
                                 ),
                                 value: preferenceState.showNotification,
-                                onChanged: (val) {
+                                onChanged: (bool val) {
                                   HapticFeedback.lightImpact();
                                   context
                                       .read<PreferenceCubit>()
@@ -265,9 +280,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                               SwitchListTile(
                                 title: const Text('Complex Story Tile'),
                                 subtitle: const Text(
-                                    'show web preview in story tile.'),
+                                  'show web preview in story tile.',
+                                ),
                                 value: preferenceState.showComplexStoryTile,
-                                onChanged: (val) {
+                                onChanged: (bool val) {
                                   HapticFeedback.lightImpact();
                                   context
                                       .read<PreferenceCubit>()
@@ -278,10 +294,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                               SwitchListTile(
                                 title: const Text('Show Web Page First'),
                                 subtitle: const Text(
-                                    'show web page first after tapping'
-                                    ' on story.'),
+                                  'show web page first after tapping'
+                                  ' on story.',
+                                ),
                                 value: preferenceState.showWebFirst,
-                                onChanged: (val) {
+                                onChanged: (bool val) {
                                   HapticFeedback.lightImpact();
                                   context
                                       .read<PreferenceCubit>()
@@ -293,10 +310,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 SwitchListTile(
                                   title: const Text('Use Reader'),
                                   subtitle: const Text(
-                                      'enter reader mode in Safari directly'
-                                      ' when it is available.'),
+                                    'enter reader mode in Safari directly'
+                                    ' when it is available.',
+                                  ),
                                   value: preferenceState.useReader,
-                                  onChanged: (val) {
+                                  onChanged: (bool val) {
                                     HapticFeedback.lightImpact();
                                     context
                                         .read<PreferenceCubit>()
@@ -307,9 +325,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                               SwitchListTile(
                                 title: const Text('Mark Read Stories'),
                                 subtitle: const Text(
-                                    'grey out stories you have read.'),
+                                  'grey out stories you have read.',
+                                ),
                                 value: preferenceState.markReadStories,
-                                onChanged: (val) {
+                                onChanged: (bool val) {
                                   HapticFeedback.lightImpact();
 
                                   if (!val) {
@@ -328,7 +347,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 title: const Text('Eye Candy'),
                                 subtitle: const Text('some sort of magic.'),
                                 value: preferenceState.showEyeCandy,
-                                onChanged: (val) {
+                                onChanged: (bool val) {
                                   HapticFeedback.lightImpact();
                                   context
                                       .read<PreferenceCubit>()
@@ -340,7 +359,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 title: const Text('True Dark Mode'),
                                 subtitle: const Text('real dark.'),
                                 value: preferenceState.useTrueDark,
-                                onChanged: (val) {
+                                onChanged: (bool val) {
                                   HapticFeedback.lightImpact();
                                   context
                                       .read<PreferenceCubit>()
@@ -358,8 +377,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   ),
                                 ),
                                 onTap: () => showThemeSettingDialog(
-                                    useTrueDarkMode:
-                                        preferenceState.useTrueDark),
+                                  useTrueDarkMode: preferenceState.useTrueDark,
+                                ),
                               ),
                               ListTile(
                                 title: const Text('About'),
@@ -375,13 +394,13 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       height: 50,
                                       width: 50,
                                     ),
-                                    children: [
+                                    children: <Widget>[
                                       ElevatedButton(
                                         onPressed: () => LinkUtil.launchUrl(
                                           Constants.portfolioLink,
                                         ),
                                         child: Row(
-                                          children: const [
+                                          children: const <Widget>[
                                             Icon(
                                               FontAwesomeIcons.addressCard,
                                             ),
@@ -397,7 +416,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                           Constants.githubLink,
                                         ),
                                         child: Row(
-                                          children: const [
+                                          children: const <Widget>[
                                             Icon(
                                               FontAwesomeIcons.github,
                                             ),
@@ -415,7 +434,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                               : Constants.googlePlayLink,
                                         ),
                                         child: Row(
-                                          children: const [
+                                          children: const <Widget>[
                                             Icon(
                                               Icons.thumb_up,
                                             ),
@@ -444,14 +463,14 @@ class _ProfileScreenState extends State<ProfileScreen>
                         scrollDirection: Axis.horizontal,
                         controller: scrollController,
                         child: Row(
-                          children: [
+                          children: <Widget>[
                             const SizedBox(
                               width: 12,
                             ),
                             CustomChip(
                               label: 'Submit',
                               selected: false,
-                              onSelected: (val) {
+                              onSelected: (bool val) {
                                 if (authState.isLoggedIn) {
                                   HackiApp.navigatorKey.currentState
                                       ?.pushNamed(SubmitScreen.routeName);
@@ -472,7 +491,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   // ignore: lines_longer_than_80_chars
                                   '${notificationState.unreadCommentsIds.length}',
                               selected: pageType == _PageType.notification,
-                              onSelected: (val) {
+                              onSelected: (bool val) {
                                 if (val) {
                                   setState(() {
                                     pageType = _PageType.notification;
@@ -486,7 +505,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             CustomChip(
                               label: 'Favorite',
                               selected: pageType == _PageType.fav,
-                              onSelected: (val) {
+                              onSelected: (bool val) {
                                 if (val) {
                                   setState(() {
                                     pageType = _PageType.fav;
@@ -500,7 +519,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             CustomChip(
                               label: 'Submitted',
                               selected: pageType == _PageType.history,
-                              onSelected: (val) {
+                              onSelected: (bool val) {
                                 if (val) {
                                   setState(() {
                                     pageType = _PageType.history;
@@ -514,7 +533,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             CustomChip(
                               label: 'Search',
                               selected: pageType == _PageType.search,
-                              onSelected: (val) {
+                              onSelected: (bool val) {
                                 if (val) {
                                   setState(() {
                                     pageType = _PageType.search;
@@ -528,7 +547,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             CustomChip(
                               label: 'Settings',
                               selected: pageType == _PageType.settings,
-                              onSelected: (val) {
+                              onSelected: (bool val) {
                                 if (val) {
                                   setState(() {
                                     pageType = _PageType.settings;
@@ -561,35 +580,39 @@ class _ProfileScreenState extends State<ProfileScreen>
       return;
     }
     showDialog<void>(
-        context: context,
-        builder: (_) {
-          final themeMode = AdaptiveTheme.of(context).mode;
-          return AlertDialog(
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                RadioListTile(
-                  value: AdaptiveThemeMode.light,
-                  groupValue: themeMode,
-                  onChanged: (val) => AdaptiveTheme.of(context).setLight(),
-                  title: const Text('Light'),
-                ),
-                RadioListTile(
-                  value: AdaptiveThemeMode.dark,
-                  groupValue: themeMode,
-                  onChanged: (val) => AdaptiveTheme.of(context).setDark(),
-                  title: const Text('Dark'),
-                ),
-                RadioListTile(
-                  value: AdaptiveThemeMode.system,
-                  groupValue: themeMode,
-                  onChanged: (val) => AdaptiveTheme.of(context).setSystem(),
-                  title: const Text('System'),
-                ),
-              ],
-            ),
-          );
-        });
+      context: context,
+      builder: (_) {
+        final AdaptiveThemeMode themeMode = AdaptiveTheme.of(context).mode;
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              RadioListTile<AdaptiveThemeMode>(
+                value: AdaptiveThemeMode.light,
+                groupValue: themeMode,
+                onChanged: (AdaptiveThemeMode? val) =>
+                    AdaptiveTheme.of(context).setLight(),
+                title: const Text('Light'),
+              ),
+              RadioListTile<AdaptiveThemeMode>(
+                value: AdaptiveThemeMode.dark,
+                groupValue: themeMode,
+                onChanged: (AdaptiveThemeMode? val) =>
+                    AdaptiveTheme.of(context).setDark(),
+                title: const Text('Dark'),
+              ),
+              RadioListTile<AdaptiveThemeMode>(
+                value: AdaptiveThemeMode.system,
+                groupValue: themeMode,
+                onChanged: (AdaptiveThemeMode? val) =>
+                    AdaptiveTheme.of(context).setSystem(),
+                title: const Text('System'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void onCommentTapped(Comment comment, {VoidCallback? then}) {
@@ -597,14 +620,14 @@ class _ProfileScreenState extends State<ProfileScreen>
       locator
           .get<StoriesRepository>()
           .fetchParentStoryWithComments(id: comment.parent)
-          .then((tuple) {
+          .then((Tuple2<Story, List<Comment>>? tuple) {
         if (tuple != null && mounted) {
           goToStoryScreen(
             args: StoryScreenArgs(
               story: tuple.item1,
               targetComments: tuple.item2.isEmpty
-                  ? [comment]
-                  : [
+                  ? <Comment>[comment]
+                  : <Comment>[
                       ...tuple.item2,
                       comment.copyWith(level: tuple.item2.length)
                     ],
@@ -617,23 +640,23 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   void onLoginTapped() {
-    final usernameController = TextEditingController();
-    final passwordController = TextEditingController();
+    final TextEditingController usernameController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
 
     showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (context) {
+      builder: (BuildContext context) {
         return BlocConsumer<AuthBloc, AuthState>(
-          listener: (context, state) {
+          listener: (BuildContext context, AuthState state) {
             if (state.isLoggedIn) {
               Navigator.pop(context);
               showSnackBar(content: 'Logged in successfully!');
             }
           },
-          builder: (context, state) {
+          builder: (BuildContext context, AuthState state) {
             return SimpleDialog(
-              children: [
+              children: <Widget>[
                 if (state.status == AuthStatus.loading)
                   const SizedBox(
                     height: 36,
@@ -644,7 +667,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       ),
                     ),
                   )
-                else if (!state.isLoggedIn) ...[
+                else if (!state.isLoggedIn) ...<Widget>[
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 18,
@@ -700,7 +723,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                    children: <Widget>[
                       IconButton(
                         icon: Icon(
                           state.agreedToEULA
@@ -716,7 +739,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       ),
                       Text.rich(
                         TextSpan(
-                          children: [
+                          children: <InlineSpan>[
                             const TextSpan(
                               text: 'I agree to ',
                               style: TextStyle(
@@ -728,7 +751,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 offset: const Offset(0, 1),
                                 child: TapDownWrapper(
                                   onTap: () => LinkUtil.launchUrl(
-                                      Constants.endUserAgreementLink),
+                                    Constants.endUserAgreementLink,
+                                  ),
                                   child: const Text(
                                     'End User Agreement',
                                     style: TextStyle(
@@ -750,7 +774,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       right: 12,
                     ),
                     child: ButtonBar(
-                      children: [
+                      children: <Widget>[
                         TextButton(
                           onPressed: () {
                             Navigator.pop(context);
@@ -766,13 +790,15 @@ class _ProfileScreenState extends State<ProfileScreen>
                         ElevatedButton(
                           onPressed: () {
                             if (state.agreedToEULA) {
-                              final username = usernameController.text;
-                              final password = passwordController.text;
+                              final String username = usernameController.text;
+                              final String password = passwordController.text;
                               if (username.isNotEmpty && password.isNotEmpty) {
-                                context.read<AuthBloc>().add(AuthLogin(
-                                      username: username,
-                                      password: password,
-                                    ));
+                                context.read<AuthBloc>().add(
+                                      AuthLogin(
+                                        username: username,
+                                        password: password,
+                                      ),
+                                    );
                               }
                             }
                           },
@@ -804,15 +830,15 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   void onLogoutTapped() {
-    final authBloc = context.read<AuthBloc>();
+    final AuthBloc authBloc = context.read<AuthBloc>();
 
     showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (context) {
+      builder: (BuildContext context) {
         return SimpleDialog(
-          children: [
-            ...[
+          children: <Widget>[
+            ...<Widget>[
               const SizedBox(
                 height: 16,
               ),
@@ -835,7 +861,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   right: 12,
                 ),
                 child: ButtonBar(
-                  children: [
+                  children: <Widget>[
                     TextButton(
                       onPressed: () => Navigator.pop(context),
                       child: const Text(

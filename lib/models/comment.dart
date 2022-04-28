@@ -25,7 +25,7 @@ class Comment extends Item {
           score: score,
           descendants: 0,
           dead: false,
-          parts: [],
+          parts: <int>[],
           poll: 0,
           title: '',
           url: '',
@@ -38,13 +38,13 @@ class Comment extends Item {
           time: json['time'] as int? ?? 0,
           by: json['by'] as String? ?? '',
           text: json['text'] as String? ?? '',
-          kids: (json['kids'] as List?)?.cast<int>() ?? [],
+          kids: (json['kids'] as List<dynamic>?)?.cast<int>() ?? <int>[],
           parent: json['parent'] as int? ?? 0,
           deleted: json['deleted'] as bool? ?? false,
           score: json['score'] as int? ?? 0,
           descendants: 0,
           dead: json['dead'] as bool? ?? false,
-          parts: [],
+          parts: <int>[],
           poll: 0,
           title: '',
           url: '',
@@ -85,12 +85,13 @@ class Comment extends Item {
 
   @override
   String toString() {
-    final prettyString = const JsonEncoder.withIndent('  ').convert(this);
+    final String prettyString =
+        const JsonEncoder.withIndent('  ').convert(this);
     return 'Comment $prettyString';
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         id,
         score,
         descendants,

@@ -9,11 +9,11 @@ class SubmitScreen extends StatefulWidget {
 
   static const String routeName = '/submit';
 
-  static Route route() {
+  static Route<dynamic> route() {
     return MaterialPageRoute<SubmitScreen>(
       settings: const RouteSettings(name: routeName),
-      builder: (context) => BlocProvider(
-        create: (context) => SubmitCubit(),
+      builder: (BuildContext context) => BlocProvider<SubmitCubit>(
+        create: (BuildContext context) => SubmitCubit(),
         child: const SubmitScreen(),
       ),
     );
@@ -24,9 +24,9 @@ class SubmitScreen extends StatefulWidget {
 }
 
 class _SubmitScreenState extends State<SubmitScreen> {
-  final titleEditingController = TextEditingController();
-  final urlEditingController = TextEditingController();
-  final textEditingController = TextEditingController();
+  final TextEditingController titleEditingController = TextEditingController();
+  final TextEditingController urlEditingController = TextEditingController();
+  final TextEditingController textEditingController = TextEditingController();
 
   @override
   void dispose() {
@@ -39,8 +39,9 @@ class _SubmitScreenState extends State<SubmitScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SubmitCubit, SubmitState>(
-      listenWhen: (previous, current) => previous.status != current.status,
-      listener: (context, state) {
+      listenWhen: (SubmitState previous, SubmitState current) =>
+          previous.status != current.status,
+      listener: (BuildContext context, SubmitState state) {
         if (state.status == SubmitStatus.submitted) {
           Navigator.pop(context);
           HapticFeedback.lightImpact();
@@ -53,7 +54,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
           );
         }
       },
-      builder: (context, state) {
+      builder: (BuildContext context, SubmitState state) {
         return Scaffold(
           appBar: AppBar(
             backgroundColor: Theme.of(context).canvasColor,
@@ -64,13 +65,14 @@ class _SubmitScreenState extends State<SubmitScreen> {
                 showDialog<bool>(
                   context: context,
                   barrierDismissible: false,
-                  builder: (context) {
+                  builder: (BuildContext context) {
                     return AlertDialog(
                       title: const Text('Quit editing?'),
                       actions: <Widget>[
                         TextButton(
-                            onPressed: () => Navigator.of(context).pop(false),
-                            child: const Text('Cancel')),
+                          onPressed: () => Navigator.of(context).pop(false),
+                          child: const Text('Cancel'),
+                        ),
                         TextButton(
                           onPressed: () => Navigator.of(context).pop(true),
                           child: const Text(
@@ -83,7 +85,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
                       ],
                     );
                   },
-                ).then((value) {
+                ).then((bool? value) {
                   if (value ?? false) {
                     Navigator.of(context).pop();
                   }
@@ -93,7 +95,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
             title: const Text(
               'Submit',
             ),
-            actions: [
+            actions: <Widget>[
               if (state.status == SubmitStatus.submitting)
                 const Padding(
                   padding: EdgeInsets.symmetric(
@@ -128,7 +130,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
             ],
           ),
           body: Column(
-            children: [
+            children: <Widget>[
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: TextField(

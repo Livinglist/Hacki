@@ -28,10 +28,10 @@ class StoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (showWebPreview) {
-      final screenWidth = MediaQuery.of(context).size.width;
-      final showSmallerPreviewPic =
+      final double screenWidth = MediaQuery.of(context).size.width;
+      final bool showSmallerPreviewPic =
           Platform.isIOS && screenWidth > 428.0 && screenWidth < 850;
-      final height = showSmallerPreviewPic
+      final double height = showSmallerPreviewPic
           ? 100.0
           : (MediaQuery.of(context).size.height * 0.14).clamp(118.0, 140.0);
 
@@ -136,7 +136,7 @@ class StoryTile extends StatelessWidget {
           ),
         );
       } else {
-        final text = parse(story.text).body?.text ?? '';
+        final String text = parse(story.text).body?.text ?? '';
 
         return TapDownWrapper(
           onTap: onTap,
@@ -173,12 +173,12 @@ class StoryTile extends StatelessWidget {
           padding: const EdgeInsets.only(left: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               const SizedBox(
                 height: 8,
               ),
               Row(
-                children: [
+                children: <Widget>[
                   Expanded(
                     child: Text(
                       story.title,

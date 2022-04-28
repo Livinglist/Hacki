@@ -15,7 +15,7 @@ class CustomAppBar extends AppBar {
           key: key,
           backgroundColor: backgroundColor,
           elevation: 0,
-          actions: [
+          actions: <Widget>[
             ScrollUpIconButton(
               scrollController: scrollController,
             ),

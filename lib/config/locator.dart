@@ -3,7 +3,7 @@ import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/services/services.dart';
 
 /// Global [GetIt.instance].
-final locator = GetIt.instance;
+final GetIt locator = GetIt.instance;
 
 /// Set up [GetIt] locator.
 Future<void> setUpLocator() async {

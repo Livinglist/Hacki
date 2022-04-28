@@ -17,19 +17,20 @@ class PreferenceCubit extends Cubit<PreferenceState> {
 
   void init() {
     _storageRepository.shouldShowNotification
-        .then((value) => emit(state.copyWith(showNotification: value)));
-    _storageRepository.shouldShowComplexStoryTile
-        .then((value) => emit(state.copyWith(showComplexStoryTile: value)));
+        .then((bool value) => emit(state.copyWith(showNotification: value)));
+    _storageRepository.shouldShowComplexStoryTile.then(
+      (bool value) => emit(state.copyWith(showComplexStoryTile: value)),
+    );
     _storageRepository.shouldShowWebFirst
-        .then((value) => emit(state.copyWith(showWebFirst: value)));
+        .then((bool value) => emit(state.copyWith(showWebFirst: value)));
     _storageRepository.shouldShowEyeCandy
-        .then((value) => emit(state.copyWith(showEyeCandy: value)));
+        .then((bool value) => emit(state.copyWith(showEyeCandy: value)));
     _storageRepository.trueDarkMode
-        .then((value) => emit(state.copyWith(useTrueDark: value)));
+        .then((bool value) => emit(state.copyWith(useTrueDark: value)));
     _storageRepository.readerMode
-        .then((value) => emit(state.copyWith(useReader: value)));
+        .then((bool value) => emit(state.copyWith(useReader: value)));
     _storageRepository.markReadStories
-        .then((value) => emit(state.copyWith(markReadStories: value)));
+        .then((bool value) => emit(state.copyWith(markReadStories: value)));
   }
 
   void toggleNotificationMode() {

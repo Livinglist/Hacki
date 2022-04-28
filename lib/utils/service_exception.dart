@@ -5,7 +5,7 @@ class ServiceException implements Exception {
 
   @override
   String toString() {
-    var result = 'ServiceException';
+    String result = 'ServiceException';
     if (message != null) {
       result = '$result: $message';
     }

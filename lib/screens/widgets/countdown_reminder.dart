@@ -4,6 +4,7 @@ import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart' show ReminderCubit, ReminderState;
 import 'package:hacki/extensions/extensions.dart';
+import 'package:hacki/models/story.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart';
 
@@ -19,26 +20,26 @@ class _CountDownReminderState extends State<CountdownReminder>
   late final AnimationController animationController;
   late final Animation<double> progressAnimation;
   late final Animation<double> opacityAnimation;
-  final progress = Tween<double>(
+  final Tween<double> progress = Tween<double>(
     begin: 0,
     end: 1,
   );
-  final opacity = Tween<double>(
+  final Tween<double> opacity = Tween<double>(
     begin: 1,
     end: 0,
   );
 
   bool isVisible = false;
 
-  static const countdownDuration = Duration(seconds: 8);
-  static const visibilityCountdownDuration = Duration(seconds: 3);
+  static const Duration countdownDuration = Duration(seconds: 8);
+  static const Duration visibilityCountdownDuration = Duration(seconds: 3);
 
   @override
   void initState() {
     animationController = AnimationController(
       vsync: this,
       duration: countdownDuration,
-    )..addStatusListener((status) {
+    )..addStatusListener((AnimationStatus status) {
         if (status == AnimationStatus.completed) {
           setState(() {
             isVisible = false;
@@ -70,7 +71,7 @@ class _CountDownReminderState extends State<CountdownReminder>
 
     super.initState();
 
-    Future.delayed(visibilityCountdownDuration, () {
+    Future<void>.delayed(visibilityCountdownDuration, () {
       setState(() {
         isVisible = true;
       });
@@ -87,7 +88,7 @@ class _CountDownReminderState extends State<CountdownReminder>
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ReminderCubit, ReminderState>(
-      builder: (context, state) {
+      builder: (BuildContext context, ReminderState state) {
         return Visibility(
           visible: isVisible && state.storyId != null,
           child: AnimatedBuilder(
@@ -103,12 +104,13 @@ class _CountDownReminderState extends State<CountdownReminder>
                       locator
                           .get<StoriesRepository>()
                           .fetchStoryBy(state.storyId!)
-                          .then((story) {
+                          .then((Story? story) {
                         if (story == null) {
                           showSnackBar(content: 'Something went wrong...');
                           return;
                         }
-                        final args = StoryScreenArgs(story: story);
+                        final StoryScreenArgs args =
+                            StoryScreenArgs(story: story);
                         goToStoryScreen(args: args);
 
                         context.read<ReminderCubit>().removeLastReadStoryId();
@@ -118,7 +120,7 @@ class _CountDownReminderState extends State<CountdownReminder>
                     context.read<ReminderCubit>().onDismiss();
                   },
                   child: Column(
-                    children: [
+                    children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.only(
                           left: 12,
@@ -126,7 +128,7 @@ class _CountDownReminderState extends State<CountdownReminder>
                           right: 10,
                         ),
                         child: Row(
-                          children: const [
+                          children: const <Widget>[
                             Text(
                               'Pick up where you left off',
                               style: TextStyle(
@@ -146,7 +148,7 @@ class _CountDownReminderState extends State<CountdownReminder>
                       const Spacer(),
                       AnimatedBuilder(
                         animation: animationController,
-                        builder: (context, child) {
+                        builder: (BuildContext context, Widget? child) {
                           return LinearProgressIndicator(
                             value: progressAnimation.value,
                           );
@@ -157,7 +159,7 @@ class _CountDownReminderState extends State<CountdownReminder>
                 ),
               ),
             ),
-            builder: (context, child) {
+            builder: (BuildContext context, Widget? child) {
               return Opacity(
                 opacity: opacityAnimation.value,
                 child: child,

@@ -15,7 +15,7 @@ class CacheCubit extends Cubit<CacheState> {
   final CacheRepository _cacheRepository;
 
   void init() {
-    _cacheRepository.getAllReadStoriesIds().then((allReadStories) {
+    _cacheRepository.getAllReadStoriesIds().then((List<int> allReadStories) {
       emit(state.copyWith(ids: allReadStories));
     });
   }

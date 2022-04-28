@@ -1,10 +1,10 @@
 import 'package:hacki/models/models.dart' show Comment;
 
 class CacheService {
-  static final _tappedStories = <int>{};
-  static final _comments = <int, Comment>{};
-  static final _commentsCollapsed = <int>{};
-  static final _drafts = <int, String>{};
+  static final Set<int> _tappedStories = <int>{};
+  static final Map<int, Comment> _comments = <int, Comment>{};
+  static final Set<int> _commentsCollapsed = <int>{};
+  static final Map<int, String> _drafts = <int, String>{};
 
   bool isFirstTimeReading(int storyId) => !_tappedStories.contains(storyId);
 

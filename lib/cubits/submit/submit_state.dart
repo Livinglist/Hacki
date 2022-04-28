@@ -41,7 +41,7 @@ class SubmitState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         title,
         url,
         text,

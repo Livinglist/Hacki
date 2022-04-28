@@ -17,7 +17,7 @@ class TapDownWrapper extends StatefulWidget {
 class _TapDownWrapperState extends State<TapDownWrapper>
     with SingleTickerProviderStateMixin {
   late AnimationController controller;
-  Tween<double> tween = Tween(begin: 1, end: 0.95);
+  Tween<double> tween = Tween<double>(begin: 1, end: 0.95);
   double scale = 1;
 
   @override
@@ -40,9 +40,11 @@ class _TapDownWrapperState extends State<TapDownWrapper>
       child: AnimatedBuilder(
         animation:
             CurvedAnimation(parent: controller, curve: Curves.decelerate),
-        builder: (context, child) {
+        builder: (BuildContext context, Widget? child) {
           return Transform.scale(
-              scale: tween.evaluate(controller), child: child);
+            scale: tween.evaluate(controller),
+            child: child,
+          );
         },
         child: widget.child,
       ),

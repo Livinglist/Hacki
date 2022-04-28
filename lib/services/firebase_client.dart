@@ -63,9 +63,9 @@ class FirebaseClient {
   /// Creates a request with a HTTP [method], [url] and optional data.
   /// The [url] can be either a `String` or `Uri`.
   Future<Object?> send(String method, dynamic url, {dynamic json}) async {
-    final uri = url is String ? Uri.parse(url) : url as Uri;
+    final Uri uri = url is String ? Uri.parse(url) : url as Uri;
 
-    final request = Request(method, uri);
+    final Request request = Request(method, uri);
     if (credential != null) {
       request.headers['Authorization'] = 'Bearer $credential';
     }
@@ -75,17 +75,18 @@ class FirebaseClient {
       request.body = jsonEncode(json);
     }
 
-    final streamedResponse = await _client.send(request);
-    final response = await Response.fromStream(streamedResponse);
+    final StreamedResponse streamedResponse = await _client.send(request);
+    final Response response = await Response.fromStream(streamedResponse);
 
     Object? bodyJson;
     try {
       bodyJson = jsonDecode(response.body);
     } on FormatException {
-      final contentType = response.headers['content-type'];
+      final String? contentType = response.headers['content-type'];
       if (contentType != null && !contentType.contains('application/json')) {
         throw Exception(
-            "Returned value was not JSON. Did the uri end with '.json'?");
+          "Returned value was not JSON. Did the uri end with '.json'?",
+        );
       }
       rethrow;
     }

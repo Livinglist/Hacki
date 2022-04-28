@@ -18,53 +18,56 @@ class SembastRepository {
   Database? _database;
   List<int>? _idsOfCommentsRepliedToMe;
 
-  static const _commentsKey = 'comments';
-  static const _idsOfCommentsRepliedToMeKey = 'idsOfCommentsRepliedToMe';
+  static const String _commentsKey = 'comments';
+  static const String _idsOfCommentsRepliedToMeKey = 'idsOfCommentsRepliedToMe';
 
   Future<Database> initializeDatabase() async {
-    final dir = await getApplicationDocumentsDirectory();
+    final Directory dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
-    final dbPath = join(dir.path, 'hacki.db');
-    final dbFactory = databaseFactoryIo;
-    final db = await dbFactory.openDatabase(dbPath);
+    final String dbPath = join(dir.path, 'hacki.db');
+    final DatabaseFactory dbFactory = databaseFactoryIo;
+    final Database db = await dbFactory.openDatabase(dbPath);
     _database = db;
     return db;
   }
 
   Future<Map<String, Object?>> saveComment(Comment comment) async {
-    final db = _database ?? await initializeDatabase();
-    final store = intMapStoreFactory.store(_commentsKey);
+    final Database db = _database ?? await initializeDatabase();
+    final StoreRef<int, Map<String, Object?>> store =
+        intMapStoreFactory.store(_commentsKey);
     return store.record(comment.id).put(db, comment.toJson());
   }
 
   Future<void> saveComments(List<Comment> comments) async {
-    final db = _database ?? await initializeDatabase();
-    final store = intMapStoreFactory.store(_commentsKey);
+    final Database db = _database ?? await initializeDatabase();
+    final StoreRef<int, Map<String, Object?>> store =
+        intMapStoreFactory.store(_commentsKey);
 
-    return db.transaction((txn) async {
-      for (final cmt in comments) {
+    return db.transaction((Transaction txn) async {
+      for (final Comment cmt in comments) {
         await store.record(cmt.id).put(txn, cmt.toJson());
       }
     });
   }
 
   Future<List<int>> getIdsOfCommentsRepliedToMe() async {
-    final db = _database ?? await initializeDatabase();
-    final store = StoreRef<dynamic, dynamic>.main();
-    final snapshot =
+    final Database db = _database ?? await initializeDatabase();
+    final StoreRef<dynamic, dynamic> store = StoreRef<dynamic, dynamic>.main();
+    final RecordSnapshot<dynamic, dynamic>? snapshot =
         await store.record(_idsOfCommentsRepliedToMeKey).getSnapshot(db);
-    final repliedToMe = (snapshot?.value as List? ?? <int>[]).cast<int>();
+    final List<int> repliedToMe =
+        (snapshot?.value as List<dynamic>? ?? <int>[]).cast<int>();
     _idsOfCommentsRepliedToMe = repliedToMe;
     return repliedToMe;
   }
 
   Future<void> updateIdsOfCommentsRepliedToMe(int id) async {
-    final db = _database ?? await initializeDatabase();
-    final store = StoreRef<dynamic, dynamic>.main();
+    final Database db = _database ?? await initializeDatabase();
+    final StoreRef<dynamic, dynamic> store = StoreRef<dynamic, dynamic>.main();
     late final List<int> list;
 
     if (_idsOfCommentsRepliedToMe == null) {
-      final snapshot =
+      final RecordSnapshot<dynamic, dynamic>? snapshot =
           await store.record(_idsOfCommentsRepliedToMeKey).getSnapshot(db);
       list = snapshot?.value as List<int>? ?? <int>[];
       _idsOfCommentsRepliedToMe = list;
@@ -72,18 +75,21 @@ class SembastRepository {
       list = _idsOfCommentsRepliedToMe!;
     }
 
-    final updatedList = ({id, ...list}.toList()..sort()).reversed.toList();
+    final List<int> updatedList =
+        (<int>{id, ...list}.toList()..sort()).reversed.toList();
     _idsOfCommentsRepliedToMe = updatedList;
 
     return store.record(_idsOfCommentsRepliedToMeKey).put(db, updatedList);
   }
 
   Future<Comment?> getComment({required int id}) async {
-    final db = _database ?? await initializeDatabase();
-    final store = intMapStoreFactory.store(_commentsKey);
-    final snapshot = await store.record(id).getSnapshot(db);
+    final Database db = _database ?? await initializeDatabase();
+    final StoreRef<int, Map<String, Object?>> store =
+        intMapStoreFactory.store(_commentsKey);
+    final RecordSnapshot<int, Map<String, Object?>>? snapshot =
+        await store.record(id).getSnapshot(db);
     if (snapshot != null) {
-      final comment = Comment.fromJson(snapshot.value);
+      final Comment comment = Comment.fromJson(snapshot.value);
       return comment;
     } else {
       return null;
@@ -91,15 +97,17 @@ class SembastRepository {
   }
 
   Future<List<Comment>> getComments({required List<int> ids}) async {
-    final db = _database ?? await initializeDatabase();
-    final store = intMapStoreFactory.store(_commentsKey);
-    final comments = <Comment>[];
+    final Database db = _database ?? await initializeDatabase();
+    final StoreRef<int, Map<String, Object?>> store =
+        intMapStoreFactory.store(_commentsKey);
+    final List<Comment> comments = <Comment>[];
 
-    await db.transaction((txn) async {
-      for (final id in ids) {
-        final snapshot = await store.record(id).getSnapshot(txn);
+    await db.transaction((Transaction txn) async {
+      for (final int id in ids) {
+        final RecordSnapshot<int, Map<String, Object?>>? snapshot =
+            await store.record(id).getSnapshot(txn);
         if (snapshot != null) {
-          final comment = Comment.fromJson(snapshot.value);
+          final Comment comment = Comment.fromJson(snapshot.value);
           comments.add(comment);
         }
       }
@@ -112,24 +120,27 @@ class SembastRepository {
     required int id,
     required List<int> kids,
   }) async {
-    final db = _database ?? await initializeDatabase();
-    final store = StoreRef<int, List>.main();
+    final Database db = _database ?? await initializeDatabase();
+    final StoreRef<int, List<dynamic>> store =
+        StoreRef<int, List<dynamic>>.main();
     return store.record(id).put(db, kids);
   }
 
   Future<List<int>?> kids({required int of}) async {
-    final itemId = of;
-    final db = _database ?? await initializeDatabase();
-    final store = StoreRef<int, List>.main();
-    final snapshot = await store.record(itemId).getSnapshot(db);
-    final kids = snapshot?.value.cast<int>();
+    final int itemId = of;
+    final Database db = _database ?? await initializeDatabase();
+    final StoreRef<int, List<dynamic>> store =
+        StoreRef<int, List<dynamic>>.main();
+    final RecordSnapshot<int, List<dynamic>>? snapshot =
+        await store.record(itemId).getSnapshot(db);
+    final List<int>? kids = snapshot?.value.cast<int>();
     return kids;
   }
 
   Future<FileSystemEntity> deleteAll() async {
-    final dir = await getApplicationDocumentsDirectory();
+    final Directory dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
-    final dbPath = join(dir.path, 'hacki.db');
+    final String dbPath = join(dir.path, 'hacki.db');
     return File(dbPath).delete();
   }
 }

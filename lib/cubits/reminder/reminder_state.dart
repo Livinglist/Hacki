@@ -24,5 +24,5 @@ class ReminderState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [storyId, hasShown];
+  List<Object?> get props => <Object?>[storyId, hasShown];
 }

@@ -12,8 +12,10 @@ class HtmlUtil {
   static bool hasMatch(dom.Element? element, {required String selector}) =>
       element?.querySelector(selector) != null;
 
-  static Iterable<String>? getIds(dom.Element? element,
-          {required String selector}) =>
+  static Iterable<String>? getIds(
+    dom.Element? element, {
+    required String selector,
+  }) =>
       element
           ?.querySelectorAll(selector)
           .map((dom.Element element) => element.id);

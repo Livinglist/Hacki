@@ -28,11 +28,11 @@ class InboxView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textColor = Theme.of(context).brightness == Brightness.dark
+    final Color textColor = Theme.of(context).brightness == Brightness.dark
         ? Colors.white
         : Colors.black;
     return Column(
-      children: [
+      children: <Widget>[
         if (unreadCommentsIds.isNotEmpty)
           TextButton(
             onPressed: onMarkAllAsReadTapped,
@@ -46,7 +46,7 @@ class InboxView extends StatelessWidget {
             ),
             footer: CustomFooter(
               loadStyle: LoadStyle.ShowWhenLoading,
-              builder: (context, mode) {
+              builder: (BuildContext context, LoadStatus? mode) {
                 Widget body;
                 if (mode == LoadStatus.idle) {
                   body = const Text('');
@@ -73,9 +73,9 @@ class InboxView extends StatelessWidget {
             onLoading: onLoadMore,
             onRefresh: onRefresh,
             child: ListView(
-              children: [
-                ...comments.map((e) {
-                  return [
+              children: <Widget>[
+                ...comments.map((Comment e) {
+                  return <Widget>[
                     FadeIn(
                       child: Padding(
                         padding: const EdgeInsets.only(left: 6),
@@ -85,11 +85,11 @@ class InboxView extends StatelessWidget {
                             padding: EdgeInsets.zero,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                              children: <Widget>[
                                 Flex(
                                   direction: Axis.horizontal,
                                   mainAxisSize: MainAxisSize.min,
-                                  children: [
+                                  children: <Widget>[
                                     Expanded(
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
@@ -112,13 +112,13 @@ class InboxView extends StatelessWidget {
                                                         .withOpacity(0.6),
                                           ),
                                           maxLines: 4,
-                                          onOpen: (link) =>
+                                          onOpen: (LinkableElement link) =>
                                               LinkUtil.launchUrl(link.url),
                                         ),
                                       ),
                                     ),
                                     Row(
-                                      children: [
+                                      children: <Widget>[
                                         Text(
                                           e.postedDate,
                                           style: const TextStyle(
@@ -145,7 +145,7 @@ class InboxView extends StatelessWidget {
                       height: 0,
                     ),
                   ];
-                }).expand((element) => element),
+                }).expand((List<Widget> element) => element),
                 const SizedBox(
                   height: 40,
                 ),

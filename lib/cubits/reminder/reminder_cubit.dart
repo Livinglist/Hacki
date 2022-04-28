@@ -14,7 +14,7 @@ class ReminderCubit extends Cubit<ReminderState> {
   final PreferenceRepository _preferenceRepository;
 
   void init() {
-    _preferenceRepository.lastReadStoryId.then((value) {
+    _preferenceRepository.lastReadStoryId.then((int? value) {
       emit(state.copyWith(storyId: value));
     });
   }

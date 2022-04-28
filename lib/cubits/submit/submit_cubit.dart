@@ -34,9 +34,9 @@ class SubmitCubit extends Cubit<SubmitState> {
         url: state.url,
         text: state.text,
       )
-          .then((successful) {
+          .then((bool successful) {
         emit(state.copyWith(status: SubmitStatus.submitted));
-      }).onError((error, stackTrace) {
+      }).onError((Object? error, StackTrace stackTrace) {
         emit(state.copyWith(status: SubmitStatus.failure));
       });
     }

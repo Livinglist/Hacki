@@ -36,31 +36,31 @@ class CommentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<CommentsCubit>(
+    return BlocProvider<CommentsCubit<Comment>>(
       lazy: false,
       create: (_) => CommentsCubit<Comment>(
         offlineReading: context.read<StoriesBloc>().state.offlineReading,
         item: comment,
       )..init(),
-      child: BlocBuilder<CommentsCubit, CommentsState>(
-        builder: (context, state) {
+      child: BlocBuilder<CommentsCubit<Comment>, CommentsState>(
+        builder: (BuildContext context, CommentsState state) {
           return BlocBuilder<PreferenceCubit, PreferenceState>(
-            builder: (context, prefState) {
+            builder: (BuildContext context, PreferenceState prefState) {
               return BlocBuilder<BlocklistCubit, BlocklistState>(
-                builder: (context, blocklistState) {
-                  const orange = Color.fromRGBO(255, 152, 0, 1);
-                  final color = _getColor(level);
+                builder: (BuildContext context, BlocklistState blocklistState) {
+                  const Color orange = Color.fromRGBO(255, 152, 0, 1);
+                  final Color color = _getColor(level);
 
-                  final child = Padding(
+                  final Padding child = Padding(
                     padding: EdgeInsets.zero,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: <Widget>[
                         Slidable(
                           startActionPane: loadKids
                               ? ActionPane(
                                   motion: const StretchMotion(),
-                                  children: [
+                                  children: <Widget>[
                                     SlidableAction(
                                       onPressed: (_) =>
                                           onReplyTapped?.call(comment),
@@ -94,7 +94,7 @@ class CommentTile extends StatelessWidget {
                           endActionPane: loadKids
                               ? ActionPane(
                                   motion: const StretchMotion(),
-                                  children: [
+                                  children: <Widget>[
                                     SlidableAction(
                                       onPressed: (_) =>
                                           onTimeMachineActivated?.call(comment),
@@ -107,18 +107,23 @@ class CommentTile extends StatelessWidget {
                               : null,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                            children: <Widget>[
                               GestureDetector(
                                 behavior: HitTestBehavior.opaque,
                                 onTap: () {
                                   HapticFeedback.lightImpact();
-                                  context.read<CommentsCubit>().collapse();
+                                  context
+                                      .read<CommentsCubit<Comment>>()
+                                      .collapse();
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.only(
-                                      left: 6, right: 6, top: 6),
+                                    left: 6,
+                                    right: 6,
+                                    top: 6,
+                                  ),
                                   child: Row(
-                                    children: [
+                                    children: <Widget>[
                                       Text(
                                         comment.by,
                                         style: TextStyle(
@@ -209,9 +214,10 @@ class CommentTile extends StatelessWidget {
                                           15,
                                       color: Colors.orange,
                                     ),
-                                    onOpen: (link) {
+                                    onOpen: (LinkableElement link) {
                                       if (link.url.contains(
-                                          'news.ycombinator.com/item')) {
+                                        'news.ycombinator.com/item',
+                                      )) {
                                         onStoryLinkTapped.call(link.url);
                                       } else {
                                         LinkUtil.launchUrl(link.url);
@@ -229,15 +235,15 @@ class CommentTile extends StatelessWidget {
                     ),
                   );
 
-                  final commentBackgroundColorOpacity =
+                  final double commentBackgroundColorOpacity =
                       Theme.of(context).brightness == Brightness.dark
                           ? 0.03
                           : 0.15;
 
-                  final commentColor = prefState.showEyeCandy
+                  final Color commentColor = prefState.showEyeCandy
                       ? color.withOpacity(commentBackgroundColorOpacity)
                       : Colors.transparent;
-                  final isMyComment = myUsername == comment.by;
+                  final bool isMyComment = myUsername == comment.by;
 
                   Widget? wrapper = child;
 
@@ -248,10 +254,12 @@ class CommentTile extends StatelessWidget {
                     );
                   }
 
-                  for (final i
-                      in List.generate(level, (index) => level - index)) {
-                    final wrapperBorderColor = _getColor(i);
-                    final shouldHighlight = isMyComment && i == level;
+                  for (final int i in List<int>.generate(
+                    level,
+                    (int index) => level - index,
+                  )) {
+                    final Color wrapperBorderColor = _getColor(i);
+                    final bool shouldHighlight = isMyComment && i == level;
                     wrapper = Container(
                       margin: const EdgeInsets.only(left: 12),
                       decoration: BoxDecoration(
@@ -285,16 +293,16 @@ class CommentTile extends StatelessWidget {
       level = level - 10;
     }
 
-    const r = 255;
-    var g = level * 40 < 255 ? 152 : (level * 20).clamp(0, 255);
-    var b = (level * 40).clamp(0, 255);
+    const int r = 255;
+    int g = level * 40 < 255 ? 152 : (level * 20).clamp(0, 255);
+    int b = (level * 40).clamp(0, 255);
 
     if (g == 255 && b == 255) {
       g = (level * 30 - 255).clamp(0, 255);
       b = (level * 40 - 255).clamp(0, 255);
     }
 
-    final color = Color.fromRGBO(
+    final Color color = Color.fromRGBO(
       r,
       g,
       b,

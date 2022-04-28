@@ -15,7 +15,7 @@ class AuthRepository {
         _storageRepository =
             storageRepository ?? locator.get<PreferenceRepository>();
 
-  static const String authority = 'news.ycombinator.com';
+  static const String _authority = 'news.ycombinator.com';
 
   final Dio _dio;
   final PreferenceRepository _storageRepository;
@@ -26,16 +26,18 @@ class AuthRepository {
 
   Future<String?> get password async => _storageRepository.password;
 
-  Future<bool> login(
-      {required String username, required String password}) async {
-    final uri = Uri.https(authority, 'login');
+  Future<bool> login({
+    required String username,
+    required String password,
+  }) async {
+    final Uri uri = Uri.https(_authority, 'login');
     final PostDataMixin data = LoginPostData(
       acct: username,
       pw: password,
       goto: 'news',
     );
 
-    final success = await _performDefaultPost(uri, data);
+    final bool success = await _performDefaultPost(uri, data);
 
     if (success) {
       await _storageRepository.setAuth(username: username, password: password);
@@ -54,9 +56,9 @@ class AuthRepository {
     required int id,
     required bool flag,
   }) async {
-    final uri = Uri.https(authority, 'flag');
-    final username = await _storageRepository.username;
-    final password = await _storageRepository.password;
+    final Uri uri = Uri.https(_authority, 'flag');
+    final String? username = await _storageRepository.username;
+    final String? password = await _storageRepository.password;
     final PostDataMixin data = FlagPostData(
       acct: username!,
       pw: password!,
@@ -71,9 +73,9 @@ class AuthRepository {
     required int id,
     required bool favorite,
   }) async {
-    final uri = Uri.https(authority, 'fave');
-    final username = await _storageRepository.username;
-    final password = await _storageRepository.password;
+    final Uri uri = Uri.https(_authority, 'fave');
+    final String? username = await _storageRepository.username;
+    final String? password = await _storageRepository.password;
     final PostDataMixin data = FavoritePostData(
       acct: username!,
       pw: password!,
@@ -88,9 +90,9 @@ class AuthRepository {
     required int id,
     required bool upvote,
   }) async {
-    final uri = Uri.https(authority, 'vote');
-    final username = await _storageRepository.username;
-    final password = await _storageRepository.password;
+    final Uri uri = Uri.https(_authority, 'vote');
+    final String? username = await _storageRepository.username;
+    final String? password = await _storageRepository.password;
     final PostDataMixin data = VotePostData(
       acct: username!,
       pw: password!,
@@ -105,9 +107,9 @@ class AuthRepository {
     required int id,
     required bool downvote,
   }) async {
-    final uri = Uri.https(authority, 'vote');
-    final username = await _storageRepository.username;
-    final password = await _storageRepository.password;
+    final Uri uri = Uri.https(_authority, 'vote');
+    final String? username = await _storageRepository.username;
+    final String? password = await _storageRepository.password;
     final PostDataMixin data = VotePostData(
       acct: username!,
       pw: password!,
@@ -125,7 +127,7 @@ class AuthRepository {
     bool Function(String?)? validateLocation,
   }) async {
     try {
-      final response = await _performPost<void>(
+      final Response<void> response = await _performPost<void>(
         uri,
         data,
         cookie: cookie,

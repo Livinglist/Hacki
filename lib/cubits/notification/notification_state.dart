@@ -18,9 +18,9 @@ class NotificationState extends Equatable {
   });
 
   NotificationState.init()
-      : comments = [],
-        unreadCommentsIds = [],
-        allCommentsIds = [],
+      : comments = <Comment>[],
+        unreadCommentsIds = <int>[],
+        allCommentsIds = <int>[],
         currentPage = 0,
         offset = 0,
         status = NotificationStatus.initial;
@@ -54,7 +54,7 @@ class NotificationState extends Equatable {
     return NotificationState(
       comments: comments,
       allCommentsIds: allCommentsIds,
-      unreadCommentsIds: [...unreadCommentsIds]..remove(commentId),
+      unreadCommentsIds: <int>[...unreadCommentsIds]..remove(commentId),
       currentPage: currentPage,
       offset: offset,
       status: status,
@@ -63,12 +63,12 @@ class NotificationState extends Equatable {
 
   NotificationState copyWithNewUnreadComment({required Comment comment}) {
     return NotificationState(
-      comments: [comment, ...comments]
-        ..sort((lhs, rhs) => rhs.time.compareTo(lhs.time)),
+      comments: <Comment>[comment, ...comments]
+        ..sort((Comment lhs, Comment rhs) => rhs.time.compareTo(lhs.time)),
       allCommentsIds:
-          ([comment.id, ...allCommentsIds]..sort()).reversed.toList(),
+          (<int>[comment.id, ...allCommentsIds]..sort()).reversed.toList(),
       unreadCommentsIds:
-          ([comment.id, ...unreadCommentsIds]..sort()).reversed.toList(),
+          (<int>[comment.id, ...unreadCommentsIds]..sort()).reversed.toList(),
       currentPage: currentPage,
       offset: offset + 1,
       status: status,
@@ -76,7 +76,7 @@ class NotificationState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         comments,
         unreadCommentsIds,
         allCommentsIds,

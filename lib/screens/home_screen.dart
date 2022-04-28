@@ -25,10 +25,10 @@ class HomeScreen extends StatefulWidget {
 
   static const String routeName = '/';
 
-  static Route route() {
+  static Route<dynamic> route() {
     return MaterialPageRoute<HomeScreen>(
       settings: const RouteSettings(name: routeName),
-      builder: (context) => const HomeScreen(),
+      builder: (BuildContext context) => const HomeScreen(),
     );
   }
 
@@ -38,7 +38,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
-  final cacheService = locator.get<CacheService>();
+  final CacheService cacheService = locator.get<CacheService>();
   late final TabController tabController;
   int currentIndex = 0;
 
@@ -74,7 +74,8 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final deviceType = getDeviceType(MediaQuery.of(context).size);
+    final DeviceScreenType deviceType =
+        getDeviceType(MediaQuery.of(context).size);
     if (context.read<StoriesBloc>().deviceScreenType != deviceType) {
       context.read<StoriesBloc>().deviceScreenType = deviceType;
       context.read<StoriesBloc>().add(StoriesInitialize());
@@ -83,20 +84,22 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    final homeScreen = BlocBuilder<PreferenceCubit, PreferenceState>(
-      buildWhen: (previous, current) =>
+    final BlocBuilder<PreferenceCubit, PreferenceState> homeScreen =
+        BlocBuilder<PreferenceCubit, PreferenceState>(
+      buildWhen: (PreferenceState previous, PreferenceState current) =>
           previous.showComplexStoryTile != current.showComplexStoryTile,
-      builder: (context, preferenceState) {
-        final pinnedStories = BlocBuilder<PinCubit, PinState>(
-          builder: (context, state) {
+      builder: (BuildContext context, PreferenceState preferenceState) {
+        final BlocBuilder<PinCubit, PinState> pinnedStories =
+            BlocBuilder<PinCubit, PinState>(
+          builder: (BuildContext context, PinState state) {
             return Column(
-              children: [
-                for (final story in state.pinnedStories)
+              children: <Widget>[
+                for (final Story story in state.pinnedStories)
                   FadeIn(
                     child: Slidable(
                       startActionPane: ActionPane(
                         motion: const BehindMotion(),
-                        children: [
+                        children: <Widget>[
                           SlidableAction(
                             onPressed: (_) {
                               HapticFeedback.lightImpact();
@@ -135,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen>
         );
 
         return BlocBuilder<CacheCubit, CacheState>(
-          builder: (context, cacheState) {
+          builder: (BuildContext context, CacheState cacheState) {
             return DefaultTabController(
               length: 6,
               child: Scaffold(
@@ -143,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen>
                 appBar: PreferredSize(
                   preferredSize: const Size(0, 40),
                   child: Column(
-                    children: [
+                    children: <Widget>[
                       SizedBox(
                         height: MediaQuery.of(context).padding.top - 8,
                       ),
@@ -165,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen>
                           onTap: (_) {
                             HapticFeedback.selectionClick();
                           },
-                          tabs: [
+                          tabs: <Widget>[
                             Tab(
                               child: Text(
                                 'TOP',
@@ -243,10 +246,16 @@ class _HomeScreenState extends State<HomeScreen>
                                 ),
                                 child: BlocBuilder<NotificationCubit,
                                     NotificationState>(
-                                  buildWhen: (previous, current) =>
+                                  buildWhen: (
+                                    NotificationState previous,
+                                    NotificationState current,
+                                  ) =>
                                       previous.unreadCommentsIds.length !=
                                       current.unreadCommentsIds.length,
-                                  builder: (context, state) {
+                                  builder: (
+                                    BuildContext context,
+                                    NotificationState state,
+                                  ) {
                                     return Badge(
                                       showBadge:
                                           state.unreadCommentsIds.isNotEmpty,
@@ -255,8 +264,9 @@ class _HomeScreenState extends State<HomeScreen>
                                         height: 3,
                                         width: 3,
                                         decoration: const BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Colors.white),
+                                          shape: BoxShape.circle,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                       child: Icon(
                                         Icons.person,
@@ -279,33 +289,33 @@ class _HomeScreenState extends State<HomeScreen>
                 body: TabBarView(
                   physics: const NeverScrollableScrollPhysics(),
                   controller: tabController,
-                  children: [
+                  children: <Widget>[
                     StoriesListView(
-                      key: const ValueKey(StoryType.top),
+                      key: const ValueKey<StoryType>(StoryType.top),
                       storyType: StoryType.top,
                       header: pinnedStories,
                       onStoryTapped: onStoryTapped,
                     ),
                     StoriesListView(
-                      key: const ValueKey(StoryType.latest),
+                      key: const ValueKey<StoryType>(StoryType.latest),
                       storyType: StoryType.latest,
                       header: pinnedStories,
                       onStoryTapped: onStoryTapped,
                     ),
                     StoriesListView(
-                      key: const ValueKey(StoryType.ask),
+                      key: const ValueKey<StoryType>(StoryType.ask),
                       storyType: StoryType.ask,
                       header: pinnedStories,
                       onStoryTapped: onStoryTapped,
                     ),
                     StoriesListView(
-                      key: const ValueKey(StoryType.show),
+                      key: const ValueKey<StoryType>(StoryType.show),
                       storyType: StoryType.show,
                       header: pinnedStories,
                       onStoryTapped: onStoryTapped,
                     ),
                     StoriesListView(
-                      key: const ValueKey(StoryType.jobs),
+                      key: const ValueKey<StoryType>(StoryType.jobs),
                       storyType: StoryType.jobs,
                       header: pinnedStories,
                       onStoryTapped: onStoryTapped,
@@ -321,33 +331,35 @@ class _HomeScreenState extends State<HomeScreen>
     );
 
     return ScreenTypeLayout.builder(
-      mobile: (context) {
+      mobile: (BuildContext context) {
         context.read<SplitViewCubit>().disableSplitView();
         return _MobileHomeScreenBuilder(
           homeScreen: homeScreen,
         );
       },
-      tablet: (context) => _TabletHomeScreenBuilder(
+      tablet: (BuildContext context) => _TabletHomeScreenBuilder(
         homeScreen: homeScreen,
       ),
     );
   }
 
   void onStoryTapped(Story story) {
-    final showWebFirst = context.read<PreferenceCubit>().state.showWebFirst;
-    final useReader = context.read<PreferenceCubit>().state.useReader;
-    final offlineReading = context.read<StoriesBloc>().state.offlineReading;
-    final firstTimeReading = cacheService.isFirstTimeReading(story.id);
-    final splitViewEnabled = context.read<SplitViewCubit>().state.enabled;
+    final bool showWebFirst =
+        context.read<PreferenceCubit>().state.showWebFirst;
+    final bool useReader = context.read<PreferenceCubit>().state.useReader;
+    final bool offlineReading =
+        context.read<StoriesBloc>().state.offlineReading;
+    final bool firstTimeReading = cacheService.isFirstTimeReading(story.id);
+    final bool splitViewEnabled = context.read<SplitViewCubit>().state.enabled;
 
     // If a story is a job story and it has a link to the job posting,
     // it would be better to just navigate to the web page.
-    final isJobWithLink = story.type == 'job' && story.url.isNotEmpty;
+    final bool isJobWithLink = story.type == 'job' && story.url.isNotEmpty;
 
     if (isJobWithLink) {
       context.read<ReminderCubit>().removeLastReadStoryId();
     } else {
-      final args = StoryScreenArgs(story: story);
+      final StoryScreenArgs args = StoryScreenArgs(story: story);
 
       context.read<ReminderCubit>().updateLastReadStoryId(story.id);
 
@@ -386,7 +398,7 @@ class _MobileHomeScreenBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      children: [
+      children: <Widget>[
         Positioned.fill(child: homeScreen),
         if (!context.read<ReminderCubit>().state.hasShown)
           const Positioned(
@@ -412,16 +424,16 @@ class _TabletHomeScreenBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveBuilder(
-      builder: (context, sizeInfo) {
+      builder: (BuildContext context, SizingInformation sizeInfo) {
         context.read<SplitViewCubit>().enableSplitView();
-        var homeScreenWidth = 428.0;
+        double homeScreenWidth = 428;
 
         if (sizeInfo.screenSize.width < homeScreenWidth * 2) {
           homeScreenWidth = 345.0;
         }
 
         return Stack(
-          children: [
+          children: <Widget>[
             Positioned(
               left: 0,
               top: 0,
@@ -456,9 +468,9 @@ class _TabletStoryView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SplitViewCubit, SplitViewState>(
-      buildWhen: (previous, current) =>
+      buildWhen: (SplitViewState previous, SplitViewState current) =>
           previous.storyScreenArgs != current.storyScreenArgs,
-      builder: (context, state) {
+      builder: (BuildContext context, SplitViewState state) {
         if (state.storyScreenArgs != null) {
           return StoryScreen.build(state.storyScreenArgs!);
         }

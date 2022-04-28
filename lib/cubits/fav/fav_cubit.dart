@@ -27,26 +27,33 @@ class FavCubit extends Cubit<FavState> {
   final AuthRepository _authRepository;
   final PreferenceRepository _storageRepository;
   final StoriesRepository _storiesRepository;
-  static const _pageSize = 20;
+  static const int _pageSize = 20;
   String? _username;
 
   Future<void> init() async {
-    _authBloc.stream.listen((authState) {
+    _authBloc.stream.listen((AuthState authState) {
       if (authState.username != _username) {
-        _storageRepository.favList(of: authState.username).then((favIds) {
-          emit(state.copyWith(
-            favIds: favIds,
-            favStories: [],
-            currentPage: 0,
-          ));
+        _storageRepository
+            .favList(of: authState.username)
+            .then((List<int> favIds) {
+          emit(
+            state.copyWith(
+              favIds: favIds,
+              favStories: <Story>[],
+              currentPage: 0,
+            ),
+          );
           _storiesRepository
               .fetchStoriesStream(
-                  ids: favIds.sublist(0, _pageSize.clamp(0, favIds.length)))
+                ids: favIds.sublist(0, _pageSize.clamp(0, favIds.length)),
+              )
               .listen(_onStoryLoaded)
               .onDone(() {
-            emit(state.copyWith(
-              status: FavStatus.loaded,
-            ));
+            emit(
+              state.copyWith(
+                status: FavStatus.loaded,
+              ),
+            );
           });
         });
 
@@ -56,7 +63,7 @@ class FavCubit extends Cubit<FavState> {
   }
 
   Future<void> addFav(int id) async {
-    final username = _authBloc.state.username;
+    final String username = _authBloc.state.username;
 
     await _storageRepository.addFav(username: username, id: id);
 
@@ -66,12 +73,15 @@ class FavCubit extends Cubit<FavState> {
       ),
     );
 
-    final story = await _storiesRepository.fetchStoryBy(id);
+    final Story? story = await _storiesRepository.fetchStoryBy(id);
 
     if (story == null) return;
 
-    emit(state.copyWith(
-        favStories: List<Story>.from(state.favStories)..insert(0, story)));
+    emit(
+      state.copyWith(
+        favStories: List<Story>.from(state.favStories)..insert(0, story),
+      ),
+    );
 
     if (_authBloc.state.isLoggedIn) {
       await _authRepository.favorite(id: id, favorite: true);
@@ -79,7 +89,7 @@ class FavCubit extends Cubit<FavState> {
   }
 
   void removeFav(int id) {
-    final username = _authBloc.state.username;
+    final String username = _authBloc.state.username;
 
     _storageRepository.removeFav(username: username, id: id);
 
@@ -87,7 +97,7 @@ class FavCubit extends Cubit<FavState> {
       state.copyWith(
         favIds: List<int>.from(state.favIds)..remove(id),
         favStories: List<Story>.from(state.favStories)
-          ..removeWhere((e) => e.id == id),
+          ..removeWhere((Story e) => e.id == id),
       ),
     );
 
@@ -98,11 +108,11 @@ class FavCubit extends Cubit<FavState> {
 
   void loadMore() {
     emit(state.copyWith(status: FavStatus.loading));
-    final currentPage = state.currentPage;
-    final len = state.favIds.length;
+    final int currentPage = state.currentPage;
+    final int len = state.favIds.length;
     emit(state.copyWith(currentPage: currentPage + 1));
-    final lower = _pageSize * (currentPage + 1);
-    var upper = _pageSize + lower;
+    final int lower = _pageSize * (currentPage + 1);
+    int upper = _pageSize + lower;
 
     if (len > lower) {
       if (len < upper) {
@@ -111,10 +121,11 @@ class FavCubit extends Cubit<FavState> {
 
       _storiesRepository
           .fetchStoriesStream(
-              ids: state.favIds.sublist(
-            lower,
-            upper,
-          ))
+            ids: state.favIds.sublist(
+              lower,
+              upper,
+            ),
+          )
           .listen(_onStoryLoaded)
           .onDone(() {
         emit(state.copyWith(status: FavStatus.loaded));
@@ -125,20 +136,23 @@ class FavCubit extends Cubit<FavState> {
   }
 
   void refresh() {
-    final username = _authBloc.state.username;
+    final String username = _authBloc.state.username;
 
-    emit(state.copyWith(
-      status: FavStatus.loading,
-      currentPage: 0,
-      favStories: [],
-      favIds: [],
-    ));
+    emit(
+      state.copyWith(
+        status: FavStatus.loading,
+        currentPage: 0,
+        favStories: <Story>[],
+        favIds: <int>[],
+      ),
+    );
 
-    _storageRepository.favList(of: username).then((favIds) {
+    _storageRepository.favList(of: username).then((List<int> favIds) {
       emit(state.copyWith(favIds: favIds));
       _storiesRepository
           .fetchStoriesStream(
-              ids: favIds.sublist(0, _pageSize.clamp(0, favIds.length)))
+            ids: favIds.sublist(0, _pageSize.clamp(0, favIds.length)),
+          )
           .listen(_onStoryLoaded)
           .onDone(() {
         emit(state.copyWith(status: FavStatus.loaded));
@@ -147,7 +161,10 @@ class FavCubit extends Cubit<FavState> {
   }
 
   void _onStoryLoaded(Story story) {
-    emit(state.copyWith(
-        favStories: List<Story>.from(state.favStories)..add(story)));
+    emit(
+      state.copyWith(
+        favStories: List<Story>.from(state.favStories)..add(story),
+      ),
+    );
   }
 }
