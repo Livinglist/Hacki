@@ -10,7 +10,7 @@ class PinCubit extends Cubit<PinState> {
   PinCubit({
     PreferenceRepository? storageRepository,
     StoriesRepository? storiesRepository,
-  })  : _storageRepository =
+  })  : _preferenceRepository =
             storageRepository ?? locator.get<PreferenceRepository>(),
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
@@ -18,12 +18,12 @@ class PinCubit extends Cubit<PinState> {
     init();
   }
 
-  final PreferenceRepository _storageRepository;
+  final PreferenceRepository _preferenceRepository;
   final StoriesRepository _storiesRepository;
 
   void init() {
     emit(PinState.init());
-    _storageRepository.pinnedStoriesIds.then((List<int> ids) {
+    _preferenceRepository.pinnedStoriesIds.then((List<int> ids) {
       emit(state.copyWith(pinnedStoriesIds: ids));
 
       _storiesRepository.fetchStoriesStream(ids: ids).listen(_onStoryFetched);
@@ -38,7 +38,7 @@ class PinCubit extends Cubit<PinState> {
           pinnedStories: <Story>{story, ...state.pinnedStories}.toList(),
         ),
       );
-      _storageRepository.updatePinnedStoriesIds(state.pinnedStoriesIds);
+      _preferenceRepository.updatePinnedStoriesIds(state.pinnedStoriesIds);
     }
   }
 
@@ -49,7 +49,7 @@ class PinCubit extends Cubit<PinState> {
         pinnedStories: <Story>[...state.pinnedStories]..remove(story),
       ),
     );
-    _storageRepository.updatePinnedStoriesIds(state.pinnedStoriesIds);
+    _preferenceRepository.updatePinnedStoriesIds(state.pinnedStoriesIds);
   }
 
   void _onStoryFetched(Story story) {

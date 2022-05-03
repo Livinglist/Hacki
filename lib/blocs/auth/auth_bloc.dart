@@ -14,7 +14,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     StoriesRepository? storiesRepository,
     SembastRepository? sembastRepository,
   })  : _authRepository = authRepository ?? locator.get<AuthRepository>(),
-        _storageRepository =
+        _preferenceRepository =
             storageRepository ?? locator.get<PreferenceRepository>(),
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
@@ -30,7 +30,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   final AuthRepository _authRepository;
-  final PreferenceRepository _storageRepository;
+  final PreferenceRepository _preferenceRepository;
   final StoriesRepository _storiesRepository;
   final SembastRepository _sembastRepository;
 
@@ -108,7 +108,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
 
     await _authRepository.logout();
-    await _storageRepository.updateUnreadCommentsIds(<int>[]);
+    await _preferenceRepository.updateUnreadCommentsIds(<int>[]);
     await _sembastRepository.deleteAll();
   }
 }

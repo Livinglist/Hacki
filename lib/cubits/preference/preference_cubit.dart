@@ -7,64 +7,64 @@ part 'preference_state.dart';
 
 class PreferenceCubit extends Cubit<PreferenceState> {
   PreferenceCubit({PreferenceRepository? storageRepository})
-      : _storageRepository =
+      : _preferenceRepository =
             storageRepository ?? locator.get<PreferenceRepository>(),
         super(const PreferenceState.init()) {
     init();
   }
 
-  final PreferenceRepository _storageRepository;
+  final PreferenceRepository _preferenceRepository;
 
   void init() {
-    _storageRepository.shouldShowNotification
+    _preferenceRepository.shouldShowNotification
         .then((bool value) => emit(state.copyWith(showNotification: value)));
-    _storageRepository.shouldShowComplexStoryTile.then(
+    _preferenceRepository.shouldShowComplexStoryTile.then(
       (bool value) => emit(state.copyWith(showComplexStoryTile: value)),
     );
-    _storageRepository.shouldShowWebFirst
+    _preferenceRepository.shouldShowWebFirst
         .then((bool value) => emit(state.copyWith(showWebFirst: value)));
-    _storageRepository.shouldShowEyeCandy
+    _preferenceRepository.shouldShowEyeCandy
         .then((bool value) => emit(state.copyWith(showEyeCandy: value)));
-    _storageRepository.trueDarkMode
+    _preferenceRepository.trueDarkMode
         .then((bool value) => emit(state.copyWith(useTrueDark: value)));
-    _storageRepository.readerMode
+    _preferenceRepository.readerMode
         .then((bool value) => emit(state.copyWith(useReader: value)));
-    _storageRepository.markReadStories
+    _preferenceRepository.markReadStories
         .then((bool value) => emit(state.copyWith(markReadStories: value)));
   }
 
   void toggleNotificationMode() {
     emit(state.copyWith(showNotification: !state.showNotification));
-    _storageRepository.toggleNotificationMode();
+    _preferenceRepository.toggleNotificationMode();
   }
 
   void toggleDisplayMode() {
     emit(state.copyWith(showComplexStoryTile: !state.showComplexStoryTile));
-    _storageRepository.toggleDisplayMode();
+    _preferenceRepository.toggleDisplayMode();
   }
 
   void toggleNavigationMode() {
     emit(state.copyWith(showWebFirst: !state.showWebFirst));
-    _storageRepository.toggleNavigationMode();
+    _preferenceRepository.toggleNavigationMode();
   }
 
   void toggleEyeCandyMode() {
     emit(state.copyWith(showEyeCandy: !state.showEyeCandy));
-    _storageRepository.toggleEyeCandyMode();
+    _preferenceRepository.toggleEyeCandyMode();
   }
 
   void toggleTrueDarkMode() {
     emit(state.copyWith(useTrueDark: !state.useTrueDark));
-    _storageRepository.toggleTrueDarkMode();
+    _preferenceRepository.toggleTrueDarkMode();
   }
 
   void toggleReaderMode() {
     emit(state.copyWith(useReader: !state.useReader));
-    _storageRepository.toggleReaderMode();
+    _preferenceRepository.toggleReaderMode();
   }
 
   void toggleMarkReadStoriesMode() {
     emit(state.copyWith(markReadStories: !state.markReadStories));
-    _storageRepository.toggleMarkReadStoriesMode();
+    _preferenceRepository.toggleMarkReadStoriesMode();
   }
 }

@@ -15,7 +15,7 @@ class FavCubit extends Cubit<FavState> {
     StoriesRepository? storiesRepository,
   })  : _authBloc = authBloc,
         _authRepository = authRepository ?? locator.get<AuthRepository>(),
-        _storageRepository =
+        _preferenceRepository =
             storageRepository ?? locator.get<PreferenceRepository>(),
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
@@ -25,7 +25,7 @@ class FavCubit extends Cubit<FavState> {
 
   final AuthBloc _authBloc;
   final AuthRepository _authRepository;
-  final PreferenceRepository _storageRepository;
+  final PreferenceRepository _preferenceRepository;
   final StoriesRepository _storiesRepository;
   static const int _pageSize = 20;
   String? _username;
@@ -33,7 +33,7 @@ class FavCubit extends Cubit<FavState> {
   Future<void> init() async {
     _authBloc.stream.listen((AuthState authState) {
       if (authState.username != _username) {
-        _storageRepository
+        _preferenceRepository
             .favList(of: authState.username)
             .then((List<int> favIds) {
           emit(
@@ -65,7 +65,7 @@ class FavCubit extends Cubit<FavState> {
   Future<void> addFav(int id) async {
     final String username = _authBloc.state.username;
 
-    await _storageRepository.addFav(username: username, id: id);
+    await _preferenceRepository.addFav(username: username, id: id);
 
     emit(
       state.copyWith(
@@ -91,7 +91,7 @@ class FavCubit extends Cubit<FavState> {
   void removeFav(int id) {
     final String username = _authBloc.state.username;
 
-    _storageRepository.removeFav(username: username, id: id);
+    _preferenceRepository.removeFav(username: username, id: id);
 
     emit(
       state.copyWith(
@@ -147,7 +147,7 @@ class FavCubit extends Cubit<FavState> {
       ),
     );
 
-    _storageRepository.favList(of: username).then((List<int> favIds) {
+    _preferenceRepository.favList(of: username).then((List<int> favIds) {
       emit(state.copyWith(favIds: favIds));
       _storiesRepository
           .fetchStoriesStream(

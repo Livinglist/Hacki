@@ -22,7 +22,7 @@ class NotificationCubit extends Cubit<NotificationState> {
         _preferenceCubit = preferenceCubit,
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
-        _storageRepository =
+        _preferenceRepository =
             storageRepository ?? locator.get<PreferenceRepository>(),
         _sembastRepository =
             sembastRepository ?? locator.get<SembastRepository>(),
@@ -30,7 +30,8 @@ class NotificationCubit extends Cubit<NotificationState> {
     _authBloc.stream.listen((AuthState authState) {
       if (authState.isLoggedIn && authState.username != _username) {
         // Get the user setting.
-        _storageRepository.shouldShowNotification.then((bool showNotification) {
+        _preferenceRepository.shouldShowNotification
+            .then((bool showNotification) {
           if (showNotification) {
             init();
           }
@@ -56,12 +57,12 @@ class NotificationCubit extends Cubit<NotificationState> {
   final AuthBloc _authBloc;
   final PreferenceCubit _preferenceCubit;
   final StoriesRepository _storiesRepository;
-  final PreferenceRepository _storageRepository;
+  final PreferenceRepository _preferenceRepository;
   final SembastRepository _sembastRepository;
   String? _username;
   Timer? _timer;
 
-  static const Duration _refreshDuration = Duration(minutes: 1);
+  static const Duration _refreshInterval = Duration(minutes: 5);
   static const int _subscriptionUpperLimit = 15;
   static const int _pageSize = 20;
 
@@ -74,7 +75,7 @@ class NotificationCubit extends Cubit<NotificationState> {
       emit(state.copyWith(allCommentsIds: commentIds));
     });
 
-    await _storageRepository.unreadCommentsIds.then((List<int> unreadIds) {
+    await _preferenceRepository.unreadCommentsIds.then((List<int> unreadIds) {
       emit(state.copyWith(unreadCommentsIds: unreadIds));
     });
 
@@ -110,14 +111,14 @@ class NotificationCubit extends Cubit<NotificationState> {
     if (state.unreadCommentsIds.contains(comment.id)) {
       final List<int> updatedUnreadIds = <int>[...state.unreadCommentsIds]
         ..remove(comment.id);
-      _storageRepository.updateUnreadCommentsIds(updatedUnreadIds);
+      _preferenceRepository.updateUnreadCommentsIds(updatedUnreadIds);
       emit(state.copyWith(unreadCommentsIds: updatedUnreadIds));
     }
   }
 
   void markAllAsRead() {
     emit(state.copyWith(unreadCommentsIds: <int>[]));
-    _storageRepository.updateUnreadCommentsIds(<int>[]);
+    _preferenceRepository.updateUnreadCommentsIds(<int>[]);
   }
 
   Future<void> refresh() async {
@@ -184,7 +185,7 @@ class NotificationCubit extends Cubit<NotificationState> {
 
   void _initializeTimer() {
     _timer?.cancel();
-    _timer = Timer.periodic(_refreshDuration, (Timer timer) => _fetchReplies());
+    _timer = Timer.periodic(_refreshInterval, (Timer timer) => _fetchReplies());
   }
 
   Future<void> _fetchReplies() {
@@ -210,7 +211,7 @@ class NotificationCubit extends Cubit<NotificationState> {
 
             if (diff.isNotEmpty) {
               for (final int newCommentId in diff) {
-                await _storageRepository.updateUnreadCommentsIds(
+                await _preferenceRepository.updateUnreadCommentsIds(
                   <int>[
                     newCommentId,
                     ...state.unreadCommentsIds,
