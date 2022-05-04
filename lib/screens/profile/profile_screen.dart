@@ -216,7 +216,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     then: () {
                                       context
                                           .read<NotificationCubit>()
-                                          .markAsRead(cmt);
+                                          .markAsRead(cmt.id);
                                     },
                                   );
                                 },

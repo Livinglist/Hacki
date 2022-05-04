@@ -1,5 +1,7 @@
 // ignore_for_file: lines_longer_than_80_chars
 
+import 'dart:convert';
+
 import 'package:badges/badges.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
@@ -59,8 +61,16 @@ class _HomeScreenState extends State<HomeScreen>
     if (!selectNotificationSubject.hasListener) {
       selectNotificationSubject.stream.listen((String? payload) async {
         if (payload == null) return;
-        final int? storyId = int.tryParse(payload);
-        if (storyId != null) {
+
+        final Map<String, dynamic> payloadJson =
+            jsonDecode(payload) as Map<String, dynamic>;
+
+        final int? storyId = payloadJson['storyId'] as int?;
+        final int? commentId = payloadJson['commentId'] as int?;
+
+        if (storyId != null && commentId != null) {
+          context.read<NotificationCubit>().markAsRead(commentId);
+
           await locator
               .get<StoriesRepository>()
               .fetchStoryBy(storyId)

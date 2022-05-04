@@ -107,10 +107,10 @@ class NotificationCubit extends Cubit<NotificationState> {
     }).onError((Object? error, StackTrace stackTrace) => _initializeTimer());
   }
 
-  void markAsRead(Comment comment) {
-    if (state.unreadCommentsIds.contains(comment.id)) {
+  void markAsRead(int id) {
+    if (state.unreadCommentsIds.contains(id)) {
       final List<int> updatedUnreadIds = <int>[...state.unreadCommentsIds]
-        ..remove(comment.id);
+        ..remove(id);
       _preferenceRepository.updateUnreadCommentsIds(updatedUnreadIds);
       emit(state.copyWith(unreadCommentsIds: updatedUnreadIds));
     }

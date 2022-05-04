@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
@@ -107,6 +108,12 @@ abstract class Fetcher {
       final String text = HtmlUtil.parseHtml(newReply!.text);
 
       if (story != null) {
+        final Map<String, int> payloadJson = <String, int>{
+          'commentId': newReply!.id,
+          'storyId': story.id,
+        };
+        final String payload = jsonEncode(payloadJson);
+
         // Push notification for new unread reply.
         await flutterLocalNotificationsPlugin.show(
           newReply?.id ?? 0,
@@ -118,7 +125,7 @@ abstract class Fetcher {
               threadIdentifier: 'hacki',
             ),
           ),
-          payload: '${story.id}',
+          payload: payload,
         );
       }
     }
