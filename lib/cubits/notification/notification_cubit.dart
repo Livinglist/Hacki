@@ -102,14 +102,17 @@ class NotificationCubit extends Cubit<NotificationState> {
       }
     }
 
-    await _fetchReplies().then(_pushNotification).whenComplete(() {
+    await _fetchReplies().whenComplete(() {
       emit(
         state.copyWith(
           status: NotificationStatus.loaded,
         ),
       );
       _initializeTimer();
-    }).onError((Object? error, StackTrace stackTrace) => _initializeTimer());
+    }).onError((Object? error, StackTrace stackTrace) {
+      _initializeTimer();
+      return null;
+    });
   }
 
   void markAsRead(int id) {
