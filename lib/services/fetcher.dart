@@ -49,8 +49,6 @@ abstract class Fetcher {
 
     if (username == null || username.isEmpty) return;
 
-    final List<int> unreadCommentsIds =
-        await preferenceRepository.unreadCommentsIds;
     Comment? newReply;
 
     await storiesRepository
@@ -77,12 +75,6 @@ abstract class Fetcher {
 
             if (diff.isNotEmpty) {
               for (final int newCommentId in diff) {
-                await preferenceRepository.updateUnreadCommentsIds(
-                  <int>[
-                    newCommentId,
-                    ...unreadCommentsIds,
-                  ]..sort((int lhs, int rhs) => rhs.compareTo(lhs)),
-                );
                 await storiesRepository
                     .fetchRawCommentBy(id: newCommentId)
                     .then((Comment? comment) {
@@ -105,7 +97,11 @@ abstract class Fetcher {
       }
     });
 
+    // Push notification for new unread reply that has not been
+    // pushed before.
     if (newReply != null) {
+      final bool hasPushedBefore =
+          await preferenceRepository.hasPushed(newReply!.id);
       final Story? story =
           await storiesRepository.fetchRawParentStory(id: newReply!.id);
       final String text = HtmlUtil.parseHtml(newReply!.text);
@@ -117,19 +113,22 @@ abstract class Fetcher {
         };
         final String payload = jsonEncode(payloadJson);
 
-        // Push notification for new unread reply.
-        await flutterLocalNotificationsPlugin.show(
-          newReply?.id ?? 0,
-          'You have a new reply! $happyFace',
-          '${newReply?.by}: $text',
-          const NotificationDetails(
-            iOS: IOSNotificationDetails(
-              presentBadge: false,
-              threadIdentifier: 'hacki',
+        if (!hasPushedBefore) {
+          await preferenceRepository.updateHasPushed(newReply!.id);
+
+          await flutterLocalNotificationsPlugin.show(
+            newReply?.id ?? 0,
+            'You have a new reply! $happyFace',
+            '${newReply?.by}: $text',
+            const NotificationDetails(
+              iOS: IOSNotificationDetails(
+                presentBadge: false,
+                threadIdentifier: 'hacki',
+              ),
             ),
-          ),
-          payload: payload,
-        );
+            payload: payload,
+          );
+        }
       }
     }
   }
