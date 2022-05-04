@@ -67,7 +67,7 @@ class NotificationCubit extends Cubit<NotificationState> {
   String? _username;
   Timer? _timer;
 
-  static const Duration _refreshInterval = Duration(seconds: 20);
+  static const Duration _refreshInterval = Duration(minutes: 5);
   static const int _subscriptionUpperLimit = 15;
   static const int _pageSize = 20;
 
