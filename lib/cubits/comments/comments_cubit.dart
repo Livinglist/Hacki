@@ -110,21 +110,15 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
       ),
     );
 
+    await _streamSubscription?.cancel();
+
     final Story story = (state.item as Story?)!;
     final Story updatedStory =
         await _storiesRepository.fetchStoryBy(story.id) ?? story;
-
-    if (state.offlineReading) {
-      _streamSubscription = _cacheRepository
-          .getCachedCommentsStream(ids: updatedStory.kids)
-          .listen(_onCommentFetched)
-        ..onDone(_onDone);
-    } else {
-      _streamSubscription = _storiesRepository
-          .fetchCommentsStream(ids: updatedStory.kids)
-          .listen(_onCommentFetched)
-        ..onDone(_onDone);
-    }
+    _streamSubscription = _storiesRepository
+        .fetchCommentsStream(ids: updatedStory.kids)
+        .listen(_onCommentFetched)
+      ..onDone(_onDone);
 
     emit(
       state.copyWith(

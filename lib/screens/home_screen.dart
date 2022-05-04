@@ -12,8 +12,10 @@ import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
@@ -53,6 +55,24 @@ class _HomeScreenState extends State<HomeScreen>
     //   Constants.featureOpenStoryInWebView,
     //   Constants.featurePinToTop,
     // ]);
+
+    selectNotificationSubject.stream.listen((String? payload) async {
+      if (payload == null) return;
+      final int? storyId = int.tryParse(payload);
+      if (storyId != null) {
+        await locator
+            .get<StoriesRepository>()
+            .fetchStoryBy(storyId)
+            .then((Story? story) {
+          if (story == null) {
+            showSnackBar(content: 'Something went wrong...');
+            return;
+          }
+          final StoryScreenArgs args = StoryScreenArgs(story: story);
+          goToStoryScreen(args: args);
+        });
+      }
+    });
 
     SchedulerBinding.instance?.addPostFrameCallback((_) {
       FeatureDiscovery.discoverFeatures(

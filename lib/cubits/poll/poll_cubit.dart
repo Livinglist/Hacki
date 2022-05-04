@@ -33,7 +33,7 @@ class PollCubit extends Cubit<PollState> {
       }
     }
 
-    // if pollOptionsIds is still empty, exit loading state.
+    // If pollOptionsIds is still empty, exit loading state.
     if (pollOptionsIds.isEmpty) {
       emit(state.copyWith(status: PollStatus.loaded));
       return;

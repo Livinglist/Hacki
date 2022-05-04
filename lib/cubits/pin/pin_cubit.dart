@@ -8,10 +8,10 @@ part 'pin_state.dart';
 
 class PinCubit extends Cubit<PinState> {
   PinCubit({
-    PreferenceRepository? storageRepository,
+    PreferenceRepository? preferenceRepository,
     StoriesRepository? storiesRepository,
   })  : _preferenceRepository =
-            storageRepository ?? locator.get<PreferenceRepository>(),
+            preferenceRepository ?? locator.get<PreferenceRepository>(),
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
         super(PinState.init()) {

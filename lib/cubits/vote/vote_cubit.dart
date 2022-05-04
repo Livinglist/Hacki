@@ -14,11 +14,11 @@ class VoteCubit extends Cubit<VoteState> {
     required Item item,
     required AuthBloc authBloc,
     AuthRepository? authRepository,
-    PreferenceRepository? storageRepository,
+    PreferenceRepository? preferenceRepository,
   })  : _authBloc = authBloc,
         _authRepository = authRepository ?? locator.get<AuthRepository>(),
         _preferenceRepository =
-            storageRepository ?? locator.get<PreferenceRepository>(),
+            preferenceRepository ?? locator.get<PreferenceRepository>(),
         super(VoteState.init(item: item)) {
     init();
   }

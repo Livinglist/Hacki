@@ -10,12 +10,12 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({
     AuthRepository? authRepository,
-    PreferenceRepository? storageRepository,
+    PreferenceRepository? preferenceRepository,
     StoriesRepository? storiesRepository,
     SembastRepository? sembastRepository,
   })  : _authRepository = authRepository ?? locator.get<AuthRepository>(),
         _preferenceRepository =
-            storageRepository ?? locator.get<PreferenceRepository>(),
+            preferenceRepository ?? locator.get<PreferenceRepository>(),
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
         _sembastRepository =

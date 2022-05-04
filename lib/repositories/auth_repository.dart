@@ -10,10 +10,10 @@ import 'package:hacki/utils/service_exception.dart';
 class AuthRepository {
   AuthRepository({
     Dio? dio,
-    PreferenceRepository? storageRepository,
+    PreferenceRepository? preferenceRepository,
   })  : _dio = dio ?? Dio(),
         _preferenceRepository =
-            storageRepository ?? locator.get<PreferenceRepository>();
+            preferenceRepository ?? locator.get<PreferenceRepository>();
 
   static const String _authority = 'news.ycombinator.com';
 
@@ -41,7 +41,9 @@ class AuthRepository {
 
     if (success) {
       await _preferenceRepository.setAuth(
-          username: username, password: password);
+        username: username,
+        password: password,
+      );
     }
 
     return success;

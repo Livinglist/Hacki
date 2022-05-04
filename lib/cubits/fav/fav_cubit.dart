@@ -11,12 +11,12 @@ class FavCubit extends Cubit<FavState> {
   FavCubit({
     required AuthBloc authBloc,
     AuthRepository? authRepository,
-    PreferenceRepository? storageRepository,
+    PreferenceRepository? preferenceRepository,
     StoriesRepository? storiesRepository,
   })  : _authBloc = authBloc,
         _authRepository = authRepository ?? locator.get<AuthRepository>(),
         _preferenceRepository =
-            storageRepository ?? locator.get<PreferenceRepository>(),
+            preferenceRepository ?? locator.get<PreferenceRepository>(),
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
         super(FavState.init()) {

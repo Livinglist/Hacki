@@ -16,14 +16,14 @@ class NotificationCubit extends Cubit<NotificationState> {
     required AuthBloc authBloc,
     required PreferenceCubit preferenceCubit,
     StoriesRepository? storiesRepository,
-    PreferenceRepository? storageRepository,
+    PreferenceRepository? preferenceRepository,
     SembastRepository? sembastRepository,
   })  : _authBloc = authBloc,
         _preferenceCubit = preferenceCubit,
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
         _preferenceRepository =
-            storageRepository ?? locator.get<PreferenceRepository>(),
+            preferenceRepository ?? locator.get<PreferenceRepository>(),
         _sembastRepository =
             sembastRepository ?? locator.get<SembastRepository>(),
         super(NotificationState.init()) {
