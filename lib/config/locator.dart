@@ -15,5 +15,6 @@ Future<void> setUpLocator() async {
     ..registerSingleton<PostRepository>(PostRepository())
     ..registerSingleton<SembastRepository>(SembastRepository())
     ..registerSingleton<CacheRepository>(CacheRepository())
-    ..registerSingleton<CacheService>(CacheService());
+    ..registerSingleton<CacheService>(CacheService())
+    ..registerSingleton<LocalNotification>(LocalNotification());
 }

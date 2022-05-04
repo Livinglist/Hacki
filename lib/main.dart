@@ -11,11 +11,9 @@ import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/screens/screens.dart';
-import 'package:hacki/services/services.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart' show BehaviorSubject;
-import 'package:workmanager/workmanager.dart';
 
 // For receiving payload event from local notifications.
 final BehaviorSubject<String?> selectNotificationSubject =
@@ -25,11 +23,12 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   if (Platform.isAndroid || Platform.isIOS) {
-    unawaited(
-      Workmanager().initialize(
-        fetcherCallbackDispatcher,
-      ),
-    );
+    // Uncomment code below for fetching replies in the background.
+    // unawaited(
+    //   Workmanager().initialize(
+    //     fetcherCallbackDispatcher,
+    //   ),
+    // );
 
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();

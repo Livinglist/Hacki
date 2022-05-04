@@ -8,6 +8,7 @@ import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
+import 'package:hacki/services/services.dart';
 
 part 'notification_state.dart';
 
@@ -18,6 +19,7 @@ class NotificationCubit extends Cubit<NotificationState> {
     StoriesRepository? storiesRepository,
     PreferenceRepository? preferenceRepository,
     SembastRepository? sembastRepository,
+    LocalNotification? localNotification,
   })  : _authBloc = authBloc,
         _preferenceCubit = preferenceCubit,
         _storiesRepository =
@@ -26,6 +28,8 @@ class NotificationCubit extends Cubit<NotificationState> {
             preferenceRepository ?? locator.get<PreferenceRepository>(),
         _sembastRepository =
             sembastRepository ?? locator.get<SembastRepository>(),
+        _localNotification =
+            localNotification ?? locator.get<LocalNotification>(),
         super(NotificationState.init()) {
     _authBloc.stream.listen((AuthState authState) {
       if (authState.isLoggedIn && authState.username != _username) {
@@ -59,10 +63,11 @@ class NotificationCubit extends Cubit<NotificationState> {
   final StoriesRepository _storiesRepository;
   final PreferenceRepository _preferenceRepository;
   final SembastRepository _sembastRepository;
+  final LocalNotification _localNotification;
   String? _username;
   Timer? _timer;
 
-  static const Duration _refreshInterval = Duration(minutes: 5);
+  static const Duration _refreshInterval = Duration(seconds: 20);
   static const int _subscriptionUpperLimit = 15;
   static const int _pageSize = 20;
 
@@ -97,7 +102,7 @@ class NotificationCubit extends Cubit<NotificationState> {
       }
     }
 
-    await _fetchReplies().whenComplete(() {
+    await _fetchReplies().then(_pushNotification).whenComplete(() {
       emit(
         state.copyWith(
           status: NotificationStatus.loaded,
@@ -145,6 +150,7 @@ class NotificationCubit extends Cubit<NotificationState> {
           ),
         );
         _initializeTimer();
+        return null;
       });
     } else {
       emit(
@@ -185,10 +191,31 @@ class NotificationCubit extends Cubit<NotificationState> {
 
   void _initializeTimer() {
     _timer?.cancel();
-    _timer = Timer.periodic(_refreshInterval, (Timer timer) => _fetchReplies());
+    _timer = Timer.periodic(
+      _refreshInterval,
+      (Timer timer) => _fetchReplies().then(_pushNotification),
+    );
   }
 
-  Future<void> _fetchReplies() {
+  Future<void> _pushNotification(Comment? newReply) async {
+    if (newReply == null) return;
+
+    final bool hasPushed = await _preferenceRepository.hasPushed(newReply.id);
+
+    if (hasPushed) return;
+
+    final Story? parentStory =
+        await _storiesRepository.fetchParentStory(id: newReply.id);
+
+    if (parentStory != null) {
+      await _preferenceRepository.updateHasPushed(newReply.id);
+      return _localNotification.pushForNewReply(newReply, parentStory.id);
+    }
+  }
+
+  Future<Comment?> _fetchReplies() {
+    Comment? newReply;
+
     return _storiesRepository
         .fetchSubmitted(of: _authBloc.state.username)
         .then((List<int>? submittedItems) async {
@@ -225,6 +252,10 @@ class NotificationCubit extends Cubit<NotificationState> {
                       ..saveComment(comment)
                       ..updateIdsOfCommentsRepliedToMe(comment.id);
 
+                    if (newReply == null || comment.time > newReply!.time) {
+                      newReply = comment;
+                    }
+
                     // Add comment fetched to comments
                     // and its id to unreadCommentsIds and allCommentsIds,
                     emit(state.copyWithNewUnreadComment(comment: comment));
@@ -235,6 +266,8 @@ class NotificationCubit extends Cubit<NotificationState> {
           });
         }
       }
+
+      return newReply;
     });
   }
 }
