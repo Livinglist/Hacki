@@ -121,19 +121,6 @@ abstract class Fetcher {
           payload: '${story.id}',
         );
       }
-    } else {
-      await flutterLocalNotificationsPlugin.show(
-        8863,
-        'You have a new reply!',
-        'test_user: something like this wasnt suposed to happen really',
-        const NotificationDetails(
-          iOS: IOSNotificationDetails(
-            presentBadge: false,
-            threadIdentifier: 'hacki',
-          ),
-        ),
-        payload: '8863',
-      );
     }
   }
 }
