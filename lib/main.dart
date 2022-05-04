@@ -28,7 +28,6 @@ Future<void> main() async {
     unawaited(
       Workmanager().initialize(
         fetcherCallbackDispatcher,
-        isInDebugMode: true,
       ),
     );
 
