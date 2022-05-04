@@ -56,23 +56,25 @@ class _HomeScreenState extends State<HomeScreen>
     //   Constants.featurePinToTop,
     // ]);
 
-    selectNotificationSubject.stream.listen((String? payload) async {
-      if (payload == null) return;
-      final int? storyId = int.tryParse(payload);
-      if (storyId != null) {
-        await locator
-            .get<StoriesRepository>()
-            .fetchStoryBy(storyId)
-            .then((Story? story) {
-          if (story == null) {
-            showSnackBar(content: 'Something went wrong...');
-            return;
-          }
-          final StoryScreenArgs args = StoryScreenArgs(story: story);
-          goToStoryScreen(args: args);
-        });
-      }
-    });
+    if (!selectNotificationSubject.hasListener) {
+      selectNotificationSubject.stream.listen((String? payload) async {
+        if (payload == null) return;
+        final int? storyId = int.tryParse(payload);
+        if (storyId != null) {
+          await locator
+              .get<StoriesRepository>()
+              .fetchStoryBy(storyId)
+              .then((Story? story) {
+            if (story == null) {
+              showSnackBar(content: 'Something went wrong...');
+              return;
+            }
+            final StoryScreenArgs args = StoryScreenArgs(story: story);
+            goToStoryScreen(args: args);
+          });
+        }
+      });
+    }
 
     SchedulerBinding.instance?.addPostFrameCallback((_) {
       FeatureDiscovery.discoverFeatures(

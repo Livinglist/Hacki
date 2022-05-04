@@ -661,14 +661,14 @@ packages:
     source: hosted
     version: "2.0.9"
   path_provider_android:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path_provider_android
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.12"
   path_provider_ios:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path_provider_ios
       url: "https://pub.dartlang.org"
@@ -801,19 +801,19 @@ packages:
     source: hosted
     version: "2.0.11"
   shared_preferences_android:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: shared_preferences_android
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.9"
+    version: "2.0.11"
   shared_preferences_ios:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: shared_preferences_ios
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.8"
+    version: "2.1.0"
   shared_preferences_linux:
     dependency: transitive
     description:

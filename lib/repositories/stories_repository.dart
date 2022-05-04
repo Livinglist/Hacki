@@ -161,12 +161,48 @@ class StoriesRepository {
     return comment;
   }
 
+  Future<Comment?> fetchRawCommentBy({required int id}) async {
+    final Comment? comment = await _firebaseClient
+        .get('${_baseUrl}item/$id.json')
+        .then((dynamic val) async {
+      if (val == null) return null;
+      final Map<String, dynamic> json = val as Map<String, dynamic>;
+
+      final Comment comment = Comment.fromJson(json);
+      return comment;
+    });
+
+    return comment;
+  }
+
   Future<Item?> fetchItemBy({required int id}) async {
     final Item? item = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
         .then((dynamic json) => _parseJson(json as Map<String, dynamic>?))
         .then((Map<String, dynamic>? json) {
       if (json == null) return null;
+
+      final String type = json['type'] as String;
+      if (type == 'story' || type == 'job') {
+        final Story story = Story.fromJson(json);
+        return story;
+      } else if (json['type'] == 'comment') {
+        final Comment comment = Comment.fromJson(json);
+        return comment;
+      }
+      return null;
+    });
+
+    return item;
+  }
+
+  Future<Item?> fetchRawItemBy({required int id}) async {
+    final Item? item = await _firebaseClient
+        .get('${_baseUrl}item/$id.json')
+        .then((dynamic val) {
+      if (val == null) return null;
+
+      final Map<String, dynamic> json = val as Map<String, dynamic>;
 
       final String type = json['type'] as String;
       if (type == 'story' || type == 'job') {
@@ -203,6 +239,17 @@ class StoriesRepository {
 
     do {
       item = await fetchItemBy(id: item?.parent ?? id);
+      if (item == null) return null;
+    } while (item is Comment);
+
+    return item as Story;
+  }
+
+  Future<Story?> fetchRawParentStory({required int id}) async {
+    Item? item;
+
+    do {
+      item = await fetchRawItemBy(id: item?.parent ?? id);
       if (item == null) return null;
     } while (item is Comment);
 

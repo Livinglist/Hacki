@@ -11,7 +11,7 @@ import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/screens/screens.dart';
-import 'package:hacki/utils/utils.dart';
+import 'package:hacki/services/services.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart' show BehaviorSubject;
@@ -34,7 +34,7 @@ Future<void> main() async {
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('ic_launcher');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
     const IOSInitializationSettings initializationSettingsIOS =
         IOSInitializationSettings();
     const InitializationSettings initializationSettings =
