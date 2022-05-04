@@ -1,10 +1,10 @@
 name: hacki
 description: A Hacker News reader.
-version: 0.2.3+37
+version: 0.2.4+38
 publish_to: none
 
 environment:
-  sdk: ">=2.16.0 <3.0.0"
+  sdk: ">=2.14.0 <3.0.0"
 
 dependencies:
   adaptive_theme: ^2.3.0
