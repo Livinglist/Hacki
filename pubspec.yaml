@@ -37,6 +37,7 @@ dependencies:
   html_unescape: ^2.0.0
   http: ^0.13.3
   intl: ^0.17.0
+  logger: ^1.1.0
   path: ^1.8.0
   path_provider: ^2.0.8
   path_provider_android: ^2.0.8

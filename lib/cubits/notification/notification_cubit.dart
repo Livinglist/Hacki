@@ -8,7 +8,6 @@ import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
-import 'package:hacki/services/services.dart';
 
 part 'notification_state.dart';
 
@@ -19,7 +18,6 @@ class NotificationCubit extends Cubit<NotificationState> {
     StoriesRepository? storiesRepository,
     PreferenceRepository? preferenceRepository,
     SembastRepository? sembastRepository,
-    LocalNotification? localNotification,
   })  : _authBloc = authBloc,
         _preferenceCubit = preferenceCubit,
         _storiesRepository =
@@ -28,8 +26,6 @@ class NotificationCubit extends Cubit<NotificationState> {
             preferenceRepository ?? locator.get<PreferenceRepository>(),
         _sembastRepository =
             sembastRepository ?? locator.get<SembastRepository>(),
-        _localNotification =
-            localNotification ?? locator.get<LocalNotification>(),
         super(NotificationState.init()) {
     _authBloc.stream.listen((AuthState authState) {
       if (authState.isLoggedIn && authState.username != _username) {
@@ -63,7 +59,6 @@ class NotificationCubit extends Cubit<NotificationState> {
   final StoriesRepository _storiesRepository;
   final PreferenceRepository _preferenceRepository;
   final SembastRepository _sembastRepository;
-  final LocalNotification _localNotification;
   String? _username;
   Timer? _timer;
 
@@ -196,29 +191,11 @@ class NotificationCubit extends Cubit<NotificationState> {
     _timer?.cancel();
     _timer = Timer.periodic(
       _refreshInterval,
-      (Timer timer) => _fetchReplies().then(_pushNotification),
+      (Timer timer) => _fetchReplies(),
     );
   }
 
-  Future<void> _pushNotification(Comment? newReply) async {
-    if (newReply == null) return;
-
-    final bool hasPushed = await _preferenceRepository.hasPushed(newReply.id);
-
-    if (hasPushed) return;
-
-    final Story? parentStory =
-        await _storiesRepository.fetchParentStory(id: newReply.id);
-
-    if (parentStory != null) {
-      await _preferenceRepository.updateHasPushed(newReply.id);
-      return _localNotification.pushForNewReply(newReply, parentStory.id);
-    }
-  }
-
-  Future<Comment?> _fetchReplies() {
-    Comment? newReply;
-
+  Future<void> _fetchReplies() {
     return _storiesRepository
         .fetchSubmitted(of: _authBloc.state.username)
         .then((List<int>? submittedItems) async {
@@ -241,36 +218,35 @@ class NotificationCubit extends Cubit<NotificationState> {
 
             if (diff.isNotEmpty) {
               for (final int newCommentId in diff) {
-                await _preferenceRepository.updateUnreadCommentsIds(
-                  <int>[
-                    newCommentId,
-                    ...state.unreadCommentsIds,
-                  ]..sort((int lhs, int rhs) => rhs.compareTo(lhs)),
-                );
-                await _storiesRepository
-                    .fetchCommentBy(id: newCommentId)
-                    .then((Comment? comment) {
-                  if (comment != null && !comment.dead && !comment.deleted) {
-                    _sembastRepository
-                      ..saveComment(comment)
-                      ..updateIdsOfCommentsRepliedToMe(comment.id);
+                final bool hasPushed =
+                    await _preferenceRepository.hasPushed(newCommentId);
 
-                    if (newReply == null || comment.time > newReply!.time) {
-                      newReply = comment;
+                if (!hasPushed) {
+                  await _preferenceRepository.updateUnreadCommentsIds(
+                    <int>[
+                      newCommentId,
+                      ...state.unreadCommentsIds,
+                    ]..sort((int lhs, int rhs) => rhs.compareTo(lhs)),
+                  );
+                  await _storiesRepository
+                      .fetchCommentBy(id: newCommentId)
+                      .then((Comment? comment) {
+                    if (comment != null && !comment.dead && !comment.deleted) {
+                      _sembastRepository
+                        ..saveComment(comment)
+                        ..updateIdsOfCommentsRepliedToMe(comment.id);
+
+                      // Add comment fetched to comments
+                      // and its id to unreadCommentsIds and allCommentsIds,
+                      emit(state.copyWithNewUnreadComment(comment: comment));
                     }
-
-                    // Add comment fetched to comments
-                    // and its id to unreadCommentsIds and allCommentsIds,
-                    emit(state.copyWithNewUnreadComment(comment: comment));
-                  }
-                });
+                  });
+                }
               }
             }
           });
         }
       }
-
-      return newReply;
     });
   }
 }
