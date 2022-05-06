@@ -216,7 +216,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     then: () {
                                       context
                                           .read<NotificationCubit>()
-                                          .markAsRead(cmt);
+                                          .markAsRead(cmt.id);
                                     },
                                   );
                                 },
@@ -265,7 +265,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 subtitle: const Text(
                                   'Hacki scans for new replies to your 15 '
                                   'most recent comments or stories '
-                                  'every 1 minute while the app is '
+                                  'every 5 minutes while the app is '
                                   'running in the foreground.',
                                 ),
                                 value: preferenceState.showNotification,
@@ -388,7 +388,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   showAboutDialog(
                                     context: context,
                                     applicationName: 'Hacki',
-                                    applicationVersion: 'v0.2.3',
+                                    applicationVersion: 'v0.2.4',
                                     applicationIcon: Image.asset(
                                       Constants.hackiIconPath,
                                       height: 50,

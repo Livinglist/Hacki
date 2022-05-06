@@ -7,16 +7,16 @@ part 'blocklist_state.dart';
 
 class BlocklistCubit extends Cubit<BlocklistState> {
   BlocklistCubit({PreferenceRepository? storageRepository})
-      : _storageRepository =
+      : _preferenceRepository =
             storageRepository ?? locator.get<PreferenceRepository>(),
         super(BlocklistState.init()) {
     init();
   }
 
-  final PreferenceRepository _storageRepository;
+  final PreferenceRepository _preferenceRepository;
 
   void init() {
-    _storageRepository.blocklist.then(
+    _preferenceRepository.blocklist.then(
       (List<String> blocklist) => emit(state.copyWith(blocklist: blocklist)),
     );
   }
@@ -25,13 +25,13 @@ class BlocklistCubit extends Cubit<BlocklistState> {
     final List<String> updated = List<String>.from(state.blocklist)
       ..add(username);
     emit(state.copyWith(blocklist: updated));
-    _storageRepository.updateBlocklist(updated);
+    _preferenceRepository.updateBlocklist(updated);
   }
 
   void removeFromBlocklist(String username) {
     final List<String> updated = List<String>.from(state.blocklist)
       ..remove(username);
     emit(state.copyWith(blocklist: updated));
-    _storageRepository.updateBlocklist(updated);
+    _preferenceRepository.updateBlocklist(updated);
   }
 }

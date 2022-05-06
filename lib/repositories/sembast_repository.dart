@@ -69,7 +69,7 @@ class SembastRepository {
     if (_idsOfCommentsRepliedToMe == null) {
       final RecordSnapshot<dynamic, dynamic>? snapshot =
           await store.record(_idsOfCommentsRepliedToMeKey).getSnapshot(db);
-      list = snapshot?.value as List<int>? ?? <int>[];
+      list = (snapshot?.value as List<dynamic>? ?? <int>[]).cast<int>();
       _idsOfCommentsRepliedToMe = list;
     } else {
       list = _idsOfCommentsRepliedToMe!;

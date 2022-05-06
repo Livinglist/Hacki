@@ -9,20 +9,20 @@ import 'package:hacki/utils/utils.dart';
 class PostRepository {
   PostRepository({Dio? dio, PreferenceRepository? storageRepository})
       : _dio = dio ?? Dio(),
-        _storageRepository =
+        _preferenceRepository =
             storageRepository ?? locator.get<PreferenceRepository>();
 
   static const String _authority = 'news.ycombinator.com';
 
   final Dio _dio;
-  final PreferenceRepository _storageRepository;
+  final PreferenceRepository _preferenceRepository;
 
   Future<bool> comment({
     required int parentId,
     required String text,
   }) async {
-    final String? username = await _storageRepository.username;
-    final String? password = await _storageRepository.password;
+    final String? username = await _preferenceRepository.username;
+    final String? password = await _preferenceRepository.password;
     final Uri uri = Uri.https(_authority, 'comment');
 
     if (username == null || password == null) {
@@ -48,8 +48,8 @@ class PostRepository {
     String? url,
     String? text,
   }) async {
-    final String? username = await _storageRepository.username;
-    final String? password = await _storageRepository.password;
+    final String? username = await _preferenceRepository.username;
+    final String? password = await _preferenceRepository.password;
 
     if (username == null || password == null) {
       return false;
@@ -91,8 +91,8 @@ class PostRepository {
     required int id,
     String? text,
   }) async {
-    final String? username = await _storageRepository.username;
-    final String? password = await _storageRepository.password;
+    final String? username = await _preferenceRepository.username;
+    final String? password = await _preferenceRepository.password;
 
     if (username == null || password == null) {
       return false;

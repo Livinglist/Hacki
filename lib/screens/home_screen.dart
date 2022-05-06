@@ -1,5 +1,7 @@
 // ignore_for_file: lines_longer_than_80_chars
 
+import 'dart:convert';
+
 import 'package:badges/badges.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +14,10 @@ import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
@@ -53,6 +57,34 @@ class _HomeScreenState extends State<HomeScreen>
     //   Constants.featureOpenStoryInWebView,
     //   Constants.featurePinToTop,
     // ]);
+
+    if (!selectNotificationSubject.hasListener) {
+      selectNotificationSubject.stream.listen((String? payload) async {
+        if (payload == null) return;
+
+        final Map<String, dynamic> payloadJson =
+            jsonDecode(payload) as Map<String, dynamic>;
+
+        final int? storyId = payloadJson['storyId'] as int?;
+        final int? commentId = payloadJson['commentId'] as int?;
+
+        if (storyId != null && commentId != null) {
+          context.read<NotificationCubit>().markAsRead(commentId);
+
+          await locator
+              .get<StoriesRepository>()
+              .fetchStoryBy(storyId)
+              .then((Story? story) {
+            if (story == null) {
+              showSnackBar(content: 'Something went wrong...');
+              return;
+            }
+            final StoryScreenArgs args = StoryScreenArgs(story: story);
+            goToStoryScreen(args: args);
+          });
+        }
+      });
+    }
 
     SchedulerBinding.instance?.addPostFrameCallback((_) {
       FeatureDiscovery.discoverFeatures(

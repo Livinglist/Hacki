@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/services/services.dart';
+import 'package:logger/logger.dart';
 
 /// Global [GetIt.instance].
 final GetIt locator = GetIt.instance;
@@ -15,5 +16,7 @@ Future<void> setUpLocator() async {
     ..registerSingleton<PostRepository>(PostRepository())
     ..registerSingleton<SembastRepository>(SembastRepository())
     ..registerSingleton<CacheRepository>(CacheRepository())
-    ..registerSingleton<CacheService>(CacheService());
+    ..registerSingleton<CacheService>(CacheService())
+    ..registerSingleton<LocalNotification>(LocalNotification())
+    ..registerSingleton<Logger>(Logger());
 }

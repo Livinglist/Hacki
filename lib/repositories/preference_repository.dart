@@ -115,6 +115,15 @@ class PreferenceRepository {
         return int.tryParse(val);
       });
 
+  Future<bool> hasPushed(int commentId) async =>
+      _prefs.then((SharedPreferences prefs) {
+        final bool? val = prefs.getBool(_getPushNotificationKey(commentId));
+
+        if (val == null) return false;
+
+        return true;
+      });
+
   Future<List<int>> favList({required String of}) => _prefs.then(
         (SharedPreferences prefs) =>
             ((prefs.getStringList(_getFavKey('')) ?? <String>[])
@@ -265,6 +274,16 @@ class PreferenceRepository {
       id.toString(),
     );
   }
+
+  Future<void> updateHasPushed(int commentId) async {
+    final SharedPreferences prefs = await _prefs;
+    await prefs.setBool(
+      _getPushNotificationKey(commentId),
+      true,
+    );
+  }
+
+  String _getPushNotificationKey(int commentId) => 'pushed_$commentId';
 
   String _getFavKey(String username) => 'fav_$username';
 

@@ -10,12 +10,12 @@ part 'auth_state.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({
     AuthRepository? authRepository,
-    PreferenceRepository? storageRepository,
+    PreferenceRepository? preferenceRepository,
     StoriesRepository? storiesRepository,
     SembastRepository? sembastRepository,
   })  : _authRepository = authRepository ?? locator.get<AuthRepository>(),
-        _storageRepository =
-            storageRepository ?? locator.get<PreferenceRepository>(),
+        _preferenceRepository =
+            preferenceRepository ?? locator.get<PreferenceRepository>(),
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
         _sembastRepository =
@@ -30,7 +30,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   final AuthRepository _authRepository;
-  final PreferenceRepository _storageRepository;
+  final PreferenceRepository _preferenceRepository;
   final StoriesRepository _storiesRepository;
   final SembastRepository _sembastRepository;
 
@@ -108,7 +108,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
 
     await _authRepository.logout();
-    await _storageRepository.updateUnreadCommentsIds(<int>[]);
+    await _preferenceRepository.updateUnreadCommentsIds(<int>[]);
     await _sembastRepository.deleteAll();
   }
 }

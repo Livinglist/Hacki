@@ -14,22 +14,22 @@ class VoteCubit extends Cubit<VoteState> {
     required Item item,
     required AuthBloc authBloc,
     AuthRepository? authRepository,
-    PreferenceRepository? storageRepository,
+    PreferenceRepository? preferenceRepository,
   })  : _authBloc = authBloc,
         _authRepository = authRepository ?? locator.get<AuthRepository>(),
-        _storageRepository =
-            storageRepository ?? locator.get<PreferenceRepository>(),
+        _preferenceRepository =
+            preferenceRepository ?? locator.get<PreferenceRepository>(),
         super(VoteState.init(item: item)) {
     init();
   }
 
   final AuthBloc _authBloc;
   final AuthRepository _authRepository;
-  final PreferenceRepository _storageRepository;
+  final PreferenceRepository _preferenceRepository;
   static const int _karmaThreshold = 501;
 
   Future<void> init() async {
-    final bool? vote = await _storageRepository.vote(
+    final bool? vote = await _preferenceRepository.vote(
       submittedTo: state.item.id,
       from: _authBloc.state.username,
     );
@@ -73,7 +73,7 @@ class VoteCubit extends Cubit<VoteState> {
         );
 
         unawaited(
-          _storageRepository.addVote(
+          _preferenceRepository.addVote(
             username: _authBloc.state.username,
             id: state.item.id,
             vote: true,
@@ -88,7 +88,7 @@ class VoteCubit extends Cubit<VoteState> {
       }
     } else {
       await _authRepository.upvote(id: state.item.id, upvote: false);
-      await _storageRepository.removeVote(
+      await _preferenceRepository.removeVote(
         username: _authBloc.state.username,
         id: state.item.id,
       );
@@ -118,7 +118,7 @@ class VoteCubit extends Cubit<VoteState> {
             await _authRepository.downvote(id: state.item.id, downvote: true);
 
         if (success) {
-          await _storageRepository.addVote(
+          await _preferenceRepository.addVote(
             username: _authBloc.state.username,
             id: state.item.id,
             vote: false,
@@ -133,7 +133,7 @@ class VoteCubit extends Cubit<VoteState> {
         }
       } else {
         await _authRepository.downvote(id: state.item.id, downvote: false);
-        await _storageRepository.removeVote(
+        await _preferenceRepository.removeVote(
           username: _authBloc.state.username,
           id: state.item.id,
         );
