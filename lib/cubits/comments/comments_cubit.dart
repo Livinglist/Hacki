@@ -14,17 +14,21 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
     CacheService? cacheService,
     CacheRepository? cacheRepository,
     StoriesRepository? storiesRepository,
+    SembastRepository? sembastRepository,
     required bool offlineReading,
     required T item,
   })  : _cacheService = cacheService ?? locator.get<CacheService>(),
         _cacheRepository = cacheRepository ?? locator.get<CacheRepository>(),
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
+        _sembastRepository =
+            sembastRepository ?? locator.get<SembastRepository>(),
         super(CommentsState.init(offlineReading: offlineReading, item: item));
 
   final CacheService _cacheService;
   final CacheRepository _cacheRepository;
   final StoriesRepository _storiesRepository;
+  final SembastRepository _sembastRepository;
   StreamSubscription<Comment>? _streamSubscription;
 
   static const int _pageSize = 20;
@@ -164,6 +168,7 @@ class CommentsCubit<T extends Item> extends Cubit<CommentsState> {
   void _onCommentFetched(Comment? comment) {
     if (comment != null) {
       _cacheService.cacheComment(comment);
+      _sembastRepository.saveComment(comment);
       final List<Comment> updatedComments = <Comment>[
         ...state.comments,
         comment
