@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hacki/config/locator.dart';
-import 'package:hacki/models/models.dart' show Comment, Item;
+import 'package:hacki/models/models.dart' show Comment;
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/services/cache_service.dart';
 
