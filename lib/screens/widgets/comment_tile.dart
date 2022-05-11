@@ -91,7 +91,7 @@ class CommentTile extends StatelessWidget {
                                   ],
                                 )
                               : null,
-                          endActionPane: loadKids
+                          endActionPane: loadKids && level != 0
                               ? ActionPane(
                                   motion: const StretchMotion(),
                                   children: <Widget>[
