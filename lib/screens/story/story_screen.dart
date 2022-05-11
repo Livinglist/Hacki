@@ -502,6 +502,8 @@ class _StoryScreenState extends State<StoryScreen> {
                                     .withOpacity(0.6),
                                 story: widget.story,
                                 scrollController: scrollController,
+                                onBackgroundTap: onFeatureDiscoveryDismissed,
+                                onDismiss: onFeatureDiscoveryDismissed,
                               ),
                             ),
                             Positioned(
@@ -533,6 +535,8 @@ class _StoryScreenState extends State<StoryScreen> {
                               Theme.of(context).canvasColor.withOpacity(0.6),
                           story: widget.story,
                           scrollController: scrollController,
+                          onBackgroundTap: onFeatureDiscoveryDismissed,
+                          onDismiss: onFeatureDiscoveryDismissed,
                         ),
                         body: mainView,
                         bottomSheet: ReplyBox(
@@ -553,6 +557,12 @@ class _StoryScreenState extends State<StoryScreen> {
         );
       },
     );
+  }
+
+  Future<bool> onFeatureDiscoveryDismissed() {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    showSnackBar(content: 'Tap on icon to continue');
+    return Future<bool>.value(false);
   }
 
   void onTimeMachineActivated(Comment comment) {

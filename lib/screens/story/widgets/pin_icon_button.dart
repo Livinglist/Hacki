@@ -12,9 +12,13 @@ class PinIconButton extends StatelessWidget {
   const PinIconButton({
     Key? key,
     required this.story,
+    required this.onBackgroundTap,
+    required this.onDismiss,
   }) : super(key: key);
 
   final Story story;
+  final Future<bool> Function() onBackgroundTap;
+  final Future<bool> Function() onDismiss;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +31,8 @@ class PinIconButton extends StatelessWidget {
             offset: const Offset(2, 0),
             child: IconButton(
               icon: DescribedFeatureOverlay(
-                barrierDismissible: false,
+                onBackgroundTap: onBackgroundTap,
+                onDismiss: onDismiss,
                 overflowMode: OverflowMode.extendBackground,
                 targetColor: Theme.of(context).primaryColor,
                 tapTarget: Icon(

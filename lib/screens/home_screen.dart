@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen>
     super.initState();
 
     // This is for testing only.
-    // FeatureDiscovery.clearPreferences(context, [
+    // FeatureDiscovery.clearPreferences(context, <String>[
     //   Constants.featureLogIn,
     //   Constants.featureAddStoryToFavList,
     //   Constants.featureOpenStoryInWebView,
@@ -256,7 +256,8 @@ class _HomeScreenState extends State<HomeScreen>
                         ),
                         Tab(
                           child: DescribedFeatureOverlay(
-                            barrierDismissible: false,
+                            onBackgroundTap: onFeatureDiscoveryDismissed,
+                            onDismiss: onFeatureDiscoveryDismissed,
                             overflowMode: OverflowMode.extendBackground,
                             targetColor: Theme.of(context).primaryColor,
                             tapTarget: const Icon(
@@ -265,7 +266,7 @@ class _HomeScreenState extends State<HomeScreen>
                               color: Colors.white,
                             ),
                             featureId: Constants.featureLogIn,
-                            title: const Text(''),
+                            title: const Text('Log in for more'),
                             description: const Text(
                               'Log in using your Hacker News account '
                               'to check out stories and comments you have '
@@ -368,6 +369,12 @@ class _HomeScreenState extends State<HomeScreen>
         homeScreen: homeScreen,
       ),
     );
+  }
+
+  Future<bool> onFeatureDiscoveryDismissed() {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    showSnackBar(content: 'Tap on icon to continue');
+    return Future<bool>.value(false);
   }
 
   void onStoryTapped(Story story) {
