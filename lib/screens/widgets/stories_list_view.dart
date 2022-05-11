@@ -9,11 +9,11 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class StoriesListView extends StatefulWidget {
   const StoriesListView({
-    Key? key,
+    super.key,
     required this.storyType,
     required this.header,
     required this.onStoryTapped,
-  }) : super(key: key);
+  });
 
   final StoryType storyType;
   final Widget header;

@@ -6,7 +6,7 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:wakelock/wakelock.dart';
 
 class OfflineListTile extends StatelessWidget {
-  const OfflineListTile({Key? key}) : super(key: key);
+  const OfflineListTile({super.key});
 
   @override
   Widget build(BuildContext context) {

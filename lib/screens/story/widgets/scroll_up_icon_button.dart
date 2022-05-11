@@ -3,9 +3,9 @@ import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 
 class ScrollUpIconButton extends StatefulWidget {
   const ScrollUpIconButton({
-    Key? key,
+    super.key,
     required this.scrollController,
-  }) : super(key: key);
+  });
 
   final ScrollController scrollController;
 

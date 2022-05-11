@@ -5,11 +5,11 @@ import 'package:hacki/utils/utils.dart';
 
 class LinkIconButton extends StatelessWidget {
   const LinkIconButton({
-    Key? key,
+    super.key,
     required this.storyId,
     required this.onBackgroundTap,
     required this.onDismiss,
-  }) : super(key: key);
+  });
 
   final int storyId;
   final Future<bool> Function() onBackgroundTap;

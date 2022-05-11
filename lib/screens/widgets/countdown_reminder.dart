@@ -9,7 +9,7 @@ import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart';
 
 class CountdownReminder extends StatefulWidget {
-  const CountdownReminder({Key? key}) : super(key: key);
+  const CountdownReminder({super.key});
 
   @override
   State<CountdownReminder> createState() => _CountDownReminderState();

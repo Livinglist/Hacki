@@ -9,7 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class LinkPreview extends StatefulWidget {
   const LinkPreview({
-    Key? key,
+    super.key,
     required this.link,
     this.cache = const Duration(days: 30),
     this.titleStyle,
@@ -26,7 +26,7 @@ class LinkPreview extends StatefulWidget {
     this.borderRadius,
     this.boxShadow,
     this.removeElevation = false,
-  }) : super(key: key);
+  });
 
   /// Web address (Url that need to be parsed)
   /// For IOS & Web, only HTTP and HTTPS are support

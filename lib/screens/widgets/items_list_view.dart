@@ -12,7 +12,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class ItemsListView<T extends Item> extends StatelessWidget {
   const ItemsListView({
-    Key? key,
+    super.key,
     required this.showWebPreview,
     required this.items,
     required this.onTap,
@@ -26,11 +26,10 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.onLoadMore,
     this.onPinned,
     this.header,
-  })  : assert(
+  }) : assert(
           !pinnable || (pinnable && onPinned != null),
           'onPinned cannot be null when pinnable is true',
-        ),
-        super(key: key);
+        );
 
   final bool showWebPreview;
   final bool enablePullDown;

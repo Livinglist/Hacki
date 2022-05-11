@@ -10,7 +10,7 @@ import 'package:hacki/utils/utils.dart';
 
 class CommentTile extends StatelessWidget {
   const CommentTile({
-    Key? key,
+    super.key,
     required this.myUsername,
     required this.comment,
     required this.onStoryLinkTapped,
@@ -21,7 +21,7 @@ class CommentTile extends StatelessWidget {
     this.opUsername,
     this.loadKids = true,
     this.level = 0,
-  }) : super(key: key);
+  });
 
   final String? myUsername;
   final String? opUsername;

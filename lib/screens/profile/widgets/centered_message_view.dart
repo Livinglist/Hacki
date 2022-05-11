@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class CenteredMessageView extends StatelessWidget {
   const CenteredMessageView({
-    Key? key,
+    super.key,
     required this.content,
-  }) : super(key: key);
+  });
 
   final String content;
 

@@ -52,11 +52,11 @@ class StoryScreenArgs extends Equatable {
 
 class StoryScreen extends StatefulWidget {
   const StoryScreen({
-    Key? key,
+    super.key,
     this.splitViewEnabled = false,
     required this.story,
     required this.parentComments,
-  }) : super(key: key);
+  });
 
   static const String routeName = '/story';
 
@@ -139,7 +139,7 @@ class _StoryScreenState extends State<StoryScreen> {
   void initState() {
     super.initState();
 
-    SchedulerBinding.instance?.addPostFrameCallback((_) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
       FeatureDiscovery.discoverFeatures(
         context,
         const <String>{

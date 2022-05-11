@@ -25,7 +25,7 @@ import 'package:hacki/utils/utils.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   static const String routeName = '/';
 
@@ -86,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen>
       });
     }
 
-    SchedulerBinding.instance?.addPostFrameCallback((_) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
       FeatureDiscovery.discoverFeatures(
         context,
         const <String>{

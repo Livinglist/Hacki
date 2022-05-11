@@ -11,13 +11,13 @@ import 'package:shimmer/shimmer.dart';
 
 class StoryTile extends StatelessWidget {
   const StoryTile({
-    Key? key,
+    super.key,
     this.hasRead = false,
     required this.showWebPreview,
     required this.story,
     required this.onTap,
     this.simpleTileFontSize = 16,
-  }) : super(key: key);
+  });
 
   final bool showWebPreview;
   final bool hasRead;

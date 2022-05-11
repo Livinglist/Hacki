@@ -10,11 +10,11 @@ import 'package:hacki/models/models.dart';
 
 class PinIconButton extends StatelessWidget {
   const PinIconButton({
-    Key? key,
+    super.key,
     required this.story,
     required this.onBackgroundTap,
     required this.onDismiss,
-  }) : super(key: key);
+  });
 
   final Story story;
   final Future<bool> Function() onBackgroundTap;
