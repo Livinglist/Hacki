@@ -57,7 +57,8 @@ class _StoriesListViewState extends State<StoriesListView> {
               (current.currentPageByType[storyType] == 0 &&
                   previous.currentPageByType[storyType] == 0) ||
               (previous.storiesByType[storyType]!.length !=
-                  current.storiesByType[storyType]!.length),
+                  current.storiesByType[storyType]!.length) ||
+              (previous.readStoriesIds.length != current.readStoriesIds.length),
           builder: (BuildContext context, StoriesState state) {
             return ItemsListView<Story>(
               pinnable: true,
