@@ -1,4 +1,5 @@
-# Hacki for Hacker News
+
+# <img width="64" src="https://user-images.githubusercontent.com/7277662/167775086-0b234f28-dee4-44f6-aae4-14a28ed4bbb6.png"> Hacki for Hacker News
 
 A simple noiseless Hacker News reader made with Flutter that is just enough.
 
