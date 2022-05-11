@@ -169,195 +169,190 @@ class _HomeScreenState extends State<HomeScreen>
           },
         );
 
-        return BlocBuilder<CacheCubit, CacheState>(
-          builder: (BuildContext context, CacheState cacheState) {
-            return DefaultTabController(
-              length: 6,
-              child: Scaffold(
-                resizeToAvoidBottomInset: false,
-                appBar: PreferredSize(
-                  preferredSize: const Size(0, 40),
-                  child: Column(
-                    children: <Widget>[
-                      SizedBox(
-                        height: MediaQuery.of(context).padding.top - 8,
-                      ),
-                      Theme(
-                        data: ThemeData(
-                          highlightColor: Colors.transparent,
-                          splashColor: Colors.transparent,
-                          primaryColor: Theme.of(context).primaryColor,
-                        ),
-                        child: TabBar(
-                          isScrollable: true,
-                          controller: tabController,
-                          indicatorColor: Colors.orange,
-                          indicator: CircleTabIndicator(
-                            color: Colors.orange,
-                            radius: 2,
-                          ),
-                          indicatorPadding: const EdgeInsets.only(bottom: 8),
-                          onTap: (_) {
-                            HapticFeedback.selectionClick();
-                          },
-                          tabs: <Widget>[
-                            Tab(
-                              child: Text(
-                                'TOP',
-                                style: TextStyle(
-                                  fontSize: currentIndex == 0 ? 14 : 10,
-                                  color: currentIndex == 0
-                                      ? Colors.orange
-                                      : Colors.grey,
-                                ),
-                              ),
-                            ),
-                            Tab(
-                              child: Text(
-                                'NEW',
-                                style: TextStyle(
-                                  fontSize: currentIndex == 1 ? 14 : 10,
-                                  color: currentIndex == 1
-                                      ? Colors.orange
-                                      : Colors.grey,
-                                ),
-                              ),
-                            ),
-                            Tab(
-                              child: Text(
-                                'ASK',
-                                style: TextStyle(
-                                  fontSize: currentIndex == 2 ? 14 : 10,
-                                  color: currentIndex == 2
-                                      ? Colors.orange
-                                      : Colors.grey,
-                                ),
-                              ),
-                            ),
-                            Tab(
-                              child: Text(
-                                'SHOW',
-                                style: TextStyle(
-                                  fontSize: currentIndex == 3 ? 14 : 10,
-                                  color: currentIndex == 3
-                                      ? Colors.orange
-                                      : Colors.grey,
-                                ),
-                              ),
-                            ),
-                            Tab(
-                              child: Text(
-                                'JOBS',
-                                style: TextStyle(
-                                  fontSize: currentIndex == 4 ? 14 : 10,
-                                  color: currentIndex == 4
-                                      ? Colors.orange
-                                      : Colors.grey,
-                                ),
-                              ),
-                            ),
-                            Tab(
-                              child: DescribedFeatureOverlay(
-                                barrierDismissible: false,
-                                overflowMode: OverflowMode.extendBackground,
-                                targetColor: Theme.of(context).primaryColor,
-                                tapTarget: const Icon(
-                                  Icons.person,
-                                  size: 16,
-                                  color: Colors.white,
-                                ),
-                                featureId: Constants.featureLogIn,
-                                title: const Text(''),
-                                description: const Text(
-                                  'Log in using your Hacker News account '
-                                  'to check out stories and comments you have '
-                                  'posted in the past, and get in-app '
-                                  'notification when there is new reply to '
-                                  'your comments or stories.',
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                                child: BlocBuilder<NotificationCubit,
-                                    NotificationState>(
-                                  buildWhen: (
-                                    NotificationState previous,
-                                    NotificationState current,
-                                  ) =>
-                                      previous.unreadCommentsIds.length !=
-                                      current.unreadCommentsIds.length,
-                                  builder: (
-                                    BuildContext context,
-                                    NotificationState state,
-                                  ) {
-                                    return Badge(
-                                      showBadge:
-                                          state.unreadCommentsIds.isNotEmpty,
-                                      borderRadius: BorderRadius.circular(100),
-                                      badgeContent: Container(
-                                        height: 3,
-                                        width: 3,
-                                        decoration: const BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      child: Icon(
-                                        Icons.person,
-                                        size: currentIndex == 5 ? 16 : 12,
-                                        color: currentIndex == 5
-                                            ? Colors.orange
-                                            : Colors.grey,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+        return DefaultTabController(
+          length: 6,
+          child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            appBar: PreferredSize(
+              preferredSize: const Size(0, 40),
+              child: Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: MediaQuery.of(context).padding.top - 8,
                   ),
-                ),
-                body: TabBarView(
-                  physics: const NeverScrollableScrollPhysics(),
-                  controller: tabController,
-                  children: <Widget>[
-                    StoriesListView(
-                      key: const ValueKey<StoryType>(StoryType.top),
-                      storyType: StoryType.top,
-                      header: pinnedStories,
-                      onStoryTapped: onStoryTapped,
+                  Theme(
+                    data: ThemeData(
+                      highlightColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                      primaryColor: Theme.of(context).primaryColor,
                     ),
-                    StoriesListView(
-                      key: const ValueKey<StoryType>(StoryType.latest),
-                      storyType: StoryType.latest,
-                      header: pinnedStories,
-                      onStoryTapped: onStoryTapped,
+                    child: TabBar(
+                      isScrollable: true,
+                      controller: tabController,
+                      indicatorColor: Colors.orange,
+                      indicator: CircleTabIndicator(
+                        color: Colors.orange,
+                        radius: 2,
+                      ),
+                      indicatorPadding: const EdgeInsets.only(bottom: 8),
+                      onTap: (_) {
+                        HapticFeedback.selectionClick();
+                      },
+                      tabs: <Widget>[
+                        Tab(
+                          child: Text(
+                            'TOP',
+                            style: TextStyle(
+                              fontSize: currentIndex == 0 ? 14 : 10,
+                              color: currentIndex == 0
+                                  ? Colors.orange
+                                  : Colors.grey,
+                            ),
+                          ),
+                        ),
+                        Tab(
+                          child: Text(
+                            'NEW',
+                            style: TextStyle(
+                              fontSize: currentIndex == 1 ? 14 : 10,
+                              color: currentIndex == 1
+                                  ? Colors.orange
+                                  : Colors.grey,
+                            ),
+                          ),
+                        ),
+                        Tab(
+                          child: Text(
+                            'ASK',
+                            style: TextStyle(
+                              fontSize: currentIndex == 2 ? 14 : 10,
+                              color: currentIndex == 2
+                                  ? Colors.orange
+                                  : Colors.grey,
+                            ),
+                          ),
+                        ),
+                        Tab(
+                          child: Text(
+                            'SHOW',
+                            style: TextStyle(
+                              fontSize: currentIndex == 3 ? 14 : 10,
+                              color: currentIndex == 3
+                                  ? Colors.orange
+                                  : Colors.grey,
+                            ),
+                          ),
+                        ),
+                        Tab(
+                          child: Text(
+                            'JOBS',
+                            style: TextStyle(
+                              fontSize: currentIndex == 4 ? 14 : 10,
+                              color: currentIndex == 4
+                                  ? Colors.orange
+                                  : Colors.grey,
+                            ),
+                          ),
+                        ),
+                        Tab(
+                          child: DescribedFeatureOverlay(
+                            barrierDismissible: false,
+                            overflowMode: OverflowMode.extendBackground,
+                            targetColor: Theme.of(context).primaryColor,
+                            tapTarget: const Icon(
+                              Icons.person,
+                              size: 16,
+                              color: Colors.white,
+                            ),
+                            featureId: Constants.featureLogIn,
+                            title: const Text(''),
+                            description: const Text(
+                              'Log in using your Hacker News account '
+                              'to check out stories and comments you have '
+                              'posted in the past, and get in-app '
+                              'notification when there is new reply to '
+                              'your comments or stories.',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            child: BlocBuilder<NotificationCubit,
+                                NotificationState>(
+                              buildWhen: (
+                                NotificationState previous,
+                                NotificationState current,
+                              ) =>
+                                  previous.unreadCommentsIds.length !=
+                                  current.unreadCommentsIds.length,
+                              builder: (
+                                BuildContext context,
+                                NotificationState state,
+                              ) {
+                                return Badge(
+                                  showBadge: state.unreadCommentsIds.isNotEmpty,
+                                  borderRadius: BorderRadius.circular(100),
+                                  badgeContent: Container(
+                                    height: 3,
+                                    width: 3,
+                                    decoration: const BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.person,
+                                    size: currentIndex == 5 ? 16 : 12,
+                                    color: currentIndex == 5
+                                        ? Colors.orange
+                                        : Colors.grey,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    StoriesListView(
-                      key: const ValueKey<StoryType>(StoryType.ask),
-                      storyType: StoryType.ask,
-                      header: pinnedStories,
-                      onStoryTapped: onStoryTapped,
-                    ),
-                    StoriesListView(
-                      key: const ValueKey<StoryType>(StoryType.show),
-                      storyType: StoryType.show,
-                      header: pinnedStories,
-                      onStoryTapped: onStoryTapped,
-                    ),
-                    StoriesListView(
-                      key: const ValueKey<StoryType>(StoryType.jobs),
-                      storyType: StoryType.jobs,
-                      header: pinnedStories,
-                      onStoryTapped: onStoryTapped,
-                    ),
-                    const ProfileScreen(),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            );
-          },
+            ),
+            body: TabBarView(
+              physics: const NeverScrollableScrollPhysics(),
+              controller: tabController,
+              children: <Widget>[
+                StoriesListView(
+                  key: const ValueKey<StoryType>(StoryType.top),
+                  storyType: StoryType.top,
+                  header: pinnedStories,
+                  onStoryTapped: onStoryTapped,
+                ),
+                StoriesListView(
+                  key: const ValueKey<StoryType>(StoryType.latest),
+                  storyType: StoryType.latest,
+                  header: pinnedStories,
+                  onStoryTapped: onStoryTapped,
+                ),
+                StoriesListView(
+                  key: const ValueKey<StoryType>(StoryType.ask),
+                  storyType: StoryType.ask,
+                  header: pinnedStories,
+                  onStoryTapped: onStoryTapped,
+                ),
+                StoriesListView(
+                  key: const ValueKey<StoryType>(StoryType.show),
+                  storyType: StoryType.show,
+                  header: pinnedStories,
+                  onStoryTapped: onStoryTapped,
+                ),
+                StoriesListView(
+                  key: const ValueKey<StoryType>(StoryType.jobs),
+                  storyType: StoryType.jobs,
+                  header: pinnedStories,
+                  onStoryTapped: onStoryTapped,
+                ),
+                const ProfileScreen(),
+              ],
+            ),
+          ),
         );
       },
     );
@@ -415,7 +410,11 @@ class _HomeScreenState extends State<HomeScreen>
       cacheService.store(story.id);
     }
 
-    context.read<CacheCubit>().markStoryAsRead(story.id);
+    context.read<StoriesBloc>().add(
+          StoryRead(
+            story: story,
+          ),
+        );
   }
 }
 

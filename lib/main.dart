@@ -142,10 +142,6 @@ class HackiApp extends StatelessWidget {
           lazy: false,
           create: (BuildContext context) => PinCubit(),
         ),
-        BlocProvider<CacheCubit>(
-          lazy: false,
-          create: (BuildContext context) => CacheCubit(),
-        ),
         BlocProvider<SplitViewCubit>(
           lazy: false,
           create: (BuildContext context) => SplitViewCubit(),

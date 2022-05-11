@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:synced_shared_preferences/synced_shared_preferences.dart';
 
 class PreferenceRepository {
   PreferenceRepository({
+    SyncedSharedPreferences? syncedPrefs,
     Future<SharedPreferences>? prefs,
     FlutterSecureStorage? secureStorage,
-  })  : _prefs = prefs ?? SharedPreferences.getInstance(),
+  })  : _syncedPrefs = syncedPrefs ?? SyncedSharedPreferences.instance,
+        _prefs = prefs ?? SharedPreferences.getInstance(),
         _secureStorage = secureStorage ?? const FlutterSecureStorage();
 
   static const String _usernameKey = 'username';
@@ -37,6 +42,7 @@ class PreferenceRepository {
   static const bool _readerModeDefaultValue = true;
   static const bool _markReadStoriesModeDefaultValue = true;
 
+  final SyncedSharedPreferences _syncedPrefs;
   final Future<SharedPreferences> _prefs;
   final FlutterSecureStorage _secureStorage;
 
@@ -123,6 +129,22 @@ class PreferenceRepository {
 
         return true;
       });
+
+  Future<bool> hasRead(int storyId) async {
+    final String key = _getHasReadKey(storyId);
+    if (Platform.isIOS) {
+      final bool? val = await _syncedPrefs.getBool(key: key);
+      return val ?? false;
+    } else {
+      return _prefs.then((SharedPreferences prefs) {
+        final bool? val = prefs.getBool(key);
+
+        if (val == null) return false;
+
+        return true;
+      });
+    }
+  }
 
   Future<List<int>> favList({required String of}) => _prefs.then(
         (SharedPreferences prefs) =>
@@ -283,9 +305,39 @@ class PreferenceRepository {
     );
   }
 
+  Future<void> updateHasRead(int storyId) async {
+    final String key = _getHasReadKey(storyId);
+    if (Platform.isIOS) {
+      await _syncedPrefs.setBool(key: key, val: true);
+    } else {
+      final SharedPreferences prefs = await _prefs;
+
+      await prefs.setBool(
+        _getHasReadKey(storyId),
+        true,
+      );
+    }
+  }
+
+  Future<void> clearAllReadStories() async {
+    if (Platform.isIOS) {
+      await _syncedPrefs.clearAll();
+    } else {
+      final SharedPreferences prefs = await _prefs;
+
+      final Iterable<String> allKeys =
+          prefs.getKeys().where((String e) => e.contains('hasRead'));
+      for (final String key in allKeys) {
+        await prefs.remove(key);
+      }
+    }
+  }
+
   String _getPushNotificationKey(int commentId) => 'pushed_$commentId';
 
   String _getFavKey(String username) => 'fav_$username';
 
   String _getVoteKey(String username, int id) => 'vote_$username-$id';
+
+  String _getHasReadKey(int storyId) => 'hasRead_$storyId';
 }

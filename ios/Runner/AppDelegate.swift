@@ -14,6 +14,11 @@ import flutter_local_notifications
     ) -> Bool {
         GeneratedPluginRegistrant.register(with: self)
         
+        let center = UNUserNotificationCenter.current()
+        center.delegate = self
+
+        HackiCore.start()
+        
         WorkmanagerPlugin.register(with: self.registrar(forPlugin: "be.tramckrijte.workmanager.WorkmanagerPlugin")!)
         
         if #available(iOS 10.0, *) {

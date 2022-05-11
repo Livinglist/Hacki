@@ -27,23 +27,6 @@ class CacheRepository {
   Future<bool> get hasCachedStories =>
       _storyBox.then((Box<Map<dynamic, dynamic>> box) => box.isNotEmpty);
 
-  Future<bool> wasRead({required int id}) async {
-    final Box<bool> box = await _readStoryIdBox;
-    final bool? val = box.get(id.toString());
-    return val != null;
-  }
-
-  Future<void> cacheReadStoryId({required int id}) async {
-    final Box<bool> box = await _readStoryIdBox;
-    return box.put(id.toString(), true);
-  }
-
-  Future<List<int>> getAllReadStoriesIds() async {
-    final Box<bool> box = await _readStoryIdBox;
-    final List<int> allReads = box.keys.cast<String>().map(int.parse).toList();
-    return allReads;
-  }
-
   Future<void> cacheStoryIds({
     required StoryType of,
     required List<int> ids,

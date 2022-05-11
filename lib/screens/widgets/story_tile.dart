@@ -12,7 +12,7 @@ import 'package:shimmer/shimmer.dart';
 class StoryTile extends StatelessWidget {
   const StoryTile({
     Key? key,
-    this.wasRead = false,
+    this.hasRead = false,
     required this.showWebPreview,
     required this.story,
     required this.onTap,
@@ -20,7 +20,7 @@ class StoryTile extends StatelessWidget {
   }) : super(key: key);
 
   final bool showWebPreview;
-  final bool wasRead;
+  final bool hasRead;
   final Story story;
   final VoidCallback onTap;
   final double simpleTileFontSize;
@@ -126,7 +126,7 @@ class StoryTile extends StatelessWidget {
                 bodyMaxLines: height == 100 ? 3 : 4,
                 errorTitle: story.title,
                 titleStyle: TextStyle(
-                  color: wasRead
+                  color: hasRead
                       ? Colors.grey[500]
                       : Theme.of(context).textTheme.subtitle1!.color,
                   fontWeight: FontWeight.bold,
@@ -155,7 +155,7 @@ class StoryTile extends StatelessWidget {
                   imagePath: Constants.hackerNewsLogoPath,
                   bodyMaxLines: height == 100 ? 3 : 4,
                   titleTextStyle: TextStyle(
-                    color: wasRead
+                    color: hasRead
                         ? Colors.grey[500]
                         : Theme.of(context).textTheme.subtitle1!.color,
                     fontWeight: FontWeight.bold,
@@ -183,7 +183,7 @@ class StoryTile extends StatelessWidget {
                     child: Text(
                       story.title,
                       style: TextStyle(
-                        color: wasRead ? Colors.grey[500] : null,
+                        color: hasRead ? Colors.grey[500] : null,
                         fontSize: simpleTileFontSize,
                       ),
                     ),

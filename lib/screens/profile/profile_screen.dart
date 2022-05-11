@@ -333,8 +333,8 @@ class _ProfileScreenState extends State<ProfileScreen>
 
                                   if (!val) {
                                     context
-                                        .read<CacheCubit>()
-                                        .deleteAllReadStoryIds();
+                                        .read<StoriesBloc>()
+                                        .add(ClearAllReadStories());
                                   }
 
                                   context
