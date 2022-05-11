@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -156,7 +157,24 @@ class PreferenceRepository {
   }
 
   Future<List<int>> favList({required String of}) async {
+    final SharedPreferences prefs = await _prefs;
     if (Platform.isIOS) {
+      final List<String> previousList =
+          ((prefs.getStringList(_getFavKey('')) ?? <String>[])
+                ..addAll(prefs.getStringList(_getFavKey(of)) ?? <String>[]))
+              .toList();
+
+      /// Since v0.2.5, fav list will be stored in [NSUbiquitousKeyValueStore]
+      /// instead of [UserDefaults] on iOS.
+      if (previousList.isNotEmpty) {
+        for (final String fav in previousList) {
+          await addFav(username: of, id: int.parse(fav));
+        }
+
+        await prefs.remove('');
+        await prefs.remove(of);
+      }
+
       final List<String>? initialList =
           await _syncedPrefs.getStringList(key: _getFavKey(''));
       final List<String>? userList =
@@ -167,16 +185,14 @@ class PreferenceRepository {
         ...?userList,
       }.map(int.parse).toList();
     } else {
-      return _prefs.then(
-        (SharedPreferences prefs) =>
-            ((prefs.getStringList(_getFavKey('')) ?? <String>[])
-                  ..addAll(prefs.getStringList(_getFavKey(of)) ?? <String>[]))
-                .map(int.parse)
-                .toSet()
-                .toList()
-                .reversed
-                .toList(),
-      );
+      final List<int> favList =
+          ((prefs.getStringList(_getFavKey('')) ?? <String>[])
+                ..addAll(prefs.getStringList(_getFavKey(of)) ?? <String>[]))
+              .map(int.parse)
+              .toSet()
+              .toList();
+
+      return favList;
     }
   }
 
@@ -256,7 +272,7 @@ class PreferenceRepository {
       final List<String> favListInString =
           (await _syncedPrefs.getStringList(key: key)) ?? <String>[];
       final List<int> favList = favListInString.map(int.parse).toList()
-        ..add(id);
+        ..insert(0, id);
 
       await _syncedPrefs.setStringList(
         key: key,
@@ -267,7 +283,7 @@ class PreferenceRepository {
       final List<String> favListInString =
           prefs.getStringList(key) ?? <String>[];
       final List<int> favList = favListInString.map(int.parse).toList()
-        ..add(id);
+        ..insert(0, id);
 
       await prefs.setStringList(
         key,
