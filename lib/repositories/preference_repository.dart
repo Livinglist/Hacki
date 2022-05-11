@@ -171,8 +171,8 @@ class PreferenceRepository {
           await addFav(username: of, id: int.parse(fav));
         }
 
-        await prefs.remove('');
-        await prefs.remove(of);
+        await prefs.remove(_getFavKey(''));
+        await prefs.remove(_getFavKey(of));
       }
 
       final List<String>? initialList =
