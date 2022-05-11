@@ -26,6 +26,22 @@ public class SwiftSyncedSharedPreferencesPlugin: NSObject, FlutterPlugin {
             }
             
             return
+        case "setStringList":
+            if let params  = call.arguments as? [String: Any] {
+                let info: [String: Any] = ["result": result,
+                                           "params": params]
+                NotificationCenter.default.post(name: Notification.Name("setStringList"), object: nil, userInfo: info)
+            }
+            
+            return
+        case "getStringList":
+            if let params  = call.arguments as? [String: Any] {
+                let info: [String: Any] = ["result": result,
+                                           "params": params]
+                NotificationCenter.default.post(name: Notification.Name("getStringList"), object: nil, userInfo: info)
+            }
+            
+            return
         case "clearAll":
             if let params  = call.arguments as? [String: Any] {
                 let info: [String: Any] = ["result": result,

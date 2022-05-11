@@ -33,6 +33,27 @@ class SyncedSharedPreferences {
     });
   }
 
+  Future<void> setStringList({
+    required String key,
+    required List<String> val,
+  }) async {
+    return _channel.invokeMethod('setStringList', <String, dynamic>{
+      'key': key,
+      'val': val,
+    });
+  }
+
+  Future<List<String>?> getStringList({
+    required String key,
+  }) async {
+    final List<dynamic>? list =
+        await _channel.invokeMethod('getStringList', <String, dynamic>{
+      'key': key,
+    });
+
+    return list?.map((dynamic e) => e as String?).whereType<String>().toList();
+  }
+
   Future<void> clearAll() async {
     return _channel.invokeMethod('clearAll', <String, dynamic>{});
   }
