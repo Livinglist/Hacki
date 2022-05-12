@@ -19,6 +19,7 @@ class StoriesState extends Equatable {
     required this.storyIdsByType,
     required this.statusByType,
     required this.currentPageByType,
+    required this.readStoriesIds,
     required this.offlineReading,
     required this.downloadStatus,
     required this.currentPageSize,
@@ -55,12 +56,14 @@ class StoriesState extends Equatable {
     },
   })  : offlineReading = false,
         downloadStatus = StoriesDownloadStatus.initial,
-        currentPageSize = 0;
+        currentPageSize = 0,
+        readStoriesIds = const <int>{};
 
   final Map<StoryType, List<Story>> storiesByType;
   final Map<StoryType, List<int>> storyIdsByType;
   final Map<StoryType, StoriesStatus> statusByType;
   final Map<StoryType, int> currentPageByType;
+  final Set<int> readStoriesIds;
   final StoriesDownloadStatus downloadStatus;
   final bool offlineReading;
   final int currentPageSize;
@@ -70,6 +73,7 @@ class StoriesState extends Equatable {
     Map<StoryType, List<int>>? storyIdsByType,
     Map<StoryType, StoriesStatus>? statusByType,
     Map<StoryType, int>? currentPageByType,
+    Set<int>? readStoriesIds,
     StoriesDownloadStatus? downloadStatus,
     bool? offlineReading,
     int? currentPageSize,
@@ -79,6 +83,7 @@ class StoriesState extends Equatable {
       storyIdsByType: storyIdsByType ?? this.storyIdsByType,
       statusByType: statusByType ?? this.statusByType,
       currentPageByType: currentPageByType ?? this.currentPageByType,
+      readStoriesIds: readStoriesIds ?? this.readStoriesIds,
       offlineReading: offlineReading ?? this.offlineReading,
       downloadStatus: downloadStatus ?? this.downloadStatus,
       currentPageSize: currentPageSize ?? this.currentPageSize,
@@ -88,6 +93,7 @@ class StoriesState extends Equatable {
   StoriesState copyWithStoryAdded({
     required StoryType of,
     required Story story,
+    required bool hasRead,
   }) {
     final Map<StoryType, List<Story>> newMap =
         Map<StoryType, List<Story>>.from(storiesByType);
@@ -97,6 +103,10 @@ class StoriesState extends Equatable {
       storyIdsByType: storyIdsByType,
       statusByType: statusByType,
       currentPageByType: currentPageByType,
+      readStoriesIds: <int>{
+        ...readStoriesIds,
+        if (hasRead) story.id,
+      },
       offlineReading: offlineReading,
       downloadStatus: downloadStatus,
       currentPageSize: currentPageSize,
@@ -115,6 +125,7 @@ class StoriesState extends Equatable {
       storyIdsByType: newMap,
       statusByType: statusByType,
       currentPageByType: currentPageByType,
+      readStoriesIds: readStoriesIds,
       offlineReading: offlineReading,
       downloadStatus: downloadStatus,
       currentPageSize: currentPageSize,
@@ -133,6 +144,7 @@ class StoriesState extends Equatable {
       storyIdsByType: storyIdsByType,
       statusByType: newMap,
       currentPageByType: currentPageByType,
+      readStoriesIds: readStoriesIds,
       offlineReading: offlineReading,
       downloadStatus: downloadStatus,
       currentPageSize: currentPageSize,
@@ -151,6 +163,7 @@ class StoriesState extends Equatable {
       storyIdsByType: storyIdsByType,
       statusByType: statusByType,
       currentPageByType: newMap,
+      readStoriesIds: readStoriesIds,
       offlineReading: offlineReading,
       downloadStatus: downloadStatus,
       currentPageSize: currentPageSize,
@@ -175,6 +188,7 @@ class StoriesState extends Equatable {
       storyIdsByType: newStoryIdsMap,
       statusByType: newStatusMap,
       currentPageByType: newCurrentPageMap,
+      readStoriesIds: readStoriesIds,
       offlineReading: offlineReading,
       downloadStatus: downloadStatus,
       currentPageSize: currentPageSize,
@@ -187,6 +201,7 @@ class StoriesState extends Equatable {
         storyIdsByType,
         statusByType,
         currentPageByType,
+        readStoriesIds,
         offlineReading,
         downloadStatus,
         currentPageSize,

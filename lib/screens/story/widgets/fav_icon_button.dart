@@ -7,11 +7,15 @@ import 'package:hacki/cubits/cubits.dart';
 
 class FavIconButton extends StatelessWidget {
   const FavIconButton({
-    Key? key,
+    super.key,
     required this.storyId,
-  }) : super(key: key);
+    required this.onBackgroundTap,
+    required this.onDismiss,
+  });
 
   final int storyId;
+  final Future<bool> Function() onBackgroundTap;
+  final Future<bool> Function() onDismiss;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +24,8 @@ class FavIconButton extends StatelessWidget {
         final bool isFav = favState.favIds.contains(storyId);
         return IconButton(
           icon: DescribedFeatureOverlay(
-            barrierDismissible: false,
+            onBackgroundTap: onBackgroundTap,
+            onDismiss: onDismiss,
             overflowMode: OverflowMode.extendBackground,
             targetColor: Theme.of(context).primaryColor,
             tapTarget: Icon(

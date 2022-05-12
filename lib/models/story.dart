@@ -13,32 +13,21 @@ enum StoryType {
 
 class Story extends Item {
   const Story({
-    required int descendants,
-    required int id,
-    required int score,
-    required int time,
-    required String by,
-    required String title,
-    required String type,
-    required String url,
-    required String text,
-    required List<int> kids,
-    required List<int> parts,
+    required super.descendants,
+    required super.id,
+    required super.score,
+    required super.time,
+    required super.by,
+    required super.title,
+    required super.type,
+    required super.url,
+    required super.text,
+    required super.kids,
+    required super.parts,
   }) : super(
-          id: id,
-          score: score,
-          descendants: descendants,
-          time: time,
-          by: by,
-          title: title,
-          url: url,
-          kids: kids,
-          type: type,
           dead: false,
-          parts: parts,
           deleted: false,
           parent: 0,
-          text: text,
         );
 
   Story.empty()

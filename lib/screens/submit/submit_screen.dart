@@ -5,7 +5,7 @@ import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 
 class SubmitScreen extends StatefulWidget {
-  const SubmitScreen({Key? key}) : super(key: key);
+  const SubmitScreen({super.key});
 
   static const String routeName = '/submit';
 

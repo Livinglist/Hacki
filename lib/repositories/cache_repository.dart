@@ -3,46 +3,24 @@ import 'package:hive/hive.dart';
 
 class CacheRepository {
   CacheRepository({
-    Future<Box<bool>>? readStoryIdBox,
     Future<Box<List<int>>>? storyIdBox,
     Future<Box<Map<dynamic, dynamic>>>? storyBox,
     Future<LazyBox<Map<dynamic, dynamic>>>? commentBox,
-  })  : _readStoryIdBox =
-            readStoryIdBox ?? Hive.openBox<bool>(_readStoryIdBoxName),
-        _storyIdBox = storyIdBox ?? Hive.openBox<List<int>>(_storyIdBoxName),
+  })  : _storyIdBox = storyIdBox ?? Hive.openBox<List<int>>(_storyIdBoxName),
         _storyBox =
             storyBox ?? Hive.openBox<Map<dynamic, dynamic>>(_storyBoxName),
         _commentBox = commentBox ??
             Hive.openLazyBox<Map<dynamic, dynamic>>(_commentBoxName);
 
-  static const String _readStoryIdBoxName = 'readStoryIdBox';
   static const String _storyIdBoxName = 'storyIdBox';
   static const String _storyBoxName = 'storyBox';
   static const String _commentBoxName = 'commentBox';
-  final Future<Box<bool>> _readStoryIdBox;
   final Future<Box<List<int>>> _storyIdBox;
   final Future<Box<Map<dynamic, dynamic>>> _storyBox;
   final Future<LazyBox<Map<dynamic, dynamic>>> _commentBox;
 
   Future<bool> get hasCachedStories =>
       _storyBox.then((Box<Map<dynamic, dynamic>> box) => box.isNotEmpty);
-
-  Future<bool> wasRead({required int id}) async {
-    final Box<bool> box = await _readStoryIdBox;
-    final bool? val = box.get(id.toString());
-    return val != null;
-  }
-
-  Future<void> cacheReadStoryId({required int id}) async {
-    final Box<bool> box = await _readStoryIdBox;
-    return box.put(id.toString(), true);
-  }
-
-  Future<List<int>> getAllReadStoriesIds() async {
-    final Box<bool> box = await _readStoryIdBox;
-    final List<int> allReads = box.keys.cast<String>().map(int.parse).toList();
-    return allReads;
-  }
 
   Future<void> cacheStoryIds({
     required StoryType of,
@@ -122,11 +100,6 @@ class CacheRepository {
         yield* getCachedCommentsStream(ids: comment.kids, level: level + 1);
       }
     }
-  }
-
-  Future<int> deleteAllReadStoryIds() async {
-    final Box<bool> box = await _readStoryIdBox;
-    return box.clear();
   }
 
   Future<int> deleteAllStoryIds() async {

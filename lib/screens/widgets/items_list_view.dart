@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/utils/utils.dart';
@@ -12,7 +12,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class ItemsListView<T extends Item> extends StatelessWidget {
   const ItemsListView({
-    Key? key,
+    super.key,
     required this.showWebPreview,
     required this.items,
     required this.onTap,
@@ -26,11 +26,10 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.onLoadMore,
     this.onPinned,
     this.header,
-  })  : assert(
+  }) : assert(
           !pinnable || (pinnable && onPinned != null),
           'onPinned cannot be null when pinnable is true',
-        ),
-        super(key: key);
+        );
 
   final bool showWebPreview;
   final bool enablePullDown;
@@ -61,9 +60,8 @@ class ItemsListView<T extends Item> extends StatelessWidget {
           ),
         if (header != null) header!,
         ...items.map((T e) {
-          final bool wasRead =
-              context.read<CacheCubit>().state.storiesReadStatus[e.id] ?? false;
           if (e is Story) {
+            final bool hasRead = context.read<StoriesBloc>().hasRead(e);
             return <Widget>[
               FadeIn(
                 child: Slidable(
@@ -91,7 +89,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                     story: e,
                     onTap: () => onTap(e),
                     showWebPreview: showWebPreview,
-                    wasRead: markReadStories && wasRead,
+                    hasRead: markReadStories && hasRead,
                     simpleTileFontSize: useConsistentFontSize ? 14 : 16,
                   ),
                 ),

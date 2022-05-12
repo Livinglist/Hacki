@@ -6,21 +6,21 @@ class LinkUtil {
   static final ChromeSafariBrowser _browser = ChromeSafariBrowser();
 
   static void launchUrl(String link, {bool useReader = false}) {
-    String rinseLink(String link) {
+    Uri rinseLink(String link) {
       if (link.contains(')')) {
         final RegExp regex = RegExp(r'\).*$');
         final String match = regex.stringMatch(link) ?? '';
-        return link.replaceAll(match, '');
+        return Uri.parse(link.replaceAll(match, ''));
       }
 
-      return link;
+      return Uri.parse(link);
     }
 
-    canLaunch(link).then((bool val) {
+    final Uri uri = rinseLink(link);
+    canLaunchUrl(uri).then((bool val) {
       if (val) {
-        final String rinsedLink = rinseLink(link);
         _browser.open(
-          url: Uri.parse(rinsedLink),
+          url: uri,
           options: ChromeSafariBrowserClassOptions(
             ios: IOSSafariOptions(
               entersReaderIfAvailable: useReader,

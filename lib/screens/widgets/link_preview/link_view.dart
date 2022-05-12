@@ -4,7 +4,7 @@ import 'package:hacki/config/constants.dart';
 
 class LinkView extends StatelessWidget {
   const LinkView({
-    Key? key,
+    super.key,
     required this.url,
     required this.title,
     required this.description,
@@ -19,12 +19,11 @@ class LinkView extends StatelessWidget {
     this.isIcon = false,
     this.bgColor,
     this.radius = 0,
-  })  : assert(
+  }) : assert(
           !showMultiMedia ||
               (showMultiMedia && (imageUri != null || imagePath != null)),
           'imageUri or imagePath cannot be null when showMultiMedia is true',
-        ),
-        super(key: key);
+        );
 
   final String url;
   final String title;

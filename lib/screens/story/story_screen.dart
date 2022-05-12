@@ -52,11 +52,11 @@ class StoryScreenArgs extends Equatable {
 
 class StoryScreen extends StatefulWidget {
   const StoryScreen({
-    Key? key,
+    super.key,
     this.splitViewEnabled = false,
     required this.story,
     required this.parentComments,
-  }) : super(key: key);
+  });
 
   static const String routeName = '/story';
 
@@ -65,10 +65,10 @@ class StoryScreen extends StatefulWidget {
       settings: const RouteSettings(name: routeName),
       builder: (BuildContext context) => MultiBlocProvider(
         providers: <BlocProvider<dynamic>>[
-          BlocProvider<CommentsCubit<Story>>(
-            create: (_) => CommentsCubit<Story>(
+          BlocProvider<CommentsCubit>(
+            create: (_) => CommentsCubit(
               offlineReading: context.read<StoriesBloc>().state.offlineReading,
-              item: args.story,
+              story: args.story,
             )..init(
                 onlyShowTargetComment: args.onlyShowTargetComment,
                 targetParents: args.targetComments,
@@ -92,10 +92,10 @@ class StoryScreen extends StatefulWidget {
     return MultiBlocProvider(
       key: ValueKey<StoryScreenArgs>(args),
       providers: <BlocProvider<dynamic>>[
-        BlocProvider<CommentsCubit<Story>>(
-          create: (BuildContext context) => CommentsCubit<Story>(
+        BlocProvider<CommentsCubit>(
+          create: (BuildContext context) => CommentsCubit(
             offlineReading: context.read<StoriesBloc>().state.offlineReading,
-            item: args.story,
+            story: args.story,
           )..init(
               onlyShowTargetComment: args.onlyShowTargetComment,
               targetParents: args.targetComments,
@@ -139,7 +139,7 @@ class _StoryScreenState extends State<StoryScreen> {
   void initState() {
     super.initState();
 
-    SchedulerBinding.instance?.addPostFrameCallback((_) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
       FeatureDiscovery.discoverFeatures(
         context,
         const <String>{
@@ -176,13 +176,6 @@ class _StoryScreenState extends State<StoryScreen> {
       builder: (BuildContext context, AuthState authState) {
         return MultiBlocListener(
           listeners: <BlocListener<dynamic, dynamic>>[
-            BlocListener<TimeMachineCubit, TimeMachineState>(
-              listenWhen:
-                  (TimeMachineState previous, TimeMachineState current) =>
-                      current.parents.isNotEmpty,
-              listener: (BuildContext context, TimeMachineState postState) =>
-                  showTimeMachine(),
-            ),
             BlocListener<PostCubit, PostState>(
               listener: (BuildContext context, PostState postState) {
                 if (postState.status == PostStatus.successful) {
@@ -209,7 +202,7 @@ class _StoryScreenState extends State<StoryScreen> {
               },
             ),
           ],
-          child: BlocConsumer<CommentsCubit<Story>, CommentsState>(
+          child: BlocConsumer<CommentsCubit, CommentsState>(
             listenWhen: (CommentsState previous, CommentsState current) =>
                 previous.status != current.status,
             listener: (BuildContext context, CommentsState state) {
@@ -257,10 +250,10 @@ class _StoryScreenState extends State<StoryScreen> {
                 onRefresh: () {
                   HapticFeedback.lightImpact();
                   locator.get<CacheService>().resetComments();
-                  context.read<CommentsCubit<Story>>().refresh();
+                  context.read<CommentsCubit>().refresh();
                 },
                 onLoading: () {
-                  context.read<CommentsCubit<Story>>().loadMore();
+                  context.read<CommentsCubit>().loadMore();
                 },
                 child: ListView(
                   primary: false,
@@ -373,8 +366,9 @@ class _StoryScreenState extends State<StoryScreen> {
                                   color: Colors.orange,
                                 ),
                                 onOpen: (LinkableElement link) {
-                                  if (link.url
-                                      .contains('news.ycombinator.com/item')) {
+                                  if (link.url.contains(
+                                    'news.ycombinator.com/item',
+                                  )) {
                                     onStoryLinkTapped(link.url);
                                   } else {
                                     LinkUtil.launchUrl(link.url);
@@ -399,9 +393,8 @@ class _StoryScreenState extends State<StoryScreen> {
                     ),
                     if (state.onlyShowTargetComment) ...<Widget>[
                       TextButton(
-                        onPressed: () => context
-                            .read<CommentsCubit<Story>>()
-                            .loadAll(widget.story),
+                        onPressed: () =>
+                            context.read<CommentsCubit>().loadAll(widget.story),
                         child: const Text('View all comments'),
                       ),
                       const Divider(
@@ -508,6 +501,8 @@ class _StoryScreenState extends State<StoryScreen> {
                                     .withOpacity(0.6),
                                 story: widget.story,
                                 scrollController: scrollController,
+                                onBackgroundTap: onFeatureDiscoveryDismissed,
+                                onDismiss: onFeatureDiscoveryDismissed,
                               ),
                             ),
                             Positioned(
@@ -539,6 +534,8 @@ class _StoryScreenState extends State<StoryScreen> {
                               Theme.of(context).canvasColor.withOpacity(0.6),
                           story: widget.story,
                           scrollController: scrollController,
+                          onBackgroundTap: onFeatureDiscoveryDismissed,
+                          onDismiss: onFeatureDiscoveryDismissed,
                         ),
                         body: mainView,
                         bottomSheet: ReplyBox(
@@ -561,77 +558,82 @@ class _StoryScreenState extends State<StoryScreen> {
     );
   }
 
-  void onTimeMachineActivated(Comment comment) {
-    HapticFeedback.lightImpact();
-    context.read<TimeMachineCubit>().activateTimeMachine(comment);
+  Future<bool> onFeatureDiscoveryDismissed() {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    showSnackBar(content: 'Tap on icon to continue');
+    return Future<bool>.value(false);
   }
 
-  void showTimeMachine() {
+  void onTimeMachineActivated(Comment comment) {
     final Size size = MediaQuery.of(context).size;
     final DeviceScreenType deviceType = getDeviceType(size);
     final double widthFactor =
         deviceType != DeviceScreenType.mobile ? 0.6 : 0.9;
+    HapticFeedback.lightImpact();
     showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        return BlocBuilder<TimeMachineCubit, TimeMachineState>(
-          builder: (BuildContext context, TimeMachineState state) {
-            return Center(
-              child: Material(
-                borderRadius: const BorderRadius.all(Radius.circular(4)),
-                child: SizedBox(
-                  height: size.height * 0.8,
-                  width: size.width * widthFactor,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 12,
-                    ),
-                    child: Column(
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            const SizedBox(
-                              width: 8,
-                            ),
-                            const Text('Parents:'),
-                            const Spacer(),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.close,
-                                size: 16,
-                              ),
-                              onPressed: () => Navigator.pop(context),
-                              padding: EdgeInsets.zero,
-                            ),
-                          ],
-                        ),
-                        Expanded(
-                          child: ListView(
+        return BlocProvider<TimeMachineCubit>.value(
+          value: TimeMachineCubit()..activateTimeMachine(comment),
+          child: BlocBuilder<TimeMachineCubit, TimeMachineState>(
+            builder: (BuildContext context, TimeMachineState state) {
+              return Center(
+                child: Material(
+                  borderRadius: const BorderRadius.all(Radius.circular(4)),
+                  child: SizedBox(
+                    height: size.height * 0.8,
+                    width: size.width * widthFactor,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 12,
+                      ),
+                      child: Column(
+                        children: <Widget>[
+                          Row(
                             children: <Widget>[
-                              for (final Comment c
-                                  in state.parents) ...<Widget>[
-                                CommentTile(
-                                  comment: c,
-                                  loadKids: false,
-                                  myUsername:
-                                      context.read<AuthBloc>().state.username,
-                                  onStoryLinkTapped: onStoryLinkTapped,
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              const Text('Parents:'),
+                              const Spacer(),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.close,
+                                  size: 16,
                                 ),
-                                const Divider(
-                                  height: 0,
-                                ),
-                              ],
+                                onPressed: () => Navigator.pop(context),
+                                padding: EdgeInsets.zero,
+                              ),
                             ],
                           ),
-                        ),
-                      ],
+                          Expanded(
+                            child: ListView(
+                              children: <Widget>[
+                                for (final Comment c
+                                    in state.parents) ...<Widget>[
+                                  CommentTile(
+                                    comment: c,
+                                    loadKids: false,
+                                    myUsername:
+                                        context.read<AuthBloc>().state.username,
+                                    onStoryLinkTapped: onStoryLinkTapped,
+                                  ),
+                                  const Divider(
+                                    height: 0,
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         );
       },
     );

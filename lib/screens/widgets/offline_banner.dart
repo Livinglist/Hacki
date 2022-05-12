@@ -5,9 +5,9 @@ import 'package:hacki/cubits/cubits.dart';
 
 class OfflineBanner extends StatelessWidget {
   const OfflineBanner({
-    Key? key,
+    super.key,
     this.showExitButton = false,
-  }) : super(key: key);
+  });
 
   final bool showExitButton;
 

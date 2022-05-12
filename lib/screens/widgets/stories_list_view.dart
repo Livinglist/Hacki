@@ -9,11 +9,11 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class StoriesListView extends StatefulWidget {
   const StoriesListView({
-    Key? key,
+    super.key,
     required this.storyType,
     required this.header,
     required this.onStoryTapped,
-  }) : super(key: key);
+  });
 
   final StoryType storyType;
   final Widget header;
@@ -57,7 +57,8 @@ class _StoriesListViewState extends State<StoriesListView> {
               (current.currentPageByType[storyType] == 0 &&
                   previous.currentPageByType[storyType] == 0) ||
               (previous.storiesByType[storyType]!.length !=
-                  current.storiesByType[storyType]!.length),
+                  current.storiesByType[storyType]!.length) ||
+              (previous.readStoriesIds.length != current.readStoriesIds.length),
           builder: (BuildContext context, StoriesState state) {
             return ItemsListView<Story>(
               pinnable: true,

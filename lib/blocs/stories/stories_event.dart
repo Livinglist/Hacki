@@ -65,3 +65,17 @@ class StoryLoaded extends StoriesEvent {
   @override
   List<Object?> get props => <Object?>[story, type];
 }
+
+class StoryRead extends StoriesEvent {
+  StoryRead({required this.story});
+
+  final Story story;
+
+  @override
+  List<Object?> get props => <Object?>[story];
+}
+
+class ClearAllReadStories extends StoriesEvent {
+  @override
+  List<Object?> get props => <Object?>[];
+}

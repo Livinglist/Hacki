@@ -10,14 +10,14 @@ import 'package:hacki/utils/link_util.dart';
 
 class ReplyBox extends StatefulWidget {
   const ReplyBox({
-    Key? key,
+    super.key,
     this.splitViewEnabled = false,
     required this.focusNode,
     required this.textEditingController,
     required this.onSendTapped,
     required this.onCloseTapped,
     required this.onChanged,
-  }) : super(key: key);
+  });
 
   final bool splitViewEnabled;
   final FocusNode focusNode;
@@ -257,7 +257,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                 ),
                 Expanded(
                   child: Scrollbar(
-                    isAlwaysShown: true,
+                    thumbVisibility: true,
                     child: Padding(
                       padding: const EdgeInsets.only(
                         left: 12,

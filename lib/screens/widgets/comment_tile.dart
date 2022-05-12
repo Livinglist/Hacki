@@ -10,7 +10,7 @@ import 'package:hacki/utils/utils.dart';
 
 class CommentTile extends StatelessWidget {
   const CommentTile({
-    Key? key,
+    super.key,
     required this.myUsername,
     required this.comment,
     required this.onStoryLinkTapped,
@@ -21,7 +21,7 @@ class CommentTile extends StatelessWidget {
     this.opUsername,
     this.loadKids = true,
     this.level = 0,
-  }) : super(key: key);
+  });
 
   final String? myUsername;
   final String? opUsername;
@@ -36,14 +36,13 @@ class CommentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<CommentsCubit<Comment>>(
+    return BlocProvider<CollapseCubit>(
       lazy: false,
-      create: (_) => CommentsCubit<Comment>(
-        offlineReading: context.read<StoriesBloc>().state.offlineReading,
-        item: comment,
+      create: (_) => CollapseCubit(
+        commentId: comment.id,
       )..init(),
-      child: BlocBuilder<CommentsCubit<Comment>, CommentsState>(
-        builder: (BuildContext context, CommentsState state) {
+      child: BlocBuilder<CollapseCubit, CollapseState>(
+        builder: (BuildContext context, CollapseState state) {
           return BlocBuilder<PreferenceCubit, PreferenceState>(
             builder: (BuildContext context, PreferenceState prefState) {
               return BlocBuilder<BlocklistCubit, BlocklistState>(
@@ -91,7 +90,7 @@ class CommentTile extends StatelessWidget {
                                   ],
                                 )
                               : null,
-                          endActionPane: loadKids
+                          endActionPane: loadKids && level != 0
                               ? ActionPane(
                                   motion: const StretchMotion(),
                                   children: <Widget>[
@@ -112,9 +111,7 @@ class CommentTile extends StatelessWidget {
                                 behavior: HitTestBehavior.opaque,
                                 onTap: () {
                                   HapticFeedback.lightImpact();
-                                  context
-                                      .read<CommentsCubit<Comment>>()
-                                      .collapse();
+                                  context.read<CollapseCubit>().collapse();
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.only(

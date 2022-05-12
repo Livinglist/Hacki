@@ -17,24 +17,30 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     required PreferenceCubit preferenceCubit,
     CacheRepository? cacheRepository,
     StoriesRepository? storiesRepository,
+    PreferenceRepository? preferenceRepository,
   })  : _preferenceCubit = preferenceCubit,
         _cacheRepository = cacheRepository ?? locator.get<CacheRepository>(),
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
+        _preferenceRepository =
+            preferenceRepository ?? locator.get<PreferenceRepository>(),
         super(const StoriesState.init()) {
     on<StoriesInitialize>(onInitialize);
     on<StoriesRefresh>(onRefresh);
     on<StoriesLoadMore>(onLoadMore);
     on<StoryLoaded>(onStoryLoaded);
+    on<StoryRead>(onStoryRead);
     on<StoriesLoaded>(onStoriesLoaded);
     on<StoriesDownload>(onDownload);
     on<StoriesExitOffline>(onExitOffline);
     on<StoriesPageSizeChanged>(onPageSizeChanged);
+    on<ClearAllReadStories>(onClearAllReadStories);
   }
 
   final PreferenceCubit _preferenceCubit;
   final CacheRepository _cacheRepository;
   final StoriesRepository _storiesRepository;
+  final PreferenceRepository _preferenceRepository;
   DeviceScreenType? deviceScreenType;
   StreamSubscription<PreferenceState>? _streamSubscription;
   static const int _smallPageSize = 10;
@@ -199,8 +205,18 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     }
   }
 
-  void onStoryLoaded(StoryLoaded event, Emitter<StoriesState> emit) {
-    emit(state.copyWithStoryAdded(of: event.type, story: event.story));
+  Future<void> onStoryLoaded(
+    StoryLoaded event,
+    Emitter<StoriesState> emit,
+  ) async {
+    final bool hasRead = await _preferenceRepository.hasRead(event.story.id);
+    emit(
+      state.copyWithStoryAdded(
+        of: event.type,
+        story: event.story,
+        hasRead: hasRead,
+      ),
+    );
   }
 
   void onStoriesLoaded(StoriesLoaded event, Emitter<StoriesState> emit) {
@@ -294,6 +310,34 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     emit(state.copyWith(offlineReading: false));
     add(StoriesInitialize());
   }
+
+  Future<void> onStoryRead(
+    StoryRead event,
+    Emitter<StoriesState> emit,
+  ) async {
+    unawaited(_preferenceRepository.updateHasRead(event.story.id));
+
+    emit(
+      state.copyWith(
+        readStoriesIds: <int>{...state.readStoriesIds, event.story.id},
+      ),
+    );
+  }
+
+  Future<void> onClearAllReadStories(
+    ClearAllReadStories event,
+    Emitter<StoriesState> emit,
+  ) async {
+    unawaited(_preferenceRepository.clearAllReadStories());
+
+    emit(
+      state.copyWith(
+        readStoriesIds: <int>{},
+      ),
+    );
+  }
+
+  bool hasRead(Story story) => state.readStoriesIds.contains(story.id);
 
   int _getPageSize({required bool isComplexTile}) {
     int pageSize = isComplexTile ? _smallPageSize : _largePageSize;

@@ -5,17 +5,22 @@ import 'package:hacki/utils/utils.dart';
 
 class LinkIconButton extends StatelessWidget {
   const LinkIconButton({
-    Key? key,
+    super.key,
     required this.storyId,
-  }) : super(key: key);
+    required this.onBackgroundTap,
+    required this.onDismiss,
+  });
 
   final int storyId;
+  final Future<bool> Function() onBackgroundTap;
+  final Future<bool> Function() onDismiss;
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
       icon: DescribedFeatureOverlay(
-        barrierDismissible: false,
+        onBackgroundTap: onBackgroundTap,
+        onDismiss: onDismiss,
         overflowMode: OverflowMode.extendBackground,
         targetColor: Theme.of(context).primaryColor,
         tapTarget: const Icon(

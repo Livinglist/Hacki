@@ -29,7 +29,7 @@ enum _PageType {
 }
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -333,8 +333,8 @@ class _ProfileScreenState extends State<ProfileScreen>
 
                                   if (!val) {
                                     context
-                                        .read<CacheCubit>()
-                                        .deleteAllReadStoryIds();
+                                        .read<StoriesBloc>()
+                                        .add(ClearAllReadStories());
                                   }
 
                                   context
@@ -388,11 +388,16 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   showAboutDialog(
                                     context: context,
                                     applicationName: 'Hacki',
-                                    applicationVersion: 'v0.2.4',
-                                    applicationIcon: Image.asset(
-                                      Constants.hackiIconPath,
-                                      height: 50,
-                                      width: 50,
+                                    applicationVersion: 'v0.2.5',
+                                    applicationIcon: ClipRRect(
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(12),
+                                      ),
+                                      child: Image.asset(
+                                        Constants.hackiIconPath,
+                                        height: 50,
+                                        width: 50,
+                                      ),
                                     ),
                                     children: <Widget>[
                                       ElevatedButton(

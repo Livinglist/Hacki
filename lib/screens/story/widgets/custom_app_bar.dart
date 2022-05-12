@@ -11,6 +11,8 @@ class CustomAppBar extends AppBar {
     required ScrollController scrollController,
     required Story story,
     required Color backgroundColor,
+    required Future<bool> Function() onBackgroundTap,
+    required Future<bool> Function() onDismiss,
   }) : super(
           key: key,
           backgroundColor: backgroundColor,
@@ -19,9 +21,21 @@ class CustomAppBar extends AppBar {
             ScrollUpIconButton(
               scrollController: scrollController,
             ),
-            PinIconButton(story: story),
-            FavIconButton(storyId: story.id),
-            LinkIconButton(storyId: story.id),
+            PinIconButton(
+              story: story,
+              onBackgroundTap: onBackgroundTap,
+              onDismiss: onDismiss,
+            ),
+            FavIconButton(
+              storyId: story.id,
+              onBackgroundTap: onBackgroundTap,
+              onDismiss: onDismiss,
+            ),
+            LinkIconButton(
+              storyId: story.id,
+              onBackgroundTap: onBackgroundTap,
+              onDismiss: onDismiss,
+            ),
           ],
         );
 }

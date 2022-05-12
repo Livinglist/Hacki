@@ -85,9 +85,9 @@ Future<void> main() async {
 
 class HackiApp extends StatelessWidget {
   const HackiApp({
-    Key? key,
+    super.key,
     this.savedThemeMode,
-  }) : super(key: key);
+  });
 
   final AdaptiveThemeMode? savedThemeMode;
 
@@ -142,10 +142,6 @@ class HackiApp extends StatelessWidget {
           lazy: false,
           create: (BuildContext context) => PinCubit(),
         ),
-        BlocProvider<CacheCubit>(
-          lazy: false,
-          create: (BuildContext context) => CacheCubit(),
-        ),
         BlocProvider<SplitViewCubit>(
           lazy: false,
           create: (BuildContext context) => SplitViewCubit(),
@@ -153,10 +149,6 @@ class HackiApp extends StatelessWidget {
         BlocProvider<ReminderCubit>(
           lazy: false,
           create: (BuildContext context) => ReminderCubit()..init(),
-        ),
-        BlocProvider<TimeMachineCubit>(
-          lazy: false,
-          create: (BuildContext context) => TimeMachineCubit(),
         ),
         BlocProvider<PostCubit>(
           lazy: false,
