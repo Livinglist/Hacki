@@ -65,10 +65,10 @@ class StoryScreen extends StatefulWidget {
       settings: const RouteSettings(name: routeName),
       builder: (BuildContext context) => MultiBlocProvider(
         providers: <BlocProvider<dynamic>>[
-          BlocProvider<CommentsCubit<Story>>(
-            create: (_) => CommentsCubit<Story>(
+          BlocProvider<CommentsCubit>(
+            create: (_) => CommentsCubit(
               offlineReading: context.read<StoriesBloc>().state.offlineReading,
-              item: args.story,
+              story: args.story,
             )..init(
                 onlyShowTargetComment: args.onlyShowTargetComment,
                 targetParents: args.targetComments,
@@ -92,10 +92,10 @@ class StoryScreen extends StatefulWidget {
     return MultiBlocProvider(
       key: ValueKey<StoryScreenArgs>(args),
       providers: <BlocProvider<dynamic>>[
-        BlocProvider<CommentsCubit<Story>>(
-          create: (BuildContext context) => CommentsCubit<Story>(
+        BlocProvider<CommentsCubit>(
+          create: (BuildContext context) => CommentsCubit(
             offlineReading: context.read<StoriesBloc>().state.offlineReading,
-            item: args.story,
+            story: args.story,
           )..init(
               onlyShowTargetComment: args.onlyShowTargetComment,
               targetParents: args.targetComments,
@@ -202,7 +202,7 @@ class _StoryScreenState extends State<StoryScreen> {
               },
             ),
           ],
-          child: BlocConsumer<CommentsCubit<Story>, CommentsState>(
+          child: BlocConsumer<CommentsCubit, CommentsState>(
             listenWhen: (CommentsState previous, CommentsState current) =>
                 previous.status != current.status,
             listener: (BuildContext context, CommentsState state) {
@@ -250,10 +250,10 @@ class _StoryScreenState extends State<StoryScreen> {
                 onRefresh: () {
                   HapticFeedback.lightImpact();
                   locator.get<CacheService>().resetComments();
-                  context.read<CommentsCubit<Story>>().refresh();
+                  context.read<CommentsCubit>().refresh();
                 },
                 onLoading: () {
-                  context.read<CommentsCubit<Story>>().loadMore();
+                  context.read<CommentsCubit>().loadMore();
                 },
                 child: ListView(
                   primary: false,
@@ -393,9 +393,8 @@ class _StoryScreenState extends State<StoryScreen> {
                     ),
                     if (state.onlyShowTargetComment) ...<Widget>[
                       TextButton(
-                        onPressed: () => context
-                            .read<CommentsCubit<Story>>()
-                            .loadAll(widget.story),
+                        onPressed: () =>
+                            context.read<CommentsCubit>().loadAll(widget.story),
                         child: const Text('View all comments'),
                       ),
                       const Divider(

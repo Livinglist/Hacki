@@ -36,14 +36,13 @@ class CommentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<CommentsCubit<Comment>>(
+    return BlocProvider<CollapseCubit>(
       lazy: false,
-      create: (_) => CommentsCubit<Comment>(
-        offlineReading: context.read<StoriesBloc>().state.offlineReading,
-        item: comment,
+      create: (_) => CollapseCubit(
+        commentId: comment.id,
       )..init(),
-      child: BlocBuilder<CommentsCubit<Comment>, CommentsState>(
-        builder: (BuildContext context, CommentsState state) {
+      child: BlocBuilder<CollapseCubit, CollapseState>(
+        builder: (BuildContext context, CollapseState state) {
           return BlocBuilder<PreferenceCubit, PreferenceState>(
             builder: (BuildContext context, PreferenceState prefState) {
               return BlocBuilder<BlocklistCubit, BlocklistState>(
@@ -112,9 +111,7 @@ class CommentTile extends StatelessWidget {
                                 behavior: HitTestBehavior.opaque,
                                 onTap: () {
                                   HapticFeedback.lightImpact();
-                                  context
-                                      .read<CommentsCubit<Comment>>()
-                                      .collapse();
+                                  context.read<CollapseCubit>().collapse();
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.only(

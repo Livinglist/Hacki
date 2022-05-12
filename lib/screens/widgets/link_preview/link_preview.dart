@@ -136,11 +136,12 @@ class _LinkPreviewState extends State<LinkPreview> {
   }
 
   Future<void> _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
     } else {
       try {
-        await launch(url);
+        await launchUrl(uri);
       } catch (err) {
         throw Exception('Could not launch $url. Error: $err');
       }
