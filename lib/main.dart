@@ -4,17 +4,20 @@ import 'dart:io';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/repositories/repositories.dart' show PreferenceRepository;
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/services/fetcher.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart' show BehaviorSubject;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 
 // For receiving payload event from local notifications.
@@ -63,6 +66,9 @@ Future<void> main() async {
   await setUpLocator();
 
   final AdaptiveThemeMode? savedThemeMode = await AdaptiveTheme.getThemeMode();
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final bool trueDarkMode =
+      prefs.getBool(PreferenceRepository.trueDarkModeKey) ?? false;
 
   // Uncomment code below for running with logging.
   // BlocOverrides.runZoned(
@@ -79,6 +85,7 @@ Future<void> main() async {
   runApp(
     HackiApp(
       savedThemeMode: savedThemeMode,
+      trueDarkMode: trueDarkMode,
     ),
   );
 }
@@ -87,9 +94,11 @@ class HackiApp extends StatelessWidget {
   const HackiApp({
     super.key,
     this.savedThemeMode,
+    required this.trueDarkMode,
   });
 
   final AdaptiveThemeMode? savedThemeMode;
+  final bool trueDarkMode;
 
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
@@ -166,6 +175,7 @@ class HackiApp extends StatelessWidget {
         dark: ThemeData(
           brightness: Brightness.dark,
           primarySwatch: Colors.orange,
+          canvasColor: trueDarkMode ? Colors.black : null,
         ),
         initial: savedThemeMode ?? AdaptiveThemeMode.system,
         builder: (ThemeData theme, ThemeData darkTheme) {
@@ -174,20 +184,35 @@ class HackiApp extends StatelessWidget {
             primarySwatch: Colors.orange,
             canvasColor: Colors.black,
           );
-          return BlocBuilder<PreferenceCubit, PreferenceState>(
-            buildWhen: (PreferenceState previous, PreferenceState current) =>
-                previous.useTrueDark != current.useTrueDark,
-            builder: (BuildContext context, PreferenceState prefState) {
-              return FeatureDiscovery(
-                child: MaterialApp(
-                  title: 'Hacki',
-                  debugShowCheckedModeBanner: false,
-                  theme: prefState.useTrueDark ? trueDarkTheme : theme,
-                  darkTheme: prefState.useTrueDark ? trueDarkTheme : darkTheme,
-                  navigatorKey: navigatorKey,
-                  onGenerateRoute: CustomRouter.onGenerateRoute,
-                  initialRoute: HomeScreen.routeName,
-                ),
+          return FutureBuilder<AdaptiveThemeMode?>(
+            future: AdaptiveTheme.getThemeMode(),
+            builder: (
+              BuildContext context,
+              AsyncSnapshot<AdaptiveThemeMode?> snapshot,
+            ) {
+              final AdaptiveThemeMode? mode = snapshot.data;
+              return BlocBuilder<PreferenceCubit, PreferenceState>(
+                buildWhen:
+                    (PreferenceState previous, PreferenceState current) =>
+                        previous.useTrueDark != current.useTrueDark,
+                builder: (BuildContext context, PreferenceState prefState) {
+                  final bool useTrueDark = prefState.useTrueDark &&
+                      (mode == AdaptiveThemeMode.dark ||
+                          (mode == AdaptiveThemeMode.system &&
+                              SchedulerBinding
+                                      .instance.window.platformBrightness ==
+                                  Brightness.dark));
+                  return FeatureDiscovery(
+                    child: MaterialApp(
+                      title: 'Hacki',
+                      debugShowCheckedModeBanner: false,
+                      theme: useTrueDark ? trueDarkTheme : theme,
+                      navigatorKey: navigatorKey,
+                      onGenerateRoute: CustomRouter.onGenerateRoute,
+                      initialRoute: HomeScreen.routeName,
+                    ),
+                  );
+                },
               );
             },
           );

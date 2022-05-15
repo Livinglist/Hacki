@@ -372,6 +372,7 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Future<bool> onFeatureDiscoveryDismissed() {
+    HapticFeedback.lightImpact();
     ScaffoldMessenger.of(context).clearSnackBars();
     showSnackBar(content: 'Tap on icon to continue');
     return Future<bool>.value(false);
@@ -383,7 +384,7 @@ class _HomeScreenState extends State<HomeScreen>
     final bool useReader = context.read<PreferenceCubit>().state.useReader;
     final bool offlineReading =
         context.read<StoriesBloc>().state.offlineReading;
-    final bool firstTimeReading = cacheService.isFirstTimeReading(story.id);
+    final bool hasRead = context.read<StoriesBloc>().hasRead(story);
     final bool splitViewEnabled = context.read<SplitViewCubit>().state.enabled;
 
     // If a story is a job story and it has a link to the job posting,
@@ -411,8 +412,7 @@ class _HomeScreenState extends State<HomeScreen>
       }
     }
 
-    if (!offlineReading &&
-        (isJobWithLink || (showWebFirst && firstTimeReading))) {
+    if (!offlineReading && (isJobWithLink || (showWebFirst && !hasRead))) {
       LinkUtil.launchUrl(story.url, useReader: useReader);
       cacheService.store(story.id);
     }

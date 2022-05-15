@@ -9,6 +9,7 @@ void main() {
     await tester.pumpWidget(
       const HackiApp(
         savedThemeMode: AdaptiveThemeMode.light,
+        trueDarkMode: false,
       ),
     );
 
