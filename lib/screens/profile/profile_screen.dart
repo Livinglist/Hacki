@@ -357,7 +357,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                               ),
                               SwitchListTile(
                                 title: const Text('True Dark Mode'),
-                                subtitle: const Text('real dark.'),
+                                subtitle: const Text(
+                                  'you might need to restart the app.',
+                                ),
                                 value: preferenceState.useTrueDark,
                                 onChanged: (bool val) {
                                   HapticFeedback.lightImpact();
@@ -368,17 +370,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 activeColor: Colors.orange,
                               ),
                               ListTile(
-                                title: Text(
+                                title: const Text(
                                   'Theme',
-                                  style: TextStyle(
-                                    decoration: preferenceState.useTrueDark
-                                        ? TextDecoration.lineThrough
-                                        : null,
-                                  ),
                                 ),
-                                onTap: () => showThemeSettingDialog(
-                                  useTrueDarkMode: preferenceState.useTrueDark,
-                                ),
+                                onTap: showThemeSettingDialog,
                               ),
                               ListTile(
                                 title: const Text('About'),
@@ -577,13 +572,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  void showThemeSettingDialog({bool useTrueDarkMode = false}) {
-    if (useTrueDarkMode) {
-      showSnackBar(
-        content: "Can't choose theme when using true dark mode.",
-      );
-      return;
-    }
+  void showThemeSettingDialog() {
     showDialog<void>(
       context: context,
       builder: (_) {

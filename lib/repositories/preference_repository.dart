@@ -22,8 +22,10 @@ class PreferenceRepository {
   static const String _lastReadStoryIdKey = 'lastReadStoryId';
 
   static const String _notificationModeKey = 'notificationMode';
-  static const String _trueDarkModeKey = 'trueDarkMode';
   static const String _readerModeKey = 'readerMode';
+
+  /// Exposing this val for main func.
+  static const String trueDarkModeKey = 'trueDarkMode';
 
   /// The key of a boolean value deciding whether or not the story
   /// tile should display link preview. Defaults to true.
@@ -99,7 +101,7 @@ class PreferenceRepository {
 
   Future<bool> get trueDarkMode async => _prefs.then(
         (SharedPreferences prefs) =>
-            prefs.getBool(_trueDarkModeKey) ?? _trueDarkModeDefaultValue,
+            prefs.getBool(trueDarkModeKey) ?? _trueDarkModeDefaultValue,
       );
 
   Future<bool> get readerMode async => _prefs.then(
@@ -247,8 +249,8 @@ class PreferenceRepository {
   Future<void> toggleTrueDarkMode() async {
     final SharedPreferences prefs = await _prefs;
     final bool currentMode =
-        prefs.getBool(_trueDarkModeKey) ?? _trueDarkModeDefaultValue;
-    await prefs.setBool(_trueDarkModeKey, !currentMode);
+        prefs.getBool(trueDarkModeKey) ?? _trueDarkModeDefaultValue;
+    await prefs.setBool(trueDarkModeKey, !currentMode);
   }
 
   Future<void> toggleReaderMode() async {
