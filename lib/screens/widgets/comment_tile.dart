@@ -181,7 +181,7 @@ class CommentTile extends StatelessWidget {
                               else if (state.collapsed)
                                 const Center(
                                   child: Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 12),
+                                    padding: EdgeInsets.only(bottom: 8),
                                     child: Text(
                                       'collapsed',
                                       style:
