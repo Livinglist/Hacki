@@ -372,6 +372,7 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Future<bool> onFeatureDiscoveryDismissed() {
+    HapticFeedback.lightImpact();
     ScaffoldMessenger.of(context).clearSnackBars();
     showSnackBar(content: 'Tap on icon to continue');
     return Future<bool>.value(false);
