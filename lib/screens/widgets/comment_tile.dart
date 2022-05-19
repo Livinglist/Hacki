@@ -43,6 +43,8 @@ class CommentTile extends StatelessWidget {
       )..init(),
       child: BlocBuilder<CollapseCubit, CollapseState>(
         builder: (BuildContext context, CollapseState state) {
+          if (state.hidden) return const SizedBox.shrink();
+
           return BlocBuilder<PreferenceCubit, PreferenceState>(
             builder: (BuildContext context, PreferenceState prefState) {
               return BlocBuilder<BlocklistCubit, BlocklistState>(
@@ -104,16 +106,15 @@ class CommentTile extends StatelessWidget {
                                   ],
                                 )
                               : null,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              GestureDetector(
-                                behavior: HitTestBehavior.opaque,
-                                onTap: () {
-                                  HapticFeedback.lightImpact();
-                                  context.read<CollapseCubit>().collapse();
-                                },
-                                child: Padding(
+                          child: InkWell(
+                            onTap: () {
+                              HapticFeedback.lightImpact();
+                              context.read<CollapseCubit>().collapse();
+                            },
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Padding(
                                   padding: const EdgeInsets.only(
                                     left: 6,
                                     right: 6,
@@ -146,86 +147,97 @@ class CommentTile extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                              ),
-                              if (comment.deleted)
-                                const Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 12),
-                                    child: Text(
-                                      'deleted',
-                                      style: TextStyle(color: Colors.grey),
+                                if (comment.deleted)
+                                  const Center(
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 12),
+                                      child: Text(
+                                        'deleted',
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                else if (comment.dead)
+                                  const Center(
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 12),
+                                      child: Text(
+                                        'dead',
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                else if (blocklistState.blocklist
+                                    .contains(comment.by))
+                                  const Center(
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 12),
+                                      child: Text(
+                                        'blocked',
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                else if (state.collapsed)
+                                  Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(bottom: 8),
+                                      child: Text(
+                                        'collapsed '
+                                        '(${state.collapsedCount + 1})',
+                                        style: const TextStyle(
+                                          color: Colors.orangeAccent,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                else
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      left: 8,
+                                      right: 8,
+                                      top: 6,
+                                      bottom: 12,
+                                    ),
+                                    child: SelectableLinkify(
+                                      key: ObjectKey(comment),
+                                      text: comment.text,
+                                      style: TextStyle(
+                                        fontSize: MediaQuery.of(context)
+                                                .textScaleFactor *
+                                            15,
+                                      ),
+                                      linkStyle: TextStyle(
+                                        fontSize: MediaQuery.of(context)
+                                                .textScaleFactor *
+                                            15,
+                                        color: Colors.orange,
+                                      ),
+                                      onOpen: (LinkableElement link) {
+                                        if (link.url.contains(
+                                          'news.ycombinator.com/item',
+                                        )) {
+                                          onStoryLinkTapped.call(link.url);
+                                        } else {
+                                          LinkUtil.launchUrl(link.url);
+                                        }
+                                      },
                                     ),
                                   ),
-                                )
-                              else if (comment.dead)
-                                const Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 12),
-                                    child: Text(
-                                      'dead',
-                                      style: TextStyle(color: Colors.grey),
-                                    ),
-                                  ),
-                                )
-                              else if (blocklistState.blocklist
-                                  .contains(comment.by))
-                                const Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 12),
-                                    child: Text(
-                                      'blocked',
-                                      style: TextStyle(color: Colors.grey),
-                                    ),
-                                  ),
-                                )
-                              else if (state.collapsed)
-                                const Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.only(bottom: 8),
-                                    child: Text(
-                                      'collapsed',
-                                      style:
-                                          TextStyle(color: Colors.orangeAccent),
-                                    ),
-                                  ),
-                                )
-                              else
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: 8,
-                                    right: 8,
-                                    top: 6,
-                                    bottom: 12,
-                                  ),
-                                  child: SelectableLinkify(
-                                    key: ObjectKey(comment),
-                                    text: comment.text,
-                                    style: TextStyle(
-                                      fontSize: MediaQuery.of(context)
-                                              .textScaleFactor *
-                                          15,
-                                    ),
-                                    linkStyle: TextStyle(
-                                      fontSize: MediaQuery.of(context)
-                                              .textScaleFactor *
-                                          15,
-                                      color: Colors.orange,
-                                    ),
-                                    onOpen: (LinkableElement link) {
-                                      if (link.url.contains(
-                                        'news.ycombinator.com/item',
-                                      )) {
-                                        onStoryLinkTapped.call(link.url);
-                                      } else {
-                                        LinkUtil.launchUrl(link.url);
-                                      }
-                                    },
-                                  ),
+                                const Divider(
+                                  height: 0,
                                 ),
-                              const Divider(
-                                height: 0,
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ],

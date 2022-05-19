@@ -6,6 +6,7 @@ export 'items_list_view.dart';
 export 'link_preview/link_preview.dart';
 export 'link_preview/link_preview.dart';
 export 'offline_banner.dart';
+export 'onboard_view.dart';
 export 'spring_curve.dart';
 export 'stories_list_view.dart';
 export 'story_tile.dart';

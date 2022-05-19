@@ -95,6 +95,15 @@ class _HomeScreenState extends State<HomeScreen>
       );
     });
 
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      final bool isFirstLaunch =
+          await locator.get<PreferenceRepository>().isFirstLaunch;
+
+      if (isFirstLaunch) {
+        showOnboardFlow();
+      }
+    });
+
     tabController = TabController(vsync: this, length: 6)
       ..addListener(() {
         setState(() {
@@ -422,6 +431,16 @@ class _HomeScreenState extends State<HomeScreen>
             story: story,
           ),
         );
+  }
+
+  void showOnboardFlow() {
+    Navigator.push<dynamic>(
+      context,
+      MaterialPageRoute<dynamic>(
+        builder: (BuildContext context) => const OnboardView(),
+        fullscreenDialog: true,
+      ),
+    );
   }
 }
 
