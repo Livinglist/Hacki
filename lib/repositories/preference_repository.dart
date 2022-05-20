@@ -64,7 +64,7 @@ class PreferenceRepository {
 
     await prefs.setBool(_isFirstLaunchKey, false);
 
-    return true;
+    return val;
   }
 
   Future<List<String>> get blocklist async => _prefs.then(
