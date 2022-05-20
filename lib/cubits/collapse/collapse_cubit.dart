@@ -25,6 +25,7 @@ class CollapseCubit extends Cubit<CollapseState> {
 
     emit(
       state.copyWith(
+        collapsedCount: _cacheService.totalHidden(_commentId),
         collapsed: _cacheService.isCollapsed(_commentId),
         hidden: _cacheService.isHidden(_commentId),
       ),

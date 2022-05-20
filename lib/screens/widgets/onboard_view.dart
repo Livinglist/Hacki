@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fadein/flutter_fadein.dart';
+import 'package:flutter/services.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/utils/utils.dart';
@@ -20,17 +20,33 @@ class _OnboardViewState extends State<OnboardView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepOrange,
-      body: Center(
-        child: Column(
-          children: <Widget>[
-            const SizedBox(
-              height: 120,
-            ),
-            SizedBox(
-              height: 600,
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).brightness == Brightness.light
+            ? Colors.orange
+            : Theme.of(context).canvasColor,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.close,
+            color: Colors.white,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      backgroundColor: Theme.of(context).brightness == Brightness.light
+          ? Colors.orange
+          : null,
+      body: Stack(
+        children: <Widget>[
+          Positioned(
+            top: 40,
+            left: 0,
+            right: 0,
+            child: SizedBox(
+              height: 550,
               child: PageView(
                 controller: pageController,
+                scrollDirection: Axis.vertical,
                 children: const <Widget>[
                   _PageViewChild(
                     path: Constants.commentTileRightSlidePath,
@@ -47,27 +63,38 @@ class _OnboardViewState extends State<OnboardView> {
                 ],
               ),
             ),
-            const Spacer(),
-            ElevatedButton(
+          ),
+          Positioned(
+            bottom: 40,
+            left: 0,
+            right: 0,
+            child: ElevatedButton(
               onPressed: () {
+                HapticFeedback.lightImpact();
                 if (pageController.page! >= 2) {
                   Navigator.pop(context);
                 } else {
                   throttle.run(() {
                     pageController.nextPage(
-                      duration: const Duration(milliseconds: 200),
+                      duration: const Duration(milliseconds: 600),
                       curve: SpringCurve.underDamped,
                     );
                   });
                 }
               },
-              child: const Text('Next'),
+              style: ElevatedButton.styleFrom(
+                shape: const CircleBorder(),
+                primary: Colors.orange,
+                padding: const EdgeInsets.all(18),
+              ),
+              child: const Icon(
+                Icons.arrow_drop_down_circle_outlined,
+                size: 24,
+                color: Colors.white,
+              ),
             ),
-            const SizedBox(
-              height: 60,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -85,29 +112,27 @@ class _PageViewChild extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FadeIn(
-      child: Column(
-        children: <Widget>[
-          SizedBox(
-            height: 400,
-            child: Image.asset(path),
+    return Column(
+      children: <Widget>[
+        SizedBox(
+          height: 400,
+          child: Image.asset(path),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: 24,
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 24,
-              vertical: 60,
-            ),
-            child: Text(
-              description,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.white,
-              ),
+          child: Text(
+            description,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.white,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

@@ -72,6 +72,8 @@ class CacheService {
 
   bool isCollapsed(int commentId) => _collapsed.contains(commentId);
 
+  int totalHidden(int commentId) => _hidden[commentId]?.length ?? 0;
+
   void store(int storyId) => _tappedStories.add(storyId);
 
   void cacheComment(Comment comment) => _comments[comment.id] = comment;

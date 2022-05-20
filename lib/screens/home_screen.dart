@@ -1,5 +1,6 @@
 // ignore_for_file: lines_longer_than_80_chars
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:badges/badges.dart';
@@ -93,15 +94,6 @@ class _HomeScreenState extends State<HomeScreen>
           Constants.featureLogIn,
         },
       );
-    });
-
-    SchedulerBinding.instance.addPostFrameCallback((_) async {
-      final bool isFirstLaunch =
-          await locator.get<PreferenceRepository>().isFirstLaunch;
-
-      if (isFirstLaunch) {
-        showOnboardFlow();
-      }
     });
 
     tabController = TabController(vsync: this, length: 6)
@@ -267,6 +259,11 @@ class _HomeScreenState extends State<HomeScreen>
                           child: DescribedFeatureOverlay(
                             onBackgroundTap: onFeatureDiscoveryDismissed,
                             onDismiss: onFeatureDiscoveryDismissed,
+                            onComplete: () async {
+                              unawaited(HapticFeedback.lightImpact());
+                              showOnboardFlow();
+                              return true;
+                            },
                             overflowMode: OverflowMode.extendBackground,
                             targetColor: Theme.of(context).primaryColor,
                             tapTarget: const Icon(

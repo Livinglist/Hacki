@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,6 +28,10 @@ class FavIconButton extends StatelessWidget {
           icon: DescribedFeatureOverlay(
             onBackgroundTap: onBackgroundTap,
             onDismiss: onDismiss,
+            onComplete: () async {
+              unawaited(HapticFeedback.lightImpact());
+              return true;
+            },
             overflowMode: OverflowMode.extendBackground,
             targetColor: Theme.of(context).primaryColor,
             tapTarget: Icon(
