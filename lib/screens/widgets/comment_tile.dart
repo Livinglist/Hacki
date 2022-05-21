@@ -5,6 +5,7 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/utils/utils.dart';
 
@@ -266,10 +267,7 @@ class CommentTile extends StatelessWidget {
                     );
                   }
 
-                  for (final int i in List<int>.generate(
-                    level,
-                    (int index) => level - index,
-                  )) {
+                  for (final int i in level.to(0, inclusive: false)) {
                     final Color wrapperBorderColor = _getColor(i);
                     final bool shouldHighlight = isMyComment && i == level;
                     wrapper = Container(

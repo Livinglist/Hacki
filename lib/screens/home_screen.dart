@@ -44,8 +44,14 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin, RouteAware {
   final CacheService cacheService = locator.get<CacheService>();
+  final Throttle featureDiscoveryDismissThrottle = Throttle(
+    delay: _throttleDelay,
+  );
+
   late final TabController tabController;
   int currentIndex = 0;
+
+  static const Duration _throttleDelay = Duration(seconds: 1);
 
   @override
   void didPopNext() {
@@ -279,6 +285,7 @@ class _HomeScreenState extends State<HomeScreen>
                             onBackgroundTap: onFeatureDiscoveryDismissed,
                             onDismiss: onFeatureDiscoveryDismissed,
                             onComplete: () async {
+                              ScaffoldMessenger.of(context).clearSnackBars();
                               unawaited(HapticFeedback.lightImpact());
                               showOnboardFlow();
                               return true;
@@ -397,9 +404,12 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Future<bool> onFeatureDiscoveryDismissed() {
-    HapticFeedback.lightImpact();
-    ScaffoldMessenger.of(context).clearSnackBars();
-    showSnackBar(content: 'Tap on icon to continue');
+    featureDiscoveryDismissThrottle.run(() {
+      HapticFeedback.lightImpact();
+      ScaffoldMessenger.of(context).clearSnackBars();
+      showSnackBar(content: 'Tap on icon to continue');
+    });
+
     return Future<bool>.value(false);
   }
 
