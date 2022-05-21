@@ -153,8 +153,7 @@ class CommentTile extends StatelessWidget {
                                 if (comment.deleted)
                                   const Center(
                                     child: Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 12),
+                                      padding: EdgeInsets.only(bottom: 12),
                                       child: Text(
                                         'deleted',
                                         style: TextStyle(
@@ -166,8 +165,7 @@ class CommentTile extends StatelessWidget {
                                 else if (comment.dead)
                                   const Center(
                                     child: Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 12),
+                                      padding: EdgeInsets.only(bottom: 12),
                                       child: Text(
                                         'dead',
                                         style: TextStyle(
@@ -180,8 +178,7 @@ class CommentTile extends StatelessWidget {
                                     .contains(comment.by))
                                   const Center(
                                     child: Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 12),
+                                      padding: EdgeInsets.only(bottom: 12),
                                       child: Text(
                                         'blocked',
                                         style: TextStyle(
