@@ -20,7 +20,7 @@ dependencies:
 #  feature_discovery: ^0.14.0
   feature_discovery:
     git:
-      url: https://github.com/P-B1101/feature_discovery
+      url: https://github.com/livinglist/feature_discovery
       ref: flutter3_compatibility
   flutter:
     sdk: flutter

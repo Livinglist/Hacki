@@ -259,7 +259,7 @@ packages:
       path: "."
       ref: flutter3_compatibility
       resolved-ref: "896306d04130f870c7ce99ce832fd977283b2392"
-      url: "https://github.com/P-B1101/feature_discovery"
+      url: "https://github.com/livinglist/feature_discovery"
     source: git
     version: "0.14.1"
   ffi:
