@@ -1,23 +1,27 @@
 name: hacki
 description: A Hacker News reader.
-version: 0.2.6+40
+version: 0.2.7+41
 publish_to: none
 
 environment:
   sdk: ">=2.17.0 <3.0.0"
 
 dependencies:
-  adaptive_theme: ^2.3.0
+  adaptive_theme: ^3.0.0
   badges: ^2.0.2
   bloc: ^8.0.3
-  cached_network_image: ^3.2.0
+  cached_network_image: ^3.2.1
   clipboard: ^0.1.3
   collection:
   connectivity_plus: ^2.2.1
   dio: ^4.0.4
   equatable: 2.0.3
   fast_gbk: ^1.0.0
-  feature_discovery: ^0.14.0
+#  feature_discovery: ^0.14.0
+  feature_discovery:
+    git:
+      url: https://github.com/livinglist/feature_discovery
+      ref: flutter3_compatibility
   flutter:
     sdk: flutter
   flutter_bloc: ^8.0.1
@@ -28,7 +32,7 @@ dependencies:
   flutter_linkify: ^5.0.2
   flutter_local_notifications: ^9.5.0
   flutter_secure_storage: ^5.0.2
-  flutter_slidable: ^1.2.0
+  flutter_slidable: ^1.2.1
   font_awesome_flutter: ^9.2.0
   gbk_codec: ^0.4.0
   get_it: 7.2.0
@@ -42,7 +46,11 @@ dependencies:
   path_provider: ^2.0.8
   path_provider_android: ^2.0.8
   path_provider_ios: ^2.0.8
-  pull_to_refresh: ^2.0.0
+#  pull_to_refresh: ^2.0.0
+  pull_to_refresh:
+    git:
+      url: https://github.com/livinglist/flutter_pulltorefresh
+      ref: master
   responsive_builder: ^0.4.2
   rxdart: ^0.27.3
   sembast: ^3.1.1+1
@@ -70,7 +78,6 @@ flutter:
   generate: true
 
   assets:
-    - images/hacki_icon.png
-    - images/hacker_news_logo.png
+    - assets/images/
 
 

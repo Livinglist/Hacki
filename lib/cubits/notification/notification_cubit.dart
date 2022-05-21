@@ -97,31 +97,35 @@ class NotificationCubit extends Cubit<NotificationState> {
       }
     }
 
-    await _fetchReplies().whenComplete(() {
-      emit(
-        state.copyWith(
-          status: NotificationStatus.loaded,
-        ),
-      );
-      _initializeTimer();
-    }).onError((Object? error, StackTrace stackTrace) {
-      _initializeTimer();
-      return null;
-    });
+    await _fetchReplies().whenComplete(_initializeTimer);
   }
 
   void markAsRead(int id) {
-    if (state.unreadCommentsIds.contains(id)) {
-      final List<int> updatedUnreadIds = <int>[...state.unreadCommentsIds]
-        ..remove(id);
-      _preferenceRepository.updateUnreadCommentsIds(updatedUnreadIds);
-      emit(state.copyWith(unreadCommentsIds: updatedUnreadIds));
-    }
+    Future.doWhile(() {
+      if (state.status != NotificationStatus.loading) {
+        if (state.unreadCommentsIds.contains(id)) {
+          final List<int> updatedUnreadIds = <int>[...state.unreadCommentsIds]
+            ..remove(id);
+          _preferenceRepository.updateUnreadCommentsIds(updatedUnreadIds);
+          emit(state.copyWith(unreadCommentsIds: updatedUnreadIds));
+        }
+        return false;
+      }
+
+      return true;
+    });
   }
 
   void markAllAsRead() {
-    emit(state.copyWith(unreadCommentsIds: <int>[]));
-    _preferenceRepository.updateUnreadCommentsIds(<int>[]);
+    Future.doWhile(() {
+      if (state.status != NotificationStatus.loading) {
+        emit(state.copyWith(unreadCommentsIds: <int>[]));
+        _preferenceRepository.updateUnreadCommentsIds(<int>[]);
+        return false;
+      }
+
+      return true;
+    });
   }
 
   Future<void> refresh() async {
@@ -134,22 +138,7 @@ class NotificationCubit extends Cubit<NotificationState> {
 
       _timer?.cancel();
 
-      await _fetchReplies().whenComplete(() {
-        emit(
-          state.copyWith(
-            status: NotificationStatus.loaded,
-          ),
-        );
-        _initializeTimer();
-      }).onError((Object? error, StackTrace stackTrace) {
-        emit(
-          state.copyWith(
-            status: NotificationStatus.loaded,
-          ),
-        );
-        _initializeTimer();
-        return null;
-      });
+      await _fetchReplies().whenComplete(_initializeTimer);
     } else {
       emit(
         state.copyWith(
@@ -247,6 +236,10 @@ class NotificationCubit extends Cubit<NotificationState> {
           });
         }
       }
-    });
+    }).whenComplete(
+      () => emit(
+        state.copyWith(status: NotificationStatus.loaded),
+      ),
+    );
   }
 }

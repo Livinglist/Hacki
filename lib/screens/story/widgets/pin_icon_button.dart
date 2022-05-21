@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:feature_discovery/feature_discovery.dart';
@@ -33,6 +34,10 @@ class PinIconButton extends StatelessWidget {
               icon: DescribedFeatureOverlay(
                 onBackgroundTap: onBackgroundTap,
                 onDismiss: onDismiss,
+                onComplete: () async {
+                  unawaited(HapticFeedback.lightImpact());
+                  return true;
+                },
                 overflowMode: OverflowMode.extendBackground,
                 targetColor: Theme.of(context).primaryColor,
                 tapTarget: Icon(

@@ -132,8 +132,17 @@ class _StoryScreenState extends State<StoryScreen> {
     initialRefreshStatus: RefreshStatus.refreshing,
   );
   final FocusNode focusNode = FocusNode();
-  final Throttle throttle = Throttle(delay: const Duration(seconds: 2));
   final String happyFace = Constants.happyFaces.pickRandomly()!;
+  final Throttle storyLinkTapThrottle = Throttle(
+    delay: _storyLinkTapThrottleDelay,
+  );
+  final Throttle featureDiscoveryDismissThrottle = Throttle(
+    delay: _featureDiscoveryDismissThrottleDelay,
+  );
+
+  static const Duration _storyLinkTapThrottleDelay = Duration(seconds: 2);
+  static const Duration _featureDiscoveryDismissThrottleDelay =
+      Duration(seconds: 1);
 
   @override
   void initState() {
@@ -164,7 +173,8 @@ class _StoryScreenState extends State<StoryScreen> {
     refreshController.dispose();
     commentEditingController.dispose();
     scrollController.dispose();
-    throttle.dispose();
+    storyLinkTapThrottle.dispose();
+    featureDiscoveryDismissThrottle.dispose();
     super.dispose();
   }
 
@@ -559,9 +569,11 @@ class _StoryScreenState extends State<StoryScreen> {
   }
 
   Future<bool> onFeatureDiscoveryDismissed() {
-    HapticFeedback.lightImpact();
-    ScaffoldMessenger.of(context).clearSnackBars();
-    showSnackBar(content: 'Tap on icon to continue');
+    featureDiscoveryDismissThrottle.run(() {
+      HapticFeedback.lightImpact();
+      ScaffoldMessenger.of(context).clearSnackBars();
+      showSnackBar(content: 'Tap on icon to continue');
+    });
     return Future<bool>.value(false);
   }
 
@@ -615,10 +627,10 @@ class _StoryScreenState extends State<StoryScreen> {
                                     in state.parents) ...<Widget>[
                                   CommentTile(
                                     comment: c,
-                                    loadKids: false,
                                     myUsername:
                                         context.read<AuthBloc>().state.username,
                                     onStoryLinkTapped: onStoryLinkTapped,
+                                    actionable: false,
                                   ),
                                   const Divider(
                                     height: 0,
@@ -645,7 +657,7 @@ class _StoryScreenState extends State<StoryScreen> {
     final String match = regex.stringMatch(link) ?? '';
     final int? id = int.tryParse(match);
     if (id != null) {
-      throttle.run(() {
+      storyLinkTapThrottle.run(() {
         locator
             .get<StoriesRepository>()
             .fetchParentStory(id: id)

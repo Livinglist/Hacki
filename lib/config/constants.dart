@@ -10,8 +10,15 @@ abstract class Constants {
   static const String googlePlayLink =
       'https://play.google.com/store/apps/details?id=com.jiaqifeng.hacki&hl=en_US&gl=US';
 
-  static const String hackerNewsLogoPath = 'images/hacker_news_logo.png';
-  static const String hackiIconPath = 'images/hacki_icon.png';
+  static const String _imagePath = 'assets/images';
+  static const String hackerNewsLogoPath = '$_imagePath/hacker_news_logo.png';
+  static const String hackiIconPath = '$_imagePath/hacki_icon.png';
+  static const String commentTileLeftSlidePath =
+      '$_imagePath/comment_tile_left_slide.png';
+  static const String commentTileRightSlidePath =
+      '$_imagePath/comment_tile_right_slide.png';
+  static const String commentTileTopTapPath =
+      '$_imagePath/comment_tile_top_tap.png';
 
   /// Feature ids for feature discovery.
   static const String featureAddStoryToFavList = 'add_story_to_fav_list';

@@ -20,6 +20,7 @@ class PreferenceRepository {
   static const String _pinnedStoriesIdsKey = 'pinnedStoriesIds';
   static const String _unreadCommentsIdsKey = 'unreadCommentsIds';
   static const String _lastReadStoryIdKey = 'lastReadStoryId';
+  static const String _isFirstLaunchKey = 'isFirstLaunch';
 
   static const String _notificationModeKey = 'notificationMode';
   static const String _readerModeKey = 'readerMode';
@@ -44,6 +45,7 @@ class PreferenceRepository {
   static const bool _trueDarkModeDefaultValue = false;
   static const bool _readerModeDefaultValue = true;
   static const bool _markReadStoriesModeDefaultValue = true;
+  static const bool _isFirstLaunchKeyDefaultValue = true;
 
   final SyncedSharedPreferences _syncedPrefs;
   final Future<SharedPreferences> _prefs;
@@ -54,6 +56,16 @@ class PreferenceRepository {
   Future<String?> get username async => _secureStorage.read(key: _usernameKey);
 
   Future<String?> get password async => _secureStorage.read(key: _passwordKey);
+
+  Future<bool> get isFirstLaunch async {
+    final SharedPreferences prefs = await _prefs;
+    final bool val =
+        prefs.getBool(_isFirstLaunchKey) ?? _isFirstLaunchKeyDefaultValue;
+
+    await prefs.setBool(_isFirstLaunchKey, false);
+
+    return val;
+  }
 
   Future<List<String>> get blocklist async => _prefs.then(
         (SharedPreferences prefs) =>

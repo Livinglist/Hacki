@@ -14,7 +14,7 @@ packages:
       name: adaptive_theme
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.3.1"
+    version: "3.0.0"
   analyzer:
     dependency: transitive
     description:
@@ -70,7 +70,7 @@ packages:
       name: cached_network_image
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.2.0"
+    version: "3.2.1"
   cached_network_image_platform_interface:
     dependency: transitive
     description:
@@ -105,7 +105,7 @@ packages:
       name: chewie
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.3.2"
+    version: "1.3.3"
   chewie_audio:
     dependency: transitive
     description:
@@ -256,9 +256,11 @@ packages:
   feature_discovery:
     dependency: "direct main"
     description:
-      name: feature_discovery
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: flutter3_compatibility
+      resolved-ref: "896306d04130f870c7ce99ce832fd977283b2392"
+      url: "https://github.com/livinglist/feature_discovery"
+    source: git
     version: "0.14.1"
   ffi:
     dependency: transitive
@@ -418,7 +420,7 @@ packages:
       name: flutter_slidable
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.0"
+    version: "1.2.1"
   flutter_svg:
     dependency: transitive
     description:
@@ -761,9 +763,11 @@ packages:
   pull_to_refresh:
     dependency: "direct main"
     description:
-      name: pull_to_refresh
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: master
+      resolved-ref: "6d7fbdd5b3cde242a474d66da312aac4aa892b9b"
+      url: "https://github.com/livinglist/flutter_pulltorefresh"
+    source: git
     version: "2.0.0"
   quiver:
     dependency: transitive
@@ -1255,4 +1259,4 @@ packages:
     version: "3.1.0"
 sdks:
   dart: ">=2.17.0 <3.0.0"
-  flutter: ">=2.10.0"
+  flutter: ">=3.0.0"

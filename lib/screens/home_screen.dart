@@ -1,5 +1,6 @@
 // ignore_for_file: lines_longer_than_80_chars
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:badges/badges.dart';
@@ -41,10 +42,25 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, RouteAware {
   final CacheService cacheService = locator.get<CacheService>();
+  final Throttle featureDiscoveryDismissThrottle = Throttle(
+    delay: _throttleDelay,
+  );
+
   late final TabController tabController;
   int currentIndex = 0;
+
+  static const Duration _throttleDelay = Duration(seconds: 1);
+
+  @override
+  void didPopNext() {
+    if (context.read<StoriesBloc>().deviceScreenType ==
+        DeviceScreenType.mobile) {
+      cacheService.resetCollapsedComments();
+    }
+    super.didPopNext();
+  }
 
   @override
   void initState() {
@@ -86,14 +102,24 @@ class _HomeScreenState extends State<HomeScreen>
       });
     }
 
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      FeatureDiscovery.discoverFeatures(
-        context,
-        const <String>{
-          Constants.featureLogIn,
-        },
-      );
-    });
+    SchedulerBinding.instance
+      ..addPostFrameCallback((_) {
+        FeatureDiscovery.discoverFeatures(
+          context,
+          const <String>{
+            Constants.featureLogIn,
+          },
+        );
+      })
+      ..addPostFrameCallback((_) {
+        final ModalRoute<dynamic>? route = ModalRoute.of(context);
+
+        if (route == null) return;
+
+        locator
+            .get<RouteObserver<ModalRoute<dynamic>>>()
+            .subscribe(this, route);
+      });
 
     tabController = TabController(vsync: this, length: 6)
       ..addListener(() {
@@ -258,6 +284,12 @@ class _HomeScreenState extends State<HomeScreen>
                           child: DescribedFeatureOverlay(
                             onBackgroundTap: onFeatureDiscoveryDismissed,
                             onDismiss: onFeatureDiscoveryDismissed,
+                            onComplete: () async {
+                              ScaffoldMessenger.of(context).clearSnackBars();
+                              unawaited(HapticFeedback.lightImpact());
+                              showOnboarding();
+                              return true;
+                            },
                             overflowMode: OverflowMode.extendBackground,
                             targetColor: Theme.of(context).primaryColor,
                             tapTarget: const Icon(
@@ -372,9 +404,12 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Future<bool> onFeatureDiscoveryDismissed() {
-    HapticFeedback.lightImpact();
-    ScaffoldMessenger.of(context).clearSnackBars();
-    showSnackBar(content: 'Tap on icon to continue');
+    featureDiscoveryDismissThrottle.run(() {
+      HapticFeedback.lightImpact();
+      ScaffoldMessenger.of(context).clearSnackBars();
+      showSnackBar(content: 'Tap on icon to continue');
+    });
+
     return Future<bool>.value(false);
   }
 
@@ -414,7 +449,6 @@ class _HomeScreenState extends State<HomeScreen>
 
     if (!offlineReading && (isJobWithLink || (showWebFirst && !hasRead))) {
       LinkUtil.launchUrl(story.url, useReader: useReader);
-      cacheService.store(story.id);
     }
 
     context.read<StoriesBloc>().add(
@@ -422,6 +456,16 @@ class _HomeScreenState extends State<HomeScreen>
             story: story,
           ),
         );
+  }
+
+  void showOnboarding() {
+    Navigator.push<dynamic>(
+      context,
+      MaterialPageRoute<dynamic>(
+        builder: (BuildContext context) => const OnboardingView(),
+        fullscreenDialog: true,
+      ),
+    );
   }
 }
 

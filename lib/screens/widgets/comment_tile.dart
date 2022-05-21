@@ -5,6 +5,7 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/utils/utils.dart';
 
@@ -19,7 +20,7 @@ class CommentTile extends StatelessWidget {
     this.onEditTapped,
     this.onTimeMachineActivated,
     this.opUsername,
-    this.loadKids = true,
+    this.actionable = true,
     this.level = 0,
   });
 
@@ -27,7 +28,7 @@ class CommentTile extends StatelessWidget {
   final String? opUsername;
   final Comment comment;
   final int level;
-  final bool loadKids;
+  final bool actionable;
   final Function(Comment)? onReplyTapped;
   final Function(Comment)? onMoreTapped;
   final Function(Comment)? onEditTapped;
@@ -43,6 +44,8 @@ class CommentTile extends StatelessWidget {
       )..init(),
       child: BlocBuilder<CollapseCubit, CollapseState>(
         builder: (BuildContext context, CollapseState state) {
+          if (actionable && state.hidden) return const SizedBox.shrink();
+
           return BlocBuilder<PreferenceCubit, PreferenceState>(
             builder: (BuildContext context, PreferenceState prefState) {
               return BlocBuilder<BlocklistCubit, BlocklistState>(
@@ -56,7 +59,7 @@ class CommentTile extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Slidable(
-                          startActionPane: loadKids
+                          startActionPane: actionable
                               ? ActionPane(
                                   motion: const StretchMotion(),
                                   children: <Widget>[
@@ -90,7 +93,7 @@ class CommentTile extends StatelessWidget {
                                   ],
                                 )
                               : null,
-                          endActionPane: loadKids && level != 0
+                          endActionPane: actionable && level != 0
                               ? ActionPane(
                                   motion: const StretchMotion(),
                                   children: <Widget>[
@@ -104,16 +107,17 @@ class CommentTile extends StatelessWidget {
                                   ],
                                 )
                               : null,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              GestureDetector(
-                                behavior: HitTestBehavior.opaque,
-                                onTap: () {
-                                  HapticFeedback.lightImpact();
-                                  context.read<CollapseCubit>().collapse();
-                                },
-                                child: Padding(
+                          child: InkWell(
+                            onTap: () {
+                              if (actionable) {
+                                HapticFeedback.lightImpact();
+                                context.read<CollapseCubit>().collapse();
+                              }
+                            },
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Padding(
                                   padding: const EdgeInsets.only(
                                     left: 6,
                                     right: 6,
@@ -146,86 +150,95 @@ class CommentTile extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                              ),
-                              if (comment.deleted)
-                                const Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 12),
-                                    child: Text(
-                                      'deleted',
-                                      style: TextStyle(color: Colors.grey),
+                                if (comment.deleted)
+                                  const Center(
+                                    child: Padding(
+                                      padding: EdgeInsets.only(bottom: 12),
+                                      child: Text(
+                                        'deleted',
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                else if (comment.dead)
+                                  const Center(
+                                    child: Padding(
+                                      padding: EdgeInsets.only(bottom: 12),
+                                      child: Text(
+                                        'dead',
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                else if (blocklistState.blocklist
+                                    .contains(comment.by))
+                                  const Center(
+                                    child: Padding(
+                                      padding: EdgeInsets.only(bottom: 12),
+                                      child: Text(
+                                        'blocked',
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                else if (actionable && state.collapsed)
+                                  Center(
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 12),
+                                      child: Text(
+                                        'collapsed '
+                                        '(${state.collapsedCount + 1})',
+                                        style: const TextStyle(
+                                          color: Colors.orangeAccent,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                else
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      left: 8,
+                                      right: 8,
+                                      top: 6,
+                                      bottom: 12,
+                                    ),
+                                    child: SelectableLinkify(
+                                      key: ObjectKey(comment),
+                                      text: comment.text,
+                                      style: TextStyle(
+                                        fontSize: MediaQuery.of(context)
+                                                .textScaleFactor *
+                                            15,
+                                      ),
+                                      linkStyle: TextStyle(
+                                        fontSize: MediaQuery.of(context)
+                                                .textScaleFactor *
+                                            15,
+                                        color: Colors.orange,
+                                      ),
+                                      onOpen: (LinkableElement link) {
+                                        if (link.url.contains(
+                                          'news.ycombinator.com/item',
+                                        )) {
+                                          onStoryLinkTapped.call(link.url);
+                                        } else {
+                                          LinkUtil.launchUrl(link.url);
+                                        }
+                                      },
                                     ),
                                   ),
-                                )
-                              else if (comment.dead)
-                                const Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 12),
-                                    child: Text(
-                                      'dead',
-                                      style: TextStyle(color: Colors.grey),
-                                    ),
-                                  ),
-                                )
-                              else if (blocklistState.blocklist
-                                  .contains(comment.by))
-                                const Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 12),
-                                    child: Text(
-                                      'blocked',
-                                      style: TextStyle(color: Colors.grey),
-                                    ),
-                                  ),
-                                )
-                              else if (state.collapsed)
-                                const Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.only(bottom: 8),
-                                    child: Text(
-                                      'collapsed',
-                                      style:
-                                          TextStyle(color: Colors.orangeAccent),
-                                    ),
-                                  ),
-                                )
-                              else
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: 8,
-                                    right: 8,
-                                    top: 6,
-                                    bottom: 12,
-                                  ),
-                                  child: SelectableLinkify(
-                                    key: ObjectKey(comment),
-                                    text: comment.text,
-                                    style: TextStyle(
-                                      fontSize: MediaQuery.of(context)
-                                              .textScaleFactor *
-                                          15,
-                                    ),
-                                    linkStyle: TextStyle(
-                                      fontSize: MediaQuery.of(context)
-                                              .textScaleFactor *
-                                          15,
-                                      color: Colors.orange,
-                                    ),
-                                    onOpen: (LinkableElement link) {
-                                      if (link.url.contains(
-                                        'news.ycombinator.com/item',
-                                      )) {
-                                        onStoryLinkTapped.call(link.url);
-                                      } else {
-                                        LinkUtil.launchUrl(link.url);
-                                      }
-                                    },
-                                  ),
+                                const Divider(
+                                  height: 0,
                                 ),
-                              const Divider(
-                                height: 0,
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -251,10 +264,7 @@ class CommentTile extends StatelessWidget {
                     );
                   }
 
-                  for (final int i in List<int>.generate(
-                    level,
-                    (int index) => level - index,
-                  )) {
+                  for (final int i in level.to(0, inclusive: false)) {
                     final Color wrapperBorderColor = _getColor(i);
                     final bool shouldHighlight = isMyComment && i == level;
                     wrapper = Container(
