@@ -644,7 +644,12 @@ class _ProfileScreenState extends State<ProfileScreen>
                     .whenComplete(
                       locator.get<SembastRepository>().deleteAllCachedComments,
                     )
-                    .whenComplete(DefaultCacheManager().emptyCache)
+                    .whenComplete(
+                      locator.get<PreferenceRepository>().clearAllReadStories,
+                    )
+                    .whenComplete(
+                      DefaultCacheManager().emptyCache,
+                    )
                     .whenComplete(() {
                   showSnackBar(content: 'Data cleared!');
                 });
