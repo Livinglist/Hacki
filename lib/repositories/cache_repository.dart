@@ -1,6 +1,8 @@
 import 'package:hacki/models/models.dart';
 import 'package:hive/hive.dart';
 
+/// [CacheRepository] is for storing stories and comments for offline reading.
+/// It's using [Hive] as its database which is being stored in temp directory.
 class CacheRepository {
   CacheRepository({
     Future<Box<List<int>>>? storyIdBox,
@@ -115,5 +117,11 @@ class CacheRepository {
   Future<int> deleteAllComments() async {
     final LazyBox<Map<dynamic, dynamic>> box = await _commentBox;
     return box.clear();
+  }
+
+  Future<int> deleteAll() async {
+    return deleteAllStoryIds()
+        .whenComplete(deleteAllStories)
+        .whenComplete(deleteAllComments);
   }
 }

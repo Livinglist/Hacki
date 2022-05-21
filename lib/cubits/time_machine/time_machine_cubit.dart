@@ -24,14 +24,14 @@ class TimeMachineCubit extends Cubit<TimeMachineState> {
 
     final List<Comment> parents = <Comment>[];
     Comment? parent = _cacheService.getComment(comment.parent);
-    parent ??= await _sembastRepository.getComment(id: comment.parent);
+    parent ??= await _sembastRepository.getCachedComment(id: comment.parent);
 
     while (parent != null) {
       parents.insert(0, parent);
 
       final int parentId = parent.parent;
       parent = _cacheService.getComment(parentId);
-      parent ??= await _sembastRepository.getComment(id: parentId);
+      parent ??= await _sembastRepository.getCachedComment(id: parentId);
     }
 
     emit(state.copyWith(parents: parents));
