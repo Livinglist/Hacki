@@ -156,7 +156,7 @@ class CommentsCubit extends Cubit<CommentsState> {
       _cacheService
         ..addKid(comment.id, to: comment.parent)
         ..cacheComment(comment);
-      _sembastRepository.saveComment(comment);
+      _sembastRepository.cacheComment(comment);
       final List<Comment> updatedComments = <Comment>[
         ...state.comments,
         comment

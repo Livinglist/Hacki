@@ -6,6 +6,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 
+/// [SembastRepository] is for storing stories and comments for faster loading.
+/// It's using Sembast as its database which is being stored in doc directory.
 class SembastRepository {
   SembastRepository({Database? database}) {
     if (database == null) {
@@ -18,6 +20,7 @@ class SembastRepository {
   Database? _database;
   List<int>? _idsOfCommentsRepliedToMe;
 
+  static const String _cachedCommentsKey = 'cachedComments';
   static const String _commentsKey = 'comments';
   static const String _idsOfCommentsRepliedToMeKey = 'idsOfCommentsRepliedToMe';
 
@@ -31,6 +34,38 @@ class SembastRepository {
     return db;
   }
 
+  //#region Cached comments for time machine feature.
+  Future<Map<String, Object?>> cacheComment(Comment comment) async {
+    final Database db = _database ?? await initializeDatabase();
+    final StoreRef<int, Map<String, Object?>> store =
+        intMapStoreFactory.store(_cachedCommentsKey);
+    return store.record(comment.id).put(db, comment.toJson());
+  }
+
+  Future<Comment?> getCachedComment({required int id}) async {
+    final Database db = _database ?? await initializeDatabase();
+    final StoreRef<int, Map<String, Object?>> store =
+        intMapStoreFactory.store(_cachedCommentsKey);
+    final RecordSnapshot<int, Map<String, Object?>>? snapshot =
+        await store.record(id).getSnapshot(db);
+    if (snapshot != null) {
+      final Comment comment = Comment.fromJson(snapshot.value);
+      return comment;
+    } else {
+      return null;
+    }
+  }
+
+  Future<int> deleteAllCachedComments() async {
+    final Database db = _database ?? await initializeDatabase();
+    final StoreRef<int, Map<String, Object?>> store =
+        intMapStoreFactory.store(_cachedCommentsKey);
+    return store.delete(db);
+  }
+
+  //#endregion
+
+  //#region Saved comments for notification feature.
   Future<Map<String, Object?>> saveComment(Comment comment) async {
     final Database db = _database ?? await initializeDatabase();
     final StoreRef<int, Map<String, Object?>> store =
@@ -136,6 +171,8 @@ class SembastRepository {
     final List<int>? kids = snapshot?.value.cast<int>();
     return kids;
   }
+
+  //#endregion
 
   Future<FileSystemEntity> deleteAll() async {
     final Directory dir = await getApplicationDocumentsDirectory();

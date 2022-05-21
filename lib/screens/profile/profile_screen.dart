@@ -4,6 +4,7 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
@@ -376,6 +377,12 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 onTap: showThemeSettingDialog,
                               ),
                               ListTile(
+                                title: const Text(
+                                  'Clear Data',
+                                ),
+                                onTap: showClearDataDialog,
+                              ),
+                              ListTile(
                                 title: const Text('About'),
                                 subtitle:
                                     const Text('nothing interesting here.'),
@@ -604,6 +611,56 @@ class _ProfileScreenState extends State<ProfileScreen>
               ),
             ],
           ),
+        );
+      },
+    );
+  }
+
+  void showClearDataDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: const Text('Clear Data?'),
+          content: const Text(
+            'Clear all cached images, stories and comments.',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.red,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                locator
+                    .get<SembastRepository>()
+                    .deleteAllCachedComments()
+                    .whenComplete(
+                      locator.get<SembastRepository>().deleteAllCachedComments,
+                    )
+                    .whenComplete(DefaultCacheManager().emptyCache)
+                    .whenComplete(() {
+                  showSnackBar(content: 'Data cleared!');
+                });
+              },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
+              ),
+              child: const Text(
+                'Yes',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
         );
       },
     );
