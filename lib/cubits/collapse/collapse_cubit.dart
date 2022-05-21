@@ -55,6 +55,17 @@ class CollapseCubit extends Cubit<CollapseState> {
   }
 
   void hiddenCommentsStreamListener(Map<int, Set<int>> event) {
+    for (final int key in event.keys) {
+      if (key == _commentId && !isClosed) {
+        emit(
+          state.copyWith(
+            collapsedCount: event[key]?.length ?? 0,
+          ),
+        );
+        return;
+      }
+    }
+
     for (final Set<int> val in event.values) {
       if (val.contains(_commentId) && !isClosed) {
         emit(
@@ -63,6 +74,7 @@ class CollapseCubit extends Cubit<CollapseState> {
         return;
       }
     }
+
     if (!isClosed) {
       emit(
         state.copyWith(hidden: false),

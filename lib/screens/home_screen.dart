@@ -42,10 +42,19 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, RouteAware {
   final CacheService cacheService = locator.get<CacheService>();
   late final TabController tabController;
   int currentIndex = 0;
+
+  @override
+  void didPopNext() {
+    if (context.read<StoriesBloc>().deviceScreenType ==
+        DeviceScreenType.mobile) {
+      cacheService.resetCollapsedComments();
+    }
+    super.didPopNext();
+  }
 
   @override
   void initState() {
@@ -87,14 +96,24 @@ class _HomeScreenState extends State<HomeScreen>
       });
     }
 
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      FeatureDiscovery.discoverFeatures(
-        context,
-        const <String>{
-          Constants.featureLogIn,
-        },
-      );
-    });
+    SchedulerBinding.instance
+      ..addPostFrameCallback((_) {
+        FeatureDiscovery.discoverFeatures(
+          context,
+          const <String>{
+            Constants.featureLogIn,
+          },
+        );
+      })
+      ..addPostFrameCallback((_) {
+        final ModalRoute<dynamic>? route = ModalRoute.of(context);
+
+        if (route == null) return;
+
+        locator
+            .get<RouteObserver<ModalRoute<dynamic>>>()
+            .subscribe(this, route);
+      });
 
     tabController = TabController(vsync: this, length: 6)
       ..addListener(() {
@@ -420,7 +439,6 @@ class _HomeScreenState extends State<HomeScreen>
 
     if (!offlineReading && (isJobWithLink || (showWebFirst && !hasRead))) {
       LinkUtil.launchUrl(story.url, useReader: useReader);
-      cacheService.store(story.id);
     }
 
     context.read<StoriesBloc>().add(

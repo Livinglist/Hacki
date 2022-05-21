@@ -615,10 +615,10 @@ class _StoryScreenState extends State<StoryScreen> {
                                     in state.parents) ...<Widget>[
                                   CommentTile(
                                     comment: c,
-                                    loadKids: false,
                                     myUsername:
                                         context.read<AuthBloc>().state.username,
                                     onStoryLinkTapped: onStoryLinkTapped,
+                                    actionable: false,
                                   ),
                                   const Divider(
                                     height: 0,

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/services/services.dart';
@@ -18,5 +19,8 @@ Future<void> setUpLocator() async {
     ..registerSingleton<CacheRepository>(CacheRepository())
     ..registerSingleton<CacheService>(CacheService())
     ..registerSingleton<LocalNotification>(LocalNotification())
-    ..registerSingleton<Logger>(Logger());
+    ..registerSingleton<Logger>(Logger())
+    ..registerSingleton<RouteObserver<ModalRoute<dynamic>>>(
+      RouteObserver<ModalRoute<dynamic>>(),
+    );
 }

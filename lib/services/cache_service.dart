@@ -2,7 +2,6 @@ import 'package:hacki/models/models.dart' show Comment;
 import 'package:rxdart/rxdart.dart';
 
 class CacheService {
-  static final Set<int> _tappedStories = <int>{};
   static final Map<int, Comment> _comments = <int, Comment>{};
   static final Map<int, String> _drafts = <int, String>{};
   static final Map<int, Set<int>> _kids = <int, Set<int>>{};
@@ -59,22 +58,24 @@ class CacheService {
 
   void addIfParentIsHiddenOrCollapsed(int commentId, int parentId) {
     for (final int key in _hidden.keys) {
-      if (key == parentId || (_hidden[key]?.contains(commentId) ?? false)) {
+      if (key == parentId || (_hidden[key]?.contains(parentId) ?? false)) {
         _hidden[key]?.add(commentId);
+        _hiddenCommentsSubject.add(_hidden);
         return;
       }
     }
   }
 
-  void resetKids() => _kids.clear();
-
-  bool isFirstTimeReading(int storyId) => !_tappedStories.contains(storyId);
+  void resetCollapsedComments() {
+    _kids.clear();
+    _collapsed.clear();
+    _hidden.clear();
+    _hiddenCommentsSubject.add(_hidden);
+  }
 
   bool isCollapsed(int commentId) => _collapsed.contains(commentId);
 
   int totalHidden(int commentId) => _hidden[commentId]?.length ?? 0;
-
-  void store(int storyId) => _tappedStories.add(storyId);
 
   void cacheComment(Comment comment) => _comments[comment.id] = comment;
 

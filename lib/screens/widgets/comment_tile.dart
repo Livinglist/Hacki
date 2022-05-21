@@ -19,7 +19,7 @@ class CommentTile extends StatelessWidget {
     this.onEditTapped,
     this.onTimeMachineActivated,
     this.opUsername,
-    this.loadKids = true,
+    this.actionable = true,
     this.level = 0,
   });
 
@@ -27,7 +27,7 @@ class CommentTile extends StatelessWidget {
   final String? opUsername;
   final Comment comment;
   final int level;
-  final bool loadKids;
+  final bool actionable;
   final Function(Comment)? onReplyTapped;
   final Function(Comment)? onMoreTapped;
   final Function(Comment)? onEditTapped;
@@ -43,7 +43,7 @@ class CommentTile extends StatelessWidget {
       )..init(),
       child: BlocBuilder<CollapseCubit, CollapseState>(
         builder: (BuildContext context, CollapseState state) {
-          if (state.hidden) return const SizedBox.shrink();
+          if (actionable && state.hidden) return const SizedBox.shrink();
 
           return BlocBuilder<PreferenceCubit, PreferenceState>(
             builder: (BuildContext context, PreferenceState prefState) {
@@ -58,7 +58,7 @@ class CommentTile extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Slidable(
-                          startActionPane: loadKids
+                          startActionPane: actionable
                               ? ActionPane(
                                   motion: const StretchMotion(),
                                   children: <Widget>[
@@ -92,7 +92,7 @@ class CommentTile extends StatelessWidget {
                                   ],
                                 )
                               : null,
-                          endActionPane: loadKids && level != 0
+                          endActionPane: actionable && level != 0
                               ? ActionPane(
                                   motion: const StretchMotion(),
                                   children: <Widget>[
@@ -108,8 +108,10 @@ class CommentTile extends StatelessWidget {
                               : null,
                           child: InkWell(
                             onTap: () {
-                              HapticFeedback.lightImpact();
-                              context.read<CollapseCubit>().collapse();
+                              if (actionable) {
+                                HapticFeedback.lightImpact();
+                                context.read<CollapseCubit>().collapse();
+                              }
                             },
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,10 +189,11 @@ class CommentTile extends StatelessWidget {
                                       ),
                                     ),
                                   )
-                                else if (state.collapsed)
+                                else if (actionable && state.collapsed)
                                   Center(
                                     child: Padding(
-                                      padding: const EdgeInsets.only(bottom: 8),
+                                      padding:
+                                          const EdgeInsets.only(bottom: 12),
                                       child: Text(
                                         'collapsed '
                                         '(${state.collapsedCount + 1})',
