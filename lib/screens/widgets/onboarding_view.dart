@@ -4,14 +4,14 @@ import 'package:hacki/config/constants.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/utils/utils.dart';
 
-class OnboardView extends StatefulWidget {
-  const OnboardView({Key? key}) : super(key: key);
+class OnboardingView extends StatefulWidget {
+  const OnboardingView({Key? key}) : super(key: key);
 
   @override
-  State<OnboardView> createState() => _OnboardViewState();
+  State<OnboardingView> createState() => _OnboardingViewState();
 }
 
-class _OnboardViewState extends State<OnboardView> {
+class _OnboardingViewState extends State<OnboardingView> {
   final PageController pageController = PageController();
   final Throttle throttle = Throttle(delay: _throttleDelay);
 

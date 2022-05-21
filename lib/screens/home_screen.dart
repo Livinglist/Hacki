@@ -287,7 +287,7 @@ class _HomeScreenState extends State<HomeScreen>
                             onComplete: () async {
                               ScaffoldMessenger.of(context).clearSnackBars();
                               unawaited(HapticFeedback.lightImpact());
-                              showOnboardFlow();
+                              showOnboarding();
                               return true;
                             },
                             overflowMode: OverflowMode.extendBackground,
@@ -458,11 +458,11 @@ class _HomeScreenState extends State<HomeScreen>
         );
   }
 
-  void showOnboardFlow() {
+  void showOnboarding() {
     Navigator.push<dynamic>(
       context,
       MaterialPageRoute<dynamic>(
-        builder: (BuildContext context) => const OnboardView(),
+        builder: (BuildContext context) => const OnboardingView(),
         fullscreenDialog: true,
       ),
     );
