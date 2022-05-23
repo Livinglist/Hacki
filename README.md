@@ -18,7 +18,7 @@ Features:
 - Log in using your Hacker News account.
 - Browse stories from various categories.
 - Search for stories.
-- Submit stoires.
+- Submit stories.
 - Pin stories.
 - Mark stories as favorite.
 - Leave comments.
@@ -30,7 +30,7 @@ Features:
 - Get in-app notification when there is new reply to your stories or comments.
 - Download stories and comments for offline reading.
 - Pick up where you left off.
-- Synced favorites and pins accross devices. (iOS only)
+- Synced favorites and pins across devices. (iOS only)
 - Launch from system share sheet.
 - And more...
 
