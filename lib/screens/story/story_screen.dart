@@ -653,9 +653,7 @@ class _StoryScreenState extends State<StoryScreen> {
   }
 
   Future<void> onStoryLinkTapped(String link) async {
-    final RegExp regex = RegExp(r'\d+$');
-    final String match = regex.stringMatch(link) ?? '';
-    final int? id = int.tryParse(match);
+    final int? id = link.getItemId();
     if (id != null) {
       storyLinkTapThrottle.run(() {
         locator
