@@ -23,6 +23,7 @@ Features:
 - Mark stories as favorite.
 - Leave comments.
 - Collapse comments.
+- View parent comments without scrolling up.
 - View and participate in polls.
 - Browse comments and stories you have posted.
 - Vote on comments or stories.
