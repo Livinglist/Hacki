@@ -109,6 +109,8 @@ class CommentTile extends StatelessWidget {
                               : null,
                           child: InkWell(
                             onTap: () {
+                              if (comment.deleted || comment.dead) return;
+
                               if (actionable) {
                                 HapticFeedback.lightImpact();
                                 context.read<CollapseCubit>().collapse();

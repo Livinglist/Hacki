@@ -388,7 +388,7 @@ class _StoryScreenState extends State<StoryScreen> {
                             ),
                           if (widget.story.isPoll)
                             PollView(
-                              story: widget.story,
+                              story: state.story,
                               onLoginTapped: onLoginTapped,
                             ),
                         ],
@@ -653,9 +653,7 @@ class _StoryScreenState extends State<StoryScreen> {
   }
 
   Future<void> onStoryLinkTapped(String link) async {
-    final RegExp regex = RegExp(r'\d+$');
-    final String match = regex.stringMatch(link) ?? '';
-    final int? id = int.tryParse(match);
+    final int? id = link.getItemId();
     if (id != null) {
       storyLinkTapThrottle.run(() {
         locator
@@ -668,7 +666,7 @@ class _StoryScreenState extends State<StoryScreen> {
                 StoryScreen.routeName,
                 arguments: StoryScreenArgs(story: story),
               );
-            } else {}
+            }
           }
         });
       });

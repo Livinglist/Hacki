@@ -11,24 +11,27 @@ A simple noiseless [Hacker News](https://news.ycombinator.com/) reader made with
 
 <noscript><a href="https://liberapay.com/jfeng_for_open_source/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a></noscript>
 
-[<img src="assets/images/app_store_badge.png" height="50">](https://apps.apple.com/us/app/hacki/id1602043763) [<img src="assets/images/google_play_badge.png" height="50">](https://play.google.com/store/apps/details?id=com.jiaqifeng.hacki&hl=en_US&gl=US)
+[<img src="assets/images/app_store_badge.png" height="50">](https://apps.apple.com/us/app/hacki/id1602043763) [<img src="assets/images/google_play_badge.png" height="50">](https://play.google.com/store/apps/details?id=com.jiaqifeng.hacki&hl=en_US&gl=US) [<img src="assets/images/f_droid_badge.png" height="50">](https://f-droid.org/en/packages/com.jiaqifeng.hacki/)
 
 
 Features:
 - Log in using your Hacker News account.
 - Browse stories from various categories.
-- Submit links.
-- Leave comments on stories.
-- View and participate in polls.
+- Search for stories.
+- Submit stories.
+- Pin stories.
 - Mark stories as favorite.
-- Browse comments and stories you have posted in the past.
-- Search for stories on Hacker News.
+- Leave comments.
 - Collapse comments.
+- View parent comments without scrolling up.
+- View and participate in polls.
+- Browse comments and stories you have posted.
 - Vote on comments or stories.
-- Pin stories to the top of home page.
 - Get in-app notification when there is new reply to your stories or comments.
-- Download stories for offline reading.
+- Download stories and comments for offline reading.
 - Pick up where you left off.
+- Synced favorites and pins across devices. (iOS only)
+- Launch from system share sheet.
 - And more...
 
 
