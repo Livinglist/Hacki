@@ -76,8 +76,7 @@ class StoryScreen extends StatefulWidget {
           ),
           if (args.story.isPoll)
             BlocProvider<PollCubit>(
-              create: (BuildContext context) =>
-                  PollCubit()..init(story: args.story),
+              create: (BuildContext context) => PollCubit(story: args.story),
             ),
         ],
         child: StoryScreen(
@@ -103,8 +102,7 @@ class StoryScreen extends StatefulWidget {
         ),
         if (args.story.isPoll)
           BlocProvider<PollCubit>(
-            create: (BuildContext context) =>
-                PollCubit()..init(story: args.story),
+            create: (BuildContext context) => PollCubit(story: args.story),
           ),
       ],
       child: StoryScreen(
@@ -261,6 +259,7 @@ class _StoryScreenState extends State<StoryScreen> {
                   HapticFeedback.lightImpact();
                   locator.get<CacheService>().resetComments();
                   context.read<CommentsCubit>().refresh();
+                  context.read<PollCubit>().refresh();
                 },
                 onLoading: () {
                   context.read<CommentsCubit>().loadMore();
@@ -388,7 +387,6 @@ class _StoryScreenState extends State<StoryScreen> {
                             ),
                           if (widget.story.isPoll)
                             PollView(
-                              story: state.story,
                               onLoginTapped: onLoginTapped,
                             ),
                         ],

@@ -10,23 +10,26 @@ part 'poll_state.dart';
 
 class PollCubit extends Cubit<PollState> {
   PollCubit({
+    required Story story,
     StoriesRepository? storiesRepository,
-  })  : _storiesRepository =
+  })  : _story = story,
+        _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
         super(PollState.init());
 
   final StoriesRepository _storiesRepository;
+  final Story _story;
 
   Future<void> init({
-    required Story story,
+    bool refresh = false,
   }) async {
     emit(state.copyWith(status: PollStatus.loading));
 
-    List<int> pollOptionsIds = story.parts;
+    List<int> pollOptionsIds = _story.parts;
 
-    if (pollOptionsIds.isEmpty) {
+    if (pollOptionsIds.isEmpty || refresh) {
       final Story? updatedStory =
-          await _storiesRepository.fetchStoryBy(story.id);
+          await _storiesRepository.fetchStoryBy(_story.id);
 
       if (updatedStory != null) {
         pollOptionsIds = updatedStory.parts;
@@ -69,13 +72,7 @@ class PollCubit extends Cubit<PollState> {
     }
   }
 
-  void select(int id) {
-    emit(state.copyWith(selections: <int>{...state.selections, id}));
-  }
-
-  void unselect(int id) {
-    emit(state.copyWith(selections: <int>{...state.selections}..remove(id)));
-  }
+  void refresh() => init(refresh: true);
 
   double _calculateRatio(int totalVotes, int votes) =>
       totalVotes == 0 ? 0 : votes / totalVotes;

@@ -9,11 +9,9 @@ import 'package:hacki/models/models.dart';
 class PollView extends StatelessWidget {
   const PollView({
     super.key,
-    required this.story,
     required this.onLoginTapped,
   });
 
-  final Story story;
   final VoidCallback onLoginTapped;
 
   @override
