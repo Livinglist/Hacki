@@ -76,7 +76,8 @@ class StoryScreen extends StatefulWidget {
           ),
           if (args.story.isPoll)
             BlocProvider<PollCubit>(
-              create: (BuildContext context) => PollCubit(story: args.story),
+              create: (BuildContext context) =>
+                  PollCubit(story: args.story)..init(),
             ),
         ],
         child: StoryScreen(
@@ -102,7 +103,8 @@ class StoryScreen extends StatefulWidget {
         ),
         if (args.story.isPoll)
           BlocProvider<PollCubit>(
-            create: (BuildContext context) => PollCubit(story: args.story),
+            create: (BuildContext context) =>
+                PollCubit(story: args.story)..init(),
           ),
       ],
       child: StoryScreen(
