@@ -109,8 +109,6 @@ class CommentTile extends StatelessWidget {
                               : null,
                           child: InkWell(
                             onTap: () {
-                              if (comment.deleted || comment.dead) return;
-
                               if (actionable) {
                                 HapticFeedback.lightImpact();
                                 context.read<CollapseCubit>().collapse();
@@ -152,7 +150,21 @@ class CommentTile extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                                if (comment.deleted)
+                                if (actionable && state.collapsed)
+                                  Center(
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 12),
+                                      child: Text(
+                                        'collapsed '
+                                        '(${state.collapsedCount + 1})',
+                                        style: const TextStyle(
+                                          color: Colors.orangeAccent,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                else if (comment.deleted)
                                   const Center(
                                     child: Padding(
                                       padding: EdgeInsets.only(bottom: 12),
@@ -185,20 +197,6 @@ class CommentTile extends StatelessWidget {
                                         'blocked',
                                         style: TextStyle(
                                           color: Colors.grey,
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                else if (actionable && state.collapsed)
-                                  Center(
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 12),
-                                      child: Text(
-                                        'collapsed '
-                                        '(${state.collapsedCount + 1})',
-                                        style: const TextStyle(
-                                          color: Colors.orangeAccent,
                                         ),
                                       ),
                                     ),
