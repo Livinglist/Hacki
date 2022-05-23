@@ -89,6 +89,8 @@ class CommentsCubit extends Cubit<CommentsState> {
   Future<void> refresh() async {
     final bool offlineReading = await _cacheRepository.hasCachedStories;
 
+    _cacheService.resetCollapsedComments();
+
     if (offlineReading) {
       emit(
         state.copyWith(
