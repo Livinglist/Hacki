@@ -388,7 +388,7 @@ class _StoryScreenState extends State<StoryScreen> {
                             ),
                           if (widget.story.isPoll)
                             PollView(
-                              story: widget.story,
+                              story: state.story,
                               onLoginTapped: onLoginTapped,
                             ),
                         ],
@@ -668,7 +668,7 @@ class _StoryScreenState extends State<StoryScreen> {
                 StoryScreen.routeName,
                 arguments: StoryScreenArgs(story: story),
               );
-            } else {}
+            }
           }
         });
       });

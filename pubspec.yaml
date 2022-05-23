@@ -52,6 +52,7 @@ dependencies:
     git:
       url: https://github.com/livinglist/flutter_pulltorefresh
       ref: master
+  receive_sharing_intent: ^1.4.5
   responsive_builder: ^0.4.2
   rxdart: ^0.27.3
   sembast: ^3.1.1+1

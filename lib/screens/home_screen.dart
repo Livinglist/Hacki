@@ -23,6 +23,7 @@ import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -49,6 +50,9 @@ class _HomeScreenState extends State<HomeScreen>
   );
 
   late final TabController tabController;
+  late final StreamSubscription<String> intentDataStreamSubscription;
+  late final StreamSubscription<String?> notificationStreamSubscription;
+
   int currentIndex = 0;
 
   static const Duration _throttleDelay = Duration(seconds: 1);
@@ -74,32 +78,14 @@ class _HomeScreenState extends State<HomeScreen>
     //   Constants.featurePinToTop,
     // ]);
 
+    ReceiveSharingIntent.getInitialText().then(onShareExtensionTapped);
+
+    intentDataStreamSubscription =
+        ReceiveSharingIntent.getTextStream().listen(onShareExtensionTapped);
+
     if (!selectNotificationSubject.hasListener) {
-      selectNotificationSubject.stream.listen((String? payload) async {
-        if (payload == null) return;
-
-        final Map<String, dynamic> payloadJson =
-            jsonDecode(payload) as Map<String, dynamic>;
-
-        final int? storyId = payloadJson['storyId'] as int?;
-        final int? commentId = payloadJson['commentId'] as int?;
-
-        if (storyId != null && commentId != null) {
-          context.read<NotificationCubit>().markAsRead(commentId);
-
-          await locator
-              .get<StoriesRepository>()
-              .fetchStoryBy(storyId)
-              .then((Story? story) {
-            if (story == null) {
-              showSnackBar(content: 'Something went wrong...');
-              return;
-            }
-            final StoryScreenArgs args = StoryScreenArgs(story: story);
-            goToStoryScreen(args: args);
-          });
-        }
-      });
+      notificationStreamSubscription =
+          selectNotificationSubject.stream.listen(onNotificationTapped);
     }
 
     SchedulerBinding.instance
@@ -138,6 +124,15 @@ class _HomeScreenState extends State<HomeScreen>
       context.read<StoriesBloc>().deviceScreenType = deviceType;
       context.read<StoriesBloc>().add(StoriesInitialize());
     }
+  }
+
+  @override
+  void dispose() {
+    featureDiscoveryDismissThrottle.dispose();
+    tabController.dispose();
+    intentDataStreamSubscription.cancel();
+    notificationStreamSubscription.cancel();
+    super.dispose();
   }
 
   @override
@@ -466,6 +461,51 @@ class _HomeScreenState extends State<HomeScreen>
         fullscreenDialog: true,
       ),
     );
+  }
+
+  void onShareExtensionTapped(String? event) {
+    if (event == null) return;
+
+    final int? id = event.getItemId();
+
+    if (id != null) {
+      locator
+          .get<StoriesRepository>()
+          .fetchParentStory(id: id)
+          .then((Story? story) {
+        if (mounted) {
+          if (story != null) {
+            goToStoryScreen(args: StoryScreenArgs(story: story));
+          }
+        }
+      });
+    }
+  }
+
+  Future<void> onNotificationTapped(String? payload) async {
+    if (payload == null) return;
+
+    final Map<String, dynamic> payloadJson =
+        jsonDecode(payload) as Map<String, dynamic>;
+
+    final int? storyId = payloadJson['storyId'] as int?;
+    final int? commentId = payloadJson['commentId'] as int?;
+
+    if (storyId != null && commentId != null) {
+      context.read<NotificationCubit>().markAsRead(commentId);
+
+      await locator
+          .get<StoriesRepository>()
+          .fetchStoryBy(storyId)
+          .then((Story? story) {
+        if (story == null) {
+          showSnackBar(content: 'Something went wrong...');
+          return;
+        }
+        final StoryScreenArgs args = StoryScreenArgs(story: story);
+        goToStoryScreen(args: args);
+      });
+    }
   }
 }
 
