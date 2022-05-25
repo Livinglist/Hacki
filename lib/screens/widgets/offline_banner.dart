@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/screens/widgets/link_preview/web_analyzer.dart';
 
 class OfflineBanner extends StatelessWidget {
   const OfflineBanner({
@@ -57,6 +58,7 @@ class OfflineBanner extends StatelessWidget {
                         context.read<StoriesBloc>().add(StoriesExitOffline());
                         context.read<AuthBloc>().add(AuthInitialize());
                         context.read<PinCubit>().init();
+                        WebAnalyzer.cacheMap.clear();
                       }
                     });
                   },
