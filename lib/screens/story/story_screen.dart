@@ -261,7 +261,10 @@ class _StoryScreenState extends State<StoryScreen> {
                   HapticFeedback.lightImpact();
                   locator.get<CacheService>().resetComments();
                   context.read<CommentsCubit>().refresh();
-                  context.read<PollCubit>().refresh();
+
+                  if (widget.story.isPoll) {
+                    context.read<PollCubit>().refresh();
+                  }
                 },
                 onLoading: () {
                   context.read<CommentsCubit>().loadMore();

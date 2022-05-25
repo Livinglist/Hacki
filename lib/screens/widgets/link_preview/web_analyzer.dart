@@ -66,7 +66,7 @@ class WebVideoInfo extends WebImageInfo {
 
 /// Web analyzer
 class WebAnalyzer {
-  static final Map<String?, InfoBase> _map = <String?, InfoBase>{};
+  static final Map<String?, InfoBase> cacheMap = <String?, InfoBase>{};
   static final RegExp _bodyReg =
       RegExp(r'<body[^>]*>([\s\S]*?)<\/body>', caseSensitive: false);
   static final RegExp _htmlReg = RegExp(
@@ -94,10 +94,11 @@ class WebAnalyzer {
   /// Get web information
   /// return [InfoBase]
   static InfoBase? getInfoFromCache(String? url) {
-    final InfoBase? info = _map[url];
+    final InfoBase? info = cacheMap[url];
+
     if (info != null) {
       if (!info._timeout.isAfter(DateTime.now())) {
-        _map.remove(url);
+        cacheMap.remove(url);
       }
     }
     return info;
@@ -113,12 +114,23 @@ class WebAnalyzer {
   }) async {
     InfoBase? info = getInfoFromCache(url);
     if (info != null) return info;
+
+    if (story.url.isEmpty && story.text.isNotEmpty) {
+      info = WebInfo(
+        title: story.title,
+        description: story.text,
+      ).._timeout = DateTime.now().add(cache);
+      cacheMap[story.id.toString()] = info;
+
+      return info;
+    }
+
     try {
       info = await _getInfoByIsolate(url, multimedia);
 
       if (info != null) {
         info._timeout = DateTime.now().add(cache);
-        _map[url] = info;
+        cacheMap[url] = info;
       }
     } catch (e) {
       //locator.get<Logger>().log(Level.error, e);
@@ -128,15 +140,36 @@ class WebAnalyzer {
             info is WebImageInfo ||
             (info is WebInfo && (info.description?.isEmpty ?? true))) &&
         story.kids.isNotEmpty) {
+      bool shouldRetry = false;
       final Comment? comment = await locator
           .get<StoriesRepository>()
-          .fetchCommentBy(id: story.kids.first);
+          .fetchCommentBy(id: story.kids.first)
+          .catchError((Object err) async {
+        int index = 0;
+        Comment? comment;
+
+        while (comment == null && index < story.kids.length) {
+          comment = await locator
+              .get<CacheRepository>()
+              .getCachedComment(id: story.kids.elementAt(index));
+          index++;
+        }
+
+        shouldRetry = true;
+        return comment;
+      });
+
       info = WebInfo(
-        description: '${comment?.by}: ${comment?.text}',
+        description:
+            comment != null ? '${comment.by}: ${comment.text}' : 'no comments',
         image: info is WebInfo ? info.image : (info as WebImageInfo?)?.image,
         icon: info is WebInfo ? info.icon : null,
-      ).._timeout = DateTime.now().add(cache);
-      _map[url] = info;
+      );
+
+      if (!shouldRetry) {
+        info._timeout = DateTime.now().add(cache);
+        cacheMap[url] = info;
+      }
     }
 
     return info;

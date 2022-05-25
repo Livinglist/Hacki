@@ -48,20 +48,14 @@ class InboxView extends StatelessWidget {
               loadStyle: LoadStyle.ShowWhenLoading,
               builder: (BuildContext context, LoadStatus? mode) {
                 Widget body;
-                if (mode == LoadStatus.idle) {
-                  body = const Text('');
-                } else if (mode == LoadStatus.loading) {
+                if (mode == LoadStatus.loading) {
                   body = const CustomCircularProgressIndicator();
                 } else if (mode == LoadStatus.failed) {
                   body = const Text(
                     'loading failed.',
                   );
-                } else if (mode == LoadStatus.canLoading) {
-                  body = const Text(
-                    'loading more.',
-                  );
                 } else {
-                  body = const Text('');
+                  body = const SizedBox.shrink();
                 }
                 return SizedBox(
                   height: 55,
