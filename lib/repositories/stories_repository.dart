@@ -25,22 +25,9 @@ class StoriesRepository {
   }
 
   Future<List<int>> fetchStoryIds({required StoryType of}) async {
-    final String suffix = () {
-      switch (of) {
-        case StoryType.top:
-          return 'topstories.json';
-        case StoryType.latest:
-          return 'newstories.json';
-        case StoryType.ask:
-          return 'askstories.json';
-        case StoryType.show:
-          return 'showstories.json';
-        case StoryType.jobs:
-          return 'jobstories.json';
-      }
-    }();
-    final List<int> ids =
-        await _firebaseClient.get('$_baseUrl$suffix').then((dynamic val) {
+    final List<int> ids = await _firebaseClient
+        .get('$_baseUrl${of.path}.json')
+        .then((dynamic val) {
       final List<int> ids = (val as List<dynamic>).cast<int>();
       return ids;
     });

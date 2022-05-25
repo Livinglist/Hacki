@@ -3,19 +3,19 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/post_data.dart';
-import 'package:hacki/repositories/repositories.dart';
+import 'package:hacki/repositories/postable_repository.dart';
+import 'package:hacki/repositories/preference_repository.dart';
 import 'package:hacki/utils/utils.dart';
 
-class PostRepository {
+class PostRepository extends PostableRepository {
   PostRepository({Dio? dio, PreferenceRepository? storageRepository})
-      : _dio = dio ?? Dio(),
-        _preferenceRepository =
-            storageRepository ?? locator.get<PreferenceRepository>();
+      : _preferenceRepository =
+            storageRepository ?? locator.get<PreferenceRepository>(),
+        super(dio: dio);
+
+  final PreferenceRepository _preferenceRepository;
 
   static const String _authority = 'news.ycombinator.com';
-
-  final Dio _dio;
-  final PreferenceRepository _preferenceRepository;
 
   Future<bool> comment({
     required int parentId,
@@ -36,7 +36,7 @@ class PostRepository {
       text: text,
     );
 
-    return _performDefaultPost(
+    return performDefaultPost(
       uri,
       data,
       validateLocation: (String? location) => location == '/',
@@ -79,7 +79,7 @@ class PostRepository {
       text: text,
     );
 
-    return _performDefaultPost(
+    return performDefaultPost(
       uri,
       data,
       cookie: cookie,
@@ -121,7 +121,7 @@ class PostRepository {
       text: text,
     );
 
-    return _performDefaultPost(
+    return performDefaultPost(
       uri,
       data,
       cookie: cookie,
@@ -144,58 +144,11 @@ class PostRepository {
       pw: password,
       id: id,
     );
-    return _performPost(
+    return performPost(
       uri,
       data,
       responseType: ResponseType.bytes,
       validateStatus: (int? status) => status == HttpStatus.ok,
     );
-  }
-
-  Future<bool> _performDefaultPost(
-    Uri uri,
-    PostDataMixin data, {
-    String? cookie,
-    bool Function(String?)? validateLocation,
-  }) async {
-    try {
-      final Response<void> response = await _performPost<void>(
-        uri,
-        data,
-        cookie: cookie,
-        validateStatus: (int? status) => status == HttpStatus.found,
-      );
-
-      if (validateLocation != null) {
-        return validateLocation(response.headers.value('location'));
-      }
-
-      return true;
-    } on ServiceException {
-      return false;
-    }
-  }
-
-  Future<Response<T>> _performPost<T>(
-    Uri uri,
-    PostDataMixin data, {
-    String? cookie,
-    ResponseType? responseType,
-    bool Function(int?)? validateStatus,
-  }) async {
-    try {
-      return await _dio.postUri<T>(
-        uri,
-        data: data.toJson(),
-        options: Options(
-          headers: <String, dynamic>{if (cookie != null) 'cookie': cookie},
-          responseType: responseType,
-          contentType: 'application/x-www-form-urlencoded',
-          validateStatus: validateStatus,
-        ),
-      );
-    } on DioError catch (e) {
-      throw ServiceException(e.message);
-    }
   }
 }

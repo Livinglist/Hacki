@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/link_preview/link_view.dart';
 import 'package:hacki/screens/widgets/link_preview/web_analyzer.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,6 +12,7 @@ class LinkPreview extends StatefulWidget {
   const LinkPreview({
     super.key,
     required this.link,
+    required this.story,
     this.cache = const Duration(days: 30),
     this.titleStyle,
     this.bodyStyle,
@@ -27,6 +29,8 @@ class LinkPreview extends StatefulWidget {
     this.boxShadow,
     this.removeElevation = false,
   });
+
+  final Story story;
 
   /// Web address (Url that need to be parsed)
   /// For IOS & Web, only HTTP and HTTPS are support
@@ -101,12 +105,11 @@ class LinkPreview extends StatefulWidget {
 
 class _LinkPreviewState extends State<LinkPreview> {
   InfoBase? _info;
-  String? _errorImage, _errorTitle, _errorBody, _url;
+  String? _errorTitle, _errorBody, _url;
   bool _loading = false;
 
   @override
   void initState() {
-    _errorImage = widget.errorImage ?? Constants.hackerNewsLogoLink;
     _errorTitle = widget.errorTitle ?? 'Something went wrong!';
     _errorBody = widget.errorBody ??
         'Oops! Unable to parse the url. We have '
@@ -124,7 +127,11 @@ class _LinkPreviewState extends State<LinkPreview> {
 
   Future<void> _getInfo() async {
     if (_url!.startsWith('http') || _url!.startsWith('https')) {
-      _info = await WebAnalyzer.getInfo(_url, cache: widget.cache);
+      _info = await WebAnalyzer.getInfo(
+        _url,
+        story: widget.story,
+        cache: widget.cache,
+      );
       if (mounted) {
         setState(() {
           _loading = false;
@@ -171,6 +178,7 @@ class _LinkPreviewState extends State<LinkPreview> {
         title: title!,
         description: desc!,
         imageUri: imageUri,
+        imagePath: Constants.hackerNewsLogoPath,
         onTap: _launchURL,
         titleTextStyle: widget.titleStyle,
         bodyTextStyle: widget.bodyStyle,
@@ -212,9 +220,8 @@ class _LinkPreviewState extends State<LinkPreview> {
         _height,
         title: _errorTitle,
         desc: _errorBody,
-        imageUri: widget.showMultimedia
-            ? (img.trim() == '' ? _errorImage : img)
-            : null,
+        imageUri:
+            widget.showMultimedia ? (img.trim() == '' ? null : img) : null,
       );
     } else {
       final WebInfo? info = _info as WebInfo?;
@@ -222,7 +229,8 @@ class _LinkPreviewState extends State<LinkPreview> {
           ? _buildLinkContainer(
               _height,
               title: _errorTitle,
-              imageUri: widget.showMultimedia ? _errorImage : null,
+              desc: _errorBody,
+              imageUri: null,
             )
           : _buildLinkContainer(
               _height,
@@ -235,7 +243,7 @@ class _LinkPreviewState extends State<LinkPreview> {
                       ? info.image
                       : WebAnalyzer.isNotEmpty(info.icon)
                           ? info.icon
-                          : _errorImage)
+                          : null)
                   : null,
               isIcon: !WebAnalyzer.isNotEmpty(info.image),
             );
