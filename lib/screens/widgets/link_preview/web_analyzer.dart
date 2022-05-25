@@ -114,6 +114,17 @@ class WebAnalyzer {
   }) async {
     InfoBase? info = getInfoFromCache(url);
     if (info != null) return info;
+
+    if (story.url.isEmpty && story.text.isNotEmpty) {
+      info = WebInfo(
+        title: story.title,
+        description: story.text,
+      ).._timeout = DateTime.now().add(cache);
+      cacheMap[story.id.toString()] = info;
+
+      return info;
+    }
+
     try {
       info = await _getInfoByIsolate(url, multimedia);
 
@@ -129,6 +140,7 @@ class WebAnalyzer {
             info is WebImageInfo ||
             (info is WebInfo && (info.description?.isEmpty ?? true))) &&
         story.kids.isNotEmpty) {
+      bool shouldRetry = false;
       final Comment? comment = await locator
           .get<StoriesRepository>()
           .fetchCommentBy(id: story.kids.first)
@@ -143,6 +155,7 @@ class WebAnalyzer {
           index++;
         }
 
+        shouldRetry = true;
         return comment;
       });
 
@@ -151,8 +164,12 @@ class WebAnalyzer {
             comment != null ? '${comment.by}: ${comment.text}' : 'no comments',
         image: info is WebInfo ? info.image : (info as WebImageInfo?)?.image,
         icon: info is WebInfo ? info.icon : null,
-      ).._timeout = DateTime.now().add(cache);
-      cacheMap[url] = info;
+      );
+
+      if (!shouldRetry) {
+        info._timeout = DateTime.now().add(cache);
+        cacheMap[url] = info;
+      }
     }
 
     return info;

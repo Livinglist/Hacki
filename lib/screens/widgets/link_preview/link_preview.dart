@@ -117,7 +117,12 @@ class _LinkPreviewState extends State<LinkPreview> {
             'we will try to fix this in our next release. Thanks!';
     _url = widget.link.trim();
 
-    _info = WebAnalyzer.getInfoFromCache(_url);
+    if (_url?.isNotEmpty ?? false) {
+      _info = WebAnalyzer.getInfoFromCache(_url);
+    } else {
+      _info = WebAnalyzer.getInfoFromCache(widget.story.id.toString());
+    }
+
     if (_info == null) {
       _loading = true;
       _getInfo();
@@ -132,13 +137,18 @@ class _LinkPreviewState extends State<LinkPreview> {
         story: widget.story,
         cache: widget.cache,
       );
-      if (mounted) {
-        setState(() {
-          _loading = false;
-        });
-      }
     } else {
-      //print('$_url is not starting with either http or https');
+      _info = await WebAnalyzer.getInfo(
+        widget.story.id.toString(),
+        story: widget.story,
+        cache: widget.cache,
+      );
+    }
+
+    if (mounted) {
+      setState(() {
+        _loading = false;
+      });
     }
   }
 
