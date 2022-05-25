@@ -44,7 +44,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
 
   final List<T> items;
   final Widget? header;
-  final RefreshController? refreshController;
+  final RefreshController refreshController;
   final VoidCallback? onRefresh;
   final VoidCallback? onLoadMore;
   final ValueChanged<Story>? onPinned;
@@ -180,10 +180,6 @@ class ItemsListView<T extends Item> extends StatelessWidget {
       ],
     );
 
-    if (refreshController == null) {
-      return child;
-    }
-
     return SmartRefresher(
       enablePullUp: true,
       enablePullDown: enablePullDown,
@@ -215,7 +211,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
           );
         },
       ),
-      controller: refreshController!,
+      controller: refreshController,
       onRefresh: onRefresh,
       onLoading: onLoadMore,
       child: child,
