@@ -129,7 +129,6 @@ class WebAnalyzer {
             info is WebImageInfo ||
             (info is WebInfo && (info.description?.isEmpty ?? true))) &&
         story.kids.isNotEmpty) {
-      bool shouldRetry = false;
       final Comment? comment = await locator
           .get<StoriesRepository>()
           .fetchCommentBy(id: story.kids.first)
@@ -144,7 +143,6 @@ class WebAnalyzer {
           index++;
         }
 
-        shouldRetry = true;
         return comment;
       });
 
@@ -153,12 +151,8 @@ class WebAnalyzer {
             comment != null ? '${comment.by}: ${comment.text}' : 'no comments',
         image: info is WebInfo ? info.image : (info as WebImageInfo?)?.image,
         icon: info is WebInfo ? info.icon : null,
-      );
-
-      if (!shouldRetry) {
-        info._timeout = DateTime.now().add(cache);
-        cacheMap[url] = info;
-      }
+      ).._timeout = DateTime.now().add(cache);
+      cacheMap[url] = info;
     }
 
     return info;
