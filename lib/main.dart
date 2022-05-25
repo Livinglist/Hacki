@@ -76,6 +76,7 @@ Future<void> main() async {
   //     runApp(
   //       HackiApp(
   //         savedThemeMode: savedThemeMode,
+  //         trueDarkMode: trueDarkMode,
   //       ),
   //     );
   //   },

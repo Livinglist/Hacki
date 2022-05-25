@@ -5,7 +5,10 @@ import 'dart:io';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:fast_gbk/fast_gbk.dart';
 import 'package:flutter/foundation.dart';
-import 'package:html/dom.dart' hide Text;
+import 'package:hacki/config/locator.dart';
+import 'package:hacki/models/models.dart';
+import 'package:hacki/repositories/repositories.dart';
+import 'package:html/dom.dart' hide Text, Comment;
 import 'package:html/parser.dart' as parser;
 import 'package:http/http.dart';
 import 'package:http/io_client.dart';
@@ -80,7 +83,10 @@ class WebAnalyzer {
   static final RegExp _lineReg = RegExp(r'[\n\r]|&nbsp;|&gt;');
   static final RegExp _spaceReg = RegExp(r'\s+');
 
-  /// Is it an empty string
+  static bool isEmpty(String? str) {
+    return !isNotEmpty(str);
+  }
+
   static bool isNotEmpty(String? str) {
     return str != null && str.isNotEmpty && str.trim().isNotEmpty;
   }
@@ -101,11 +107,10 @@ class WebAnalyzer {
   /// return [InfoBase]
   static Future<InfoBase?> getInfo(
     String? url, {
+    required Story story,
     Duration cache = const Duration(hours: 24),
     bool multimedia = true,
   }) async {
-    // final start = DateTime.now();
-
     InfoBase? info = getInfoFromCache(url);
     if (info != null) return info;
     try {
@@ -116,10 +121,23 @@ class WebAnalyzer {
         _map[url] = info;
       }
     } catch (e) {
-      //print('Get web error:$url, Error:$e');
+      //locator.get<Logger>().log(Level.error, e);
     }
 
-    // print("$url cost ${DateTime.now().difference(start).inMilliseconds}");
+    if ((info == null ||
+            info is WebImageInfo ||
+            (info is WebInfo && (info.description?.isEmpty ?? true))) &&
+        story.kids.isNotEmpty) {
+      final Comment? comment = await locator
+          .get<StoriesRepository>()
+          .fetchCommentBy(id: story.kids.first);
+      info = WebInfo(
+        description: '${comment?.by}: ${comment?.text}',
+        image: info is WebInfo ? info.image : (info as WebImageInfo?)?.image,
+        icon: info is WebInfo ? info.icon : null,
+      ).._timeout = DateTime.now().add(cache);
+      _map[url] = info;
+    }
 
     return info;
   }
@@ -128,6 +146,7 @@ class WebAnalyzer {
     final Response? response = await _requestUrl(url);
 
     if (response == null) return null;
+
     if (multimedia!) {
       final String? contentType = response.headers['content-type'];
       if (contentType != null) {
@@ -214,17 +233,21 @@ class WebAnalyzer {
       ..maxRedirects = 3
       ..persistentConnection = true
       ..headers['accept-encoding'] = 'gzip, deflate'
-      ..headers['User-Agent'] =
-          'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Mobile Safari/537.36'
+      ..headers['User-Agent'] = url.contains('twitter.com')
+          ? 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+          : 'Mozilla/5.0'
       ..headers['cache-control'] = 'no-cache'
       ..headers['accept'] =
           'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9';
-    // print(request.headers);
+
     final IOStreamedResponse stream =
         await client.send(request).catchError((dynamic err) {
-      //print('Error in getting the link => ${request.url}');
-      //print('Error => $err');
+      // locator.get<Logger>().log(
+      //       Level.error,
+      //       'Error in getting the link => ${request.url}\n$err',
+      //     );
     });
+
     if (stream.statusCode == HttpStatus.movedTemporarily ||
         stream.statusCode == HttpStatus.movedPermanently) {
       if (stream.isRedirect && count < 6) {
@@ -240,7 +263,6 @@ class WebAnalyzer {
         }
         count++;
         client.close();
-        // print("Redirect ====> $url");
         return _requestUrl(url, count: count, cookie: cookie);
       }
     } else if (stream.statusCode == HttpStatus.ok) {
@@ -257,7 +279,6 @@ class WebAnalyzer {
       }
     }
     client.close();
-    //if (res == null) print('Get web info empty($url)');
     return res;
   }
 
@@ -274,28 +295,22 @@ class WebAnalyzer {
           String temp = html.replaceAll(r'\', '');
           temp = temp.replaceAll('u003C', '<');
           temp = temp.replaceAll('u003E', '>');
-          // print(temp);
-        } else {
-          // print(html);
         }
       } catch (e) {
         try {
           html = gbk.decode(response.bodyBytes);
         } catch (e) {
-          //print('Web page resolution failure from:$url Error:$e');
+          // locator.get<Logger>().log(
+          //       Level.error,
+          //       'Web page resolution failure from:$url Error:$e',
+          //     );
         }
       }
 
-      if (html == null) {
-        //print('Web page resolution failure from:$url');
-        return null;
-      }
+      if (html == null) return null;
 
-      // Improved performance
-      // final start = DateTime.now();
       final String headHtml = _getHeadHtml(html);
       final Document document = parser.parse(headHtml);
-      // print("dom cost ${DateTime.now().difference(start).inMilliseconds}");
       final Uri uri = Uri.parse(url);
 
       // get image or video
@@ -360,6 +375,7 @@ class WebAnalyzer {
   static String _analyzeTitle(Document document, {bool isTwitter = false}) {
     if (isTwitter) return '';
     final String? title = _getMetaContent(document, 'property', 'og:title');
+
     if (title != null) return title;
     final List<Element> list = document.head!.getElementsByTagName('title');
     if (list.isNotEmpty) {
@@ -379,14 +395,12 @@ class WebAnalyzer {
         _getMetaContent(document, 'name', 'description') ??
             _getMetaContent(document, 'name', 'Description');
 
-    if (!isNotEmpty(description)) {
-      // final DateTime start = DateTime.now();
+    if (isEmpty(description)) {
       String body = html.replaceAll(_htmlReg, '');
       body = body.trim().replaceAll(_lineReg, ' ').replaceAll(_spaceReg, ' ');
       if (body.length > 300) {
         body = body.substring(0, 300);
       }
-      // print("html cost ${DateTime.now().difference(start).inMilliseconds}");
       if (body.contains('JavaScript is disabled in your browser')) return '';
       return body;
     }

@@ -4,11 +4,15 @@ import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/item.dart';
 
 enum StoryType {
-  top,
-  latest,
-  ask,
-  show,
-  jobs,
+  top('topstories'),
+  latest('newstories'),
+  ask('askstories'),
+  show('showstories'),
+  jobs('jobstories');
+
+  const StoryType(this.path);
+
+  final String path;
 }
 
 class Story extends Item {

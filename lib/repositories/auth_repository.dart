@@ -1,24 +1,22 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/repositories/postable_repository.dart';
 import 'package:hacki/repositories/repositories.dart';
-import 'package:hacki/utils/service_exception.dart';
 
-class AuthRepository {
+class AuthRepository extends PostableRepository {
   AuthRepository({
     Dio? dio,
     PreferenceRepository? preferenceRepository,
-  })  : _dio = dio ?? Dio(),
-        _preferenceRepository =
-            preferenceRepository ?? locator.get<PreferenceRepository>();
+  })  : _preferenceRepository =
+            preferenceRepository ?? locator.get<PreferenceRepository>(),
+        super(dio: dio);
+
+  final PreferenceRepository _preferenceRepository;
 
   static const String _authority = 'news.ycombinator.com';
-
-  final Dio _dio;
-  final PreferenceRepository _preferenceRepository;
 
   Future<bool> get loggedIn async => _preferenceRepository.loggedIn;
 
@@ -37,7 +35,7 @@ class AuthRepository {
       goto: 'news',
     );
 
-    final bool success = await _performDefaultPost(uri, data);
+    final bool success = await performDefaultPost(uri, data);
 
     if (success) {
       await _preferenceRepository.setAuth(
@@ -69,7 +67,7 @@ class AuthRepository {
       un: flag ? null : 't',
     );
 
-    return _performDefaultPost(uri, data);
+    return performDefaultPost(uri, data);
   }
 
   Future<bool> favorite({
@@ -86,7 +84,7 @@ class AuthRepository {
       un: favorite ? null : 't',
     );
 
-    return _performDefaultPost(uri, data);
+    return performDefaultPost(uri, data);
   }
 
   Future<bool> upvote({
@@ -103,7 +101,7 @@ class AuthRepository {
       how: upvote ? 'up' : 'un',
     );
 
-    return _performDefaultPost(uri, data);
+    return performDefaultPost(uri, data);
   }
 
   Future<bool> downvote({
@@ -120,53 +118,6 @@ class AuthRepository {
       how: downvote ? 'down' : 'un',
     );
 
-    return _performDefaultPost(uri, data);
-  }
-
-  Future<bool> _performDefaultPost(
-    Uri uri,
-    PostDataMixin data, {
-    String? cookie,
-    bool Function(String?)? validateLocation,
-  }) async {
-    try {
-      final Response<void> response = await _performPost<void>(
-        uri,
-        data,
-        cookie: cookie,
-        validateStatus: (int? status) => status == HttpStatus.found,
-      );
-
-      if (validateLocation != null) {
-        return validateLocation(response.headers.value('location'));
-      }
-
-      return true;
-    } on ServiceException {
-      return false;
-    }
-  }
-
-  Future<Response<T>> _performPost<T>(
-    Uri uri,
-    PostDataMixin data, {
-    String? cookie,
-    ResponseType? responseType,
-    bool Function(int?)? validateStatus,
-  }) async {
-    try {
-      return await _dio.postUri<T>(
-        uri,
-        data: data.toJson(),
-        options: Options(
-          headers: <String, dynamic>{if (cookie != null) 'cookie': cookie},
-          responseType: responseType,
-          contentType: 'application/x-www-form-urlencoded',
-          validateStatus: validateStatus,
-        ),
-      );
-    } on DioError catch (e) {
-      throw ServiceException(e.message);
-    }
+    return performDefaultPost(uri, data);
   }
 }

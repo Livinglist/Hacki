@@ -97,7 +97,7 @@ class LinkView extends StatelessWidget {
                     child: (imageUri?.isEmpty ?? true) && imagePath != null
                         ? Image.asset(
                             imagePath!,
-                            fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
+                            fit: BoxFit.cover,
                           )
                         : CachedNetworkImage(
                             imageUrl: imageUri!,

@@ -44,6 +44,7 @@ class StoryTile extends StatelessWidget {
             ),
             child: AbsorbPointer(
               child: LinkPreview(
+                story: story,
                 link: story.url.isNotEmpty ? story.url : 's',
                 placeholderWidget: FadeIn(
                   child: SizedBox(
