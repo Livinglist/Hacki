@@ -23,6 +23,10 @@ class PollCubit extends Cubit<PollState> {
   Future<void> init({
     bool refresh = false,
   }) async {
+    if (refresh) {
+      emit(PollState.init());
+    }
+
     emit(state.copyWith(status: PollStatus.loading));
 
     List<int> pollOptionsIds = _story.parts;
