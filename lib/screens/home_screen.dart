@@ -172,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen>
                         child: StoryTile(
                           key: ObjectKey(story),
                           story: story,
-                          onTap: () => onStoryTapped(story),
+                          onTap: () => onStoryTapped(story, isPin: true),
                           showWebPreview: preferenceState.showComplexStoryTile,
                         ),
                       ),
@@ -408,13 +408,13 @@ class _HomeScreenState extends State<HomeScreen>
     return Future<bool>.value(false);
   }
 
-  void onStoryTapped(Story story) {
+  void onStoryTapped(Story story, {bool isPin = false}) {
     final bool showWebFirst =
         context.read<PreferenceCubit>().state.showWebFirst;
     final bool useReader = context.read<PreferenceCubit>().state.useReader;
     final bool offlineReading =
         context.read<StoriesBloc>().state.offlineReading;
-    final bool hasRead = context.read<StoriesBloc>().hasRead(story);
+    final bool hasRead = isPin || context.read<StoriesBloc>().hasRead(story);
     final bool splitViewEnabled = context.read<SplitViewCubit>().state.enabled;
 
     // If a story is a job story and it has a link to the job posting,
