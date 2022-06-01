@@ -160,20 +160,21 @@ class StoryTile extends StatelessWidget {
                   ),
                 ],
               ),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      story.metadata,
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: simpleTileFontSize - 2,
+              if (showMetadata)
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        story.metadata,
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: simpleTileFontSize - 2,
+                        ),
+                        maxLines: 1,
                       ),
-                      maxLines: 1,
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
               const SizedBox(
                 height: 8,
               ),
