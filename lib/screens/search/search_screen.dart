@@ -102,6 +102,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     child: StoryTile(
                                       showWebPreview:
                                           prefState.showComplexStoryTile,
+                                      showMetadata: prefState.showMetadata,
                                       story: e,
                                       onTap: () => goToStoryScreen(
                                         args: StoryScreenArgs(story: e),

@@ -119,6 +119,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
                             return ItemsListView<Item>(
                               showWebPreview: false,
+                              showMetadata: false,
                               useConsistentFontSize: true,
                               refreshController: refreshControllerHistory,
                               items: historyState.submittedItems
@@ -170,6 +171,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             return ItemsListView<Story>(
                               showWebPreview:
                                   preferenceState.showComplexStoryTile,
+                              showMetadata: preferenceState.showMetadata,
                               refreshController: refreshControllerFav,
                               items: favState.favStories,
                               onRefresh: () {
@@ -293,6 +295,21 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 activeColor: Colors.orange,
                               ),
                               SwitchListTile(
+                                title: const Text('Show Metadata'),
+                                subtitle: const Text(
+                                  'show number of comments and post date'
+                                  ' in story tile.',
+                                ),
+                                value: preferenceState.showMetadata,
+                                onChanged: (bool val) {
+                                  HapticFeedback.lightImpact();
+                                  context
+                                      .read<PreferenceCubit>()
+                                      .toggleMetadataMode();
+                                },
+                                activeColor: Colors.orange,
+                              ),
+                              SwitchListTile(
                                 title: const Text('Show Web Page First'),
                                 subtitle: const Text(
                                   'show web page first after tapping'
@@ -390,7 +407,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   showAboutDialog(
                                     context: context,
                                     applicationName: 'Hacki',
-                                    applicationVersion: 'v0.2.11',
+                                    applicationVersion: 'v0.2.12',
                                     applicationIcon: ClipRRect(
                                       borderRadius: const BorderRadius.all(
                                         Radius.circular(12),

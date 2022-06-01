@@ -28,6 +28,8 @@ class SearchRepository {
       final String by = hit['author'] as String? ?? '';
       final String title = hit['title'] as String? ?? '';
       final int createdAt = hit['created_at_i'] as int? ?? 0;
+      final int score = hit['points'] as int? ?? 0;
+      final int descendants = hit['num_comments'] as int? ?? 0;
 
       // Getting rid of comments, only keeping stories for convenience.
       // Don't judge me.
@@ -46,9 +48,9 @@ class SearchRepository {
       final int id = int.parse(hit['objectID'] as String? ?? '0');
 
       final Story story = Story(
-        descendants: 0,
+        descendants: descendants,
         id: id,
-        score: 0,
+        score: score,
         time: createdAt,
         by: by,
         title: title,

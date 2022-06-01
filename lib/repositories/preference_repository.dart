@@ -21,6 +21,7 @@ class PreferenceRepository {
   static const String _unreadCommentsIdsKey = 'unreadCommentsIds';
   static const String _lastReadStoryIdKey = 'lastReadStoryId';
   static const String _isFirstLaunchKey = 'isFirstLaunch';
+  static const String _metadataModeKey = 'metadataMode';
 
   static const String _notificationModeKey = 'notificationMode';
   static const String _readerModeKey = 'readerMode';
@@ -46,6 +47,7 @@ class PreferenceRepository {
   static const bool _readerModeDefaultValue = true;
   static const bool _markReadStoriesModeDefaultValue = true;
   static const bool _isFirstLaunchKeyDefaultValue = true;
+  static const bool _metadataModeDefaultValue = true;
 
   final SyncedSharedPreferences _syncedPrefs;
   final Future<SharedPreferences> _prefs;
@@ -65,29 +67,6 @@ class PreferenceRepository {
     await prefs.setBool(_isFirstLaunchKey, false);
 
     return val;
-  }
-
-  Future<List<String>> get blocklist async => _prefs.then(
-        (SharedPreferences prefs) =>
-            prefs.getStringList(_blocklistKey) ?? <String>[],
-      );
-
-  Future<List<int>> get pinnedStoriesIds async {
-    if (Platform.isIOS) {
-      final List<String>? favList = await _syncedPrefs.getStringList(
-        key: _pinnedStoriesIdsKey,
-      );
-      return favList?.map(int.parse).toList() ?? <int>[];
-    } else {
-      return _prefs.then(
-        (SharedPreferences prefs) =>
-            prefs
-                .getStringList(_pinnedStoriesIdsKey)
-                ?.map(int.parse)
-                .toList() ??
-            <int>[],
-      );
-    }
   }
 
   Future<bool> get shouldShowNotification async => _prefs.then(
@@ -111,6 +90,11 @@ class PreferenceRepository {
             prefs.getBool(_eyeCandyModeKey) ?? _eyeCandyModeDefaultValue,
       );
 
+  Future<bool> get shouldShowMetadata async => _prefs.then(
+        (SharedPreferences prefs) =>
+            prefs.getBool(_metadataModeKey) ?? _metadataModeDefaultValue,
+      );
+
   Future<bool> get trueDarkMode async => _prefs.then(
         (SharedPreferences prefs) =>
             prefs.getBool(trueDarkModeKey) ?? _trueDarkModeDefaultValue,
@@ -126,24 +110,6 @@ class PreferenceRepository {
             prefs.getBool(_markReadStoriesModeKey) ??
             _markReadStoriesModeDefaultValue,
       );
-
-  Future<List<int>> get unreadCommentsIds async => _prefs.then(
-        (SharedPreferences prefs) =>
-            prefs
-                .getStringList(_unreadCommentsIdsKey)
-                ?.map(int.parse)
-                .toList() ??
-            <int>[],
-      );
-
-  Future<int?> get lastReadStoryId async =>
-      _prefs.then((SharedPreferences prefs) {
-        final String? val = prefs.getString(_lastReadStoryIdKey);
-
-        if (val == null) return null;
-
-        return int.tryParse(val);
-      });
 
   Future<bool> hasPushed(int commentId) async =>
       _prefs.then((SharedPreferences prefs) {
@@ -168,53 +134,6 @@ class PreferenceRepository {
         return true;
       });
     }
-  }
-
-  Future<List<int>> favList({required String of}) async {
-    final SharedPreferences prefs = await _prefs;
-    if (Platform.isIOS) {
-      final List<String> previousList =
-          ((prefs.getStringList(_getFavKey('')) ?? <String>[])
-                ..addAll(prefs.getStringList(_getFavKey(of)) ?? <String>[]))
-              .toList();
-
-      /// Since v0.2.5, fav list will be stored in [NSUbiquitousKeyValueStore]
-      /// instead of [UserDefaults] on iOS.
-      if (previousList.isNotEmpty) {
-        for (final String fav in previousList) {
-          await addFav(username: of, id: int.parse(fav));
-        }
-
-        await prefs.remove(_getFavKey(''));
-        await prefs.remove(_getFavKey(of));
-      }
-
-      final List<String>? initialList =
-          await _syncedPrefs.getStringList(key: _getFavKey(''));
-      final List<String>? userList =
-          await _syncedPrefs.getStringList(key: _getFavKey(of));
-
-      return <String>{
-        ...?initialList,
-        ...?userList,
-      }.map(int.parse).toList();
-    } else {
-      final List<int> favList =
-          ((prefs.getStringList(_getFavKey('')) ?? <String>[])
-                ..addAll(prefs.getStringList(_getFavKey(of)) ?? <String>[]))
-              .map(int.parse)
-              .toSet()
-              .toList();
-
-      return favList;
-    }
-  }
-
-  Future<bool?> vote({required int submittedTo, required String from}) async {
-    final SharedPreferences prefs = await _prefs;
-    final String key = _getVoteKey(from, submittedTo);
-    final bool? vote = prefs.getBool(key);
-    return vote;
   }
 
   Future<void> setAuth({
@@ -279,6 +198,55 @@ class PreferenceRepository {
     await prefs.setBool(_markReadStoriesModeKey, !currentMode);
   }
 
+  Future<void> toggleMetadataMode() async {
+    final SharedPreferences prefs = await _prefs;
+    final bool currentMode =
+        prefs.getBool(_metadataModeKey) ?? _metadataModeDefaultValue;
+    await prefs.setBool(_metadataModeKey, !currentMode);
+  }
+
+  //#region fav
+
+  Future<List<int>> favList({required String of}) async {
+    final SharedPreferences prefs = await _prefs;
+    if (Platform.isIOS) {
+      final List<String> previousList =
+          ((prefs.getStringList(_getFavKey('')) ?? <String>[])
+                ..addAll(prefs.getStringList(_getFavKey(of)) ?? <String>[]))
+              .toList();
+
+      /// Since v0.2.5, fav list will be stored in [NSUbiquitousKeyValueStore]
+      /// instead of [UserDefaults] on iOS.
+      if (previousList.isNotEmpty) {
+        for (final String fav in previousList) {
+          await addFav(username: of, id: int.parse(fav));
+        }
+
+        await prefs.remove(_getFavKey(''));
+        await prefs.remove(_getFavKey(of));
+      }
+
+      final List<String>? initialList =
+          await _syncedPrefs.getStringList(key: _getFavKey(''));
+      final List<String>? userList =
+          await _syncedPrefs.getStringList(key: _getFavKey(of));
+
+      return <String>{
+        ...?initialList,
+        ...?userList,
+      }.map(int.parse).toList();
+    } else {
+      final List<int> favList =
+          ((prefs.getStringList(_getFavKey('')) ?? <String>[])
+                ..addAll(prefs.getStringList(_getFavKey(of)) ?? <String>[]))
+              .map(int.parse)
+              .toSet()
+              .toList();
+
+      return favList;
+    }
+  }
+
   Future<void> addFav({required String username, required int id}) async {
     final String key = _getFavKey(username);
 
@@ -331,6 +299,19 @@ class PreferenceRepository {
     }
   }
 
+  static String _getFavKey(String username) => 'fav_$username';
+
+  //#endregion
+
+  //#region vote
+
+  Future<bool?> vote({required int submittedTo, required String from}) async {
+    final SharedPreferences prefs = await _prefs;
+    final String key = _getVoteKey(from, submittedTo);
+    final bool? vote = prefs.getBool(key);
+    return vote;
+  }
+
   Future<void> addVote({
     required String username,
     required int id,
@@ -350,9 +331,42 @@ class PreferenceRepository {
     await prefs.remove(key);
   }
 
+  String _getVoteKey(String username, int id) => 'vote_$username-$id';
+
+  //#endregion
+
+  //#region blocklist
+
+  Future<List<String>> get blocklist async => _prefs.then(
+        (SharedPreferences prefs) =>
+            prefs.getStringList(_blocklistKey) ?? <String>[],
+      );
+
   Future<void> updateBlocklist(List<String> usernames) async {
     final SharedPreferences prefs = await _prefs;
     await prefs.setStringList(_blocklistKey, usernames);
+  }
+
+  //#endregion
+
+  //#region pins
+
+  Future<List<int>> get pinnedStoriesIds async {
+    if (Platform.isIOS) {
+      final List<String>? favList = await _syncedPrefs.getStringList(
+        key: _pinnedStoriesIdsKey,
+      );
+      return favList?.map(int.parse).toList() ?? <int>[];
+    } else {
+      return _prefs.then(
+        (SharedPreferences prefs) =>
+            prefs
+                .getStringList(_pinnedStoriesIdsKey)
+                ?.map(int.parse)
+                .toList() ??
+            <int>[],
+      );
+    }
   }
 
   Future<void> updatePinnedStoriesIds(List<int> ids) async {
@@ -370,6 +384,19 @@ class PreferenceRepository {
     }
   }
 
+  //#endregion
+
+  //#region unread comment ids
+
+  Future<List<int>> get unreadCommentsIds async => _prefs.then(
+        (SharedPreferences prefs) =>
+            prefs
+                .getStringList(_unreadCommentsIdsKey)
+                ?.map(int.parse)
+                .toList() ??
+            <int>[],
+      );
+
   Future<void> updateUnreadCommentsIds(List<int> ids) async {
     final SharedPreferences prefs = await _prefs;
     await prefs.setStringList(
@@ -378,6 +405,19 @@ class PreferenceRepository {
     );
   }
 
+  //#endregion
+
+  //#region reminder
+
+  Future<int?> get lastReadStoryId async =>
+      _prefs.then((SharedPreferences prefs) {
+        final String? val = prefs.getString(_lastReadStoryIdKey);
+
+        if (val == null) return null;
+
+        return int.tryParse(val);
+      });
+
   Future<void> updateLastReadStoryId(int? id) async {
     final SharedPreferences prefs = await _prefs;
     await prefs.setString(
@@ -385,6 +425,8 @@ class PreferenceRepository {
       id.toString(),
     );
   }
+
+  //#endregion
 
   Future<void> updateHasPushed(int commentId) async {
     final SharedPreferences prefs = await _prefs;
@@ -422,11 +464,7 @@ class PreferenceRepository {
     }
   }
 
-  String _getPushNotificationKey(int commentId) => 'pushed_$commentId';
+  static String _getPushNotificationKey(int commentId) => 'pushed_$commentId';
 
-  String _getFavKey(String username) => 'fav_$username';
-
-  String _getVoteKey(String username, int id) => 'vote_$username-$id';
-
-  String _getHasReadKey(int storyId) => 'hasRead_$storyId';
+  static String _getHasReadKey(int storyId) => 'hasRead_$storyId';
 }

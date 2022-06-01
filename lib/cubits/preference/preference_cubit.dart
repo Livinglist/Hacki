@@ -31,6 +31,8 @@ class PreferenceCubit extends Cubit<PreferenceState> {
         .then((bool value) => emit(state.copyWith(useReader: value)));
     _preferenceRepository.markReadStories
         .then((bool value) => emit(state.copyWith(markReadStories: value)));
+    _preferenceRepository.shouldShowMetadata
+        .then((bool value) => emit(state.copyWith(showMetadata: value)));
   }
 
   void toggleNotificationMode() {
@@ -66,5 +68,10 @@ class PreferenceCubit extends Cubit<PreferenceState> {
   void toggleMarkReadStoriesMode() {
     emit(state.copyWith(markReadStories: !state.markReadStories));
     _preferenceRepository.toggleMarkReadStoriesMode();
+  }
+
+  void toggleMetadataMode() {
+    emit(state.copyWith(showMetadata: !state.showMetadata));
+    _preferenceRepository.toggleMetadataMode();
   }
 }

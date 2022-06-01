@@ -5,10 +5,12 @@ import 'package:hacki/config/constants.dart';
 class LinkView extends StatelessWidget {
   const LinkView({
     super.key,
+    required this.metadata,
     required this.url,
     required this.title,
     required this.description,
     required this.onTap,
+    required this.showMetadata,
     this.imageUri,
     this.imagePath,
     this.titleTextStyle,
@@ -25,6 +27,7 @@ class LinkView extends StatelessWidget {
           'imageUri or imagePath cannot be null when showMultiMedia is true',
         );
 
+  final String metadata;
   final String url;
   final String title;
   final String description;
@@ -39,6 +42,7 @@ class LinkView extends StatelessWidget {
   final bool isIcon;
   final double radius;
   final Color? bgColor;
+  final bool showMetadata;
 
   double computeTitleFontSize(double width) {
     double size = width * 0.13;
@@ -166,6 +170,20 @@ class LinkView extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(5, 3, 5, 0),
         child: Column(
           children: <Widget>[
+            if (showMetadata)
+              Container(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  metadata,
+                  textAlign: TextAlign.left,
+                  style: _bodyTS.copyWith(
+                    fontSize:
+                        _bodyTS.fontSize == null ? 12 : _bodyTS.fontSize! - 2,
+                  ),
+                  overflow: bodyTextOverflow ?? TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
             Expanded(
               child: Container(
                 alignment: Alignment.topLeft,
@@ -174,7 +192,8 @@ class LinkView extends StatelessWidget {
                   textAlign: TextAlign.left,
                   style: _bodyTS,
                   overflow: bodyTextOverflow ?? TextOverflow.ellipsis,
-                  maxLines: bodyMaxLines ?? _maxLines,
+                  maxLines:
+                      (bodyMaxLines ?? _maxLines) - (showMetadata ? 1 : 0),
                 ),
               ),
             ),
