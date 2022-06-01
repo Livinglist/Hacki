@@ -6,6 +6,7 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:fast_gbk/fast_gbk.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:html/dom.dart' hide Text, Comment;
@@ -208,7 +209,8 @@ class WebAnalyzer {
       if (res[0] == '0') {
         info = WebInfo(
           title: res[1] as String?,
-          description: res[2] as String?,
+          description:
+              res[2] == null ? null : (res[2] as String).removeAllEmojis(),
           icon: res[3] as String?,
           image: res[4] as String?,
         );

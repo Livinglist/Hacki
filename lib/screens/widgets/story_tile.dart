@@ -12,12 +12,14 @@ class StoryTile extends StatelessWidget {
     super.key,
     this.hasRead = false,
     required this.showWebPreview,
+    required this.showMetadata,
     required this.story,
     required this.onTap,
     this.simpleTileFontSize = 16,
   });
 
   final bool showWebPreview;
+  final bool showMetadata;
   final bool hasRead;
   final Story story;
   final VoidCallback onTap;
@@ -129,6 +131,7 @@ class StoryTile extends StatelessWidget {
                     : Theme.of(context).textTheme.subtitle1!.color,
                 fontWeight: FontWeight.bold,
               ),
+              showMetadata: showMetadata,
             ),
           ),
         ),
@@ -157,6 +160,21 @@ class StoryTile extends StatelessWidget {
                   ),
                 ],
               ),
+              if (showMetadata)
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        story.metadata,
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: simpleTileFontSize - 2,
+                        ),
+                        maxLines: 1,
+                      ),
+                    ),
+                  ],
+                ),
               const SizedBox(
                 height: 8,
               ),

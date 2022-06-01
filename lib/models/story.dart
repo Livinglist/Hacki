@@ -70,6 +70,12 @@ class Story extends Item {
           parent: 0,
         );
 
+  String get metadata =>
+      '''$score point${score > 1 ? 's' : ''} by $by $postedDate | $descendants comment${descendants > 1 ? 's' : ''}''';
+
+  String get simpleMetadata =>
+      '''$score point${score > 1 ? 's' : ''} $descendants comment${descendants > 1 ? 's' : ''} $postedDate''';
+
   String get postedDate =>
       DateTime.fromMillisecondsSinceEpoch(time * 1000).toReadableString();
 

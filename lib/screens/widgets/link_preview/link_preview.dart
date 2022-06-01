@@ -13,6 +13,7 @@ class LinkPreview extends StatefulWidget {
     super.key,
     required this.link,
     required this.story,
+    required this.showMetadata,
     this.cache = const Duration(days: 30),
     this.titleStyle,
     this.bodyStyle,
@@ -99,6 +100,8 @@ class LinkPreview extends StatefulWidget {
   /// `[BoxShadow(blurRadius: 3, color: Colors.grey)]`
   final List<BoxShadow>? boxShadow;
 
+  final bool showMetadata;
+
   @override
   _LinkPreviewState createState() => _LinkPreviewState();
 }
@@ -184,6 +187,7 @@ class _LinkPreviewState extends State<LinkPreview> {
       height: _height,
       child: LinkView(
         key: widget.key ?? Key(widget.link),
+        metadata: widget.story.simpleMetadata,
         url: widget.link,
         title: title!,
         description: desc!,
@@ -198,6 +202,7 @@ class _LinkPreviewState extends State<LinkPreview> {
         isIcon: isIcon,
         bgColor: widget.backgroundColor,
         radius: widget.borderRadius ?? 12,
+        showMetadata: widget.showMetadata,
       ),
     );
   }

@@ -124,7 +124,7 @@ class PollView extends StatelessWidget {
                                     option.text,
                                   ),
                                   Text(
-                                    '${option.score} votes',
+                                    '''${option.score} vote${option.score > 1 ? 's' : ''}''',
                                     style: const TextStyle(
                                       color: Colors.grey,
                                       fontSize: 12,

@@ -40,7 +40,8 @@ class _StoriesListViewState extends State<StoriesListView> {
 
     return BlocBuilder<PreferenceCubit, PreferenceState>(
       buildWhen: (PreferenceState previous, PreferenceState current) =>
-          previous.showComplexStoryTile != current.showComplexStoryTile,
+          previous.showComplexStoryTile != current.showComplexStoryTile ||
+          previous.showMetadata != current.showMetadata,
       builder: (BuildContext context, PreferenceState preferenceState) {
         return BlocConsumer<StoriesBloc, StoriesState>(
           listenWhen: (StoriesState previous, StoriesState current) =>
@@ -66,6 +67,7 @@ class _StoriesListViewState extends State<StoriesListView> {
               markReadStories:
                   context.read<PreferenceCubit>().state.markReadStories,
               showWebPreview: preferenceState.showComplexStoryTile,
+              showMetadata: preferenceState.showMetadata,
               refreshController: refreshController,
               items: state.storiesByType[storyType]!,
               onRefresh: () {

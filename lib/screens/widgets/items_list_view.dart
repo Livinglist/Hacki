@@ -14,6 +14,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   const ItemsListView({
     super.key,
     required this.showWebPreview,
+    required this.showMetadata,
     required this.items,
     required this.onTap,
     required this.refreshController,
@@ -32,6 +33,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
         );
 
   final bool showWebPreview;
+  final bool showMetadata;
   final bool enablePullDown;
   final bool markReadStories;
   final bool showOfflineBanner;
@@ -89,6 +91,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                     story: e,
                     onTap: () => onTap(e),
                     showWebPreview: showWebPreview,
+                    showMetadata: showMetadata,
                     hasRead: markReadStories && hasRead,
                     simpleTileFontSize: useConsistentFontSize ? 14 : 16,
                   ),
