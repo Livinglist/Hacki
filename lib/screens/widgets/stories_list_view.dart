@@ -75,6 +75,7 @@ class _StoriesListViewState extends State<StoriesListView> {
                 context
                     .read<StoriesBloc>()
                     .add(StoriesRefresh(type: storyType));
+                context.read<PinCubit>().refresh();
               },
               onLoadMore: () {
                 context
