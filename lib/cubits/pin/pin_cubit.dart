@@ -52,6 +52,8 @@ class PinCubit extends Cubit<PinState> {
     _preferenceRepository.updatePinnedStoriesIds(state.pinnedStoriesIds);
   }
 
+  void refresh() => init();
+
   void _onStoryFetched(Story story) {
     emit(state.copyWith(pinnedStories: <Story>[...state.pinnedStories, story]));
   }
