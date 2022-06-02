@@ -407,7 +407,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   showAboutDialog(
                                     context: context,
                                     applicationName: 'Hacki',
-                                    applicationVersion: 'v0.2.12',
+                                    applicationVersion: 'v0.2.13',
                                     applicationIcon: ClipRRect(
                                       borderRadius: const BorderRadius.all(
                                         Radius.circular(12),
@@ -420,7 +420,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     ),
                                     children: <Widget>[
                                       ElevatedButton(
-                                        onPressed: () => LinkUtil.launchUrl(
+                                        onPressed: () => LinkUtil.launch(
                                           Constants.portfolioLink,
                                         ),
                                         child: Row(
@@ -436,7 +436,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                         ),
                                       ),
                                       ElevatedButton(
-                                        onPressed: () => LinkUtil.launchUrl(
+                                        onPressed: () => LinkUtil.launch(
                                           Constants.githubLink,
                                         ),
                                         child: Row(
@@ -452,7 +452,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                         ),
                                       ),
                                       ElevatedButton(
-                                        onPressed: () => LinkUtil.launchUrl(
+                                        onPressed: () => LinkUtil.launch(
                                           Platform.isIOS
                                               ? Constants.appStoreLink
                                               : Constants.googlePlayLink,
@@ -823,7 +823,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               child: Transform.translate(
                                 offset: const Offset(0, 1),
                                 child: TapDownWrapper(
-                                  onTap: () => LinkUtil.launchUrl(
+                                  onTap: () => LinkUtil.launch(
                                     Constants.endUserAgreementLink,
                                   ),
                                   child: const Text(

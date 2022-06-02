@@ -445,7 +445,7 @@ class _HomeScreenState extends State<HomeScreen>
     }
 
     if (!offlineReading && (isJobWithLink || (showWebFirst && !hasRead))) {
-      LinkUtil.launchUrl(story.url, useReader: useReader);
+      LinkUtil.launch(story.url, useReader: useReader);
     }
 
     context.read<StoriesBloc>().add(

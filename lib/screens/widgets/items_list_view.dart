@@ -141,7 +141,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                                       color: Colors.orange,
                                     ),
                                     onOpen: (LinkableElement link) =>
-                                        LinkUtil.launchUrl(link.url),
+                                        LinkUtil.launch(link.url),
                                   ),
                                 ),
                               ),

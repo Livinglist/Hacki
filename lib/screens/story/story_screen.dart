@@ -335,7 +335,7 @@ class _StoryScreenState extends State<StoryScreen> {
                             ),
                           ),
                           InkWell(
-                            onTap: () => LinkUtil.launchUrl(
+                            onTap: () => LinkUtil.launch(
                               widget.story.url,
                               useReader: context
                                   .read<PreferenceCubit>()
@@ -385,7 +385,7 @@ class _StoryScreenState extends State<StoryScreen> {
                                   )) {
                                     onStoryLinkTapped(link.url);
                                   } else {
-                                    LinkUtil.launchUrl(link.url);
+                                    LinkUtil.launch(link.url);
                                   }
                                 },
                               ),
@@ -674,7 +674,7 @@ class _StoryScreenState extends State<StoryScreen> {
         });
       });
     } else {
-      LinkUtil.launchUrl(link);
+      LinkUtil.launch(link);
     }
   }
 
@@ -1093,7 +1093,7 @@ class _StoryScreenState extends State<StoryScreen> {
                               child: Transform.translate(
                                 offset: const Offset(0, 1),
                                 child: TapDownWrapper(
-                                  onTap: () => LinkUtil.launchUrl(
+                                  onTap: () => LinkUtil.launch(
                                     Constants.endUserAgreementLink,
                                   ),
                                   child: const Text(
