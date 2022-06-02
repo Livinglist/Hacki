@@ -7,8 +7,8 @@ abstract class LinkUtil {
 
   static void launchUrl(String link, {bool useReader = false}) {
     Uri rinseLink(String link) {
-      if (link.contains(')')) {
-        final RegExp regex = RegExp(r'\).*$');
+      final RegExp regex = RegExp(r'\)|].*$');
+      if (!link.contains('en.wikipedia.org') && link.contains(regex)) {
         final String match = regex.stringMatch(link) ?? '';
         return Uri.parse(link.replaceAll(match, ''));
       }
