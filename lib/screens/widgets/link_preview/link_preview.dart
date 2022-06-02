@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hacki/config/constants.dart';
@@ -210,11 +209,11 @@ class _LinkPreviewState extends State<LinkPreview> {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    final bool showSmallerPreviewPic =
-        Platform.isIOS && screenWidth > 428.0 && screenWidth < 850;
+    final bool showSmallerPreviewPic = screenWidth > 428.0 && screenWidth < 850;
     final double _height = showSmallerPreviewPic
         ? 100.0
         : (MediaQuery.of(context).size.height * 0.14).clamp(118.0, 140.0);
+
     final Widget loadingWidget = widget.placeholderWidget ??
         Container(
           height: _height,
