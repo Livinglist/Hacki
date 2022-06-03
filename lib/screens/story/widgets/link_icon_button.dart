@@ -47,7 +47,7 @@ class LinkIconButton extends StatelessWidget {
         ),
       ),
       onPressed: () =>
-          LinkUtil.launchUrl('https://news.ycombinator.com/item?id=$storyId'),
+          LinkUtil.launch('https://news.ycombinator.com/item?id=$storyId'),
     );
   }
 }

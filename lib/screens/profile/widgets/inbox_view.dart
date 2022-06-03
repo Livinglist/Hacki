@@ -107,7 +107,7 @@ class InboxView extends StatelessWidget {
                                           ),
                                           maxLines: 4,
                                           onOpen: (LinkableElement link) =>
-                                              LinkUtil.launchUrl(link.url),
+                                              LinkUtil.launch(link.url),
                                         ),
                                       ),
                                     ),

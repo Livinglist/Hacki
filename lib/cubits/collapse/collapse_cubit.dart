@@ -55,21 +55,21 @@ class CollapseCubit extends Cubit<CollapseState> {
   }
 
   void hiddenCommentsStreamListener(Map<int, Set<int>> event) {
+    int collapsedCount = 0;
     for (final int key in event.keys) {
       if (key == _commentId && !isClosed) {
-        emit(
-          state.copyWith(
-            collapsedCount: event[key]?.length ?? 0,
-          ),
-        );
-        return;
+        collapsedCount = event[key]?.length ?? 0;
+        break;
       }
     }
 
     for (final Set<int> val in event.values) {
       if (val.contains(_commentId) && !isClosed) {
         emit(
-          state.copyWith(hidden: true),
+          state.copyWith(
+            hidden: true,
+            collapsedCount: collapsedCount,
+          ),
         );
         return;
       }
@@ -77,7 +77,10 @@ class CollapseCubit extends Cubit<CollapseState> {
 
     if (!isClosed) {
       emit(
-        state.copyWith(hidden: false),
+        state.copyWith(
+          hidden: false,
+          collapsedCount: collapsedCount,
+        ),
       );
     }
   }

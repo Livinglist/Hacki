@@ -273,7 +273,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                             color: Colors.orange,
                           ),
                           onOpen: (LinkableElement link) =>
-                              LinkUtil.launchUrl(link.url),
+                              LinkUtil.launch(link.url),
                           text: replyingTo?.text ?? '',
                         ),
                       ),

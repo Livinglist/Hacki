@@ -140,6 +140,7 @@ class _StoryScreenState extends State<StoryScreen> {
     delay: _featureDiscoveryDismissThrottleDelay,
   );
 
+  static const int _extraItemsCount = 2;
   static const Duration _storyLinkTapThrottleDelay = Duration(seconds: 2);
   static const Duration _featureDiscoveryDismissThrottleDelay =
       Duration(seconds: 1);
@@ -269,209 +270,229 @@ class _StoryScreenState extends State<StoryScreen> {
                 onLoading: () {
                   context.read<CommentsCubit>().loadMore();
                 },
-                child: ListView(
+                child: ListView.builder(
                   primary: false,
-                  children: <Widget>[
-                    SizedBox(
-                      height: topPadding,
-                    ),
-                    if (!widget.splitViewEnabled)
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 6),
-                        child: OfflineBanner(),
-                      ),
-                    Slidable(
-                      startActionPane: ActionPane(
-                        motion: const BehindMotion(),
+                  itemCount: state.comments.length + _extraItemsCount,
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == 0) {
+                      return Column(
                         children: <Widget>[
-                          SlidableAction(
-                            onPressed: (_) {
-                              HapticFeedback.lightImpact();
-
-                              if (widget.story !=
-                                  context.read<EditCubit>().state.replyingTo) {
-                                commentEditingController.clear();
-                              }
-                              context
-                                  .read<EditCubit>()
-                                  .onReplyTapped(widget.story);
-                              focusNode.requestFocus();
-                            },
-                            backgroundColor: Colors.orange,
-                            foregroundColor: Colors.white,
-                            icon: Icons.message,
+                          SizedBox(
+                            height: topPadding,
                           ),
-                          SlidableAction(
-                            onPressed: (_) => onMorePressed(widget.story),
-                            backgroundColor: Colors.orange,
-                            foregroundColor: Colors.white,
-                            icon: Icons.more_horiz,
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              left: 6,
-                              right: 6,
+                          if (!widget.splitViewEnabled)
+                            const Padding(
+                              padding: EdgeInsets.only(bottom: 6),
+                              child: OfflineBanner(),
                             ),
-                            child: Row(
+                          Slidable(
+                            startActionPane: ActionPane(
+                              motion: const BehindMotion(),
                               children: <Widget>[
-                                Text(
-                                  widget.story.by,
-                                  style: const TextStyle(
-                                    color: Colors.orange,
-                                  ),
+                                SlidableAction(
+                                  onPressed: (_) {
+                                    HapticFeedback.lightImpact();
+
+                                    if (widget.story !=
+                                        context
+                                            .read<EditCubit>()
+                                            .state
+                                            .replyingTo) {
+                                      commentEditingController.clear();
+                                    }
+                                    context
+                                        .read<EditCubit>()
+                                        .onReplyTapped(widget.story);
+                                    focusNode.requestFocus();
+                                  },
+                                  backgroundColor: Colors.orange,
+                                  foregroundColor: Colors.white,
+                                  icon: Icons.message,
                                 ),
-                                const Spacer(),
-                                Text(
-                                  widget.story.postedDate,
-                                  style: const TextStyle(
-                                    color: Colors.grey,
-                                  ),
+                                SlidableAction(
+                                  onPressed: (_) => onMorePressed(widget.story),
+                                  backgroundColor: Colors.orange,
+                                  foregroundColor: Colors.white,
+                                  icon: Icons.more_horiz,
                                 ),
                               ],
                             ),
-                          ),
-                          InkWell(
-                            onTap: () => LinkUtil.launchUrl(
-                              widget.story.url,
-                              useReader: context
-                                  .read<PreferenceCubit>()
-                                  .state
-                                  .useReader,
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                left: 6,
-                                right: 6,
-                                bottom: 12,
-                                top: 12,
-                              ),
-                              child: Text(
-                                widget.story.title,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: widget.story.url.isNotEmpty
-                                      ? Colors.orange
-                                      : null,
+                            child: Column(
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 6,
+                                    right: 6,
+                                  ),
+                                  child: Row(
+                                    children: <Widget>[
+                                      Text(
+                                        widget.story.by,
+                                        style: const TextStyle(
+                                          color: Colors.orange,
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      Text(
+                                        widget.story.postedDate,
+                                        style: const TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
+                                InkWell(
+                                  onTap: () => LinkUtil.launch(
+                                    widget.story.url,
+                                    useReader: context
+                                        .read<PreferenceCubit>()
+                                        .state
+                                        .useReader,
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                      left: 6,
+                                      right: 6,
+                                      bottom: 12,
+                                      top: 12,
+                                    ),
+                                    child: Text(
+                                      widget.story.title,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: widget.story.url.isNotEmpty
+                                            ? Colors.orange
+                                            : null,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                if (widget.story.text.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                    ),
+                                    child: SelectableLinkify(
+                                      text: widget.story.text,
+                                      style: TextStyle(
+                                        fontSize: MediaQuery.of(context)
+                                                .textScaleFactor *
+                                            15,
+                                      ),
+                                      linkStyle: TextStyle(
+                                        fontSize: MediaQuery.of(context)
+                                                .textScaleFactor *
+                                            15,
+                                        color: Colors.orange,
+                                      ),
+                                      onOpen: (LinkableElement link) {
+                                        if (link.url.contains(
+                                          'news.ycombinator.com/item',
+                                        )) {
+                                          onStoryLinkTapped(link.url);
+                                        } else {
+                                          LinkUtil.launch(link.url);
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                if (widget.story.isPoll)
+                                  PollView(
+                                    onLoginTapped: onLoginTapped,
+                                  ),
+                              ],
                             ),
                           ),
                           if (widget.story.text.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                              ),
-                              child: SelectableLinkify(
-                                text: widget.story.text,
-                                style: TextStyle(
-                                  fontSize:
-                                      MediaQuery.of(context).textScaleFactor *
-                                          15,
-                                ),
-                                linkStyle: TextStyle(
-                                  fontSize:
-                                      MediaQuery.of(context).textScaleFactor *
-                                          15,
-                                  color: Colors.orange,
-                                ),
-                                onOpen: (LinkableElement link) {
-                                  if (link.url.contains(
-                                    'news.ycombinator.com/item',
-                                  )) {
-                                    onStoryLinkTapped(link.url);
-                                  } else {
-                                    LinkUtil.launchUrl(link.url);
-                                  }
-                                },
+                            const SizedBox(
+                              height: 8,
+                            ),
+                          const Divider(
+                            height: 0,
+                          ),
+                          if (state.onlyShowTargetComment) ...<Widget>[
+                            TextButton(
+                              onPressed: () => context
+                                  .read<CommentsCubit>()
+                                  .loadAll(widget.story),
+                              child: const Text('View all comments'),
+                            ),
+                            const Divider(
+                              height: 0,
+                            ),
+                          ],
+                          if (state.comments.isEmpty &&
+                              state.status ==
+                                  CommentsStatus.allLoaded) ...<Widget>[
+                            const SizedBox(
+                              height: 240,
+                            ),
+                            const Center(
+                              child: Text(
+                                'Nothing yet',
+                                style: TextStyle(color: Colors.grey),
                               ),
                             ),
-                          if (widget.story.isPoll)
-                            PollView(
-                              onLoginTapped: onLoginTapped,
-                            ),
+                          ],
                         ],
-                      ),
-                    ),
-                    if (widget.story.text.isNotEmpty)
-                      const SizedBox(
-                        height: 8,
-                      ),
-                    const Divider(
-                      height: 0,
-                    ),
-                    if (state.onlyShowTargetComment) ...<Widget>[
-                      TextButton(
-                        onPressed: () =>
-                            context.read<CommentsCubit>().loadAll(widget.story),
-                        child: const Text('View all comments'),
-                      ),
-                      const Divider(
-                        height: 0,
-                      ),
-                    ],
-                    if (state.comments.isEmpty &&
-                        state.status == CommentsStatus.allLoaded) ...<Widget>[
-                      const SizedBox(
-                        height: 240,
-                      ),
-                      const Center(
-                        child: Text(
-                          'Nothing yet',
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      ),
-                    ],
-                    for (final Comment e in state.comments)
-                      FadeIn(
-                        child: CommentTile(
-                          comment: e,
-                          level: e.level,
-                          myUsername:
-                              authState.isLoggedIn ? authState.username : null,
-                          opUsername: widget.story.by,
-                          onReplyTapped: (Comment cmt) {
-                            HapticFeedback.lightImpact();
-                            if (cmt.deleted || cmt.dead) {
-                              return;
-                            }
+                      );
+                    } else if (index ==
+                        state.comments.length + _extraItemsCount - 1) {
+                      if ((state.status == CommentsStatus.allLoaded &&
+                              state.comments.isNotEmpty) ||
+                          state.onlyShowTargetComment) {
+                        return SizedBox(
+                          height: 240,
+                          child: Center(
+                            child: Text(happyFace),
+                          ),
+                        );
+                      }
 
-                            if (cmt !=
-                                context.read<EditCubit>().state.replyingTo) {
-                              commentEditingController.clear();
-                            }
+                      return const SizedBox.shrink();
+                    }
 
-                            context.read<EditCubit>().onReplyTapped(cmt);
-                            focusNode.requestFocus();
-                          },
-                          onEditTapped: (Comment cmt) {
-                            HapticFeedback.lightImpact();
-                            if (cmt.deleted || cmt.dead) {
-                              return;
-                            }
+                    final Comment comment = state.comments.elementAt(index - 1);
+
+                    return FadeIn(
+                      key: ValueKey<int>(comment.id),
+                      child: CommentTile(
+                        comment: comment,
+                        level: comment.level,
+                        myUsername:
+                            authState.isLoggedIn ? authState.username : null,
+                        opUsername: widget.story.by,
+                        onReplyTapped: (Comment cmt) {
+                          HapticFeedback.lightImpact();
+                          if (cmt.deleted || cmt.dead) {
+                            return;
+                          }
+
+                          if (cmt !=
+                              context.read<EditCubit>().state.replyingTo) {
                             commentEditingController.clear();
-                            context.read<EditCubit>().onEditTapped(cmt);
-                            focusNode.requestFocus();
-                          },
-                          onMoreTapped: onMorePressed,
-                          onStoryLinkTapped: onStoryLinkTapped,
-                          onTimeMachineActivated: onTimeMachineActivated,
-                        ),
+                          }
+
+                          context.read<EditCubit>().onReplyTapped(cmt);
+                          focusNode.requestFocus();
+                        },
+                        onEditTapped: (Comment cmt) {
+                          HapticFeedback.lightImpact();
+                          if (cmt.deleted || cmt.dead) {
+                            return;
+                          }
+                          commentEditingController.clear();
+                          context.read<EditCubit>().onEditTapped(cmt);
+                          focusNode.requestFocus();
+                        },
+                        onMoreTapped: onMorePressed,
+                        onStoryLinkTapped: onStoryLinkTapped,
+                        onTimeMachineActivated: onTimeMachineActivated,
                       ),
-                    if ((state.status == CommentsStatus.allLoaded &&
-                            state.comments.isNotEmpty) ||
-                        state.onlyShowTargetComment)
-                      SizedBox(
-                        height: 240,
-                        child: Center(
-                          child: Text(happyFace),
-                        ),
-                      ),
-                  ],
+                    );
+                  },
                 ),
               );
 
@@ -674,7 +695,7 @@ class _StoryScreenState extends State<StoryScreen> {
         });
       });
     } else {
-      LinkUtil.launchUrl(link);
+      LinkUtil.launch(link);
     }
   }
 
@@ -1093,7 +1114,7 @@ class _StoryScreenState extends State<StoryScreen> {
                               child: Transform.translate(
                                 offset: const Offset(0, 1),
                                 child: TapDownWrapper(
-                                  onTap: () => LinkUtil.launchUrl(
+                                  onTap: () => LinkUtil.launch(
                                     Constants.endUserAgreementLink,
                                   ),
                                   child: const Text(

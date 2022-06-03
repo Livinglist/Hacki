@@ -229,7 +229,7 @@ class CommentTile extends StatelessWidget {
                                         )) {
                                           onStoryLinkTapped.call(link.url);
                                         } else {
-                                          LinkUtil.launchUrl(link.url);
+                                          LinkUtil.launch(link.url);
                                         }
                                       },
                                     ),
