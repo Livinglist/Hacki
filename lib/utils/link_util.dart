@@ -19,17 +19,21 @@ abstract class LinkUtil {
     final Uri uri = rinseLink(link);
     canLaunchUrl(uri).then((bool val) {
       if (val) {
-        _browser
-            .open(
-              url: uri,
-              options: ChromeSafariBrowserClassOptions(
-                ios: IOSSafariOptions(
-                  entersReaderIfAvailable: useReader,
-                  preferredControlTintColor: Colors.orange,
+        if (link.contains('http')) {
+          _browser
+              .open(
+                url: uri,
+                options: ChromeSafariBrowserClassOptions(
+                  ios: IOSSafariOptions(
+                    entersReaderIfAvailable: useReader,
+                    preferredControlTintColor: Colors.orange,
+                  ),
                 ),
-              ),
-            )
-            .onError((_, __) => launchUrl(uri));
+              )
+              .onError((_, __) => launchUrl(uri));
+        } else {
+          launchUrl(uri);
+        }
       }
     });
   }
