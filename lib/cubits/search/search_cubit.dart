@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hacki/config/locator.dart';
@@ -13,7 +15,10 @@ class SearchCubit extends Cubit<SearchState> {
 
   final SearchRepository _searchRepository;
 
+  StreamSubscription<Story>? streamSubscription;
+
   void search(String query) {
+    streamSubscription?.cancel();
     emit(
       state.copyWith(
         results: <Story>[],
@@ -21,12 +26,12 @@ class SearchCubit extends Cubit<SearchState> {
         searchFilters: state.searchFilters.copyWith(query: query, page: 0),
       ),
     );
-    _searchRepository
+    streamSubscription = _searchRepository
         .search(filters: state.searchFilters)
         .listen(_onStoryFetched)
-        .onDone(() {
-      emit(state.copyWith(status: SearchStatus.loaded));
-    });
+      ..onDone(() {
+        emit(state.copyWith(status: SearchStatus.loaded));
+      });
   }
 
   void loadMore() {
@@ -38,12 +43,12 @@ class SearchCubit extends Cubit<SearchState> {
           searchFilters: state.searchFilters.copyWith(page: updatedPage),
         ),
       );
-      _searchRepository
+      streamSubscription = _searchRepository
           .search(filters: state.searchFilters)
           .listen(_onStoryFetched)
-          .onDone(() {
-        emit(state.copyWith(status: SearchStatus.loaded));
-      });
+        ..onDone(() {
+          emit(state.copyWith(status: SearchStatus.loaded));
+        });
     }
   }
 
@@ -93,5 +98,11 @@ class SearchCubit extends Cubit<SearchState> {
         results: List<Story>.from(state.results)..add(story),
       ),
     );
+  }
+
+  @override
+  Future<void> close() async {
+    await streamSubscription?.cancel();
+    await super.close();
   }
 }

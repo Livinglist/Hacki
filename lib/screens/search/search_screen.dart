@@ -60,46 +60,56 @@ class _SearchScreenState extends State<SearchScreen> {
                   const SizedBox(
                     height: 6,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
                     child: Row(
                       children: <Widget>[
-                        Expanded(
-                          child: Wrap(
-                            spacing: 8,
-                            children: <Widget>[
-                              DateTimeRangeFilterChip(
-                                filter: state.searchFilters
-                                    .get<DateTimeRangeFilter>(),
-                                onDateTimeRangeUpdated:
-                                    (DateTime start, DateTime end) {
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        DateTimeRangeFilterChip(
+                          filter:
+                              state.searchFilters.get<DateTimeRangeFilter>(),
+                          onDateTimeRangeUpdated:
+                              (DateTime start, DateTime end) =>
                                   context.read<SearchCubit>().addFilter(
                                         DateTimeRangeFilter(
                                           startTime: start,
                                           endTime: end,
                                         ),
-                                      );
-                                },
-                                onDateTimeRangeRemoved: () {
-                                  context
-                                      .read<SearchCubit>()
-                                      .removeFilter<DateTimeRangeFilter>();
-                                },
-                              ),
-                              PostedByFilterChip(
-                                filter:
-                                    state.searchFilters.get<PostedByFilter>(),
-                              ),
-                              CustomChip(
-                                onSelected: (_) {
-                                  context.read<SearchCubit>().onSortToggled();
-                                },
-                                selected: state.searchFilters.sorted,
-                                label: '''newest first''',
-                              )
-                            ],
-                          ),
+                                      ),
+                          onDateTimeRangeRemoved: context
+                              .read<SearchCubit>()
+                              .removeFilter<DateTimeRangeFilter>,
                         ),
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        CustomChip(
+                          onSelected: (_) =>
+                              context.read<SearchCubit>().onSortToggled(),
+                          selected: state.searchFilters.sorted,
+                          label: '''newest first''',
+                        ),
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        for (final CustomDateTimeRange range
+                            in CustomDateTimeRange.values) ...<Widget>[
+                          CustomRangeFilterChip(
+                            range: range,
+                            onTap: (DateTime start, DateTime end) =>
+                                context.read<SearchCubit>().addFilter(
+                                      DateTimeRangeFilter(
+                                        startTime: start,
+                                        endTime: end,
+                                      ),
+                                    ),
+                          ),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                        ],
                       ],
                     ),
                   ),
