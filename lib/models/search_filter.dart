@@ -1,6 +1,6 @@
 part of 'search_filters.dart';
 
-abstract class SearchFilter extends Equatable {
+abstract class SearchFilter {
   String get query;
 }
 
@@ -34,12 +34,6 @@ class DateTimeRangeFilter implements NumericFilter {
 
     return query;
   }
-
-  @override
-  List<Object?> get props => <Object?>[];
-
-  @override
-  bool? get stringify => false;
 }
 
 class PostedByFilter implements TagFilter {
@@ -51,12 +45,6 @@ class PostedByFilter implements TagFilter {
   String get query {
     return 'author_$author';
   }
-
-  @override
-  List<Object?> get props => <Object?>[];
-
-  @override
-  bool? get stringify => false;
 }
 
 class FrontPageFilter implements TagFilter {
@@ -66,12 +54,6 @@ class FrontPageFilter implements TagFilter {
   String get query {
     return 'front_page';
   }
-
-  @override
-  List<Object?> get props => <Object?>[];
-
-  @override
-  bool? get stringify => false;
 }
 
 class ShowHnFilter implements TagFilter {
@@ -81,12 +63,6 @@ class ShowHnFilter implements TagFilter {
   String get query {
     return 'show_hn';
   }
-
-  @override
-  List<Object?> get props => <Object?>[];
-
-  @override
-  bool? get stringify => false;
 }
 
 class AskHnFilter implements TagFilter {
@@ -96,12 +72,6 @@ class AskHnFilter implements TagFilter {
   String get query {
     return 'ask_hn';
   }
-
-  @override
-  List<Object?> get props => <Object?>[];
-
-  @override
-  bool? get stringify => false;
 }
 
 class PollFilter implements TagFilter {
@@ -111,12 +81,6 @@ class PollFilter implements TagFilter {
   String get query {
     return 'poll';
   }
-
-  @override
-  List<Object?> get props => <Object?>[];
-
-  @override
-  bool? get stringify => false;
 }
 
 class StoryFilter implements TagFilter {
@@ -126,12 +90,6 @@ class StoryFilter implements TagFilter {
   String get query {
     return 'story';
   }
-
-  @override
-  List<Object?> get props => <Object?>[];
-
-  @override
-  bool? get stringify => false;
 }
 
 class CombinedFilter implements TagFilter {
@@ -143,10 +101,4 @@ class CombinedFilter implements TagFilter {
   String get query {
     return '''(${filters.map((TagFilter e) => e.query).reduce((String value, String element) => '$value, $element')})''';
   }
-
-  @override
-  List<Object?> get props => <Object?>[];
-
-  @override
-  bool? get stringify => false;
 }
