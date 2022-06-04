@@ -17,37 +17,80 @@ class SearchCubit extends Cubit<SearchState> {
     emit(
       state.copyWith(
         results: <Story>[],
-        currentPage: 0,
         status: SearchStatus.loading,
-        query: query,
-      ),
-    );
-    _searchRepository.search(query).listen(_onStoryFetched).onDone(() {
-      emit(state.copyWith(status: SearchStatus.loaded));
-    });
-  }
-
-  void loadMore() {
-    final int updatedPage = state.currentPage + 1;
-    emit(
-      state.copyWith(
-        status: SearchStatus.loadingMore,
-        currentPage: updatedPage,
+        searchFilters: state.searchFilters.copyWith(query: query, page: 0),
       ),
     );
     _searchRepository
-        .search(state.query, page: updatedPage)
+        .search(filters: state.searchFilters)
         .listen(_onStoryFetched)
         .onDone(() {
       emit(state.copyWith(status: SearchStatus.loaded));
     });
   }
 
+  void loadMore() {
+    if (state.status != SearchStatus.loading) {
+      final int updatedPage = state.searchFilters.page + 1;
+      emit(
+        state.copyWith(
+          status: SearchStatus.loadingMore,
+          searchFilters: state.searchFilters.copyWith(page: updatedPage),
+        ),
+      );
+      _searchRepository
+          .search(filters: state.searchFilters)
+          .listen(_onStoryFetched)
+          .onDone(() {
+        emit(state.copyWith(status: SearchStatus.loaded));
+      });
+    }
+  }
+
+  void addFilter<T extends SearchFilter>(T filter) {
+    if (state.searchFilters.contains<T>()) {
+      emit(
+        state.copyWith(
+          searchFilters: state.searchFilters.copyWithFilterRemoved<T>(),
+        ),
+      );
+    }
+
+    emit(
+      state.copyWith(
+        searchFilters: state.searchFilters.copyWithFilterAdded(filter),
+      ),
+    );
+
+    search(state.searchFilters.query);
+  }
+
+  void removeFilter<T extends SearchFilter>() {
+    emit(
+      state.copyWith(
+        searchFilters: state.searchFilters.copyWithFilterRemoved<T>(),
+      ),
+    );
+
+    search(state.searchFilters.query);
+  }
+
+  void onSortToggled() {
+    emit(
+      state.copyWith(
+        searchFilters: state.searchFilters.copyWith(
+          sorted: !state.searchFilters.sorted,
+        ),
+      ),
+    );
+
+    search(state.searchFilters.query);
+  }
+
   void _onStoryFetched(Story story) {
     emit(
       state.copyWith(
         results: List<Story>.from(state.results)..add(story),
-        status: SearchStatus.loaded,
       ),
     );
   }

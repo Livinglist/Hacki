@@ -5,4 +5,5 @@ linter:
     public_member_api_docs: false
     library_private_types_in_public_api: false
     omit_local_variable_types: false
+    one_member_abstracts: false
     always_specify_types: true

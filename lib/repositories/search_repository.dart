@@ -6,12 +6,14 @@ import 'package:hacki/utils/utils.dart';
 class SearchRepository {
   SearchRepository({Dio? dio}) : _dio = dio ?? Dio();
 
-  static const String _baseUrl = 'http://hn.algolia.com/api/v1/search?query=';
+  static const String _baseUrl = 'http://hn.algolia.com/api/v1/';
 
   final Dio _dio;
 
-  Stream<Story> search(String query, {int page = 0}) async* {
-    final String url = '$_baseUrl${Uri.encodeComponent(query)}&page=$page';
+  Stream<Story> search({
+    required SearchFilters filters,
+  }) async* {
+    final String url = '$_baseUrl${filters.filteredQuery}';
     final Response<Map<String, dynamic>> response =
         await _dio.get<Map<String, dynamic>>(url);
     final Map<String, dynamic>? data = response.data;
