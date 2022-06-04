@@ -9,42 +9,36 @@ enum SearchStatus {
 
 class SearchState extends Equatable {
   const SearchState({
-    required this.query,
     required this.status,
     required this.results,
-    required this.currentPage,
+    required this.searchFilters,
   });
 
   SearchState.init()
-      : query = '',
-        status = SearchStatus.initial,
+      : status = SearchStatus.initial,
         results = <Story>[],
-        currentPage = 0;
+        searchFilters = SearchFilters.init();
 
-  final String query;
   final List<Story> results;
   final SearchStatus status;
-  final int currentPage;
+  final SearchFilters searchFilters;
 
   SearchState copyWith({
-    String? query,
     List<Story>? results,
     SearchStatus? status,
-    int? currentPage,
+    SearchFilters? searchFilters,
   }) {
     return SearchState(
-      query: query ?? this.query,
       results: results ?? this.results,
       status: status ?? this.status,
-      currentPage: currentPage ?? this.currentPage,
+      searchFilters: searchFilters ?? this.searchFilters,
     );
   }
 
   @override
   List<Object?> get props => <Object?>[
-        query,
         status,
         results,
-        currentPage,
+        searchFilters,
       ];
 }

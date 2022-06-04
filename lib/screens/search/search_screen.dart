@@ -3,8 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
-import 'package:hacki/models/story.dart';
+import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/screens.dart';
+import 'package:hacki/screens/search/widgets/widgets.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -56,7 +57,64 @@ class _SearchScreenState extends State<SearchScreen> {
                       },
                     ),
                   ),
-                  if (state.status == SearchStatus.loading) ...<Widget>[
+                  const SizedBox(
+                    height: 6,
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: <Widget>[
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        DateTimeRangeFilterChip(
+                          filter:
+                              state.searchFilters.get<DateTimeRangeFilter>(),
+                          onDateTimeRangeUpdated:
+                              (DateTime start, DateTime end) =>
+                                  context.read<SearchCubit>().addFilter(
+                                        DateTimeRangeFilter(
+                                          startTime: start,
+                                          endTime: end,
+                                        ),
+                                      ),
+                          onDateTimeRangeRemoved: context
+                              .read<SearchCubit>()
+                              .removeFilter<DateTimeRangeFilter>,
+                        ),
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        CustomChip(
+                          onSelected: (_) =>
+                              context.read<SearchCubit>().onSortToggled(),
+                          selected: state.searchFilters.sorted,
+                          label: '''newest first''',
+                        ),
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        for (final CustomDateTimeRange range
+                            in CustomDateTimeRange.values) ...<Widget>[
+                          CustomRangeFilterChip(
+                            range: range,
+                            onTap: (DateTime start, DateTime end) =>
+                                context.read<SearchCubit>().addFilter(
+                                      DateTimeRangeFilter(
+                                        startTime: start,
+                                        endTime: end,
+                                      ),
+                                    ),
+                          ),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  if (state.status == SearchStatus.loading &&
+                      state.results.isEmpty) ...<Widget>[
                     const SizedBox(
                       height: 100,
                     ),
