@@ -390,11 +390,11 @@ class _HomeScreenState extends State<HomeScreen>
     return ScreenTypeLayout.builder(
       mobile: (BuildContext context) {
         context.read<SplitViewCubit>().disableSplitView();
-        return _MobileHomeScreenBuilder(
+        return _MobileHomeScreen(
           homeScreen: homeScreen,
         );
       },
-      tablet: (BuildContext context) => _TabletHomeScreenBuilder(
+      tablet: (BuildContext context) => _TabletHomeScreen(
         homeScreen: homeScreen,
       ),
     );
@@ -511,8 +511,8 @@ class _HomeScreenState extends State<HomeScreen>
   }
 }
 
-class _MobileHomeScreenBuilder extends StatelessWidget {
-  const _MobileHomeScreenBuilder({
+class _MobileHomeScreen extends StatelessWidget {
+  const _MobileHomeScreen({
     Key? key,
     required this.homeScreen,
   }) : super(key: key);
@@ -537,8 +537,8 @@ class _MobileHomeScreenBuilder extends StatelessWidget {
   }
 }
 
-class _TabletHomeScreenBuilder extends StatelessWidget {
-  const _TabletHomeScreenBuilder({
+class _TabletHomeScreen extends StatelessWidget {
+  const _TabletHomeScreen({
     Key? key,
     required this.homeScreen,
   }) : super(key: key);
@@ -556,30 +556,40 @@ class _TabletHomeScreenBuilder extends StatelessWidget {
           homeScreenWidth = 345.0;
         }
 
-        return Stack(
-          children: <Widget>[
-            Positioned(
-              left: 0,
-              top: 0,
-              bottom: 0,
-              width: homeScreenWidth,
-              child: homeScreen,
-            ),
-            Positioned(
-              left: 24,
-              bottom: 36,
-              height: 40,
-              width: homeScreenWidth - 24,
-              child: const CountdownReminder(),
-            ),
-            Positioned(
-              right: 0,
-              top: 0,
-              bottom: 0,
-              left: homeScreenWidth,
-              child: const _TabletStoryView(),
-            ),
-          ],
+        return BlocBuilder<SplitViewCubit, SplitViewState>(
+          buildWhen: (SplitViewState previous, SplitViewState current) =>
+              previous.expanded != current.expanded,
+          builder: (BuildContext context, SplitViewState state) {
+            return Stack(
+              children: <Widget>[
+                AnimatedPositioned(
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+                  width: state.expanded ? 0 : homeScreenWidth,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.elasticOut,
+                  child: homeScreen,
+                ),
+                Positioned(
+                  left: 24,
+                  bottom: 36,
+                  height: 40,
+                  width: homeScreenWidth - 24,
+                  child: const CountdownReminder(),
+                ),
+                AnimatedPositioned(
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  left: state.expanded ? 0 : homeScreenWidth,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.elasticOut,
+                  child: const _TabletStoryView(),
+                ),
+              ],
+            );
+          },
         );
       },
     );

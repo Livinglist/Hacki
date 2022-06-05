@@ -187,6 +187,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
                       ),
                     ),
                     onChanged: context.read<SubmitCubit>().onTextChanged,
+                    textCapitalization: TextCapitalization.sentences,
                   ),
                 ),
               ),

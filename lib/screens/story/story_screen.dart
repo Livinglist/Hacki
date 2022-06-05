@@ -525,19 +525,34 @@ class _StoryScreenState extends State<StoryScreen> {
                             Positioned.fill(
                               child: mainView,
                             ),
-                            Positioned(
-                              top: 0,
-                              left: 0,
-                              right: 0,
-                              child: CustomAppBar(
-                                backgroundColor: Theme.of(context)
-                                    .canvasColor
-                                    .withOpacity(0.6),
-                                story: widget.story,
-                                scrollController: scrollController,
-                                onBackgroundTap: onFeatureDiscoveryDismissed,
-                                onDismiss: onFeatureDiscoveryDismissed,
-                              ),
+                            BlocBuilder<SplitViewCubit, SplitViewState>(
+                              buildWhen: (
+                                SplitViewState previous,
+                                SplitViewState current,
+                              ) =>
+                                  previous.expanded != current.expanded,
+                              builder:
+                                  (BuildContext context, SplitViewState state) {
+                                return Positioned(
+                                  top: 0,
+                                  left: 0,
+                                  right: 0,
+                                  child: CustomAppBar(
+                                    backgroundColor: Theme.of(context)
+                                        .canvasColor
+                                        .withOpacity(0.6),
+                                    story: widget.story,
+                                    scrollController: scrollController,
+                                    onBackgroundTap:
+                                        onFeatureDiscoveryDismissed,
+                                    onDismiss: onFeatureDiscoveryDismissed,
+                                    splitViewEnabled: state.enabled,
+                                    expanded: state.expanded,
+                                    onZoomTap:
+                                        context.read<SplitViewCubit>().zoom,
+                                  ),
+                                );
+                              },
                             ),
                             Positioned(
                               bottom: 0,

@@ -21,4 +21,6 @@ class SplitViewCubit extends Cubit<SplitViewState> {
   void enableSplitView() => emit(state.copyWith(enabled: true));
 
   void disableSplitView() => emit(state.copyWith(enabled: false));
+
+  void zoom() => emit(state.copyWith(expanded: !state.expanded));
 }
