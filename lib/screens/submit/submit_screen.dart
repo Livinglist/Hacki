@@ -145,7 +145,6 @@ class _SubmitScreenState extends State<SubmitScreen> {
                     ),
                   ),
                   onChanged: context.read<SubmitCubit>().onTitleChanged,
-                  textCapitalization: TextCapitalization.word,
                 ),
               ),
               Padding(
