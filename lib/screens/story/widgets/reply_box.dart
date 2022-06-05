@@ -189,6 +189,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                                 border: InputBorder.none,
                               ),
                               keyboardType: TextInputType.multiline,
+                              textCapitalization: TextCapitalization.sentences,
                               textInputAction: TextInputAction.newline,
                               onChanged: widget.onChanged,
                             ),
