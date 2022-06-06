@@ -4,7 +4,6 @@
 A simple noiseless [Hacker News](https://news.ycombinator.com/) client made with Flutter that is just enough.
 
 [![App Store](https://img.shields.io/itunes/v/1602043763?label=App%20Store)](https://apps.apple.com/us/app/hacki/id1602043763?platform=iphone)
-[![Play Store](https://img.shields.io/badge/Play%20Store--yellow)](https://play.google.com/store/apps/details?id=com.jiaqifeng.hacki&hl=en_US&gl=US)
 [![Fdroid version](https://img.shields.io/f-droid/v/com.jiaqifeng.hacki)](https://f-droid.org/en/packages/com.jiaqifeng.hacki/)
 [![GH version](https://img.shields.io/github/release/livinglist/hacki.svg?logo=github)](https://github.com/Livinglist/Hacki/releases/latest)
 [![Visits Badge](https://badges.pufler.dev/visits/livinglist/Hacki)](https://badges.pufler.dev)
