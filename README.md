@@ -36,24 +36,24 @@ Features:
 
 
 <p align="center">
-   <img width="200" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/171450528-02c561ed-0ebb-4c1b-9ee0-a935211db0f2.png"> 
-   <img width="200" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/171450536-ea61c176-37d7-4744-8674-4668e0e7e774.png"> 
-   <img width="200" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/171450541-a9af3417-526f-4dbd-96d7-781c95c886d3.png"> 
-   <img width="200" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/171450543-fb631b02-5f46-4455-b8ff-9ef119a486f1.png"> 
-   <img width="200" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/171450548-38e98b02-6201-48c9-9674-87bdfc61f456.png"> 
-   <img width="200" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/159798179-72edbe49-7444-4e54-a07c-fc1244447a74.png"> 
-   <img width="200" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/159798182-28397805-a7cc-4124-b65b-c02c80afbbec.png"> 
-   <img width="200" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/159798183-c2984270-ee99-4419-841e-65e98890464f.png"> 
-   <img width="200" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/159798184-2fce5d97-710e-44a7-b99a-3296ebcf273b.png"> 
-   <img width="200" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/171992215-5b43443b-f2b0-4b6e-9a30-a583fda1b189.png"> 
-   <img width="200" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/159798186-1457ae21-f1aa-40a4-9206-0f3a1e24653e.png"> 
-   <img width="200" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/171450557-ab038e72-78c4-4daf-9b77-3873be1700db.png"> 
+   <img width="200" alt="01" src="assets/screenshots/01.png"> 
+   <img width="200" alt="02" src="assets/screenshots/02.png"> 
+   <img width="200" alt="03" src="assets/screenshots/03.png"> 
+   <img width="200" alt="04" src="assets/screenshots/04.png"> 
+   <img width="200" alt="05" src="assets/screenshots/05.png"> 
+   <img width="200" alt="06" src="assets/screenshots/06.png"> 
+   <img width="200" alt="07" src="assets/screenshots/07.png"> 
+   <img width="200" alt="08" src="assets/screenshots/08.png"> 
+   <img width="200" alt="09" src="assets/screenshots/09.png"> 
+   <img width="200" alt="10" src="assets/screenshots/10.png"> 
+   <img width="200" alt="11" src="assets/screenshots/11.png"> 
+   <img width="200" alt="12" src="assets/screenshots/12.png"> 
    
-   <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/160162711-a9146326-9645-4db6-a04e-1f82e6133e40.png"> 
-   <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/160162726-ef1d3f2a-5179-417c-8a5f-0cddb52249da.png"> 
-   <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/160162733-906c4afd-39a8-48ae-946a-8019b327eaa0.png"> 
-   <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/160162735-f2b25119-4702-4308-b2f5-281a2a2c5901.png"> 
-   <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/160163024-6dcd65b6-bada-4c1c-95af-387fd4f42fb2.png"> 
-   <img width="400" alt="Screen Shot 2020-03-03 at 1 22 57 PM" src="https://user-images.githubusercontent.com/7277662/160163033-7bcf7038-b9aa-4ce4-8b58-64578eae8531.png"> 
+   <img width="400" alt="ipad-01" src="assets/screenshots/ipad-01.png"> 
+   <img width="400" alt="ipad-02" src="assets/screenshots/ipad-02.png"> 
+   <img width="400" alt="ipad-03" src="assets/screenshots/ipad-03.png"> 
+   <img width="400" alt="ipad-04" src="assets/screenshots/ipad-04.png"> 
+   <img width="400" alt="ipad-05" src="assets/screenshots/ipad-05.png"> 
+   <img width="400" alt="ipad-06" src="assets/screenshots/ipad-06.png"> 
 </p>
 
