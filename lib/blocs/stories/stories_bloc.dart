@@ -48,6 +48,15 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   static const int _tabletSmallPageSize = 15;
   static const int _tabletLargePageSize = 25;
 
+  /// Types of story to be shown in the tab bar.
+  static const Set<StoryType> types = <StoryType>{
+    StoryType.top,
+    StoryType.best,
+    StoryType.latest,
+    StoryType.ask,
+    StoryType.show,
+  };
+
   Future<void> onInitialize(
     StoriesInitialize event,
     Emitter<StoriesState> emit,
@@ -70,11 +79,9 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         currentPageSize: pageSize,
       ),
     );
-    await loadStories(of: StoryType.top, emit: emit);
-    await loadStories(of: StoryType.latest, emit: emit);
-    await loadStories(of: StoryType.ask, emit: emit);
-    await loadStories(of: StoryType.show, emit: emit);
-    await loadStories(of: StoryType.jobs, emit: emit);
+    for (final StoryType type in types) {
+      await loadStories(of: type, emit: emit);
+    }
   }
 
   Future<void> loadStories({
@@ -237,34 +244,17 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     await _cacheRepository.deleteAllStories();
     await _cacheRepository.deleteAllComments();
 
-    final List<int> topIds =
-        await _storiesRepository.fetchStoryIds(of: StoryType.top);
-    final List<int> newIds =
-        await _storiesRepository.fetchStoryIds(of: StoryType.latest);
-    final List<int> askIds =
-        await _storiesRepository.fetchStoryIds(of: StoryType.ask);
-    final List<int> showIds =
-        await _storiesRepository.fetchStoryIds(of: StoryType.show);
-    final List<int> jobIds =
-        await _storiesRepository.fetchStoryIds(of: StoryType.jobs);
+    final Set<int> allIds = <int>{};
 
-    await _cacheRepository.cacheStoryIds(of: StoryType.top, ids: topIds);
-    await _cacheRepository.cacheStoryIds(of: StoryType.latest, ids: newIds);
-    await _cacheRepository.cacheStoryIds(of: StoryType.ask, ids: askIds);
-    await _cacheRepository.cacheStoryIds(of: StoryType.show, ids: showIds);
-    await _cacheRepository.cacheStoryIds(of: StoryType.jobs, ids: jobIds);
-
-    final List<int> allIds = <int>[
-      ...topIds,
-      ...newIds,
-      ...askIds,
-      ...showIds,
-      ...jobIds
-    ];
+    for (final StoryType type in types) {
+      final List<int> ids = await _storiesRepository.fetchStoryIds(of: type);
+      await _cacheRepository.cacheStoryIds(of: type, ids: ids);
+      allIds.addAll(ids);
+    }
 
     try {
       _storiesRepository
-          .fetchStoriesStream(ids: allIds)
+          .fetchStoriesStream(ids: allIds.toList())
           .listen((Story story) async {
         if (story.kids.isNotEmpty) {
           await _cacheRepository.cacheStory(story: story);

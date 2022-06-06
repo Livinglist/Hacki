@@ -222,61 +222,21 @@ class _HomeScreenState extends State<HomeScreen>
                         HapticFeedback.selectionClick();
                       },
                       tabs: <Widget>[
-                        Tab(
-                          child: Text(
-                            'TOP',
-                            style: TextStyle(
-                              fontSize: currentIndex == 0 ? 14 : 10,
-                              color: currentIndex == 0
-                                  ? Colors.orange
-                                  : Colors.grey,
+                        for (int i = 0; i < StoriesBloc.types.length; i++)
+                          Tab(
+                            key: ValueKey<StoryType>(
+                              StoriesBloc.types.elementAt(i),
+                            ),
+                            child: Text(
+                              StoriesBloc.types.elementAt(i).label,
+                              style: TextStyle(
+                                fontSize: currentIndex == i ? 14 : 10,
+                                color: currentIndex == i
+                                    ? Colors.orange
+                                    : Colors.grey,
+                              ),
                             ),
                           ),
-                        ),
-                        Tab(
-                          child: Text(
-                            'NEW',
-                            style: TextStyle(
-                              fontSize: currentIndex == 1 ? 14 : 10,
-                              color: currentIndex == 1
-                                  ? Colors.orange
-                                  : Colors.grey,
-                            ),
-                          ),
-                        ),
-                        Tab(
-                          child: Text(
-                            'ASK',
-                            style: TextStyle(
-                              fontSize: currentIndex == 2 ? 14 : 10,
-                              color: currentIndex == 2
-                                  ? Colors.orange
-                                  : Colors.grey,
-                            ),
-                          ),
-                        ),
-                        Tab(
-                          child: Text(
-                            'SHOW',
-                            style: TextStyle(
-                              fontSize: currentIndex == 3 ? 14 : 10,
-                              color: currentIndex == 3
-                                  ? Colors.orange
-                                  : Colors.grey,
-                            ),
-                          ),
-                        ),
-                        Tab(
-                          child: Text(
-                            'JOBS',
-                            style: TextStyle(
-                              fontSize: currentIndex == 4 ? 14 : 10,
-                              color: currentIndex == 4
-                                  ? Colors.orange
-                                  : Colors.grey,
-                            ),
-                          ),
-                        ),
                         Tab(
                           child: DescribedFeatureOverlay(
                             onBackgroundTap: onFeatureDiscoveryDismissed,
@@ -349,36 +309,13 @@ class _HomeScreenState extends State<HomeScreen>
               physics: const NeverScrollableScrollPhysics(),
               controller: tabController,
               children: <Widget>[
-                StoriesListView(
-                  key: const ValueKey<StoryType>(StoryType.top),
-                  storyType: StoryType.top,
-                  header: pinnedStories,
-                  onStoryTapped: onStoryTapped,
-                ),
-                StoriesListView(
-                  key: const ValueKey<StoryType>(StoryType.latest),
-                  storyType: StoryType.latest,
-                  header: pinnedStories,
-                  onStoryTapped: onStoryTapped,
-                ),
-                StoriesListView(
-                  key: const ValueKey<StoryType>(StoryType.ask),
-                  storyType: StoryType.ask,
-                  header: pinnedStories,
-                  onStoryTapped: onStoryTapped,
-                ),
-                StoriesListView(
-                  key: const ValueKey<StoryType>(StoryType.show),
-                  storyType: StoryType.show,
-                  header: pinnedStories,
-                  onStoryTapped: onStoryTapped,
-                ),
-                StoriesListView(
-                  key: const ValueKey<StoryType>(StoryType.jobs),
-                  storyType: StoryType.jobs,
-                  header: pinnedStories,
-                  onStoryTapped: onStoryTapped,
-                ),
+                for (final StoryType type in StoriesBloc.types)
+                  StoriesListView(
+                    key: ValueKey<StoryType>(type),
+                    storyType: type,
+                    header: pinnedStories,
+                    onStoryTapped: onStoryTapped,
+                  ),
                 const ProfileScreen(),
               ],
             ),

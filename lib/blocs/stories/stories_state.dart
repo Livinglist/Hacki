@@ -28,6 +28,7 @@ class StoriesState extends Equatable {
   const StoriesState.init({
     this.storiesByType = const <StoryType, List<Story>>{
       StoryType.top: <Story>[],
+      StoryType.best: <Story>[],
       StoryType.latest: <Story>[],
       StoryType.ask: <Story>[],
       StoryType.show: <Story>[],
@@ -35,6 +36,7 @@ class StoriesState extends Equatable {
     },
     this.storyIdsByType = const <StoryType, List<int>>{
       StoryType.top: <int>[],
+      StoryType.best: <int>[],
       StoryType.latest: <int>[],
       StoryType.ask: <int>[],
       StoryType.show: <int>[],
@@ -42,6 +44,7 @@ class StoriesState extends Equatable {
     },
     this.statusByType = const <StoryType, StoriesStatus>{
       StoryType.top: StoriesStatus.initial,
+      StoryType.best: StoriesStatus.initial,
       StoryType.latest: StoriesStatus.initial,
       StoryType.ask: StoriesStatus.initial,
       StoryType.show: StoriesStatus.initial,
@@ -49,6 +52,7 @@ class StoriesState extends Equatable {
     },
     this.currentPageByType = const <StoryType, int>{
       StoryType.top: 0,
+      StoryType.best: 0,
       StoryType.latest: 0,
       StoryType.ask: 0,
       StoryType.show: 0,
