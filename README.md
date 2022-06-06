@@ -55,7 +55,5 @@ Features:
    <img width="400" alt="ipad-02" src="assets/screenshots/ipad-02.png"> 
    <img width="400" alt="ipad-03" src="assets/screenshots/ipad-03.png"> 
    <img width="400" alt="ipad-04" src="assets/screenshots/ipad-04.png"> 
-   <img width="400" alt="ipad-05" src="assets/screenshots/ipad-05.png"> 
-   <img width="400" alt="ipad-06" src="assets/screenshots/ipad-06.png"> 
 </p>
 
