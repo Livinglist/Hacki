@@ -5,8 +5,12 @@
 
     <!-- Provide required visibility configuration for API level 30 and above -->
     <queries>
-        <intent>
+        <intent> <!-- https://developer.android.com/training/package-visibility/use-cases#open-urls-custom-tabs -->
+            <action android:name="android.support.customtabs.action.CustomTabsService" />
+        </intent>
+        <intent> <!-- add3d category from same link. not sure if needed. -->
             <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
             <data android:scheme="https" />
         </intent>
         <intent>

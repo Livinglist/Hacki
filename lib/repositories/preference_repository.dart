@@ -33,6 +33,10 @@ class PreferenceRepository {
   /// tile should display link preview. Defaults to true.
   static const String _displayModeKey = 'displayMode';
 
+  /// The key of a boolean value deciding whether or not the internal
+  /// webview browser should be used. Defaults to true.
+  static const String _browserModeKey = 'browserMode';
+
   /// The key of a boolean value deciding whether or not user should be
   /// navigated to web view first. Defaults to false.
   static const String _navigationModeKey = 'navigationMode';
@@ -41,6 +45,7 @@ class PreferenceRepository {
 
   static const bool _notificationModeDefaultValue = true;
   static const bool _displayModeDefaultValue = true;
+  static const bool _browserModeDefaultValue = true;
   static const bool _navigationModeDefaultValue = true;
   static const bool _eyeCandyModeDefaultValue = false;
   static const bool _trueDarkModeDefaultValue = false;
@@ -78,6 +83,11 @@ class PreferenceRepository {
   Future<bool> get shouldShowComplexStoryTile async => _prefs.then(
         (SharedPreferences prefs) =>
             prefs.getBool(_displayModeKey) ?? _displayModeDefaultValue,
+      );
+
+  Future<bool> get shouldUseInternalBrowser async => _prefs.then(
+        (SharedPreferences prefs) =>
+            prefs.getBool(_browserModeKey) ?? _browserModeDefaultValue,
       );
 
   Future<bool> get shouldShowWebFirst async => _prefs.then(
@@ -161,6 +171,13 @@ class PreferenceRepository {
     final bool currentMode =
         prefs.getBool(_displayModeKey) ?? _displayModeDefaultValue;
     await prefs.setBool(_displayModeKey, !currentMode);
+  }
+
+  Future<void> toggleBrowserMode() async {
+    final SharedPreferences prefs = await _prefs;
+    final bool currentMode =
+        prefs.getBool(_browserModeKey) ?? _browserModeDefaultValue;
+    await prefs.setBool(_browserModeKey, !currentMode);
   }
 
   Future<void> toggleNavigationMode() async {

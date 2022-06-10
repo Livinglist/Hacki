@@ -21,6 +21,9 @@ class PreferenceCubit extends Cubit<PreferenceState> {
     _preferenceRepository.shouldShowComplexStoryTile.then(
       (bool value) => emit(state.copyWith(showComplexStoryTile: value)),
     );
+    _preferenceRepository.shouldUseInternalBrowser.then(
+      (bool value) => emit(state.copyWith(useInternalBrowser: value)),
+    );
     _preferenceRepository.shouldShowWebFirst
         .then((bool value) => emit(state.copyWith(showWebFirst: value)));
     _preferenceRepository.shouldShowEyeCandy
@@ -43,6 +46,11 @@ class PreferenceCubit extends Cubit<PreferenceState> {
   void toggleDisplayMode() {
     emit(state.copyWith(showComplexStoryTile: !state.showComplexStoryTile));
     _preferenceRepository.toggleDisplayMode();
+  }
+
+  void toggleBrowserMode() {
+    emit(state.copyWith(useInternalBrowser: !state.useInternalBrowser));
+    _preferenceRepository.toggleBrowserMode();
   }
 
   void toggleNavigationMode() {

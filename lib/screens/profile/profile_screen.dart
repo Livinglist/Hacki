@@ -295,6 +295,20 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 activeColor: Colors.orange,
                               ),
                               SwitchListTile(
+                                title: const Text('Use WebView'),
+                                subtitle: const Text(
+                                  'open pages in webview or use default browser.',
+                                ),
+                                value: preferenceState.useInternalBrowser,
+                                onChanged: (bool val) {
+                                  HapticFeedback.lightImpact();
+                                  context
+                                      .read<PreferenceCubit>()
+                                      .toggleBrowserMode();
+                                },
+                                activeColor: Colors.orange,
+                              ),
+                              SwitchListTile(
                                 title: const Text('Show Metadata'),
                                 subtitle: const Text(
                                   'show number of comments and post date'

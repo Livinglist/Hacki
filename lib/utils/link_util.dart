@@ -19,7 +19,7 @@ abstract class LinkUtil {
     final Uri uri = rinseLink(link);
     canLaunchUrl(uri).then((bool val) {
       if (val) {
-        if (link.contains('http')) {
+        if (link.contains('http') && preferenceState.useInternalBrowser) {
           _browser
               .open(
                 url: uri,
