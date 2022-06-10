@@ -543,7 +543,7 @@ class _TabletStoryView extends StatelessWidget {
           previous.storyScreenArgs != current.storyScreenArgs,
       builder: (BuildContext context, SplitViewState state) {
         if (state.storyScreenArgs != null) {
-          return StoryScreen.build(state.storyScreenArgs!);
+          return StoryScreen.build(context, state.storyScreenArgs!);
         }
 
         return Material(

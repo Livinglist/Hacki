@@ -88,29 +88,39 @@ class StoryScreen extends StatefulWidget {
     );
   }
 
-  static Widget build(StoryScreenArgs args) {
-    return MultiBlocProvider(
-      key: ValueKey<StoryScreenArgs>(args),
-      providers: <BlocProvider<dynamic>>[
-        BlocProvider<CommentsCubit>(
-          create: (BuildContext context) => CommentsCubit(
-            offlineReading: context.read<StoriesBloc>().state.offlineReading,
-            story: args.story,
-          )..init(
-              onlyShowTargetComment: args.onlyShowTargetComment,
-              targetParents: args.targetComments,
-            ),
-        ),
-        if (args.story.isPoll)
-          BlocProvider<PollCubit>(
-            create: (BuildContext context) =>
-                PollCubit(story: args.story)..init(),
+  static Widget build(BuildContext context, StoryScreenArgs args) {
+    return WillPopScope(
+      onWillPop: () async {
+        if (context.read<SplitViewCubit>().state.expanded) {
+          context.read<SplitViewCubit>().zoom();
+          return false;
+        } else {
+          return true;
+        }
+      },
+      child: MultiBlocProvider(
+        key: ValueKey<StoryScreenArgs>(args),
+        providers: <BlocProvider<dynamic>>[
+          BlocProvider<CommentsCubit>(
+            create: (BuildContext context) => CommentsCubit(
+              offlineReading: context.read<StoriesBloc>().state.offlineReading,
+              story: args.story,
+            )..init(
+                onlyShowTargetComment: args.onlyShowTargetComment,
+                targetParents: args.targetComments,
+              ),
           ),
-      ],
-      child: StoryScreen(
-        story: args.story,
-        parentComments: args.targetComments ?? <Comment>[],
-        splitViewEnabled: true,
+          if (args.story.isPoll)
+            BlocProvider<PollCubit>(
+              create: (BuildContext context) =>
+                  PollCubit(story: args.story)..init(),
+            ),
+        ],
+        child: StoryScreen(
+          story: args.story,
+          parentComments: args.targetComments ?? <Comment>[],
+          splitViewEnabled: true,
+        ),
       ),
     );
   }
