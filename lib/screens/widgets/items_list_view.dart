@@ -87,7 +87,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                         )
                       : null,
                   child: StoryTile(
-                    key: ObjectKey(e),
+                    key: ValueKey<int>(e.id),
                     story: e,
                     onTap: () => onTap(e),
                     showWebPreview: showWebPreview,
