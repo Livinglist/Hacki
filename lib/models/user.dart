@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
+
 class User {
   User({
     required this.about,
@@ -28,6 +30,12 @@ class User {
   final int delay;
   final String id;
   final int karma;
+
+  static final DateFormat _dateTimeFormatter = DateFormat.yMMMd();
+
+  String get description {
+    return '''$karma karma, created on ${_dateTimeFormatter.format(DateTime.fromMillisecondsSinceEpoch(created * 1000))}''';
+  }
 
   @override
   String toString() {

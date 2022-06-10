@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
@@ -159,10 +160,19 @@ class CommentsCubit extends Cubit<CommentsState> {
         ..addKid(comment.id, to: comment.parent)
         ..cacheComment(comment);
       _sembastRepository.cacheComment(comment);
+
+      final List<LinkifyElement> elements = linkify(
+        comment.text,
+      );
+
+      final BuildableComment buildableComment =
+          BuildableComment.fromComment(comment, elements: elements);
+
       final List<Comment> updatedComments = <Comment>[
         ...state.comments,
-        comment
+        buildableComment
       ];
+
       emit(state.copyWith(comments: updatedComments));
 
       if (updatedComments.length >= _pageSize + _pageSize * state.currentPage &&
@@ -178,6 +188,31 @@ class CommentsCubit extends Cubit<CommentsState> {
         );
       }
     }
+  }
+
+  List<LinkifyElement> linkify(
+    String text, {
+    LinkifyOptions options = const LinkifyOptions(),
+    List<Linkifier> linkifiers = const <Linkifier>[
+      UrlLinkifier(),
+      EmailLinkifier(),
+    ],
+  }) {
+    List<LinkifyElement> list = <LinkifyElement>[TextElement(text)];
+
+    if (text.isEmpty) {
+      return <LinkifyElement>[];
+    }
+
+    if (linkifiers.isEmpty) {
+      return list;
+    }
+
+    for (final Linkifier linkifier in linkifiers) {
+      list = linkifier.parse(list, options);
+    }
+
+    return list;
   }
 
   @override

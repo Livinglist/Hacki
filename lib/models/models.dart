@@ -1,3 +1,4 @@
+export 'buildable_comment.dart';
 export 'comment.dart';
 export 'item.dart';
 export 'poll_option.dart';

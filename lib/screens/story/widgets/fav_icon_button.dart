@@ -25,6 +25,7 @@ class FavIconButton extends StatelessWidget {
       builder: (BuildContext context, FavState favState) {
         final bool isFav = favState.favIds.contains(storyId);
         return IconButton(
+          tooltip: 'Add to favorites',
           icon: DescribedFeatureOverlay(
             onBackgroundTap: onBackgroundTap,
             onDismiss: onDismiss,

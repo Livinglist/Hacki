@@ -38,6 +38,7 @@ class CommentTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<CollapseCubit>(
+      key: ValueKey<String>('${comment.id}-BlocProvider'),
       lazy: false,
       create: (_) => CollapseCubit(
         commentId: comment.id,
@@ -209,30 +210,62 @@ class CommentTile extends StatelessWidget {
                                       top: 6,
                                       bottom: 12,
                                     ),
-                                    child: SelectableLinkify(
-                                      key: ObjectKey(comment),
-                                      text: comment.text,
-                                      style: TextStyle(
-                                        fontSize: MediaQuery.of(context)
-                                                .textScaleFactor *
-                                            15,
-                                      ),
-                                      linkStyle: TextStyle(
-                                        fontSize: MediaQuery.of(context)
-                                                .textScaleFactor *
-                                            15,
-                                        color: Colors.orange,
-                                      ),
-                                      onOpen: (LinkableElement link) {
-                                        if (link.url.contains(
-                                          'news.ycombinator.com/item',
-                                        )) {
-                                          onStoryLinkTapped.call(link.url);
-                                        } else {
-                                          LinkUtil.launch(link.url);
-                                        }
-                                      },
-                                    ),
+                                    child: comment is BuildableComment
+                                        ? SelectableText.rich(
+                                            key: ValueKey<int>(comment.id),
+                                            buildTextSpan(
+                                              (comment as BuildableComment)
+                                                  .elements,
+                                              style: TextStyle(
+                                                fontSize: MediaQuery.of(context)
+                                                        .textScaleFactor *
+                                                    15,
+                                              ),
+                                              linkStyle: TextStyle(
+                                                fontSize: MediaQuery.of(context)
+                                                        .textScaleFactor *
+                                                    15,
+                                                decoration:
+                                                    TextDecoration.underline,
+                                                color: Colors.orange,
+                                              ),
+                                              onOpen: (LinkableElement link) {
+                                                if (link.url.contains(
+                                                  'news.ycombinator.com/item',
+                                                )) {
+                                                  onStoryLinkTapped
+                                                      .call(link.url);
+                                                } else {
+                                                  LinkUtil.launch(link.url);
+                                                }
+                                              },
+                                            ),
+                                          )
+                                        : SelectableLinkify(
+                                            key: ValueKey<int>(comment.id),
+                                            text: comment.text,
+                                            style: TextStyle(
+                                              fontSize: MediaQuery.of(context)
+                                                      .textScaleFactor *
+                                                  15,
+                                            ),
+                                            linkStyle: TextStyle(
+                                              fontSize: MediaQuery.of(context)
+                                                      .textScaleFactor *
+                                                  15,
+                                              color: Colors.orange,
+                                            ),
+                                            onOpen: (LinkableElement link) {
+                                              if (link.url.contains(
+                                                'news.ycombinator.com/item',
+                                              )) {
+                                                onStoryLinkTapped
+                                                    .call(link.url);
+                                              } else {
+                                                LinkUtil.launch(link.url);
+                                              }
+                                            },
+                                          ),
                                   ),
                                 const Divider(
                                   height: 0,

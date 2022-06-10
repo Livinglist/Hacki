@@ -171,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen>
                       child: Container(
                         color: Colors.orangeAccent.withOpacity(0.2),
                         child: StoryTile(
-                          key: ObjectKey(story),
+                          key: ValueKey<String>('${story.id}-PinnedStoryTile'),
                           story: story,
                           onTap: () => onStoryTapped(story, isPin: true),
                           showWebPreview: preferenceState.showComplexStoryTile,
@@ -543,7 +543,7 @@ class _TabletStoryView extends StatelessWidget {
           previous.storyScreenArgs != current.storyScreenArgs,
       builder: (BuildContext context, SplitViewState state) {
         if (state.storyScreenArgs != null) {
-          return StoryScreen.build(state.storyScreenArgs!);
+          return StoryScreen.build(context, state.storyScreenArgs!);
         }
 
         return Material(
