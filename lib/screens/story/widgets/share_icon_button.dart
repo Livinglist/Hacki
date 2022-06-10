@@ -44,7 +44,7 @@ class ShareIconButton extends StatelessWidget {
           style: TextStyle(fontSize: 16),
         ),
         child: const Icon(
-          Icons.stream,
+          Icons.share,
         ),
       ),
       onPressed: () =>
