@@ -756,7 +756,7 @@ class _StoryScreenState extends State<StoryScreen> {
               final bool upvoted = voteState.vote == Vote.up;
               final bool downvoted = voteState.vote == Vote.down;
               return Container(
-                height: 370,
+                height: item is Comment ? 370 : 390,
                 color: Theme.of(context).canvasColor,
                 child: Material(
                   color: Colors.transparent,
