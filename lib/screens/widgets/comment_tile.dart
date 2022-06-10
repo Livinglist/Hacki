@@ -225,6 +225,8 @@ class CommentTile extends StatelessWidget {
                                                 fontSize: MediaQuery.of(context)
                                                         .textScaleFactor *
                                                     15,
+                                                decoration:
+                                                    TextDecoration.underline,
                                                 color: Colors.orange,
                                               ),
                                               onOpen: (LinkableElement link) {
