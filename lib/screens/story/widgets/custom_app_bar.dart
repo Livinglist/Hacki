@@ -51,6 +51,11 @@ class CustomAppBar extends AppBar {
               onBackgroundTap: onBackgroundTap,
               onDismiss: onDismiss,
             ),
+            ShareIconButton(
+              storyId: story.id,
+              onBackgroundTap: onBackgroundTap,
+              onDismiss: onDismiss,
+            ),
             LinkIconButton(
               storyId: story.id,
               onBackgroundTap: onBackgroundTap,

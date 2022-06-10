@@ -155,6 +155,7 @@ class _StoryScreenState extends State<StoryScreen> {
         const <String>{
           Constants.featurePinToTop,
           Constants.featureAddStoryToFavList,
+          Constants.featureShareStory,
           Constants.featureOpenStoryInWebView,
         },
       );
