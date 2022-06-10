@@ -756,12 +756,82 @@ class _StoryScreenState extends State<StoryScreen> {
               final bool upvoted = voteState.vote == Vote.up;
               final bool downvoted = voteState.vote == Vote.down;
               return Container(
-                height: 300,
+                height: 370,
                 color: Theme.of(context).canvasColor,
                 child: Material(
                   color: Colors.transparent,
                   child: Column(
                     children: <Widget>[
+                      BlocProvider<UserCubit>(
+                        create: (BuildContext context) =>
+                            UserCubit()..init(userId: item.by),
+                        child: BlocBuilder<UserCubit, UserState>(
+                          builder: (BuildContext context, UserState state) {
+                            return ListTile(
+                              leading: const Icon(
+                                Icons.account_circle,
+                              ),
+                              title: Text(item.by),
+                              subtitle: Text(
+                                state.user.description,
+                              ),
+                              onTap: () {
+                                showDialog<void>(
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      SimpleDialog(
+                                    title: Text('About ${state.user.id}'),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 24,
+                                      vertical: 12,
+                                    ),
+                                    children: <Widget>[
+                                      SelectableLinkify(
+                                        text: HtmlUtil.parseHtml(
+                                          state.user.about,
+                                        ),
+                                        linkStyle: const TextStyle(
+                                          color: Colors.orange,
+                                        ),
+                                        onOpen: (LinkableElement link) {
+                                          if (link.url.contains(
+                                            'news.ycombinator.com/item',
+                                          )) {
+                                            onStoryLinkTapped.call(link.url);
+                                          } else {
+                                            LinkUtil.launch(link.url);
+                                          }
+                                        },
+                                      ),
+                                      ButtonBar(
+                                        children: <Widget>[
+                                          ElevatedButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            style: ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStateProperty.all(
+                                                Colors.deepOrange,
+                                              ),
+                                            ),
+                                            child: const Text(
+                                              'Okay',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
                       ListTile(
                         leading: Icon(
                           FeatherIcons.chevronUp,

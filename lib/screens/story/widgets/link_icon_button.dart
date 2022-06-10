@@ -21,6 +21,7 @@ class LinkIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
+      tooltip: 'Open this story in browser',
       icon: DescribedFeatureOverlay(
         onBackgroundTap: onBackgroundTap,
         onDismiss: onDismiss,
