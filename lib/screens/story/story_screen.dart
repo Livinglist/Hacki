@@ -22,10 +22,12 @@ import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:share_plus/share_plus.dart';
 
 enum _MenuAction {
   upvote,
   downvote,
+  share,
   block,
   flag,
   cancel,
@@ -756,7 +758,7 @@ class _StoryScreenState extends State<StoryScreen> {
               final bool upvoted = voteState.vote == Vote.up;
               final bool downvoted = voteState.vote == Vote.down;
               return Container(
-                height: item is Comment ? 370 : 390,
+                height: item is Comment ? 430 : 450,
                 color: Theme.of(context).canvasColor,
                 child: Material(
                   color: Colors.transparent,
@@ -861,6 +863,16 @@ class _StoryScreenState extends State<StoryScreen> {
                         onTap: context.read<VoteCubit>().downvote,
                       ),
                       ListTile(
+                        leading: const Icon(FeatherIcons.share),
+                        title: const Text(
+                          'Share',
+                        ),
+                        onTap: () => Navigator.pop(
+                          context,
+                          _MenuAction.share,
+                        ),
+                      ),
+                      ListTile(
                         leading: const Icon(Icons.local_police),
                         title: const Text(
                           'Flag',
@@ -907,6 +919,9 @@ class _StoryScreenState extends State<StoryScreen> {
             break;
           case _MenuAction.downvote:
             break;
+          case _MenuAction.share:
+            onShareTapped(item);
+            break;
           case _MenuAction.flag:
             onFlagTapped(item);
             break;
@@ -919,6 +934,9 @@ class _StoryScreenState extends State<StoryScreen> {
       }
     });
   }
+
+  void onShareTapped(Item item) =>
+      Share.share('https://news.ycombinator.com/item?id=${item.id}');
 
   void onFlagTapped(Item item) {
     showDialog<bool>(

@@ -141,7 +141,7 @@ class _LinkPreviewState extends State<LinkPreview> {
       );
     } else {
       _info = await WebAnalyzer.getInfo(
-        widget.story.id.toString(),
+        null,
         story: widget.story,
         cache: widget.cache,
       );
@@ -188,8 +188,8 @@ class _LinkPreviewState extends State<LinkPreview> {
         key: widget.key ?? Key(widget.link),
         metadata: widget.story.simpleMetadata,
         url: widget.link,
-        title: title!,
-        description: desc!,
+        title: widget.story.title,
+        description: desc ?? title ?? 'no comments yet.',
         imageUri: imageUri,
         imagePath: Constants.hackerNewsLogoPath,
         onTap: _launchURL,
@@ -228,40 +228,29 @@ class _LinkPreviewState extends State<LinkPreview> {
 
     Widget loadedWidget;
 
-    if (_info is WebImageInfo) {
-      final String img = (_info as WebImageInfo?)?.image ?? '';
-      loadedWidget = _buildLinkContainer(
-        _height,
-        title: _errorTitle,
-        desc: _errorBody,
-        imageUri:
-            widget.showMultimedia ? (img.trim() == '' ? null : img) : null,
-      );
-    } else {
-      final WebInfo? info = _info as WebInfo?;
-      loadedWidget = _info == null
-          ? _buildLinkContainer(
-              _height,
-              title: _errorTitle,
-              desc: _errorBody,
-              imageUri: null,
-            )
-          : _buildLinkContainer(
-              _height,
-              title: _errorTitle,
-              desc: WebAnalyzer.isNotEmpty(info!.description)
-                  ? info.description
-                  : _errorBody,
-              imageUri: widget.showMultimedia
-                  ? (WebAnalyzer.isNotEmpty(info.image)
-                      ? info.image
-                      : WebAnalyzer.isNotEmpty(info.icon)
-                          ? info.icon
-                          : null)
-                  : null,
-              isIcon: !WebAnalyzer.isNotEmpty(info.image),
-            );
-    }
+    final WebInfo? info = _info as WebInfo?;
+    loadedWidget = _info == null
+        ? _buildLinkContainer(
+            _height,
+            title: _errorTitle,
+            desc: _errorBody,
+            imageUri: null,
+          )
+        : _buildLinkContainer(
+            _height,
+            title: _errorTitle,
+            desc: WebAnalyzer.isNotEmpty(info!.description)
+                ? info.description
+                : _errorBody,
+            imageUri: widget.showMultimedia
+                ? (WebAnalyzer.isNotEmpty(info.image)
+                    ? info.image
+                    : WebAnalyzer.isNotEmpty(info.icon)
+                        ? info.icon
+                        : null)
+                : null,
+            isIcon: !WebAnalyzer.isNotEmpty(info.image),
+          );
 
     return AnimatedCrossFade(
       firstChild: loadingWidget,

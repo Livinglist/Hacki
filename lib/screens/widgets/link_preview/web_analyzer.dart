@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:fast_gbk/fast_gbk.dart';
 import 'package:flutter/foundation.dart';
-import 'package:hacki/config/locator.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
@@ -16,6 +15,7 @@ import 'package:http/io_client.dart';
 
 abstract class InfoBase {
   late DateTime _timeout;
+  late bool _shouldRetry;
 
   Map<String, dynamic> toJson();
 }
@@ -114,63 +114,34 @@ class WebAnalyzer {
     bool multimedia = true,
   }) async {
     InfoBase? info = getInfoFromCache(url);
+
     if (info != null) return info;
 
     if (story.url.isEmpty && story.text.isNotEmpty) {
       info = WebInfo(
         title: story.title,
         description: story.text,
-      ).._timeout = DateTime.now().add(cache);
+      )
+        .._timeout = DateTime.now().add(cache)
+        .._shouldRetry = false;
       cacheMap[story.id.toString()] = info;
 
       return info;
     }
 
     try {
-      info = await _getInfoByIsolate(url, multimedia);
+      info = await _getInfoByIsolate(
+        url: url,
+        multimedia: multimedia,
+        story: story,
+      );
 
-      if (info != null) {
+      if (info != null && !info._shouldRetry) {
         info._timeout = DateTime.now().add(cache);
         cacheMap[url] = info;
       }
     } catch (e) {
       //locator.get<Logger>().log(Level.error, e);
-    }
-
-    if ((info == null ||
-            info is WebImageInfo ||
-            (info is WebInfo && (info.description?.isEmpty ?? true))) &&
-        story.kids.isNotEmpty) {
-      bool shouldRetry = false;
-      final Comment? comment = await locator
-          .get<StoriesRepository>()
-          .fetchCommentBy(id: story.kids.first)
-          .catchError((Object err) async {
-        int index = 0;
-        Comment? comment;
-
-        while (comment == null && index < story.kids.length) {
-          comment = await locator
-              .get<CacheRepository>()
-              .getCachedComment(id: story.kids.elementAt(index));
-          index++;
-        }
-
-        shouldRetry = true;
-        return comment;
-      });
-
-      info = WebInfo(
-        description:
-            comment != null ? '${comment.by}: ${comment.text}' : 'no comments',
-        image: info is WebInfo ? info.image : (info as WebImageInfo?)?.image,
-        icon: info is WebInfo ? info.icon : null,
-      );
-
-      if (!shouldRetry) {
-        info._timeout = DateTime.now().add(cache);
-        cacheMap[url] = info;
-      }
     }
 
     return info;
@@ -195,58 +166,112 @@ class WebAnalyzer {
     return _getWebInfo(response, url, multimedia);
   }
 
-  static Future<InfoBase?> _getInfoByIsolate(
+  static Future<InfoBase?> _getInfoByIsolate({
     String? url,
-    bool multimedia,
-  ) async {
-    final List<dynamic>? res = await compute(
-      _isolate,
-      <dynamic>[url, multimedia],
-    );
+    required bool multimedia,
+    required Story story,
+  }) async {
+    List<dynamic>? res;
 
+    if (url != null) {
+      res = await compute(
+        _fetchInfoFromUrl,
+        <dynamic>[url, multimedia],
+      );
+    }
+
+    late final bool shouldRetry;
     InfoBase? info;
+    String? fallbackDescription;
+
+    if (res == null || isEmpty(res[2] as String?)) {
+      final String? commentText = await compute(
+        _fetchInfoFromStoryId,
+        story.kids,
+      );
+
+      shouldRetry = commentText == null;
+      fallbackDescription = commentText ?? 'no comments yet';
+    } else {
+      shouldRetry = false;
+    }
+
     if (res != null) {
       if (res[0] == '0') {
         info = WebInfo(
-          title: res[1] as String?,
-          description:
-              res[2] == null ? null : (res[2] as String).removeAllEmojis(),
+          title: story.title,
+          description: isEmpty(res[2] as String?)
+              ? (fallbackDescription ??
+                  (story.text.isEmpty ? res[1] as String? : story.text))
+              : (res[2] as String).removeAllEmojis(),
           icon: res[3] as String?,
           image: res[4] as String?,
-        );
-      } else if (res[0] == '1') {
-        info = WebVideoInfo(image: res[1] as String);
-      } else if (res[0] == '2') {
-        info = WebImageInfo(image: res[1] as String);
+        ).._shouldRetry = shouldRetry;
+      } else {
+        info = WebInfo(
+          image: res[1] as String,
+          title: story.title,
+          description: story.text.isEmpty ? fallbackDescription : story.text,
+        ).._shouldRetry = shouldRetry;
       }
+    } else {
+      return WebInfo(
+        title: story.title,
+        description: fallbackDescription,
+      ).._shouldRetry = shouldRetry;
     }
 
     return info;
   }
 
-  static Future<List<dynamic>?> _isolate(dynamic message) async {
-    // ignore: avoid_dynamic_calls
-    final String url = message[0] as String;
-    // ignore: avoid_dynamic_calls
-    final bool multimedia = message[1] as bool;
+  static Future<List<dynamic>?> _fetchInfoFromUrl(dynamic message) async {
+    try {
+      // ignore: avoid_dynamic_calls
+      final String url = message[0] as String;
+      // ignore: avoid_dynamic_calls
+      final bool multimedia = message[1] as bool;
 
-    final InfoBase? info = await _getInfo(url, multimedia);
+      final InfoBase? info = await _getInfo(url, multimedia);
 
-    if (info is WebInfo) {
-      return <dynamic>[
-        '0',
-        info.title,
-        info.description,
-        info.icon,
-        info.image
-      ];
-    } else if (info is WebVideoInfo) {
-      return <dynamic>['1', info.image];
-    } else if (info is WebImageInfo) {
-      return <dynamic>['2', info.image];
-    } else {
+      if (info is WebInfo) {
+        return <dynamic>[
+          '0',
+          info.title,
+          info.description,
+          info.icon,
+          info.image
+        ];
+      } else if (info is WebVideoInfo) {
+        return <dynamic>['1', info.image];
+      } else if (info is WebImageInfo) {
+        return <dynamic>['2', info.image];
+      } else {
+        return null;
+      }
+    } catch (_) {
       return null;
     }
+  }
+
+  static Future<String?> _fetchInfoFromStoryId(List<int> kids) async {
+    if (kids.isEmpty) return null;
+
+    final Comment? comment = await StoriesRepository()
+        .fetchCommentBy(id: kids.first)
+        .catchError((Object err) async {
+      int index = 0;
+      Comment? comment;
+
+      while (comment == null && index < kids.length) {
+        comment =
+            await CacheRepository().getCachedComment(id: kids.elementAt(index));
+        index++;
+      }
+
+      return comment;
+    });
+
+    return comment != null ? '${comment.by}: ${comment.text}' : null;
   }
 
   static bool _certificateCheck(X509Certificate cert, String host, int port) =>
@@ -275,46 +300,45 @@ class WebAnalyzer {
       ..headers['accept'] =
           'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9';
 
-    final IOStreamedResponse stream =
-        await client.send(request).catchError((dynamic err) {
-      // locator.get<Logger>().log(
-      //       Level.error,
-      //       'Error in getting the link => ${request.url}\n$err',
-      //     );
-    });
+    try {
+      final IOStreamedResponse stream =
+          await client.send(request).timeout(const Duration(seconds: 10));
 
-    if (stream.statusCode == HttpStatus.movedTemporarily ||
-        stream.statusCode == HttpStatus.movedPermanently) {
-      if (stream.isRedirect && count < 6) {
-        final String? location = stream.headers['location'];
-        if (location != null) {
-          url = location;
-          if (location.startsWith('/')) {
-            url = uri.origin + location;
+      if (stream.statusCode == HttpStatus.movedTemporarily ||
+          stream.statusCode == HttpStatus.movedPermanently) {
+        if (stream.isRedirect && count < 6) {
+          final String? location = stream.headers['location'];
+          if (location != null) {
+            url = location;
+            if (location.startsWith('/')) {
+              url = uri.origin + location;
+            }
+          }
+          if (stream.headers['set-cookie'] != null) {
+            cookie = stream.headers['set-cookie'];
+          }
+          count++;
+          client.close();
+          return _requestUrl(url, count: count, cookie: cookie);
+        }
+      } else if (stream.statusCode == HttpStatus.ok) {
+        res = await Response.fromStream(stream);
+        if (uri.host == 'm.tb.cn') {
+          final RegExpMatch? match =
+              RegExp(r"var url = \'(.*)\'").firstMatch(res.body);
+          if (match != null) {
+            final String? newUrl = match.group(1);
+            if (newUrl != null) {
+              return _requestUrl(newUrl, count: count, cookie: cookie);
+            }
           }
         }
-        if (stream.headers['set-cookie'] != null) {
-          cookie = stream.headers['set-cookie'];
-        }
-        count++;
-        client.close();
-        return _requestUrl(url, count: count, cookie: cookie);
       }
-    } else if (stream.statusCode == HttpStatus.ok) {
-      res = await Response.fromStream(stream);
-      if (uri.host == 'm.tb.cn') {
-        final RegExpMatch? match =
-            RegExp(r"var url = \'(.*)\'").firstMatch(res.body);
-        if (match != null) {
-          final String? newUrl = match.group(1);
-          if (newUrl != null) {
-            return _requestUrl(newUrl, count: count, cookie: cookie);
-          }
-        }
-      }
+      client.close();
+      return res;
+    } catch (_) {
+      return null;
     }
-    client.close();
-    return res;
   }
 
   static Future<InfoBase?> _getWebInfo(

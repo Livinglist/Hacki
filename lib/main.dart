@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_siri_suggestions/flutter_siri_suggestions.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
@@ -22,6 +23,10 @@ import 'package:workmanager/workmanager.dart';
 
 // For receiving payload event from local notifications.
 final BehaviorSubject<String?> selectNotificationSubject =
+    BehaviorSubject<String?>();
+
+// For receiving payload event from siri suggestions.
+final BehaviorSubject<String?> siriSuggestionSubject =
     BehaviorSubject<String?>();
 
 Future<void> main() async {
@@ -57,6 +62,16 @@ Future<void> main() async {
           badge: true,
           sound: true,
         );
+
+    FlutterSiriSuggestions.instance.configure(
+      onLaunch: (Map<String, dynamic> message) async {
+        final String? storyId = message['key'] as String?;
+
+        if (storyId == null) return;
+
+        siriSuggestionSubject.add(storyId);
+      },
+    );
   }
 
   final Directory tempDir = await getTemporaryDirectory();

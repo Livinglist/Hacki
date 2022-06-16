@@ -17,7 +17,8 @@
 
    <application
         android:label="hacki"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -51,6 +52,21 @@
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="*/*" />
+            </intent-filter>
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="http"
+                    android:host="news.ycombinator.com"
+                    android:pathPrefix="/item" />
+                <data
+                    android:scheme="https"
+                    android:host="news.ycombinator.com"
+                    android:pathPrefix="/item" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
