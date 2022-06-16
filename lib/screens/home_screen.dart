@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:badges/badges.dart';
 import 'package:feature_discovery/feature_discovery.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
+import 'package:flutter_siri_suggestions/flutter_siri_suggestions.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
@@ -52,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen>
   late final TabController tabController;
   late final StreamSubscription<String> intentDataStreamSubscription;
   late final StreamSubscription<String?> notificationStreamSubscription;
+  late final StreamSubscription<String?> siriSuggestionStreamSubscription;
 
   int currentIndex = 0;
 
@@ -86,6 +89,11 @@ class _HomeScreenState extends State<HomeScreen>
     if (!selectNotificationSubject.hasListener) {
       notificationStreamSubscription =
           selectNotificationSubject.stream.listen(onNotificationTapped);
+    }
+
+    if (!siriSuggestionSubject.hasListener) {
+      siriSuggestionStreamSubscription =
+          siriSuggestionSubject.stream.listen(onSiriSuggestionTapped);
     }
 
     SchedulerBinding.instance
@@ -132,6 +140,7 @@ class _HomeScreenState extends State<HomeScreen>
     tabController.dispose();
     intentDataStreamSubscription.cancel();
     notificationStreamSubscription.cancel();
+    siriSuggestionStreamSubscription.cancel();
     super.dispose();
   }
 
@@ -390,6 +399,18 @@ class _HomeScreenState extends State<HomeScreen>
             story: story,
           ),
         );
+
+    if (Platform.isIOS) {
+      FlutterSiriSuggestions.instance.registerActivity(
+        FlutterSiriActivity(
+          story.title,
+          story.id.toString(),
+          suggestedInvocationPhrase: '',
+          contentDescription: story.text,
+          persistentIdentifier: story.id.toString(),
+        ),
+      );
+    }
   }
 
   void showOnboarding() {
@@ -419,6 +440,24 @@ class _HomeScreenState extends State<HomeScreen>
         }
       });
     }
+  }
+
+  Future<void> onSiriSuggestionTapped(String? id) async {
+    if (id == null) return;
+    final int? storyId = int.tryParse(id);
+    if (storyId == null) return;
+
+    await locator
+        .get<StoriesRepository>()
+        .fetchStoryBy(storyId)
+        .then((Story? story) {
+      if (story == null) {
+        showSnackBar(content: 'Something went wrong...');
+        return;
+      }
+      final StoryScreenArgs args = StoryScreenArgs(story: story);
+      goToStoryScreen(args: args);
+    });
   }
 
   Future<void> onNotificationTapped(String? payload) async {

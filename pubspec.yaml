@@ -33,6 +33,7 @@ dependencies:
   flutter_linkify: ^5.0.2
   flutter_local_notifications: ^9.5.0
   flutter_secure_storage: ^5.0.2
+  flutter_siri_suggestions: ^2.1.0
   flutter_slidable: ^1.2.1
   font_awesome_flutter: ^9.2.0
   gbk_codec: ^0.4.0
