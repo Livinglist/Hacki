@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -20,17 +22,21 @@ abstract class LinkUtil {
     canLaunchUrl(uri).then((bool val) {
       if (val) {
         if (link.contains('http')) {
-          _browser
-              .open(
-                url: uri,
-                options: ChromeSafariBrowserClassOptions(
-                  ios: IOSSafariOptions(
-                    entersReaderIfAvailable: useReader,
-                    preferredControlTintColor: Colors.orange,
+          if (Platform.isAndroid) {
+            launchUrl(uri, mode: LaunchMode.externalApplication);
+          } else {
+            _browser
+                .open(
+                  url: uri,
+                  options: ChromeSafariBrowserClassOptions(
+                    ios: IOSSafariOptions(
+                      entersReaderIfAvailable: useReader,
+                      preferredControlTintColor: Colors.orange,
+                    ),
                   ),
-                ),
-              )
-              .onError((_, __) => launchUrl(uri));
+                )
+                .onError((_, __) => launchUrl(uri));
+          }
         } else {
           launchUrl(uri);
         }
