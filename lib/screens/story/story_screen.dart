@@ -353,6 +353,10 @@ class _StoryScreenState extends State<StoryScreen> {
                                   .read<PreferenceCubit>()
                                   .state
                                   .useReader,
+                              offlineReading: context
+                                  .read<StoriesBloc>()
+                                  .state
+                                  .offlineReading,
                             ),
                             child: Padding(
                               padding: const EdgeInsets.only(
@@ -417,10 +421,13 @@ class _StoryScreenState extends State<StoryScreen> {
                       height: 0,
                     ),
                     if (state.onlyShowTargetComment) ...<Widget>[
-                      TextButton(
-                        onPressed: () =>
-                            context.read<CommentsCubit>().loadAll(widget.story),
-                        child: const Text('View all comments'),
+                      Center(
+                        child: TextButton(
+                          onPressed: () => context
+                              .read<CommentsCubit>()
+                              .loadAll(widget.story),
+                          child: const Text('View all comments'),
+                        ),
                       ),
                       const Divider(
                         height: 0,
@@ -623,6 +630,7 @@ class _StoryScreenState extends State<StoryScreen> {
             builder: (BuildContext context, TimeMachineState state) {
               return Center(
                 child: Material(
+                  color: Theme.of(context).canvasColor,
                   borderRadius: const BorderRadius.all(Radius.circular(4)),
                   child: SizedBox(
                     height: size.height * 0.8,
@@ -781,50 +789,45 @@ class _StoryScreenState extends State<StoryScreen> {
                                 showDialog<void>(
                                   context: context,
                                   builder: (BuildContext context) =>
-                                      SimpleDialog(
+                                      AlertDialog(
                                     title: Text('About ${state.user.id}'),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 24,
-                                      vertical: 12,
-                                    ),
-                                    children: <Widget>[
-                                      SelectableLinkify(
-                                        text: HtmlUtil.parseHtml(
-                                          state.user.about,
-                                        ),
-                                        linkStyle: const TextStyle(
-                                          color: Colors.orange,
-                                        ),
-                                        onOpen: (LinkableElement link) {
-                                          if (link.url.contains(
-                                            'news.ycombinator.com/item',
-                                          )) {
-                                            onStoryLinkTapped.call(link.url);
-                                          } else {
-                                            LinkUtil.launch(link.url);
-                                          }
-                                        },
-                                      ),
-                                      ButtonBar(
-                                        children: <Widget>[
-                                          ElevatedButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            style: ButtonStyle(
-                                              backgroundColor:
-                                                  MaterialStateProperty.all(
-                                                Colors.deepOrange,
+                                    content: state.user.about.isEmpty
+                                        ? Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: const <Widget>[
+                                              Text(
+                                                'empty',
+                                                style: TextStyle(
+                                                  color: Colors.grey,
+                                                ),
                                               ),
+                                            ],
+                                          )
+                                        : SelectableLinkify(
+                                            text: HtmlUtil.parseHtml(
+                                              state.user.about,
                                             ),
-                                            child: const Text(
-                                              'Okay',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.white,
-                                              ),
+                                            linkStyle: const TextStyle(
+                                              color: Colors.orange,
                                             ),
+                                            onOpen: (LinkableElement link) {
+                                              if (link.url.contains(
+                                                'news.ycombinator.com/item',
+                                              )) {
+                                                onStoryLinkTapped
+                                                    .call(link.url);
+                                              } else {
+                                                LinkUtil.launch(link.url);
+                                              }
+                                            },
                                           ),
-                                        ],
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text(
+                                          'Okay',
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -942,53 +945,25 @@ class _StoryScreenState extends State<StoryScreen> {
     showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
-        return SimpleDialog(
+        return AlertDialog(
           title: const Text('Flag this comment?'),
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 24,
-                right: 12,
-              ),
-              child: Text(
-                'Flag this comment posted by ${item.by}?',
-                style: const TextStyle(
-                  color: Colors.grey,
-                ),
+          content: Text(
+            'Flag this comment posted by ${item.by}?',
+            style: const TextStyle(
+              color: Colors.grey,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text(
+                'Cancel',
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(
-                right: 12,
-              ),
-              child: ButtonBar(
-                children: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, false),
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(
-                        color: Colors.red,
-                      ),
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context, true);
-                    },
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(Colors.deepOrange),
-                    ),
-                    child: const Text(
-                      'Yes',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text(
+                'Yes',
               ),
             ),
           ],
@@ -1006,55 +981,27 @@ class _StoryScreenState extends State<StoryScreen> {
     showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
-        return SimpleDialog(
+        return AlertDialog(
           title: Text('${isBlocked ? 'Unblock' : 'Block'} this user?'),
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 24,
-                right: 12,
-              ),
-              child: Text(
-                'Do you want to ${isBlocked ? 'unblock' : 'block'} ${item.by}'
-                ' and ${isBlocked ? 'display' : 'hide'} '
-                'comments posted by this user?',
-                style: const TextStyle(
-                  color: Colors.grey,
-                ),
+          content: Text(
+            'Do you want to ${isBlocked ? 'unblock' : 'block'} ${item.by}'
+            ' and ${isBlocked ? 'display' : 'hide'} '
+            'comments posted by this user?',
+            style: const TextStyle(
+              color: Colors.grey,
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text(
+                'Cancel',
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(
-                right: 12,
-              ),
-              child: ButtonBar(
-                children: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, false),
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(
-                        color: Colors.red,
-                      ),
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context, true);
-                    },
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(Colors.deepOrange),
-                    ),
-                    child: const Text(
-                      'Yes',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text(
+                'Yes',
               ),
             ),
           ],
@@ -1239,9 +1186,6 @@ class _StoryScreenState extends State<StoryScreen> {
                           },
                           child: const Text(
                             'Cancel',
-                            style: TextStyle(
-                              color: Colors.red,
-                            ),
                           ),
                         ),
                         ElevatedButton(

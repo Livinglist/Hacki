@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hive/hive.dart';
+import 'package:http/http.dart';
 
 /// [CacheRepository] is for storing stories and comments for offline reading.
 /// It's using [Hive] as its database which is being stored in temp directory.
@@ -7,19 +9,23 @@ class CacheRepository {
   CacheRepository({
     Future<Box<List<int>>>? storyIdBox,
     Future<Box<Map<dynamic, dynamic>>>? storyBox,
+    Future<Box<String>>? webPageBox,
     Future<LazyBox<Map<dynamic, dynamic>>>? commentBox,
   })  : _storyIdBox = storyIdBox ?? Hive.openBox<List<int>>(_storyIdBoxName),
         _storyBox =
             storyBox ?? Hive.openBox<Map<dynamic, dynamic>>(_storyBoxName),
+        _webPageBox = webPageBox ?? Hive.openBox<String>(_webPageBoxName),
         _commentBox = commentBox ??
             Hive.openLazyBox<Map<dynamic, dynamic>>(_commentBoxName);
 
   static const String _storyIdBoxName = 'storyIdBox';
   static const String _storyBoxName = 'storyBox';
   static const String _commentBoxName = 'commentBox';
+  static const String _webPageBoxName = 'webPageBox';
   final Future<Box<List<int>>> _storyIdBox;
   final Future<Box<Map<dynamic, dynamic>>> _storyBox;
   final Future<LazyBox<Map<dynamic, dynamic>>> _commentBox;
+  final Future<Box<String>> _webPageBox;
 
   Future<bool> get hasCachedStories =>
       _storyBox.then((Box<Map<dynamic, dynamic>> box) => box.isNotEmpty);
@@ -35,6 +41,17 @@ class CacheRepository {
   Future<void> cacheStory({required Story story}) async {
     final Box<Map<dynamic, dynamic>> box = await _storyBox;
     return box.put(story.id.toString(), story.toJson());
+  }
+
+  Future<void> cacheUrl({required String url}) async {
+    final Box<String> box = await _webPageBox;
+    final String html = await compute(downloadWebPage, url);
+    return box.put(url, html);
+  }
+
+  Future<String?> getHtml({required String url}) async {
+    final Box<String> box = await _webPageBox;
+    return box.get(url);
   }
 
   Future<List<int>> getCachedStoryIds({required StoryType of}) async {
@@ -119,9 +136,23 @@ class CacheRepository {
     return box.clear();
   }
 
+  Future<int> deleteAllWebPages() async {
+    final Box<String> box = await _webPageBox;
+    return box.clear();
+  }
+
   Future<int> deleteAll() async {
     return deleteAllStoryIds()
         .whenComplete(deleteAllStories)
-        .whenComplete(deleteAllComments);
+        .whenComplete(deleteAllComments)
+        .whenComplete(deleteAllWebPages);
+  }
+
+  static Future<String> downloadWebPage(String link) async {
+    final Client client = Client();
+    final Uri url = Uri.parse(link);
+    final Response response = await client.get(url);
+    final String body = response.body;
+    return body;
   }
 }

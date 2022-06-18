@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
@@ -447,7 +448,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                             SizedBox(
                                               width: 12,
                                             ),
-                                            Text('Source Code'),
+                                            Text('Source code'),
                                           ],
                                         ),
                                       ),
@@ -465,7 +466,23 @@ class _ProfileScreenState extends State<ProfileScreen>
                                             SizedBox(
                                               width: 12,
                                             ),
-                                            Text('Like the App?'),
+                                            Text('Like the app?'),
+                                          ],
+                                        ),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () => LinkUtil.launch(
+                                          Constants.sponsorLink,
+                                        ),
+                                        child: Row(
+                                          children: const <Widget>[
+                                            Icon(
+                                              FeatherIcons.coffee,
+                                            ),
+                                            SizedBox(
+                                              width: 12,
+                                            ),
+                                            Text('Buy me a coffee'),
                                           ],
                                         ),
                                       ),
@@ -648,11 +665,11 @@ class _ProfileScreenState extends State<ProfileScreen>
               child: const Text(
                 'Cancel',
                 style: TextStyle(
-                  color: Colors.red,
+                  color: Colors.orange,
                 ),
               ),
             ),
-            ElevatedButton(
+            TextButton(
               onPressed: () {
                 Navigator.pop(context);
                 locator
@@ -671,15 +688,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                   showSnackBar(content: 'Data cleared!');
                 });
               },
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.deepOrange),
-              ),
               child: const Text(
                 'Yes',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
               ),
             ),
           ],
@@ -855,9 +865,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                           },
                           child: const Text(
                             'Cancel',
-                            style: TextStyle(
-                              color: Colors.red,
-                            ),
                           ),
                         ),
                         ElevatedButton(
@@ -909,63 +916,30 @@ class _ProfileScreenState extends State<ProfileScreen>
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return SimpleDialog(
-          children: <Widget>[
-            ...<Widget>[
-              const SizedBox(
-                height: 16,
+        return AlertDialog(
+          content: Text(
+            'Log out as ${authBloc.state.username}?',
+            style: const TextStyle(
+              fontSize: 16,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                'Cancel',
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 18,
-                ),
-                child: Text(
-                  'Log out as ${authBloc.state.username}?',
-                  style: const TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                context.read<AuthBloc>().add(AuthLogout());
+                context.read<HistoryCubit>().reset();
+              },
+              child: const Text(
+                'Log out',
               ),
-              const SizedBox(
-                height: 16,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                  right: 12,
-                ),
-                child: ButtonBar(
-                  children: <Widget>[
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(
-                          color: Colors.red,
-                        ),
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        context.read<AuthBloc>().add(AuthLogout());
-                        context.read<HistoryCubit>().reset();
-                      },
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.deepOrange),
-                      ),
-                      child: const Text(
-                        'Log out',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ],
         );
       },

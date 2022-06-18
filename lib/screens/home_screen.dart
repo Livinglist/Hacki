@@ -390,8 +390,12 @@ class _HomeScreenState extends State<HomeScreen>
       }
     }
 
-    if (!offlineReading && (isJobWithLink || (showWebFirst && !hasRead))) {
-      LinkUtil.launch(story.url, useReader: useReader);
+    if (story.url.isNotEmpty && (isJobWithLink || (showWebFirst && !hasRead))) {
+      LinkUtil.launch(
+        story.url,
+        useReader: useReader,
+        offlineReading: offlineReading,
+      );
     }
 
     context.read<StoriesBloc>().add(
