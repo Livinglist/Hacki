@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:fast_gbk/fast_gbk.dart';
 import 'package:flutter/foundation.dart';
+import 'package:hacki/config/locator.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
@@ -112,6 +113,7 @@ class WebAnalyzer {
     required Story story,
     Duration cache = const Duration(hours: 24),
     bool multimedia = true,
+    required bool offlineReading,
   }) async {
     InfoBase? info = getInfoFromCache(url);
 
@@ -129,6 +131,25 @@ class WebAnalyzer {
       return info;
     }
 
+    if (offlineReading) {
+      int index = 0;
+      Comment? comment;
+
+      while (comment == null && index < story.kids.length) {
+        comment = await locator
+            .get<CacheRepository>()
+            .getCachedComment(id: story.kids.elementAt(index));
+        index++;
+      }
+
+      return WebInfo(
+        title: story.title,
+        description: comment != null ? '${comment.by}: ${comment.text}' : null,
+      )
+        .._shouldRetry = !offlineReading
+        .._timeout = DateTime.now();
+    }
+
     try {
       info = await _getInfoByIsolate(
         url: url,
@@ -140,11 +161,16 @@ class WebAnalyzer {
         info._timeout = DateTime.now().add(cache);
         cacheMap[url] = info;
       }
-    } catch (e) {
-      //locator.get<Logger>().log(Level.error, e);
-    }
 
-    return info;
+      return info;
+    } catch (e) {
+      return WebInfo(
+        title: story.title,
+        description: story.text,
+      )
+        .._shouldRetry = true
+        .._timeout = DateTime.now();
+    }
   }
 
   static Future<InfoBase?> _getInfo(String url, bool? multimedia) async {
@@ -256,20 +282,8 @@ class WebAnalyzer {
   static Future<String?> _fetchInfoFromStoryId(List<int> kids) async {
     if (kids.isEmpty) return null;
 
-    final Comment? comment = await StoriesRepository()
-        .fetchCommentBy(id: kids.first)
-        .catchError((Object err) async {
-      int index = 0;
-      Comment? comment;
-
-      while (comment == null && index < kids.length) {
-        comment =
-            await CacheRepository().getCachedComment(id: kids.elementAt(index));
-        index++;
-      }
-
-      return comment;
-    });
+    final Comment? comment =
+        await StoriesRepository().fetchCommentBy(id: kids.first);
 
     return comment != null ? '${comment.by}: ${comment.text}' : null;
   }

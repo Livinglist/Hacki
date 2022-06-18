@@ -923,7 +923,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               fontSize: 16,
             ),
           ),
-          actions: [
+          actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: const Text(
