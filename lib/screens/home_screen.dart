@@ -64,7 +64,10 @@ class _HomeScreenState extends State<HomeScreen>
   void didPopNext() {
     if (context.read<StoriesBloc>().deviceScreenType ==
         DeviceScreenType.mobile) {
-      cacheService.resetCollapsedComments();
+      Future<void>.delayed(
+        const Duration(seconds: 3),
+        cacheService.resetCollapsedComments,
+      );
     }
     super.didPopNext();
   }
