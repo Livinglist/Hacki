@@ -14,12 +14,15 @@ class OfflineListTile extends StatelessWidget {
       listenWhen: (StoriesState previous, StoriesState current) =>
           previous.downloadStatus != current.downloadStatus,
       listener: (BuildContext context, StoriesState state) {
-        if (state.downloadStatus == StoriesDownloadStatus.failure) {
+        if (state.downloadStatus == StoriesDownloadStatus.failure ||
+            state.downloadStatus == StoriesDownloadStatus.finished) {
           Wakelock.disable();
         }
       },
       buildWhen: (StoriesState previous, StoriesState current) =>
-          previous.downloadStatus != current.downloadStatus,
+          previous.downloadStatus != current.downloadStatus ||
+          previous.storiesDownloaded != current.storiesDownloaded ||
+          previous.storiesToBeDownloaded != current.storiesToBeDownloaded,
       builder: (BuildContext context, StoriesState state) {
         final bool downloading =
             state.downloadStatus == StoriesDownloadStatus.downloading;
@@ -41,11 +44,14 @@ class OfflineListTile extends StatelessWidget {
 
         return ListTile(
           title: Text(
-            downloading ? 'Downloading All Stories...' : 'Download All Stories',
+            downloading
+                ? '''Downloading All Stories (${state.storiesDownloaded}/${state.storiesToBeDownloaded})'''
+                : 'Download All Stories',
           ),
           subtitle: const Text(
             'download all latest stories that have at least one comment '
-            "for offline reading. (web page won't be downloaded)",
+            'for offline reading. (Please keep Hacki in foreground while '
+            'downloading.)',
           ),
           trailing: trailingWidget,
           isThreeLine: true,

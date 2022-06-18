@@ -23,6 +23,8 @@ class StoriesState extends Equatable {
     required this.offlineReading,
     required this.downloadStatus,
     required this.currentPageSize,
+    required this.storiesDownloaded,
+    required this.storiesToBeDownloaded,
   });
 
   const StoriesState.init({
@@ -61,7 +63,9 @@ class StoriesState extends Equatable {
   })  : offlineReading = false,
         downloadStatus = StoriesDownloadStatus.initial,
         currentPageSize = 0,
-        readStoriesIds = const <int>{};
+        readStoriesIds = const <int>{},
+        storiesDownloaded = 0,
+        storiesToBeDownloaded = 0;
 
   final Map<StoryType, List<Story>> storiesByType;
   final Map<StoryType, List<int>> storyIdsByType;
@@ -71,6 +75,8 @@ class StoriesState extends Equatable {
   final StoriesDownloadStatus downloadStatus;
   final bool offlineReading;
   final int currentPageSize;
+  final int storiesDownloaded;
+  final int storiesToBeDownloaded;
 
   StoriesState copyWith({
     Map<StoryType, List<Story>>? storiesByType,
@@ -81,6 +87,8 @@ class StoriesState extends Equatable {
     StoriesDownloadStatus? downloadStatus,
     bool? offlineReading,
     int? currentPageSize,
+    int? storiesDownloaded,
+    int? storiesToBeDownloaded,
   }) {
     return StoriesState(
       storiesByType: storiesByType ?? this.storiesByType,
@@ -91,6 +99,9 @@ class StoriesState extends Equatable {
       offlineReading: offlineReading ?? this.offlineReading,
       downloadStatus: downloadStatus ?? this.downloadStatus,
       currentPageSize: currentPageSize ?? this.currentPageSize,
+      storiesDownloaded: storiesDownloaded ?? this.storiesDownloaded,
+      storiesToBeDownloaded:
+          storiesToBeDownloaded ?? this.storiesToBeDownloaded,
     );
   }
 
@@ -102,18 +113,12 @@ class StoriesState extends Equatable {
     final Map<StoryType, List<Story>> newMap =
         Map<StoryType, List<Story>>.from(storiesByType);
     newMap[of] = List<Story>.from(newMap[of]!)..add(story);
-    return StoriesState(
+    return copyWith(
       storiesByType: newMap,
-      storyIdsByType: storyIdsByType,
-      statusByType: statusByType,
-      currentPageByType: currentPageByType,
       readStoriesIds: <int>{
         ...readStoriesIds,
         if (hasRead) story.id,
       },
-      offlineReading: offlineReading,
-      downloadStatus: downloadStatus,
-      currentPageSize: currentPageSize,
     );
   }
 
@@ -124,15 +129,8 @@ class StoriesState extends Equatable {
     final Map<StoryType, List<int>> newMap =
         Map<StoryType, List<int>>.from(storyIdsByType);
     newMap[of] = to;
-    return StoriesState(
-      storiesByType: storiesByType,
+    return copyWith(
       storyIdsByType: newMap,
-      statusByType: statusByType,
-      currentPageByType: currentPageByType,
-      readStoriesIds: readStoriesIds,
-      offlineReading: offlineReading,
-      downloadStatus: downloadStatus,
-      currentPageSize: currentPageSize,
     );
   }
 
@@ -143,15 +141,8 @@ class StoriesState extends Equatable {
     final Map<StoryType, StoriesStatus> newMap =
         Map<StoryType, StoriesStatus>.from(statusByType);
     newMap[of] = to;
-    return StoriesState(
-      storiesByType: storiesByType,
-      storyIdsByType: storyIdsByType,
+    return copyWith(
       statusByType: newMap,
-      currentPageByType: currentPageByType,
-      readStoriesIds: readStoriesIds,
-      offlineReading: offlineReading,
-      downloadStatus: downloadStatus,
-      currentPageSize: currentPageSize,
     );
   }
 
@@ -162,15 +153,8 @@ class StoriesState extends Equatable {
     final Map<StoryType, int> newMap =
         Map<StoryType, int>.from(currentPageByType);
     newMap[of] = to;
-    return StoriesState(
-      storiesByType: storiesByType,
-      storyIdsByType: storyIdsByType,
-      statusByType: statusByType,
+    return copyWith(
       currentPageByType: newMap,
-      readStoriesIds: readStoriesIds,
-      offlineReading: offlineReading,
-      downloadStatus: downloadStatus,
-      currentPageSize: currentPageSize,
     );
   }
 
@@ -187,15 +171,11 @@ class StoriesState extends Equatable {
     final Map<StoryType, int> newCurrentPageMap =
         Map<StoryType, int>.from(currentPageByType);
     newCurrentPageMap[of] = 0;
-    return StoriesState(
+    return copyWith(
       storiesByType: newStoriesMap,
       storyIdsByType: newStoryIdsMap,
       statusByType: newStatusMap,
       currentPageByType: newCurrentPageMap,
-      readStoriesIds: readStoriesIds,
-      offlineReading: offlineReading,
-      downloadStatus: downloadStatus,
-      currentPageSize: currentPageSize,
     );
   }
 
@@ -209,5 +189,7 @@ class StoriesState extends Equatable {
         offlineReading,
         downloadStatus,
         currentPageSize,
+        storiesDownloaded,
+        storiesToBeDownloaded,
       ];
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
+import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
@@ -43,6 +45,7 @@ class StoryTile extends StatelessWidget {
             child: LinkPreview(
               story: story,
               link: story.url,
+              offlineReading: context.read<StoriesBloc>().state.offlineReading,
               placeholderWidget: FadeIn(
                 child: SizedBox(
                   height: height,

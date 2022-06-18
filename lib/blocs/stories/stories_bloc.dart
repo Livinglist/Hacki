@@ -32,6 +32,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     on<StoryRead>(onStoryRead);
     on<StoriesLoaded>(onStoriesLoaded);
     on<StoriesDownload>(onDownload);
+    on<StoryDownloaded>(onStoryDownloaded);
     on<StoriesExitOffline>(onExitOffline);
     on<StoriesPageSizeChanged>(onPageSizeChanged);
     on<ClearAllReadStories>(onClearAllReadStories);
@@ -252,19 +253,26 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       allIds.addAll(ids);
     }
 
+    emit(state.copyWith(storiesToBeDownloaded: allIds.length));
+
     try {
       _storiesRepository
           .fetchStoriesStream(ids: allIds.toList())
           .listen((Story story) async {
         if (story.kids.isNotEmpty) {
           await _cacheRepository.cacheStory(story: story);
+          await _cacheRepository.cacheUrl(url: story.url);
           _storiesRepository
               .fetchAllChildrenComments(ids: story.kids)
               .listen((Comment? comment) async {
             if (comment != null) {
               await _cacheRepository.cacheComment(comment: comment);
             }
+          }).onDone(() {
+            add(StoryDownloaded(skipped: false));
           });
+        } else {
+          add(StoryDownloaded(skipped: true));
         }
       }).onDone(() {
         emit(
@@ -277,6 +285,22 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       emit(
         state.copyWith(
           downloadStatus: StoriesDownloadStatus.failure,
+        ),
+      );
+    }
+  }
+
+  void onStoryDownloaded(StoryDownloaded event, Emitter<StoriesState> emit) {
+    if (event.skipped) {
+      emit(
+        state.copyWith(
+          storiesToBeDownloaded: state.storiesToBeDownloaded - 1,
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(
+          storiesDownloaded: state.storiesDownloaded + 1,
         ),
       );
     }
@@ -297,6 +321,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     await _cacheRepository.deleteAllStoryIds();
     await _cacheRepository.deleteAllStories();
     await _cacheRepository.deleteAllComments();
+    await _cacheRepository.deleteAllWebPages();
     emit(state.copyWith(offlineReading: false));
     add(StoriesInitialize());
   }
