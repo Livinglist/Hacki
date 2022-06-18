@@ -178,7 +178,11 @@ class CommentsCubit extends Cubit<CommentsState> {
       if (updatedComments.length >= _pageSize + _pageSize * state.currentPage &&
           updatedComments.length <=
               _pageSize * 2 + _pageSize * state.currentPage) {
-        _streamSubscription?.pause();
+        final bool isHidden = _cacheService.isHidden(comment.id);
+
+        if (!isHidden) {
+          _streamSubscription?.pause();
+        }
 
         emit(
           state.copyWith(
