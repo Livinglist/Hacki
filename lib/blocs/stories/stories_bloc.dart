@@ -261,7 +261,11 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
           .listen((Story story) async {
         if (story.kids.isNotEmpty) {
           await _cacheRepository.cacheStory(story: story);
-          await _cacheRepository.cacheUrl(url: story.url);
+
+          if (story.url.isNotEmpty) {
+            await _cacheRepository.cacheUrl(url: story.url);
+          }
+
           _storiesRepository
               .fetchAllChildrenComments(ids: story.kids)
               .listen((Comment? comment) async {
