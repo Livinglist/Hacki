@@ -21,7 +21,13 @@ class _WebViewScreenState extends State<WebViewScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).canvasColor,
-        title: Text(humanize(widget.url)),
+        title: Text(
+          humanize(widget.url),
+          style: const TextStyle(
+            fontSize: 12,
+          ),
+        ),
+        centerTitle: true,
       ),
       body: WebView(
         onWebViewCreated: (WebViewController controller) async {
