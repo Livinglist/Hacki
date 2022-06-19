@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:hacki/config/locator.dart';
 import 'package:hacki/main.dart';
+import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart' show WebViewScreen;
 import 'package:url_launcher/url_launcher.dart';
 
@@ -15,11 +17,19 @@ abstract class LinkUtil {
     bool offlineReading = false,
   }) {
     if (offlineReading) {
-      HackiApp.navigatorKey.currentState?.push<void>(
-        MaterialPageRoute<void>(
-          builder: (BuildContext context) => WebViewScreen(url: link),
-        ),
-      );
+      locator
+          .get<CacheRepository>()
+          .hasCachedWebPage(url: link)
+          .then((bool cached) {
+        if (cached) {
+          HackiApp.navigatorKey.currentState?.push<void>(
+            MaterialPageRoute<void>(
+              builder: (BuildContext context) => WebViewScreen(url: link),
+            ),
+          );
+        }
+      });
+
       return;
     }
 

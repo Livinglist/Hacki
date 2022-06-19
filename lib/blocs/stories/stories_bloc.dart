@@ -245,52 +245,93 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     await _cacheRepository.deleteAllStories();
     await _cacheRepository.deleteAllComments();
 
-    final Set<int> allIds = <int>{};
+    final Set<int> prioritizedIds = <int>{};
+    final List<StoryType> prioritizedTypes = <StoryType>[...types]
+      ..remove(StoryType.latest);
 
-    for (final StoryType type in types) {
+    for (final StoryType type in prioritizedTypes) {
       final List<int> ids = await _storiesRepository.fetchStoryIds(of: type);
       await _cacheRepository.cacheStoryIds(of: type, ids: ids);
-      allIds.addAll(ids);
+      prioritizedIds.addAll(ids);
     }
 
-    emit(state.copyWith(storiesToBeDownloaded: allIds.length));
+    emit(state.copyWith(storiesToBeDownloaded: prioritizedIds.length));
 
     try {
-      _storiesRepository
-          .fetchStoriesStream(ids: allIds.toList())
-          .listen((Story story) async {
-        if (story.kids.isNotEmpty) {
-          await _cacheRepository.cacheStory(story: story);
+      await fetchAndCacheStories(
+        prioritizedIds,
+        includingWebPage: event.includingWebPage,
+        isPrioritized: true,
+      );
 
-          if (story.url.isNotEmpty) {
-            await _cacheRepository.cacheUrl(url: story.url);
-          }
+      final Set<int> latestIds = <int>{};
+      final List<int> ids = await _storiesRepository.fetchStoryIds(
+        of: StoryType.latest,
+      );
+      await _cacheRepository.cacheStoryIds(of: StoryType.latest, ids: ids);
+      latestIds.addAll(ids);
 
-          _storiesRepository
-              .fetchAllChildrenComments(ids: story.kids)
-              .listen((Comment? comment) async {
-            if (comment != null) {
-              await _cacheRepository.cacheComment(comment: comment);
-            }
-          }).onDone(() {
-            add(StoryDownloaded(skipped: false));
-          });
-        } else {
-          add(StoryDownloaded(skipped: true));
-        }
-      }).onDone(() {
-        emit(
-          state.copyWith(
-            downloadStatus: StoriesDownloadStatus.finished,
-          ),
-        );
-      });
+      await fetchAndCacheStories(
+        latestIds,
+        includingWebPage: event.includingWebPage,
+        isPrioritized: false,
+      );
+
+      emit(
+        state.copyWith(
+          downloadStatus: StoriesDownloadStatus.finished,
+        ),
+      );
     } catch (_) {
       emit(
         state.copyWith(
           downloadStatus: StoriesDownloadStatus.failure,
         ),
       );
+    }
+  }
+
+  Future<void> fetchAndCacheStories(
+    Iterable<int> ids, {
+    required bool includingWebPage,
+    required bool isPrioritized,
+  }) async {
+    for (final int id in ids) {
+      final Story? story = await _storiesRepository.fetchStoryBy(id);
+
+      if (story == null) {
+        if (isPrioritized) {
+          add(StoryDownloaded(skipped: true));
+        }
+        continue;
+      }
+
+      if (story.kids.isEmpty) {
+        if (isPrioritized) {
+          add(StoryDownloaded(skipped: true));
+        }
+        continue;
+      }
+
+      await _cacheRepository.cacheStory(story: story);
+
+      if (story.url.isNotEmpty && includingWebPage) {
+        await _cacheRepository.cacheUrl(url: story.url);
+      }
+
+      final Completer<void> completer = Completer<void>();
+      _storiesRepository
+          .fetchAllChildrenComments(ids: story.kids)
+          .listen((Comment? comment) async {
+        if (comment != null) {
+          await _cacheRepository.cacheComment(comment: comment);
+        }
+      }).onDone(() {
+        completer.complete();
+        add(StoryDownloaded(skipped: false));
+      });
+
+      await completer.future;
     }
   }
 
@@ -302,9 +343,14 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         ),
       );
     } else {
+      final int updatedStoriesDownloaded = state.storiesDownloaded + 1;
       emit(
         state.copyWith(
-          storiesDownloaded: state.storiesDownloaded + 1,
+          storiesDownloaded: updatedStoriesDownloaded,
+          storiesToBeDownloaded:
+              updatedStoriesDownloaded > state.storiesToBeDownloaded
+                  ? state.storiesToBeDownloaded + 1
+                  : state.storiesToBeDownloaded,
         ),
       );
     }

@@ -38,8 +38,12 @@ class StoriesLoadMore extends StoriesEvent {
 }
 
 class StoriesDownload extends StoriesEvent {
+  StoriesDownload({required this.includingWebPage});
+
+  final bool includingWebPage;
+
   @override
-  List<Object?> get props => <Object?>[];
+  List<Object?> get props => <Object?>[includingWebPage];
 }
 
 class StoryDownloaded extends StoriesEvent {
