@@ -22,10 +22,11 @@ class _WebViewScreenState extends State<WebViewScreen> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).canvasColor,
         title: Text(
-          humanize(widget.url).substring(0, 20),
+          humanize(widget.url),
           style: const TextStyle(
             fontSize: 12,
           ),
+          overflow: TextOverflow.ellipsis,
           textAlign: TextAlign.center,
         ),
         centerTitle: true,
