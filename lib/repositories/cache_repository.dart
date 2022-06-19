@@ -54,6 +54,11 @@ class CacheRepository {
     return box.get(url);
   }
 
+  Future<bool> hasCachedWebPage({required String url}) async {
+    final Box<String> box = await _webPageBox;
+    return box.containsKey(url);
+  }
+
   Future<List<int>> getCachedStoryIds({required StoryType of}) async {
     final Box<List<int>> box = await _storyIdBox;
     final List<int>? ids = box.get(of.name);
@@ -149,10 +154,14 @@ class CacheRepository {
   }
 
   static Future<String> downloadWebPage(String link) async {
-    final Client client = Client();
-    final Uri url = Uri.parse(link);
-    final Response response = await client.get(url);
-    final String body = response.body;
-    return body;
+    try {
+      final Client client = Client();
+      final Uri url = Uri.parse(link);
+      final Response response = await client.get(url);
+      final String body = response.body;
+      return body;
+    } catch (_) {
+      return '''Web page not available.''';
+    }
   }
 }

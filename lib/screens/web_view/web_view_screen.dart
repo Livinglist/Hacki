@@ -26,6 +26,8 @@ class _WebViewScreenState extends State<WebViewScreen> {
           style: const TextStyle(
             fontSize: 12,
           ),
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
         ),
         centerTitle: true,
       ),

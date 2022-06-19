@@ -56,10 +56,41 @@ class OfflineListTile extends StatelessWidget {
           trailing: trailingWidget,
           isThreeLine: true,
           onTap: () {
+            if (state.downloadStatus == StoriesDownloadStatus.downloading) {
+              return;
+            }
             Connectivity().checkConnectivity().then((ConnectivityResult res) {
               if (res != ConnectivityResult.none) {
-                Wakelock.enable();
-                context.read<StoriesBloc>().add(StoriesDownload());
+                showDialog<bool>(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    title: const Text('Download web pages as well?'),
+                    content: const Text('It will take longer time.'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text('No'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: const Text('Yes'),
+                      ),
+                    ],
+                  ),
+                ).then((bool? includeWebPage) {
+                  if (includeWebPage != null) {
+                    Wakelock.enable();
+                    context.read<StoriesBloc>().add(
+                          StoriesDownload(
+                            includingWebPage: includeWebPage,
+                          ),
+                        );
+                  }
+                });
               }
             });
           },

@@ -62,14 +62,14 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void didPopNext() {
+    super.didPopNext();
     if (context.read<StoriesBloc>().deviceScreenType ==
         DeviceScreenType.mobile) {
       Future<void>.delayed(
-        const Duration(seconds: 3),
+        const Duration(milliseconds: 500),
         cacheService.resetCollapsedComments,
       );
     }
-    super.didPopNext();
   }
 
   @override

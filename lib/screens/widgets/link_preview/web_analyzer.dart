@@ -142,12 +142,14 @@ class WebAnalyzer {
         index++;
       }
 
-      return WebInfo(
+      info = WebInfo(
         title: story.title,
         description: comment != null ? '${comment.by}: ${comment.text}' : null,
       )
-        .._shouldRetry = !offlineReading
+        .._shouldRetry = false
         .._timeout = DateTime.now();
+      cacheMap[url] = info;
+      return info;
     }
 
     try {
