@@ -255,7 +255,12 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       prioritizedIds.addAll(ids);
     }
 
-    emit(state.copyWith(storiesToBeDownloaded: prioritizedIds.length));
+    emit(
+      state.copyWith(
+        storiesDownloaded: 0,
+        storiesToBeDownloaded: prioritizedIds.length,
+      ),
+    );
 
     try {
       await fetchAndCacheStories(
