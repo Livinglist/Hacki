@@ -11,6 +11,7 @@ class BuildableComment extends Comment {
     required super.by,
     required super.text,
     required super.kids,
+    required super.dead,
     required super.deleted,
     required super.level,
     required this.elements,
@@ -25,6 +26,7 @@ class BuildableComment extends Comment {
           by: comment.by,
           text: comment.text,
           kids: comment.kids,
+          dead: comment.dead,
           deleted: comment.deleted,
           level: comment.level,
         );

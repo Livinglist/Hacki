@@ -12,11 +12,11 @@ class Comment extends Item {
     required super.by,
     required super.text,
     required super.kids,
+    required super.dead,
     required super.deleted,
     required this.level,
   }) : super(
           descendants: 0,
-          dead: false,
           parts: <int>[],
           title: '',
           url: '',
@@ -55,6 +55,7 @@ class Comment extends Item {
       by: by,
       text: text,
       kids: kids,
+      dead: dead,
       deleted: deleted,
       level: level ?? this.level,
     );
