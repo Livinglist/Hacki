@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:hacki/config/locator.dart';
@@ -76,9 +77,9 @@ class CommentsCubit extends Cubit<CommentsState> {
         case CommentsOrder.natural:
           return story.kids;
         case CommentsOrder.newestFirst:
-          return story.kids..sort((int a, int b) => b.compareTo(a));
+          return story.kids.sorted((int a, int b) => b.compareTo(a));
         case CommentsOrder.oldestFirst:
-          return story.kids..sort();
+          return story.kids.sorted((int a, int b) => a.compareTo(b));
       }
     }();
 
@@ -98,11 +99,7 @@ class CommentsCubit extends Cubit<CommentsState> {
   }
 
   Future<void> refresh() async {
-    final bool offlineReading = await _cacheRepository.hasCachedStories;
-
-    _cacheService.resetCollapsedComments();
-
-    if (offlineReading) {
+    if (state.offlineReading) {
       emit(
         state.copyWith(
           status: CommentsStatus.loaded,
@@ -110,6 +107,10 @@ class CommentsCubit extends Cubit<CommentsState> {
       );
       return;
     }
+
+    _cacheService
+      ..resetComments()
+      ..resetCollapsedComments();
 
     emit(
       state.copyWith(
@@ -128,9 +129,9 @@ class CommentsCubit extends Cubit<CommentsState> {
         case CommentsOrder.natural:
           return story.kids;
         case CommentsOrder.newestFirst:
-          return story.kids..sort((int a, int b) => b.compareTo(a));
+          return story.kids.sorted((int a, int b) => b.compareTo(a));
         case CommentsOrder.oldestFirst:
-          return story.kids..sort();
+          return story.kids.sorted((int a, int b) => a.compareTo(b));
       }
     }();
 

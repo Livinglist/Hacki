@@ -280,11 +280,15 @@ class _StoryScreenState extends State<StoryScreen> {
                 controller: refreshController,
                 onRefresh: () {
                   HapticFeedback.lightImpact();
-                  locator.get<CacheService>().resetComments();
-                  context.read<CommentsCubit>().refresh();
 
-                  if (widget.story.isPoll) {
-                    context.read<PollCubit>().refresh();
+                  if (context.read<StoriesBloc>().state.offlineReading) {
+                    refreshController.refreshCompleted();
+                  } else {
+                    context.read<CommentsCubit>().refresh();
+
+                    if (widget.story.isPoll) {
+                      context.read<PollCubit>().refresh();
+                    }
                   }
                 },
                 onLoading: context.read<CommentsCubit>().loadMore,
@@ -455,20 +459,38 @@ class _StoryScreenState extends State<StoryScreen> {
                             items: const <DropdownMenuItem<CommentsOrder>>[
                               DropdownMenuItem<CommentsOrder>(
                                 value: CommentsOrder.natural,
-                                child: Text('Natural'),
+                                child: Text(
+                                  'Natural',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
                               ),
                               DropdownMenuItem<CommentsOrder>(
                                 value: CommentsOrder.newestFirst,
-                                child: Text('Newest first'),
+                                child: Text(
+                                  'Newest first',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
                               ),
                               DropdownMenuItem<CommentsOrder>(
                                 value: CommentsOrder.oldestFirst,
-                                child: Text('Oldest first'),
+                                child: Text(
+                                  'Oldest first',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
                               ),
                             ],
                             onChanged:
                                 context.read<CommentsCubit>().onOrderChanged,
-                          )
+                          ),
+                          const SizedBox(
+                            width: 4,
+                          ),
                         ],
                       ),
                       const Divider(
