@@ -71,17 +71,27 @@ class CommentsCubit extends Cubit<CommentsState> {
     final Story updatedStory = state.offlineReading
         ? story
         : await _storiesRepository.fetchStoryBy(story.id) ?? story;
+    final List<int> kids = () {
+      switch (state.order) {
+        case CommentsOrder.natural:
+          return story.kids;
+        case CommentsOrder.newestFirst:
+          return story.kids..sort((int a, int b) => b.compareTo(a));
+        case CommentsOrder.oldestFirst:
+          return story.kids..sort();
+      }
+    }();
 
     emit(state.copyWith(story: updatedStory));
 
     if (state.offlineReading) {
       _streamSubscription = _cacheRepository
-          .getCachedCommentsStream(ids: updatedStory.kids)
+          .getCachedCommentsStream(ids: kids)
           .listen(_onCommentFetched)
         ..onDone(_onDone);
     } else {
       _streamSubscription = _storiesRepository
-          .fetchCommentsStream(ids: updatedStory.kids)
+          .fetchCommentsStream(ids: kids)
           .listen(_onCommentFetched)
         ..onDone(_onDone);
     }
@@ -113,8 +123,19 @@ class CommentsCubit extends Cubit<CommentsState> {
     final Story story = state.story;
     final Story updatedStory =
         await _storiesRepository.fetchStoryBy(story.id) ?? story;
+    final List<int> kids = () {
+      switch (state.order) {
+        case CommentsOrder.natural:
+          return story.kids;
+        case CommentsOrder.newestFirst:
+          return story.kids..sort((int a, int b) => b.compareTo(a));
+        case CommentsOrder.oldestFirst:
+          return story.kids..sort();
+      }
+    }();
+
     _streamSubscription = _storiesRepository
-        .fetchCommentsStream(ids: updatedStory.kids)
+        .fetchCommentsStream(ids: kids)
         .listen(_onCommentFetched)
       ..onDone(_onDone);
 
@@ -161,7 +182,7 @@ class CommentsCubit extends Cubit<CommentsState> {
         ..cacheComment(comment);
       _sembastRepository.cacheComment(comment);
 
-      final List<LinkifyElement> elements = linkify(
+      final List<LinkifyElement> elements = _linkify(
         comment.text,
       );
 
@@ -194,7 +215,14 @@ class CommentsCubit extends Cubit<CommentsState> {
     }
   }
 
-  List<LinkifyElement> linkify(
+  void onOrderChanged(CommentsOrder? order) {
+    if (order == null) return;
+    _streamSubscription?.cancel();
+    emit(state.copyWith(order: order, comments: <Comment>[]));
+    init();
+  }
+
+  static List<LinkifyElement> _linkify(
     String text, {
     LinkifyOptions options = const LinkifyOptions(),
     List<Linkifier> linkifiers = const <Linkifier>[

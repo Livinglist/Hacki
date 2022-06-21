@@ -439,6 +439,41 @@ class _StoryScreenState extends State<StoryScreen> {
                       const Divider(
                         height: 0,
                       ),
+                    ] else ...<Widget>[
+                      Row(
+                        children: <Widget>[
+                          const SizedBox(
+                            width: 12,
+                          ),
+                          Text(
+                            '''${state.story.score} karma, ${state.story.descendants} comments''',
+                          ),
+                          const Spacer(),
+                          DropdownButton<CommentsOrder>(
+                            value: state.order,
+                            underline: const SizedBox.shrink(),
+                            items: const <DropdownMenuItem<CommentsOrder>>[
+                              DropdownMenuItem<CommentsOrder>(
+                                value: CommentsOrder.natural,
+                                child: Text('Natural'),
+                              ),
+                              DropdownMenuItem<CommentsOrder>(
+                                value: CommentsOrder.newestFirst,
+                                child: Text('Newest first'),
+                              ),
+                              DropdownMenuItem<CommentsOrder>(
+                                value: CommentsOrder.oldestFirst,
+                                child: Text('Oldest first'),
+                              ),
+                            ],
+                            onChanged:
+                                context.read<CommentsCubit>().onOrderChanged,
+                          )
+                        ],
+                      ),
+                      const Divider(
+                        height: 0,
+                      ),
                     ],
                     if (state.comments.isEmpty &&
                         state.status == CommentsStatus.allLoaded) ...<Widget>[
