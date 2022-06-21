@@ -219,8 +219,8 @@ class WebAnalyzer {
 
     if (res == null || isEmpty(res[2] as String?)) {
       final String? commentText = await compute(
-        _fetchInfoFromStoryId,
-        story.kids,
+        _fetchInfoFromStory,
+        <int>[story.id, ...story.kids],
       );
 
       shouldRetry = commentText == null;
@@ -286,11 +286,25 @@ class WebAnalyzer {
     }
   }
 
-  static Future<String?> _fetchInfoFromStoryId(List<int> kids) async {
-    if (kids.isEmpty) return null;
+  static Future<String?> _fetchInfoFromStory(List<int> meta) async {
+    final StoriesRepository storiesRepository = StoriesRepository();
+    final int storyId = meta.first;
+    List<int> kids = meta.sublist(1, meta.length);
+
+    // Kids of stories from search results are always empty, so here we try
+    // to fetch the story itself first and see if the kids are still empty.
+    if (kids.isEmpty) {
+      final Story? story = await storiesRepository.fetchStoryBy(storyId);
+
+      if (story == null) return null;
+
+      kids = story.kids;
+
+      if (kids.isEmpty) return null;
+    }
 
     final Comment? comment =
-        await StoriesRepository().fetchCommentBy(id: kids.first);
+        await storiesRepository.fetchCommentBy(id: kids.first);
 
     return comment != null ? '${comment.by}: ${comment.text}' : null;
   }

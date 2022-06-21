@@ -461,17 +461,6 @@ class _StoryScreenState extends State<StoryScreen> {
                           myUsername:
                               authState.isLoggedIn ? authState.username : null,
                           opUsername: widget.story.by,
-                          onCollapseTapped: (Comment cmt) {
-                            if (state.status == CommentsStatus.loaded) {
-                              final bool isHidden = locator
-                                  .get<CacheService>()
-                                  .isHidden(state.comments.last.id);
-
-                              if (isHidden) {
-                                context.read<CommentsCubit>().loadMore();
-                              }
-                            }
-                          },
                           onReplyTapped: (Comment cmt) {
                             HapticFeedback.lightImpact();
                             if (cmt.deleted || cmt.dead) {
