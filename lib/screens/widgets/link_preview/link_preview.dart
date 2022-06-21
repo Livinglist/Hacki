@@ -175,7 +175,7 @@ class _LinkPreviewState extends State<LinkPreview> {
         metadata: widget.story.simpleMetadata,
         url: widget.link,
         title: widget.story.title,
-        description: desc ?? title ?? 'no comments yet.',
+        description: desc ?? title ?? 'no comment yet.',
         imageUri: imageUri,
         imagePath: Constants.hackerNewsLogoPath,
         onTap: _launchURL,

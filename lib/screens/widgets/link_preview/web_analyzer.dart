@@ -224,7 +224,7 @@ class WebAnalyzer {
       );
 
       shouldRetry = commentText == null;
-      fallbackDescription = commentText ?? 'no comments yet';
+      fallbackDescription = commentText ?? 'no comment yet';
     } else {
       shouldRetry = false;
     }

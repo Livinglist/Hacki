@@ -450,7 +450,7 @@ class _StoryScreenState extends State<StoryScreen> {
                             width: 12,
                           ),
                           Text(
-                            '''${state.story.score} karma, ${state.story.descendants} comments''',
+                            '''${state.story.score} karma, ${state.story.descendants} comment${state.story.descendants > 1 ? 's' : ''}''',
                           ),
                           const Spacer(),
                           DropdownButton<CommentsOrder>(
