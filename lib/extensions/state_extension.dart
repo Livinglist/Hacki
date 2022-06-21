@@ -26,10 +26,13 @@ extension StateExtension on State {
     );
   }
 
-  Future<void>? goToItemScreen({required ItemScreenArgs args}) {
+  Future<void>? goToItemScreen({
+    required ItemScreenArgs args,
+    bool forceNewScreen = false,
+  }) {
     final bool splitViewEnabled = context.read<SplitViewCubit>().state.enabled;
 
-    if (splitViewEnabled) {
+    if (splitViewEnabled && !forceNewScreen) {
       context.read<SplitViewCubit>().updateItemScreenArgs(args);
     } else {
       return HackiApp.navigatorKey.currentState?.pushNamed(

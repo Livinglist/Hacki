@@ -729,7 +729,10 @@ class _ItemScreenState extends State<ItemScreen> {
                   onTap: () {
                     HapticFeedback.lightImpact();
                     Navigator.pop(context);
-                    goToItemScreen(args: ItemScreenArgs(item: comment));
+                    goToItemScreen(
+                      args: ItemScreenArgs(item: comment),
+                      forceNewScreen: true,
+                    );
                   },
                 ),
               ],
