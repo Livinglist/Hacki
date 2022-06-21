@@ -75,11 +75,11 @@ class CommentsCubit extends Cubit<CommentsState> {
     final List<int> kids = () {
       switch (state.order) {
         case CommentsOrder.natural:
-          return story.kids;
+          return updatedStory.kids;
         case CommentsOrder.newestFirst:
-          return story.kids.sorted((int a, int b) => b.compareTo(a));
+          return updatedStory.kids.sorted((int a, int b) => b.compareTo(a));
         case CommentsOrder.oldestFirst:
-          return story.kids.sorted((int a, int b) => a.compareTo(b));
+          return updatedStory.kids.sorted((int a, int b) => a.compareTo(b));
       }
     }();
 
@@ -127,11 +127,11 @@ class CommentsCubit extends Cubit<CommentsState> {
     final List<int> kids = () {
       switch (state.order) {
         case CommentsOrder.natural:
-          return story.kids;
+          return updatedStory.kids;
         case CommentsOrder.newestFirst:
-          return story.kids.sorted((int a, int b) => b.compareTo(a));
+          return updatedStory.kids.sorted((int a, int b) => b.compareTo(a));
         case CommentsOrder.oldestFirst:
-          return story.kids.sorted((int a, int b) => a.compareTo(b));
+          return updatedStory.kids.sorted((int a, int b) => a.compareTo(b));
       }
     }();
 
