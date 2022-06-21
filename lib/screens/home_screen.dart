@@ -436,13 +436,10 @@ class _HomeScreenState extends State<HomeScreen>
     final int? id = event.getItemId();
 
     if (id != null) {
-      locator
-          .get<StoriesRepository>()
-          .fetchParentStory(id: id)
-          .then((Story? story) {
+      locator.get<StoriesRepository>().fetchItemBy(id: id).then((Item? item) {
         if (mounted) {
-          if (story != null) {
-            goToItemScreen(args: ItemScreenArgs(item: story));
+          if (item != null) {
+            goToItemScreen(args: ItemScreenArgs(item: item));
           }
         }
       });

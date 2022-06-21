@@ -829,19 +829,6 @@ class _ItemScreenState extends State<ItemScreen> {
             }
           }
         });
-        //   locator
-        //       .get<StoriesRepository>()
-        //       .fetchParentStory(id: id)
-        //       .then((Story? story) {
-        //     if (mounted) {
-        //       if (story != null) {
-        //         HackiApp.navigatorKey.currentState!.pushNamed(
-        //           StoryScreen.routeName,
-        //           arguments: StoryScreenArgs(item: story),
-        //         );
-        //       }
-        //     }
-        //   });
       });
     } else {
       LinkUtil.launch(link);
