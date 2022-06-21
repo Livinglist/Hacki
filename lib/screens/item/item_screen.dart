@@ -721,7 +721,8 @@ class _ItemScreenState extends State<ItemScreen> {
                     Navigator.pop(context);
                     onTimeMachineActivated(comment);
                   },
-                  enabled: comment.level > 0,
+                  enabled:
+                      comment.level > 0 && !(comment.dead || comment.deleted),
                 ),
                 ListTile(
                   leading: const Icon(Icons.list),
@@ -734,6 +735,7 @@ class _ItemScreenState extends State<ItemScreen> {
                       forceNewScreen: true,
                     );
                   },
+                  enabled: !(comment.dead || comment.deleted),
                 ),
               ],
             ),
