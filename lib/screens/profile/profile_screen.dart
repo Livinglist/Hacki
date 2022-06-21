@@ -408,7 +408,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   showAboutDialog(
                                     context: context,
                                     applicationName: 'Hacki',
-                                    applicationVersion: 'v0.2.19',
+                                    applicationVersion: 'v0.2.20',
                                     applicationIcon: ClipRRect(
                                       borderRadius: const BorderRadius.all(
                                         Radius.circular(12),
@@ -676,7 +676,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                     .get<SembastRepository>()
                     .deleteAllCachedComments()
                     .whenComplete(
-                      locator.get<SembastRepository>().deleteAllCachedComments,
+                      locator.get<CacheRepository>().deleteAll,
                     )
                     .whenComplete(
                       locator.get<PreferenceRepository>().clearAllReadStories,

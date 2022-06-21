@@ -76,6 +76,10 @@ class StoryScreen extends StatefulWidget {
                 targetParents: args.targetComments,
               ),
           ),
+          BlocProvider<EditCubit>(
+            lazy: false,
+            create: (BuildContext context) => EditCubit(),
+          ),
           if (args.story.isPoll)
             BlocProvider<PollCubit>(
               create: (BuildContext context) =>
@@ -111,6 +115,10 @@ class StoryScreen extends StatefulWidget {
                 onlyShowTargetComment: args.onlyShowTargetComment,
                 targetParents: args.targetComments,
               ),
+          ),
+          BlocProvider<EditCubit>(
+            lazy: false,
+            create: (BuildContext context) => EditCubit(),
           ),
           if (args.story.isPoll)
             BlocProvider<PollCubit>(
@@ -187,6 +195,7 @@ class _StoryScreenState extends State<StoryScreen> {
     scrollController.dispose();
     storyLinkTapThrottle.dispose();
     featureDiscoveryDismissThrottle.dispose();
+    focusNode.dispose();
     super.dispose();
   }
 
@@ -271,16 +280,18 @@ class _StoryScreenState extends State<StoryScreen> {
                 controller: refreshController,
                 onRefresh: () {
                   HapticFeedback.lightImpact();
-                  locator.get<CacheService>().resetComments();
-                  context.read<CommentsCubit>().refresh();
 
-                  if (widget.story.isPoll) {
-                    context.read<PollCubit>().refresh();
+                  if (context.read<StoriesBloc>().state.offlineReading) {
+                    refreshController.refreshCompleted();
+                  } else {
+                    context.read<CommentsCubit>().refresh();
+
+                    if (widget.story.isPoll) {
+                      context.read<PollCubit>().refresh();
+                    }
                   }
                 },
-                onLoading: () {
-                  context.read<CommentsCubit>().loadMore();
-                },
+                onLoading: context.read<CommentsCubit>().loadMore,
                 child: ListView(
                   primary: false,
                   children: <Widget>[
@@ -432,6 +443,59 @@ class _StoryScreenState extends State<StoryScreen> {
                       const Divider(
                         height: 0,
                       ),
+                    ] else ...<Widget>[
+                      Row(
+                        children: <Widget>[
+                          const SizedBox(
+                            width: 12,
+                          ),
+                          Text(
+                            '''${state.story.score} karma, ${state.story.descendants} comment${state.story.descendants > 1 ? 's' : ''}''',
+                          ),
+                          const Spacer(),
+                          DropdownButton<CommentsOrder>(
+                            value: state.order,
+                            underline: const SizedBox.shrink(),
+                            items: const <DropdownMenuItem<CommentsOrder>>[
+                              DropdownMenuItem<CommentsOrder>(
+                                value: CommentsOrder.natural,
+                                child: Text(
+                                  'Natural',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                              DropdownMenuItem<CommentsOrder>(
+                                value: CommentsOrder.newestFirst,
+                                child: Text(
+                                  'Newest first',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                              DropdownMenuItem<CommentsOrder>(
+                                value: CommentsOrder.oldestFirst,
+                                child: Text(
+                                  'Oldest first',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ],
+                            onChanged:
+                                context.read<CommentsCubit>().onOrderChanged,
+                          ),
+                          const SizedBox(
+                            width: 4,
+                          ),
+                        ],
+                      ),
+                      const Divider(
+                        height: 0,
+                      ),
                     ],
                     if (state.comments.isEmpty &&
                         state.status == CommentsStatus.allLoaded) ...<Widget>[
@@ -530,8 +594,10 @@ class _StoryScreenState extends State<StoryScreen> {
                                 SplitViewState current,
                               ) =>
                                   previous.expanded != current.expanded,
-                              builder:
-                                  (BuildContext context, SplitViewState state) {
+                              builder: (
+                                BuildContext context,
+                                SplitViewState state,
+                              ) {
                                 return Positioned(
                                   top: 0,
                                   left: 0,

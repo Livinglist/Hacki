@@ -95,12 +95,12 @@ class WebAnalyzer {
 
   /// Get web information
   /// return [InfoBase]
-  static InfoBase? getInfoFromCache(String? url) {
-    final InfoBase? info = cacheMap[url];
+  static InfoBase? getInfoFromCache(String? cacheKey) {
+    final InfoBase? info = cacheMap[cacheKey];
 
     if (info != null) {
       if (!info._timeout.isAfter(DateTime.now())) {
-        cacheMap.remove(url);
+        cacheMap.remove(cacheKey);
       }
     }
     return info;
@@ -108,14 +108,16 @@ class WebAnalyzer {
 
   /// Get web information
   /// return [InfoBase]
-  static Future<InfoBase?> getInfo(
-    String? url, {
+  static Future<InfoBase?> getInfo({
     required Story story,
     Duration cache = const Duration(hours: 24),
     bool multimedia = true,
     required bool offlineReading,
   }) async {
-    InfoBase? info = getInfoFromCache(url);
+    final String key = getKey(story);
+    final String url = story.url;
+
+    InfoBase? info = getInfoFromCache(key);
 
     if (info != null) return info;
 
@@ -126,7 +128,8 @@ class WebAnalyzer {
       )
         .._timeout = DateTime.now().add(cache)
         .._shouldRetry = false;
-      cacheMap[story.id.toString()] = info;
+
+      cacheMap[key] = info;
 
       return info;
     }
@@ -148,7 +151,9 @@ class WebAnalyzer {
       )
         .._shouldRetry = false
         .._timeout = DateTime.now();
-      cacheMap[url] = info;
+
+      cacheMap[key] = info;
+
       return info;
     }
 
@@ -161,7 +166,7 @@ class WebAnalyzer {
 
       if (info != null && !info._shouldRetry) {
         info._timeout = DateTime.now().add(cache);
-        cacheMap[url] = info;
+        cacheMap[key] = info;
       }
 
       return info;
@@ -214,12 +219,12 @@ class WebAnalyzer {
 
     if (res == null || isEmpty(res[2] as String?)) {
       final String? commentText = await compute(
-        _fetchInfoFromStoryId,
-        story.kids,
+        _fetchInfoFromStory,
+        <int>[story.id, ...story.kids],
       );
 
       shouldRetry = commentText == null;
-      fallbackDescription = commentText ?? 'no comments yet';
+      fallbackDescription = commentText ?? 'no comment yet';
     } else {
       shouldRetry = false;
     }
@@ -281,11 +286,25 @@ class WebAnalyzer {
     }
   }
 
-  static Future<String?> _fetchInfoFromStoryId(List<int> kids) async {
-    if (kids.isEmpty) return null;
+  static Future<String?> _fetchInfoFromStory(List<int> meta) async {
+    final StoriesRepository storiesRepository = StoriesRepository();
+    final int storyId = meta.first;
+    List<int> kids = meta.sublist(1, meta.length);
+
+    // Kids of stories from search results are always empty, so here we try
+    // to fetch the story itself first and see if the kids are still empty.
+    if (kids.isEmpty) {
+      final Story? story = await storiesRepository.fetchStoryBy(storyId);
+
+      if (story == null) return null;
+
+      kids = story.kids;
+
+      if (kids.isEmpty) return null;
+    }
 
     final Comment? comment =
-        await StoriesRepository().fetchCommentBy(id: kids.first);
+        await storiesRepository.fetchCommentBy(id: kids.first);
 
     return comment != null ? '${comment.by}: ${comment.text}' : null;
   }
@@ -540,4 +559,7 @@ class WebAnalyzer {
     }
     return source;
   }
+
+  static String getKey(Story story) =>
+      story.url.isNotEmpty ? story.url : story.id.toString();
 }

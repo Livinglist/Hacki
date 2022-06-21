@@ -8,12 +8,18 @@ enum CommentsStatus {
   failure,
 }
 
+enum CommentsOrder {
+  natural,
+  newestFirst,
+  oldestFirst,
+}
+
 class CommentsState extends Equatable {
   const CommentsState({
     required this.story,
     required this.comments,
     required this.status,
-    required this.collapsed,
+    required this.order,
     required this.onlyShowTargetComment,
     required this.offlineReading,
     required this.currentPage,
@@ -24,14 +30,14 @@ class CommentsState extends Equatable {
     required this.story,
   })  : comments = <Comment>[],
         status = CommentsStatus.init,
-        collapsed = false,
+        order = CommentsOrder.natural,
         onlyShowTargetComment = false,
         currentPage = 0;
 
   final Story story;
   final List<Comment> comments;
   final CommentsStatus status;
-  final bool collapsed;
+  final CommentsOrder order;
   final bool onlyShowTargetComment;
   final bool offlineReading;
   final int currentPage;
@@ -40,7 +46,7 @@ class CommentsState extends Equatable {
     Story? story,
     List<Comment>? comments,
     CommentsStatus? status,
-    bool? collapsed,
+    CommentsOrder? order,
     bool? onlyShowTargetComment,
     bool? offlineReading,
     int? currentPage,
@@ -49,7 +55,7 @@ class CommentsState extends Equatable {
       story: story ?? this.story,
       comments: comments ?? this.comments,
       status: status ?? this.status,
-      collapsed: collapsed ?? this.collapsed,
+      order: order ?? this.order,
       onlyShowTargetComment:
           onlyShowTargetComment ?? this.onlyShowTargetComment,
       offlineReading: offlineReading ?? this.offlineReading,
@@ -62,7 +68,7 @@ class CommentsState extends Equatable {
         story,
         comments,
         status,
-        collapsed,
+        order,
         onlyShowTargetComment,
         offlineReading,
         currentPage,

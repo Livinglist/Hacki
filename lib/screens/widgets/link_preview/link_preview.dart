@@ -109,7 +109,7 @@ class LinkPreview extends StatefulWidget {
 
 class _LinkPreviewState extends State<LinkPreview> {
   InfoBase? _info;
-  String? _errorTitle, _errorBody, _url;
+  String? _errorTitle, _errorBody;
   bool _loading = false;
 
   @override
@@ -119,37 +119,19 @@ class _LinkPreviewState extends State<LinkPreview> {
         'Oops! Unable to parse the url. We have '
             'sent feedback to our developers & '
             'we will try to fix this in our next release. Thanks!';
-    _url = widget.link.trim();
 
-    if (_url?.isNotEmpty ?? false) {
-      _info = WebAnalyzer.getInfoFromCache(_url);
-    } else {
-      _info = WebAnalyzer.getInfoFromCache(widget.story.id.toString());
-    }
+    _loading = true;
+    _getInfo();
 
-    if (_info == null) {
-      _loading = true;
-      _getInfo();
-    }
     super.initState();
   }
 
   Future<void> _getInfo() async {
-    if (_url!.startsWith('http') || _url!.startsWith('https')) {
-      _info = await WebAnalyzer.getInfo(
-        _url,
-        story: widget.story,
-        cache: widget.cache,
-        offlineReading: widget.offlineReading,
-      );
-    } else {
-      _info = await WebAnalyzer.getInfo(
-        null,
-        story: widget.story,
-        cache: widget.cache,
-        offlineReading: widget.offlineReading,
-      );
-    }
+    _info = await WebAnalyzer.getInfo(
+      story: widget.story,
+      cache: widget.cache,
+      offlineReading: widget.offlineReading,
+    );
 
     if (mounted) {
       setState(() {
@@ -193,7 +175,7 @@ class _LinkPreviewState extends State<LinkPreview> {
         metadata: widget.story.simpleMetadata,
         url: widget.link,
         title: widget.story.title,
-        description: desc ?? title ?? 'no comments yet.',
+        description: desc ?? title ?? 'no comment yet.',
         imageUri: imageUri,
         imagePath: Constants.hackerNewsLogoPath,
         onTap: _launchURL,

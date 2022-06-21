@@ -179,10 +179,6 @@ class HackiApp extends StatelessWidget {
           lazy: false,
           create: (BuildContext context) => PostCubit(),
         ),
-        BlocProvider<EditCubit>(
-          lazy: false,
-          create: (BuildContext context) => EditCubit(),
-        ),
       ],
       child: AdaptiveTheme(
         light: ThemeData(
