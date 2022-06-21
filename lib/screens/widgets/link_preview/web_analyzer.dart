@@ -95,12 +95,12 @@ class WebAnalyzer {
 
   /// Get web information
   /// return [InfoBase]
-  static InfoBase? getInfoFromCache(String? url) {
-    final InfoBase? info = cacheMap[url];
+  static InfoBase? getInfoFromCache(String? cacheKey) {
+    final InfoBase? info = cacheMap[cacheKey];
 
     if (info != null) {
       if (!info._timeout.isAfter(DateTime.now())) {
-        cacheMap.remove(url);
+        cacheMap.remove(cacheKey);
       }
     }
     return info;
@@ -108,14 +108,16 @@ class WebAnalyzer {
 
   /// Get web information
   /// return [InfoBase]
-  static Future<InfoBase?> getInfo(
-    String? url, {
+  static Future<InfoBase?> getInfo({
     required Story story,
     Duration cache = const Duration(hours: 24),
     bool multimedia = true,
     required bool offlineReading,
   }) async {
-    InfoBase? info = getInfoFromCache(url);
+    final String key = getKey(story);
+    final String url = story.url;
+
+    InfoBase? info = getInfoFromCache(key);
 
     if (info != null) return info;
 
@@ -126,7 +128,8 @@ class WebAnalyzer {
       )
         .._timeout = DateTime.now().add(cache)
         .._shouldRetry = false;
-      cacheMap[story.id.toString()] = info;
+
+      cacheMap[key] = info;
 
       return info;
     }
@@ -148,7 +151,9 @@ class WebAnalyzer {
       )
         .._shouldRetry = false
         .._timeout = DateTime.now();
-      cacheMap[url] = info;
+
+      cacheMap[key] = info;
+
       return info;
     }
 
@@ -161,7 +166,7 @@ class WebAnalyzer {
 
       if (info != null && !info._shouldRetry) {
         info._timeout = DateTime.now().add(cache);
-        cacheMap[url] = info;
+        cacheMap[key] = info;
       }
 
       return info;
@@ -540,4 +545,7 @@ class WebAnalyzer {
     }
     return source;
   }
+
+  static String getKey(Story story) =>
+      story.url.isNotEmpty ? story.url : story.id.toString();
 }
