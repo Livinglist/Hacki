@@ -10,8 +10,8 @@ class CustomRouter {
     switch (settings.name) {
       case HomeScreen.routeName:
         return HomeScreen.route();
-      case StoryScreen.routeName:
-        return StoryScreen.route(settings.arguments! as StoryScreenArgs);
+      case ItemScreen.routeName:
+        return ItemScreen.route(settings.arguments! as ItemScreenArgs);
       case SubmitScreen.routeName:
         return SubmitScreen.route();
       default:
@@ -22,8 +22,8 @@ class CustomRouter {
   /// Nested routing for bottom navigation bar.
   static Route<dynamic> onGenerateNestedRoute(RouteSettings settings) {
     switch (settings.name) {
-      case StoryScreen.routeName:
-        return StoryScreen.route(settings.arguments! as StoryScreenArgs);
+      case ItemScreen.routeName:
+        return ItemScreen.route(settings.arguments! as ItemScreenArgs);
       case SubmitScreen.routeName:
         return SubmitScreen.route();
       default:

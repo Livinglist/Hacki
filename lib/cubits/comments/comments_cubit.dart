@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/models.dart';
@@ -18,14 +19,14 @@ class CommentsCubit extends Cubit<CommentsState> {
     StoriesRepository? storiesRepository,
     SembastRepository? sembastRepository,
     required bool offlineReading,
-    required Story story,
+    required Item item,
   })  : _cacheService = cacheService ?? locator.get<CacheService>(),
         _cacheRepository = cacheRepository ?? locator.get<CacheRepository>(),
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
         _sembastRepository =
             sembastRepository ?? locator.get<SembastRepository>(),
-        super(CommentsState.init(offlineReading: offlineReading, story: story));
+        super(CommentsState.init(offlineReading: offlineReading, item: item));
 
   final CacheService _cacheService;
   final CacheRepository _cacheRepository;
@@ -68,22 +69,22 @@ class CommentsCubit extends Cubit<CommentsState> {
 
     emit(state.copyWith(status: CommentsStatus.loading));
 
-    final Story story = state.story;
-    final Story updatedStory = state.offlineReading
-        ? story
-        : await _storiesRepository.fetchStoryBy(story.id) ?? story;
+    final Item item = state.item;
+    final Item updatedItem = state.offlineReading
+        ? item
+        : await _storiesRepository.fetchItemBy(id: item.id) ?? item;
     final List<int> kids = () {
       switch (state.order) {
         case CommentsOrder.natural:
-          return updatedStory.kids;
+          return updatedItem.kids;
         case CommentsOrder.newestFirst:
-          return updatedStory.kids.sorted((int a, int b) => b.compareTo(a));
+          return updatedItem.kids.sorted((int a, int b) => b.compareTo(a));
         case CommentsOrder.oldestFirst:
-          return updatedStory.kids.sorted((int a, int b) => a.compareTo(b));
+          return updatedItem.kids.sorted((int a, int b) => a.compareTo(b));
       }
     }();
 
-    emit(state.copyWith(story: updatedStory));
+    emit(state.copyWith(item: updatedItem));
 
     if (state.offlineReading) {
       _streamSubscription = _cacheRepository
@@ -121,17 +122,17 @@ class CommentsCubit extends Cubit<CommentsState> {
 
     await _streamSubscription?.cancel();
 
-    final Story story = state.story;
-    final Story updatedStory =
-        await _storiesRepository.fetchStoryBy(story.id) ?? story;
+    final Item item = state.item;
+    final Item updatedItem =
+        await _storiesRepository.fetchItemBy(id: item.id) ?? item;
     final List<int> kids = () {
       switch (state.order) {
         case CommentsOrder.natural:
-          return updatedStory.kids;
+          return updatedItem.kids;
         case CommentsOrder.newestFirst:
-          return updatedStory.kids.sorted((int a, int b) => b.compareTo(a));
+          return updatedItem.kids.sorted((int a, int b) => b.compareTo(a));
         case CommentsOrder.oldestFirst:
-          return updatedStory.kids.sorted((int a, int b) => a.compareTo(b));
+          return updatedItem.kids.sorted((int a, int b) => a.compareTo(b));
       }
     }();
 
@@ -142,18 +143,19 @@ class CommentsCubit extends Cubit<CommentsState> {
 
     emit(
       state.copyWith(
-        story: updatedStory,
+        item: updatedItem,
         status: CommentsStatus.loaded,
       ),
     );
   }
 
   void loadAll(Story story) {
+    HapticFeedback.lightImpact();
     emit(
       state.copyWith(
         onlyShowTargetComment: false,
         comments: <Comment>[],
-        story: story,
+        item: story,
       ),
     );
     init();
@@ -164,6 +166,35 @@ class CommentsCubit extends Cubit<CommentsState> {
       emit(state.copyWith(status: CommentsStatus.loading));
       _streamSubscription?.resume();
     }
+  }
+
+  Future<void> loadParentThread() async {
+    unawaited(HapticFeedback.lightImpact());
+    emit(state.copyWith(fetchParentStatus: CommentsStatus.loading));
+    final Story? parent =
+        await _storiesRepository.fetchParentStory(id: state.item.id);
+
+    if (parent == null) return;
+
+    await _streamSubscription?.cancel();
+
+    emit(
+      state.copyWith(
+        onlyShowTargetComment: false,
+        comments: <Comment>[],
+        item: parent,
+        fetchParentStatus: CommentsStatus.loaded,
+      ),
+    );
+    await init();
+  }
+
+  void onOrderChanged(CommentsOrder? order) {
+    HapticFeedback.lightImpact();
+    if (order == null) return;
+    _streamSubscription?.cancel();
+    emit(state.copyWith(order: order, comments: <Comment>[]));
+    init();
   }
 
   void _onDone() {
@@ -214,13 +245,6 @@ class CommentsCubit extends Cubit<CommentsState> {
         );
       }
     }
-  }
-
-  void onOrderChanged(CommentsOrder? order) {
-    if (order == null) return;
-    _streamSubscription?.cancel();
-    emit(state.copyWith(order: order, comments: <Comment>[]));
-    init();
   }
 
   static List<LinkifyElement> _linkify(

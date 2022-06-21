@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/main.dart';
-import 'package:hacki/screens/screens.dart' show StoryScreen, StoryScreenArgs;
+import 'package:hacki/screens/screens.dart' show ItemScreen, ItemScreenArgs;
 
 extension StateExtension on State {
   void showSnackBar({
@@ -26,14 +26,14 @@ extension StateExtension on State {
     );
   }
 
-  Future<void>? goToStoryScreen({required StoryScreenArgs args}) {
+  Future<void>? goToItemScreen({required ItemScreenArgs args}) {
     final bool splitViewEnabled = context.read<SplitViewCubit>().state.enabled;
 
     if (splitViewEnabled) {
-      context.read<SplitViewCubit>().updateStoryScreenArgs(args);
+      context.read<SplitViewCubit>().updateItemScreenArgs(args);
     } else {
       return HackiApp.navigatorKey.currentState?.pushNamed(
-        StoryScreen.routeName,
+        ItemScreen.routeName,
         arguments: args,
       );
     }

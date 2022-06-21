@@ -13,9 +13,9 @@ class SplitViewCubit extends Cubit<SplitViewState> {
 
   final CacheService _cacheService;
 
-  void updateStoryScreenArgs(StoryScreenArgs args) {
+  void updateItemScreenArgs(ItemScreenArgs args) {
     _cacheService.resetCollapsedComments();
-    emit(state.copyWith(storyScreenArgs: args));
+    emit(state.copyWith(itemScreenArgs: args));
   }
 
   void enableSplitView() => emit(state.copyWith(enabled: true));

@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/item.dart';
 
 class Comment extends Item {
@@ -43,8 +42,7 @@ class Comment extends Item {
 
   final int level;
 
-  String get postedDate =>
-      DateTime.fromMillisecondsSinceEpoch(time * 1000).toReadableString();
+  String get metadata => '''by $by $postedDate''';
 
   Comment copyWith({int? level}) {
     return Comment(

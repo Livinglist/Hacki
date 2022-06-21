@@ -39,15 +39,15 @@ class FavCubit extends Cubit<FavState> {
           emit(
             state.copyWith(
               favIds: favIds,
-              favStories: <Story>[],
+              favItems: <Item>[],
               currentPage: 0,
             ),
           );
           _storiesRepository
-              .fetchStoriesStream(
+              .fetchItemsStream(
                 ids: favIds.sublist(0, _pageSize.clamp(0, favIds.length)),
               )
-              .listen(_onStoryLoaded)
+              .listen(_onItemLoaded)
               .onDone(() {
             emit(
               state.copyWith(
@@ -73,13 +73,13 @@ class FavCubit extends Cubit<FavState> {
       ),
     );
 
-    final Story? story = await _storiesRepository.fetchStoryBy(id);
+    final Item? item = await _storiesRepository.fetchItemBy(id: id);
 
-    if (story == null) return;
+    if (item == null) return;
 
     emit(
       state.copyWith(
-        favStories: List<Story>.from(state.favStories)..insert(0, story),
+        favItems: List<Item>.from(state.favItems)..insert(0, item),
       ),
     );
 
@@ -96,8 +96,8 @@ class FavCubit extends Cubit<FavState> {
     emit(
       state.copyWith(
         favIds: List<int>.from(state.favIds)..remove(id),
-        favStories: List<Story>.from(state.favStories)
-          ..removeWhere((Story e) => e.id == id),
+        favItems: List<Item>.from(state.favItems)
+          ..removeWhere((Item e) => e.id == id),
       ),
     );
 
@@ -120,13 +120,13 @@ class FavCubit extends Cubit<FavState> {
       }
 
       _storiesRepository
-          .fetchStoriesStream(
+          .fetchItemsStream(
             ids: state.favIds.sublist(
               lower,
               upper,
             ),
           )
-          .listen(_onStoryLoaded)
+          .listen(_onItemLoaded)
           .onDone(() {
         emit(state.copyWith(status: FavStatus.loaded));
       });
@@ -142,7 +142,7 @@ class FavCubit extends Cubit<FavState> {
       state.copyWith(
         status: FavStatus.loading,
         currentPage: 0,
-        favStories: <Story>[],
+        favItems: <Item>[],
         favIds: <int>[],
       ),
     );
@@ -150,20 +150,20 @@ class FavCubit extends Cubit<FavState> {
     _preferenceRepository.favList(of: username).then((List<int> favIds) {
       emit(state.copyWith(favIds: favIds));
       _storiesRepository
-          .fetchStoriesStream(
+          .fetchItemsStream(
             ids: favIds.sublist(0, _pageSize.clamp(0, favIds.length)),
           )
-          .listen(_onStoryLoaded)
+          .listen(_onItemLoaded)
           .onDone(() {
         emit(state.copyWith(status: FavStatus.loaded));
       });
     });
   }
 
-  void _onStoryLoaded(Story story) {
+  void _onItemLoaded(Item item) {
     emit(
       state.copyWith(
-        favStories: List<Story>.from(state.favStories)..add(story),
+        favItems: List<Item>.from(state.favItems)..add(item),
       ),
     );
   }

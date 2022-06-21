@@ -16,9 +16,10 @@ enum CommentsOrder {
 
 class CommentsState extends Equatable {
   const CommentsState({
-    required this.story,
+    required this.item,
     required this.comments,
     required this.status,
+    required this.fetchParentStatus,
     required this.order,
     required this.onlyShowTargetComment,
     required this.offlineReading,
@@ -27,33 +28,37 @@ class CommentsState extends Equatable {
 
   CommentsState.init({
     required this.offlineReading,
-    required this.story,
+    required this.item,
   })  : comments = <Comment>[],
         status = CommentsStatus.init,
+        fetchParentStatus = CommentsStatus.init,
         order = CommentsOrder.natural,
         onlyShowTargetComment = false,
         currentPage = 0;
 
-  final Story story;
+  final Item item;
   final List<Comment> comments;
   final CommentsStatus status;
+  final CommentsStatus fetchParentStatus;
   final CommentsOrder order;
   final bool onlyShowTargetComment;
   final bool offlineReading;
   final int currentPage;
 
   CommentsState copyWith({
-    Story? story,
+    Item? item,
     List<Comment>? comments,
     CommentsStatus? status,
+    CommentsStatus? fetchParentStatus,
     CommentsOrder? order,
     bool? onlyShowTargetComment,
     bool? offlineReading,
     int? currentPage,
   }) {
     return CommentsState(
-      story: story ?? this.story,
+      item: item ?? this.item,
       comments: comments ?? this.comments,
+      fetchParentStatus: fetchParentStatus ?? this.fetchParentStatus,
       status: status ?? this.status,
       order: order ?? this.order,
       onlyShowTargetComment:
@@ -65,9 +70,10 @@ class CommentsState extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        story,
+        item,
         comments,
         status,
+        fetchParentStatus,
         order,
         onlyShowTargetComment,
         offlineReading,

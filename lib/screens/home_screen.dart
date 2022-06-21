@@ -375,16 +375,16 @@ class _HomeScreenState extends State<HomeScreen>
     if (isJobWithLink) {
       context.read<ReminderCubit>().removeLastReadStoryId();
     } else {
-      final StoryScreenArgs args = StoryScreenArgs(story: story);
+      final ItemScreenArgs args = ItemScreenArgs(item: story);
 
       context.read<ReminderCubit>().updateLastReadStoryId(story.id);
 
       if (splitViewEnabled) {
-        context.read<SplitViewCubit>().updateStoryScreenArgs(args);
+        context.read<SplitViewCubit>().updateItemScreenArgs(args);
       } else {
         HackiApp.navigatorKey.currentState
             ?.pushNamed(
-          StoryScreen.routeName,
+          ItemScreen.routeName,
           arguments: args,
         )
             .whenComplete(() {
@@ -442,7 +442,7 @@ class _HomeScreenState extends State<HomeScreen>
           .then((Story? story) {
         if (mounted) {
           if (story != null) {
-            goToStoryScreen(args: StoryScreenArgs(story: story));
+            goToItemScreen(args: ItemScreenArgs(item: story));
           }
         }
       });
@@ -462,8 +462,8 @@ class _HomeScreenState extends State<HomeScreen>
         showSnackBar(content: 'Something went wrong...');
         return;
       }
-      final StoryScreenArgs args = StoryScreenArgs(story: story);
-      goToStoryScreen(args: args);
+      final ItemScreenArgs args = ItemScreenArgs(item: story);
+      goToItemScreen(args: args);
     });
   }
 
@@ -487,8 +487,8 @@ class _HomeScreenState extends State<HomeScreen>
           showSnackBar(content: 'Something went wrong...');
           return;
         }
-        final StoryScreenArgs args = StoryScreenArgs(story: story);
-        goToStoryScreen(args: args);
+        final ItemScreenArgs args = ItemScreenArgs(item: story);
+        goToItemScreen(args: args);
       });
     }
   }
@@ -586,10 +586,10 @@ class _TabletStoryView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SplitViewCubit, SplitViewState>(
       buildWhen: (SplitViewState previous, SplitViewState current) =>
-          previous.storyScreenArgs != current.storyScreenArgs,
+          previous.itemScreenArgs != current.itemScreenArgs,
       builder: (BuildContext context, SplitViewState state) {
-        if (state.storyScreenArgs != null) {
-          return StoryScreen.build(context, state.storyScreenArgs!);
+        if (state.itemScreenArgs != null) {
+          return ItemScreen.build(context, state.itemScreenArgs!);
         }
 
         return Material(

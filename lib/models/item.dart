@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:hacki/extensions/date_time_extension.dart';
 
 abstract class Item extends Equatable {
   const Item({
@@ -53,6 +54,9 @@ abstract class Item extends Equatable {
 
   final List<int> kids;
   final List<int> parts;
+
+  String get postedDate =>
+      DateTime.fromMillisecondsSinceEpoch(time * 1000).toReadableString();
 
   bool get isPoll => type == 'poll';
 
