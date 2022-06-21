@@ -15,6 +15,7 @@ class CommentTile extends StatelessWidget {
     required this.myUsername,
     required this.comment,
     required this.onStoryLinkTapped,
+    this.onCollapseTapped,
     this.onReplyTapped,
     this.onMoreTapped,
     this.onEditTapped,
@@ -29,6 +30,7 @@ class CommentTile extends StatelessWidget {
   final Comment comment;
   final int level;
   final bool actionable;
+  final Function(Comment)? onCollapseTapped;
   final Function(Comment)? onReplyTapped;
   final Function(Comment)? onMoreTapped;
   final Function(Comment)? onEditTapped;

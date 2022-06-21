@@ -278,9 +278,7 @@ class _StoryScreenState extends State<StoryScreen> {
                     context.read<PollCubit>().refresh();
                   }
                 },
-                onLoading: () {
-                  context.read<CommentsCubit>().loadMore();
-                },
+                onLoading: context.read<CommentsCubit>().loadMore,
                 child: ListView(
                   primary: false,
                   children: <Widget>[
@@ -454,6 +452,17 @@ class _StoryScreenState extends State<StoryScreen> {
                           myUsername:
                               authState.isLoggedIn ? authState.username : null,
                           opUsername: widget.story.by,
+                          onCollapseTapped: (Comment cmt) {
+                            if (state.status == CommentsStatus.loaded) {
+                              final bool isHidden = locator
+                                  .get<CacheService>()
+                                  .isHidden(state.comments.last.id);
+
+                              if (isHidden) {
+                                context.read<CommentsCubit>().loadMore();
+                              }
+                            }
+                          },
                           onReplyTapped: (Comment cmt) {
                             HapticFeedback.lightImpact();
                             if (cmt.deleted || cmt.dead) {
@@ -495,109 +504,125 @@ class _StoryScreenState extends State<StoryScreen> {
                 ),
               );
 
-              return BlocListener<EditCubit, EditState>(
-                listenWhen: (EditState previous, EditState current) {
-                  return previous.replyingTo != current.replyingTo ||
-                      previous.itemBeingEdited != current.itemBeingEdited;
-                },
-                listener: (BuildContext context, EditState editState) {
-                  if (editState.replyingTo != null ||
-                      editState.itemBeingEdited != null) {
-                    if (editState.text == null) {
-                      commentEditingController.clear();
-                    } else {
-                      final String text = editState.text!;
-                      commentEditingController
-                        ..text = text
-                        ..selection = TextSelection.fromPosition(
-                          TextPosition(offset: text.length),
-                        );
-                    }
-                  } else {
-                    commentEditingController.clear();
+              return WillPopScope(
+                onWillPop: () async {
+                  final EditState editState = context.read<EditCubit>().state;
+
+                  if (editState.text?.isEmpty ?? true) {
+                    context.read<EditCubit>().onReplyBoxClosed();
                   }
+
+                  return true;
                 },
-                child: widget.splitViewEnabled
-                    ? Material(
-                        child: Stack(
-                          children: <Widget>[
-                            Positioned.fill(
-                              child: mainView,
-                            ),
-                            BlocBuilder<SplitViewCubit, SplitViewState>(
-                              buildWhen: (
-                                SplitViewState previous,
-                                SplitViewState current,
-                              ) =>
-                                  previous.expanded != current.expanded,
-                              builder:
-                                  (BuildContext context, SplitViewState state) {
-                                return Positioned(
-                                  top: 0,
-                                  left: 0,
-                                  right: 0,
-                                  child: CustomAppBar(
-                                    backgroundColor: Theme.of(context)
-                                        .canvasColor
-                                        .withOpacity(0.6),
-                                    story: widget.story,
-                                    scrollController: scrollController,
-                                    onBackgroundTap:
-                                        onFeatureDiscoveryDismissed,
-                                    onDismiss: onFeatureDiscoveryDismissed,
-                                    splitViewEnabled: state.enabled,
-                                    expanded: state.expanded,
-                                    onZoomTap:
-                                        context.read<SplitViewCubit>().zoom,
-                                  ),
-                                );
-                              },
-                            ),
-                            Positioned(
-                              bottom: 0,
-                              left: 0,
-                              right: 0,
-                              child: ReplyBox(
-                                splitViewEnabled: true,
-                                focusNode: focusNode,
-                                textEditingController: commentEditingController,
-                                onSendTapped: onSendTapped,
-                                onCloseTapped: () {
-                                  context.read<EditCubit>().onReplyBoxClosed();
-                                  commentEditingController.clear();
-                                  focusNode.unfocus();
-                                },
-                                onChanged:
-                                    context.read<EditCubit>().onTextChanged,
+                child: BlocListener<EditCubit, EditState>(
+                  listenWhen: (EditState previous, EditState current) {
+                    return previous.replyingTo != current.replyingTo ||
+                        previous.itemBeingEdited != current.itemBeingEdited;
+                  },
+                  listener: (BuildContext context, EditState editState) {
+                    if (editState.replyingTo != null ||
+                        editState.itemBeingEdited != null) {
+                      if (editState.text == null) {
+                        commentEditingController.clear();
+                      } else {
+                        final String text = editState.text!;
+                        commentEditingController
+                          ..text = text
+                          ..selection = TextSelection.fromPosition(
+                            TextPosition(offset: text.length),
+                          );
+                      }
+                    } else {
+                      commentEditingController.clear();
+                    }
+                  },
+                  child: widget.splitViewEnabled
+                      ? Material(
+                          child: Stack(
+                            children: <Widget>[
+                              Positioned.fill(
+                                child: mainView,
                               ),
-                            ),
-                          ],
+                              BlocBuilder<SplitViewCubit, SplitViewState>(
+                                buildWhen: (
+                                  SplitViewState previous,
+                                  SplitViewState current,
+                                ) =>
+                                    previous.expanded != current.expanded,
+                                builder: (
+                                  BuildContext context,
+                                  SplitViewState state,
+                                ) {
+                                  return Positioned(
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    child: CustomAppBar(
+                                      backgroundColor: Theme.of(context)
+                                          .canvasColor
+                                          .withOpacity(0.6),
+                                      story: widget.story,
+                                      scrollController: scrollController,
+                                      onBackgroundTap:
+                                          onFeatureDiscoveryDismissed,
+                                      onDismiss: onFeatureDiscoveryDismissed,
+                                      splitViewEnabled: state.enabled,
+                                      expanded: state.expanded,
+                                      onZoomTap:
+                                          context.read<SplitViewCubit>().zoom,
+                                    ),
+                                  );
+                                },
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                child: ReplyBox(
+                                  splitViewEnabled: true,
+                                  focusNode: focusNode,
+                                  textEditingController:
+                                      commentEditingController,
+                                  onSendTapped: onSendTapped,
+                                  onCloseTapped: () {
+                                    context
+                                        .read<EditCubit>()
+                                        .onReplyBoxClosed();
+                                    commentEditingController.clear();
+                                    focusNode.unfocus();
+                                  },
+                                  onChanged:
+                                      context.read<EditCubit>().onTextChanged,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : Scaffold(
+                          extendBodyBehindAppBar: true,
+                          resizeToAvoidBottomInset: true,
+                          appBar: CustomAppBar(
+                            backgroundColor:
+                                Theme.of(context).canvasColor.withOpacity(0.6),
+                            story: widget.story,
+                            scrollController: scrollController,
+                            onBackgroundTap: onFeatureDiscoveryDismissed,
+                            onDismiss: onFeatureDiscoveryDismissed,
+                          ),
+                          body: mainView,
+                          bottomSheet: ReplyBox(
+                            focusNode: focusNode,
+                            textEditingController: commentEditingController,
+                            onSendTapped: onSendTapped,
+                            onCloseTapped: () {
+                              context.read<EditCubit>().onReplyBoxClosed();
+                              commentEditingController.clear();
+                              focusNode.unfocus();
+                            },
+                            onChanged: context.read<EditCubit>().onTextChanged,
+                          ),
                         ),
-                      )
-                    : Scaffold(
-                        extendBodyBehindAppBar: true,
-                        resizeToAvoidBottomInset: true,
-                        appBar: CustomAppBar(
-                          backgroundColor:
-                              Theme.of(context).canvasColor.withOpacity(0.6),
-                          story: widget.story,
-                          scrollController: scrollController,
-                          onBackgroundTap: onFeatureDiscoveryDismissed,
-                          onDismiss: onFeatureDiscoveryDismissed,
-                        ),
-                        body: mainView,
-                        bottomSheet: ReplyBox(
-                          focusNode: focusNode,
-                          textEditingController: commentEditingController,
-                          onSendTapped: onSendTapped,
-                          onCloseTapped: () {
-                            context.read<EditCubit>().onReplyBoxClosed();
-                            commentEditingController.clear();
-                            focusNode.unfocus();
-                          },
-                          onChanged: context.read<EditCubit>().onTextChanged,
-                        ),
-                      ),
+                ),
               );
             },
           ),
