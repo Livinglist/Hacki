@@ -109,9 +109,8 @@ class _CountDownReminderState extends State<CountdownReminder>
                           showSnackBar(content: 'Something went wrong...');
                           return;
                         }
-                        final StoryScreenArgs args =
-                            StoryScreenArgs(story: story);
-                        goToStoryScreen(args: args);
+                        final ItemScreenArgs args = ItemScreenArgs(item: story);
+                        goToItemScreen(args: args);
 
                         context.read<ReminderCubit>().removeLastReadStoryId();
                       });

@@ -2,7 +2,7 @@ part of 'split_view_cubit.dart';
 
 class SplitViewState extends Equatable {
   const SplitViewState({
-    required this.storyScreenArgs,
+    required this.itemScreenArgs,
     required this.expanded,
     required this.enabled,
   });
@@ -10,21 +10,21 @@ class SplitViewState extends Equatable {
   const SplitViewState.init()
       : enabled = false,
         expanded = false,
-        storyScreenArgs = null;
+        itemScreenArgs = null;
 
   final bool enabled;
   final bool expanded;
-  final StoryScreenArgs? storyScreenArgs;
+  final ItemScreenArgs? itemScreenArgs;
 
   SplitViewState copyWith({
     bool? enabled,
     bool? expanded,
-    StoryScreenArgs? storyScreenArgs,
+    ItemScreenArgs? itemScreenArgs,
   }) {
     return SplitViewState(
       enabled: enabled ?? this.enabled,
       expanded: expanded ?? this.expanded,
-      storyScreenArgs: storyScreenArgs ?? this.storyScreenArgs,
+      itemScreenArgs: itemScreenArgs ?? this.itemScreenArgs,
     );
   }
 
@@ -32,6 +32,6 @@ class SplitViewState extends Equatable {
   List<Object?> get props => <Object?>[
         enabled,
         expanded,
-        storyScreenArgs,
+        itemScreenArgs,
       ];
 }

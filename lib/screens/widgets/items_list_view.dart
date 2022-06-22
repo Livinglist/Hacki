@@ -18,6 +18,8 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     required this.items,
     required this.onTap,
     required this.refreshController,
+    this.useCommentTile = false,
+    this.showCommentBy = false,
     this.enablePullDown = true,
     this.pinnable = false,
     this.markReadStories = false,
@@ -32,6 +34,8 @@ class ItemsListView<T extends Item> extends StatelessWidget {
           'onPinned cannot be null when pinnable is true',
         );
 
+  final bool useCommentTile;
+  final bool showCommentBy;
   final bool showWebPreview;
   final bool showMetadata;
   final bool enablePullDown;
@@ -103,6 +107,22 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                 ),
             ];
           } else if (e is Comment) {
+            if (useCommentTile) {
+              return <Widget>[
+                if (showWebPreview)
+                  const Divider(
+                    height: 0,
+                  ),
+                _CommentTile(
+                  comment: e,
+                  onTap: () => onTap(e),
+                  fontSize: showWebPreview ? 14 : 16,
+                ),
+                const Divider(
+                  height: 0,
+                ),
+              ];
+            }
             return <Widget>[
               FadeIn(
                 child: Padding(
@@ -135,7 +155,8 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                                     horizontal: 6,
                                   ),
                                   child: Linkify(
-                                    text: e.text,
+                                    text:
+                                        '''${showCommentBy ? '${e.by}: ' : ''}${e.text}''',
                                     maxLines: 4,
                                     linkStyle: const TextStyle(
                                       color: Colors.orange,
@@ -212,6 +233,68 @@ class ItemsListView<T extends Item> extends StatelessWidget {
       onRefresh: onRefresh,
       onLoading: onLoadMore,
       child: child,
+    );
+  }
+}
+
+class _CommentTile extends StatelessWidget {
+  const _CommentTile({
+    Key? key,
+    required this.comment,
+    required this.onTap,
+    this.fontSize = 16,
+  }) : super(key: key);
+
+  final Comment comment;
+  final VoidCallback onTap;
+  final double fontSize;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            const SizedBox(
+              height: 8,
+            ),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    comment.text,
+                    style: TextStyle(
+                      fontSize: fontSize,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    comment.metadata,
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: fontSize - 2,
+                    ),
+                    maxLines: 1,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 8,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

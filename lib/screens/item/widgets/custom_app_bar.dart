@@ -2,16 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:hacki/models/models.dart';
-import 'package:hacki/screens/story/widgets/fav_icon_button.dart';
-import 'package:hacki/screens/story/widgets/link_icon_button.dart';
-import 'package:hacki/screens/story/widgets/pin_icon_button.dart';
-import 'package:hacki/screens/story/widgets/scroll_up_icon_button.dart';
+import 'package:hacki/screens/item/widgets/widgets.dart';
 
 class CustomAppBar extends AppBar {
   CustomAppBar({
     Key? key,
     required ScrollController scrollController,
-    required Story story,
+    required Item item,
     required Color backgroundColor,
     required Future<bool> Function() onBackgroundTap,
     required Future<bool> Function() onDismiss,
@@ -41,18 +38,19 @@ class CustomAppBar extends AppBar {
             ScrollUpIconButton(
               scrollController: scrollController,
             ),
-            PinIconButton(
-              story: story,
-              onBackgroundTap: onBackgroundTap,
-              onDismiss: onDismiss,
-            ),
+            if (item is Story)
+              PinIconButton(
+                story: item,
+                onBackgroundTap: onBackgroundTap,
+                onDismiss: onDismiss,
+              ),
             FavIconButton(
-              storyId: story.id,
+              storyId: item.id,
               onBackgroundTap: onBackgroundTap,
               onDismiss: onDismiss,
             ),
             LinkIconButton(
-              storyId: story.id,
+              storyId: item.id,
               onBackgroundTap: onBackgroundTap,
               onDismiss: onDismiss,
             ),

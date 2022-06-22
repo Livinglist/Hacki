@@ -10,31 +10,31 @@ enum FavStatus {
 class FavState extends Equatable {
   const FavState({
     required this.favIds,
-    required this.favStories,
+    required this.favItems,
     required this.status,
     required this.currentPage,
   });
 
   FavState.init()
       : favIds = <int>[],
-        favStories = <Story>[],
+        favItems = <Item>[],
         status = FavStatus.init,
         currentPage = 0;
 
   final List<int> favIds;
-  final List<Story> favStories;
+  final List<Item> favItems;
   final FavStatus status;
   final int currentPage;
 
   FavState copyWith({
     List<int>? favIds,
-    List<Story>? favStories,
+    List<Item>? favItems,
     FavStatus? status,
     int? currentPage,
   }) {
     return FavState(
       favIds: favIds ?? this.favIds,
-      favStories: favStories ?? this.favStories,
+      favItems: favItems ?? this.favItems,
       status: status ?? this.status,
       currentPage: currentPage ?? this.currentPage,
     );
@@ -43,7 +43,7 @@ class FavState extends Equatable {
   @override
   List<Object?> get props => <Object?>[
         favIds,
-        favStories,
+        favItems,
         status,
         currentPage,
       ];

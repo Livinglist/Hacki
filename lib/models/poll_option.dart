@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/item.dart';
 
 class PollOption extends Item {
@@ -62,9 +61,6 @@ class PollOption extends Item {
         );
 
   final double ratio;
-
-  String get postedDate =>
-      DateTime.fromMillisecondsSinceEpoch(time * 1000).toReadableString();
 
   PollOption copyWith({double? ratio}) {
     return PollOption(

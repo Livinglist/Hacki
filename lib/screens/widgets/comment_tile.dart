@@ -18,7 +18,7 @@ class CommentTile extends StatelessWidget {
     this.onReplyTapped,
     this.onMoreTapped,
     this.onEditTapped,
-    this.onTimeMachineActivated,
+    this.onRightMoreTapped,
     this.opUsername,
     this.actionable = true,
     this.level = 0,
@@ -32,7 +32,7 @@ class CommentTile extends StatelessWidget {
   final Function(Comment)? onReplyTapped;
   final Function(Comment)? onMoreTapped;
   final Function(Comment)? onEditTapped;
-  final Function(Comment)? onTimeMachineActivated;
+  final Function(Comment)? onRightMoreTapped;
   final Function(String) onStoryLinkTapped;
 
   @override
@@ -94,13 +94,13 @@ class CommentTile extends StatelessWidget {
                                   ],
                                 )
                               : null,
-                          endActionPane: actionable && level != 0
+                          endActionPane: actionable
                               ? ActionPane(
                                   motion: const StretchMotion(),
                                   children: <Widget>[
                                     SlidableAction(
                                       onPressed: (_) =>
-                                          onTimeMachineActivated?.call(comment),
+                                          onRightMoreTapped?.call(comment),
                                       backgroundColor: Colors.orange,
                                       foregroundColor: Colors.white,
                                       icon: Icons.av_timer,

@@ -170,7 +170,7 @@ class StoriesRepository {
       if (json == null) return null;
 
       final String type = json['type'] as String;
-      if (type == 'story' || type == 'job') {
+      if (type == 'story' || type == 'job' || type == 'poll') {
         final Story story = Story.fromJson(json);
         return story;
       } else if (json['type'] == 'comment') {
@@ -192,7 +192,7 @@ class StoriesRepository {
       final Map<String, dynamic> json = val as Map<String, dynamic>;
 
       final String type = json['type'] as String;
-      if (type == 'story' || type == 'job') {
+      if (type == 'story' || type == 'job' || type == 'poll') {
         final Story story = Story.fromJson(json);
         return story;
       } else if (json['type'] == 'comment') {

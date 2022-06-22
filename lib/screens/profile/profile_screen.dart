@@ -135,8 +135,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                               },
                               onTap: (Item item) {
                                 if (item is Story) {
-                                  goToStoryScreen(
-                                    args: StoryScreenArgs(story: item),
+                                  goToItemScreen(
+                                    args: ItemScreenArgs(item: item),
                                   );
                                 } else if (item is Comment) {
                                   onCommentTapped(item);
@@ -160,7 +160,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             }
                           },
                           builder: (BuildContext context, FavState favState) {
-                            if (favState.favStories.isEmpty &&
+                            if (favState.favItems.isEmpty &&
                                 favState.status != FavStatus.loading) {
                               return const CenteredMessageView(
                                 content:
@@ -169,12 +169,13 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     'News account if you are logged in.',
                               );
                             }
-                            return ItemsListView<Story>(
+                            return ItemsListView<Item>(
                               showWebPreview:
                                   preferenceState.showComplexStoryTile,
                               showMetadata: preferenceState.showMetadata,
+                              useCommentTile: true,
                               refreshController: refreshControllerFav,
-                              items: favState.favStories,
+                              items: favState.favItems,
                               onRefresh: () {
                                 HapticFeedback.lightImpact();
                                 context.read<FavCubit>().refresh();
@@ -182,8 +183,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                               onLoadMore: () {
                                 context.read<FavCubit>().loadMore();
                               },
-                              onTap: (Story story) => goToStoryScreen(
-                                args: StoryScreenArgs(story: story),
+                              onTap: (Item item) => goToItemScreen(
+                                args: ItemScreenArgs(item: item),
                               ),
                             );
                           },
@@ -408,7 +409,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   showAboutDialog(
                                     context: context,
                                     applicationName: 'Hacki',
-                                    applicationVersion: 'v0.2.20',
+                                    applicationVersion: 'v0.2.21',
                                     applicationIcon: ClipRRect(
                                       borderRadius: const BorderRadius.all(
                                         Radius.circular(12),
@@ -705,9 +706,9 @@ class _ProfileScreenState extends State<ProfileScreen>
           .fetchParentStoryWithComments(id: comment.parent)
           .then((Tuple2<Story, List<Comment>>? tuple) {
         if (tuple != null && mounted) {
-          goToStoryScreen(
-            args: StoryScreenArgs(
-              story: tuple.item1,
+          goToItemScreen(
+            args: ItemScreenArgs(
+              item: tuple.item1,
               targetComments: tuple.item2.isEmpty
                   ? <Comment>[comment]
                   : <Comment>[

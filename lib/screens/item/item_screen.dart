@@ -16,7 +16,7 @@ import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
-import 'package:hacki/screens/story/widgets/widgets.dart';
+import 'package:hacki/screens/item/widgets/widgets.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
@@ -33,44 +33,44 @@ enum _MenuAction {
   cancel,
 }
 
-class StoryScreenArgs extends Equatable {
-  const StoryScreenArgs({
-    required this.story,
+class ItemScreenArgs extends Equatable {
+  const ItemScreenArgs({
+    required this.item,
     this.onlyShowTargetComment = false,
     this.targetComments,
   });
 
-  final Story story;
+  final Item item;
   final bool onlyShowTargetComment;
   final List<Comment>? targetComments;
 
   @override
   List<Object?> get props => <Object?>[
-        story,
+        item,
         onlyShowTargetComment,
         targetComments,
       ];
 }
 
-class StoryScreen extends StatefulWidget {
-  const StoryScreen({
+class ItemScreen extends StatefulWidget {
+  const ItemScreen({
     super.key,
     this.splitViewEnabled = false,
-    required this.story,
+    required this.item,
     required this.parentComments,
   });
 
-  static const String routeName = '/story';
+  static const String routeName = '/item';
 
-  static Route<dynamic> route(StoryScreenArgs args) {
-    return MaterialPageRoute<StoryScreen>(
+  static Route<dynamic> route(ItemScreenArgs args) {
+    return MaterialPageRoute<ItemScreen>(
       settings: const RouteSettings(name: routeName),
       builder: (BuildContext context) => MultiBlocProvider(
         providers: <BlocProvider<dynamic>>[
           BlocProvider<CommentsCubit>(
             create: (_) => CommentsCubit(
               offlineReading: context.read<StoriesBloc>().state.offlineReading,
-              story: args.story,
+              item: args.item,
             )..init(
                 onlyShowTargetComment: args.onlyShowTargetComment,
                 targetParents: args.targetComments,
@@ -80,21 +80,16 @@ class StoryScreen extends StatefulWidget {
             lazy: false,
             create: (BuildContext context) => EditCubit(),
           ),
-          if (args.story.isPoll)
-            BlocProvider<PollCubit>(
-              create: (BuildContext context) =>
-                  PollCubit(story: args.story)..init(),
-            ),
         ],
-        child: StoryScreen(
-          story: args.story,
+        child: ItemScreen(
+          item: args.item,
           parentComments: args.targetComments ?? <Comment>[],
         ),
       ),
     );
   }
 
-  static Widget build(BuildContext context, StoryScreenArgs args) {
+  static Widget build(BuildContext context, ItemScreenArgs args) {
     return WillPopScope(
       onWillPop: () async {
         if (context.read<SplitViewCubit>().state.expanded) {
@@ -105,12 +100,12 @@ class StoryScreen extends StatefulWidget {
         }
       },
       child: MultiBlocProvider(
-        key: ValueKey<StoryScreenArgs>(args),
+        key: ValueKey<ItemScreenArgs>(args),
         providers: <BlocProvider<dynamic>>[
           BlocProvider<CommentsCubit>(
             create: (BuildContext context) => CommentsCubit(
               offlineReading: context.read<StoriesBloc>().state.offlineReading,
-              story: args.story,
+              item: args.item,
             )..init(
                 onlyShowTargetComment: args.onlyShowTargetComment,
                 targetParents: args.targetComments,
@@ -120,14 +115,9 @@ class StoryScreen extends StatefulWidget {
             lazy: false,
             create: (BuildContext context) => EditCubit(),
           ),
-          if (args.story.isPoll)
-            BlocProvider<PollCubit>(
-              create: (BuildContext context) =>
-                  PollCubit(story: args.story)..init(),
-            ),
         ],
-        child: StoryScreen(
-          story: args.story,
+        child: ItemScreen(
+          item: args.item,
           parentComments: args.targetComments ?? <Comment>[],
           splitViewEnabled: true,
         ),
@@ -136,14 +126,14 @@ class StoryScreen extends StatefulWidget {
   }
 
   final bool splitViewEnabled;
-  final Story story;
+  final Item item;
   final List<Comment> parentComments;
 
   @override
-  _StoryScreenState createState() => _StoryScreenState();
+  _ItemScreenState createState() => _ItemScreenState();
 }
 
-class _StoryScreenState extends State<StoryScreen> {
+class _ItemScreenState extends State<ItemScreen> {
   final TextEditingController commentEditingController =
       TextEditingController();
   final ScrollController scrollController = ScrollController();
@@ -286,7 +276,7 @@ class _StoryScreenState extends State<StoryScreen> {
                   } else {
                     context.read<CommentsCubit>().refresh();
 
-                    if (widget.story.isPoll) {
+                    if (widget.item.isPoll) {
                       context.read<PollCubit>().refresh();
                     }
                   }
@@ -311,13 +301,13 @@ class _StoryScreenState extends State<StoryScreen> {
                             onPressed: (_) {
                               HapticFeedback.lightImpact();
 
-                              if (widget.story !=
+                              if (widget.item !=
                                   context.read<EditCubit>().state.replyingTo) {
                                 commentEditingController.clear();
                               }
                               context
                                   .read<EditCubit>()
-                                  .onReplyTapped(widget.story);
+                                  .onReplyTapped(widget.item);
                               focusNode.requestFocus();
                             },
                             backgroundColor: Colors.orange,
@@ -325,7 +315,7 @@ class _StoryScreenState extends State<StoryScreen> {
                             icon: Icons.message,
                           ),
                           SlidableAction(
-                            onPressed: (_) => onMorePressed(widget.story),
+                            onPressed: (_) => onMoreTapped(widget.item),
                             backgroundColor: Colors.orange,
                             foregroundColor: Colors.white,
                             icon: Icons.more_horiz,
@@ -342,14 +332,14 @@ class _StoryScreenState extends State<StoryScreen> {
                             child: Row(
                               children: <Widget>[
                                 Text(
-                                  widget.story.by,
+                                  state.item.by,
                                   style: const TextStyle(
                                     color: Colors.orange,
                                   ),
                                 ),
                                 const Spacer(),
                                 Text(
-                                  widget.story.postedDate,
+                                  state.item.postedDate,
                                   style: const TextStyle(
                                     color: Colors.grey,
                                   ),
@@ -357,44 +347,49 @@ class _StoryScreenState extends State<StoryScreen> {
                               ],
                             ),
                           ),
-                          InkWell(
-                            onTap: () => LinkUtil.launch(
-                              widget.story.url,
-                              useReader: context
-                                  .read<PreferenceCubit>()
-                                  .state
-                                  .useReader,
-                              offlineReading: context
-                                  .read<StoriesBloc>()
-                                  .state
-                                  .offlineReading,
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                left: 6,
-                                right: 6,
-                                bottom: 12,
-                                top: 12,
+                          if (state.item is Story)
+                            InkWell(
+                              onTap: () => LinkUtil.launch(
+                                state.item.url,
+                                useReader: context
+                                    .read<PreferenceCubit>()
+                                    .state
+                                    .useReader,
+                                offlineReading: context
+                                    .read<StoriesBloc>()
+                                    .state
+                                    .offlineReading,
                               ),
-                              child: Text(
-                                widget.story.title,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: widget.story.url.isNotEmpty
-                                      ? Colors.orange
-                                      : null,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 6,
+                                  right: 6,
+                                  bottom: 12,
+                                  top: 12,
+                                ),
+                                child: Text(
+                                  state.item.title,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: state.item.url.isNotEmpty
+                                        ? Colors.orange
+                                        : null,
+                                  ),
                                 ),
                               ),
+                            )
+                          else
+                            const SizedBox(
+                              height: 6,
                             ),
-                          ),
-                          if (widget.story.text.isNotEmpty)
+                          if (state.item.text.isNotEmpty)
                             Padding(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 10,
                               ),
                               child: SelectableLinkify(
-                                text: widget.story.text,
+                                text: widget.item.text,
                                 style: TextStyle(
                                   fontSize:
                                       MediaQuery.of(context).textScaleFactor *
@@ -417,14 +412,18 @@ class _StoryScreenState extends State<StoryScreen> {
                                 },
                               ),
                             ),
-                          if (widget.story.isPoll)
-                            PollView(
-                              onLoginTapped: onLoginTapped,
+                          if (state.item.isPoll)
+                            BlocProvider<PollCubit>(
+                              create: (BuildContext context) =>
+                                  PollCubit(story: state.item as Story)..init(),
+                              child: PollView(
+                                onLoginTapped: onLoginTapped,
+                              ),
                             ),
                         ],
                       ),
                     ),
-                    if (widget.story.text.isNotEmpty)
+                    if (state.item.text.isNotEmpty)
                       const SizedBox(
                         height: 8,
                       ),
@@ -436,7 +435,7 @@ class _StoryScreenState extends State<StoryScreen> {
                         child: TextButton(
                           onPressed: () => context
                               .read<CommentsCubit>()
-                              .loadAll(widget.story),
+                              .loadAll(state.item as Story),
                           child: const Text('View all comments'),
                         ),
                       ),
@@ -446,12 +445,33 @@ class _StoryScreenState extends State<StoryScreen> {
                     ] else ...<Widget>[
                       Row(
                         children: <Widget>[
-                          const SizedBox(
-                            width: 12,
-                          ),
-                          Text(
-                            '''${state.story.score} karma, ${state.story.descendants} comment${state.story.descendants > 1 ? 's' : ''}''',
-                          ),
+                          if (state.item is Story) ...<Widget>[
+                            const SizedBox(
+                              width: 12,
+                            ),
+                            Text(
+                              '''${state.item.score} karma, ${state.item.descendants} comment${state.item.descendants > 1 ? 's' : ''}''',
+                            ),
+                          ] else ...<Widget>[
+                            const SizedBox(
+                              width: 4,
+                            ),
+                            TextButton(
+                              onPressed: context
+                                  .read<CommentsCubit>()
+                                  .loadParentThread,
+                              child: state.fetchParentStatus ==
+                                      CommentsStatus.loading
+                                  ? const SizedBox(
+                                      height: 12,
+                                      width: 12,
+                                      child: CustomCircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : const Text('View parent thread'),
+                            ),
+                          ],
                           const Spacer(),
                           DropdownButton<CommentsOrder>(
                             value: state.order,
@@ -517,7 +537,7 @@ class _StoryScreenState extends State<StoryScreen> {
                           level: comment.level,
                           myUsername:
                               authState.isLoggedIn ? authState.username : null,
-                          opUsername: widget.story.by,
+                          opUsername: widget.item.by,
                           onReplyTapped: (Comment cmt) {
                             HapticFeedback.lightImpact();
                             if (cmt.deleted || cmt.dead) {
@@ -541,9 +561,9 @@ class _StoryScreenState extends State<StoryScreen> {
                             context.read<EditCubit>().onEditTapped(cmt);
                             focusNode.requestFocus();
                           },
-                          onMoreTapped: onMorePressed,
+                          onMoreTapped: onMoreTapped,
                           onStoryLinkTapped: onStoryLinkTapped,
-                          onTimeMachineActivated: onTimeMachineActivated,
+                          onRightMoreTapped: onRightMoreTapped,
                         ),
                       ),
                     if ((state.status == CommentsStatus.allLoaded &&
@@ -606,7 +626,7 @@ class _StoryScreenState extends State<StoryScreen> {
                                     backgroundColor: Theme.of(context)
                                         .canvasColor
                                         .withOpacity(0.6),
-                                    story: widget.story,
+                                    item: widget.item,
                                     scrollController: scrollController,
                                     onBackgroundTap:
                                         onFeatureDiscoveryDismissed,
@@ -646,7 +666,7 @@ class _StoryScreenState extends State<StoryScreen> {
                         appBar: CustomAppBar(
                           backgroundColor:
                               Theme.of(context).canvasColor.withOpacity(0.6),
-                          story: widget.story,
+                          item: widget.item,
                           scrollController: scrollController,
                           onBackgroundTap: onFeatureDiscoveryDismissed,
                           onDismiss: onFeatureDiscoveryDismissed,
@@ -681,12 +701,53 @@ class _StoryScreenState extends State<StoryScreen> {
     return Future<bool>.value(false);
   }
 
+  void onRightMoreTapped(Comment comment) {
+    HapticFeedback.lightImpact();
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 140,
+          color: Theme.of(context).canvasColor,
+          child: Material(
+            color: Colors.transparent,
+            child: Column(
+              children: <Widget>[
+                ListTile(
+                  leading: const Icon(Icons.av_timer),
+                  title: const Text('View parents'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    onTimeMachineActivated(comment);
+                  },
+                  enabled:
+                      comment.level > 0 && !(comment.dead || comment.deleted),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.list),
+                  title: const Text('View in separate thread'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    goToItemScreen(
+                      args: ItemScreenArgs(item: comment),
+                      forceNewScreen: true,
+                    );
+                  },
+                  enabled: !(comment.dead || comment.deleted),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void onTimeMachineActivated(Comment comment) {
     final Size size = MediaQuery.of(context).size;
     final DeviceScreenType deviceType = getDeviceType(size);
     final double widthFactor =
         deviceType != DeviceScreenType.mobile ? 0.6 : 0.9;
-    HapticFeedback.lightImpact();
     showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -761,15 +822,12 @@ class _StoryScreenState extends State<StoryScreen> {
     final int? id = link.getItemId();
     if (id != null) {
       storyLinkTapThrottle.run(() {
-        locator
-            .get<StoriesRepository>()
-            .fetchParentStory(id: id)
-            .then((Story? story) {
+        locator.get<StoriesRepository>().fetchItemBy(id: id).then((Item? item) {
           if (mounted) {
-            if (story != null) {
+            if (item != null) {
               HackiApp.navigatorKey.currentState!.pushNamed(
-                StoryScreen.routeName,
-                arguments: StoryScreenArgs(story: story),
+                ItemScreen.routeName,
+                arguments: ItemScreenArgs(item: item),
               );
             }
           }
@@ -780,7 +838,7 @@ class _StoryScreenState extends State<StoryScreen> {
     }
   }
 
-  void onMorePressed(Item item) {
+  void onMoreTapped(Item item) {
     HapticFeedback.lightImpact();
 
     if (item.dead || item.deleted) {

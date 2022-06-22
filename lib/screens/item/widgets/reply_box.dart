@@ -83,20 +83,24 @@ class _ReplyBoxState extends State<ReplyBox> {
                         ),
                         Row(
                           children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 8,
-                              ),
-                              child: Text(
-                                replyingTo == null
-                                    ? 'Editing'
-                                    : 'Replying '
-                                        '${replyingTo.by}',
-                                style: const TextStyle(color: Colors.grey),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 12,
+                                  top: 8,
+                                  bottom: 8,
+                                ),
+                                child: Text(
+                                  replyingTo == null
+                                      ? 'Editing'
+                                      : 'Replying '
+                                          '${replyingTo.by}',
+                                  style: const TextStyle(color: Colors.grey),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             ),
-                            const Spacer(),
                             if (!isLoading) ...<Widget>[
                               ...<Widget>[
                                 if (replyingTo != null)

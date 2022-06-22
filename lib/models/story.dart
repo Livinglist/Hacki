@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/item.dart';
 
 enum StoryType {
@@ -93,9 +92,6 @@ class Story extends Item {
 
   String get simpleMetadata =>
       '''$score point${score > 1 ? 's' : ''} $descendants comment${descendants > 1 ? 's' : ''} $postedDate''';
-
-  String get postedDate =>
-      DateTime.fromMillisecondsSinceEpoch(time * 1000).toReadableString();
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
