@@ -16,7 +16,7 @@
     </queries>
 
    <application
-        android:label="hacki"
+        android:label="Hacki"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">
         <activity
