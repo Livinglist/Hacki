@@ -113,7 +113,11 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                   const Divider(
                     height: 0,
                   ),
-                _CommentTile(comment: e, onTap: () => onTap(e)),
+                _CommentTile(
+                  comment: e,
+                  onTap: () => onTap(e),
+                  fontSize: showWebPreview ? 14 : 16,
+                ),
                 const Divider(
                   height: 0,
                 ),
@@ -238,10 +242,12 @@ class _CommentTile extends StatelessWidget {
     Key? key,
     required this.comment,
     required this.onTap,
+    this.fontSize = 16,
   }) : super(key: key);
 
   final Comment comment;
   final VoidCallback onTap;
+  final double fontSize;
 
   @override
   Widget build(BuildContext context) {
@@ -260,8 +266,8 @@ class _CommentTile extends StatelessWidget {
                 Expanded(
                   child: Text(
                     comment.text,
-                    style: const TextStyle(
-                      fontSize: 16,
+                    style: TextStyle(
+                      fontSize: fontSize,
                     ),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
@@ -274,9 +280,9 @@ class _CommentTile extends StatelessWidget {
                 Expanded(
                   child: Text(
                     comment.metadata,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.grey,
-                      fontSize: 14,
+                      fontSize: fontSize - 2,
                     ),
                     maxLines: 1,
                   ),
