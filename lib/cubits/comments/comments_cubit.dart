@@ -6,8 +6,10 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
+import 'package:hacki/screens/screens.dart';
 import 'package:hacki/services/services.dart';
 
 part 'comments_state.dart';
@@ -174,23 +176,24 @@ class CommentsCubit extends Cubit<CommentsState> {
     final Story? parent =
         await _storiesRepository.fetchParentStory(id: state.item.id);
 
-    if (parent == null) return;
+    if (parent == null) {
+      return;
+    } else {
+      await HackiApp.navigatorKey.currentState?.pushNamed(
+        ItemScreen.routeName,
+        arguments: ItemScreenArgs(item: parent),
+      );
 
-    await _streamSubscription?.cancel();
-
-    emit(
-      state.copyWith(
-        onlyShowTargetComment: false,
-        comments: <Comment>[],
-        item: parent,
-        fetchParentStatus: CommentsStatus.loaded,
-      ),
-    );
-    await init();
+      emit(
+        state.copyWith(
+          fetchParentStatus: CommentsStatus.loaded,
+        ),
+      );
+    }
   }
 
   void onOrderChanged(CommentsOrder? order) {
-    HapticFeedback.lightImpact();
+    HapticFeedback.selectionClick();
     if (order == null) return;
     _streamSubscription?.cancel();
     emit(state.copyWith(order: order, comments: <Comment>[]));

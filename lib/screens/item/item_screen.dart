@@ -717,7 +717,6 @@ class _ItemScreenState extends State<ItemScreen> {
                   leading: const Icon(Icons.av_timer),
                   title: const Text('View parents'),
                   onTap: () {
-                    HapticFeedback.lightImpact();
                     Navigator.pop(context);
                     onTimeMachineActivated(comment);
                   },
@@ -728,7 +727,6 @@ class _ItemScreenState extends State<ItemScreen> {
                   leading: const Icon(Icons.list),
                   title: const Text('View in separate thread'),
                   onTap: () {
-                    HapticFeedback.lightImpact();
                     Navigator.pop(context);
                     goToItemScreen(
                       args: ItemScreenArgs(item: comment),
