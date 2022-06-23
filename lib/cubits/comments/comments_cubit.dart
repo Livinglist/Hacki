@@ -182,6 +182,17 @@ class CommentsCubit extends Cubit<CommentsState> {
     init();
   }
 
+  List<int> sortKids(List<int> kids) {
+    switch (state.order) {
+      case CommentsOrder.natural:
+        return kids;
+      case CommentsOrder.newestFirst:
+        return kids.sorted((int a, int b) => b.compareTo(a));
+      case CommentsOrder.oldestFirst:
+        return kids.sorted((int a, int b) => a.compareTo(b));
+    }
+  }
+
   void _onDone() {
     _streamSubscription?.cancel();
     _streamSubscription = null;
@@ -229,17 +240,6 @@ class CommentsCubit extends Cubit<CommentsState> {
           ),
         );
       }
-    }
-  }
-
-  List<int> sortKids(List<int> kids) {
-    switch (state.order) {
-      case CommentsOrder.natural:
-        return kids;
-      case CommentsOrder.newestFirst:
-        return kids.sorted((int a, int b) => b.compareTo(a));
-      case CommentsOrder.oldestFirst:
-        return kids.sorted((int a, int b) => a.compareTo(b));
     }
   }
 
