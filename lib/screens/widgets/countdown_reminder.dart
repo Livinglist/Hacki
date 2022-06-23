@@ -7,6 +7,7 @@ import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/story.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart';
+import 'package:hacki/styles/styles.dart';
 
 class CountdownReminder extends StatefulWidget {
   const CountdownReminder({super.key});
@@ -95,9 +96,13 @@ class _CountDownReminderState extends State<CountdownReminder>
             animation: animationController,
             child: FadeIn(
               child: Material(
-                color: Colors.deepOrange,
+                color: Palette.deepOrange,
                 clipBehavior: Clip.hardEdge,
-                borderRadius: const BorderRadius.all(Radius.circular(4)),
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(
+                    Dimens.pt4,
+                  ),
+                ),
                 child: InkWell(
                   onTap: () {
                     if (state.storyId != null) {
@@ -122,24 +127,24 @@ class _CountDownReminderState extends State<CountdownReminder>
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.only(
-                          left: 12,
-                          top: 10,
-                          right: 10,
+                          left: Dimens.pt12,
+                          top: Dimens.pt10,
+                          right: Dimens.pt10,
                         ),
                         child: Row(
                           children: const <Widget>[
                             Text(
                               'Pick up where you left off',
                               style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
+                                color: Palette.white,
+                                fontSize: TextDimens.pt12,
                               ),
                             ),
                             Spacer(),
                             Icon(
                               Icons.arrow_forward_ios,
-                              size: 12,
-                              color: Colors.white,
+                              size: TextDimens.pt12,
+                              color: Palette.white,
                             ),
                           ],
                         ),

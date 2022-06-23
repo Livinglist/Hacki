@@ -6,6 +6,7 @@ import 'package:hacki/config/locator.dart';
 import 'package:hacki/main.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart' show WebViewScreen;
+import 'package:hacki/styles/styles.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 abstract class LinkUtil {
@@ -56,7 +57,7 @@ abstract class LinkUtil {
                   options: ChromeSafariBrowserClassOptions(
                     ios: IOSSafariOptions(
                       entersReaderIfAvailable: useReader,
-                      preferredControlTintColor: Colors.orange,
+                      preferredControlTintColor: Palette.orange,
                     ),
                   ),
                 )

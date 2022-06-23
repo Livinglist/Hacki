@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/repositories/repositories.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewScreen extends StatefulWidget {
@@ -24,7 +25,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
         title: Text(
           humanize(widget.url),
           style: const TextStyle(
-            fontSize: 12,
+            fontSize: TextDimens.pt12,
           ),
           overflow: TextOverflow.ellipsis,
           textAlign: TextAlign.center,

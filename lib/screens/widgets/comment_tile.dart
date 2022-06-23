@@ -7,6 +7,7 @@ import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 
 class CommentTile extends StatelessWidget {
@@ -67,8 +68,8 @@ class CommentTile extends StatelessWidget {
                                     SlidableAction(
                                       onPressed: (_) =>
                                           onReplyTapped?.call(comment),
-                                      backgroundColor: Colors.orange,
-                                      foregroundColor: Colors.white,
+                                      backgroundColor: Palette.orange,
+                                      foregroundColor: Palette.white,
                                       icon: Icons.message,
                                     ),
                                     if (context
@@ -80,15 +81,15 @@ class CommentTile extends StatelessWidget {
                                       SlidableAction(
                                         onPressed: (_) =>
                                             onEditTapped?.call(comment),
-                                        backgroundColor: Colors.orange,
-                                        foregroundColor: Colors.white,
+                                        backgroundColor: Palette.orange,
+                                        foregroundColor: Palette.white,
                                         icon: Icons.edit,
                                       ),
                                     SlidableAction(
                                       onPressed: (_) =>
                                           onMoreTapped?.call(comment),
-                                      backgroundColor: Colors.orange,
-                                      foregroundColor: Colors.white,
+                                      backgroundColor: Palette.orange,
+                                      foregroundColor: Palette.white,
                                       icon: Icons.more_horiz,
                                     ),
                                   ],
@@ -101,8 +102,8 @@ class CommentTile extends StatelessWidget {
                                     SlidableAction(
                                       onPressed: (_) =>
                                           onRightMoreTapped?.call(comment),
-                                      backgroundColor: Colors.orange,
-                                      foregroundColor: Colors.white,
+                                      backgroundColor: Palette.orange,
+                                      foregroundColor: Palette.white,
                                       icon: Icons.av_timer,
                                     ),
                                   ],
@@ -111,7 +112,7 @@ class CommentTile extends StatelessWidget {
                           child: InkWell(
                             onTap: () {
                               if (actionable) {
-                                HapticFeedback.lightImpact();
+                                HapticFeedback.selectionClick();
                                 context.read<CollapseCubit>().collapse();
                               }
                             },
@@ -120,9 +121,9 @@ class CommentTile extends StatelessWidget {
                               children: <Widget>[
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                    left: 6,
-                                    right: 6,
-                                    top: 6,
+                                    left: Dimens.pt6,
+                                    right: Dimens.pt6,
+                                    top: Dimens.pt6,
                                   ),
                                   child: Row(
                                     children: <Widget>[
@@ -145,7 +146,7 @@ class CommentTile extends StatelessWidget {
                                       Text(
                                         comment.postedDate,
                                         style: const TextStyle(
-                                          color: Colors.grey,
+                                          color: Palette.grey,
                                         ),
                                       ),
                                     ],
@@ -154,13 +155,14 @@ class CommentTile extends StatelessWidget {
                                 if (actionable && state.collapsed)
                                   Center(
                                     child: Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 12),
+                                      padding: const EdgeInsets.only(
+                                        bottom: Dimens.pt12,
+                                      ),
                                       child: Text(
                                         'collapsed '
                                         '(${state.collapsedCount + 1})',
                                         style: const TextStyle(
-                                          color: Colors.orangeAccent,
+                                          color: Palette.orangeAccent,
                                         ),
                                       ),
                                     ),
@@ -168,11 +170,13 @@ class CommentTile extends StatelessWidget {
                                 else if (comment.deleted)
                                   const Center(
                                     child: Padding(
-                                      padding: EdgeInsets.only(bottom: 12),
+                                      padding: EdgeInsets.only(
+                                        bottom: Dimens.pt12,
+                                      ),
                                       child: Text(
                                         'deleted',
                                         style: TextStyle(
-                                          color: Colors.grey,
+                                          color: Palette.grey,
                                         ),
                                       ),
                                     ),
@@ -180,11 +184,13 @@ class CommentTile extends StatelessWidget {
                                 else if (comment.dead)
                                   const Center(
                                     child: Padding(
-                                      padding: EdgeInsets.only(bottom: 12),
+                                      padding: EdgeInsets.only(
+                                        bottom: Dimens.pt12,
+                                      ),
                                       child: Text(
                                         'dead',
                                         style: TextStyle(
-                                          color: Colors.grey,
+                                          color: Palette.grey,
                                         ),
                                       ),
                                     ),
@@ -193,11 +199,13 @@ class CommentTile extends StatelessWidget {
                                     .contains(comment.by))
                                   const Center(
                                     child: Padding(
-                                      padding: EdgeInsets.only(bottom: 12),
+                                      padding: EdgeInsets.only(
+                                        bottom: Dimens.pt12,
+                                      ),
                                       child: Text(
                                         'blocked',
                                         style: TextStyle(
-                                          color: Colors.grey,
+                                          color: Palette.grey,
                                         ),
                                       ),
                                     ),
@@ -205,10 +213,10 @@ class CommentTile extends StatelessWidget {
                                 else
                                   Padding(
                                     padding: const EdgeInsets.only(
-                                      left: 8,
-                                      right: 8,
-                                      top: 6,
-                                      bottom: 12,
+                                      left: Dimens.pt8,
+                                      right: Dimens.pt8,
+                                      top: Dimens.pt6,
+                                      bottom: Dimens.pt12,
                                     ),
                                     child: comment is BuildableComment
                                         ? SelectableText.rich(
@@ -227,7 +235,7 @@ class CommentTile extends StatelessWidget {
                                                     15,
                                                 decoration:
                                                     TextDecoration.underline,
-                                                color: Colors.orange,
+                                                color: Palette.orange,
                                               ),
                                               onOpen: (LinkableElement link) {
                                                 if (link.url.contains(
@@ -253,7 +261,7 @@ class CommentTile extends StatelessWidget {
                                               fontSize: MediaQuery.of(context)
                                                       .textScaleFactor *
                                                   15,
-                                              color: Colors.orange,
+                                              color: Palette.orange,
                                             ),
                                             onOpen: (LinkableElement link) {
                                               if (link.url.contains(
@@ -268,7 +276,7 @@ class CommentTile extends StatelessWidget {
                                           ),
                                   ),
                                 const Divider(
-                                  height: 0,
+                                  height: Dimens.zero,
                                 ),
                               ],
                             ),
@@ -285,14 +293,14 @@ class CommentTile extends StatelessWidget {
 
                   final Color commentColor = prefState.showEyeCandy
                       ? color.withOpacity(commentBackgroundColorOpacity)
-                      : Colors.transparent;
+                      : Palette.transparent;
                   final bool isMyComment = myUsername == comment.by;
 
                   Widget? wrapper = child;
 
                   if (isMyComment && level == 0) {
                     return Container(
-                      color: Colors.orange.withOpacity(0.2),
+                      color: Palette.orange.withOpacity(0.2),
                       child: wrapper,
                     );
                   }
@@ -301,7 +309,9 @@ class CommentTile extends StatelessWidget {
                     final Color wrapperBorderColor = _getColor(i);
                     final bool shouldHighlight = isMyComment && i == level;
                     wrapper = Container(
-                      margin: const EdgeInsets.only(left: 12),
+                      margin: const EdgeInsets.only(
+                        left: Dimens.pt12,
+                      ),
                       decoration: BoxDecoration(
                         border: i != 0
                             ? Border(
@@ -311,7 +321,7 @@ class CommentTile extends StatelessWidget {
                               )
                             : null,
                         color: shouldHighlight
-                            ? Colors.orange.withOpacity(0.2)
+                            ? Palette.orange.withOpacity(0.2)
                             : commentColor,
                       ),
                       child: wrapper,

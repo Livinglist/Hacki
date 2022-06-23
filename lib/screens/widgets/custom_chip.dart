@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hacki/styles/styles.dart';
 
 class CustomChip extends StatelessWidget {
   CustomChip({
@@ -15,16 +16,16 @@ class CustomChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FilterChip(
-      shadowColor: Colors.transparent,
-      selectedShadowColor: Colors.transparent,
-      backgroundColor: Colors.transparent,
+      shadowColor: Palette.transparent,
+      selectedShadowColor: Palette.transparent,
+      backgroundColor: Palette.transparent,
       shape: const StadiumBorder(
-        side: BorderSide(color: Colors.orange),
+        side: BorderSide(color: Palette.orange),
       ),
       label: Text(label),
       selected: selected,
       onSelected: onSelected,
-      selectedColor: Colors.orange,
+      selectedColor: Palette.orange,
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/main.dart';
 import 'package:hacki/screens/screens.dart' show ItemScreen, ItemScreenArgs;
+import 'package:hacki/styles/styles.dart';
 
 extension StateExtension on State {
   void showSnackBar({
@@ -12,7 +13,7 @@ extension StateExtension on State {
   }) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: Colors.deepOrange,
+        backgroundColor: Palette.deepOrange,
         content: Text(content),
         action: action != null && label != null
             ? SnackBarAction(

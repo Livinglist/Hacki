@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/styles/styles.dart';
 
 class FavIconButton extends StatelessWidget {
   const FavIconButton({
@@ -37,17 +38,17 @@ class FavIconButton extends StatelessWidget {
             targetColor: Theme.of(context).primaryColor,
             tapTarget: Icon(
               isFav ? Icons.favorite : Icons.favorite_border,
-              color: Colors.white,
+              color: Palette.white,
             ),
             featureId: Constants.featureAddStoryToFavList,
             title: const Text('Fav a Story'),
             description: const Text(
               'Add it to your favorites.',
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: TextDimens.pt16),
             ),
             child: Icon(
               isFav ? Icons.favorite : Icons.favorite_border,
-              color: isFav ? Colors.orange : Theme.of(context).iconTheme.color,
+              color: isFav ? Palette.orange : Theme.of(context).iconTheme.color,
             ),
           ),
           onPressed: () {

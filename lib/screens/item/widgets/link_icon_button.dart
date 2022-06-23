@@ -4,6 +4,7 @@ import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 
 class LinkIconButton extends StatelessWidget {
@@ -33,7 +34,7 @@ class LinkIconButton extends StatelessWidget {
         targetColor: Theme.of(context).primaryColor,
         tapTarget: const Icon(
           Icons.stream,
-          color: Colors.white,
+          color: Palette.white,
         ),
         featureId: Constants.featureOpenStoryInWebView,
         title: const Text('Open in Browser'),
@@ -41,7 +42,7 @@ class LinkIconButton extends StatelessWidget {
           'Want more than just reading and replying? '
           'You can tap here to open this story in a '
           'browser.',
-          style: TextStyle(fontSize: 16),
+          style: TextStyle(fontSize: TextDimens.pt16),
         ),
         child: const Icon(
           Icons.stream,

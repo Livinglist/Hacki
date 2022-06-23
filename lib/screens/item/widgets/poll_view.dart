@@ -5,6 +5,7 @@ import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/blocs/auth/auth_bloc.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/styles/styles.dart';
 
 class PollView extends StatelessWidget {
   const PollView({
@@ -21,29 +22,29 @@ class PollView extends StatelessWidget {
         return Column(
           children: <Widget>[
             const SizedBox(
-              height: 24,
+              height: Dimens.pt24,
             ),
             if (state.status == PollStatus.loading) ...<Widget>[
               const LinearProgressIndicator(),
               const SizedBox(
-                height: 24,
+                height: Dimens.pt24,
               ),
             ] else ...<Widget>[
               Row(
                 children: <Widget>[
                   const SizedBox(
-                    width: 24,
+                    width: Dimens.pt24,
                   ),
                   Text(
                     'Total votes: ${state.totalVotes}',
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: TextDimens.pt14,
                     ),
                   ),
                 ],
               ),
               const SizedBox(
-                height: 12,
+                height: Dimens.pt12,
               ),
             ],
             for (final PollOption option in state.pollOptions)
@@ -97,9 +98,9 @@ class PollView extends StatelessWidget {
                     builder: (BuildContext context, VoteState voteState) {
                       return Padding(
                         padding: const EdgeInsets.only(
-                          left: 12,
-                          right: 24,
-                          bottom: 4,
+                          left: Dimens.pt12,
+                          right: Dimens.pt24,
+                          bottom: Dimens.pt4,
                         ),
                         child: Row(
                           children: <Widget>[
@@ -111,9 +112,9 @@ class PollView extends StatelessWidget {
                               icon: Icon(
                                 Icons.arrow_drop_up,
                                 color: voteState.vote == Vote.up
-                                    ? Colors.orange
-                                    : Colors.grey,
-                                size: 36,
+                                    ? Palette.orange
+                                    : Palette.grey,
+                                size: TextDimens.pt36,
                               ),
                             ),
                             Expanded(
@@ -126,16 +127,16 @@ class PollView extends StatelessWidget {
                                   Text(
                                     '''${option.score} vote${option.score > 1 ? 's' : ''}''',
                                     style: const TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 12,
+                                      color: Palette.grey,
+                                      fontSize: TextDimens.pt12,
                                     ),
                                   ),
                                   const SizedBox(
-                                    height: 4,
+                                    height: Dimens.pt4,
                                   ),
                                   LinearProgressIndicator(
                                     value: option.ratio,
-                                    color: Colors.deepOrange,
+                                    color: Palette.deepOrange,
                                   ),
                                 ],
                               ),
@@ -161,7 +162,7 @@ class PollView extends StatelessWidget {
   }) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: Colors.deepOrange,
+        backgroundColor: Palette.deepOrange,
         content: Text(content),
         action: action != null && label != null
             ? SnackBarAction(

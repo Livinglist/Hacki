@@ -5,6 +5,7 @@ import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/link_preview/link_view.dart';
 import 'package:hacki/screens/widgets/link_preview/web_analyzer.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LinkPreview extends StatefulWidget {
@@ -97,7 +98,7 @@ class LinkPreview extends StatefulWidget {
   final bool removeElevation;
 
   /// Box shadow for the card. Defaults to
-  /// `[BoxShadow(blurRadius: 3, color: Colors.grey)]`
+  /// `[BoxShadow(blurRadius: 3, color: Palette.grey)]`
   final List<BoxShadow>? boxShadow;
 
   final bool showMetadata;
@@ -163,11 +164,15 @@ class _LinkPreviewState extends State<LinkPreview> {
     return Container(
       decoration: BoxDecoration(
         color: widget.backgroundColor,
-        borderRadius: BorderRadius.circular(widget.borderRadius ?? 12),
+        borderRadius: BorderRadius.circular(
+          widget.borderRadius ?? Dimens.pt12,
+        ),
         boxShadow: widget.removeElevation
             ? <BoxShadow>[]
             : widget.boxShadow ??
-                <BoxShadow>[const BoxShadow(blurRadius: 3, color: Colors.grey)],
+                <BoxShadow>[
+                  const BoxShadow(blurRadius: 3, color: Palette.grey),
+                ],
       ),
       height: _height,
       child: LinkView(
@@ -194,19 +199,29 @@ class _LinkPreviewState extends State<LinkPreview> {
 
   @override
   Widget build(BuildContext context) {
+    const double screenWidthLowerBound = 428,
+        screenWidthUpperBound = 850,
+        picHeightLowerBound = 118,
+        picHeightUpperBound = 140,
+        smallPicHeight = 100,
+        picHeightFactor = 0.14;
     final double screenWidth = MediaQuery.of(context).size.width;
-    final bool showSmallerPreviewPic = screenWidth > 428.0 && screenWidth < 850;
-    final double _height = showSmallerPreviewPic
-        ? 100.0
-        : (MediaQuery.of(context).size.height * 0.14).clamp(118.0, 140.0);
+    final bool showSmallerPreviewPic = screenWidth > screenWidthLowerBound &&
+        screenWidth < screenWidthUpperBound;
+    final double height = showSmallerPreviewPic
+        ? smallPicHeight
+        : (MediaQuery.of(context).size.height * picHeightFactor)
+            .clamp(picHeightLowerBound, picHeightUpperBound);
 
     final Widget loadingWidget = widget.placeholderWidget ??
         Container(
-          height: _height,
+          height: height,
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(widget.borderRadius ?? 12),
-            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(
+              widget.borderRadius ?? Dimens.pt12,
+            ),
+            color: Palette.grey[200],
           ),
           alignment: Alignment.center,
           child: const Text('Fetching data...'),
@@ -217,13 +232,13 @@ class _LinkPreviewState extends State<LinkPreview> {
     final WebInfo? info = _info as WebInfo?;
     loadedWidget = _info == null
         ? _buildLinkContainer(
-            _height,
+            height,
             title: _errorTitle,
             desc: _errorBody,
             imageUri: null,
           )
         : _buildLinkContainer(
-            _height,
+            height,
             title: _errorTitle,
             desc: WebAnalyzer.isNotEmpty(info!.description)
                 ? info.description

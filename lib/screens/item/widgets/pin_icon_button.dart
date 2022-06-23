@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/styles/styles.dart';
 
 class PinIconButton extends StatelessWidget {
   const PinIconButton({
@@ -43,7 +44,7 @@ class PinIconButton extends StatelessWidget {
                 targetColor: Theme.of(context).primaryColor,
                 tapTarget: Icon(
                   pinned ? Icons.push_pin : Icons.push_pin_outlined,
-                  color: Colors.white,
+                  color: Palette.white,
                 ),
                 featureId: Constants.featurePinToTop,
                 title: const Text('Pin a Story'),
@@ -51,12 +52,12 @@ class PinIconButton extends StatelessWidget {
                   'Pin this story to the top of your '
                   'home screen so that you can come'
                   ' back later.',
-                  style: TextStyle(fontSize: 16),
+                  style: TextStyle(fontSize: TextDimens.pt16),
                 ),
                 child: Icon(
                   pinned ? Icons.push_pin : Icons.push_pin_outlined,
                   color: pinned
-                      ? Colors.orange
+                      ? Palette.orange
                       : Theme.of(context).iconTheme.color,
                 ),
               ),

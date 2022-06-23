@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 
 class OnboardingView extends StatefulWidget {
@@ -16,34 +17,35 @@ class _OnboardingViewState extends State<OnboardingView> {
   final Throttle throttle = Throttle(delay: _throttleDelay);
 
   static const Duration _throttleDelay = Duration(milliseconds: 100);
+  static const double _screenshotHeight = 550;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).brightness == Brightness.light
-            ? Colors.orange
+            ? Palette.orange
             : Theme.of(context).canvasColor,
-        elevation: 0,
+        elevation: Dimens.zero,
         leading: IconButton(
           icon: const Icon(
             Icons.close,
-            color: Colors.white,
+            color: Palette.white,
           ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       backgroundColor: Theme.of(context).brightness == Brightness.light
-          ? Colors.orange
+          ? Palette.orange
           : null,
       body: Stack(
         children: <Widget>[
           Positioned(
-            top: 40,
-            left: 0,
-            right: 0,
+            top: Dimens.pt40,
+            left: Dimens.zero,
+            right: Dimens.zero,
             child: SizedBox(
-              height: 550,
+              height: _screenshotHeight,
               child: PageView(
                 controller: pageController,
                 scrollDirection: Axis.vertical,
@@ -65,9 +67,9 @@ class _OnboardingViewState extends State<OnboardingView> {
             ),
           ),
           Positioned(
-            bottom: 40,
-            left: 0,
-            right: 0,
+            bottom: Dimens.pt40,
+            left: Dimens.zero,
+            right: Dimens.zero,
             child: ElevatedButton(
               onPressed: () {
                 HapticFeedback.lightImpact();
@@ -84,13 +86,15 @@ class _OnboardingViewState extends State<OnboardingView> {
               },
               style: ElevatedButton.styleFrom(
                 shape: const CircleBorder(),
-                primary: Colors.orange,
-                padding: const EdgeInsets.all(18),
+                primary: Palette.orange,
+                padding: const EdgeInsets.all(
+                  Dimens.pt18,
+                ),
               ),
               child: const Icon(
                 Icons.arrow_drop_down_circle_outlined,
-                size: 24,
-                color: Colors.white,
+                size: TextDimens.pt24,
+                color: Palette.white,
               ),
             ),
           ),
@@ -110,25 +114,27 @@ class _PageViewChild extends StatelessWidget {
   final String path;
   final String description;
 
+  static const double _height = 400;
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
         SizedBox(
-          height: 400,
+          height: _height,
           child: Image.asset(path),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: 24,
-            vertical: 24,
+            horizontal: Dimens.pt24,
+            vertical: Dimens.pt24,
           ),
           child: Text(
             description,
             textAlign: TextAlign.center,
             style: const TextStyle(
-              fontSize: 16,
-              color: Colors.white,
+              fontSize: TextDimens.pt16,
+              color: Palette.white,
             ),
           ),
         ),

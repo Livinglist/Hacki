@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
+import 'package:hacki/styles/styles.dart';
 
 class CustomAppBar extends AppBar {
   CustomAppBar({
@@ -18,7 +19,7 @@ class CustomAppBar extends AppBar {
   }) : super(
           key: key,
           backgroundColor: backgroundColor,
-          elevation: 0,
+          elevation: Dimens.zero,
           actions: <Widget>[
             if (splitViewEnabled) ...<Widget>[
               IconButton(
@@ -26,7 +27,7 @@ class CustomAppBar extends AppBar {
                   expanded ?? false
                       ? FeatherIcons.minimize2
                       : FeatherIcons.maximize2,
-                  size: 20,
+                  size: TextDimens.pt20,
                 ),
                 onPressed: () {
                   HapticFeedback.lightImpact();
