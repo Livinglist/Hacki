@@ -5,6 +5,7 @@ import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:shimmer/shimmer.dart';
 
 class StoryTile extends StatelessWidget {
@@ -28,18 +29,25 @@ class StoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (showWebPreview) {
+      const double screenWidthLowerBound = 428,
+          screenWidthUpperBound = 850,
+          picHeightLowerBound = 118,
+          picHeightUpperBound = 140,
+          smallPicHeight = 100,
+          picHeightFactor = 0.14;
       final double screenWidth = MediaQuery.of(context).size.width;
-      final bool showSmallerPreviewPic =
-          screenWidth > 428.0 && screenWidth < 850;
+      final bool showSmallerPreviewPic = screenWidth > screenWidthLowerBound &&
+          screenWidth < screenWidthUpperBound;
       final double height = showSmallerPreviewPic
-          ? 100.0
-          : (MediaQuery.of(context).size.height * 0.14).clamp(118.0, 140.0);
+          ? smallPicHeight
+          : (MediaQuery.of(context).size.height * picHeightFactor)
+              .clamp(picHeightLowerBound, picHeightUpperBound);
 
       return TapDownWrapper(
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: 12,
+            horizontal: Dimens.pt12,
           ),
           child: AbsorbPointer(
             child: LinkPreview(
@@ -50,66 +58,77 @@ class StoryTile extends StatelessWidget {
                 child: SizedBox(
                   height: height,
                   child: Shimmer.fromColors(
-                    baseColor: Colors.orange,
-                    highlightColor: Colors.orangeAccent,
+                    baseColor: Palette.orange,
+                    highlightColor: Palette.orangeAccent,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Padding(
                           padding: const EdgeInsets.only(
-                            right: 5,
-                            bottom: 5,
-                            top: 5,
+                            right: Dimens.pt5,
+                            bottom: Dimens.pt5,
+                            top: Dimens.pt5,
                           ),
                           child: Container(
                             height: height,
                             width: height,
-                            color: Colors.white,
+                            color: Palette.white,
                           ),
                         ),
                         Expanded(
                           flex: 4,
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 4, top: 6),
+                            padding: const EdgeInsets.only(
+                              left: Dimens.pt4,
+                              top: Dimens.pt6,
+                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Container(
                                   width: double.infinity,
-                                  height: 14,
-                                  color: Colors.white,
+                                  height: Dimens.pt14,
+                                  color: Palette.white,
                                 ),
                                 const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 4),
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: Dimens.pt4,
+                                  ),
                                 ),
                                 Container(
                                   width: double.infinity,
-                                  height: 10,
-                                  color: Colors.white,
+                                  height: Dimens.pt10,
+                                  color: Palette.white,
                                 ),
                                 const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 3),
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: Dimens.pt3,
+                                  ),
                                 ),
                                 Container(
                                   width: double.infinity,
-                                  height: 10,
-                                  color: Colors.white,
+                                  height: Dimens.pt10,
+                                  color: Palette.white,
                                 ),
                                 const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 3),
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: Dimens.pt3,
+                                  ),
                                 ),
                                 Container(
                                   width: double.infinity,
-                                  height: 10,
-                                  color: Colors.white,
+                                  height: Dimens.pt10,
+                                  color: Palette.white,
                                 ),
                                 const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 3),
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: Dimens.pt3,
+                                  ),
                                 ),
                                 Container(
-                                  width: 40,
-                                  height: 10,
-                                  color: Colors.white,
+                                  width: Dimens.pt40,
+                                  height: Dimens.pt10,
+                                  color: Palette.white,
                                 ),
                               ],
                             ),
@@ -121,14 +140,14 @@ class StoryTile extends StatelessWidget {
                 ),
               ),
               errorImage: Constants.hackerNewsLogoLink,
-              backgroundColor: Colors.transparent,
-              borderRadius: 0,
+              backgroundColor: Palette.transparent,
+              borderRadius: Dimens.zero,
               removeElevation: true,
-              bodyMaxLines: height == 100 ? 3 : 4,
+              bodyMaxLines: height == smallPicHeight ? 3 : 4,
               errorTitle: story.title,
               titleStyle: TextStyle(
                 color: hasRead
-                    ? Colors.grey[500]
+                    ? Palette.grey[500]
                     : Theme.of(context).textTheme.subtitle1!.color,
                 fontWeight: FontWeight.bold,
               ),
@@ -141,12 +160,12 @@ class StoryTile extends StatelessWidget {
       return InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.only(left: 12),
+          padding: const EdgeInsets.only(left: Dimens.pt12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               const SizedBox(
-                height: 8,
+                height: Dimens.pt8,
               ),
               Row(
                 children: <Widget>[
@@ -154,7 +173,7 @@ class StoryTile extends StatelessWidget {
                     child: Text(
                       story.title,
                       style: TextStyle(
-                        color: hasRead ? Colors.grey[500] : null,
+                        color: hasRead ? Palette.grey[500] : null,
                         fontSize: simpleTileFontSize,
                       ),
                     ),
@@ -168,7 +187,7 @@ class StoryTile extends StatelessWidget {
                       child: Text(
                         story.metadata,
                         style: TextStyle(
-                          color: Colors.grey,
+                          color: Palette.grey,
                           fontSize: simpleTileFontSize - 2,
                         ),
                         maxLines: 1,
@@ -177,7 +196,7 @@ class StoryTile extends StatelessWidget {
                   ],
                 ),
               const SizedBox(
-                height: 8,
+                height: Dimens.pt8,
               ),
             ],
           ),

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
+import 'package:hacki/styles/styles.dart';
 
 class SubmitScreen extends StatefulWidget {
   const SubmitScreen({super.key});
@@ -58,7 +59,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
         return Scaffold(
           appBar: AppBar(
             backgroundColor: Theme.of(context).canvasColor,
-            elevation: 0,
+            elevation: Dimens.zero,
             leading: IconButton(
               icon: const Icon(Icons.close),
               onPressed: () {
@@ -78,7 +79,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
                           child: const Text(
                             'Yes',
                             style: TextStyle(
-                              color: Colors.red,
+                              color: Palette.red,
                             ),
                           ),
                         ),
@@ -99,14 +100,14 @@ class _SubmitScreenState extends State<SubmitScreen> {
               if (state.status == SubmitStatus.submitting)
                 const Padding(
                   padding: EdgeInsets.symmetric(
-                    vertical: 18,
-                    horizontal: 16,
+                    vertical: Dimens.pt18,
+                    horizontal: Dimens.pt16,
                   ),
                   child: SizedBox(
-                    height: 20,
-                    width: 20,
+                    height: Dimens.pt20,
+                    width: Dimens.pt20,
                     child: CircularProgressIndicator(
-                      color: Colors.orange,
+                      color: Palette.orange,
                       strokeWidth: 2,
                     ),
                   ),
@@ -115,7 +116,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
                 IconButton(
                   icon: const Icon(
                     Icons.send,
-                    color: Colors.orange,
+                    color: Palette.orange,
                   ),
                   onPressed: context.read<SubmitCubit>().onSubmitTapped,
                 )
@@ -123,7 +124,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
                 IconButton(
                   icon: const Icon(
                     Icons.send,
-                    color: Colors.grey,
+                    color: Palette.grey,
                   ),
                   onPressed: () {},
                 ),
@@ -132,50 +133,58 @@ class _SubmitScreenState extends State<SubmitScreen> {
           body: Column(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: Dimens.pt12,
+                ),
                 child: TextField(
                   controller: titleEditingController,
-                  cursorColor: Colors.orange,
+                  cursorColor: Palette.orange,
                   autocorrect: false,
                   maxLength: 80,
                   decoration: const InputDecoration(
                     hintText: 'Title',
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.orange),
+                      borderSide: BorderSide(color: Palette.orange),
                     ),
                   ),
                   onChanged: context.read<SubmitCubit>().onTitleChanged,
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: Dimens.pt12,
+                ),
                 child: TextField(
                   enabled: textEditingController.text.isEmpty,
                   controller: urlEditingController,
-                  cursorColor: Colors.orange,
+                  cursorColor: Palette.orange,
                   autocorrect: false,
                   decoration: const InputDecoration(
                     hintText: 'Url',
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.orange),
+                      borderSide: BorderSide(color: Palette.orange),
                     ),
                   ),
                   onChanged: context.read<SubmitCubit>().onUrlChanged,
                 ),
               ),
               const Padding(
-                padding: EdgeInsets.symmetric(vertical: 12),
+                padding: EdgeInsets.symmetric(
+                  vertical: Dimens.pt12,
+                ),
                 child: Center(
                   child: Text('or'),
                 ),
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: Dimens.pt12,
+                  ),
                   child: TextField(
                     enabled: urlEditingController.text.isEmpty,
                     controller: textEditingController,
-                    cursorColor: Colors.orange,
+                    cursorColor: Palette.orange,
                     maxLines: 200,
                     decoration: const InputDecoration(
                       hintText: 'Text',

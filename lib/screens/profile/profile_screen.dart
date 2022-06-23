@@ -18,6 +18,7 @@ import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/profile/widgets/widgets.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:tuple/tuple.dart';
@@ -91,7 +92,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                 return Stack(
                   children: <Widget>[
                     Positioned.fill(
-                      top: 50,
+                      top: Dimens.pt50,
                       child: Visibility(
                         visible: pageType == _PageType.history,
                         child: BlocConsumer<HistoryCubit, HistoryState>(
@@ -148,7 +149,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       ),
                     ),
                     Positioned.fill(
-                      top: 50,
+                      top: Dimens.pt50,
                       child: Visibility(
                         visible: pageType == _PageType.fav,
                         child: BlocConsumer<FavCubit, FavState>(
@@ -192,7 +193,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       ),
                     ),
                     Positioned.fill(
-                      top: 50,
+                      top: Dimens.pt50,
                       child: Visibility(
                         visible: pageType == _PageType.search,
                         maintainState: true,
@@ -200,7 +201,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       ),
                     ),
                     Positioned.fill(
-                      top: 50,
+                      top: Dimens.pt50,
                       child: Visibility(
                         visible: pageType == _PageType.notification,
                         child: notificationState.comments.isEmpty
@@ -241,7 +242,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       ),
                     ),
                     Positioned.fill(
-                      top: 50,
+                      top: Dimens.pt50,
                       child: Visibility(
                         visible: pageType == _PageType.settings,
                         child: SingleChildScrollView(
@@ -280,7 +281,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       .read<PreferenceCubit>()
                                       .toggleNotificationMode();
                                 },
-                                activeColor: Colors.orange,
+                                activeColor: Palette.orange,
                               ),
                               SwitchListTile(
                                 title: const Text('Complex Story Tile'),
@@ -294,7 +295,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       .read<PreferenceCubit>()
                                       .toggleDisplayMode();
                                 },
-                                activeColor: Colors.orange,
+                                activeColor: Palette.orange,
                               ),
                               SwitchListTile(
                                 title: const Text('Show Metadata'),
@@ -309,7 +310,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       .read<PreferenceCubit>()
                                       .toggleMetadataMode();
                                 },
-                                activeColor: Colors.orange,
+                                activeColor: Palette.orange,
                               ),
                               SwitchListTile(
                                 title: const Text('Show Web Page First'),
@@ -324,7 +325,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       .read<PreferenceCubit>()
                                       .toggleNavigationMode();
                                 },
-                                activeColor: Colors.orange,
+                                activeColor: Palette.orange,
                               ),
                               if (Platform.isIOS)
                                 SwitchListTile(
@@ -340,7 +341,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                         .read<PreferenceCubit>()
                                         .toggleReaderMode();
                                   },
-                                  activeColor: Colors.orange,
+                                  activeColor: Palette.orange,
                                 ),
                               SwitchListTile(
                                 title: const Text('Mark Read Stories'),
@@ -361,7 +362,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       .read<PreferenceCubit>()
                                       .toggleMarkReadStoriesMode();
                                 },
-                                activeColor: Colors.orange,
+                                activeColor: Palette.orange,
                               ),
                               SwitchListTile(
                                 title: const Text('Eye Candy'),
@@ -373,7 +374,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       .read<PreferenceCubit>()
                                       .toggleEyeCandyMode();
                                 },
-                                activeColor: Colors.orange,
+                                activeColor: Palette.orange,
                               ),
                               SwitchListTile(
                                 title: const Text('True Dark Mode'),
@@ -387,7 +388,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       .read<PreferenceCubit>()
                                       .toggleTrueDarkMode();
                                 },
-                                activeColor: Colors.orange,
+                                activeColor: Palette.orange,
                               ),
                               ListTile(
                                 title: const Text(
@@ -409,15 +410,17 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   showAboutDialog(
                                     context: context,
                                     applicationName: 'Hacki',
-                                    applicationVersion: 'v0.2.21',
+                                    applicationVersion: 'v0.2.22',
                                     applicationIcon: ClipRRect(
                                       borderRadius: const BorderRadius.all(
-                                        Radius.circular(12),
+                                        Radius.circular(
+                                          Dimens.pt12,
+                                        ),
                                       ),
                                       child: Image.asset(
                                         Constants.hackiIconPath,
-                                        height: 50,
-                                        width: 50,
+                                        height: Dimens.pt50,
+                                        width: Dimens.pt50,
                                       ),
                                     ),
                                     children: <Widget>[
@@ -431,7 +434,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                               FontAwesomeIcons.addressCard,
                                             ),
                                             SizedBox(
-                                              width: 12,
+                                              width: Dimens.pt12,
                                             ),
                                             Text('Developer'),
                                           ],
@@ -447,7 +450,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                               FontAwesomeIcons.github,
                                             ),
                                             SizedBox(
-                                              width: 12,
+                                              width: Dimens.pt12,
                                             ),
                                             Text('Source code'),
                                           ],
@@ -465,7 +468,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                               Icons.thumb_up,
                                             ),
                                             SizedBox(
-                                              width: 12,
+                                              width: Dimens.pt12,
                                             ),
                                             Text('Like the app?'),
                                           ],
@@ -481,7 +484,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                               FeatherIcons.coffee,
                                             ),
                                             SizedBox(
-                                              width: 12,
+                                              width: Dimens.pt12,
                                             ),
                                             Text('Buy me a coffee'),
                                           ],
@@ -492,7 +495,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 },
                               ),
                               const SizedBox(
-                                height: 48,
+                                height: Dimens.pt48,
                               ),
                             ],
                           ),
@@ -507,7 +510,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                         child: Row(
                           children: <Widget>[
                             const SizedBox(
-                              width: 12,
+                              width: Dimens.pt12,
                             ),
                             CustomChip(
                               label: 'Submit',
@@ -526,7 +529,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               },
                             ),
                             const SizedBox(
-                              width: 12,
+                              width: Dimens.pt12,
                             ),
                             CustomChip(
                               label: 'Inbox : '
@@ -542,7 +545,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               },
                             ),
                             const SizedBox(
-                              width: 12,
+                              width: Dimens.pt12,
                             ),
                             CustomChip(
                               label: 'Favorite',
@@ -556,7 +559,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               },
                             ),
                             const SizedBox(
-                              width: 12,
+                              width: Dimens.pt12,
                             ),
                             CustomChip(
                               label: 'Submitted',
@@ -570,7 +573,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               },
                             ),
                             const SizedBox(
-                              width: 12,
+                              width: Dimens.pt12,
                             ),
                             CustomChip(
                               label: 'Search',
@@ -584,7 +587,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               },
                             ),
                             const SizedBox(
-                              width: 12,
+                              width: Dimens.pt12,
                             ),
                             CustomChip(
                               label: 'Settings',
@@ -598,7 +601,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               },
                             ),
                             const SizedBox(
-                              width: 12,
+                              width: Dimens.pt12,
                             ),
                           ],
                         ),
@@ -666,7 +669,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               child: const Text(
                 'Cancel',
                 style: TextStyle(
-                  color: Colors.orange,
+                  color: Palette.orange,
                 ),
               ),
             ),
@@ -743,64 +746,64 @@ class _ProfileScreenState extends State<ProfileScreen>
               children: <Widget>[
                 if (state.status == AuthStatus.loading)
                   const SizedBox(
-                    height: 36,
-                    width: 36,
+                    height: Dimens.pt36,
+                    width: Dimens.pt36,
                     child: Center(
                       child: CircularProgressIndicator(
-                        color: Colors.orange,
+                        color: Palette.orange,
                       ),
                     ),
                   )
                 else if (!state.isLoggedIn) ...<Widget>[
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 18,
+                      horizontal: Dimens.pt18,
                     ),
                     child: TextField(
                       controller: usernameController,
-                      cursorColor: Colors.orange,
+                      cursorColor: Palette.orange,
                       autocorrect: false,
                       decoration: const InputDecoration(
                         hintText: 'Username',
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.orange),
+                          borderSide: BorderSide(color: Palette.orange),
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(
-                    height: 16,
+                    height: Dimens.pt16,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 18,
+                      horizontal: Dimens.pt18,
                     ),
                     child: TextField(
                       controller: passwordController,
-                      cursorColor: Colors.orange,
+                      cursorColor: Palette.orange,
                       obscureText: true,
                       autocorrect: false,
                       decoration: const InputDecoration(
                         hintText: 'Password',
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.orange),
+                          borderSide: BorderSide(color: Palette.orange),
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(
-                    height: 16,
+                    height: Dimens.pt16,
                   ),
                   if (state.status == AuthStatus.failure)
                     const Padding(
                       padding: EdgeInsets.only(
-                        left: 18,
+                        left: Dimens.pt18,
                       ),
                       child: Text(
                         'Something went wrong...',
                         style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
+                          color: Palette.grey,
+                          fontSize: TextDimens.pt12,
                         ),
                       ),
                     ),
@@ -814,8 +817,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                               ? Icons.check_box
                               : Icons.check_box_outline_blank,
                           color: state.agreedToEULA
-                              ? Colors.deepOrange
-                              : Colors.grey,
+                              ? Palette.deepOrange
+                              : Palette.grey,
                         ),
                         onPressed: () => context
                             .read<AuthBloc>()
@@ -840,7 +843,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   child: const Text(
                                     'End User Agreement',
                                     style: TextStyle(
-                                      color: Colors.deepOrange,
+                                      color: Palette.deepOrange,
                                       decoration: TextDecoration.underline,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -855,7 +858,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
-                      right: 12,
+                      right: Dimens.pt12,
                     ),
                     child: ButtonBar(
                       children: <Widget>[
@@ -886,15 +889,15 @@ class _ProfileScreenState extends State<ProfileScreen>
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all(
                               state.agreedToEULA
-                                  ? Colors.deepOrange
-                                  : Colors.grey,
+                                  ? Palette.deepOrange
+                                  : Palette.grey,
                             ),
                           ),
                           child: const Text(
                             'Log in',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: Palette.white,
                             ),
                           ),
                         ),
@@ -921,7 +924,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           content: Text(
             'Log out as ${authBloc.state.username}?',
             style: const TextStyle(
-              fontSize: 16,
+              fontSize: TextDimens.pt16,
             ),
           ),
           actions: <Widget>[

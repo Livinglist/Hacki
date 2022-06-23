@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hacki/styles/styles.dart';
 
 class CenteredMessageView extends StatelessWidget {
   const CenteredMessageView({
@@ -12,14 +13,14 @@ class CenteredMessageView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(
-        top: 120,
-        left: 40,
-        right: 40,
+        top: Dimens.pt120,
+        left: Dimens.pt40,
+        right: Dimens.pt40,
       ),
       child: Text(
         content,
         textAlign: TextAlign.center,
-        style: const TextStyle(color: Colors.grey),
+        style: const TextStyle(color: Palette.grey),
       ),
     );
   }

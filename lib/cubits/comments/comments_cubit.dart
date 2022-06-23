@@ -75,16 +75,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     final Item updatedItem = state.offlineReading
         ? item
         : await _storiesRepository.fetchItemBy(id: item.id) ?? item;
-    final List<int> kids = () {
-      switch (state.order) {
-        case CommentsOrder.natural:
-          return updatedItem.kids;
-        case CommentsOrder.newestFirst:
-          return updatedItem.kids.sorted((int a, int b) => b.compareTo(a));
-        case CommentsOrder.oldestFirst:
-          return updatedItem.kids.sorted((int a, int b) => a.compareTo(b));
-      }
-    }();
+    final List<int> kids = sortKids(updatedItem.kids);
 
     emit(state.copyWith(item: updatedItem));
 
@@ -127,16 +118,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     final Item item = state.item;
     final Item updatedItem =
         await _storiesRepository.fetchItemBy(id: item.id) ?? item;
-    final List<int> kids = () {
-      switch (state.order) {
-        case CommentsOrder.natural:
-          return updatedItem.kids;
-        case CommentsOrder.newestFirst:
-          return updatedItem.kids.sorted((int a, int b) => b.compareTo(a));
-        case CommentsOrder.oldestFirst:
-          return updatedItem.kids.sorted((int a, int b) => a.compareTo(b));
-      }
-    }();
+    final List<int> kids = sortKids(updatedItem.kids);
 
     _streamSubscription = _storiesRepository
         .fetchCommentsStream(ids: kids)
@@ -198,6 +180,17 @@ class CommentsCubit extends Cubit<CommentsState> {
     _streamSubscription?.cancel();
     emit(state.copyWith(order: order, comments: <Comment>[]));
     init();
+  }
+
+  List<int> sortKids(List<int> kids) {
+    switch (state.order) {
+      case CommentsOrder.natural:
+        return kids;
+      case CommentsOrder.newestFirst:
+        return kids.sorted((int a, int b) => b.compareTo(a));
+      case CommentsOrder.oldestFirst:
+        return kids.sorted((int a, int b) => a.compareTo(b));
+    }
   }
 
   void _onDone() {

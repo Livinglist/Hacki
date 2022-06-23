@@ -15,6 +15,7 @@ import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/repositories/repositories.dart' show PreferenceRepository;
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/services/fetcher.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart' show BehaviorSubject;
@@ -182,19 +183,19 @@ class HackiApp extends StatelessWidget {
       ],
       child: AdaptiveTheme(
         light: ThemeData(
-          primarySwatch: Colors.orange,
+          primarySwatch: Palette.orange,
         ),
         dark: ThemeData(
           brightness: Brightness.dark,
-          primarySwatch: Colors.orange,
-          canvasColor: trueDarkMode ? Colors.black : null,
+          primarySwatch: Palette.orange,
+          canvasColor: trueDarkMode ? Palette.black : null,
         ),
         initial: savedThemeMode ?? AdaptiveThemeMode.system,
         builder: (ThemeData theme, ThemeData darkTheme) {
           final ThemeData trueDarkTheme = ThemeData(
             brightness: Brightness.dark,
-            primarySwatch: Colors.orange,
-            canvasColor: Colors.black,
+            primarySwatch: Palette.orange,
+            canvasColor: Palette.black,
           );
           return FutureBuilder<AdaptiveThemeMode?>(
             future: AdaptiveTheme.getThemeMode(),

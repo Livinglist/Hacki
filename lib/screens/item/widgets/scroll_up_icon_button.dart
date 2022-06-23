@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:hacki/styles/styles.dart';
 
 class ScrollUpIconButton extends StatefulWidget {
   const ScrollUpIconButton({
@@ -35,8 +36,8 @@ class _ScrollUpIconButtonState extends State<ScrollUpIconButton> {
         child: IconButton(
           icon: const Icon(
             FeatherIcons.chevronsUp,
-            color: Colors.orange,
-            size: 26,
+            color: Palette.orange,
+            size: TextDimens.pt26,
           ),
           onPressed: () {
             final double curPos = widget.scrollController.offset;

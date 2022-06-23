@@ -6,6 +6,7 @@ import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/item.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/link_util.dart';
 
 class ReplyBox extends StatefulWidget {
@@ -34,6 +35,8 @@ class _ReplyBoxState extends State<ReplyBox> {
   bool expanded = false;
   double? expandedHeight;
 
+  static const double _collapsedHeight = 100;
+
   @override
   Widget build(BuildContext context) {
     expandedHeight ??= MediaQuery.of(context).size.height;
@@ -53,20 +56,21 @@ class _ReplyBoxState extends State<ReplyBox> {
               return Padding(
                 padding: EdgeInsets.only(
                   bottom: expanded
-                      ? 0
+                      ? Dimens.zero
                       : widget.splitViewEnabled
                           ? MediaQuery.of(context).viewInsets.bottom
-                          : 0,
+                          : Dimens.zero,
                 ),
                 child: AnimatedContainer(
-                  height: expanded ? expandedHeight : 100,
+                  height: expanded ? expandedHeight : _collapsedHeight,
                   duration: const Duration(milliseconds: 200),
                   decoration: BoxDecoration(
                     boxShadow: <BoxShadow>[
                       if (!context.read<SplitViewCubit>().state.enabled)
                         BoxShadow(
-                          color: expanded ? Colors.transparent : Colors.black26,
-                          blurRadius: 40,
+                          color:
+                              expanded ? Palette.transparent : Palette.black26,
+                          blurRadius: Dimens.pt40,
                         ),
                     ],
                   ),
@@ -75,10 +79,10 @@ class _ReplyBoxState extends State<ReplyBox> {
                       children: <Widget>[
                         if (context.read<SplitViewCubit>().state.enabled)
                           const Divider(
-                            height: 0,
+                            height: Dimens.zero,
                           ),
                         AnimatedContainer(
-                          height: expanded ? 36 : 0,
+                          height: expanded ? Dimens.pt36 : Dimens.zero,
                           duration: const Duration(milliseconds: 200),
                         ),
                         Row(
@@ -86,16 +90,16 @@ class _ReplyBoxState extends State<ReplyBox> {
                             Expanded(
                               child: Padding(
                                 padding: const EdgeInsets.only(
-                                  left: 12,
-                                  top: 8,
-                                  bottom: 8,
+                                  left: Dimens.pt12,
+                                  top: Dimens.pt8,
+                                  bottom: Dimens.pt8,
                                 ),
                                 child: Text(
                                   replyingTo == null
                                       ? 'Editing'
                                       : 'Replying '
                                           '${replyingTo.by}',
-                                  style: const TextStyle(color: Colors.grey),
+                                  style: const TextStyle(color: Palette.grey),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -111,8 +115,8 @@ class _ReplyBoxState extends State<ReplyBox> {
                                       key: const Key('quote'),
                                       icon: const Icon(
                                         FeatherIcons.code,
-                                        color: Colors.orange,
-                                        size: 18,
+                                        color: Palette.orange,
+                                        size: TextDimens.pt18,
                                       ),
                                       onPressed:
                                           expanded ? showTextPopup : null,
@@ -124,8 +128,8 @@ class _ReplyBoxState extends State<ReplyBox> {
                                     expanded
                                         ? FeatherIcons.minimize2
                                         : FeatherIcons.maximize2,
-                                    color: Colors.orange,
-                                    size: 18,
+                                    color: Palette.orange,
+                                    size: TextDimens.pt18,
                                   ),
                                   onPressed: () {
                                     setState(() {
@@ -138,7 +142,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                                 key: const Key('close'),
                                 icon: const Icon(
                                   Icons.close,
-                                  color: Colors.orange,
+                                  color: Palette.orange,
                                 ),
                                 onPressed: () {
                                   widget.onCloseTapped();
@@ -149,15 +153,15 @@ class _ReplyBoxState extends State<ReplyBox> {
                             if (isLoading)
                               const Padding(
                                 padding: EdgeInsets.symmetric(
-                                  vertical: 12,
-                                  horizontal: 16,
+                                  vertical: Dimens.pt12,
+                                  horizontal: Dimens.pt16,
                                 ),
                                 child: SizedBox(
-                                  height: 24,
-                                  width: 24,
+                                  height: Dimens.pt24,
+                                  width: Dimens.pt24,
                                   child: CircularProgressIndicator(
-                                    color: Colors.orange,
-                                    strokeWidth: 2,
+                                    color: Palette.orange,
+                                    strokeWidth: Dimens.pt2,
                                   ),
                                 ),
                               )
@@ -166,7 +170,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                                 key: const Key('send'),
                                 icon: const Icon(
                                   Icons.send,
-                                  color: Colors.orange,
+                                  color: Palette.orange,
                                 ),
                                 onPressed: () {
                                   widget.onSendTapped();
@@ -177,7 +181,9 @@ class _ReplyBoxState extends State<ReplyBox> {
                         ),
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: Dimens.pt16,
+                            ),
                             child: TextField(
                               focusNode: widget.focusNode,
                               controller: widget.textEditingController,
@@ -187,7 +193,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                                 contentPadding: EdgeInsets.zero,
                                 hintText: '...',
                                 hintStyle: TextStyle(
-                                  color: Colors.grey,
+                                  color: Palette.grey,
                                 ),
                                 focusedBorder: InputBorder.none,
                                 border: InputBorder.none,
@@ -220,8 +226,8 @@ class _ReplyBoxState extends State<ReplyBox> {
       builder: (_) {
         return AlertDialog(
           insetPadding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 24,
+            horizontal: Dimens.pt12,
+            vertical: Dimens.pt24,
           ),
           contentPadding: EdgeInsets.zero,
           content: ConstrainedBox(
@@ -233,14 +239,14 @@ class _ReplyBoxState extends State<ReplyBox> {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.only(
-                    left: 12,
-                    top: 6,
+                    left: Dimens.pt12,
+                    top: Dimens.pt6,
                   ),
                   child: Row(
                     children: <Widget>[
                       Text(
                         replyingTo?.by ?? '',
-                        style: const TextStyle(color: Colors.grey),
+                        style: const TextStyle(color: Palette.grey),
                       ),
                       const Spacer(),
                       TextButton(
@@ -252,8 +258,8 @@ class _ReplyBoxState extends State<ReplyBox> {
                       IconButton(
                         icon: const Icon(
                           Icons.close,
-                          color: Colors.orange,
-                          size: 18,
+                          color: Palette.orange,
+                          size: TextDimens.pt18,
                         ),
                         onPressed: () => Navigator.pop(context),
                       ),
@@ -265,17 +271,17 @@ class _ReplyBoxState extends State<ReplyBox> {
                     thumbVisibility: true,
                     child: Padding(
                       padding: const EdgeInsets.only(
-                        left: 12,
-                        right: 6,
-                        top: 6,
+                        left: Dimens.pt12,
+                        right: Dimens.pt6,
+                        top: Dimens.pt6,
                       ),
                       child: SingleChildScrollView(
                         child: SelectableLinkify(
                           scrollPhysics: const NeverScrollableScrollPhysics(),
                           linkStyle: TextStyle(
-                            fontSize:
-                                MediaQuery.of(context).textScaleFactor * 15,
-                            color: Colors.orange,
+                            fontSize: MediaQuery.of(context).textScaleFactor *
+                                TextDimens.pt15,
+                            color: Palette.orange,
                           ),
                           onOpen: (LinkableElement link) =>
                               LinkUtil.launch(link.url),

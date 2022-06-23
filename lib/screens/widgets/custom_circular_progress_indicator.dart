@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hacki/styles/styles.dart';
 
 /// Circular progress indicator with color.
 /// Changing `colorScheme`'s `primary` color doesn't work because it changes
@@ -17,7 +18,7 @@ class CustomCircularProgressIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return CircularProgressIndicator(
       strokeWidth: strokeWidth,
-      valueColor: const AlwaysStoppedAnimation<Color>(Colors.orange),
+      valueColor: const AlwaysStoppedAnimation<Color>(Palette.orange),
     );
   }
 }

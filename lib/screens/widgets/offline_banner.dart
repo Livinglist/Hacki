@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/screens/widgets/link_preview/web_analyzer.dart';
+import 'package:hacki/styles/styles.dart';
 
 class OfflineBanner extends StatelessWidget {
   const OfflineBanner({
@@ -25,7 +26,7 @@ class OfflineBanner extends StatelessWidget {
               '${showExitButton ? 'Exit to fetch latest stories.' : ''}',
               textAlign: showExitButton ? TextAlign.left : TextAlign.center,
             ),
-            backgroundColor: Colors.orangeAccent.withOpacity(0.3),
+            backgroundColor: Palette.orangeAccent.withOpacity(0.3),
             actions: <Widget>[
               if (showExitButton)
                 TextButton(
@@ -46,7 +47,7 @@ class OfflineBanner extends StatelessWidget {
                               child: const Text(
                                 'Yes',
                                 style: TextStyle(
-                                  color: Colors.red,
+                                  color: Palette.red,
                                 ),
                               ),
                             ),

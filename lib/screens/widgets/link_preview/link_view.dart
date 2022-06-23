@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/styles/styles.dart';
 
 class LinkView extends StatelessWidget {
   const LinkView({
@@ -74,13 +75,13 @@ class LinkView extends StatelessWidget {
         final TextStyle _titleFontSize = titleTextStyle ??
             TextStyle(
               fontSize: computeTitleFontSize(layoutWidth),
-              color: Colors.black,
+              color: Palette.black,
               fontWeight: FontWeight.bold,
             );
         final TextStyle _bodyFontSize = bodyTextStyle ??
             TextStyle(
               fontSize: computeTitleFontSize(layoutWidth) - 1,
-              color: Colors.grey,
+              color: Palette.grey,
               fontWeight: FontWeight.w400,
             );
 

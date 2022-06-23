@@ -19,6 +19,7 @@ import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:responsive_builder/responsive_builder.dart';
@@ -239,13 +240,15 @@ class _ItemScreenState extends State<ItemScreen> {
                 enablePullUp: !state.onlyShowTargetComment,
                 enablePullDown: !state.onlyShowTargetComment,
                 header: WaterDropMaterialHeader(
-                  backgroundColor: Colors.orange,
+                  backgroundColor: Palette.orange,
                   offset: topPadding,
                 ),
                 footer: CustomFooter(
                   loadStyle: LoadStyle.ShowWhenLoading,
                   builder: (BuildContext context, LoadStatus? mode) {
-                    Widget body;
+                    const double height = 55;
+                    late final Widget body;
+
                     if (mode == LoadStatus.idle) {
                       body = const Text('');
                     } else if (mode == LoadStatus.loading) {
@@ -262,7 +265,7 @@ class _ItemScreenState extends State<ItemScreen> {
                       body = const Text('');
                     }
                     return SizedBox(
-                      height: 55,
+                      height: height,
                       child: Center(child: body),
                     );
                   },
@@ -276,7 +279,7 @@ class _ItemScreenState extends State<ItemScreen> {
                   } else {
                     context.read<CommentsCubit>().refresh();
 
-                    if (widget.item.isPoll) {
+                    if (state.item.isPoll) {
                       context.read<PollCubit>().refresh();
                     }
                   }
@@ -290,7 +293,7 @@ class _ItemScreenState extends State<ItemScreen> {
                     ),
                     if (!widget.splitViewEnabled)
                       const Padding(
-                        padding: EdgeInsets.only(bottom: 6),
+                        padding: EdgeInsets.only(bottom: Dimens.pt6),
                         child: OfflineBanner(),
                       ),
                     Slidable(
@@ -301,23 +304,27 @@ class _ItemScreenState extends State<ItemScreen> {
                             onPressed: (_) {
                               HapticFeedback.lightImpact();
 
-                              if (widget.item !=
-                                  context.read<EditCubit>().state.replyingTo) {
+                              if (state.item.id !=
+                                  context
+                                      .read<EditCubit>()
+                                      .state
+                                      .replyingTo
+                                      ?.id) {
                                 commentEditingController.clear();
                               }
                               context
                                   .read<EditCubit>()
-                                  .onReplyTapped(widget.item);
+                                  .onReplyTapped(state.item);
                               focusNode.requestFocus();
                             },
-                            backgroundColor: Colors.orange,
-                            foregroundColor: Colors.white,
+                            backgroundColor: Palette.orange,
+                            foregroundColor: Palette.white,
                             icon: Icons.message,
                           ),
                           SlidableAction(
-                            onPressed: (_) => onMoreTapped(widget.item),
-                            backgroundColor: Colors.orange,
-                            foregroundColor: Colors.white,
+                            onPressed: (_) => onMoreTapped(state.item),
+                            backgroundColor: Palette.orange,
+                            foregroundColor: Palette.white,
                             icon: Icons.more_horiz,
                           ),
                         ],
@@ -326,22 +333,22 @@ class _ItemScreenState extends State<ItemScreen> {
                         children: <Widget>[
                           Padding(
                             padding: const EdgeInsets.only(
-                              left: 6,
-                              right: 6,
+                              left: Dimens.pt6,
+                              right: Dimens.pt6,
                             ),
                             child: Row(
                               children: <Widget>[
                                 Text(
                                   state.item.by,
                                   style: const TextStyle(
-                                    color: Colors.orange,
+                                    color: Palette.orange,
                                   ),
                                 ),
                                 const Spacer(),
                                 Text(
                                   state.item.postedDate,
                                   style: const TextStyle(
-                                    color: Colors.grey,
+                                    color: Palette.grey,
                                   ),
                                 ),
                               ],
@@ -362,10 +369,10 @@ class _ItemScreenState extends State<ItemScreen> {
                               ),
                               child: Padding(
                                 padding: const EdgeInsets.only(
-                                  left: 6,
-                                  right: 6,
-                                  bottom: 12,
-                                  top: 12,
+                                  left: Dimens.pt6,
+                                  right: Dimens.pt6,
+                                  bottom: Dimens.pt12,
+                                  top: Dimens.pt12,
                                 ),
                                 child: Text(
                                   state.item.title,
@@ -373,7 +380,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: state.item.url.isNotEmpty
-                                        ? Colors.orange
+                                        ? Palette.orange
                                         : null,
                                   ),
                                 ),
@@ -381,25 +388,25 @@ class _ItemScreenState extends State<ItemScreen> {
                             )
                           else
                             const SizedBox(
-                              height: 6,
+                              height: Dimens.pt6,
                             ),
                           if (state.item.text.isNotEmpty)
                             Padding(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
+                                horizontal: Dimens.pt10,
                               ),
                               child: SelectableLinkify(
-                                text: widget.item.text,
+                                text: state.item.text,
                                 style: TextStyle(
                                   fontSize:
                                       MediaQuery.of(context).textScaleFactor *
-                                          15,
+                                          TextDimens.pt15,
                                 ),
                                 linkStyle: TextStyle(
                                   fontSize:
                                       MediaQuery.of(context).textScaleFactor *
-                                          15,
-                                  color: Colors.orange,
+                                          TextDimens.pt15,
+                                  color: Palette.orange,
                                 ),
                                 onOpen: (LinkableElement link) {
                                   if (link.url.contains(
@@ -425,10 +432,10 @@ class _ItemScreenState extends State<ItemScreen> {
                     ),
                     if (state.item.text.isNotEmpty)
                       const SizedBox(
-                        height: 8,
+                        height: Dimens.pt8,
                       ),
                     const Divider(
-                      height: 0,
+                      height: Dimens.zero,
                     ),
                     if (state.onlyShowTargetComment) ...<Widget>[
                       Center(
@@ -440,21 +447,21 @@ class _ItemScreenState extends State<ItemScreen> {
                         ),
                       ),
                       const Divider(
-                        height: 0,
+                        height: Dimens.zero,
                       ),
                     ] else ...<Widget>[
                       Row(
                         children: <Widget>[
                           if (state.item is Story) ...<Widget>[
                             const SizedBox(
-                              width: 12,
+                              width: Dimens.pt12,
                             ),
                             Text(
                               '''${state.item.score} karma, ${state.item.descendants} comment${state.item.descendants > 1 ? 's' : ''}''',
                             ),
                           ] else ...<Widget>[
                             const SizedBox(
-                              width: 4,
+                              width: Dimens.pt4,
                             ),
                             TextButton(
                               onPressed: context
@@ -463,10 +470,10 @@ class _ItemScreenState extends State<ItemScreen> {
                               child: state.fetchParentStatus ==
                                       CommentsStatus.loading
                                   ? const SizedBox(
-                                      height: 12,
-                                      width: 12,
+                                      height: Dimens.pt12,
+                                      width: Dimens.pt12,
                                       child: CustomCircularProgressIndicator(
-                                        strokeWidth: 2,
+                                        strokeWidth: Dimens.pt2,
                                       ),
                                     )
                                   : const Text('View parent thread'),
@@ -482,7 +489,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                 child: Text(
                                   'Natural',
                                   style: TextStyle(
-                                    fontSize: 14,
+                                    fontSize: TextDimens.pt14,
                                   ),
                                 ),
                               ),
@@ -491,7 +498,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                 child: Text(
                                   'Newest first',
                                   style: TextStyle(
-                                    fontSize: 14,
+                                    fontSize: TextDimens.pt14,
                                   ),
                                 ),
                               ),
@@ -500,7 +507,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                 child: Text(
                                   'Oldest first',
                                   style: TextStyle(
-                                    fontSize: 14,
+                                    fontSize: TextDimens.pt14,
                                   ),
                                 ),
                               ),
@@ -509,12 +516,12 @@ class _ItemScreenState extends State<ItemScreen> {
                                 context.read<CommentsCubit>().onOrderChanged,
                           ),
                           const SizedBox(
-                            width: 4,
+                            width: Dimens.pt4,
                           ),
                         ],
                       ),
                       const Divider(
-                        height: 0,
+                        height: Dimens.zero,
                       ),
                     ],
                     if (state.comments.isEmpty &&
@@ -525,7 +532,7 @@ class _ItemScreenState extends State<ItemScreen> {
                       const Center(
                         child: Text(
                           'Nothing yet',
-                          style: TextStyle(color: Colors.grey),
+                          style: TextStyle(color: Palette.grey),
                         ),
                       ),
                     ],
@@ -537,15 +544,19 @@ class _ItemScreenState extends State<ItemScreen> {
                           level: comment.level,
                           myUsername:
                               authState.isLoggedIn ? authState.username : null,
-                          opUsername: widget.item.by,
+                          opUsername: state.item.by,
                           onReplyTapped: (Comment cmt) {
                             HapticFeedback.lightImpact();
                             if (cmt.deleted || cmt.dead) {
                               return;
                             }
 
-                            if (cmt !=
-                                context.read<EditCubit>().state.replyingTo) {
+                            if (cmt.id !=
+                                context
+                                    .read<EditCubit>()
+                                    .state
+                                    .replyingTo
+                                    ?.id) {
                               commentEditingController.clear();
                             }
 
@@ -619,9 +630,9 @@ class _ItemScreenState extends State<ItemScreen> {
                                 SplitViewState state,
                               ) {
                                 return Positioned(
-                                  top: 0,
-                                  left: 0,
-                                  right: 0,
+                                  top: Dimens.zero,
+                                  left: Dimens.zero,
+                                  right: Dimens.zero,
                                   child: CustomAppBar(
                                     backgroundColor: Theme.of(context)
                                         .canvasColor
@@ -640,9 +651,9 @@ class _ItemScreenState extends State<ItemScreen> {
                               },
                             ),
                             Positioned(
-                              bottom: 0,
-                              left: 0,
-                              right: 0,
+                              bottom: Dimens.zero,
+                              left: Dimens.zero,
+                              right: Dimens.zero,
                               child: ReplyBox(
                                 splitViewEnabled: true,
                                 focusNode: focusNode,
@@ -702,15 +713,17 @@ class _ItemScreenState extends State<ItemScreen> {
   }
 
   void onRightMoreTapped(Comment comment) {
+    const double bottomSheetHeight = 140;
+
     HapticFeedback.lightImpact();
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
         return Container(
-          height: 140,
+          height: bottomSheetHeight,
           color: Theme.of(context).canvasColor,
           child: Material(
-            color: Colors.transparent,
+            color: Palette.transparent,
             child: Column(
               children: <Widget>[
                 ListTile(
@@ -758,28 +771,32 @@ class _ItemScreenState extends State<ItemScreen> {
               return Center(
                 child: Material(
                   color: Theme.of(context).canvasColor,
-                  borderRadius: const BorderRadius.all(Radius.circular(4)),
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(
+                      Dimens.pt4,
+                    ),
+                  ),
                   child: SizedBox(
                     height: size.height * 0.8,
                     width: size.width * widthFactor,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 12,
+                        horizontal: Dimens.pt8,
+                        vertical: Dimens.pt12,
                       ),
                       child: Column(
                         children: <Widget>[
                           Row(
                             children: <Widget>[
                               const SizedBox(
-                                width: 8,
+                                width: Dimens.pt8,
                               ),
                               const Text('Parents:'),
                               const Spacer(),
                               IconButton(
                                 icon: const Icon(
                                   Icons.close,
-                                  size: 16,
+                                  size: Dimens.pt16,
                                 ),
                                 onPressed: () => Navigator.pop(context),
                                 padding: EdgeInsets.zero,
@@ -799,7 +816,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                     actionable: false,
                                   ),
                                   const Divider(
-                                    height: 0,
+                                    height: Dimens.zero,
                                   ),
                                 ],
                               ],
@@ -893,7 +910,7 @@ class _ItemScreenState extends State<ItemScreen> {
                 height: item is Comment ? 430 : 450,
                 color: Theme.of(context).canvasColor,
                 child: Material(
-                  color: Colors.transparent,
+                  color: Palette.transparent,
                   child: Column(
                     children: <Widget>[
                       BlocProvider<UserCubit>(
@@ -923,7 +940,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                               Text(
                                                 'empty',
                                                 style: TextStyle(
-                                                  color: Colors.grey,
+                                                  color: Palette.grey,
                                                 ),
                                               ),
                                             ],
@@ -933,7 +950,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                               state.user.about,
                                             ),
                                             linkStyle: const TextStyle(
-                                              color: Colors.orange,
+                                              color: Palette.orange,
                                             ),
                                             onOpen: (LinkableElement link) {
                                               if (link.url.contains(
@@ -964,12 +981,12 @@ class _ItemScreenState extends State<ItemScreen> {
                       ListTile(
                         leading: Icon(
                           FeatherIcons.chevronUp,
-                          color: upvoted ? Colors.orange : null,
+                          color: upvoted ? Palette.orange : null,
                         ),
                         title: Text(
                           upvoted ? 'Upvoted' : 'Upvote',
                           style: upvoted
-                              ? const TextStyle(color: Colors.orange)
+                              ? const TextStyle(color: Palette.orange)
                               : null,
                         ),
                         subtitle:
@@ -979,12 +996,12 @@ class _ItemScreenState extends State<ItemScreen> {
                       ListTile(
                         leading: Icon(
                           FeatherIcons.chevronDown,
-                          color: downvoted ? Colors.orange : null,
+                          color: downvoted ? Palette.orange : null,
                         ),
                         title: Text(
                           downvoted ? 'Downvoted' : 'Downvote',
                           style: downvoted
-                              ? const TextStyle(color: Colors.orange)
+                              ? const TextStyle(color: Palette.orange)
                               : null,
                         ),
                         onTap: context.read<VoteCubit>().downvote,
@@ -1074,7 +1091,7 @@ class _ItemScreenState extends State<ItemScreen> {
           content: Text(
             'Flag this comment posted by ${item.by}?',
             style: const TextStyle(
-              color: Colors.grey,
+              color: Palette.grey,
             ),
           ),
           actions: <Widget>[
@@ -1112,7 +1129,7 @@ class _ItemScreenState extends State<ItemScreen> {
             ' and ${isBlocked ? 'display' : 'hide'} '
             'comments posted by this user?',
             style: const TextStyle(
-              color: Colors.grey,
+              color: Palette.grey,
             ),
           ),
           actions: <Widget>[
@@ -1187,64 +1204,64 @@ class _ItemScreenState extends State<ItemScreen> {
               children: <Widget>[
                 if (state.status == AuthStatus.loading)
                   const SizedBox(
-                    height: 36,
-                    width: 36,
+                    height: Dimens.pt36,
+                    width: Dimens.pt36,
                     child: Center(
                       child: CircularProgressIndicator(
-                        color: Colors.orange,
+                        color: Palette.orange,
                       ),
                     ),
                   )
                 else if (!state.isLoggedIn) ...<Widget>[
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 18,
+                      horizontal: Dimens.pt18,
                     ),
                     child: TextField(
                       controller: usernameController,
-                      cursorColor: Colors.orange,
+                      cursorColor: Palette.orange,
                       autocorrect: false,
                       decoration: const InputDecoration(
                         hintText: 'Username',
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.orange),
+                          borderSide: BorderSide(color: Palette.orange),
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(
-                    height: 16,
+                    height: Dimens.pt16,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 18,
+                      horizontal: Dimens.pt18,
                     ),
                     child: TextField(
                       controller: passwordController,
-                      cursorColor: Colors.orange,
+                      cursorColor: Palette.orange,
                       obscureText: true,
                       autocorrect: false,
                       decoration: const InputDecoration(
                         hintText: 'Password',
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.orange),
+                          borderSide: BorderSide(color: Palette.orange),
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(
-                    height: 16,
+                    height: Dimens.pt16,
                   ),
                   if (state.status == AuthStatus.failure)
                     Padding(
                       padding: const EdgeInsets.only(
-                        left: 18,
+                        left: Dimens.pt18,
                       ),
                       child: Text(
                         'Something went wrong... $sadFace',
                         style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
+                          color: Palette.grey,
+                          fontSize: TextDimens.pt12,
                         ),
                       ),
                     ),
@@ -1258,8 +1275,8 @@ class _ItemScreenState extends State<ItemScreen> {
                               ? Icons.check_box
                               : Icons.check_box_outline_blank,
                           color: state.agreedToEULA
-                              ? Colors.deepOrange
-                              : Colors.grey,
+                              ? Palette.deepOrange
+                              : Palette.grey,
                         ),
                         onPressed: () => context
                             .read<AuthBloc>()
@@ -1284,7 +1301,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                   child: const Text(
                                     'End User Agreement',
                                     style: TextStyle(
-                                      color: Colors.deepOrange,
+                                      color: Palette.deepOrange,
                                       decoration: TextDecoration.underline,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -1299,7 +1316,7 @@ class _ItemScreenState extends State<ItemScreen> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
-                      right: 12,
+                      right: Dimens.pt12,
                     ),
                     child: ButtonBar(
                       children: <Widget>[
@@ -1330,15 +1347,15 @@ class _ItemScreenState extends State<ItemScreen> {
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all(
                               state.agreedToEULA
-                                  ? Colors.deepOrange
-                                  : Colors.grey,
+                                  ? Palette.deepOrange
+                                  : Palette.grey,
                             ),
                           ),
                           child: const Text(
                             'Log in',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: Palette.white,
                             ),
                           ),
                         ),

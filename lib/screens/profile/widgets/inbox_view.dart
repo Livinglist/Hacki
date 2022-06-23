@@ -3,6 +3,7 @@ import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/link_util.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -29,8 +30,8 @@ class InboxView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color textColor = Theme.of(context).brightness == Brightness.dark
-        ? Colors.white
-        : Colors.black;
+        ? Palette.white
+        : Palette.black;
     return Column(
       children: <Widget>[
         if (unreadCommentsIds.isNotEmpty)
@@ -42,12 +43,14 @@ class InboxView extends StatelessWidget {
           child: SmartRefresher(
             enablePullUp: true,
             header: const WaterDropMaterialHeader(
-              backgroundColor: Colors.orange,
+              backgroundColor: Palette.orange,
             ),
             footer: CustomFooter(
               loadStyle: LoadStyle.ShowWhenLoading,
               builder: (BuildContext context, LoadStatus? mode) {
-                Widget body;
+                const double height = 55;
+                late final Widget body;
+
                 if (mode == LoadStatus.loading) {
                   body = const CustomCircularProgressIndicator();
                 } else if (mode == LoadStatus.failed) {
@@ -58,7 +61,7 @@ class InboxView extends StatelessWidget {
                   body = const SizedBox.shrink();
                 }
                 return SizedBox(
-                  height: 55,
+                  height: height,
                   child: Center(child: body),
                 );
               },
@@ -72,7 +75,9 @@ class InboxView extends StatelessWidget {
                   return <Widget>[
                     FadeIn(
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 6),
+                        padding: const EdgeInsets.only(
+                          left: Dimens.pt6,
+                        ),
                         child: InkWell(
                           onTap: () => onCommentTapped(e),
                           child: Padding(
@@ -87,8 +92,8 @@ class InboxView extends StatelessWidget {
                                     Expanded(
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
-                                          vertical: 8,
-                                          horizontal: 6,
+                                          vertical: Dimens.pt8,
+                                          horizontal: Dimens.pt6,
                                         ),
                                         child: Linkify(
                                           text: '${e.by} : ${e.text}',
@@ -96,13 +101,13 @@ class InboxView extends StatelessWidget {
                                             color:
                                                 unreadCommentsIds.contains(e.id)
                                                     ? textColor
-                                                    : Colors.grey,
+                                                    : Palette.grey,
                                           ),
                                           linkStyle: TextStyle(
                                             color:
                                                 unreadCommentsIds.contains(e.id)
-                                                    ? Colors.orange
-                                                    : Colors.orange
+                                                    ? Palette.orange
+                                                    : Palette.orange
                                                         .withOpacity(0.6),
                                           ),
                                           maxLines: 4,
@@ -116,18 +121,18 @@ class InboxView extends StatelessWidget {
                                         Text(
                                           e.postedDate,
                                           style: const TextStyle(
-                                            color: Colors.grey,
+                                            color: Palette.grey,
                                           ),
                                         ),
                                         const SizedBox(
-                                          width: 12,
+                                          width: Dimens.pt12,
                                         ),
                                       ],
                                     ),
                                   ],
                                 ),
                                 const Divider(
-                                  height: 0,
+                                  height: Dimens.zero,
                                 ),
                               ],
                             ),
@@ -136,12 +141,12 @@ class InboxView extends StatelessWidget {
                       ),
                     ),
                     const Divider(
-                      height: 0,
+                      height: Dimens.zero,
                     ),
                   ];
                 }).expand((List<Widget> element) => element),
                 const SizedBox(
-                  height: 40,
+                  height: Dimens.pt40,
                 ),
               ],
             ),

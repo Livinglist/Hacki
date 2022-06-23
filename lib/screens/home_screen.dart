@@ -24,6 +24,7 @@ import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:responsive_builder/responsive_builder.dart';
@@ -171,8 +172,8 @@ class _HomeScreenState extends State<HomeScreen>
                               HapticFeedback.lightImpact();
                               context.read<PinCubit>().unpinStory(story);
                             },
-                            backgroundColor: Colors.red,
-                            foregroundColor: Colors.white,
+                            backgroundColor: Palette.red,
+                            foregroundColor: Palette.white,
                             icon: preferenceState.showComplexStoryTile
                                 ? Icons.close
                                 : null,
@@ -181,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen>
                         ],
                       ),
                       child: Container(
-                        color: Colors.orangeAccent.withOpacity(0.2),
+                        color: Palette.orangeAccent.withOpacity(0.2),
                         child: StoryTile(
                           key: ValueKey<String>('${story.id}-PinnedStoryTile'),
                           story: story,
@@ -194,9 +195,9 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 if (state.pinnedStories.isNotEmpty)
                   const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12),
+                    padding: EdgeInsets.symmetric(horizontal: Dimens.pt12),
                     child: Divider(
-                      color: Colors.orangeAccent,
+                      color: Palette.orangeAccent,
                     ),
                   ),
               ],
@@ -209,27 +210,32 @@ class _HomeScreenState extends State<HomeScreen>
           child: Scaffold(
             resizeToAvoidBottomInset: false,
             appBar: PreferredSize(
-              preferredSize: const Size(0, 40),
+              preferredSize: const Size(
+                Dimens.zero,
+                Dimens.pt40,
+              ),
               child: Column(
                 children: <Widget>[
                   SizedBox(
-                    height: MediaQuery.of(context).padding.top - 8,
+                    height: MediaQuery.of(context).padding.top - Dimens.pt8,
                   ),
                   Theme(
                     data: ThemeData(
-                      highlightColor: Colors.transparent,
-                      splashColor: Colors.transparent,
+                      highlightColor: Palette.transparent,
+                      splashColor: Palette.transparent,
                       primaryColor: Theme.of(context).primaryColor,
                     ),
                     child: TabBar(
                       isScrollable: true,
                       controller: tabController,
-                      indicatorColor: Colors.orange,
+                      indicatorColor: Palette.orange,
                       indicator: CircleTabIndicator(
-                        color: Colors.orange,
-                        radius: 2,
+                        color: Palette.orange,
+                        radius: Dimens.pt2,
                       ),
-                      indicatorPadding: const EdgeInsets.only(bottom: 8),
+                      indicatorPadding: const EdgeInsets.only(
+                        bottom: Dimens.pt8,
+                      ),
                       onTap: (_) {
                         HapticFeedback.selectionClick();
                       },
@@ -242,10 +248,12 @@ class _HomeScreenState extends State<HomeScreen>
                             child: Text(
                               StoriesBloc.types.elementAt(i).label,
                               style: TextStyle(
-                                fontSize: currentIndex == i ? 14 : 10,
+                                fontSize: currentIndex == i
+                                    ? TextDimens.pt14
+                                    : TextDimens.pt10,
                                 color: currentIndex == i
-                                    ? Colors.orange
-                                    : Colors.grey,
+                                    ? Palette.orange
+                                    : Palette.grey,
                               ),
                             ),
                           ),
@@ -263,8 +271,8 @@ class _HomeScreenState extends State<HomeScreen>
                             targetColor: Theme.of(context).primaryColor,
                             tapTarget: const Icon(
                               Icons.person,
-                              size: 16,
-                              color: Colors.white,
+                              size: TextDimens.pt16,
+                              color: Palette.white,
                             ),
                             featureId: Constants.featureLogIn,
                             title: const Text('Log in for more'),
@@ -274,7 +282,7 @@ class _HomeScreenState extends State<HomeScreen>
                               'posted in the past, and get in-app '
                               'notification when there is new reply to '
                               'your comments or stories.',
-                              style: TextStyle(fontSize: 16),
+                              style: TextStyle(fontSize: TextDimens.pt16),
                             ),
                             child: BlocBuilder<NotificationCubit,
                                 NotificationState>(
@@ -292,19 +300,21 @@ class _HomeScreenState extends State<HomeScreen>
                                   showBadge: state.unreadCommentsIds.isNotEmpty,
                                   borderRadius: BorderRadius.circular(100),
                                   badgeContent: Container(
-                                    height: 3,
-                                    width: 3,
+                                    height: Dimens.pt3,
+                                    width: Dimens.pt3,
                                     decoration: const BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: Colors.white,
+                                      color: Palette.white,
                                     ),
                                   ),
                                   child: Icon(
                                     Icons.person,
-                                    size: currentIndex == 5 ? 16 : 12,
+                                    size: currentIndex == 5
+                                        ? TextDimens.pt16
+                                        : TextDimens.pt12,
                                     color: currentIndex == 5
-                                        ? Colors.orange
-                                        : Colors.grey,
+                                        ? Palette.orange
+                                        : Palette.grey,
                                   ),
                                 );
                               },
@@ -506,10 +516,10 @@ class _MobileHomeScreen extends StatelessWidget {
         Positioned.fill(child: homeScreen),
         if (!context.read<ReminderCubit>().state.hasShown)
           const Positioned(
-            left: 24,
-            right: 24,
-            bottom: 36,
-            height: 40,
+            left: Dimens.pt24,
+            right: Dimens.pt24,
+            bottom: Dimens.pt36,
+            height: Dimens.pt40,
             child: CountdownReminder(),
           ),
       ],
@@ -533,7 +543,7 @@ class _TabletHomeScreen extends StatelessWidget {
         double homeScreenWidth = 428;
 
         if (sizeInfo.screenSize.width < homeScreenWidth * 2) {
-          homeScreenWidth = 345.0;
+          homeScreenWidth = 345;
         }
 
         return BlocBuilder<SplitViewCubit, SplitViewState>(
@@ -543,26 +553,26 @@ class _TabletHomeScreen extends StatelessWidget {
             return Stack(
               children: <Widget>[
                 AnimatedPositioned(
-                  left: 0,
-                  top: 0,
-                  bottom: 0,
-                  width: state.expanded ? 0 : homeScreenWidth,
+                  left: Dimens.zero,
+                  top: Dimens.zero,
+                  bottom: Dimens.zero,
+                  width: state.expanded ? Dimens.zero : homeScreenWidth,
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.elasticOut,
                   child: homeScreen,
                 ),
                 Positioned(
-                  left: 24,
-                  bottom: 36,
-                  height: 40,
-                  width: homeScreenWidth - 24,
+                  left: Dimens.pt24,
+                  bottom: Dimens.pt36,
+                  height: Dimens.pt40,
+                  width: homeScreenWidth - Dimens.pt24,
                   child: const CountdownReminder(),
                 ),
                 AnimatedPositioned(
-                  right: 0,
-                  top: 0,
-                  bottom: 0,
-                  left: state.expanded ? 0 : homeScreenWidth,
+                  right: Dimens.zero,
+                  top: Dimens.zero,
+                  bottom: Dimens.zero,
+                  left: state.expanded ? Dimens.zero : homeScreenWidth,
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.elasticOut,
                   child: const _TabletStoryView(),

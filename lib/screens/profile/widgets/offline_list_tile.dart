@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:wakelock/wakelock.dart';
 
 class OfflineListTile extends StatelessWidget {
@@ -32,8 +33,8 @@ class OfflineListTile extends StatelessWidget {
         final Widget trailingWidget = () {
           if (downloading) {
             return const SizedBox(
-              height: 24,
-              width: 24,
+              height: Dimens.pt24,
+              width: Dimens.pt24,
               child: CustomCircularProgressIndicator(),
             );
           } else if (downloaded) {

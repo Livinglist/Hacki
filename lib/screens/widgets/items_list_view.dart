@@ -7,6 +7,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -80,8 +81,8 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                                 HapticFeedback.lightImpact();
                                 onPinned?.call(e);
                               },
-                              backgroundColor: Colors.orange,
-                              foregroundColor: Colors.white,
+                              backgroundColor: Palette.orange,
+                              foregroundColor: Palette.white,
                               icon: showWebPreview
                                   ? Icons.push_pin_outlined
                                   : null,
@@ -97,13 +98,15 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                     showWebPreview: showWebPreview,
                     showMetadata: showMetadata,
                     hasRead: markReadStories && hasRead,
-                    simpleTileFontSize: useConsistentFontSize ? 14 : 16,
+                    simpleTileFontSize: useConsistentFontSize
+                        ? TextDimens.pt14
+                        : TextDimens.pt16,
                   ),
                 ),
               ),
               if (!showWebPreview)
                 const Divider(
-                  height: 0,
+                  height: Dimens.zero,
                 ),
             ];
           } else if (e is Comment) {
@@ -111,22 +114,22 @@ class ItemsListView<T extends Item> extends StatelessWidget {
               return <Widget>[
                 if (showWebPreview)
                   const Divider(
-                    height: 0,
+                    height: Dimens.zero,
                   ),
                 _CommentTile(
                   comment: e,
                   onTap: () => onTap(e),
-                  fontSize: showWebPreview ? 14 : 16,
+                  fontSize: showWebPreview ? TextDimens.pt14 : TextDimens.pt16,
                 ),
                 const Divider(
-                  height: 0,
+                  height: Dimens.zero,
                 ),
               ];
             }
             return <Widget>[
               FadeIn(
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 6),
+                  padding: const EdgeInsets.only(left: Dimens.pt6),
                   child: InkWell(
                     onTap: () => onTap(e),
                     child: Padding(
@@ -137,10 +140,12 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                           if (e.deleted)
                             const Center(
                               child: Padding(
-                                padding: EdgeInsets.only(top: 6),
+                                padding: EdgeInsets.only(
+                                  top: Dimens.pt6,
+                                ),
                                 child: Text(
                                   'deleted',
-                                  style: TextStyle(color: Colors.grey),
+                                  style: TextStyle(color: Palette.grey),
                                 ),
                               ),
                             ),
@@ -151,15 +156,15 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                               Expanded(
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
-                                    vertical: 8,
-                                    horizontal: 6,
+                                    vertical: Dimens.pt8,
+                                    horizontal: Dimens.pt6,
                                   ),
                                   child: Linkify(
                                     text:
                                         '''${showCommentBy ? '${e.by}: ' : ''}${e.text}''',
                                     maxLines: 4,
                                     linkStyle: const TextStyle(
-                                      color: Colors.orange,
+                                      color: Palette.orange,
                                     ),
                                     onOpen: (LinkableElement link) =>
                                         LinkUtil.launch(link.url),
@@ -171,18 +176,18 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                                   Text(
                                     e.postedDate,
                                     style: const TextStyle(
-                                      color: Colors.grey,
+                                      color: Palette.grey,
                                     ),
                                   ),
                                   const SizedBox(
-                                    width: 12,
+                                    width: Dimens.pt12,
                                   ),
                                 ],
                               ),
                             ],
                           ),
                           const Divider(
-                            height: 0,
+                            height: Dimens.zero,
                           ),
                         ],
                       ),
@@ -191,7 +196,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                 ),
               ),
               const Divider(
-                height: 0,
+                height: Dimens.zero,
               ),
             ];
           }
@@ -199,7 +204,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
           return <Widget>[Container()];
         }).expand((List<Widget> element) => element),
         const SizedBox(
-          height: 40,
+          height: Dimens.pt40,
         ),
       ],
     );
@@ -208,12 +213,14 @@ class ItemsListView<T extends Item> extends StatelessWidget {
       enablePullUp: true,
       enablePullDown: enablePullDown,
       header: const WaterDropMaterialHeader(
-        backgroundColor: Colors.orange,
+        backgroundColor: Palette.orange,
       ),
       footer: CustomFooter(
         loadStyle: LoadStyle.ShowWhenLoading,
         builder: (BuildContext context, LoadStatus? mode) {
-          Widget body;
+          const double height = 55;
+          late final Widget body;
+
           if (mode == LoadStatus.loading) {
             body = const CustomCircularProgressIndicator();
           } else if (mode == LoadStatus.failed) {
@@ -224,7 +231,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
             body = const SizedBox.shrink();
           }
           return SizedBox(
-            height: 55,
+            height: height,
             child: Center(child: body),
           );
         },
@@ -254,12 +261,14 @@ class _CommentTile extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.only(left: 12),
+        padding: const EdgeInsets.only(
+          left: Dimens.pt12,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             const SizedBox(
-              height: 8,
+              height: Dimens.pt8,
             ),
             Row(
               children: <Widget>[
@@ -281,7 +290,7 @@ class _CommentTile extends StatelessWidget {
                   child: Text(
                     comment.metadata,
                     style: TextStyle(
-                      color: Colors.grey,
+                      color: Palette.grey,
                       fontSize: fontSize - 2,
                     ),
                     maxLines: 1,
@@ -290,7 +299,7 @@ class _CommentTile extends StatelessWidget {
               ],
             ),
             const SizedBox(
-              height: 8,
+              height: Dimens.pt8,
             ),
           ],
         ),

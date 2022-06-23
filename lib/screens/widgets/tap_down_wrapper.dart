@@ -18,7 +18,6 @@ class _TapDownWrapperState extends State<TapDownWrapper>
     with SingleTickerProviderStateMixin {
   late AnimationController controller;
   Tween<double> tween = Tween<double>(begin: 1, end: 0.95);
-  double scale = 1;
 
   @override
   void initState() {

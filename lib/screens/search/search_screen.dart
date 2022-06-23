@@ -7,6 +7,7 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/search/widgets/widgets.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -38,14 +39,16 @@ class _SearchScreenState extends State<SearchScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: Dimens.pt12,
+                    ),
                     child: TextField(
-                      cursorColor: Colors.orange,
+                      cursorColor: Palette.orange,
                       autocorrect: false,
                       decoration: const InputDecoration(
                         hintText: 'Search Hacker News',
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.orange),
+                          borderSide: BorderSide(color: Palette.orange),
                         ),
                       ),
                       onChanged: (String val) {
@@ -58,7 +61,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     ),
                   ),
                   const SizedBox(
-                    height: 6,
+                    height: Dimens.pt6,
                   ),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -83,7 +86,7 @@ class _SearchScreenState extends State<SearchScreen> {
                               .removeFilter<DateTimeRangeFilter>,
                         ),
                         const SizedBox(
-                          width: 8,
+                          width: Dimens.pt8,
                         ),
                         CustomChip(
                           onSelected: (_) =>
@@ -92,7 +95,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           label: '''newest first''',
                         ),
                         const SizedBox(
-                          width: 8,
+                          width: Dimens.pt8,
                         ),
                         for (final CustomDateTimeRange range
                             in CustomDateTimeRange.values) ...<Widget>[
@@ -107,7 +110,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     ),
                           ),
                           const SizedBox(
-                            width: 8,
+                            width: Dimens.pt8,
                           ),
                         ],
                       ],
@@ -116,7 +119,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   if (state.status == SearchStatus.loading &&
                       state.results.isEmpty) ...<Widget>[
                     const SizedBox(
-                      height: 100,
+                      height: Dimens.pt100,
                     ),
                     const CustomCircularProgressIndicator(),
                   ],
@@ -125,12 +128,14 @@ class _SearchScreenState extends State<SearchScreen> {
                       enablePullDown: false,
                       enablePullUp: true,
                       header: const WaterDropMaterialHeader(
-                        backgroundColor: Colors.orange,
+                        backgroundColor: Palette.orange,
                       ),
                       footer: CustomFooter(
                         loadStyle: LoadStyle.ShowWhenLoading,
                         builder: (BuildContext context, LoadStatus? mode) {
-                          Widget body;
+                          const double height = 55;
+                          late final Widget body;
+
                           if (mode == LoadStatus.loading) {
                             body = const CustomCircularProgressIndicator();
                           } else if (mode == LoadStatus.failed) {
@@ -140,8 +145,9 @@ class _SearchScreenState extends State<SearchScreen> {
                           } else {
                             body = const SizedBox.shrink();
                           }
+
                           return SizedBox(
-                            height: 55,
+                            height: height,
                             child: Center(child: body),
                           );
                         },
@@ -169,14 +175,14 @@ class _SearchScreenState extends State<SearchScreen> {
                                   ),
                                   if (!prefState.showComplexStoryTile)
                                     const Divider(
-                                      height: 0,
+                                      height: Dimens.zero,
                                     ),
                                 ],
                               )
                               .expand((List<Widget> e) => e)
                               .toList(),
                           const SizedBox(
-                            height: 40,
+                            height: Dimens.pt40,
                           ),
                         ],
                       ),
