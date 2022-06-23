@@ -217,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen>
               child: Column(
                 children: <Widget>[
                   SizedBox(
-                    height: MediaQuery.of(context).padding.top - 8,
+                    height: MediaQuery.of(context).padding.top - Dimens.pt8,
                   ),
                   Theme(
                     data: ThemeData(

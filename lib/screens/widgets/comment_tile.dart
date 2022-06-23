@@ -227,12 +227,12 @@ class CommentTile extends StatelessWidget {
                                               style: TextStyle(
                                                 fontSize: MediaQuery.of(context)
                                                         .textScaleFactor *
-                                                    15,
+                                                    TextDimens.pt15,
                                               ),
                                               linkStyle: TextStyle(
                                                 fontSize: MediaQuery.of(context)
                                                         .textScaleFactor *
-                                                    15,
+                                                    TextDimens.pt15,
                                                 decoration:
                                                     TextDecoration.underline,
                                                 color: Palette.orange,
@@ -255,12 +255,12 @@ class CommentTile extends StatelessWidget {
                                             style: TextStyle(
                                               fontSize: MediaQuery.of(context)
                                                       .textScaleFactor *
-                                                  15,
+                                                  TextDimens.pt15,
                                             ),
                                             linkStyle: TextStyle(
                                               fontSize: MediaQuery.of(context)
                                                       .textScaleFactor *
-                                                  15,
+                                                  TextDimens.pt15,
                                               color: Palette.orange,
                                             ),
                                             onOpen: (LinkableElement link) {

@@ -304,13 +304,17 @@ class _ItemScreenState extends State<ItemScreen> {
                             onPressed: (_) {
                               HapticFeedback.lightImpact();
 
-                              if (widget.item !=
-                                  context.read<EditCubit>().state.replyingTo) {
+                              if (state.item.id !=
+                                  context
+                                      .read<EditCubit>()
+                                      .state
+                                      .replyingTo
+                                      ?.id) {
                                 commentEditingController.clear();
                               }
                               context
                                   .read<EditCubit>()
-                                  .onReplyTapped(widget.item);
+                                  .onReplyTapped(state.item);
                               focusNode.requestFocus();
                             },
                             backgroundColor: Palette.orange,
@@ -318,7 +322,7 @@ class _ItemScreenState extends State<ItemScreen> {
                             icon: Icons.message,
                           ),
                           SlidableAction(
-                            onPressed: (_) => onMoreTapped(widget.item),
+                            onPressed: (_) => onMoreTapped(state.item),
                             backgroundColor: Palette.orange,
                             foregroundColor: Palette.white,
                             icon: Icons.more_horiz,
@@ -547,8 +551,12 @@ class _ItemScreenState extends State<ItemScreen> {
                               return;
                             }
 
-                            if (cmt !=
-                                context.read<EditCubit>().state.replyingTo) {
+                            if (cmt.id !=
+                                context
+                                    .read<EditCubit>()
+                                    .state
+                                    .replyingTo
+                                    ?.id) {
                               commentEditingController.clear();
                             }
 
