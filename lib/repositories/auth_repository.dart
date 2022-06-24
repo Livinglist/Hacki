@@ -38,10 +38,14 @@ class AuthRepository extends PostableRepository {
     final bool success = await performDefaultPost(uri, data);
 
     if (success) {
-      await _preferenceRepository.setAuth(
-        username: username,
-        password: password,
-      );
+      try {
+        await _preferenceRepository.setAuth(
+          username: username,
+          password: password,
+        );
+      } catch (_) {
+        return false;
+      }
     }
 
     return success;
