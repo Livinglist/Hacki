@@ -140,8 +140,25 @@ class PreferenceRepository {
     required String username,
     required String password,
   }) async {
-    await _secureStorage.write(key: _usernameKey, value: username);
-    await _secureStorage.write(key: _passwordKey, value: password);
+    const AndroidOptions androidOptions = AndroidOptions(resetOnError: true);
+    try {
+      await _secureStorage.write(
+        key: _usernameKey,
+        value: username,
+        aOptions: androidOptions,
+      );
+      await _secureStorage.write(
+        key: _passwordKey,
+        value: password,
+        aOptions: androidOptions,
+      );
+    } catch (_) {
+      await _secureStorage.deleteAll(
+        aOptions: androidOptions,
+      );
+
+      rethrow;
+    }
   }
 
   Future<void> removeAuth() async {
