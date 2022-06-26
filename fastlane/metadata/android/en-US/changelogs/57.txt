@@ -1,7 +1,0 @@
-- You can share links.
-- You can now add filters for searching.
-- You can now participate in polls.
-- Pick up where you left off.
-- Swipe left on comment tile to view its parents without scrolling all the way up.
-- Huge performance boost.
-- Bugfixes.

@@ -1,3 +1,0 @@
-- Tapping on comment in notification or history screen will now lead you directly to the comment.
-- Fixed the bug where reply box cannot be expanded in editing mode.
-- Fixed inconsistent font size in history screen.

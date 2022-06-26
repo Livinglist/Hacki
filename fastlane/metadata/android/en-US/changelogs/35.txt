@@ -1,3 +1,0 @@
-- Pick up where you left off.
-- Swipe left on comment tile to view its parents without scrolling all the way up.
-- Huge performance boost.
