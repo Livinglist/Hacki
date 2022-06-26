@@ -7,6 +7,7 @@ import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 
@@ -43,6 +44,7 @@ class CommentTile extends StatelessWidget {
       lazy: false,
       create: (_) => CollapseCubit(
         commentId: comment.id,
+        cacheService: context.read<CacheService>(),
       )..init(),
       child: BlocBuilder<CollapseCubit, CollapseState>(
         builder: (BuildContext context, CollapseState state) {

@@ -66,25 +66,31 @@ class ItemScreen extends StatefulWidget {
   static Route<dynamic> route(ItemScreenArgs args) {
     return MaterialPageRoute<ItemScreen>(
       settings: const RouteSettings(name: routeName),
-      builder: (BuildContext context) => MultiBlocProvider(
-        providers: <BlocProvider<dynamic>>[
-          BlocProvider<CommentsCubit>(
-            create: (_) => CommentsCubit(
-              offlineReading: context.read<StoriesBloc>().state.offlineReading,
-              item: args.item,
-            )..init(
-                onlyShowTargetComment: args.onlyShowTargetComment,
-                targetParents: args.targetComments,
-              ),
+      builder: (BuildContext context) => RepositoryProvider<CacheService>(
+        create: (BuildContext context) => CacheService(),
+        lazy: false,
+        child: MultiBlocProvider(
+          providers: <BlocProvider<dynamic>>[
+            BlocProvider<CommentsCubit>(
+              create: (BuildContext context) => CommentsCubit(
+                offlineReading:
+                    context.read<StoriesBloc>().state.offlineReading,
+                item: args.item,
+                cacheService: context.read<CacheService>(),
+              )..init(
+                  onlyShowTargetComment: args.onlyShowTargetComment,
+                  targetParents: args.targetComments,
+                ),
+            ),
+            BlocProvider<EditCubit>(
+              lazy: false,
+              create: (BuildContext context) => EditCubit(),
+            ),
+          ],
+          child: ItemScreen(
+            item: args.item,
+            parentComments: args.targetComments ?? <Comment>[],
           ),
-          BlocProvider<EditCubit>(
-            lazy: false,
-            create: (BuildContext context) => EditCubit(),
-          ),
-        ],
-        child: ItemScreen(
-          item: args.item,
-          parentComments: args.targetComments ?? <Comment>[],
         ),
       ),
     );
@@ -100,27 +106,32 @@ class ItemScreen extends StatefulWidget {
           return true;
         }
       },
-      child: MultiBlocProvider(
-        key: ValueKey<ItemScreenArgs>(args),
-        providers: <BlocProvider<dynamic>>[
-          BlocProvider<CommentsCubit>(
-            create: (BuildContext context) => CommentsCubit(
-              offlineReading: context.read<StoriesBloc>().state.offlineReading,
-              item: args.item,
-            )..init(
-                onlyShowTargetComment: args.onlyShowTargetComment,
-                targetParents: args.targetComments,
-              ),
+      child: RepositoryProvider<CacheService>(
+        create: (BuildContext context) => CacheService(),
+        child: MultiBlocProvider(
+          key: ValueKey<ItemScreenArgs>(args),
+          providers: <BlocProvider<dynamic>>[
+            BlocProvider<CommentsCubit>(
+              create: (BuildContext context) => CommentsCubit(
+                offlineReading:
+                    context.read<StoriesBloc>().state.offlineReading,
+                item: args.item,
+                cacheService: context.read<CacheService>(),
+              )..init(
+                  onlyShowTargetComment: args.onlyShowTargetComment,
+                  targetParents: args.targetComments,
+                ),
+            ),
+            BlocProvider<EditCubit>(
+              lazy: false,
+              create: (BuildContext context) => EditCubit(),
+            ),
+          ],
+          child: ItemScreen(
+            item: args.item,
+            parentComments: args.targetComments ?? <Comment>[],
+            splitViewEnabled: true,
           ),
-          BlocProvider<EditCubit>(
-            lazy: false,
-            create: (BuildContext context) => EditCubit(),
-          ),
-        ],
-        child: ItemScreen(
-          item: args.item,
-          parentComments: args.targetComments ?? <Comment>[],
-          splitViewEnabled: true,
         ),
       ),
     );

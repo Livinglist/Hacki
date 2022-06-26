@@ -2,11 +2,11 @@ import 'package:hacki/models/models.dart' show Comment;
 import 'package:rxdart/rxdart.dart';
 
 class CacheService {
-  static final Map<int, Comment> _comments = <int, Comment>{};
-  static final Map<int, String> _drafts = <int, String>{};
-  static final Map<int, Set<int>> _kids = <int, Set<int>>{};
-  static final Set<int> _collapsed = <int>{};
-  static final Map<int, Set<int>> _hidden = <int, Set<int>>{};
+  final Map<int, Comment> _comments = <int, Comment>{};
+  final Map<int, String> _drafts = <int, String>{};
+  final Map<int, Set<int>> _kids = <int, Set<int>>{};
+  final Set<int> _collapsed = <int>{};
+  final Map<int, Set<int>> _hidden = <int, Set<int>>{};
   final PublishSubject<Map<int, Set<int>>> _hiddenCommentsSubject =
       PublishSubject<Map<int, Set<int>>>();
 
