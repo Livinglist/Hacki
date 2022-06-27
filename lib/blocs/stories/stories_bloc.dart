@@ -7,6 +7,7 @@ import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
+import 'package:logger/logger.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -316,7 +317,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       await _cacheRepository.cacheStory(story: story);
 
       if (story.url.isNotEmpty && includingWebPage) {
-        unawaited(_cacheRepository.cacheUrl(url: story.url));
+        locator.get<Logger>().i('downloading ${story.url}');
+        await _cacheRepository.cacheUrl(url: story.url);
       }
 
       _storiesRepository

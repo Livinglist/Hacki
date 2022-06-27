@@ -262,6 +262,7 @@ class CacheRepository {
       final Uri url = Uri.parse(link);
       final Response response = await client.get(url);
       final String body = response.body;
+      client.close();
       return body;
     } catch (_) {
       return '''Web page not available.''';
