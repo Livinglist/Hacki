@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hacki/config/custom_log_filter.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/services/services.dart';
 import 'package:logger/logger.dart';
@@ -19,8 +19,5 @@ Future<void> setUpLocator() async {
     ..registerSingleton<CacheRepository>(CacheRepository())
     ..registerSingleton<CacheService>(CacheService())
     ..registerSingleton<LocalNotification>(LocalNotification())
-    ..registerSingleton<Logger>(Logger())
-    ..registerSingleton<RouteObserver<ModalRoute<dynamic>>>(
-      RouteObserver<ModalRoute<dynamic>>(),
-    );
+    ..registerSingleton<Logger>(Logger(filter: CustomLogFilter()));
 }

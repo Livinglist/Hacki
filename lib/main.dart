@@ -221,9 +221,6 @@ class HackiApp extends StatelessWidget {
                       debugShowCheckedModeBanner: false,
                       theme: useTrueDark ? trueDarkTheme : theme,
                       navigatorKey: navigatorKey,
-                      navigatorObservers: <NavigatorObserver>[
-                        locator.get<RouteObserver<ModalRoute<dynamic>>>(),
-                      ],
                       onGenerateRoute: CustomRouter.onGenerateRoute,
                       initialRoute: HomeScreen.routeName,
                     ),

@@ -7,7 +7,9 @@ import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
+import 'package:logger/logger.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:rxdart/rxdart.dart';
 
 part 'stories_event.dart';
 part 'stories_state.dart';
@@ -281,12 +283,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         includingWebPage: event.includingWebPage,
         isPrioritized: false,
       );
-
-      emit(
-        state.copyWith(
-          downloadStatus: StoriesDownloadStatus.finished,
-        ),
-      );
     } catch (_) {
       emit(
         state.copyWith(
@@ -321,41 +317,50 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       await _cacheRepository.cacheStory(story: story);
 
       if (story.url.isNotEmpty && includingWebPage) {
+        locator.get<Logger>().i('downloading ${story.url}');
         await _cacheRepository.cacheUrl(url: story.url);
       }
 
-      final Completer<void> completer = Completer<void>();
       _storiesRepository
           .fetchAllChildrenComments(ids: story.kids)
-          .listen((Comment? comment) async {
-        if (comment != null) {
-          await _cacheRepository.cacheComment(comment: comment);
-        }
-      }).onDone(() {
-        completer.complete();
-        add(StoryDownloaded(skipped: false));
-      });
-
-      await completer.future;
+          .whereType<Comment>()
+          .listen(
+            (Comment comment) => unawaited(
+              _cacheRepository.cacheComment(comment: comment),
+            ),
+          )
+          .onDone(() => add(StoryDownloaded(skipped: false)));
     }
   }
 
   void onStoryDownloaded(StoryDownloaded event, Emitter<StoriesState> emit) {
     if (event.skipped) {
+      final int updatedStoriesToBeDownloaded = state.storiesToBeDownloaded - 1;
+
       emit(
         state.copyWith(
-          storiesToBeDownloaded: state.storiesToBeDownloaded - 1,
+          storiesToBeDownloaded: updatedStoriesToBeDownloaded,
+          downloadStatus:
+              state.storiesDownloaded == updatedStoriesToBeDownloaded
+                  ? StoriesDownloadStatus.finished
+                  : null,
         ),
       );
     } else {
       final int updatedStoriesDownloaded = state.storiesDownloaded + 1;
+      final int updatedStoriesToBeDownloaded =
+          updatedStoriesDownloaded > state.storiesToBeDownloaded
+              ? state.storiesToBeDownloaded + 1
+              : state.storiesToBeDownloaded;
+
       emit(
         state.copyWith(
           storiesDownloaded: updatedStoriesDownloaded,
-          storiesToBeDownloaded:
-              updatedStoriesDownloaded > state.storiesToBeDownloaded
-                  ? state.storiesToBeDownloaded + 1
-                  : state.storiesToBeDownloaded,
+          storiesToBeDownloaded: updatedStoriesToBeDownloaded,
+          downloadStatus:
+              updatedStoriesDownloaded == updatedStoriesToBeDownloaded
+                  ? StoriesDownloadStatus.finished
+                  : null,
         ),
       );
     }
