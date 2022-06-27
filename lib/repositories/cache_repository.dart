@@ -138,18 +138,22 @@ class CacheRepository {
   }
 
   Future<Story?> getCachedStory({required int id}) async {
+    late final Box<Map<dynamic, dynamic>> box;
+
     try {
-      final Box<Map<dynamic, dynamic>> box = await _storyBox;
-      final Map<dynamic, dynamic>? json = box.get(id.toString());
-      if (json == null) {
-        return null;
-      }
-      final Story story = Story.fromJson(json.cast<String, dynamic>());
-      return story;
+      box = await _storyBox;
     } catch (_) {
       locator.get<Logger>().e(_);
+      await Hive.deleteBoxFromDisk(_storyBoxName);
       return null;
     }
+
+    final Map<dynamic, dynamic>? json = box.get(id.toString());
+    if (json == null) {
+      return null;
+    }
+    final Story story = Story.fromJson(json.cast<String, dynamic>());
+    return story;
   }
 
   Future<void> cacheComment({required Comment comment}) async {
