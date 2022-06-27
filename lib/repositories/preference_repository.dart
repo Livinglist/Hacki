@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:hacki/config/locator.dart';
+import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:synced_shared_preferences/synced_shared_preferences.dart';
 
@@ -153,9 +155,13 @@ class PreferenceRepository {
         aOptions: androidOptions,
       );
     } catch (_) {
-      await _secureStorage.deleteAll(
-        aOptions: androidOptions,
-      );
+      try {
+        await _secureStorage.deleteAll(
+          aOptions: androidOptions,
+        );
+      } catch (_) {
+        locator.get<Logger>().e(_);
+      }
 
       rethrow;
     }
