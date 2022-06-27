@@ -5,6 +5,7 @@ import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/postable_repository.dart';
 import 'package:hacki/repositories/repositories.dart';
+import 'package:logger/logger.dart';
 
 class AuthRepository extends PostableRepository {
   AuthRepository({
@@ -44,6 +45,7 @@ class AuthRepository extends PostableRepository {
           password: password,
         );
       } catch (_) {
+        locator.get<Logger>().e(_);
         return false;
       }
     }

@@ -282,12 +282,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         includingWebPage: event.includingWebPage,
         isPrioritized: false,
       );
-
-      // emit(
-      //   state.copyWith(
-      //     downloadStatus: StoriesDownloadStatus.finished,
-      //   ),
-      // );
     } catch (_) {
       emit(
         state.copyWith(
@@ -319,7 +313,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         continue;
       }
 
-      unawaited(_cacheRepository.cacheStory(story: story));
+      await _cacheRepository.cacheStory(story: story);
 
       if (story.url.isNotEmpty && includingWebPage) {
         unawaited(_cacheRepository.cacheUrl(url: story.url));
@@ -340,6 +334,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   void onStoryDownloaded(StoryDownloaded event, Emitter<StoriesState> emit) {
     if (event.skipped) {
       final int updatedStoriesToBeDownloaded = state.storiesToBeDownloaded - 1;
+
       emit(
         state.copyWith(
           storiesToBeDownloaded: updatedStoriesToBeDownloaded,
@@ -355,6 +350,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
           updatedStoriesDownloaded > state.storiesToBeDownloaded
               ? state.storiesToBeDownloaded + 1
               : state.storiesToBeDownloaded;
+
       emit(
         state.copyWith(
           storiesDownloaded: updatedStoriesDownloaded,
