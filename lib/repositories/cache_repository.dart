@@ -84,6 +84,7 @@ class CacheRepository {
       return box.get(url);
     } catch (_) {
       locator.get<Logger>().e(_);
+      await Hive.deleteBoxFromDisk(_webPageBoxName);
       return null;
     }
   }
@@ -94,6 +95,7 @@ class CacheRepository {
       return box.containsKey(url);
     } catch (_) {
       locator.get<Logger>().e(_);
+      await Hive.deleteBoxFromDisk(_webPageBoxName);
       return false;
     }
   }
@@ -105,30 +107,34 @@ class CacheRepository {
       return ids ?? <int>[];
     } catch (_) {
       locator.get<Logger>().e(_);
+      await Hive.deleteBoxFromDisk(_storyIdBoxName);
       return <int>[];
     }
   }
 
   Stream<Story> getCachedStoriesStream({required List<int> ids}) async* {
+    late final Box<Map<dynamic, dynamic>> box;
+
     try {
-      final Box<Map<dynamic, dynamic>> box = await _storyBox;
-
-      for (final int id in ids) {
-        final Map<dynamic, dynamic>? json = box.get(id.toString());
-
-        if (json == null) {
-          continue;
-        }
-
-        final Story story = Story.fromJson(json.cast<String, dynamic>());
-        yield story;
-      }
-
-      return;
+      box = await _storyBox;
     } catch (_) {
       locator.get<Logger>().e(_);
+      await Hive.deleteBoxFromDisk(_storyBoxName);
       return;
     }
+
+    for (final int id in ids) {
+      final Map<dynamic, dynamic>? json = box.get(id.toString());
+
+      if (json == null) {
+        continue;
+      }
+
+      final Story story = Story.fromJson(json.cast<String, dynamic>());
+      yield story;
+    }
+
+    return;
   }
 
   Future<Story?> getCachedStory({required int id}) async {
