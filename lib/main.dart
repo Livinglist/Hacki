@@ -14,6 +14,7 @@ import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/repositories/repositories.dart' show PreferenceRepository;
 import 'package:hacki/screens/screens.dart';
+import 'package:hacki/services/custom_bloc_observer.dart';
 import 'package:hacki/services/fetcher.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hive/hive.dart';
@@ -90,24 +91,16 @@ Future<void> main({bool testing = false}) async {
   final bool trueDarkMode =
       prefs.getBool(PreferenceRepository.trueDarkModeKey) ?? false;
 
-  // Uncomment code below for running with logging.
-  // BlocOverrides.runZoned(
-  //   () {
-  //     runApp(
-  //       HackiApp(
-  //         savedThemeMode: savedThemeMode,
-  //         trueDarkMode: trueDarkMode,
-  //       ),
-  //     );
-  //   },
-  //   blocObserver: CustomBlocObserver(),
-  // );
-
-  runApp(
-    HackiApp(
-      savedThemeMode: savedThemeMode,
-      trueDarkMode: trueDarkMode,
-    ),
+  BlocOverrides.runZoned(
+    () {
+      runApp(
+        HackiApp(
+          savedThemeMode: savedThemeMode,
+          trueDarkMode: trueDarkMode,
+        ),
+      );
+    },
+    blocObserver: CustomBlocObserver(),
   );
 }
 
