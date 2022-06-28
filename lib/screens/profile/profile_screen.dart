@@ -680,7 +680,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                     .get<SembastRepository>()
                     .deleteAllCachedComments()
                     .whenComplete(
-                      locator.get<CacheRepository>().deleteAll,
+                      locator.get<OfflineRepository>().deleteAll,
                     )
                     .whenComplete(
                       locator.get<PreferenceRepository>().clearAllReadStories,

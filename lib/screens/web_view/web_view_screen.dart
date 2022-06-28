@@ -34,7 +34,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
       ),
       body: WebView(
         onWebViewCreated: (WebViewController controller) async {
-          final String? html = await locator.get<CacheRepository>().getHtml(
+          final String? html = await locator.get<OfflineRepository>().getHtml(
                 url: widget.url,
               );
 

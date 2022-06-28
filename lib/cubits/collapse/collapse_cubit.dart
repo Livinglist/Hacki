@@ -10,31 +10,31 @@ part 'collapse_state.dart';
 class CollapseCubit extends Cubit<CollapseState> {
   CollapseCubit({
     required int commentId,
-    CacheService? cacheService,
+    CollapseCache? collapseCache,
   })  : _commentId = commentId,
-        _cacheService = cacheService ?? locator.get<CacheService>(),
+        _collapseCache = collapseCache ?? locator.get<CollapseCache>(),
         super(const CollapseState.init());
 
   final int _commentId;
-  final CacheService _cacheService;
+  final CollapseCache _collapseCache;
   late final StreamSubscription<Map<int, Set<int>>> _streamSubscription;
 
   void init() {
     _streamSubscription =
-        _cacheService.hiddenComments.listen(hiddenCommentsStreamListener);
+        _collapseCache.hiddenComments.listen(hiddenCommentsStreamListener);
 
     emit(
       state.copyWith(
-        collapsedCount: _cacheService.totalHidden(_commentId),
-        collapsed: _cacheService.isCollapsed(_commentId),
-        hidden: _cacheService.isHidden(_commentId),
+        collapsedCount: _collapseCache.totalHidden(_commentId),
+        collapsed: _collapseCache.isCollapsed(_commentId),
+        hidden: _collapseCache.isHidden(_commentId),
       ),
     );
   }
 
   void collapse() {
     if (state.collapsed) {
-      _cacheService.uncollapse(_commentId);
+      _collapseCache.uncollapse(_commentId);
 
       emit(
         state.copyWith(
@@ -43,7 +43,7 @@ class CollapseCubit extends Cubit<CollapseState> {
         ),
       );
     } else {
-      final int count = _cacheService.collapse(_commentId);
+      final int count = _collapseCache.collapse(_commentId);
 
       emit(
         state.copyWith(

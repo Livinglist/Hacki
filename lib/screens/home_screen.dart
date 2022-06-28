@@ -46,8 +46,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
-  final CacheService cacheService = locator.get<CacheService>();
+    with SingleTickerProviderStateMixin, RouteAware {
   final Throttle featureDiscoveryDismissThrottle = Throttle(
     delay: _throttleDelay,
   );
@@ -60,6 +59,18 @@ class _HomeScreenState extends State<HomeScreen>
   int currentIndex = 0;
 
   static const Duration _throttleDelay = Duration(seconds: 1);
+
+  @override
+  void didPopNext() {
+    super.didPopNext();
+    if (context.read<StoriesBloc>().deviceScreenType ==
+        DeviceScreenType.mobile) {
+      Future<void>.delayed(
+        const Duration(milliseconds: 500),
+        locator.get<CommentCache>().resetComments,
+      );
+    }
+  }
 
   @override
   void initState() {
@@ -88,14 +99,24 @@ class _HomeScreenState extends State<HomeScreen>
           siriSuggestionSubject.stream.listen(onSiriSuggestionTapped);
     }
 
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      FeatureDiscovery.discoverFeatures(
-        context,
-        const <String>{
-          Constants.featureLogIn,
-        },
-      );
-    });
+    SchedulerBinding.instance
+      ..addPostFrameCallback((_) {
+        FeatureDiscovery.discoverFeatures(
+          context,
+          const <String>{
+            Constants.featureLogIn,
+          },
+        );
+      })
+      ..addPostFrameCallback((_) {
+        final ModalRoute<dynamic>? route = ModalRoute.of(context);
+
+        if (route == null) return;
+
+        locator
+            .get<RouteObserver<ModalRoute<dynamic>>>()
+            .subscribe(this, route);
+      });
 
     tabController = TabController(vsync: this, length: 6)
       ..addListener(() {

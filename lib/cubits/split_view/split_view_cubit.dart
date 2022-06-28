@@ -7,14 +7,14 @@ import 'package:hacki/services/services.dart';
 part 'split_view_state.dart';
 
 class SplitViewCubit extends Cubit<SplitViewState> {
-  SplitViewCubit({CacheService? cacheService})
-      : _cacheService = cacheService ?? locator.get<CacheService>(),
+  SplitViewCubit({CommentCache? commentCache})
+      : _commentCache = commentCache ?? locator.get<CommentCache>(),
         super(const SplitViewState.init());
 
-  final CacheService _cacheService;
+  final CommentCache _commentCache;
 
   void updateItemScreenArgs(ItemScreenArgs args) {
-    _cacheService.resetCollapsedComments();
+    _commentCache.resetComments();
     emit(state.copyWith(itemScreenArgs: args));
   }
 

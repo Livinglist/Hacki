@@ -16,22 +16,26 @@ part 'comments_state.dart';
 
 class CommentsCubit extends Cubit<CommentsState> {
   CommentsCubit({
-    CacheService? cacheService,
-    CacheRepository? cacheRepository,
+    required CollapseCache collapseCache,
+    CommentCache? commentCache,
+    OfflineRepository? offlineRepository,
     StoriesRepository? storiesRepository,
     SembastRepository? sembastRepository,
     required bool offlineReading,
     required Item item,
-  })  : _cacheService = cacheService ?? locator.get<CacheService>(),
-        _cacheRepository = cacheRepository ?? locator.get<CacheRepository>(),
+  })  : _collapseCache = collapseCache,
+        _commentCache = commentCache ?? locator.get<CommentCache>(),
+        _offlineRepository =
+            offlineRepository ?? locator.get<OfflineRepository>(),
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
         _sembastRepository =
             sembastRepository ?? locator.get<SembastRepository>(),
         super(CommentsState.init(offlineReading: offlineReading, item: item));
 
-  final CacheService _cacheService;
-  final CacheRepository _cacheRepository;
+  final CollapseCache _collapseCache;
+  final CommentCache _commentCache;
+  final OfflineRepository _offlineRepository;
   final StoriesRepository _storiesRepository;
   final SembastRepository _sembastRepository;
   StreamSubscription<Comment>? _streamSubscription;
@@ -62,6 +66,7 @@ class CommentsCubit extends Cubit<CommentsState> {
           .fetchCommentsStream(
             ids: targetParents!.last.kids,
             level: targetParents.last.level + 1,
+            getFromCache: _commentCache.getComment,
           )
           .listen(_onCommentFetched)
         ..onDone(_onDone);
@@ -80,13 +85,15 @@ class CommentsCubit extends Cubit<CommentsState> {
     emit(state.copyWith(item: updatedItem));
 
     if (state.offlineReading) {
-      _streamSubscription = _cacheRepository
+      _streamSubscription = _offlineRepository
           .getCachedCommentsStream(ids: kids)
           .listen(_onCommentFetched)
         ..onDone(_onDone);
     } else {
       _streamSubscription = _storiesRepository
-          .fetchCommentsStream(ids: kids)
+          .fetchCommentsStream(
+            ids: kids,
+          )
           .listen(_onCommentFetched)
         ..onDone(_onDone);
     }
@@ -102,9 +109,7 @@ class CommentsCubit extends Cubit<CommentsState> {
       return;
     }
 
-    _cacheService
-      ..resetComments()
-      ..resetCollapsedComments();
+    _collapseCache.resetCollapsedComments();
 
     emit(
       state.copyWith(
@@ -205,9 +210,8 @@ class CommentsCubit extends Cubit<CommentsState> {
 
   void _onCommentFetched(Comment? comment) {
     if (comment != null) {
-      _cacheService
-        ..addKid(comment.id, to: comment.parent)
-        ..cacheComment(comment);
+      _collapseCache.addKid(comment.id, to: comment.parent);
+      _commentCache.cacheComment(comment);
       _sembastRepository.cacheComment(comment);
 
       final List<LinkifyElement> elements = _linkify(
@@ -227,7 +231,7 @@ class CommentsCubit extends Cubit<CommentsState> {
       if (updatedComments.length >= _pageSize + _pageSize * state.currentPage &&
           updatedComments.length <=
               _pageSize * 2 + _pageSize * state.currentPage) {
-        final bool isHidden = _cacheService.isHidden(comment.id);
+        final bool isHidden = _collapseCache.isHidden(comment.id);
 
         if (!isHidden) {
           _streamSubscription?.pause();

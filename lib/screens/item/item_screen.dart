@@ -1,3 +1,5 @@
+// ignore_for_file: comment_references
+
 import 'package:equatable/equatable.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +40,7 @@ class ItemScreenArgs extends Equatable {
   const ItemScreenArgs({
     required this.item,
     this.onlyShowTargetComment = false,
+    this.useCommentCache = false,
     this.targetComments,
   });
 
@@ -45,11 +48,17 @@ class ItemScreenArgs extends Equatable {
   final bool onlyShowTargetComment;
   final List<Comment>? targetComments;
 
+  /// when a user is trying to view a sub-thread from a main thread, we don't
+  /// need to fetch comments from [StoryRepository] since we have some, if not
+  /// all, comments cached in [CommentCache].
+  final bool useCommentCache;
+
   @override
   List<Object?> get props => <Object?>[
         item,
         onlyShowTargetComment,
         targetComments,
+        useCommentCache,
       ];
 }
 
@@ -66,8 +75,8 @@ class ItemScreen extends StatefulWidget {
   static Route<dynamic> route(ItemScreenArgs args) {
     return MaterialPageRoute<ItemScreen>(
       settings: const RouteSettings(name: routeName),
-      builder: (BuildContext context) => RepositoryProvider<CacheService>(
-        create: (BuildContext context) => CacheService(),
+      builder: (BuildContext context) => RepositoryProvider<CollapseCache>(
+        create: (BuildContext context) => CollapseCache(),
         lazy: false,
         child: MultiBlocProvider(
           providers: <BlocProvider<dynamic>>[
@@ -76,7 +85,7 @@ class ItemScreen extends StatefulWidget {
                 offlineReading:
                     context.read<StoriesBloc>().state.offlineReading,
                 item: args.item,
-                cacheService: context.read<CacheService>(),
+                collapseCache: context.read<CollapseCache>(),
               )..init(
                   onlyShowTargetComment: args.onlyShowTargetComment,
                   targetParents: args.targetComments,
@@ -106,8 +115,9 @@ class ItemScreen extends StatefulWidget {
           return true;
         }
       },
-      child: RepositoryProvider<CacheService>(
-        create: (BuildContext context) => CacheService(),
+      child: RepositoryProvider<CollapseCache>(
+        create: (BuildContext context) => CollapseCache(),
+        lazy: false,
         child: MultiBlocProvider(
           key: ValueKey<ItemScreenArgs>(args),
           providers: <BlocProvider<dynamic>>[
@@ -116,7 +126,7 @@ class ItemScreen extends StatefulWidget {
                 offlineReading:
                     context.read<StoriesBloc>().state.offlineReading,
                 item: args.item,
-                cacheService: context.read<CacheService>(),
+                collapseCache: context.read<CollapseCache>(),
               )..init(
                   onlyShowTargetComment: args.onlyShowTargetComment,
                   targetParents: args.targetComments,
@@ -191,7 +201,6 @@ class _ItemScreenState extends State<ItemScreen> {
 
   @override
   void dispose() {
-    locator.get<CacheService>().resetComments();
     refreshController.dispose();
     commentEditingController.dispose();
     scrollController.dispose();
@@ -753,7 +762,10 @@ class _ItemScreenState extends State<ItemScreen> {
                   onTap: () {
                     Navigator.pop(context);
                     goToItemScreen(
-                      args: ItemScreenArgs(item: comment),
+                      args: ItemScreenArgs(
+                        item: comment,
+                        useCommentCache: true,
+                      ),
                       forceNewScreen: true,
                     );
                   },

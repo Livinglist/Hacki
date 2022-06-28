@@ -140,7 +140,7 @@ class WebAnalyzer {
 
       while (comment == null && index < story.kids.length) {
         comment = await locator
-            .get<CacheRepository>()
+            .get<OfflineRepository>()
             .getCachedComment(id: story.kids.elementAt(index));
         index++;
       }
