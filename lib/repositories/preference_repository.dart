@@ -43,7 +43,8 @@ class PreferenceRepository {
 
   static const bool _notificationModeDefaultValue = true;
   static const bool _displayModeDefaultValue = true;
-  static const bool _navigationModeDefaultValue = true;
+  static const bool _navigationModeDefaultValueIOS = true;
+  static const bool _navigationModeDefaultValueAndroid = false;
   static const bool _eyeCandyModeDefaultValue = false;
   static const bool _trueDarkModeDefaultValue = false;
   static const bool _readerModeDefaultValue = true;
@@ -84,7 +85,10 @@ class PreferenceRepository {
 
   Future<bool> get shouldShowWebFirst async => _prefs.then(
         (SharedPreferences prefs) =>
-            prefs.getBool(_navigationModeKey) ?? _navigationModeDefaultValue,
+            prefs.getBool(_navigationModeKey) ??
+            (Platform.isAndroid
+                ? _navigationModeDefaultValueAndroid
+                : _navigationModeDefaultValueIOS),
       );
 
   Future<bool> get shouldShowEyeCandy async => _prefs.then(
@@ -188,8 +192,10 @@ class PreferenceRepository {
 
   Future<void> toggleNavigationMode() async {
     final SharedPreferences prefs = await _prefs;
-    final bool currentMode =
-        prefs.getBool(_navigationModeKey) ?? _navigationModeDefaultValue;
+    final bool currentMode = prefs.getBool(_navigationModeKey) ??
+        (Platform.isAndroid
+            ? _navigationModeDefaultValueAndroid
+            : _navigationModeDefaultValueIOS);
     await prefs.setBool(_navigationModeKey, !currentMode);
   }
 
