@@ -5,10 +5,10 @@ import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';
 
-/// [CacheRepository] is for storing stories and comments for offline reading.
+/// [OfflineRepository] is for storing stories and comments for offline reading.
 /// It's using [Hive] as its database which is being stored in temp directory.
-class CacheRepository {
-  CacheRepository({
+class OfflineRepository {
+  OfflineRepository({
     Future<Box<List<int>>>? storyIdBox,
     Future<Box<Map<dynamic, dynamic>>>? storyBox,
     Future<LazyBox<String>>? webPageBox,

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hacki/config/custom_log_filter.dart';
 import 'package:hacki/repositories/repositories.dart';
@@ -16,8 +17,12 @@ Future<void> setUpLocator() async {
     ..registerSingleton<AuthRepository>(AuthRepository())
     ..registerSingleton<PostRepository>(PostRepository())
     ..registerSingleton<SembastRepository>(SembastRepository())
-    ..registerSingleton<CacheRepository>(CacheRepository())
-    ..registerSingleton<CacheService>(CacheService())
+    ..registerSingleton<OfflineRepository>(OfflineRepository())
+    ..registerSingleton<DraftCache>(DraftCache())
+    ..registerSingleton<CommentCache>(CommentCache())
     ..registerSingleton<LocalNotification>(LocalNotification())
-    ..registerSingleton<Logger>(Logger(filter: CustomLogFilter()));
+    ..registerSingleton<Logger>(Logger(filter: CustomLogFilter()))
+    ..registerSingleton<RouteObserver<ModalRoute<dynamic>>>(
+      RouteObserver<ModalRoute<dynamic>>(),
+    );
 }

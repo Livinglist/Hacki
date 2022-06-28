@@ -19,7 +19,7 @@ abstract class LinkUtil {
   }) {
     if (offlineReading) {
       locator
-          .get<CacheRepository>()
+          .get<OfflineRepository>()
           .hasCachedWebPage(url: link)
           .then((bool cached) {
         if (cached) {

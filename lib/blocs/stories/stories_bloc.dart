@@ -17,11 +17,12 @@ part 'stories_state.dart';
 class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   StoriesBloc({
     required PreferenceCubit preferenceCubit,
-    CacheRepository? cacheRepository,
+    OfflineRepository? offlineRepository,
     StoriesRepository? storiesRepository,
     PreferenceRepository? preferenceRepository,
   })  : _preferenceCubit = preferenceCubit,
-        _cacheRepository = cacheRepository ?? locator.get<CacheRepository>(),
+        _offlineRepository =
+            offlineRepository ?? locator.get<OfflineRepository>(),
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
         _preferenceRepository =
@@ -41,7 +42,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   }
 
   final PreferenceCubit _preferenceCubit;
-  final CacheRepository _cacheRepository;
+  final OfflineRepository _offlineRepository;
   final StoriesRepository _storiesRepository;
   final PreferenceRepository _preferenceRepository;
   DeviceScreenType? deviceScreenType;
@@ -73,7 +74,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         add(StoriesPageSizeChanged(pageSize: pageSize));
       }
     });
-    final bool hasCachedStories = await _cacheRepository.hasCachedStories;
+    final bool hasCachedStories = await _offlineRepository.hasCachedStories;
     final bool isComplexTile = _preferenceCubit.state.showComplexStoryTile;
     final int pageSize = _getPageSize(isComplexTile: isComplexTile);
     emit(
@@ -92,13 +93,13 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     required Emitter<StoriesState> emit,
   }) async {
     if (state.offlineReading) {
-      final List<int> ids = await _cacheRepository.getCachedStoryIds(of: of);
+      final List<int> ids = await _offlineRepository.getCachedStoryIds(of: of);
       emit(
         state
             .copyWithStoryIdsUpdated(of: of, to: ids)
             .copyWithCurrentPageUpdated(of: of, to: 0),
       );
-      _cacheRepository
+      _offlineRepository
           .getCachedStoriesStream(
         ids: ids.sublist(0, min(ids.length, state.currentPageSize)),
       )
@@ -169,7 +170,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       }
 
       if (state.offlineReading) {
-        _cacheRepository
+        _offlineRepository
             .getCachedStoriesStream(
           ids: state.storyIdsByType[event.type]!.sublist(
             lower,
@@ -243,9 +244,9 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       ),
     );
 
-    await _cacheRepository.deleteAllStoryIds();
-    await _cacheRepository.deleteAllStories();
-    await _cacheRepository.deleteAllComments();
+    await _offlineRepository.deleteAllStoryIds();
+    await _offlineRepository.deleteAllStories();
+    await _offlineRepository.deleteAllComments();
 
     final Set<int> prioritizedIds = <int>{};
     final List<StoryType> prioritizedTypes = <StoryType>[...types]
@@ -253,7 +254,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
 
     for (final StoryType type in prioritizedTypes) {
       final List<int> ids = await _storiesRepository.fetchStoryIds(of: type);
-      await _cacheRepository.cacheStoryIds(of: type, ids: ids);
+      await _offlineRepository.cacheStoryIds(of: type, ids: ids);
       prioritizedIds.addAll(ids);
     }
 
@@ -275,7 +276,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       final List<int> ids = await _storiesRepository.fetchStoryIds(
         of: StoryType.latest,
       );
-      await _cacheRepository.cacheStoryIds(of: StoryType.latest, ids: ids);
+      await _offlineRepository.cacheStoryIds(of: StoryType.latest, ids: ids);
       latestIds.addAll(ids);
 
       await fetchAndCacheStories(
@@ -314,11 +315,11 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         continue;
       }
 
-      await _cacheRepository.cacheStory(story: story);
+      await _offlineRepository.cacheStory(story: story);
 
       if (story.url.isNotEmpty && includingWebPage) {
         locator.get<Logger>().i('downloading ${story.url}');
-        await _cacheRepository.cacheUrl(url: story.url);
+        await _offlineRepository.cacheUrl(url: story.url);
       }
 
       _storiesRepository
@@ -326,7 +327,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
           .whereType<Comment>()
           .listen(
             (Comment comment) => unawaited(
-              _cacheRepository.cacheComment(comment: comment),
+              _offlineRepository.cacheComment(comment: comment),
             ),
           )
           .onDone(() => add(StoryDownloaded(skipped: false)));
@@ -378,10 +379,10 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     StoriesExitOffline event,
     Emitter<StoriesState> emit,
   ) async {
-    await _cacheRepository.deleteAllStoryIds();
-    await _cacheRepository.deleteAllStories();
-    await _cacheRepository.deleteAllComments();
-    await _cacheRepository.deleteAllWebPages();
+    await _offlineRepository.deleteAllStoryIds();
+    await _offlineRepository.deleteAllStories();
+    await _offlineRepository.deleteAllComments();
+    await _offlineRepository.deleteAllWebPages();
     emit(state.copyWith(offlineReading: false));
     add(StoriesInitialize());
   }

@@ -44,7 +44,7 @@ class CommentTile extends StatelessWidget {
       lazy: false,
       create: (_) => CollapseCubit(
         commentId: comment.id,
-        cacheService: context.read<CacheService>(),
+        collapseCache: context.tryRead<CollapseCache>() ?? CollapseCache(),
       )..init(),
       child: BlocBuilder<CollapseCubit, CollapseState>(
         builder: (BuildContext context, CollapseState state) {

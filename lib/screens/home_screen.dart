@@ -26,6 +26,7 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
+import 'package:logger/logger.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
@@ -46,8 +47,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
-  final CacheService cacheService = locator.get<CacheService>();
+    with SingleTickerProviderStateMixin, RouteAware {
   final Throttle featureDiscoveryDismissThrottle = Throttle(
     delay: _throttleDelay,
   );
@@ -60,6 +60,19 @@ class _HomeScreenState extends State<HomeScreen>
   int currentIndex = 0;
 
   static const Duration _throttleDelay = Duration(seconds: 1);
+
+  @override
+  void didPopNext() {
+    super.didPopNext();
+    if (context.read<StoriesBloc>().deviceScreenType ==
+        DeviceScreenType.mobile) {
+      locator.get<Logger>().i('resetting comments in CommentCache');
+      Future<void>.delayed(
+        const Duration(milliseconds: 500),
+        locator.get<CommentCache>().resetComments,
+      );
+    }
+  }
 
   @override
   void initState() {
@@ -88,14 +101,24 @@ class _HomeScreenState extends State<HomeScreen>
           siriSuggestionSubject.stream.listen(onSiriSuggestionTapped);
     }
 
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      FeatureDiscovery.discoverFeatures(
-        context,
-        const <String>{
-          Constants.featureLogIn,
-        },
-      );
-    });
+    SchedulerBinding.instance
+      ..addPostFrameCallback((_) {
+        FeatureDiscovery.discoverFeatures(
+          context,
+          const <String>{
+            Constants.featureLogIn,
+          },
+        );
+      })
+      ..addPostFrameCallback((_) {
+        final ModalRoute<dynamic>? route = ModalRoute.of(context);
+
+        if (route == null) return;
+
+        locator
+            .get<RouteObserver<ModalRoute<dynamic>>>()
+            .subscribe(this, route);
+      });
 
     tabController = TabController(vsync: this, length: 6)
       ..addListener(() {

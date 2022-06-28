@@ -1,9 +1,6 @@
-import 'package:hacki/models/models.dart' show Comment;
 import 'package:rxdart/rxdart.dart';
 
-class CacheService {
-  final Map<int, Comment> _comments = <int, Comment>{};
-  final Map<int, String> _drafts = <int, String>{};
+class CollapseCache {
   final Map<int, Set<int>> _kids = <int, Set<int>>{};
   final Set<int> _collapsed = <int>{};
   final Map<int, Set<int>> _hidden = <int, Set<int>>{};
@@ -76,19 +73,4 @@ class CacheService {
   bool isCollapsed(int commentId) => _collapsed.contains(commentId);
 
   int totalHidden(int commentId) => _hidden[commentId]?.length ?? 0;
-
-  void cacheComment(Comment comment) => _comments[comment.id] = comment;
-
-  Comment? getComment(int id) => _comments[id];
-
-  void resetComments() {
-    _comments.clear();
-  }
-
-  void removeDraft({required int replyingTo}) => _drafts.remove(replyingTo);
-
-  void cacheDraft({required String text, required int replyingTo}) =>
-      _drafts[replyingTo] = text;
-
-  String? getDraft({required int replyingTo}) => _drafts[replyingTo];
 }

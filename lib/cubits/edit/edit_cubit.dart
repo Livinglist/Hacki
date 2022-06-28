@@ -8,19 +8,19 @@ import 'package:hacki/utils/debouncer.dart';
 part 'edit_state.dart';
 
 class EditCubit extends Cubit<EditState> {
-  EditCubit({CacheService? cacheService})
-      : _cacheService = cacheService ?? locator.get<CacheService>(),
+  EditCubit({DraftCache? draftCache})
+      : _draftCache = draftCache ?? locator.get<DraftCache>(),
         _debouncer = Debouncer(delay: const Duration(seconds: 1)),
         super(const EditState.init());
 
-  final CacheService _cacheService;
+  final DraftCache _draftCache;
   final Debouncer _debouncer;
 
   void onReplyTapped(Item item) {
     emit(
       EditState(
         replyingTo: item,
-        text: _cacheService.getDraft(replyingTo: item.id),
+        text: _draftCache.getDraft(replyingTo: item.id),
       ),
     );
   }
@@ -44,7 +44,7 @@ class EditCubit extends Cubit<EditState> {
 
   void onReplySubmittedSuccessfully() {
     if (state.replyingTo != null) {
-      _cacheService.removeDraft(replyingTo: state.replyingTo!.id);
+      _draftCache.removeDraft(replyingTo: state.replyingTo!.id);
     }
     emit(const EditState.init());
   }
@@ -54,7 +54,7 @@ class EditCubit extends Cubit<EditState> {
     if (state.replyingTo != null) {
       final int? id = state.replyingTo?.id;
       _debouncer.run(() {
-        _cacheService.cacheDraft(
+        _draftCache.cacheDraft(
           text: text,
           replyingTo: id!,
         );
