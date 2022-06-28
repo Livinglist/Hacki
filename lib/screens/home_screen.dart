@@ -26,6 +26,7 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
+import 'package:logger/logger.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
@@ -65,6 +66,7 @@ class _HomeScreenState extends State<HomeScreen>
     super.didPopNext();
     if (context.read<StoriesBloc>().deviceScreenType ==
         DeviceScreenType.mobile) {
+      locator.get<Logger>().i('resetting comments in CommentCache');
       Future<void>.delayed(
         const Duration(milliseconds: 500),
         locator.get<CommentCache>().resetComments,

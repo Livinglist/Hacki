@@ -51,6 +51,7 @@ class CommentsCubit extends Cubit<CommentsState> {
 
   Future<void> init({
     bool onlyShowTargetComment = false,
+    bool useCommentCache = false,
     List<Comment>? targetParents,
   }) async {
     if (onlyShowTargetComment && (targetParents?.isNotEmpty ?? false)) {
@@ -66,7 +67,6 @@ class CommentsCubit extends Cubit<CommentsState> {
           .fetchCommentsStream(
             ids: targetParents!.last.kids,
             level: targetParents.last.level + 1,
-            getFromCache: _commentCache.getComment,
           )
           .listen(_onCommentFetched)
         ..onDone(_onDone);
@@ -93,6 +93,7 @@ class CommentsCubit extends Cubit<CommentsState> {
       _streamSubscription = _storiesRepository
           .fetchCommentsStream(
             ids: kids,
+            getFromCache: useCommentCache ? _commentCache.getComment : null,
           )
           .listen(_onCommentFetched)
         ..onDone(_onDone);
@@ -184,7 +185,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     if (order == null) return;
     _streamSubscription?.cancel();
     emit(state.copyWith(order: order, comments: <Comment>[]));
-    init();
+    init(useCommentCache: true);
   }
 
   List<int> sortKids(List<int> kids) {

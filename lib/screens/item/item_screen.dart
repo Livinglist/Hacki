@@ -89,6 +89,7 @@ class ItemScreen extends StatefulWidget {
               )..init(
                   onlyShowTargetComment: args.onlyShowTargetComment,
                   targetParents: args.targetComments,
+                  useCommentCache: args.useCommentCache,
                 ),
             ),
             BlocProvider<EditCubit>(

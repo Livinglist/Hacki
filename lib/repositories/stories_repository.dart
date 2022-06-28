@@ -54,7 +54,7 @@ class StoriesRepository {
     Comment? Function(int)? getFromCache,
   }) async* {
     for (final int id in ids) {
-      Comment? comment = getFromCache?.call(id);
+      Comment? comment = getFromCache?.call(id)?.copyWith(level: level);
 
       comment ??= await _firebaseClient
           .get('${_baseUrl}item/$id.json')
