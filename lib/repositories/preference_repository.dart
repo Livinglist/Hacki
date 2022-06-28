@@ -12,9 +12,11 @@ class PreferenceRepository {
     SyncedSharedPreferences? syncedPrefs,
     Future<SharedPreferences>? prefs,
     FlutterSecureStorage? secureStorage,
+    Logger? logger,
   })  : _syncedPrefs = syncedPrefs ?? SyncedSharedPreferences.instance,
         _prefs = prefs ?? SharedPreferences.getInstance(),
-        _secureStorage = secureStorage ?? const FlutterSecureStorage();
+        _secureStorage = secureStorage ?? const FlutterSecureStorage(),
+        _logger = logger ?? locator.get<Logger>();
 
   static const String _usernameKey = 'username';
   static const String _passwordKey = 'password';
@@ -55,6 +57,7 @@ class PreferenceRepository {
   final SyncedSharedPreferences _syncedPrefs;
   final Future<SharedPreferences> _prefs;
   final FlutterSecureStorage _secureStorage;
+  final Logger _logger;
 
   Future<bool> get loggedIn async => await username != null;
 
@@ -164,7 +167,7 @@ class PreferenceRepository {
           aOptions: androidOptions,
         );
       } catch (_) {
-        locator.get<Logger>().e(_);
+        _logger.e(_);
       }
 
       rethrow;

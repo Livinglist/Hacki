@@ -11,11 +11,14 @@ class AuthRepository extends PostableRepository {
   AuthRepository({
     Dio? dio,
     PreferenceRepository? preferenceRepository,
+    Logger? logger,
   })  : _preferenceRepository =
             preferenceRepository ?? locator.get<PreferenceRepository>(),
+        _logger = logger ?? locator.get<Logger>(),
         super(dio: dio);
 
   final PreferenceRepository _preferenceRepository;
+  final Logger _logger;
 
   static const String _authority = 'news.ycombinator.com';
 
@@ -45,7 +48,7 @@ class AuthRepository extends PostableRepository {
           password: password,
         );
       } catch (_) {
-        locator.get<Logger>().e(_);
+        _logger.e(_);
         return false;
       }
     }

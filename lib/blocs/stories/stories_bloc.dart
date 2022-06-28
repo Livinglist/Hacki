@@ -20,6 +20,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     OfflineRepository? offlineRepository,
     StoriesRepository? storiesRepository,
     PreferenceRepository? preferenceRepository,
+    Logger? logger,
   })  : _preferenceCubit = preferenceCubit,
         _offlineRepository =
             offlineRepository ?? locator.get<OfflineRepository>(),
@@ -27,6 +28,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
             storiesRepository ?? locator.get<StoriesRepository>(),
         _preferenceRepository =
             preferenceRepository ?? locator.get<PreferenceRepository>(),
+        _logger = logger ?? locator.get<Logger>(),
         super(const StoriesState.init()) {
     on<StoriesInitialize>(onInitialize);
     on<StoriesRefresh>(onRefresh);
@@ -45,6 +47,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   final OfflineRepository _offlineRepository;
   final StoriesRepository _storiesRepository;
   final PreferenceRepository _preferenceRepository;
+  final Logger _logger;
   DeviceScreenType? deviceScreenType;
   StreamSubscription<PreferenceState>? _streamSubscription;
   static const int _smallPageSize = 10;
@@ -318,7 +321,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       await _offlineRepository.cacheStory(story: story);
 
       if (story.url.isNotEmpty && includingWebPage) {
-        locator.get<Logger>().i('downloading ${story.url}');
+        _logger.i('downloading ${story.url}');
         await _offlineRepository.cacheUrl(url: story.url);
       }
 

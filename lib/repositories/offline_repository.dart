@@ -13,12 +13,14 @@ class OfflineRepository {
     Future<Box<Map<dynamic, dynamic>>>? storyBox,
     Future<LazyBox<String>>? webPageBox,
     Future<LazyBox<Map<dynamic, dynamic>>>? commentBox,
+    Logger? logger,
   })  : _storyIdBox = storyIdBox ?? Hive.openBox<List<int>>(_storyIdBoxName),
         _storyBox =
             storyBox ?? Hive.openBox<Map<dynamic, dynamic>>(_storyBoxName),
         _webPageBox = webPageBox ?? Hive.openLazyBox<String>(_webPageBoxName),
         _commentBox = commentBox ??
-            Hive.openLazyBox<Map<dynamic, dynamic>>(_commentBoxName);
+            Hive.openLazyBox<Map<dynamic, dynamic>>(_commentBoxName),
+        _logger = logger ?? locator.get<Logger>();
 
   static const String _storyIdBoxName = 'storyIdBox';
   static const String _storyBoxName = 'storyBox';
@@ -28,6 +30,7 @@ class OfflineRepository {
   final Future<Box<Map<dynamic, dynamic>>> _storyBox;
   final Future<LazyBox<Map<dynamic, dynamic>>> _commentBox;
   final Future<LazyBox<String>> _webPageBox;
+  final Logger _logger;
 
   Future<bool> get hasCachedStories =>
       _storyBox.then((Box<Map<dynamic, dynamic>> box) => box.isNotEmpty);
@@ -41,7 +44,7 @@ class OfflineRepository {
     try {
       box = await _storyIdBox;
     } catch (_) {
-      locator.get<Logger>().e(_);
+      _logger.e(_);
       await Hive.deleteBoxFromDisk(_storyIdBoxName);
       box = await _storyIdBox;
     }
@@ -55,7 +58,7 @@ class OfflineRepository {
     try {
       box = await _storyBox;
     } catch (_) {
-      locator.get<Logger>().e(_);
+      _logger.e(_);
       await Hive.deleteBoxFromDisk(_storyBoxName);
       box = await _storyBox;
     }
@@ -69,7 +72,7 @@ class OfflineRepository {
     try {
       box = await _webPageBox;
     } catch (_) {
-      locator.get<Logger>().e(_);
+      _logger.e(_);
       await Hive.deleteBoxFromDisk(_webPageBoxName);
       box = await _webPageBox;
     }
@@ -83,7 +86,7 @@ class OfflineRepository {
       final LazyBox<String> box = await _webPageBox;
       return box.get(url);
     } catch (_) {
-      locator.get<Logger>().e(_);
+      _logger.e(_);
       await Hive.deleteBoxFromDisk(_webPageBoxName);
       return null;
     }
@@ -94,7 +97,7 @@ class OfflineRepository {
       final LazyBox<String> box = await _webPageBox;
       return box.containsKey(url);
     } catch (_) {
-      locator.get<Logger>().e(_);
+      _logger.e(_);
       await Hive.deleteBoxFromDisk(_webPageBoxName);
       return false;
     }
@@ -106,7 +109,7 @@ class OfflineRepository {
       final List<int>? ids = box.get(of.name);
       return ids ?? <int>[];
     } catch (_) {
-      locator.get<Logger>().e(_);
+      _logger.e(_);
       await Hive.deleteBoxFromDisk(_storyIdBoxName);
       return <int>[];
     }
@@ -118,7 +121,7 @@ class OfflineRepository {
     try {
       box = await _storyBox;
     } catch (_) {
-      locator.get<Logger>().e(_);
+      _logger.e(_);
       await Hive.deleteBoxFromDisk(_storyBoxName);
       return;
     }
@@ -143,7 +146,7 @@ class OfflineRepository {
     try {
       box = await _storyBox;
     } catch (_) {
-      locator.get<Logger>().e(_);
+      _logger.e(_);
       await Hive.deleteBoxFromDisk(_storyBoxName);
       return null;
     }
@@ -162,7 +165,7 @@ class OfflineRepository {
     try {
       box = await _commentBox;
     } catch (_) {
-      locator.get<Logger>().e(_);
+      _logger.e(_);
       await Hive.deleteBoxFromDisk(_commentBoxName);
       box = await _commentBox;
     }
@@ -180,7 +183,7 @@ class OfflineRepository {
       final Comment comment = Comment.fromJson(json.cast<String, dynamic>());
       return comment;
     } catch (_) {
-      locator.get<Logger>().e(_);
+      _logger.e(_);
       await Hive.deleteBoxFromDisk(_commentBoxName);
       return null;
     }
@@ -210,7 +213,7 @@ class OfflineRepository {
       final Box<List<int>> box = await _storyIdBox;
       return box.clear();
     } catch (_) {
-      locator.get<Logger>().e(_);
+      _logger.e(_);
       await Hive.deleteBoxFromDisk(_storyIdBoxName);
       return 0;
     }
@@ -221,7 +224,7 @@ class OfflineRepository {
       final Box<Map<dynamic, dynamic>> box = await _storyBox;
       return box.clear();
     } catch (_) {
-      locator.get<Logger>().e(_);
+      _logger.e(_);
       await Hive.deleteBoxFromDisk(_storyBoxName);
       return 0;
     }
@@ -232,7 +235,7 @@ class OfflineRepository {
       final LazyBox<Map<dynamic, dynamic>> box = await _commentBox;
       return box.clear();
     } catch (_) {
-      locator.get<Logger>().e(_);
+      _logger.e(_);
       await Hive.deleteBoxFromDisk(_commentBoxName);
       return 0;
     }
@@ -243,7 +246,7 @@ class OfflineRepository {
       final LazyBox<String> box = await _webPageBox;
       return box.clear();
     } catch (_) {
-      locator.get<Logger>().e(_);
+      _logger.e(_);
       await Hive.deleteBoxFromDisk(_webPageBoxName);
       return 0;
     }
