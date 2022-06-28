@@ -182,14 +182,16 @@ class _ItemScreenState extends State<ItemScreen> {
     super.initState();
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      FeatureDiscovery.discoverFeatures(
-        context,
-        const <String>{
-          Constants.featurePinToTop,
-          Constants.featureAddStoryToFavList,
-          Constants.featureOpenStoryInWebView,
-        },
-      );
+      if (!isTesting) {
+        FeatureDiscovery.discoverFeatures(
+          context,
+          const <String>{
+            Constants.featurePinToTop,
+            Constants.featureAddStoryToFavList,
+            Constants.featureOpenStoryInWebView,
+          },
+        );
+      }
     });
 
     scrollController.addListener(() {

@@ -11,6 +11,7 @@ final GetIt locator = GetIt.instance;
 /// Set up [GetIt] locator.
 Future<void> setUpLocator() async {
   locator
+    ..registerSingleton<Logger>(Logger(filter: CustomLogFilter()))
     ..registerSingleton<StoriesRepository>(StoriesRepository())
     ..registerSingleton<PreferenceRepository>(PreferenceRepository())
     ..registerSingleton<SearchRepository>(SearchRepository())
@@ -21,7 +22,6 @@ Future<void> setUpLocator() async {
     ..registerSingleton<DraftCache>(DraftCache())
     ..registerSingleton<CommentCache>(CommentCache())
     ..registerSingleton<LocalNotification>(LocalNotification())
-    ..registerSingleton<Logger>(Logger(filter: CustomLogFilter()))
     ..registerSingleton<RouteObserver<ModalRoute<dynamic>>>(
       RouteObserver<ModalRoute<dynamic>>(),
     );

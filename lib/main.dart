@@ -30,8 +30,12 @@ final BehaviorSubject<String?> selectNotificationSubject =
 final BehaviorSubject<String?> siriSuggestionSubject =
     BehaviorSubject<String?>();
 
-Future<void> main() async {
+late final bool isTesting;
+
+Future<void> main({bool testing = false}) async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  isTesting = testing;
 
   if (Platform.isIOS) {
     unawaited(
