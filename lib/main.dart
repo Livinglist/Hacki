@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:feature_discovery/feature_discovery.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -91,17 +92,26 @@ Future<void> main({bool testing = false}) async {
   final bool trueDarkMode =
       prefs.getBool(PreferenceRepository.trueDarkModeKey) ?? false;
 
-  BlocOverrides.runZoned(
-    () {
-      runApp(
-        HackiApp(
-          savedThemeMode: savedThemeMode,
-          trueDarkMode: trueDarkMode,
-        ),
-      );
-    },
-    blocObserver: CustomBlocObserver(),
-  );
+  if (kReleaseMode) {
+    runApp(
+      HackiApp(
+        savedThemeMode: savedThemeMode,
+        trueDarkMode: trueDarkMode,
+      ),
+    );
+  } else {
+    BlocOverrides.runZoned(
+      () {
+        runApp(
+          HackiApp(
+            savedThemeMode: savedThemeMode,
+            trueDarkMode: trueDarkMode,
+          ),
+        );
+      },
+      blocObserver: CustomBlocObserver(),
+    );
+  }
 }
 
 class HackiApp extends StatelessWidget {

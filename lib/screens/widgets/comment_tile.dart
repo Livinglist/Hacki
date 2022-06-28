@@ -340,7 +340,7 @@ class CommentTile extends StatelessWidget {
     );
   }
 
-  static const Map<int, Color> _colors = <int, Color>{};
+  static final Map<int, Color> _colors = <int, Color>{};
 
   Color _getColor(int level) {
     final int initialLevel = level;
