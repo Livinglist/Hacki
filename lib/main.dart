@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:feature_discovery/feature_discovery.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,6 +15,7 @@ import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/repositories/repositories.dart' show PreferenceRepository;
 import 'package:hacki/screens/screens.dart';
+import 'package:hacki/services/custom_bloc_observer.dart';
 import 'package:hacki/services/fetcher.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hive/hive.dart';
@@ -30,8 +32,12 @@ final BehaviorSubject<String?> selectNotificationSubject =
 final BehaviorSubject<String?> siriSuggestionSubject =
     BehaviorSubject<String?>();
 
-Future<void> main() async {
+late final bool isTesting;
+
+Future<void> main({bool testing = false}) async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  isTesting = testing;
 
   if (Platform.isIOS) {
     unawaited(
@@ -86,25 +92,26 @@ Future<void> main() async {
   final bool trueDarkMode =
       prefs.getBool(PreferenceRepository.trueDarkModeKey) ?? false;
 
-  // Uncomment code below for running with logging.
-  // BlocOverrides.runZoned(
-  //   () {
-  //     runApp(
-  //       HackiApp(
-  //         savedThemeMode: savedThemeMode,
-  //         trueDarkMode: trueDarkMode,
-  //       ),
-  //     );
-  //   },
-  //   blocObserver: CustomBlocObserver(),
-  // );
-
-  runApp(
-    HackiApp(
-      savedThemeMode: savedThemeMode,
-      trueDarkMode: trueDarkMode,
-    ),
-  );
+  if (kReleaseMode) {
+    runApp(
+      HackiApp(
+        savedThemeMode: savedThemeMode,
+        trueDarkMode: trueDarkMode,
+      ),
+    );
+  } else {
+    BlocOverrides.runZoned(
+      () {
+        runApp(
+          HackiApp(
+            savedThemeMode: savedThemeMode,
+            trueDarkMode: trueDarkMode,
+          ),
+        );
+      },
+      blocObserver: CustomBlocObserver(),
+    );
+  }
 }
 
 class HackiApp extends StatelessWidget {

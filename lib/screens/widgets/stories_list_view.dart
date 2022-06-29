@@ -23,8 +23,7 @@ class StoriesListView extends StatefulWidget {
   State<StoriesListView> createState() => _StoriesListViewState();
 }
 
-class _StoriesListViewState extends State<StoriesListView>
-    with AutomaticKeepAliveClientMixin {
+class _StoriesListViewState extends State<StoriesListView> {
   final RefreshController refreshController = RefreshController();
 
   @override
@@ -35,7 +34,6 @@ class _StoriesListViewState extends State<StoriesListView>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     final StoryType storyType = widget.storyType;
     final Widget header = widget.header;
     final ValueChanged<Story> onStoryTapped = widget.onStoryTapped;
@@ -93,7 +91,4 @@ class _StoriesListViewState extends State<StoriesListView>
       },
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }
