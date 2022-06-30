@@ -116,6 +116,7 @@ class CommentsCubit extends Cubit<CommentsState> {
       state.copyWith(
         status: CommentsStatus.loading,
         comments: <Comment>[],
+        currentPage: 0,
       ),
     );
 
