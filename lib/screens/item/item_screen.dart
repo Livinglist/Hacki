@@ -86,6 +86,10 @@ class ItemScreen extends StatefulWidget {
                     context.read<StoriesBloc>().state.offlineReading,
                 item: args.item,
                 collapseCache: context.read<CollapseCache>(),
+                defaultFetchMode:
+                    context.read<PreferenceCubit>().state.fetchMode,
+                defaultCommentsOrder:
+                    context.read<PreferenceCubit>().state.order,
               )..init(
                   onlyShowTargetComment: args.onlyShowTargetComment,
                   targetParents: args.targetComments,
@@ -128,6 +132,10 @@ class ItemScreen extends StatefulWidget {
                     context.read<StoriesBloc>().state.offlineReading,
                 item: args.item,
                 collapseCache: context.read<CollapseCache>(),
+                defaultFetchMode:
+                    context.read<PreferenceCubit>().state.fetchMode,
+                defaultCommentsOrder:
+                    context.read<PreferenceCubit>().state.order,
               )..init(
                   onlyShowTargetComment: args.onlyShowTargetComment,
                   targetParents: args.targetComments,

@@ -35,11 +35,11 @@ class CommentsState extends Equatable {
   CommentsState.init({
     required this.offlineReading,
     required this.item,
+    required this.fetchMode,
+    required this.order,
   })  : comments = <Comment>[],
         status = CommentsStatus.init,
         fetchParentStatus = CommentsStatus.init,
-        order = CommentsOrder.natural,
-        fetchMode = FetchMode.eager,
         onlyShowTargetComment = false,
         currentPage = 0;
 

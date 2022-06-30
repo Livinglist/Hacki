@@ -10,6 +10,8 @@ class PreferenceState extends Equatable {
     required this.useReader,
     required this.markReadStories,
     required this.showMetadata,
+    required this.fetchMode,
+    required this.order,
   });
 
   const PreferenceState.init()
@@ -20,7 +22,9 @@ class PreferenceState extends Equatable {
         useTrueDark = false,
         useReader = false,
         markReadStories = false,
-        showMetadata = false;
+        showMetadata = false,
+        fetchMode = FetchMode.eager,
+        order = CommentsOrder.natural;
 
   final bool showNotification;
   final bool showComplexStoryTile;
@@ -30,6 +34,8 @@ class PreferenceState extends Equatable {
   final bool useReader;
   final bool markReadStories;
   final bool showMetadata;
+  final FetchMode fetchMode;
+  final CommentsOrder order;
 
   PreferenceState copyWith({
     bool? showNotification,
@@ -40,6 +46,8 @@ class PreferenceState extends Equatable {
     bool? useReader,
     bool? markReadStories,
     bool? showMetadata,
+    FetchMode? fetchMode,
+    CommentsOrder? order,
   }) {
     return PreferenceState(
       showNotification: showNotification ?? this.showNotification,
@@ -50,6 +58,8 @@ class PreferenceState extends Equatable {
       useReader: useReader ?? this.useReader,
       markReadStories: markReadStories ?? this.markReadStories,
       showMetadata: showMetadata ?? this.showMetadata,
+      fetchMode: fetchMode ?? this.fetchMode,
+      order: order ?? this.order,
     );
   }
 
@@ -63,5 +73,7 @@ class PreferenceState extends Equatable {
         useReader,
         markReadStories,
         showMetadata,
+        fetchMode,
+        order,
       ];
 }

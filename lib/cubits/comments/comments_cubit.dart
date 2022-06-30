@@ -23,6 +23,8 @@ class CommentsCubit extends Cubit<CommentsState> {
     SembastRepository? sembastRepository,
     required bool offlineReading,
     required Item item,
+    required FetchMode defaultFetchMode,
+    required CommentsOrder defaultCommentsOrder,
   })  : _collapseCache = collapseCache,
         _commentCache = commentCache ?? locator.get<CommentCache>(),
         _offlineRepository =
@@ -31,7 +33,14 @@ class CommentsCubit extends Cubit<CommentsState> {
             storiesRepository ?? locator.get<StoriesRepository>(),
         _sembastRepository =
             sembastRepository ?? locator.get<SembastRepository>(),
-        super(CommentsState.init(offlineReading: offlineReading, item: item));
+        super(
+          CommentsState.init(
+            offlineReading: offlineReading,
+            item: item,
+            fetchMode: defaultFetchMode,
+            order: defaultCommentsOrder,
+          ),
+        );
 
   final CollapseCache _collapseCache;
   final CommentCache _commentCache;

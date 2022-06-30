@@ -283,6 +283,122 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 },
                                 activeColor: Palette.orange,
                               ),
+                              const SizedBox(
+                                height: Dimens.pt8,
+                              ),
+                              Flex(
+                                direction: Axis.horizontal,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Flexible(
+                                    child: Row(
+                                      children: const <Widget>[
+                                        SizedBox(
+                                          width: Dimens.pt16,
+                                        ),
+                                        Text('Default fetch mode'),
+                                        Spacer(),
+                                      ],
+                                    ),
+                                  ),
+                                  Flexible(
+                                    child: Row(
+                                      children: const <Widget>[
+                                        Text('Default comments order'),
+                                        Spacer(),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Flex(
+                                direction: Axis.horizontal,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Flexible(
+                                    child: Row(
+                                      children: <Widget>[
+                                        const SizedBox(
+                                          width: Dimens.pt16,
+                                        ),
+                                        DropdownButton<FetchMode>(
+                                          value: preferenceState.fetchMode,
+                                          underline: const SizedBox.shrink(),
+                                          items: const <
+                                              DropdownMenuItem<FetchMode>>[
+                                            DropdownMenuItem<FetchMode>(
+                                              value: FetchMode.lazy,
+                                              child: Text(
+                                                'Lazy',
+                                                style: TextStyle(
+                                                  fontSize: TextDimens.pt16,
+                                                ),
+                                              ),
+                                            ),
+                                            DropdownMenuItem<FetchMode>(
+                                              value: FetchMode.eager,
+                                              child: Text(
+                                                'Eager',
+                                                style: TextStyle(
+                                                  fontSize: TextDimens.pt16,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                          onChanged: context
+                                              .read<PreferenceCubit>()
+                                              .selectFetchMode,
+                                        ),
+                                        const Spacer(),
+                                      ],
+                                    ),
+                                  ),
+                                  Flexible(
+                                    child: Row(
+                                      children: <Widget>[
+                                        DropdownButton<CommentsOrder>(
+                                          value: preferenceState.order,
+                                          underline: const SizedBox.shrink(),
+                                          items: const <
+                                              DropdownMenuItem<CommentsOrder>>[
+                                            DropdownMenuItem<CommentsOrder>(
+                                              value: CommentsOrder.natural,
+                                              child: Text(
+                                                'Natural',
+                                                style: TextStyle(
+                                                  fontSize: TextDimens.pt16,
+                                                ),
+                                              ),
+                                            ),
+                                            DropdownMenuItem<CommentsOrder>(
+                                              value: CommentsOrder.newestFirst,
+                                              child: Text(
+                                                'Newest first',
+                                                style: TextStyle(
+                                                  fontSize: TextDimens.pt16,
+                                                ),
+                                              ),
+                                            ),
+                                            DropdownMenuItem<CommentsOrder>(
+                                              value: CommentsOrder.oldestFirst,
+                                              child: Text(
+                                                'Oldest first',
+                                                style: TextStyle(
+                                                  fontSize: TextDimens.pt16,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                          onChanged: context
+                                              .read<PreferenceCubit>()
+                                              .selectCommentsOrder,
+                                        ),
+                                        const Spacer(),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                               SwitchListTile(
                                 title: const Text('Complex Story Tile'),
                                 subtitle: const Text(
