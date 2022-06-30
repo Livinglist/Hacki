@@ -242,16 +242,19 @@ class CommentsCubit extends Cubit<CommentsState> {
   }
 
   void onOrderChanged(CommentsOrder? order) {
-    HapticFeedback.selectionClick();
     if (order == null) return;
+    if (state.order == order) return;
+    HapticFeedback.selectionClick();
     _streamSubscription?.cancel();
     emit(state.copyWith(order: order));
     init(useCommentCache: true);
   }
 
   void onFetchModeChanged(FetchMode? fetchMode) {
-    HapticFeedback.selectionClick();
     if (fetchMode == null) return;
+    if (state.fetchMode == fetchMode) return;
+    _collapseCache.resetCollapsedComments();
+    HapticFeedback.selectionClick();
     _streamSubscription?.cancel();
     emit(state.copyWith(fetchMode: fetchMode));
     init(useCommentCache: true);
