@@ -295,6 +295,7 @@ class CommentTile extends StatelessWidget {
                                   Center(
                                     child: TextButton(
                                       onPressed: () {
+                                        HapticFeedback.selectionClick();
                                         context
                                             .read<CommentsCubit>()
                                             .loadMore(comment: comment);
