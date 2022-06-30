@@ -307,7 +307,13 @@ class _ItemScreenState extends State<ItemScreen> {
                     }
                   }
                 },
-                onLoading: context.read<CommentsCubit>().loadMore,
+                onLoading: () {
+                  if (state.fetchMode == FetchMode.eager) {
+                    context.read<CommentsCubit>().loadMore();
+                  } else {
+                    refreshController.loadComplete();
+                  }
+                },
                 child: ListView.builder(
                   primary: false,
                   itemCount: state.comments.length + 2,
@@ -487,6 +493,9 @@ class _ItemScreenState extends State<ItemScreen> {
                                   ),
                                   Text(
                                     '''${state.item.score} karma, ${state.item.descendants} comment${state.item.descendants > 1 ? 's' : ''}''',
+                                    style: const TextStyle(
+                                      fontSize: TextDimens.pt12,
+                                    ),
                                   ),
                                 ] else ...<Widget>[
                                   const SizedBox(
@@ -510,6 +519,37 @@ class _ItemScreenState extends State<ItemScreen> {
                                   ),
                                 ],
                                 const Spacer(),
+                                if (!state.offlineReading)
+                                  DropdownButton<FetchMode>(
+                                    value: state.fetchMode,
+                                    underline: const SizedBox.shrink(),
+                                    items: const <DropdownMenuItem<FetchMode>>[
+                                      DropdownMenuItem<FetchMode>(
+                                        value: FetchMode.lazy,
+                                        child: Text(
+                                          'Lazy',
+                                          style: TextStyle(
+                                            fontSize: TextDimens.pt12,
+                                          ),
+                                        ),
+                                      ),
+                                      DropdownMenuItem<FetchMode>(
+                                        value: FetchMode.eager,
+                                        child: Text(
+                                          'Eager',
+                                          style: TextStyle(
+                                            fontSize: TextDimens.pt12,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                    onChanged: context
+                                        .read<CommentsCubit>()
+                                        .onFetchModeChanged,
+                                  ),
+                                const SizedBox(
+                                  width: Dimens.pt6,
+                                ),
                                 DropdownButton<CommentsOrder>(
                                   value: state.order,
                                   underline: const SizedBox.shrink(),
@@ -520,7 +560,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                       child: Text(
                                         'Natural',
                                         style: TextStyle(
-                                          fontSize: TextDimens.pt14,
+                                          fontSize: TextDimens.pt12,
                                         ),
                                       ),
                                     ),
@@ -529,7 +569,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                       child: Text(
                                         'Newest first',
                                         style: TextStyle(
-                                          fontSize: TextDimens.pt14,
+                                          fontSize: TextDimens.pt12,
                                         ),
                                       ),
                                     ),
@@ -538,7 +578,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                       child: Text(
                                         'Oldest first',
                                         style: TextStyle(
-                                          fontSize: TextDimens.pt14,
+                                          fontSize: TextDimens.pt12,
                                         ),
                                       ),
                                     ),
@@ -596,6 +636,7 @@ class _ItemScreenState extends State<ItemScreen> {
                         myUsername:
                             authState.isLoggedIn ? authState.username : null,
                         opUsername: state.item.by,
+                        fetchMode: state.fetchMode,
                         onReplyTapped: (Comment cmt) {
                           HapticFeedback.lightImpact();
                           if (cmt.deleted || cmt.dead) {
@@ -855,6 +896,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                         context.read<AuthBloc>().state.username,
                                     onStoryLinkTapped: onStoryLinkTapped,
                                     actionable: false,
+                                    fetchMode: FetchMode.eager,
                                   ),
                                   const Divider(
                                     height: Dimens.zero,
