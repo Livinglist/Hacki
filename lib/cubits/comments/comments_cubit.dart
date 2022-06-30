@@ -74,7 +74,13 @@ class CommentsCubit extends Cubit<CommentsState> {
       return;
     }
 
-    emit(state.copyWith(status: CommentsStatus.loading));
+    emit(
+      state.copyWith(
+        status: CommentsStatus.loading,
+        comments: <Comment>[],
+        currentPage: 0,
+      ),
+    );
 
     final Item item = state.item;
     final Item updatedItem = state.offlineReading
@@ -145,7 +151,6 @@ class CommentsCubit extends Cubit<CommentsState> {
     emit(
       state.copyWith(
         onlyShowTargetComment: false,
-        comments: <Comment>[],
         item: story,
       ),
     );
@@ -185,7 +190,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     HapticFeedback.selectionClick();
     if (order == null) return;
     _streamSubscription?.cancel();
-    emit(state.copyWith(order: order, comments: <Comment>[]));
+    emit(state.copyWith(order: order));
     init(useCommentCache: true);
   }
 

@@ -32,7 +32,7 @@ class CommentTile extends StatelessWidget {
   final int level;
   final bool actionable;
   final Function(Comment)? onReplyTapped;
-  final Function(Comment, BuildContext)? onMoreTapped;
+  final Function(Comment, Rect?)? onMoreTapped;
   final Function(Comment)? onEditTapped;
   final Function(Comment)? onRightMoreTapped;
   final Function(String) onStoryLinkTapped;
@@ -89,7 +89,10 @@ class CommentTile extends StatelessWidget {
                                       ),
                                     SlidableAction(
                                       onPressed: (BuildContext context) =>
-                                          onMoreTapped?.call(comment, context),
+                                          onMoreTapped?.call(
+                                        comment,
+                                        context.rect,
+                                      ),
                                       backgroundColor: Palette.orange,
                                       foregroundColor: Palette.white,
                                       icon: Icons.more_horiz,
