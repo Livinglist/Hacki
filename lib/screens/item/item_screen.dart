@@ -349,7 +349,8 @@ class _ItemScreenState extends State<ItemScreen> {
                                   icon: Icons.message,
                                 ),
                                 SlidableAction(
-                                  onPressed: (_) => onMoreTapped(state.item),
+                                  onPressed: (BuildContext context) =>
+                                      onMoreTapped(state.item, context),
                                   backgroundColor: Palette.orange,
                                   foregroundColor: Palette.white,
                                   icon: Icons.more_horiz,
@@ -895,7 +896,7 @@ class _ItemScreenState extends State<ItemScreen> {
     }
   }
 
-  void onMoreTapped(Item item) {
+  void onMoreTapped(Item item, BuildContext commentContext) {
     HapticFeedback.lightImpact();
 
     if (item.dead || item.deleted) {
@@ -1104,7 +1105,7 @@ class _ItemScreenState extends State<ItemScreen> {
           case _MenuAction.downvote:
             break;
           case _MenuAction.share:
-            onShareTapped(item);
+            onShareTapped(item, commentContext);
             break;
           case _MenuAction.flag:
             onFlagTapped(item);
@@ -1119,8 +1120,14 @@ class _ItemScreenState extends State<ItemScreen> {
     });
   }
 
-  void onShareTapped(Item item) =>
-      Share.share('https://news.ycombinator.com/item?id=${item.id}');
+  void onShareTapped(Item item, BuildContext context) {
+    final RenderBox? box = context.findRenderObject() as RenderBox?;
+    Share.share(
+      'https://news.ycombinator.com/item?id=${item.id}',
+      sharePositionOrigin:
+          box == null ? null : box.localToGlobal(Offset.zero) & box.size,
+    );
+  }
 
   void onFlagTapped(Item item) {
     showDialog<bool>(
