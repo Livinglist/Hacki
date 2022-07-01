@@ -86,6 +86,10 @@ class ItemScreen extends StatefulWidget {
                     context.read<StoriesBloc>().state.offlineReading,
                 item: args.item,
                 collapseCache: context.read<CollapseCache>(),
+                defaultFetchMode:
+                    context.read<PreferenceCubit>().state.fetchMode,
+                defaultCommentsOrder:
+                    context.read<PreferenceCubit>().state.order,
               )..init(
                   onlyShowTargetComment: args.onlyShowTargetComment,
                   targetParents: args.targetComments,
@@ -128,6 +132,10 @@ class ItemScreen extends StatefulWidget {
                     context.read<StoriesBloc>().state.offlineReading,
                 item: args.item,
                 collapseCache: context.read<CollapseCache>(),
+                defaultFetchMode:
+                    context.read<PreferenceCubit>().state.fetchMode,
+                defaultCommentsOrder:
+                    context.read<PreferenceCubit>().state.order,
               )..init(
                   onlyShowTargetComment: args.onlyShowTargetComment,
                   targetParents: args.targetComments,
@@ -307,7 +315,13 @@ class _ItemScreenState extends State<ItemScreen> {
                     }
                   }
                 },
-                onLoading: context.read<CommentsCubit>().loadMore,
+                onLoading: () {
+                  if (state.fetchMode == FetchMode.eager) {
+                    context.read<CommentsCubit>().loadMore();
+                  } else {
+                    refreshController.loadComplete();
+                  }
+                },
                 child: ListView.builder(
                   primary: false,
                   itemCount: state.comments.length + 2,
@@ -349,7 +363,8 @@ class _ItemScreenState extends State<ItemScreen> {
                                   icon: Icons.message,
                                 ),
                                 SlidableAction(
-                                  onPressed: (_) => onMoreTapped(state.item),
+                                  onPressed: (BuildContext context) =>
+                                      onMoreTapped(state.item, context.rect),
                                   backgroundColor: Palette.orange,
                                   foregroundColor: Palette.white,
                                   icon: Icons.more_horiz,
@@ -486,6 +501,9 @@ class _ItemScreenState extends State<ItemScreen> {
                                   ),
                                   Text(
                                     '''${state.item.score} karma, ${state.item.descendants} comment${state.item.descendants > 1 ? 's' : ''}''',
+                                    style: const TextStyle(
+                                      fontSize: TextDimens.pt12,
+                                    ),
                                   ),
                                 ] else ...<Widget>[
                                   const SizedBox(
@@ -509,6 +527,37 @@ class _ItemScreenState extends State<ItemScreen> {
                                   ),
                                 ],
                                 const Spacer(),
+                                if (!state.offlineReading)
+                                  DropdownButton<FetchMode>(
+                                    value: state.fetchMode,
+                                    underline: const SizedBox.shrink(),
+                                    items: const <DropdownMenuItem<FetchMode>>[
+                                      DropdownMenuItem<FetchMode>(
+                                        value: FetchMode.lazy,
+                                        child: Text(
+                                          'Lazy',
+                                          style: TextStyle(
+                                            fontSize: TextDimens.pt12,
+                                          ),
+                                        ),
+                                      ),
+                                      DropdownMenuItem<FetchMode>(
+                                        value: FetchMode.eager,
+                                        child: Text(
+                                          'Eager',
+                                          style: TextStyle(
+                                            fontSize: TextDimens.pt12,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                    onChanged: context
+                                        .read<CommentsCubit>()
+                                        .onFetchModeChanged,
+                                  ),
+                                const SizedBox(
+                                  width: Dimens.pt6,
+                                ),
                                 DropdownButton<CommentsOrder>(
                                   value: state.order,
                                   underline: const SizedBox.shrink(),
@@ -519,7 +568,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                       child: Text(
                                         'Natural',
                                         style: TextStyle(
-                                          fontSize: TextDimens.pt14,
+                                          fontSize: TextDimens.pt12,
                                         ),
                                       ),
                                     ),
@@ -528,7 +577,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                       child: Text(
                                         'Newest first',
                                         style: TextStyle(
-                                          fontSize: TextDimens.pt14,
+                                          fontSize: TextDimens.pt12,
                                         ),
                                       ),
                                     ),
@@ -537,7 +586,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                       child: Text(
                                         'Oldest first',
                                         style: TextStyle(
-                                          fontSize: TextDimens.pt14,
+                                          fontSize: TextDimens.pt12,
                                         ),
                                       ),
                                     ),
@@ -595,6 +644,7 @@ class _ItemScreenState extends State<ItemScreen> {
                         myUsername:
                             authState.isLoggedIn ? authState.username : null,
                         opUsername: state.item.by,
+                        fetchMode: state.fetchMode,
                         onReplyTapped: (Comment cmt) {
                           HapticFeedback.lightImpact();
                           if (cmt.deleted || cmt.dead) {
@@ -854,6 +904,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                         context.read<AuthBloc>().state.username,
                                     onStoryLinkTapped: onStoryLinkTapped,
                                     actionable: false,
+                                    fetchMode: FetchMode.eager,
                                   ),
                                   const Divider(
                                     height: Dimens.zero,
@@ -895,7 +946,7 @@ class _ItemScreenState extends State<ItemScreen> {
     }
   }
 
-  void onMoreTapped(Item item) {
+  void onMoreTapped(Item item, Rect? rect) {
     HapticFeedback.lightImpact();
 
     if (item.dead || item.deleted) {
@@ -1104,7 +1155,7 @@ class _ItemScreenState extends State<ItemScreen> {
           case _MenuAction.downvote:
             break;
           case _MenuAction.share:
-            onShareTapped(item);
+            onShareTapped(item, rect);
             break;
           case _MenuAction.flag:
             onFlagTapped(item);
@@ -1119,8 +1170,12 @@ class _ItemScreenState extends State<ItemScreen> {
     });
   }
 
-  void onShareTapped(Item item) =>
-      Share.share('https://news.ycombinator.com/item?id=${item.id}');
+  void onShareTapped(Item item, Rect? rect) {
+    Share.share(
+      'https://news.ycombinator.com/item?id=${item.id}',
+      sharePositionOrigin: rect,
+    );
+  }
 
   void onFlagTapped(Item item) {
     showDialog<bool>(

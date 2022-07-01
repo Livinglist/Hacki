@@ -23,6 +23,8 @@ class CommentsCubit extends Cubit<CommentsState> {
     SembastRepository? sembastRepository,
     required bool offlineReading,
     required Item item,
+    required FetchMode defaultFetchMode,
+    required CommentsOrder defaultCommentsOrder,
   })  : _collapseCache = collapseCache,
         _commentCache = commentCache ?? locator.get<CommentCache>(),
         _offlineRepository =
@@ -31,7 +33,14 @@ class CommentsCubit extends Cubit<CommentsState> {
             storiesRepository ?? locator.get<StoriesRepository>(),
         _sembastRepository =
             sembastRepository ?? locator.get<SembastRepository>(),
-        super(CommentsState.init(offlineReading: offlineReading, item: item));
+        super(
+          CommentsState.init(
+            offlineReading: offlineReading,
+            item: item,
+            fetchMode: defaultFetchMode,
+            order: defaultCommentsOrder,
+          ),
+        );
 
   final CollapseCache _collapseCache;
   final CommentCache _commentCache;
@@ -64,7 +73,7 @@ class CommentsCubit extends Cubit<CommentsState> {
       );
 
       _streamSubscription = _storiesRepository
-          .fetchCommentsStream(
+          .fetchAllCommentsStream(
             ids: targetParents!.last.kids,
             level: targetParents.last.level + 1,
           )
@@ -74,7 +83,13 @@ class CommentsCubit extends Cubit<CommentsState> {
       return;
     }
 
-    emit(state.copyWith(status: CommentsStatus.loading));
+    emit(
+      state.copyWith(
+        status: CommentsStatus.loading,
+        comments: <Comment>[],
+        currentPage: 0,
+      ),
+    );
 
     final Item item = state.item;
     final Item updatedItem = state.offlineReading
@@ -90,13 +105,23 @@ class CommentsCubit extends Cubit<CommentsState> {
           .listen(_onCommentFetched)
         ..onDone(_onDone);
     } else {
-      _streamSubscription = _storiesRepository
-          .fetchCommentsStream(
-            ids: kids,
-            getFromCache: useCommentCache ? _commentCache.getComment : null,
-          )
-          .listen(_onCommentFetched)
-        ..onDone(_onDone);
+      if (state.fetchMode == FetchMode.lazy) {
+        _streamSubscription = _storiesRepository
+            .fetchCommentsStream(
+              ids: kids,
+              getFromCache: useCommentCache ? _commentCache.getComment : null,
+            )
+            .listen(_onCommentFetched)
+          ..onDone(_onDone);
+      } else {
+        _streamSubscription = _storiesRepository
+            .fetchAllCommentsStream(
+              ids: kids,
+              getFromCache: useCommentCache ? _commentCache.getComment : null,
+            )
+            .listen(_onCommentFetched)
+          ..onDone(_onDone);
+      }
     }
   }
 
@@ -116,6 +141,7 @@ class CommentsCubit extends Cubit<CommentsState> {
       state.copyWith(
         status: CommentsStatus.loading,
         comments: <Comment>[],
+        currentPage: 0,
       ),
     );
 
@@ -126,10 +152,21 @@ class CommentsCubit extends Cubit<CommentsState> {
         await _storiesRepository.fetchItemBy(id: item.id) ?? item;
     final List<int> kids = sortKids(updatedItem.kids);
 
-    _streamSubscription = _storiesRepository
-        .fetchCommentsStream(ids: kids)
-        .listen(_onCommentFetched)
-      ..onDone(_onDone);
+    if (state.fetchMode == FetchMode.lazy) {
+      _streamSubscription = _storiesRepository
+          .fetchCommentsStream(
+            ids: kids,
+          )
+          .listen(_onCommentFetched)
+        ..onDone(_onDone);
+    } else {
+      _streamSubscription = _storiesRepository
+          .fetchAllCommentsStream(
+            ids: kids,
+          )
+          .listen(_onCommentFetched)
+        ..onDone(_onDone);
+    }
 
     emit(
       state.copyWith(
@@ -144,17 +181,50 @@ class CommentsCubit extends Cubit<CommentsState> {
     emit(
       state.copyWith(
         onlyShowTargetComment: false,
-        comments: <Comment>[],
         item: story,
       ),
     );
     init();
   }
 
-  void loadMore() {
-    if (_streamSubscription != null) {
-      emit(state.copyWith(status: CommentsStatus.loading));
-      _streamSubscription?.resume();
+  /// [comment] is only used for lazy fetching.
+  void loadMore({Comment? comment}) {
+    if (state.fetchMode == FetchMode.eager) {
+      if (_streamSubscription != null) {
+        emit(state.copyWith(status: CommentsStatus.loading));
+        _streamSubscription?.resume();
+      }
+    } else {
+      if (comment == null) return;
+
+      final int level = comment.level + 1;
+      int offset = 0;
+
+      _streamSubscription = _streamSubscription =
+          _storiesRepository.fetchCommentsStream(ids: comment.kids).listen(
+        (Comment cmt) {
+          _collapseCache.addKid(cmt.id, to: cmt.parent);
+          _commentCache.cacheComment(cmt);
+          _sembastRepository.cacheComment(cmt);
+
+          final List<LinkifyElement> elements = _linkify(
+            cmt.text,
+          );
+
+          final BuildableComment buildableComment =
+              BuildableComment.fromComment(cmt, elements: elements);
+
+          emit(
+            state.copyWith(
+              comments: <Comment>[...state.comments]..insert(
+                  state.comments.indexOf(comment) + offset + 1,
+                  buildableComment.copyWith(level: level),
+                ),
+            ),
+          );
+          offset++;
+        },
+      );
     }
   }
 
@@ -181,10 +251,21 @@ class CommentsCubit extends Cubit<CommentsState> {
   }
 
   void onOrderChanged(CommentsOrder? order) {
-    HapticFeedback.selectionClick();
     if (order == null) return;
+    if (state.order == order) return;
+    HapticFeedback.selectionClick();
     _streamSubscription?.cancel();
-    emit(state.copyWith(order: order, comments: <Comment>[]));
+    emit(state.copyWith(order: order));
+    init(useCommentCache: true);
+  }
+
+  void onFetchModeChanged(FetchMode? fetchMode) {
+    if (fetchMode == null) return;
+    if (state.fetchMode == fetchMode) return;
+    _collapseCache.resetCollapsedComments();
+    HapticFeedback.selectionClick();
+    _streamSubscription?.cancel();
+    emit(state.copyWith(fetchMode: fetchMode));
     init(useCommentCache: true);
   }
 
@@ -229,21 +310,24 @@ class CommentsCubit extends Cubit<CommentsState> {
 
       emit(state.copyWith(comments: updatedComments));
 
-      if (updatedComments.length >= _pageSize + _pageSize * state.currentPage &&
-          updatedComments.length <=
-              _pageSize * 2 + _pageSize * state.currentPage) {
-        final bool isHidden = _collapseCache.isHidden(comment.id);
+      if (state.fetchMode == FetchMode.eager) {
+        if (updatedComments.length >=
+                _pageSize + _pageSize * state.currentPage &&
+            updatedComments.length <=
+                _pageSize * 2 + _pageSize * state.currentPage) {
+          final bool isHidden = _collapseCache.isHidden(comment.id);
 
-        if (!isHidden) {
-          _streamSubscription?.pause();
+          if (!isHidden) {
+            _streamSubscription?.pause();
+          }
+
+          emit(
+            state.copyWith(
+              currentPage: state.currentPage + 1,
+              status: CommentsStatus.loaded,
+            ),
+          );
         }
-
-        emit(
-          state.copyWith(
-            currentPage: state.currentPage + 1,
-            status: CommentsStatus.loaded,
-          ),
-        );
       }
     }
   }

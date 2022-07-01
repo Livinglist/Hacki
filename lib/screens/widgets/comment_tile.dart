@@ -17,6 +17,7 @@ class CommentTile extends StatelessWidget {
     required this.myUsername,
     required this.comment,
     required this.onStoryLinkTapped,
+    required this.fetchMode,
     this.onReplyTapped,
     this.onMoreTapped,
     this.onEditTapped,
@@ -32,10 +33,11 @@ class CommentTile extends StatelessWidget {
   final int level;
   final bool actionable;
   final Function(Comment)? onReplyTapped;
-  final Function(Comment)? onMoreTapped;
+  final Function(Comment, Rect?)? onMoreTapped;
   final Function(Comment)? onEditTapped;
   final Function(Comment)? onRightMoreTapped;
   final Function(String) onStoryLinkTapped;
+  final FetchMode fetchMode;
 
   @override
   Widget build(BuildContext context) {
@@ -88,8 +90,11 @@ class CommentTile extends StatelessWidget {
                                         icon: Icons.edit,
                                       ),
                                     SlidableAction(
-                                      onPressed: (_) =>
-                                          onMoreTapped?.call(comment),
+                                      onPressed: (BuildContext context) =>
+                                          onMoreTapped?.call(
+                                        comment,
+                                        context.rect,
+                                      ),
                                       backgroundColor: Palette.orange,
                                       foregroundColor: Palette.white,
                                       icon: Icons.more_horiz,
@@ -277,6 +282,32 @@ class CommentTile extends StatelessWidget {
                                             },
                                           ),
                                   ),
+                                if (!state.collapsed &&
+                                    fetchMode == FetchMode.lazy &&
+                                    comment.kids.isNotEmpty &&
+                                    !context
+                                        .read<CommentsCubit>()
+                                        .state
+                                        .comments
+                                        .map((Comment e) => e.id)
+                                        .toSet()
+                                        .contains(comment.kids.first))
+                                  Center(
+                                    child: TextButton(
+                                      onPressed: () {
+                                        HapticFeedback.selectionClick();
+                                        context
+                                            .read<CommentsCubit>()
+                                            .loadMore(comment: comment);
+                                      },
+                                      child: Text(
+                                        '''Load ${comment.kids.length} ${comment.kids.length > 1 ? 'replies' : 'reply'}''',
+                                        style: const TextStyle(
+                                          fontSize: TextDimens.pt12,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 const Divider(
                                   height: Dimens.zero,
                                 ),
@@ -298,7 +329,7 @@ class CommentTile extends StatelessWidget {
                       : Palette.transparent;
                   final bool isMyComment = myUsername == comment.by;
 
-                  Widget? wrapper = child;
+                  Widget wrapper = child;
 
                   if (isMyComment && level == 0) {
                     return Container(
@@ -330,7 +361,7 @@ class CommentTile extends StatelessWidget {
                     );
                   }
 
-                  return wrapper!;
+                  return wrapper;
                 },
               );
             },

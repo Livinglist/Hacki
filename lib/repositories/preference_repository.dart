@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/cubits/comments/comments_cubit.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:synced_shared_preferences/synced_shared_preferences.dart';
@@ -42,6 +43,8 @@ class PreferenceRepository {
   static const String _navigationModeKey = 'navigationMode';
   static const String _eyeCandyModeKey = 'eyeCandyMode';
   static const String _markReadStoriesModeKey = 'markReadStoriesMode';
+  static const String _fetchModeKey = 'fetchMode';
+  static const String _commentsOrderKey = 'commentsOrder';
 
   static const bool _notificationModeDefaultValue = true;
   static const bool _displayModeDefaultValue = true;
@@ -53,6 +56,8 @@ class PreferenceRepository {
   static const bool _markReadStoriesModeDefaultValue = true;
   static const bool _isFirstLaunchKeyDefaultValue = true;
   static const bool _metadataModeDefaultValue = true;
+  static final int _fetchModeDefaultValue = FetchMode.eager.index;
+  static final int _commentsOrderDefaultValue = CommentsOrder.natural.index;
 
   final SyncedSharedPreferences _syncedPrefs;
   final Future<SharedPreferences> _prefs;
@@ -118,6 +123,17 @@ class PreferenceRepository {
         (SharedPreferences prefs) =>
             prefs.getBool(_markReadStoriesModeKey) ??
             _markReadStoriesModeDefaultValue,
+      );
+
+  Future<FetchMode> get fetchMode async => _prefs.then(
+        (SharedPreferences prefs) => FetchMode.values
+            .elementAt(prefs.getInt(_fetchModeKey) ?? _fetchModeDefaultValue),
+      );
+
+  Future<CommentsOrder> get commentsOrder async => _prefs.then(
+        (SharedPreferences prefs) => CommentsOrder.values.elementAt(
+          prefs.getInt(_commentsOrderKey) ?? _commentsOrderDefaultValue,
+        ),
       );
 
   Future<bool> hasPushed(int commentId) async =>
@@ -235,6 +251,18 @@ class PreferenceRepository {
     final bool currentMode =
         prefs.getBool(_metadataModeKey) ?? _metadataModeDefaultValue;
     await prefs.setBool(_metadataModeKey, !currentMode);
+  }
+
+  Future<void> selectFetchMode(FetchMode fetchMode) async {
+    final SharedPreferences prefs = await _prefs;
+    final int index = fetchMode.index;
+    await prefs.setInt(_fetchModeKey, index);
+  }
+
+  Future<void> selectCommentsOrder(CommentsOrder order) async {
+    final SharedPreferences prefs = await _prefs;
+    final int index = order.index;
+    await prefs.setInt(_commentsOrderKey, index);
   }
 
   //#region fav

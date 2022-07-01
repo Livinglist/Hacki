@@ -452,7 +452,10 @@ class _HomeScreenState extends State<HomeScreen>
       locator.get<StoriesRepository>().fetchItemBy(id: id).then((Item? item) {
         if (mounted) {
           if (item != null) {
-            goToItemScreen(args: ItemScreenArgs(item: item));
+            goToItemScreen(
+              args: ItemScreenArgs(item: item),
+              forceNewScreen: true,
+            );
           }
         }
       });

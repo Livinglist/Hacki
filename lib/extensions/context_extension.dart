@@ -9,4 +9,11 @@ extension TryReadContext on BuildContext {
       return null;
     }
   }
+
+  Rect? get rect {
+    final RenderBox? box = findRenderObject() as RenderBox?;
+    final Rect? rect =
+        box == null ? null : box.localToGlobal(Offset.zero) & box.size;
+    return rect;
+  }
 }

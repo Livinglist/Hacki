@@ -68,8 +68,33 @@ class StoriesRepository {
 
       if (comment != null) {
         yield comment;
+      }
+    }
+    return;
+  }
 
-        yield* fetchCommentsStream(
+  Stream<Comment> fetchAllCommentsStream({
+    required List<int> ids,
+    int level = 0,
+    Comment? Function(int)? getFromCache,
+  }) async* {
+    for (final int id in ids) {
+      Comment? comment = getFromCache?.call(id)?.copyWith(level: level);
+
+      comment ??= await _firebaseClient
+          .get('${_baseUrl}item/$id.json')
+          .then((dynamic json) => _parseJson(json as Map<String, dynamic>?))
+          .then((Map<String, dynamic>? json) async {
+        if (json == null) return null;
+
+        final Comment comment = Comment.fromJson(json, level: level);
+        return comment;
+      });
+
+      if (comment != null) {
+        yield comment;
+
+        yield* fetchAllCommentsStream(
           ids: comment.kids,
           level: level + 1,
           getFromCache: getFromCache,

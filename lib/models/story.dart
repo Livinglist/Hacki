@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:hacki/models/item.dart';
 
 enum StoryType {
@@ -113,9 +111,10 @@ class Story extends Item {
 
   @override
   String toString() {
-    final String prettyString =
-        const JsonEncoder.withIndent('  ').convert(this);
-    return 'Story $prettyString';
+    // final String prettyString =
+    //     const JsonEncoder.withIndent('  ').convert(this);
+    // return 'Story $prettyString';
+    return 'Story $id';
   }
 
   @override

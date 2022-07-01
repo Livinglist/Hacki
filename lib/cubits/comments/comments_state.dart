@@ -14,6 +14,11 @@ enum CommentsOrder {
   oldestFirst,
 }
 
+enum FetchMode {
+  lazy,
+  eager,
+}
+
 class CommentsState extends Equatable {
   const CommentsState({
     required this.item,
@@ -21,6 +26,7 @@ class CommentsState extends Equatable {
     required this.status,
     required this.fetchParentStatus,
     required this.order,
+    required this.fetchMode,
     required this.onlyShowTargetComment,
     required this.offlineReading,
     required this.currentPage,
@@ -29,10 +35,11 @@ class CommentsState extends Equatable {
   CommentsState.init({
     required this.offlineReading,
     required this.item,
+    required this.fetchMode,
+    required this.order,
   })  : comments = <Comment>[],
         status = CommentsStatus.init,
         fetchParentStatus = CommentsStatus.init,
-        order = CommentsOrder.natural,
         onlyShowTargetComment = false,
         currentPage = 0;
 
@@ -41,6 +48,7 @@ class CommentsState extends Equatable {
   final CommentsStatus status;
   final CommentsStatus fetchParentStatus;
   final CommentsOrder order;
+  final FetchMode fetchMode;
   final bool onlyShowTargetComment;
   final bool offlineReading;
   final int currentPage;
@@ -51,6 +59,7 @@ class CommentsState extends Equatable {
     CommentsStatus? status,
     CommentsStatus? fetchParentStatus,
     CommentsOrder? order,
+    FetchMode? fetchMode,
     bool? onlyShowTargetComment,
     bool? offlineReading,
     int? currentPage,
@@ -61,6 +70,7 @@ class CommentsState extends Equatable {
       fetchParentStatus: fetchParentStatus ?? this.fetchParentStatus,
       status: status ?? this.status,
       order: order ?? this.order,
+      fetchMode: fetchMode ?? this.fetchMode,
       onlyShowTargetComment:
           onlyShowTargetComment ?? this.onlyShowTargetComment,
       offlineReading: offlineReading ?? this.offlineReading,
@@ -75,6 +85,7 @@ class CommentsState extends Equatable {
         status,
         fetchParentStatus,
         order,
+        fetchMode,
         onlyShowTargetComment,
         offlineReading,
         currentPage,
