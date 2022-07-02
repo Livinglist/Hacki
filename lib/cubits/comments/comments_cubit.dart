@@ -252,9 +252,10 @@ class CommentsCubit extends Cubit<CommentsState> {
                 _streamSubscriptions[comment.id]?.cancel();
                 _streamSubscriptions.remove(comment.id);
               })
-              // ignore: unnecessary_lambdas
               ..onError((dynamic error) {
                 _logger.e(error);
+                _streamSubscriptions[comment.id]?.cancel();
+                _streamSubscriptions.remove(comment.id);
               });
 
         _streamSubscriptions[comment.id] = streamSubscription;
