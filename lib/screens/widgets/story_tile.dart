@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
@@ -29,20 +30,7 @@ class StoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (showWebPreview) {
-      const double screenWidthLowerBound = 428,
-          screenWidthUpperBound = 850,
-          picHeightLowerBound = 118,
-          picHeightUpperBound = 140,
-          smallPicHeight = 100,
-          picHeightFactor = 0.14;
-      final double screenWidth = MediaQuery.of(context).size.width;
-      final bool showSmallerPreviewPic = screenWidth > screenWidthLowerBound &&
-          screenWidth < screenWidthUpperBound;
-      final double height = showSmallerPreviewPic
-          ? smallPicHeight
-          : (MediaQuery.of(context).size.height * picHeightFactor)
-              .clamp(picHeightLowerBound, picHeightUpperBound);
-
+      final double height = context.storyTileHeight;
       return TapDownWrapper(
         onTap: onTap,
         child: Padding(
@@ -143,7 +131,7 @@ class StoryTile extends StatelessWidget {
               backgroundColor: Palette.transparent,
               borderRadius: Dimens.zero,
               removeElevation: true,
-              bodyMaxLines: height == smallPicHeight ? 3 : 4,
+              bodyMaxLines: context.storyTileMaxLines,
               errorTitle: story.title,
               titleStyle: TextStyle(
                 color: hasRead

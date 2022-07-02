@@ -147,7 +147,7 @@ class LinkView extends StatelessWidget {
 
   Widget _buildTitleContainer(TextStyle _titleTS, int _maxLines) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 2, 3, 1),
+      padding: const EdgeInsets.fromLTRB(4, 2, 3, 0),
       child: Column(
         children: <Widget>[
           Container(
@@ -168,7 +168,7 @@ class LinkView extends StatelessWidget {
     return Expanded(
       flex: 2,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(5, 3, 5, 0),
+        padding: const EdgeInsets.fromLTRB(5, 2, 5, 0),
         child: Column(
           children: <Widget>[
             if (showMetadata)

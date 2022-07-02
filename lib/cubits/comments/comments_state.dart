@@ -78,6 +78,8 @@ class CommentsState extends Equatable {
     );
   }
 
+  Set<int> get commentIds => comments.map((Comment e) => e.id).toSet();
+
   @override
   List<Object?> get props => <Object?>[
         item,
