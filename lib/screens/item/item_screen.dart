@@ -523,7 +523,12 @@ class _ItemScreenState extends State<ItemScreen> {
                                               strokeWidth: Dimens.pt2,
                                             ),
                                           )
-                                        : const Text('View parent thread'),
+                                        : const Text(
+                                            'View parent thread',
+                                            style: TextStyle(
+                                              fontSize: TextDimens.pt12,
+                                            ),
+                                          ),
                                   ),
                                 ],
                                 const Spacer(),

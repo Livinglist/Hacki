@@ -288,9 +288,7 @@ class CommentTile extends StatelessWidget {
                                     !context
                                         .read<CommentsCubit>()
                                         .state
-                                        .comments
-                                        .map((Comment e) => e.id)
-                                        .toSet()
+                                        .commentIds
                                         .contains(comment.kids.first))
                                   Center(
                                     child: TextButton(

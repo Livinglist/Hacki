@@ -73,7 +73,7 @@ class StoriesRepository {
     return;
   }
 
-  Stream<Comment> fetchAllCommentsStream({
+  Stream<Comment> fetchAllCommentsRecursivelyStream({
     required List<int> ids,
     int level = 0,
     Comment? Function(int)? getFromCache,
@@ -94,7 +94,7 @@ class StoriesRepository {
       if (comment != null) {
         yield comment;
 
-        yield* fetchAllCommentsStream(
+        yield* fetchAllCommentsRecursivelyStream(
           ids: comment.kids,
           level: level + 1,
           getFromCache: getFromCache,

@@ -11,6 +11,7 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/services/services.dart';
+import 'package:logger/logger.dart';
 
 part 'comments_state.dart';
 
@@ -21,6 +22,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     OfflineRepository? offlineRepository,
     StoriesRepository? storiesRepository,
     SembastRepository? sembastRepository,
+    Logger? logger,
     required bool offlineReading,
     required Item item,
     required FetchMode defaultFetchMode,
@@ -33,6 +35,7 @@ class CommentsCubit extends Cubit<CommentsState> {
             storiesRepository ?? locator.get<StoriesRepository>(),
         _sembastRepository =
             sembastRepository ?? locator.get<SembastRepository>(),
+        _logger = logger ?? locator.get<Logger>(),
         super(
           CommentsState.init(
             offlineReading: offlineReading,
@@ -47,7 +50,16 @@ class CommentsCubit extends Cubit<CommentsState> {
   final OfflineRepository _offlineRepository;
   final StoriesRepository _storiesRepository;
   final SembastRepository _sembastRepository;
+  final Logger _logger;
+
+  /// The [StreamSubscription] for stream (both lazy or eager)
+  /// fetching comments posted directly to the story.
   StreamSubscription<Comment>? _streamSubscription;
+
+  /// The map of [StreamSubscription] for streams
+  /// fetching comments lazily. [int] is the id of parent comment.
+  final Map<int, StreamSubscription<Comment>> _streamSubscriptions =
+      <int, StreamSubscription<Comment>>{};
 
   static const int _pageSize = 20;
 
@@ -73,7 +85,7 @@ class CommentsCubit extends Cubit<CommentsState> {
       );
 
       _streamSubscription = _storiesRepository
-          .fetchAllCommentsStream(
+          .fetchAllCommentsRecursivelyStream(
             ids: targetParents!.last.kids,
             level: targetParents.last.level + 1,
           )
@@ -105,22 +117,25 @@ class CommentsCubit extends Cubit<CommentsState> {
           .listen(_onCommentFetched)
         ..onDone(_onDone);
     } else {
-      if (state.fetchMode == FetchMode.lazy) {
-        _streamSubscription = _storiesRepository
-            .fetchCommentsStream(
-              ids: kids,
-              getFromCache: useCommentCache ? _commentCache.getComment : null,
-            )
-            .listen(_onCommentFetched)
-          ..onDone(_onDone);
-      } else {
-        _streamSubscription = _storiesRepository
-            .fetchAllCommentsStream(
-              ids: kids,
-              getFromCache: useCommentCache ? _commentCache.getComment : null,
-            )
-            .listen(_onCommentFetched)
-          ..onDone(_onDone);
+      switch (state.fetchMode) {
+        case FetchMode.lazy:
+          _streamSubscription = _storiesRepository
+              .fetchCommentsStream(
+                ids: kids,
+                getFromCache: useCommentCache ? _commentCache.getComment : null,
+              )
+              .listen(_onCommentFetched)
+            ..onDone(_onDone);
+          break;
+        case FetchMode.eager:
+          _streamSubscription = _storiesRepository
+              .fetchAllCommentsRecursivelyStream(
+                ids: kids,
+                getFromCache: useCommentCache ? _commentCache.getComment : null,
+              )
+              .listen(_onCommentFetched)
+            ..onDone(_onDone);
+          break;
       }
     }
   }
@@ -135,17 +150,26 @@ class CommentsCubit extends Cubit<CommentsState> {
       return;
     }
 
-    _collapseCache.resetCollapsedComments();
-
     emit(
       state.copyWith(
         status: CommentsStatus.loading,
+      ),
+    );
+
+    _collapseCache.resetCollapsedComments();
+
+    await _streamSubscription?.cancel();
+    for (final int id in _streamSubscriptions.keys) {
+      await _streamSubscriptions[id]?.cancel();
+    }
+    _streamSubscriptions.clear();
+
+    emit(
+      state.copyWith(
         comments: <Comment>[],
         currentPage: 0,
       ),
     );
-
-    await _streamSubscription?.cancel();
 
     final Item item = state.item;
     final Item updatedItem =
@@ -161,7 +185,7 @@ class CommentsCubit extends Cubit<CommentsState> {
         ..onDone(_onDone);
     } else {
       _streamSubscription = _storiesRepository
-          .fetchAllCommentsStream(
+          .fetchAllCommentsRecursivelyStream(
             ids: kids,
           )
           .listen(_onCommentFetched)
@@ -189,20 +213,20 @@ class CommentsCubit extends Cubit<CommentsState> {
 
   /// [comment] is only used for lazy fetching.
   void loadMore({Comment? comment}) {
-    if (state.fetchMode == FetchMode.eager) {
-      if (_streamSubscription != null) {
-        emit(state.copyWith(status: CommentsStatus.loading));
-        _streamSubscription?.resume();
-      }
-    } else {
-      if (comment == null) return;
+    switch (state.fetchMode) {
+      case FetchMode.lazy:
+        if (comment == null) return;
+        if (_streamSubscriptions.containsKey(comment.id)) return;
 
-      final int level = comment.level + 1;
-      int offset = 0;
+        final int level = comment.level + 1;
+        int offset = 0;
 
-      _streamSubscription = _streamSubscription =
-          _storiesRepository.fetchCommentsStream(ids: comment.kids).listen(
-        (Comment cmt) {
+        /// Ignoring because the subscription will be cancelled in close()
+        // ignore: cancel_subscriptions
+        final StreamSubscription<Comment> streamSubscription =
+            _storiesRepository
+                .fetchCommentsStream(ids: comment.kids)
+                .listen((Comment cmt) {
           _collapseCache.addKid(cmt.id, to: cmt.parent);
           _commentCache.cacheComment(cmt);
           _sembastRepository.cacheComment(cmt);
@@ -223,8 +247,24 @@ class CommentsCubit extends Cubit<CommentsState> {
             ),
           );
           offset++;
-        },
-      );
+        })
+              ..onDone(() {
+                _streamSubscriptions[comment.id]?.cancel();
+                _streamSubscriptions.remove(comment.id);
+              })
+              // ignore: unnecessary_lambdas
+              ..onError((dynamic error) {
+                _logger.e(error);
+              });
+
+        _streamSubscriptions[comment.id] = streamSubscription;
+        break;
+      case FetchMode.eager:
+        if (_streamSubscription != null) {
+          emit(state.copyWith(status: CommentsStatus.loading));
+          _streamSubscription?.resume();
+        }
+        break;
     }
   }
 
@@ -255,6 +295,10 @@ class CommentsCubit extends Cubit<CommentsState> {
     if (state.order == order) return;
     HapticFeedback.selectionClick();
     _streamSubscription?.cancel();
+    for (final StreamSubscription<Comment> s in _streamSubscriptions.values) {
+      s.cancel();
+    }
+    _streamSubscriptions.clear();
     emit(state.copyWith(order: order));
     init(useCommentCache: true);
   }
@@ -265,6 +309,10 @@ class CommentsCubit extends Cubit<CommentsState> {
     _collapseCache.resetCollapsedComments();
     HapticFeedback.selectionClick();
     _streamSubscription?.cancel();
+    for (final StreamSubscription<Comment> s in _streamSubscriptions.values) {
+      s.cancel();
+    }
+    _streamSubscriptions.clear();
     emit(state.copyWith(fetchMode: fetchMode));
     init(useCommentCache: true);
   }
@@ -360,6 +408,9 @@ class CommentsCubit extends Cubit<CommentsState> {
   @override
   Future<void> close() async {
     await _streamSubscription?.cancel();
+    for (final StreamSubscription<Comment> s in _streamSubscriptions.values) {
+      await s.cancel();
+    }
     await super.close();
   }
 }

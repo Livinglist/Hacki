@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/link_preview/link_view.dart';
 import 'package:hacki/screens/widgets/link_preview/web_analyzer.dart';
@@ -199,23 +200,9 @@ class _LinkPreviewState extends State<LinkPreview> {
 
   @override
   Widget build(BuildContext context) {
-    const double screenWidthLowerBound = 428,
-        screenWidthUpperBound = 850,
-        picHeightLowerBound = 118,
-        picHeightUpperBound = 140,
-        smallPicHeight = 100,
-        picHeightFactor = 0.14;
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final bool showSmallerPreviewPic = screenWidth > screenWidthLowerBound &&
-        screenWidth < screenWidthUpperBound;
-    final double height = showSmallerPreviewPic
-        ? smallPicHeight
-        : (MediaQuery.of(context).size.height * picHeightFactor)
-            .clamp(picHeightLowerBound, picHeightUpperBound);
-
     final Widget loadingWidget = widget.placeholderWidget ??
         Container(
-          height: height,
+          height: context.storyTileHeight,
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(
@@ -232,13 +219,13 @@ class _LinkPreviewState extends State<LinkPreview> {
     final WebInfo? info = _info as WebInfo?;
     loadedWidget = _info == null
         ? _buildLinkContainer(
-            height,
+            context.storyTileHeight,
             title: _errorTitle,
             desc: _errorBody,
             imageUri: null,
           )
         : _buildLinkContainer(
-            height,
+            context.storyTileHeight,
             title: _errorTitle,
             desc: WebAnalyzer.isNotEmpty(info!.description)
                 ? info.description
