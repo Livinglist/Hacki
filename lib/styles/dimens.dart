@@ -27,6 +27,7 @@ abstract class TextDimens {
   static const double pt8 = 8;
   static const double pt10 = 10;
   static const double pt12 = 12;
+  static const double pt13 = 13;
   static const double pt14 = 14;
   static const double pt15 = 15;
   static const double pt16 = 16;

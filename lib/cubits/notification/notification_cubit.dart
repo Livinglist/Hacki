@@ -33,7 +33,8 @@ class NotificationCubit extends Cubit<NotificationState> {
         _preferenceRepository.shouldShowNotification
             .then((bool showNotification) {
           if (showNotification) {
-            init();
+            // Delaying the initialization to prevent janks in home screen.
+            Future<void>.delayed(const Duration(seconds: 2), init);
           }
         });
 
