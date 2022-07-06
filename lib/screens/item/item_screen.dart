@@ -526,7 +526,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                         : const Text(
                                             'View parent thread',
                                             style: TextStyle(
-                                              fontSize: TextDimens.pt12,
+                                              fontSize: TextDimens.pt13,
                                             ),
                                           ),
                                   ),
