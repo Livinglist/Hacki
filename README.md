@@ -1,7 +1,7 @@
 
 # <img width="64" src="https://user-images.githubusercontent.com/7277662/167775086-0b234f28-dee4-44f6-aae4-14a28ed4bbb6.png"> Hacki for Hacker News
 
-A simple noiseless [Hacker News](https://news.ycombinator.com/) client made with Flutter that is just enough.
+A [Hacker News](https://news.ycombinator.com/) client made with Flutter that is just enough.
 
 [![App Store](https://img.shields.io/itunes/v/1602043763?label=App%20Store)](https://apps.apple.com/us/app/hacki/id1602043763?platform=iphone)
 [![Fdroid version](https://img.shields.io/f-droid/v/com.jiaqifeng.hacki)](https://f-droid.org/en/packages/com.jiaqifeng.hacki/)
