@@ -6,9 +6,8 @@ A simple noiseless [Hacker News](https://news.ycombinator.com/) client made with
 [![App Store](https://img.shields.io/itunes/v/1602043763?label=App%20Store)](https://apps.apple.com/us/app/hacki/id1602043763?platform=iphone)
 [![Fdroid version](https://img.shields.io/f-droid/v/com.jiaqifeng.hacki)](https://f-droid.org/en/packages/com.jiaqifeng.hacki/)
 [![GH version](https://img.shields.io/github/release/livinglist/hacki.svg?logo=github)](https://github.com/Livinglist/Hacki/releases/latest)
-[![Visits Badge](https://badges.pufler.dev/visits/livinglist/Hacki)](https://badges.pufler.dev)
-[![GitHub](https://img.shields.io/github/stars/livinglist/Hacki?style=social)](https://img.shields.io/github/stars/livinglist/Hacki?style=social)
 [![style: effective dart](https://img.shields.io/badge/style-effective_dart-40c4ff.svg)](https://pub.dev/packages/effective_dart)
+[![GitHub](https://img.shields.io/github/stars/livinglist/Hacki?style=social)](https://img.shields.io/github/stars/livinglist/Hacki?style=social)
 
 [<img src="assets/images/app_store_badge.png" height="50">](https://apps.apple.com/us/app/hacki/id1602043763?platform=iphone) [<img src="assets/images/google_play_badge.png" height="50">](https://play.google.com/store/apps/details?id=com.jiaqifeng.hacki&hl=en_US&gl=US) [<img src="assets/images/f_droid_badge.png" height="50">](https://f-droid.org/en/packages/com.jiaqifeng.hacki/)
 
