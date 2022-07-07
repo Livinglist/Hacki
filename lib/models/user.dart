@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:intl/intl.dart';
 
 class User {
@@ -39,8 +37,6 @@ class User {
 
   @override
   String toString() {
-    final String prettyString =
-        const JsonEncoder.withIndent('  ').convert(this);
-    return 'User $prettyString';
+    return 'User $about, $created, $delay, $id, $karma';
   }
 }

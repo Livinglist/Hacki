@@ -502,7 +502,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                   Text(
                                     '''${state.item.score} karma, ${state.item.descendants} comment${state.item.descendants > 1 ? 's' : ''}''',
                                     style: const TextStyle(
-                                      fontSize: TextDimens.pt12,
+                                      fontSize: TextDimens.pt13,
                                     ),
                                   ),
                                 ] else ...<Widget>[
@@ -526,7 +526,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                         : const Text(
                                             'View parent thread',
                                             style: TextStyle(
-                                              fontSize: TextDimens.pt12,
+                                              fontSize: TextDimens.pt13,
                                             ),
                                           ),
                                   ),
@@ -542,7 +542,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                         child: Text(
                                           'Lazy',
                                           style: TextStyle(
-                                            fontSize: TextDimens.pt12,
+                                            fontSize: TextDimens.pt13,
                                           ),
                                         ),
                                       ),
@@ -551,7 +551,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                         child: Text(
                                           'Eager',
                                           style: TextStyle(
-                                            fontSize: TextDimens.pt12,
+                                            fontSize: TextDimens.pt13,
                                           ),
                                         ),
                                       ),
@@ -573,7 +573,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                       child: Text(
                                         'Natural',
                                         style: TextStyle(
-                                          fontSize: TextDimens.pt12,
+                                          fontSize: TextDimens.pt13,
                                         ),
                                       ),
                                     ),
@@ -582,7 +582,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                       child: Text(
                                         'Newest first',
                                         style: TextStyle(
-                                          fontSize: TextDimens.pt12,
+                                          fontSize: TextDimens.pt13,
                                         ),
                                       ),
                                     ),
@@ -591,7 +591,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                       child: Text(
                                         'Oldest first',
                                         style: TextStyle(
-                                          fontSize: TextDimens.pt12,
+                                          fontSize: TextDimens.pt13,
                                         ),
                                       ),
                                     ),

@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/services.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/comments/comments_cubit.dart';
 import 'package:hacki/repositories/repositories.dart';
@@ -82,12 +83,14 @@ class PreferenceCubit extends Cubit<PreferenceState> {
 
   void selectFetchMode(FetchMode? fetchMode) {
     if (fetchMode == null || state.fetchMode == fetchMode) return;
+    HapticFeedback.lightImpact();
     emit(state.copyWith(fetchMode: fetchMode));
     _preferenceRepository.selectFetchMode(fetchMode);
   }
 
   void selectCommentsOrder(CommentsOrder? order) {
     if (order == null || state.order == order) return;
+    HapticFeedback.lightImpact();
     emit(state.copyWith(order: order));
     _preferenceRepository.selectCommentsOrder(order);
   }
