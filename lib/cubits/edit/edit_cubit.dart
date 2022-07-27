@@ -70,18 +70,19 @@ class EditCubit extends HydratedCubit<EditState> {
     final Map<String, dynamic>? itemJson =
         json['item'] as Map<String, dynamic>?;
     final Item? replyingTo = itemJson == null ? null : Item.fromJson(itemJson);
-    if (replyingTo != null) {
+
+    if (replyingTo != null && text.isNotEmpty) {
       _draftCache.cacheDraft(text: text, replyingTo: replyingTo.id);
+
+      cachedState = json;
+
+      return EditState(
+        text: text,
+        replyingTo: replyingTo,
+      );
     }
 
-    if (text.isEmpty) return state;
-
-    cachedState = json;
-
-    return EditState(
-      text: text,
-      replyingTo: replyingTo,
-    );
+    return state;
   }
 
   @override
