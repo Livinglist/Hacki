@@ -42,6 +42,7 @@ dependencies:
   html: ^0.15.0
   html_unescape: ^2.0.0
   http: ^0.13.3
+  hydrated_bloc: ^8.1.0
   intl: ^0.17.0
   logger: ^1.1.0
   path: ^1.8.0

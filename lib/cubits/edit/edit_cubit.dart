@@ -1,13 +1,13 @@
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/debouncer.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 part 'edit_state.dart';
 
-class EditCubit extends Cubit<EditState> {
+class EditCubit extends HydratedCubit<EditState> {
   EditCubit({DraftCache? draftCache})
       : _draftCache = draftCache ?? locator.get<DraftCache>(),
         _debouncer = Debouncer(delay: const Duration(seconds: 1)),
@@ -61,4 +61,38 @@ class EditCubit extends Cubit<EditState> {
       });
     }
   }
+
+  void deleteDraft() => clear();
+
+  @override
+  EditState? fromJson(Map<String, dynamic> json) {
+    final String text = json['text'] as String? ?? '';
+    final Map<String, dynamic>? itemJson =
+        json['item'] as Map<String, dynamic>?;
+    final Item? replyingTo = itemJson == null ? null : Item.fromJson(itemJson);
+    if (replyingTo != null) {
+      _draftCache.cacheDraft(text: text, replyingTo: replyingTo.id);
+    }
+
+    if (text.isEmpty) return state;
+
+    cachedState = json;
+
+    return EditState(
+      text: text,
+      replyingTo: replyingTo,
+    );
+  }
+
+  @override
+  Map<String, dynamic>? toJson(EditState state) {
+    if (state.text?.isEmpty ?? true) return cachedState;
+
+    return <String, dynamic>{
+      'text': state.text,
+      'item': state.replyingTo?.toJson(),
+    };
+  }
+
+  static Map<String, dynamic> cachedState = <String, dynamic>{};
 }

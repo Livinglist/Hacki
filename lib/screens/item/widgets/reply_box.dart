@@ -145,6 +145,36 @@ class _ReplyBoxState extends State<ReplyBox> {
                                   color: Palette.orange,
                                 ),
                                 onPressed: () {
+                                  if (editState.text?.isNotEmpty ?? false) {
+                                    showDialog<void>(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          AlertDialog(
+                                        title: const Text('Save draft?'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              context
+                                                  .read<EditCubit>()
+                                                  .deleteDraft();
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text(
+                                              'No',
+                                              style: TextStyle(
+                                                color: Palette.red,
+                                              ),
+                                            ),
+                                          ),
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: const Text('Yes'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }
                                   widget.onCloseTapped();
                                   expanded = false;
                                 },

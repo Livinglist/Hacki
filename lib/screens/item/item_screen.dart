@@ -96,10 +96,6 @@ class ItemScreen extends StatefulWidget {
                   useCommentCache: args.useCommentCache,
                 ),
             ),
-            BlocProvider<EditCubit>(
-              lazy: false,
-              create: (BuildContext context) => EditCubit(),
-            ),
           ],
           child: ItemScreen(
             item: args.item,
@@ -140,10 +136,6 @@ class ItemScreen extends StatefulWidget {
                   onlyShowTargetComment: args.onlyShowTargetComment,
                   targetParents: args.targetComments,
                 ),
-            ),
-            BlocProvider<EditCubit>(
-              lazy: false,
-              create: (BuildContext context) => EditCubit(),
             ),
           ],
           child: ItemScreen(
@@ -208,6 +200,8 @@ class _ItemScreenState extends State<ItemScreen> {
         context.read<EditCubit>().onScrolled();
       }
     });
+
+    commentEditingController.text = context.read<EditCubit>().state.text ?? '';
   }
 
   @override

@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:hacki/extensions/date_time_extension.dart';
 
-abstract class Item extends Equatable {
+class Item extends Equatable {
   const Item({
     required this.id,
     required this.deleted,
@@ -35,6 +35,22 @@ abstract class Item extends Equatable {
         text = '',
         type = '';
 
+  Item.fromJson(Map<String, dynamic> json)
+      : id = json['id'] as int? ?? 0,
+        score = json['score'] as int? ?? 0,
+        descendants = json['descendants'] as int? ?? 0,
+        time = json['time'] as int? ?? 0,
+        by = json['by'] as String? ?? '',
+        title = json['title'] as String? ?? '',
+        text = json['text'] as String? ?? '',
+        url = json['url'] as String? ?? '',
+        kids = <int>[],
+        dead = json['dead'] as bool? ?? false,
+        deleted = json['deleted'] as bool? ?? false,
+        parent = json['parent'] as int? ?? 0,
+        parts = <int>[],
+        type = json['type'] as String? ?? '';
+
   final int id;
   final int time;
   final int score;
@@ -65,4 +81,40 @@ abstract class Item extends Equatable {
   bool get isJob => type == 'job';
 
   bool get isComment => type == 'comment';
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'descendants': descendants,
+      'id': id,
+      'score': score,
+      'time': time,
+      'by': by,
+      'title': title,
+      'url': url,
+      'kids': kids,
+      'text': text,
+      'dead': dead,
+      'deleted': deleted,
+      'type': type,
+      'parts': parts,
+    };
+  }
+
+  @override
+  List<Object?> get props => <Object?>[
+        id,
+        deleted,
+        by,
+        time,
+        text,
+        dead,
+        parent,
+        kids,
+        url,
+        score,
+        title,
+        type,
+        parts,
+        descendants,
+      ];
 }
