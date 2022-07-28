@@ -13,3 +13,10 @@ extension StringExtension on String {
     return replaceAllMapped(regex, (_) => '');
   }
 }
+
+extension OptionalStringExtension on String? {
+  bool isNullOrEmpty() {
+    if (this == null) return true;
+    return this!.trim().isEmpty;
+  }
+}

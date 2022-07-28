@@ -219,331 +219,380 @@ class _ItemScreenState extends State<ItemScreen> {
   Widget build(BuildContext context) {
     final double topPadding =
         MediaQuery.of(context).padding.top + kToolbarHeight;
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (BuildContext context, AuthState authState) {
-        return MultiBlocListener(
-          listeners: <BlocListener<dynamic, dynamic>>[
-            BlocListener<PostCubit, PostState>(
-              listener: (BuildContext context, PostState postState) {
-                if (postState.status == PostStatus.successful) {
-                  final String verb =
-                      context.read<EditCubit>().state.replyingTo == null
-                          ? 'updated'
-                          : 'submitted';
-                  final String msg =
-                      'Comment $verb! ${Constants.happyFaces.pickRandomly()}';
-                  focusNode.unfocus();
-                  HapticFeedback.lightImpact();
-                  showSnackBar(content: msg);
-                  context.read<EditCubit>().onReplySubmittedSuccessfully();
-                  context.read<PostCubit>().reset();
-                } else if (postState.status == PostStatus.failure) {
-                  showSnackBar(
-                    content: 'Something went wrong...'
-                        '${Constants.sadFaces.pickRandomly()}',
-                    label: 'Okay',
-                    action: ScaffoldMessenger.of(context).hideCurrentSnackBar,
-                  );
-                  context.read<PostCubit>().reset();
+    return WillPopScope(
+      onWillPop: () async {
+        print(context.read<EditCubit>().state.text.isNullOrEmpty());
+        if (context.read<EditCubit>().state.text.isNullOrEmpty()) {
+          context.read<EditCubit>().onReplyBoxClosed();
+        }
+        return true;
+      },
+      child: BlocBuilder<AuthBloc, AuthState>(
+        builder: (BuildContext context, AuthState authState) {
+          return MultiBlocListener(
+            listeners: <BlocListener<dynamic, dynamic>>[
+              BlocListener<PostCubit, PostState>(
+                listener: (BuildContext context, PostState postState) {
+                  if (postState.status == PostStatus.successful) {
+                    final String verb =
+                        context.read<EditCubit>().state.replyingTo == null
+                            ? 'updated'
+                            : 'submitted';
+                    final String msg =
+                        'Comment $verb! ${Constants.happyFaces.pickRandomly()}';
+                    focusNode.unfocus();
+                    HapticFeedback.lightImpact();
+                    showSnackBar(content: msg);
+                    context.read<EditCubit>().onReplySubmittedSuccessfully();
+                    context.read<PostCubit>().reset();
+                  } else if (postState.status == PostStatus.failure) {
+                    showSnackBar(
+                      content: 'Something went wrong...'
+                          '${Constants.sadFaces.pickRandomly()}',
+                      label: 'Okay',
+                      action: ScaffoldMessenger.of(context).hideCurrentSnackBar,
+                    );
+                    context.read<PostCubit>().reset();
+                  }
+                },
+              ),
+            ],
+            child: BlocConsumer<CommentsCubit, CommentsState>(
+              listenWhen: (CommentsState previous, CommentsState current) =>
+                  previous.status != current.status,
+              listener: (BuildContext context, CommentsState state) {
+                if (state.status == CommentsStatus.loaded) {
+                  refreshController
+                    ..refreshCompleted()
+                    ..loadComplete();
                 }
               },
-            ),
-          ],
-          child: BlocConsumer<CommentsCubit, CommentsState>(
-            listenWhen: (CommentsState previous, CommentsState current) =>
-                previous.status != current.status,
-            listener: (BuildContext context, CommentsState state) {
-              if (state.status == CommentsStatus.loaded) {
-                refreshController
-                  ..refreshCompleted()
-                  ..loadComplete();
-              }
-            },
-            builder: (BuildContext context, CommentsState state) {
-              final SmartRefresher mainView = SmartRefresher(
-                scrollController: scrollController,
-                enablePullUp: !state.onlyShowTargetComment,
-                enablePullDown: !state.onlyShowTargetComment,
-                header: WaterDropMaterialHeader(
-                  backgroundColor: Palette.orange,
-                  offset: topPadding,
-                ),
-                footer: CustomFooter(
-                  loadStyle: LoadStyle.ShowWhenLoading,
-                  builder: (BuildContext context, LoadStatus? mode) {
-                    const double height = 55;
-                    late final Widget body;
+              builder: (BuildContext context, CommentsState state) {
+                final SmartRefresher mainView = SmartRefresher(
+                  scrollController: scrollController,
+                  enablePullUp: !state.onlyShowTargetComment,
+                  enablePullDown: !state.onlyShowTargetComment,
+                  header: WaterDropMaterialHeader(
+                    backgroundColor: Palette.orange,
+                    offset: topPadding,
+                  ),
+                  footer: CustomFooter(
+                    loadStyle: LoadStyle.ShowWhenLoading,
+                    builder: (BuildContext context, LoadStatus? mode) {
+                      const double height = 55;
+                      late final Widget body;
 
-                    if (mode == LoadStatus.idle) {
-                      body = const Text('');
-                    } else if (mode == LoadStatus.loading) {
-                      body = const Text('');
-                    } else if (mode == LoadStatus.failed) {
-                      body = const Text(
-                        '',
+                      if (mode == LoadStatus.idle) {
+                        body = const Text('');
+                      } else if (mode == LoadStatus.loading) {
+                        body = const Text('');
+                      } else if (mode == LoadStatus.failed) {
+                        body = const Text(
+                          '',
+                        );
+                      } else if (mode == LoadStatus.canLoading) {
+                        body = const Text(
+                          '',
+                        );
+                      } else {
+                        body = const Text('');
+                      }
+                      return SizedBox(
+                        height: height,
+                        child: Center(child: body),
                       );
-                    } else if (mode == LoadStatus.canLoading) {
-                      body = const Text(
-                        '',
-                      );
+                    },
+                  ),
+                  controller: refreshController,
+                  onRefresh: () {
+                    HapticFeedback.lightImpact();
+
+                    if (context.read<StoriesBloc>().state.offlineReading) {
+                      refreshController.refreshCompleted();
                     } else {
-                      body = const Text('');
+                      context.read<CommentsCubit>().refresh();
+
+                      if (state.item.isPoll) {
+                        context.read<PollCubit>().refresh();
+                      }
                     }
-                    return SizedBox(
-                      height: height,
-                      child: Center(child: body),
-                    );
                   },
-                ),
-                controller: refreshController,
-                onRefresh: () {
-                  HapticFeedback.lightImpact();
-
-                  if (context.read<StoriesBloc>().state.offlineReading) {
-                    refreshController.refreshCompleted();
-                  } else {
-                    context.read<CommentsCubit>().refresh();
-
-                    if (state.item.isPoll) {
-                      context.read<PollCubit>().refresh();
+                  onLoading: () {
+                    if (state.fetchMode == FetchMode.eager) {
+                      context.read<CommentsCubit>().loadMore();
+                    } else {
+                      refreshController.loadComplete();
                     }
-                  }
-                },
-                onLoading: () {
-                  if (state.fetchMode == FetchMode.eager) {
-                    context.read<CommentsCubit>().loadMore();
-                  } else {
-                    refreshController.loadComplete();
-                  }
-                },
-                child: ListView.builder(
-                  primary: false,
-                  itemCount: state.comments.length + 2,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == 0) {
-                      return Column(
-                        children: <Widget>[
-                          SizedBox(
-                            height: topPadding,
-                          ),
-                          if (!widget.splitViewEnabled)
-                            const Padding(
-                              padding: EdgeInsets.only(bottom: Dimens.pt6),
-                              child: OfflineBanner(),
+                  },
+                  child: ListView.builder(
+                    primary: false,
+                    itemCount: state.comments.length + 2,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == 0) {
+                        return Column(
+                          children: <Widget>[
+                            SizedBox(
+                              height: topPadding,
                             ),
-                          Slidable(
-                            startActionPane: ActionPane(
-                              motion: const BehindMotion(),
-                              children: <Widget>[
-                                SlidableAction(
-                                  onPressed: (_) {
-                                    HapticFeedback.lightImpact();
+                            if (!widget.splitViewEnabled)
+                              const Padding(
+                                padding: EdgeInsets.only(bottom: Dimens.pt6),
+                                child: OfflineBanner(),
+                              ),
+                            Slidable(
+                              startActionPane: ActionPane(
+                                motion: const BehindMotion(),
+                                children: <Widget>[
+                                  SlidableAction(
+                                    onPressed: (_) {
+                                      HapticFeedback.lightImpact();
 
-                                    if (state.item.id !=
-                                        context
-                                            .read<EditCubit>()
-                                            .state
-                                            .replyingTo
-                                            ?.id) {
-                                      commentEditingController.clear();
-                                    }
-                                    context
-                                        .read<EditCubit>()
-                                        .onReplyTapped(state.item);
-                                    focusNode.requestFocus();
-                                  },
-                                  backgroundColor: Palette.orange,
-                                  foregroundColor: Palette.white,
-                                  icon: Icons.message,
-                                ),
-                                SlidableAction(
-                                  onPressed: (BuildContext context) =>
-                                      onMoreTapped(state.item, context.rect),
-                                  backgroundColor: Palette.orange,
-                                  foregroundColor: Palette.white,
-                                  icon: Icons.more_horiz,
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: Dimens.pt6,
-                                    right: Dimens.pt6,
+                                      if (state.item.id !=
+                                          context
+                                              .read<EditCubit>()
+                                              .state
+                                              .replyingTo
+                                              ?.id) {
+                                        commentEditingController.clear();
+                                      }
+                                      context
+                                          .read<EditCubit>()
+                                          .onReplyTapped(state.item);
+                                      focusNode.requestFocus();
+                                    },
+                                    backgroundColor: Palette.orange,
+                                    foregroundColor: Palette.white,
+                                    icon: Icons.message,
                                   ),
-                                  child: Row(
-                                    children: <Widget>[
-                                      Text(
-                                        state.item.by,
-                                        style: const TextStyle(
+                                  SlidableAction(
+                                    onPressed: (BuildContext context) =>
+                                        onMoreTapped(state.item, context.rect),
+                                    backgroundColor: Palette.orange,
+                                    foregroundColor: Palette.white,
+                                    icon: Icons.more_horiz,
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      left: Dimens.pt6,
+                                      right: Dimens.pt6,
+                                    ),
+                                    child: Row(
+                                      children: <Widget>[
+                                        Text(
+                                          state.item.by,
+                                          style: const TextStyle(
+                                            color: Palette.orange,
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        Text(
+                                          state.item.postedDate,
+                                          style: const TextStyle(
+                                            color: Palette.grey,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  if (state.item is Story)
+                                    InkWell(
+                                      onTap: () => LinkUtil.launch(
+                                        state.item.url,
+                                        useReader: context
+                                            .read<PreferenceCubit>()
+                                            .state
+                                            .useReader,
+                                        offlineReading: context
+                                            .read<StoriesBloc>()
+                                            .state
+                                            .offlineReading,
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                          left: Dimens.pt6,
+                                          right: Dimens.pt6,
+                                          bottom: Dimens.pt12,
+                                          top: Dimens.pt12,
+                                        ),
+                                        child: Text(
+                                          state.item.title,
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: state.item.url.isNotEmpty
+                                                ? Palette.orange
+                                                : null,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  else
+                                    const SizedBox(
+                                      height: Dimens.pt6,
+                                    ),
+                                  if (state.item.text.isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: Dimens.pt10,
+                                      ),
+                                      child: SelectableLinkify(
+                                        text: state.item.text,
+                                        style: TextStyle(
+                                          fontSize: MediaQuery.of(context)
+                                                  .textScaleFactor *
+                                              TextDimens.pt15,
+                                        ),
+                                        linkStyle: TextStyle(
+                                          fontSize: MediaQuery.of(context)
+                                                  .textScaleFactor *
+                                              TextDimens.pt15,
                                           color: Palette.orange,
                                         ),
-                                      ),
-                                      const Spacer(),
-                                      Text(
-                                        state.item.postedDate,
-                                        style: const TextStyle(
-                                          color: Palette.grey,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                if (state.item is Story)
-                                  InkWell(
-                                    onTap: () => LinkUtil.launch(
-                                      state.item.url,
-                                      useReader: context
-                                          .read<PreferenceCubit>()
-                                          .state
-                                          .useReader,
-                                      offlineReading: context
-                                          .read<StoriesBloc>()
-                                          .state
-                                          .offlineReading,
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                        left: Dimens.pt6,
-                                        right: Dimens.pt6,
-                                        bottom: Dimens.pt12,
-                                        top: Dimens.pt12,
-                                      ),
-                                      child: Text(
-                                        state.item.title,
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: state.item.url.isNotEmpty
-                                              ? Palette.orange
-                                              : null,
-                                        ),
+                                        onOpen: (LinkableElement link) {
+                                          if (link.url.contains(
+                                            'news.ycombinator.com/item',
+                                          )) {
+                                            onStoryLinkTapped(link.url);
+                                          } else {
+                                            LinkUtil.launch(link.url);
+                                          }
+                                        },
                                       ),
                                     ),
-                                  )
-                                else
-                                  const SizedBox(
-                                    height: Dimens.pt6,
-                                  ),
-                                if (state.item.text.isNotEmpty)
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: Dimens.pt10,
-                                    ),
-                                    child: SelectableLinkify(
-                                      text: state.item.text,
-                                      style: TextStyle(
-                                        fontSize: MediaQuery.of(context)
-                                                .textScaleFactor *
-                                            TextDimens.pt15,
+                                  if (state.item.isPoll)
+                                    BlocProvider<PollCubit>(
+                                      create: (BuildContext context) =>
+                                          PollCubit(story: state.item as Story)
+                                            ..init(),
+                                      child: PollView(
+                                        onLoginTapped: onLoginTapped,
                                       ),
-                                      linkStyle: TextStyle(
-                                        fontSize: MediaQuery.of(context)
-                                                .textScaleFactor *
-                                            TextDimens.pt15,
-                                        color: Palette.orange,
-                                      ),
-                                      onOpen: (LinkableElement link) {
-                                        if (link.url.contains(
-                                          'news.ycombinator.com/item',
-                                        )) {
-                                          onStoryLinkTapped(link.url);
-                                        } else {
-                                          LinkUtil.launch(link.url);
-                                        }
-                                      },
                                     ),
-                                  ),
-                                if (state.item.isPoll)
-                                  BlocProvider<PollCubit>(
-                                    create: (BuildContext context) =>
-                                        PollCubit(story: state.item as Story)
-                                          ..init(),
-                                    child: PollView(
-                                      onLoginTapped: onLoginTapped,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                          if (state.item.text.isNotEmpty)
-                            const SizedBox(
-                              height: Dimens.pt8,
-                            ),
-                          const Divider(
-                            height: Dimens.zero,
-                          ),
-                          if (state.onlyShowTargetComment) ...<Widget>[
-                            Center(
-                              child: TextButton(
-                                onPressed: () => context
-                                    .read<CommentsCubit>()
-                                    .loadAll(state.item as Story),
-                                child: const Text('View all comments'),
+                                ],
                               ),
                             ),
+                            if (state.item.text.isNotEmpty)
+                              const SizedBox(
+                                height: Dimens.pt8,
+                              ),
                             const Divider(
                               height: Dimens.zero,
                             ),
-                          ] else ...<Widget>[
-                            Row(
-                              children: <Widget>[
-                                if (state.item is Story) ...<Widget>[
-                                  const SizedBox(
-                                    width: Dimens.pt12,
-                                  ),
-                                  Text(
-                                    '''${state.item.score} karma, ${state.item.descendants} comment${state.item.descendants > 1 ? 's' : ''}''',
-                                    style: const TextStyle(
-                                      fontSize: TextDimens.pt13,
+                            if (state.onlyShowTargetComment) ...<Widget>[
+                              Center(
+                                child: TextButton(
+                                  onPressed: () => context
+                                      .read<CommentsCubit>()
+                                      .loadAll(state.item as Story),
+                                  child: const Text('View all comments'),
+                                ),
+                              ),
+                              const Divider(
+                                height: Dimens.zero,
+                              ),
+                            ] else ...<Widget>[
+                              Row(
+                                children: <Widget>[
+                                  if (state.item is Story) ...<Widget>[
+                                    const SizedBox(
+                                      width: Dimens.pt12,
                                     ),
-                                  ),
-                                ] else ...<Widget>[
-                                  const SizedBox(
-                                    width: Dimens.pt4,
-                                  ),
-                                  TextButton(
-                                    onPressed: context
-                                        .read<CommentsCubit>()
-                                        .loadParentThread,
-                                    child: state.fetchParentStatus ==
-                                            CommentsStatus.loading
-                                        ? const SizedBox(
-                                            height: Dimens.pt12,
-                                            width: Dimens.pt12,
-                                            child:
-                                                CustomCircularProgressIndicator(
-                                              strokeWidth: Dimens.pt2,
+                                    Text(
+                                      '''${state.item.score} karma, ${state.item.descendants} comment${state.item.descendants > 1 ? 's' : ''}''',
+                                      style: const TextStyle(
+                                        fontSize: TextDimens.pt13,
+                                      ),
+                                    ),
+                                  ] else ...<Widget>[
+                                    const SizedBox(
+                                      width: Dimens.pt4,
+                                    ),
+                                    TextButton(
+                                      onPressed: context
+                                          .read<CommentsCubit>()
+                                          .loadParentThread,
+                                      child: state.fetchParentStatus ==
+                                              CommentsStatus.loading
+                                          ? const SizedBox(
+                                              height: Dimens.pt12,
+                                              width: Dimens.pt12,
+                                              child:
+                                                  CustomCircularProgressIndicator(
+                                                strokeWidth: Dimens.pt2,
+                                              ),
+                                            )
+                                          : const Text(
+                                              'View parent thread',
+                                              style: TextStyle(
+                                                fontSize: TextDimens.pt13,
+                                              ),
                                             ),
-                                          )
-                                        : const Text(
-                                            'View parent thread',
+                                    ),
+                                  ],
+                                  const Spacer(),
+                                  if (!state.offlineReading)
+                                    DropdownButton<FetchMode>(
+                                      value: state.fetchMode,
+                                      underline: const SizedBox.shrink(),
+                                      items: const <
+                                          DropdownMenuItem<FetchMode>>[
+                                        DropdownMenuItem<FetchMode>(
+                                          value: FetchMode.lazy,
+                                          child: Text(
+                                            'Lazy',
                                             style: TextStyle(
                                               fontSize: TextDimens.pt13,
                                             ),
                                           ),
+                                        ),
+                                        DropdownMenuItem<FetchMode>(
+                                          value: FetchMode.eager,
+                                          child: Text(
+                                            'Eager',
+                                            style: TextStyle(
+                                              fontSize: TextDimens.pt13,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                      onChanged: context
+                                          .read<CommentsCubit>()
+                                          .onFetchModeChanged,
+                                    ),
+                                  const SizedBox(
+                                    width: Dimens.pt6,
                                   ),
-                                ],
-                                const Spacer(),
-                                if (!state.offlineReading)
-                                  DropdownButton<FetchMode>(
-                                    value: state.fetchMode,
+                                  DropdownButton<CommentsOrder>(
+                                    value: state.order,
                                     underline: const SizedBox.shrink(),
-                                    items: const <DropdownMenuItem<FetchMode>>[
-                                      DropdownMenuItem<FetchMode>(
-                                        value: FetchMode.lazy,
+                                    items: const <
+                                        DropdownMenuItem<CommentsOrder>>[
+                                      DropdownMenuItem<CommentsOrder>(
+                                        value: CommentsOrder.natural,
                                         child: Text(
-                                          'Lazy',
+                                          'Natural',
                                           style: TextStyle(
                                             fontSize: TextDimens.pt13,
                                           ),
                                         ),
                                       ),
-                                      DropdownMenuItem<FetchMode>(
-                                        value: FetchMode.eager,
+                                      DropdownMenuItem<CommentsOrder>(
+                                        value: CommentsOrder.newestFirst,
                                         child: Text(
-                                          'Eager',
+                                          'Newest first',
+                                          style: TextStyle(
+                                            fontSize: TextDimens.pt13,
+                                          ),
+                                        ),
+                                      ),
+                                      DropdownMenuItem<CommentsOrder>(
+                                        value: CommentsOrder.oldestFirst,
+                                        child: Text(
+                                          'Oldest first',
                                           style: TextStyle(
                                             fontSize: TextDimens.pt13,
                                           ),
@@ -552,240 +601,209 @@ class _ItemScreenState extends State<ItemScreen> {
                                     ],
                                     onChanged: context
                                         .read<CommentsCubit>()
-                                        .onFetchModeChanged,
+                                        .onOrderChanged,
                                   ),
-                                const SizedBox(
-                                  width: Dimens.pt6,
-                                ),
-                                DropdownButton<CommentsOrder>(
-                                  value: state.order,
-                                  underline: const SizedBox.shrink(),
-                                  items: const <
-                                      DropdownMenuItem<CommentsOrder>>[
-                                    DropdownMenuItem<CommentsOrder>(
-                                      value: CommentsOrder.natural,
-                                      child: Text(
-                                        'Natural',
-                                        style: TextStyle(
-                                          fontSize: TextDimens.pt13,
-                                        ),
-                                      ),
-                                    ),
-                                    DropdownMenuItem<CommentsOrder>(
-                                      value: CommentsOrder.newestFirst,
-                                      child: Text(
-                                        'Newest first',
-                                        style: TextStyle(
-                                          fontSize: TextDimens.pt13,
-                                        ),
-                                      ),
-                                    ),
-                                    DropdownMenuItem<CommentsOrder>(
-                                      value: CommentsOrder.oldestFirst,
-                                      child: Text(
-                                        'Oldest first',
-                                        style: TextStyle(
-                                          fontSize: TextDimens.pt13,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                  onChanged: context
-                                      .read<CommentsCubit>()
-                                      .onOrderChanged,
-                                ),
-                                const SizedBox(
-                                  width: Dimens.pt4,
-                                ),
-                              ],
-                            ),
-                            const Divider(
-                              height: Dimens.zero,
-                            ),
-                          ],
-                          if (state.comments.isEmpty &&
-                              state.status ==
-                                  CommentsStatus.allLoaded) ...<Widget>[
-                            const SizedBox(
-                              height: 240,
-                            ),
-                            const Center(
-                              child: Text(
-                                'Nothing yet',
-                                style: TextStyle(color: Palette.grey),
+                                  const SizedBox(
+                                    width: Dimens.pt4,
+                                  ),
+                                ],
                               ),
-                            ),
+                              const Divider(
+                                height: Dimens.zero,
+                              ),
+                            ],
+                            if (state.comments.isEmpty &&
+                                state.status ==
+                                    CommentsStatus.allLoaded) ...<Widget>[
+                              const SizedBox(
+                                height: 240,
+                              ),
+                              const Center(
+                                child: Text(
+                                  'Nothing yet',
+                                  style: TextStyle(color: Palette.grey),
+                                ),
+                              ),
+                            ],
                           ],
-                        ],
-                      );
-                    } else if (index == state.comments.length + 1) {
-                      if ((state.status == CommentsStatus.allLoaded &&
-                              state.comments.isNotEmpty) ||
-                          state.onlyShowTargetComment) {
-                        return SizedBox(
-                          height: 240,
-                          child: Center(
-                            child: Text(happyFace),
-                          ),
                         );
-                      } else {
-                        return const SizedBox.shrink();
+                      } else if (index == state.comments.length + 1) {
+                        if ((state.status == CommentsStatus.allLoaded &&
+                                state.comments.isNotEmpty) ||
+                            state.onlyShowTargetComment) {
+                          return SizedBox(
+                            height: 240,
+                            child: Center(
+                              child: Text(happyFace),
+                            ),
+                          );
+                        } else {
+                          return const SizedBox.shrink();
+                        }
                       }
-                    }
 
-                    index = index - 1;
-                    final Comment comment = state.comments.elementAt(index);
-                    return FadeIn(
-                      key: ValueKey<String>('${comment.id}-FadeIn'),
-                      child: CommentTile(
-                        comment: comment,
-                        level: comment.level,
-                        myUsername:
-                            authState.isLoggedIn ? authState.username : null,
-                        opUsername: state.item.by,
-                        fetchMode: state.fetchMode,
-                        onReplyTapped: (Comment cmt) {
-                          HapticFeedback.lightImpact();
-                          if (cmt.deleted || cmt.dead) {
-                            return;
-                          }
+                      index = index - 1;
+                      final Comment comment = state.comments.elementAt(index);
+                      return FadeIn(
+                        key: ValueKey<String>('${comment.id}-FadeIn'),
+                        child: CommentTile(
+                          comment: comment,
+                          level: comment.level,
+                          myUsername:
+                              authState.isLoggedIn ? authState.username : null,
+                          opUsername: state.item.by,
+                          fetchMode: state.fetchMode,
+                          onReplyTapped: (Comment cmt) {
+                            HapticFeedback.lightImpact();
+                            if (cmt.deleted || cmt.dead) {
+                              return;
+                            }
 
-                          if (cmt.id !=
-                              context.read<EditCubit>().state.replyingTo?.id) {
-                            commentEditingController.clear();
-                          }
+                            if (cmt.id !=
+                                context
+                                    .read<EditCubit>()
+                                    .state
+                                    .replyingTo
+                                    ?.id) {
+                              commentEditingController.clear();
+                            }
 
-                          context.read<EditCubit>().onReplyTapped(cmt);
-                          focusNode.requestFocus();
-                        },
-                        onEditTapped: (Comment cmt) {
-                          HapticFeedback.lightImpact();
-                          if (cmt.deleted || cmt.dead) {
-                            return;
-                          }
-                          commentEditingController.clear();
-                          context.read<EditCubit>().onEditTapped(cmt);
-                          focusNode.requestFocus();
-                        },
-                        onMoreTapped: onMoreTapped,
-                        onStoryLinkTapped: onStoryLinkTapped,
-                        onRightMoreTapped: onRightMoreTapped,
-                      ),
-                    );
-                  },
-                ),
-              );
-
-              return BlocListener<EditCubit, EditState>(
-                listenWhen: (EditState previous, EditState current) {
-                  return previous.replyingTo != current.replyingTo ||
-                      previous.itemBeingEdited != current.itemBeingEdited;
-                },
-                listener: (BuildContext context, EditState editState) {
-                  if (editState.replyingTo != null ||
-                      editState.itemBeingEdited != null) {
-                    if (editState.text == null) {
-                      commentEditingController.clear();
-                    } else {
-                      final String text = editState.text!;
-                      commentEditingController
-                        ..text = text
-                        ..selection = TextSelection.fromPosition(
-                          TextPosition(offset: text.length),
-                        );
-                    }
-                  } else {
-                    commentEditingController.clear();
-                  }
-                },
-                child: widget.splitViewEnabled
-                    ? Material(
-                        child: Stack(
-                          children: <Widget>[
-                            Positioned.fill(
-                              child: mainView,
-                            ),
-                            BlocBuilder<SplitViewCubit, SplitViewState>(
-                              buildWhen: (
-                                SplitViewState previous,
-                                SplitViewState current,
-                              ) =>
-                                  previous.expanded != current.expanded,
-                              builder: (
-                                BuildContext context,
-                                SplitViewState state,
-                              ) {
-                                return Positioned(
-                                  top: Dimens.zero,
-                                  left: Dimens.zero,
-                                  right: Dimens.zero,
-                                  child: CustomAppBar(
-                                    backgroundColor: Theme.of(context)
-                                        .canvasColor
-                                        .withOpacity(0.6),
-                                    item: widget.item,
-                                    scrollController: scrollController,
-                                    onBackgroundTap:
-                                        onFeatureDiscoveryDismissed,
-                                    onDismiss: onFeatureDiscoveryDismissed,
-                                    splitViewEnabled: state.enabled,
-                                    expanded: state.expanded,
-                                    onZoomTap:
-                                        context.read<SplitViewCubit>().zoom,
-                                  ),
-                                );
-                              },
-                            ),
-                            Positioned(
-                              bottom: Dimens.zero,
-                              left: Dimens.zero,
-                              right: Dimens.zero,
-                              child: ReplyBox(
-                                splitViewEnabled: true,
-                                focusNode: focusNode,
-                                textEditingController: commentEditingController,
-                                onSendTapped: onSendTapped,
-                                onCloseTapped: () {
-                                  context.read<EditCubit>().onReplyBoxClosed();
-                                  commentEditingController.clear();
-                                  focusNode.unfocus();
-                                },
-                                onChanged:
-                                    context.read<EditCubit>().onTextChanged,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : Scaffold(
-                        extendBodyBehindAppBar: true,
-                        resizeToAvoidBottomInset: true,
-                        appBar: CustomAppBar(
-                          backgroundColor:
-                              Theme.of(context).canvasColor.withOpacity(0.6),
-                          item: widget.item,
-                          scrollController: scrollController,
-                          onBackgroundTap: onFeatureDiscoveryDismissed,
-                          onDismiss: onFeatureDiscoveryDismissed,
-                        ),
-                        body: mainView,
-                        bottomSheet: ReplyBox(
-                          focusNode: focusNode,
-                          textEditingController: commentEditingController,
-                          onSendTapped: onSendTapped,
-                          onCloseTapped: () {
-                            context.read<EditCubit>().onReplyBoxClosed();
-                            commentEditingController.clear();
-                            focusNode.unfocus();
+                            context.read<EditCubit>().onReplyTapped(cmt);
+                            focusNode.requestFocus();
                           },
-                          onChanged: context.read<EditCubit>().onTextChanged,
+                          onEditTapped: (Comment cmt) {
+                            HapticFeedback.lightImpact();
+                            if (cmt.deleted || cmt.dead) {
+                              return;
+                            }
+                            commentEditingController.clear();
+                            context.read<EditCubit>().onEditTapped(cmt);
+                            focusNode.requestFocus();
+                          },
+                          onMoreTapped: onMoreTapped,
+                          onStoryLinkTapped: onStoryLinkTapped,
+                          onRightMoreTapped: onRightMoreTapped,
                         ),
-                      ),
-              );
-            },
-          ),
-        );
-      },
+                      );
+                    },
+                  ),
+                );
+
+                return BlocListener<EditCubit, EditState>(
+                  listenWhen: (EditState previous, EditState current) {
+                    return previous.replyingTo != current.replyingTo ||
+                        previous.itemBeingEdited != current.itemBeingEdited ||
+                        commentEditingController.text != current.text;
+                  },
+                  listener: (BuildContext context, EditState editState) {
+                    if (editState.replyingTo != null ||
+                        editState.itemBeingEdited != null) {
+                      if (editState.text == null) {
+                        commentEditingController.clear();
+                      } else {
+                        final String text = editState.text!;
+                        commentEditingController
+                          ..text = text
+                          ..selection = TextSelection.fromPosition(
+                            TextPosition(offset: text.length),
+                          );
+                      }
+                    } else {
+                      commentEditingController.clear();
+                    }
+                  },
+                  child: widget.splitViewEnabled
+                      ? Material(
+                          child: Stack(
+                            children: <Widget>[
+                              Positioned.fill(
+                                child: mainView,
+                              ),
+                              BlocBuilder<SplitViewCubit, SplitViewState>(
+                                buildWhen: (
+                                  SplitViewState previous,
+                                  SplitViewState current,
+                                ) =>
+                                    previous.expanded != current.expanded,
+                                builder: (
+                                  BuildContext context,
+                                  SplitViewState state,
+                                ) {
+                                  return Positioned(
+                                    top: Dimens.zero,
+                                    left: Dimens.zero,
+                                    right: Dimens.zero,
+                                    child: CustomAppBar(
+                                      backgroundColor: Theme.of(context)
+                                          .canvasColor
+                                          .withOpacity(0.6),
+                                      item: widget.item,
+                                      scrollController: scrollController,
+                                      onBackgroundTap:
+                                          onFeatureDiscoveryDismissed,
+                                      onDismiss: onFeatureDiscoveryDismissed,
+                                      splitViewEnabled: state.enabled,
+                                      expanded: state.expanded,
+                                      onZoomTap:
+                                          context.read<SplitViewCubit>().zoom,
+                                    ),
+                                  );
+                                },
+                              ),
+                              Positioned(
+                                bottom: Dimens.zero,
+                                left: Dimens.zero,
+                                right: Dimens.zero,
+                                child: ReplyBox(
+                                  splitViewEnabled: true,
+                                  focusNode: focusNode,
+                                  textEditingController:
+                                      commentEditingController,
+                                  onSendTapped: onSendTapped,
+                                  onCloseTapped: () {
+                                    context
+                                        .read<EditCubit>()
+                                        .onReplyBoxClosed();
+                                    commentEditingController.clear();
+                                    focusNode.unfocus();
+                                  },
+                                  onChanged:
+                                      context.read<EditCubit>().onTextChanged,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : Scaffold(
+                          extendBodyBehindAppBar: true,
+                          resizeToAvoidBottomInset: true,
+                          appBar: CustomAppBar(
+                            backgroundColor:
+                                Theme.of(context).canvasColor.withOpacity(0.6),
+                            item: widget.item,
+                            scrollController: scrollController,
+                            onBackgroundTap: onFeatureDiscoveryDismissed,
+                            onDismiss: onFeatureDiscoveryDismissed,
+                          ),
+                          body: mainView,
+                          bottomSheet: ReplyBox(
+                            focusNode: focusNode,
+                            textEditingController: commentEditingController,
+                            onSendTapped: onSendTapped,
+                            onCloseTapped: () {
+                              context.read<EditCubit>().onReplyBoxClosed();
+                              commentEditingController.clear();
+                              focusNode.unfocus();
+                            },
+                            onChanged: context.read<EditCubit>().onTextChanged,
+                          ),
+                        ),
+                );
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 

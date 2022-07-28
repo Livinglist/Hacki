@@ -5,7 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/item.dart';
+import 'package:hacki/screens/screens.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/link_util.dart';
 
@@ -40,7 +42,10 @@ class _ReplyBoxState extends State<ReplyBox> {
   @override
   Widget build(BuildContext context) {
     expandedHeight ??= MediaQuery.of(context).size.height;
-    return BlocBuilder<EditCubit, EditState>(
+    return BlocConsumer<EditCubit, EditState>(
+      listenWhen: (EditState previous, EditState current) =>
+          previous.text != current.text,
+      listener: (BuildContext context, EditState editState) {},
       buildWhen: (EditState previous, EditState current) =>
           previous.showReplyBox != current.showReplyBox ||
           previous.itemBeingEdited != current.itemBeingEdited ||
@@ -279,8 +284,30 @@ class _ReplyBoxState extends State<ReplyBox> {
                         style: const TextStyle(color: Palette.grey),
                       ),
                       const Spacer(),
+                      if (replyingTo != null)
+                        TextButton(
+                          child: const Text('View thread'),
+                          onPressed: () {
+                            HapticFeedback.lightImpact();
+                            setState(() {
+                              expanded = false;
+                            });
+                            Navigator.popUntil(
+                              context,
+                              (Route<dynamic> route) =>
+                                  route.settings.name == ItemScreen.routeName,
+                            );
+                            goToItemScreen(
+                              args: ItemScreenArgs(
+                                item: replyingTo,
+                                useCommentCache: true,
+                              ),
+                              forceNewScreen: true,
+                            );
+                          },
+                        ),
                       TextButton(
-                        child: const Text('Copy All'),
+                        child: const Text('Copy all'),
                         onPressed: () => FlutterClipboard.copy(
                           replyingTo?.text ?? '',
                         ).then((_) => HapticFeedback.selectionClick()),
