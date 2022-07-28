@@ -1,4 +1,5 @@
 // ignore_for_file: comment_references
+// ignore_for_file: lines_longer_than_80_chars
 
 import 'package:equatable/equatable.dart';
 import 'package:feature_discovery/feature_discovery.dart';
@@ -221,7 +222,6 @@ class _ItemScreenState extends State<ItemScreen> {
         MediaQuery.of(context).padding.top + kToolbarHeight;
     return WillPopScope(
       onWillPop: () async {
-        print(context.read<EditCubit>().state.text.isNullOrEmpty());
         if (context.read<EditCubit>().state.text.isNullOrEmpty()) {
           context.read<EditCubit>().onReplyBoxClosed();
         }
