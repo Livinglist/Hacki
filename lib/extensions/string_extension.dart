@@ -15,7 +15,7 @@ extension StringExtension on String {
 }
 
 extension OptionalStringExtension on String? {
-  bool isNullOrEmpty() {
+  bool get isNullOrEmpty {
     if (this == null) return true;
     return this!.trim().isEmpty;
   }

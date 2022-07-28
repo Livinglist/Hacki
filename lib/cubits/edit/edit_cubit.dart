@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/debouncer.dart';
@@ -74,12 +75,14 @@ class EditCubit extends HydratedCubit<EditState> {
     if (replyingTo != null && text.isNotEmpty) {
       _draftCache.cacheDraft(text: text, replyingTo: replyingTo.id);
 
-      cachedState = json;
-
-      return EditState(
+      final EditState state = EditState(
         text: text,
         replyingTo: replyingTo,
       );
+
+      cachedState = state;
+
+      return state;
     }
 
     return state;
@@ -87,13 +90,19 @@ class EditCubit extends HydratedCubit<EditState> {
 
   @override
   Map<String, dynamic>? toJson(EditState state) {
-    if (state.text?.isEmpty ?? true) return cachedState;
+    EditState selected = state;
+
+    if (state.replyingTo == null ||
+        (state.replyingTo?.id != cachedState.replyingTo?.id &&
+            state.text.isNullOrEmpty)) {
+      selected = cachedState;
+    }
 
     return <String, dynamic>{
-      'text': state.text,
-      'item': state.replyingTo?.toJson(),
+      'text': selected.text,
+      'item': selected.replyingTo?.toJson(),
     };
   }
 
-  static Map<String, dynamic> cachedState = <String, dynamic>{};
+  static EditState cachedState = const EditState.init();
 }
