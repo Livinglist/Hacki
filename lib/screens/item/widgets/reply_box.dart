@@ -42,10 +42,7 @@ class _ReplyBoxState extends State<ReplyBox> {
   @override
   Widget build(BuildContext context) {
     expandedHeight ??= MediaQuery.of(context).size.height;
-    return BlocConsumer<EditCubit, EditState>(
-      listenWhen: (EditState previous, EditState current) =>
-          previous.text != current.text,
-      listener: (BuildContext context, EditState editState) {},
+    return BlocBuilder<EditCubit, EditState>(
       buildWhen: (EditState previous, EditState current) =>
           previous.showReplyBox != current.showReplyBox ||
           previous.itemBeingEdited != current.itemBeingEdited ||
@@ -150,7 +147,11 @@ class _ReplyBoxState extends State<ReplyBox> {
                                   color: Palette.orange,
                                 ),
                                 onPressed: () {
-                                  if (editState.text?.isNotEmpty ?? false) {
+                                  if (context
+                                      .read<EditCubit>()
+                                      .state
+                                      .text
+                                      .isNotNullOrEmpty) {
                                     showDialog<void>(
                                       context: context,
                                       builder: (BuildContext context) =>

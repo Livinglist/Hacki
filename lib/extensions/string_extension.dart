@@ -19,4 +19,6 @@ extension OptionalStringExtension on String? {
     if (this == null) return true;
     return this!.trim().isEmpty;
   }
+
+  bool get isNotNullOrEmpty => !isNullOrEmpty;
 }
