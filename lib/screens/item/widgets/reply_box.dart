@@ -296,7 +296,8 @@ class _ReplyBoxState extends State<ReplyBox> {
                             Navigator.popUntil(
                               context,
                               (Route<dynamic> route) =>
-                                  route.settings.name == ItemScreen.routeName,
+                                  route.settings.name == ItemScreen.routeName ||
+                                  route.isFirst,
                             );
                             goToItemScreen(
                               args: ItemScreenArgs(
