@@ -19,6 +19,7 @@ import 'package:hacki/services/custom_bloc_observer.dart';
 import 'package:hacki/services/fetcher.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hive/hive.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart' show BehaviorSubject;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -38,6 +39,12 @@ Future<void> main({bool testing = false}) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   isTesting = testing;
+
+  final HydratedStorage storage = await HydratedStorage.build(
+    storageDirectory: kIsWeb
+        ? HydratedStorage.webStorageDirectory
+        : await getTemporaryDirectory(),
+  );
 
   if (Platform.isIOS) {
     unawaited(
@@ -93,20 +100,26 @@ Future<void> main({bool testing = false}) async {
       prefs.getBool(PreferenceRepository.trueDarkModeKey) ?? false;
 
   if (kReleaseMode) {
-    runApp(
-      HackiApp(
-        savedThemeMode: savedThemeMode,
-        trueDarkMode: trueDarkMode,
+    HydratedBlocOverrides.runZoned(
+      () => runApp(
+        HackiApp(
+          savedThemeMode: savedThemeMode,
+          trueDarkMode: trueDarkMode,
+        ),
       ),
+      storage: storage,
     );
   } else {
     BlocOverrides.runZoned(
       () {
-        runApp(
-          HackiApp(
-            savedThemeMode: savedThemeMode,
-            trueDarkMode: trueDarkMode,
+        HydratedBlocOverrides.runZoned(
+          () => runApp(
+            HackiApp(
+              savedThemeMode: savedThemeMode,
+              trueDarkMode: trueDarkMode,
+            ),
           ),
+          storage: storage,
         );
       },
       blocObserver: CustomBlocObserver(),
@@ -186,6 +199,10 @@ class HackiApp extends StatelessWidget {
         BlocProvider<PostCubit>(
           lazy: false,
           create: (BuildContext context) => PostCubit(),
+        ),
+        BlocProvider<EditCubit>(
+          lazy: false,
+          create: (BuildContext context) => EditCubit(),
         ),
       ],
       child: AdaptiveTheme(

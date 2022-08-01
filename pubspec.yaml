@@ -1,11 +1,11 @@
 name: hacki
 description: A Hacker News reader.
-version: 0.2.29+72
+version: 0.2.30+73
 publish_to: none
 
 environment:
   sdk: ">=2.17.0 <3.0.0"
-  flutter: "3.0.3"
+  flutter: "3.0.5"
 
 dependencies:
   adaptive_theme: ^3.0.0
@@ -42,6 +42,7 @@ dependencies:
   html: ^0.15.0
   html_unescape: ^2.0.0
   http: ^0.13.3
+  hydrated_bloc: ^8.1.0
   intl: ^0.17.0
   logger: ^1.1.0
   path: ^1.8.0

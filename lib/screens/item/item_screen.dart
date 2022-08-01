@@ -96,10 +96,6 @@ class ItemScreen extends StatefulWidget {
                   useCommentCache: args.useCommentCache,
                 ),
             ),
-            BlocProvider<EditCubit>(
-              lazy: false,
-              create: (BuildContext context) => EditCubit(),
-            ),
           ],
           child: ItemScreen(
             item: args.item,
@@ -141,10 +137,6 @@ class ItemScreen extends StatefulWidget {
                   targetParents: args.targetComments,
                 ),
             ),
-            BlocProvider<EditCubit>(
-              lazy: false,
-              create: (BuildContext context) => EditCubit(),
-            ),
           ],
           child: ItemScreen(
             item: args.item,
@@ -164,7 +156,7 @@ class ItemScreen extends StatefulWidget {
   _ItemScreenState createState() => _ItemScreenState();
 }
 
-class _ItemScreenState extends State<ItemScreen> {
+class _ItemScreenState extends State<ItemScreen> with RouteAware {
   final TextEditingController commentEditingController =
       TextEditingController();
   final ScrollController scrollController = ScrollController();
@@ -186,21 +178,39 @@ class _ItemScreenState extends State<ItemScreen> {
       Duration(seconds: 1);
 
   @override
+  void didPop() {
+    super.didPop();
+    if (context.read<EditCubit>().state.text.isNullOrEmpty) {
+      context.read<EditCubit>().onReplyBoxClosed();
+    }
+  }
+
+  @override
   void initState() {
     super.initState();
 
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (!isTesting) {
-        FeatureDiscovery.discoverFeatures(
-          context,
-          const <String>{
-            Constants.featurePinToTop,
-            Constants.featureAddStoryToFavList,
-            Constants.featureOpenStoryInWebView,
-          },
-        );
-      }
-    });
+    SchedulerBinding.instance
+      ..addPostFrameCallback((_) {
+        if (!isTesting) {
+          FeatureDiscovery.discoverFeatures(
+            context,
+            const <String>{
+              Constants.featurePinToTop,
+              Constants.featureAddStoryToFavList,
+              Constants.featureOpenStoryInWebView,
+            },
+          );
+        }
+      })
+      ..addPostFrameCallback((_) {
+        final ModalRoute<dynamic>? route = ModalRoute.of(context);
+
+        if (route == null) return;
+
+        locator
+            .get<RouteObserver<ModalRoute<dynamic>>>()
+            .subscribe(this, route);
+      });
 
     scrollController.addListener(() {
       FocusScope.of(context).requestFocus(FocusNode());
@@ -208,6 +218,8 @@ class _ItemScreenState extends State<ItemScreen> {
         context.read<EditCubit>().onScrolled();
       }
     });
+
+    commentEditingController.text = context.read<EditCubit>().state.text ?? '';
   }
 
   @override
@@ -685,7 +697,8 @@ class _ItemScreenState extends State<ItemScreen> {
               return BlocListener<EditCubit, EditState>(
                 listenWhen: (EditState previous, EditState current) {
                   return previous.replyingTo != current.replyingTo ||
-                      previous.itemBeingEdited != current.itemBeingEdited;
+                      previous.itemBeingEdited != current.itemBeingEdited ||
+                      commentEditingController.text != current.text;
                 },
                 listener: (BuildContext context, EditState editState) {
                   if (editState.replyingTo != null ||

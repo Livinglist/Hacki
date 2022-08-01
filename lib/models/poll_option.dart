@@ -79,6 +79,7 @@ class PollOption extends Item {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'descendants': descendants,

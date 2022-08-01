@@ -91,6 +91,7 @@ class Story extends Item {
   String get simpleMetadata =>
       '''$score point${score > 1 ? 's' : ''} $descendants comment${descendants > 1 ? 's' : ''} $postedDate''';
 
+  @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'descendants': descendants,

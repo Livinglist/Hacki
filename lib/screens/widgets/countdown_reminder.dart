@@ -33,7 +33,7 @@ class _CountDownReminderState extends State<CountdownReminder>
   bool isVisible = false;
 
   static const Duration countdownDuration = Duration(seconds: 8);
-  static const Duration visibilityCountdownDuration = Duration(seconds: 3);
+  static const Duration visibilityCountdownDuration = Duration.zero;
 
   @override
   void initState() {
