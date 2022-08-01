@@ -48,6 +48,7 @@ class EditCubit extends HydratedCubit<EditState> {
       _draftCache.removeDraft(replyingTo: state.replyingTo!.id);
     }
     emit(const EditState.init());
+    clear();
   }
 
   void onTextChanged(String text) {

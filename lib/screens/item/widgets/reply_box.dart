@@ -147,11 +147,10 @@ class _ReplyBoxState extends State<ReplyBox> {
                                   color: Palette.orange,
                                 ),
                                 onPressed: () {
-                                  if (context
-                                      .read<EditCubit>()
-                                      .state
-                                      .text
-                                      .isNotNullOrEmpty) {
+                                  final EditState state =
+                                      context.read<EditCubit>().state;
+                                  if (state.replyingTo != null &&
+                                      state.text.isNotNullOrEmpty) {
                                     showDialog<void>(
                                       context: context,
                                       builder: (BuildContext context) =>
