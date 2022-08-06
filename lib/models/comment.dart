@@ -59,6 +59,7 @@ class Comment extends Item {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() => <String, dynamic>{
         'id': id,
         'time': time,

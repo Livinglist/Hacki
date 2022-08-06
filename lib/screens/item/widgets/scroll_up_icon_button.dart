@@ -20,7 +20,7 @@ class _ScrollUpIconButtonState extends State<ScrollUpIconButton> {
     super.initState();
 
     widget.scrollController.addListener(() {
-      if (widget.scrollController.offset <= 1000) {
+      if (widget.scrollController.offset <= 1000 && mounted) {
         setState(() {});
       }
     });

@@ -5,7 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/item.dart';
+import 'package:hacki/screens/screens.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/link_util.dart';
 
@@ -145,6 +147,39 @@ class _ReplyBoxState extends State<ReplyBox> {
                                   color: Palette.orange,
                                 ),
                                 onPressed: () {
+                                  final EditState state =
+                                      context.read<EditCubit>().state;
+                                  if (state.replyingTo != null &&
+                                      state.text.isNotNullOrEmpty) {
+                                    showDialog<void>(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          AlertDialog(
+                                        title: const Text('Save draft?'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              context
+                                                  .read<EditCubit>()
+                                                  .deleteDraft();
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text(
+                                              'No',
+                                              style: TextStyle(
+                                                color: Palette.red,
+                                              ),
+                                            ),
+                                          ),
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: const Text('Yes'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }
                                   widget.onCloseTapped();
                                   expanded = false;
                                 },
@@ -249,8 +284,31 @@ class _ReplyBoxState extends State<ReplyBox> {
                         style: const TextStyle(color: Palette.grey),
                       ),
                       const Spacer(),
+                      if (replyingTo != null)
+                        TextButton(
+                          child: const Text('View thread'),
+                          onPressed: () {
+                            HapticFeedback.lightImpact();
+                            setState(() {
+                              expanded = false;
+                            });
+                            Navigator.popUntil(
+                              context,
+                              (Route<dynamic> route) =>
+                                  route.settings.name == ItemScreen.routeName ||
+                                  route.isFirst,
+                            );
+                            goToItemScreen(
+                              args: ItemScreenArgs(
+                                item: replyingTo,
+                                useCommentCache: true,
+                              ),
+                              forceNewScreen: true,
+                            );
+                          },
+                        ),
                       TextButton(
-                        child: const Text('Copy All'),
+                        child: const Text('Copy all'),
                         onPressed: () => FlutterClipboard.copy(
                           replyingTo?.text ?? '',
                         ).then((_) => HapticFeedback.selectionClick()),

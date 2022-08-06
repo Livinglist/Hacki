@@ -289,20 +289,37 @@ class CommentTile extends StatelessWidget {
                                         .read<CommentsCubit>()
                                         .state
                                         .commentIds
-                                        .contains(comment.kids.first))
+                                        .contains(comment.kids.first) &&
+                                    !context
+                                        .read<CommentsCubit>()
+                                        .state
+                                        .onlyShowTargetComment)
                                   Center(
-                                    child: TextButton(
-                                      onPressed: () {
-                                        HapticFeedback.selectionClick();
-                                        context
-                                            .read<CommentsCubit>()
-                                            .loadMore(comment: comment);
-                                      },
-                                      child: Text(
-                                        '''Load ${comment.kids.length} ${comment.kids.length > 1 ? 'replies' : 'reply'}''',
-                                        style: const TextStyle(
-                                          fontSize: TextDimens.pt12,
-                                        ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: Dimens.pt12,
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          Expanded(
+                                            child: TextButton(
+                                              onPressed: () {
+                                                HapticFeedback.selectionClick();
+                                                context
+                                                    .read<CommentsCubit>()
+                                                    .loadMore(comment: comment);
+                                              },
+                                              child: Text(
+                                                '''Load ${comment.kids.length} ${comment.kids.length > 1 ? 'replies' : 'reply'}''',
+                                                style: const TextStyle(
+                                                  fontSize: TextDimens.pt12,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
