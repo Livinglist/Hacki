@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_siri_suggestions/flutter_siri_suggestions.dart';
 import 'package:hacki/blocs/blocs.dart';
@@ -40,10 +39,6 @@ Future<void> main({bool testing = false}) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   isTesting = testing;
-
-  if (isTesting) {
-    enableFlutterDriverExtension();
-  }
 
   final HydratedStorage storage = await HydratedStorage.build(
     storageDirectory: kIsWeb

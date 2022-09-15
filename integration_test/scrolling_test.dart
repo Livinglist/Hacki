@@ -1,72 +1,68 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hacki/main.dart' as app;
+import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:integration_test/integration_test.dart';
 
 void main() {
   final IntegrationTestWidgetsFlutterBinding binding =
       IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('Scrolling test', (WidgetTester tester) async {
     await app.main(testing: true);
-    await tester.pump();
-    // await tester.pumpWidget(
-    //   const app.HackiApp(
-    //     trueDarkMode: false,
-    //   ),
-    // );
+    await tester.pumpAndSettle();
 
-    final Finder listFinder = find.byType(Scrollable);
-    final Finder itemFinder = find.widgetWithText(Tab, 'BEST');
+    final Finder bestTabFinder = find.widgetWithText(Tab, 'BEST');
+
+    expect(bestTabFinder, findsOneWidget);
+
+    Future<void> scrollDown(WidgetTester tester) async {
+      await tester.timedDragFrom(
+        const Offset(100, 200),
+        const Offset(100, -700),
+        const Duration(seconds: 2),
+      );
+      await tester.pump();
+    }
+
+    Future<void> scrollUp(WidgetTester tester) async {
+      await tester.timedDragFrom(
+        const Offset(100, 200),
+        const Offset(100, 700),
+        const Duration(seconds: 1),
+      );
+      await tester.pump();
+    }
 
     await binding.traceAction(
       () async {
-        // Scroll until the item to be found appears.
-        await tester.scrollUntilVisible(
-          itemFinder,
-          500,
-          scrollable: listFinder,
-        );
+        await tester.tap(bestTabFinder);
+        await tester.pump();
+
+        const int count = 10;
+
+        for (int i = 0; i < count; i++) {
+          await scrollDown(tester);
+        }
+
+        for (int i = 0; i < count - 3; i++) {
+          await scrollUp(tester);
+        }
+
+        await tester.pumpAndSettle(const Duration(seconds: 2));
+
+        final Finder storyFinder = find.byType(StoryTile);
+
+        expect(storyFinder, findsWidgets);
+
+        final Finder firstStoryFinder = storyFinder.first;
+
+        expect(firstStoryFinder, findsOneWidget);
+
+        await tester.tap(firstStoryFinder);
+        await tester.pump(const Duration(seconds: 4));
       },
       reportKey: 'scrolling_timeline',
     );
   });
-
-  // group('performance test', () {
-  //   testWidgets('scrolling performance on ItemScreen',
-  //       (WidgetTester tester) async {
-  //     await app.main(testing: true);
-  //     await tester.pump();
-  //
-  //     final Finder bestStoryTabFinder = find.text('BEST');
-  //
-  //     await tester.tap(bestStoryTabFinder);
-  //     await tester.pumpAndSettle(const Duration(seconds: 3));
-  //
-  //     final Finder storyTileFinder = find.byType(StoryTile);
-  //
-  //     await tester.tap(storyTileFinder.first);
-  //     await tester.pumpAndSettle(const Duration(seconds: 3));
-  //
-  //     TestGesture gesture = await tester.startGesture(const Offset(0, 300));
-  //     await gesture.moveBy(const Offset(0, -300));
-  //     await tester.pump();
-  //
-  //     gesture = await tester.startGesture(const Offset(0, 300));
-  //     await gesture.moveBy(const Offset(0, -300));
-  //     await tester.pump();
-  //
-  //     gesture = await tester.startGesture(const Offset(0, 300));
-  //     await gesture.moveBy(const Offset(0, -300));
-  //     await tester.pump();
-  //
-  //     gesture = await tester.startGesture(const Offset(0, 300));
-  //     await gesture.moveBy(const Offset(0, 900));
-  //     await tester.pump();
-  //
-  //     gesture = await tester.startGesture(const Offset(0, 300));
-  //     await gesture.moveBy(const Offset(0, -900));
-  //     await tester.pump();
-  //   });
-  // });
 }
