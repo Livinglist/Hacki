@@ -9,11 +9,12 @@ void main() {
 
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     await app.main(testing: true);
-    await tester.pumpWidget(
-      const app.HackiApp(
-        trueDarkMode: false,
-      ),
-    );
+    await tester.pump();
+    // await tester.pumpWidget(
+    //   const app.HackiApp(
+    //     trueDarkMode: false,
+    //   ),
+    // );
 
     final Finder listFinder = find.byType(Scrollable);
     final Finder itemFinder = find.widgetWithText(Tab, 'BEST');

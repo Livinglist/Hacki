@@ -101,8 +101,13 @@ class EditCubit extends HydratedCubit<EditState> {
       selected = _cachedState;
     }
 
+    if (selected.text.isNullOrEmpty) {
+      clear();
+      return null;
+    }
+
     return <String, dynamic>{
-      'text': selected.text,
+      'text': selected.text ?? '',
       'item': selected.replyingTo?.toJson(),
     };
   }

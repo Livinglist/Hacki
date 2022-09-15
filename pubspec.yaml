@@ -16,7 +16,7 @@ dependencies:
   collection: ^1.16.0
   connectivity_plus: ^2.3.7
   dio: ^4.0.4
-  equatable: 2.0.3
+  equatable: ^2.0.5
   fast_gbk: ^1.0.0
   #  feature_discovery: ^0.14.0
   feature_discovery:
@@ -36,7 +36,7 @@ dependencies:
       ref: master
   flutter_linkify: ^5.0.2
   flutter_local_notifications: ^9.5.0
-  flutter_secure_storage: ^5.0.2
+  flutter_secure_storage: ^6.0.0
   flutter_siri_suggestions: ^2.1.0
   flutter_slidable: ^1.2.1
   font_awesome_flutter: ^9.2.0
