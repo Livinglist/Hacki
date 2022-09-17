@@ -1,11 +1,16 @@
 import 'package:bloc/bloc.dart';
+import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:logger/logger.dart';
 
 class CustomBlocObserver extends BlocObserver {
   @override
   void onCreate(BlocBase<dynamic> bloc) {
-    locator.get<Logger>().v('$bloc created');
+    if (bloc is! CollapseCubit) {
+      locator.get<Logger>().v('$bloc created');
+    }
+
     super.onCreate(bloc);
   }
 
@@ -14,7 +19,10 @@ class CustomBlocObserver extends BlocObserver {
     Bloc<dynamic, dynamic> bloc,
     Object? event,
   ) {
-    locator.get<Logger>().v(event);
+    if (event is! StoriesEvent) {
+      locator.get<Logger>().v(event);
+    }
+
     super.onEvent(bloc, event);
   }
 
@@ -23,7 +31,10 @@ class CustomBlocObserver extends BlocObserver {
     Bloc<dynamic, dynamic> bloc,
     Transition<dynamic, dynamic> transition,
   ) {
-    locator.get<Logger>().v(transition);
+    if (bloc is! StoriesBloc) {
+      locator.get<Logger>().v(transition);
+    }
+
     super.onTransition(bloc, transition);
   }
 
@@ -34,6 +45,8 @@ class CustomBlocObserver extends BlocObserver {
     StackTrace stackTrace,
   ) {
     locator.get<Logger>().e(error);
+    locator.get<Logger>().e(stackTrace);
+
     super.onError(bloc, error, stackTrace);
   }
 }

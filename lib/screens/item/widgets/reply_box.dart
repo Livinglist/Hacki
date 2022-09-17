@@ -257,7 +257,6 @@ class _ReplyBoxState extends State<ReplyBox> {
 
     showDialog<void>(
       context: context,
-      barrierDismissible: true,
       builder: (_) {
         return AlertDialog(
           insetPadding: const EdgeInsets.symmetric(

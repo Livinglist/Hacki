@@ -86,7 +86,7 @@ class _OnboardingViewState extends State<OnboardingView> {
               },
               style: ElevatedButton.styleFrom(
                 shape: const CircleBorder(),
-                primary: Palette.orange,
+                backgroundColor: Palette.orange,
                 padding: const EdgeInsets.all(
                   Dimens.pt18,
                 ),

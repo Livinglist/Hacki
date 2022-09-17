@@ -99,32 +99,15 @@ Future<void> main({bool testing = false}) async {
   final bool trueDarkMode =
       prefs.getBool(PreferenceRepository.trueDarkModeKey) ?? false;
 
-  if (kReleaseMode) {
-    HydratedBlocOverrides.runZoned(
-      () => runApp(
-        HackiApp(
-          savedThemeMode: savedThemeMode,
-          trueDarkMode: trueDarkMode,
-        ),
-      ),
-      storage: storage,
-    );
-  } else {
-    BlocOverrides.runZoned(
-      () {
-        HydratedBlocOverrides.runZoned(
-          () => runApp(
-            HackiApp(
-              savedThemeMode: savedThemeMode,
-              trueDarkMode: trueDarkMode,
-            ),
-          ),
-          storage: storage,
-        );
-      },
-      blocObserver: CustomBlocObserver(),
-    );
-  }
+  Bloc.observer = CustomBlocObserver();
+  HydratedBloc.storage = storage;
+
+  runApp(
+    HackiApp(
+      savedThemeMode: savedThemeMode,
+      trueDarkMode: trueDarkMode,
+    ),
+  );
 }
 
 class HackiApp extends StatelessWidget {

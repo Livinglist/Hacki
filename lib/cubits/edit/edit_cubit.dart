@@ -66,6 +66,8 @@ class EditCubit extends HydratedCubit<EditState> {
 
   void deleteDraft() => clear();
 
+  bool called = false;
+
   @override
   EditState? fromJson(Map<String, dynamic> json) {
     final String text = json['text'] as String? ?? '';
@@ -81,7 +83,7 @@ class EditCubit extends HydratedCubit<EditState> {
         replyingTo: replyingTo,
       );
 
-      cachedState = state;
+      _cachedState = state;
 
       return state;
     }
@@ -94,16 +96,21 @@ class EditCubit extends HydratedCubit<EditState> {
     EditState selected = state;
 
     if (state.replyingTo == null ||
-        (state.replyingTo?.id != cachedState.replyingTo?.id &&
+        (state.replyingTo?.id != _cachedState.replyingTo?.id &&
             state.text.isNullOrEmpty)) {
-      selected = cachedState;
+      selected = _cachedState;
+    }
+
+    if (selected.text.isNullOrEmpty) {
+      clear();
+      return null;
     }
 
     return <String, dynamic>{
-      'text': selected.text,
+      'text': selected.text ?? '',
       'item': selected.replyingTo?.toJson(),
     };
   }
 
-  static EditState cachedState = const EditState.init();
+  static EditState _cachedState = const EditState.init();
 }

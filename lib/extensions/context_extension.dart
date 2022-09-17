@@ -22,7 +22,7 @@ extension ContextExtension on BuildContext {
   static double _screenWidth = 0;
   static double _storyTileHeight = 0;
   static int _storyTileMaxLines = 4;
-  static const double _screenWidthLowerBound = 428,
+  static const double _screenWidthLowerBound = 430,
       _screenWidthUpperBound = 850,
       _picHeightLowerBound = 110,
       _picHeightUpperBound = 128,
