@@ -1,3 +1,2 @@
-- Lazy loading.
-- Offline mode now includes web pages.
-- You can now sort comments in story screen.
+- Bumped Flutter version.
+- Updated navigation bar background color.
