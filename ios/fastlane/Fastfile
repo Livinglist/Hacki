@@ -42,6 +42,18 @@ platform :ios do
       readonly: true
     )
 
+    sync_code_signing(
+      type: "appstore",
+      app_identifier: "com.jiaqi.hacki.Share-Extension",
+      readonly: true
+    )
+
+    sync_code_signing(
+      type: "appstore",
+      app_identifier: "com.jiaqi.hacki.Action-Extension",
+      readonly: true
+    )
+
     if !is_example_repo then
       if APPSTORECONNECT_ISSUER_ID == '69a6de83-feb7-47e3-e053-5b8c7c11a4d1' then
         UI.user_error! "You need to update your Fastfile to use your own `APPSTORECONNECT_ISSUER_ID`"
