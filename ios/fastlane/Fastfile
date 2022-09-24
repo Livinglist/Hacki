@@ -56,9 +56,9 @@ platform :ios do
       key_id: APPSTORECONNECT_KEY_ID,
       issuer_id: APPSTORECONNECT_ISSUER_ID
     )
-
+latest_testflight_build_number
     # Figure out the build number (and optionally build name)
-    new_build_number = (latest_testflight_build_number + 1)
+    new_build_number = ( + 1)
     extra_config_args = []
     if options.key?(:build_name) then
       extra_config_args = ["--build-name", options[:build_name].delete_prefix('v')]
@@ -71,6 +71,14 @@ platform :ios do
       "--build-number", new_build_number.to_s,
       *extra_config_args
     )
+
+    increment_version_number(
+      version_number: options[:build_name].delete_prefix('v')
+    )
+
+    increment_build_number({
+      build_number: latest_testflight_build_number + 1
+    })
   
     # Build & sign using Runner.xcworkspace
     build_app(
