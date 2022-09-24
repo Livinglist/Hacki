@@ -7,10 +7,10 @@
 		<key>NSExtensionAttributes</key>
 		<dict>
 			<key>NSExtensionActivationRule</key>
-            <dict>
-            	<key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
-            	<integer>1</integer>
-            </dict>
+			<dict>
+				<key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
+				<integer>1</integer>
+			</dict>
 		</dict>
 		<key>NSExtensionMainStoryboard</key>
 		<string>MainInterface</string>
