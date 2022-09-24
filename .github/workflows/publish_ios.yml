@@ -35,7 +35,7 @@ jobs:
           flutter-version: 3.3.2
       - run: flutter pub get
       - run: flutter format --set-exit-if-changed .
-      - run: flutter anaylyze
+      - run: flutter analyze
       # Start an ssh-agent that will provide the SSH key from the
       # SSH_PRIVATE_KEY secret to `fastlane match`
       - name: Setup SSH key
