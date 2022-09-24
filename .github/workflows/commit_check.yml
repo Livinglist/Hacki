@@ -2,8 +2,8 @@ name: Commit Guard
 
 on:
   push:
-    tags-ignore:
-      - '**'
+    branches:
+      - "**"
 
 jobs:
   releases:
