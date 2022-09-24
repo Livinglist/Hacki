@@ -73,7 +73,7 @@ latest_testflight_build_number
     )
 
     increment_version_number(
-      version_number: options[:build_name].delete_prefix('v')
+      version_number: options[:build_name].delete_prefix('v').delete_suffix('-rc')
     )
 
     increment_build_number({
