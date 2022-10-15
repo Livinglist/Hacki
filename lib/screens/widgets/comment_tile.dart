@@ -357,6 +357,7 @@ class CommentTile extends StatelessWidget {
                     final Color wrapperBorderColor = _getColor(i);
                     final bool shouldHighlight = isMyComment && i == level;
                     wrapper = Container(
+                      clipBehavior: Clip.hardEdge,
                       margin: const EdgeInsets.only(
                         left: Dimens.pt12,
                       ),

@@ -1,0 +1,54 @@
+name: Publish (iOS)
+
+on:
+  # Allow manual builds of this workflow
+  workflow_dispatch: {}
+  # Run the workflow whenever a new tag named 'v*' is pushed
+  push:
+    branches:
+      - "!*"
+    tags:
+      - "v*"
+
+jobs:
+  build_and_publish:
+    runs-on: macos-latest
+
+    env:
+      # Point the `ruby/setup-ruby` action at this Gemfile, so it
+      # caches dependencies for us.
+      BUNDLE_GEMFILE: ${{ github.workspace }}/ios/Gemfile
+
+    steps:
+      - name: Check out from git
+        uses: actions/checkout@v2
+      # Configure ruby according to our .ruby-version
+      - name: Setup ruby & Bundler
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      # Set up flutter (feel free to adjust the version below)
+      - name: Setup flutter
+        uses: subosito/flutter-action@v2
+        with:
+          cache: true
+          flutter-version: 3.3.4
+      - run: flutter pub get
+      - run: flutter format --set-exit-if-changed .
+      - run: flutter analyze
+      # Start an ssh-agent that will provide the SSH key from the
+      # SSH_PRIVATE_KEY secret to `fastlane match`
+      - name: Setup SSH key
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+            ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+            ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
+      - name: Download dependencies
+        run: flutter pub get
+      - name: Build & Publish to TestFlight with Fastlane
+        env:
+          APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: cd ios && bundle exec fastlane beta "build_name:${{ github.ref_name }}"
