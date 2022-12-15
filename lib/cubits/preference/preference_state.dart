@@ -10,6 +10,7 @@ class PreferenceState extends Equatable {
     required this.useReader,
     required this.markReadStories,
     required this.showMetadata,
+    required this.tapAnywhereToCollapse,
     required this.fetchMode,
     required this.order,
   });
@@ -23,6 +24,7 @@ class PreferenceState extends Equatable {
         useReader = false,
         markReadStories = false,
         showMetadata = false,
+        tapAnywhereToCollapse = false,
         fetchMode = FetchMode.eager,
         order = CommentsOrder.natural;
 
@@ -34,6 +36,7 @@ class PreferenceState extends Equatable {
   final bool useReader;
   final bool markReadStories;
   final bool showMetadata;
+  final bool tapAnywhereToCollapse;
   final FetchMode fetchMode;
   final CommentsOrder order;
 
@@ -46,6 +49,7 @@ class PreferenceState extends Equatable {
     bool? useReader,
     bool? markReadStories,
     bool? showMetadata,
+    bool? tapAnywhereToCollapse,
     FetchMode? fetchMode,
     CommentsOrder? order,
   }) {
@@ -58,6 +62,8 @@ class PreferenceState extends Equatable {
       useReader: useReader ?? this.useReader,
       markReadStories: markReadStories ?? this.markReadStories,
       showMetadata: showMetadata ?? this.showMetadata,
+      tapAnywhereToCollapse:
+          tapAnywhereToCollapse ?? this.tapAnywhereToCollapse,
       fetchMode: fetchMode ?? this.fetchMode,
       order: order ?? this.order,
     );
@@ -73,6 +79,7 @@ class PreferenceState extends Equatable {
         useReader,
         markReadStories,
         showMetadata,
+        tapAnywhereToCollapse,
         fetchMode,
         order,
       ];

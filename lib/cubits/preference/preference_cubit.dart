@@ -81,6 +81,11 @@ class PreferenceCubit extends Cubit<PreferenceState> {
     _preferenceRepository.toggleMetadataMode();
   }
 
+  void toggleTapAnywhereToCollapse() {
+    emit(state.copyWith(tapAnywhereToCollapse: !state.tapAnywhereToCollapse));
+    _preferenceRepository.toggleTapAnywhereToCollapse();
+  }
+
   void selectFetchMode(FetchMode? fetchMode) {
     if (fetchMode == null || state.fetchMode == fetchMode) return;
     HapticFeedback.lightImpact();

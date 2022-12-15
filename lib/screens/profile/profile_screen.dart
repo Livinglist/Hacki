@@ -324,27 +324,20 @@ class _ProfileScreenState extends State<ProfileScreen>
                                         DropdownButton<FetchMode>(
                                           value: preferenceState.fetchMode,
                                           underline: const SizedBox.shrink(),
-                                          items: const <
-                                              DropdownMenuItem<FetchMode>>[
-                                            DropdownMenuItem<FetchMode>(
-                                              value: FetchMode.lazy,
-                                              child: Text(
-                                                'Lazy',
-                                                style: TextStyle(
-                                                  fontSize: TextDimens.pt16,
+                                          items: FetchMode.values
+                                              .map(
+                                                (FetchMode val) =>
+                                                    DropdownMenuItem<FetchMode>(
+                                                  value: val,
+                                                  child: Text(
+                                                    val.description,
+                                                    style: const TextStyle(
+                                                      fontSize: TextDimens.pt16,
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
-                                            ),
-                                            DropdownMenuItem<FetchMode>(
-                                              value: FetchMode.eager,
-                                              child: Text(
-                                                'Eager',
-                                                style: TextStyle(
-                                                  fontSize: TextDimens.pt16,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
+                                              )
+                                              .toList(),
                                           onChanged: context
                                               .read<PreferenceCubit>()
                                               .selectFetchMode,
@@ -359,36 +352,21 @@ class _ProfileScreenState extends State<ProfileScreen>
                                         DropdownButton<CommentsOrder>(
                                           value: preferenceState.order,
                                           underline: const SizedBox.shrink(),
-                                          items: const <
-                                              DropdownMenuItem<CommentsOrder>>[
-                                            DropdownMenuItem<CommentsOrder>(
-                                              value: CommentsOrder.natural,
-                                              child: Text(
-                                                'Natural',
-                                                style: TextStyle(
-                                                  fontSize: TextDimens.pt16,
+                                          items: CommentsOrder.values
+                                              .map(
+                                                (CommentsOrder val) =>
+                                                    DropdownMenuItem<
+                                                        CommentsOrder>(
+                                                  value: val,
+                                                  child: Text(
+                                                    val.description,
+                                                    style: const TextStyle(
+                                                      fontSize: TextDimens.pt16,
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
-                                            ),
-                                            DropdownMenuItem<CommentsOrder>(
-                                              value: CommentsOrder.newestFirst,
-                                              child: Text(
-                                                'Newest first',
-                                                style: TextStyle(
-                                                  fontSize: TextDimens.pt16,
-                                                ),
-                                              ),
-                                            ),
-                                            DropdownMenuItem<CommentsOrder>(
-                                              value: CommentsOrder.oldestFirst,
-                                              child: Text(
-                                                'Oldest first',
-                                                style: TextStyle(
-                                                  fontSize: TextDimens.pt16,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
+                                              )
+                                              .toList(),
                                           onChanged: context
                                               .read<PreferenceCubit>()
                                               .selectCommentsOrder,
@@ -398,6 +376,17 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     ),
                                   ),
                                 ],
+                              ),
+                              SwitchListTile(
+                                title: const Text('Tap Anywhere to Collapse'),
+                                value: preferenceState.tapAnywhereToCollapse,
+                                onChanged: (bool val) {
+                                  HapticFeedback.lightImpact();
+                                  context
+                                      .read<PreferenceCubit>()
+                                      .toggleTapAnywhereToCollapse();
+                                },
+                                activeColor: Palette.orange,
                               ),
                               SwitchListTile(
                                 title: const Text('Complex Story Tile'),

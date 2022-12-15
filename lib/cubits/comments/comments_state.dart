@@ -9,14 +9,22 @@ enum CommentsStatus {
 }
 
 enum CommentsOrder {
-  natural,
-  newestFirst,
-  oldestFirst,
+  natural('Natural'),
+  newestFirst('Newest first'),
+  oldestFirst('Oldest first');
+
+  const CommentsOrder(this.description);
+
+  final String description;
 }
 
 enum FetchMode {
-  lazy,
-  eager,
+  lazy('Lazy'),
+  eager('Eager');
+
+  const FetchMode(this.description);
+
+  final String description;
 }
 
 class CommentsState extends Equatable {

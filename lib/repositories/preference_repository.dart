@@ -27,6 +27,7 @@ class PreferenceRepository {
   static const String _lastReadStoryIdKey = 'lastReadStoryId';
   static const String _isFirstLaunchKey = 'isFirstLaunch';
   static const String _metadataModeKey = 'metadataMode';
+  static const String _tapAnywhereToCollapseKey = 'tapAnywhereToCollapse';
 
   static const String _notificationModeKey = 'notificationMode';
   static const String _readerModeKey = 'readerMode';
@@ -56,6 +57,7 @@ class PreferenceRepository {
   static const bool _markReadStoriesModeDefaultValue = true;
   static const bool _isFirstLaunchKeyDefaultValue = true;
   static const bool _metadataModeDefaultValue = true;
+  static const bool _tapAnywhereToCollapseDefaultValue = false;
   static final int _fetchModeDefaultValue = FetchMode.eager.index;
   static final int _commentsOrderDefaultValue = CommentsOrder.natural.index;
 
@@ -251,6 +253,13 @@ class PreferenceRepository {
     final bool currentMode =
         prefs.getBool(_metadataModeKey) ?? _metadataModeDefaultValue;
     await prefs.setBool(_metadataModeKey, !currentMode);
+  }
+
+  Future<void> toggleTapAnywhereToCollapse() async {
+    final SharedPreferences prefs = await _prefs;
+    final bool currentMode = prefs.getBool(_tapAnywhereToCollapseKey) ??
+        _tapAnywhereToCollapseDefaultValue;
+    await prefs.setBool(_tapAnywhereToCollapseKey, !currentMode);
   }
 
   Future<void> selectFetchMode(FetchMode fetchMode) async {

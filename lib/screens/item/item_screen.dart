@@ -463,9 +463,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                                         color: Palette.orange,
                                       ),
                                       onOpen: (LinkableElement link) {
-                                        if (link.url.contains(
-                                          'news.ycombinator.com/item',
-                                        )) {
+                                        if (link.url.isStoryLink) {
                                           onStoryLinkTapped(link.url);
                                         } else {
                                           LinkUtil.launch(link.url);
@@ -548,26 +546,20 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                                   DropdownButton<FetchMode>(
                                     value: state.fetchMode,
                                     underline: const SizedBox.shrink(),
-                                    items: const <DropdownMenuItem<FetchMode>>[
-                                      DropdownMenuItem<FetchMode>(
-                                        value: FetchMode.lazy,
-                                        child: Text(
-                                          'Lazy',
-                                          style: TextStyle(
-                                            fontSize: TextDimens.pt13,
+                                    items: FetchMode.values
+                                        .map(
+                                          (FetchMode val) =>
+                                              DropdownMenuItem<FetchMode>(
+                                            value: val,
+                                            child: Text(
+                                              val.description,
+                                              style: const TextStyle(
+                                                fontSize: TextDimens.pt13,
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                      DropdownMenuItem<FetchMode>(
-                                        value: FetchMode.eager,
-                                        child: Text(
-                                          'Eager',
-                                          style: TextStyle(
-                                            fontSize: TextDimens.pt13,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                        )
+                                        .toList(),
                                     onChanged: context
                                         .read<CommentsCubit>()
                                         .onFetchModeChanged,
@@ -578,36 +570,20 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                                 DropdownButton<CommentsOrder>(
                                   value: state.order,
                                   underline: const SizedBox.shrink(),
-                                  items: const <
-                                      DropdownMenuItem<CommentsOrder>>[
-                                    DropdownMenuItem<CommentsOrder>(
-                                      value: CommentsOrder.natural,
-                                      child: Text(
-                                        'Natural',
-                                        style: TextStyle(
-                                          fontSize: TextDimens.pt13,
+                                  items: CommentsOrder.values
+                                      .map(
+                                        (CommentsOrder val) =>
+                                            DropdownMenuItem<CommentsOrder>(
+                                          value: val,
+                                          child: Text(
+                                            val.description,
+                                            style: const TextStyle(
+                                              fontSize: TextDimens.pt13,
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                    DropdownMenuItem<CommentsOrder>(
-                                      value: CommentsOrder.newestFirst,
-                                      child: Text(
-                                        'Newest first',
-                                        style: TextStyle(
-                                          fontSize: TextDimens.pt13,
-                                        ),
-                                      ),
-                                    ),
-                                    DropdownMenuItem<CommentsOrder>(
-                                      value: CommentsOrder.oldestFirst,
-                                      child: Text(
-                                        'Oldest first',
-                                        style: TextStyle(
-                                          fontSize: TextDimens.pt13,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                      )
+                                      .toList(),
                                   onChanged: context
                                       .read<CommentsCubit>()
                                       .onOrderChanged,
@@ -945,7 +921,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
   }
 
   Future<void> onStoryLinkTapped(String link) async {
-    final int? id = link.getItemId();
+    final int? id = link.itemId;
     if (id != null) {
       storyLinkTapThrottle.run(() {
         locator.get<StoriesRepository>().fetchItemBy(id: id).then((Item? item) {
@@ -1062,9 +1038,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                                               color: Palette.orange,
                                             ),
                                             onOpen: (LinkableElement link) {
-                                              if (link.url.contains(
-                                                'news.ycombinator.com/item',
-                                              )) {
+                                              if (link.url.isStoryLink) {
                                                 onStoryLinkTapped
                                                     .call(link.url);
                                               } else {
