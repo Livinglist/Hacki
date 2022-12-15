@@ -303,12 +303,10 @@ packages:
   flutter_inappwebview:
     dependency: "direct main"
     description:
-      path: "."
-      ref: master
-      resolved-ref: e81d9b76aa8cbbdec65429a84a9edaf370715e90
-      url: "https://github.com/vocsyinfotech/flutter_inappwebview"
-    source: git
-    version: "5.4.3+7"
+      name: flutter_inappwebview
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.7.2+3"
   flutter_linkify:
     dependency: "direct main"
     description:
@@ -1248,4 +1246,4 @@ packages:
     version: "3.1.1"
 sdks:
   dart: ">=2.18.0 <3.0.0"
-  flutter: ">=3.3.2"
+  flutter: ">=3.3.10"

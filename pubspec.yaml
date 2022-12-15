@@ -1,11 +1,11 @@
 name: hacki
 description: A Hacker News reader.
-version: 0.2.32+75
+version: 0.2.33+76
 publish_to: none
 
 environment:
   sdk: ">=2.17.0 <3.0.0"
-  flutter: "3.3.4"
+  flutter: "3.3.10"
 
 dependencies:
   adaptive_theme: ^3.0.0
@@ -29,11 +29,7 @@ dependencies:
   flutter_cache_manager: ^3.3.0
   flutter_fadein: ^2.0.0
   flutter_feather_icons: 2.0.0+1
-  #  flutter_inappwebview: ^5.4.3+7
-  flutter_inappwebview:
-    git:
-      url: https://github.com/vocsyinfotech/flutter_inappwebview
-      ref: master
+  flutter_inappwebview: ^5.7.2+3
   flutter_linkify: ^5.0.2
   flutter_local_notifications: ^9.5.0
   flutter_secure_storage: ^6.0.0
