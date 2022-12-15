@@ -421,6 +421,7 @@ class CommentTile extends StatelessWidget {
 
   void onTextTapped(BuildContext context) {
     if (context.read<PreferenceCubit>().state.tapAnywhereToCollapse) {
+      HapticFeedback.selectionClick();
       context.read<CollapseCubit>().collapse();
     }
   }
