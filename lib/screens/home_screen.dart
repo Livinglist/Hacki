@@ -156,8 +156,7 @@ class _HomeScreenState extends State<HomeScreen>
     final BlocBuilder<PreferenceCubit, PreferenceState> homeScreen =
         BlocBuilder<PreferenceCubit, PreferenceState>(
       buildWhen: (PreferenceState previous, PreferenceState current) =>
-          previous.shouldShowComplexStoryTile !=
-              current.shouldShowComplexStoryTile ||
+          previous.showComplexStoryTile != current.showComplexStoryTile ||
           previous.showMetadata != current.showMetadata,
       builder: (BuildContext context, PreferenceState preferenceState) {
         final BlocBuilder<PinCubit, PinState> pinnedStories =
@@ -178,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen>
                             },
                             backgroundColor: Palette.red,
                             foregroundColor: Palette.white,
-                            icon: preferenceState.shouldShowComplexStoryTile
+                            icon: preferenceState.showComplexStoryTile
                                 ? Icons.close
                                 : null,
                             label: 'Unpin',
@@ -191,8 +190,7 @@ class _HomeScreenState extends State<HomeScreen>
                           key: ValueKey<String>('${story.id}-PinnedStoryTile'),
                           story: story,
                           onTap: () => onStoryTapped(story, isPin: true),
-                          showWebPreview:
-                              preferenceState.shouldShowComplexStoryTile,
+                          showWebPreview: preferenceState.showComplexStoryTile,
                           showMetadata: preferenceState.showMetadata,
                         ),
                       ),

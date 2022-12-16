@@ -41,35 +41,6 @@ abstract class IntPreference extends Preference<int> {
   const IntPreference({required super.val});
 }
 
-// static const String _usernameKey = 'username';
-// static const String _passwordKey = 'password';
-// static const String _blocklistKey = 'blocklist';
-// static const String _pinnedStoriesIdsKey = 'pinnedStoriesIds';
-// static const String _unreadCommentsIdsKey = 'unreadCommentsIds';
-// static const String _lastReadStoryIdKey = 'lastReadStoryId';
-// static const String _isFirstLaunchKey = 'isFirstLaunch';
-// static const String _metadataModeKey = 'metadataMode';
-// static const String _tapAnywhereToCollapseKey = 'tapAnywhereToCollapse';
-//
-// static const String _notificationModeKey = 'notificationMode';
-// static const String _readerModeKey = 'readerMode';
-//
-// /// Exposing this val for main func.
-// static const String trueDarkModeKey = 'trueDarkMode';
-//
-// /// The key of a boolean value deciding whether or not the story
-// /// tile should display link preview. Defaults to true.
-// static const String _displayModeKey = 'displayMode';
-//
-// /// The key of a boolean value deciding whether or not user should be
-// /// navigated to web view first. Defaults to false.
-// static const String _navigationModeKey = 'navigationMode';
-// static const String _eyeCandyModeKey = 'eyeCandyMode';
-// static const String _markReadStoriesModeKey = 'markReadStoriesMode';
-// static const String _fetchModeKey = 'fetchMode';
-// static const String _commentsOrderKey = 'commentsOrder';
-//
-
 const bool _notificationModeDefaultValue = true;
 const bool _displayModeDefaultValue = true;
 const bool _navigationModeDefaultValueIOS = true;

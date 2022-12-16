@@ -30,13 +30,9 @@ class NotificationCubit extends Cubit<NotificationState> {
     _authBloc.stream.listen((AuthState authState) {
       if (authState.isLoggedIn && authState.username != _username) {
         // Get the user setting.
-        _preferenceRepository.shouldShowNotification
-            .then((bool showNotification) {
-          if (showNotification) {
-            // Delaying the initialization to prevent janks in home screen.
-            Future<void>.delayed(const Duration(seconds: 2), init);
-          }
-        });
+        if (_preferenceCubit.state.showNotification) {
+          Future<void>.delayed(const Duration(seconds: 2), init);
+        }
 
         // Listen for setting changes in the future.
         _preferenceCubit.stream.listen((PreferenceState prefState) {

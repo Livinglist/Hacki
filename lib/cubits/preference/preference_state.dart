@@ -50,7 +50,7 @@ class PreferenceState extends Equatable {
 
   bool get showNotification => _isOn<NotificationModePreference>();
 
-  bool get shouldShowComplexStoryTile => _isOn<DisplayModePreference>();
+  bool get showComplexStoryTile => _isOn<DisplayModePreference>();
 
   bool get showWebFirst => _isOn<NavigationModePreference>();
 

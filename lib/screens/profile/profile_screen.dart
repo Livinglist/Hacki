@@ -172,7 +172,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             }
                             return ItemsListView<Item>(
                               showWebPreview:
-                                  preferenceState.shouldShowComplexStoryTile,
+                                  preferenceState.showComplexStoryTile,
                               showMetadata: preferenceState.showMetadata,
                               useCommentTile: true,
                               refreshController: refreshControllerFav,
