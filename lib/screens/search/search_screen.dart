@@ -165,7 +165,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   FadeIn(
                                     child: StoryTile(
                                       showWebPreview:
-                                          prefState.showComplexStoryTile,
+                                          prefState.shouldShowComplexStoryTile,
                                       showMetadata: prefState.showMetadata,
                                       story: e,
                                       onTap: () => goToItemScreen(
@@ -173,7 +173,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                       ),
                                     ),
                                   ),
-                                  if (!prefState.showComplexStoryTile)
+                                  if (!prefState.shouldShowComplexStoryTile)
                                     const Divider(
                                       height: Dimens.zero,
                                     ),

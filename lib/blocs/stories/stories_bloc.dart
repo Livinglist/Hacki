@@ -70,7 +70,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   ) async {
     _streamSubscription ??=
         _preferenceCubit.stream.listen((PreferenceState event) {
-      final bool isComplexTile = event.showComplexStoryTile;
+      final bool isComplexTile = event.shouldShowComplexStoryTile;
       final int pageSize = _getPageSize(isComplexTile: isComplexTile);
 
       if (pageSize != state.currentPageSize) {
@@ -78,7 +78,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       }
     });
     final bool hasCachedStories = await _offlineRepository.hasCachedStories;
-    final bool isComplexTile = _preferenceCubit.state.showComplexStoryTile;
+    final bool isComplexTile =
+        _preferenceCubit.state.shouldShowComplexStoryTile;
     final int pageSize = _getPageSize(isComplexTile: isComplexTile);
     emit(
       const StoriesState.init().copyWith(

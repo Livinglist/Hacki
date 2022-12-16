@@ -82,6 +82,23 @@ class PreferenceRepository {
     return val;
   }
 
+  Future<bool?> getBool(String key) => _prefs.then(
+        (SharedPreferences prefs) => prefs.getBool(key),
+      );
+
+  Future<int?> getInt(String key) => _prefs.then(
+        (SharedPreferences prefs) => prefs.getInt(key),
+      );
+
+  //ignore: avoid_positional_boolean_parameters
+  void setBool(String key, bool val) => _prefs.then(
+        (SharedPreferences prefs) => prefs.setBool(key, val),
+      );
+
+  void setInt(String key, int val) => _prefs.then(
+        (SharedPreferences prefs) => prefs.setInt(key, val),
+      );
+
   Future<bool> get shouldShowNotification async => _prefs.then(
         (SharedPreferences prefs) =>
             prefs.getBool(_notificationModeKey) ??
