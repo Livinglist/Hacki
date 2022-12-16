@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hacki/config/locator.dart';
-import 'package:hacki/cubits/comments/comments_cubit.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:synced_shared_preferences/synced_shared_preferences.dart';
@@ -25,20 +24,6 @@ class PreferenceRepository {
   static const String _pinnedStoriesIdsKey = 'pinnedStoriesIds';
   static const String _unreadCommentsIdsKey = 'unreadCommentsIds';
   static const String _lastReadStoryIdKey = 'lastReadStoryId';
-  static const String _isFirstLaunchKey = 'isFirstLaunch';
-
-  static const String _notificationModeKey = 'notificationMode';
-
-  /// Exposing this val for main func.
-  static const String trueDarkModeKey = 'trueDarkMode';
-
-  /// The key of a boolean value deciding whether or not user should be
-  /// navigated to web view first. Defaults to false.
-  static const String _fetchModeKey = 'fetchMode';
-  static const String _commentsOrderKey = 'commentsOrder';
-
-  static const bool _notificationModeDefaultValue = true;
-  static const bool _isFirstLaunchKeyDefaultValue = true;
 
   final SyncedSharedPreferences _syncedPrefs;
   final Future<SharedPreferences> _prefs;
@@ -50,16 +35,6 @@ class PreferenceRepository {
   Future<String?> get username async => _secureStorage.read(key: _usernameKey);
 
   Future<String?> get password async => _secureStorage.read(key: _passwordKey);
-
-  Future<bool> get isFirstLaunch async {
-    final SharedPreferences prefs = await _prefs;
-    final bool val =
-        prefs.getBool(_isFirstLaunchKey) ?? _isFirstLaunchKeyDefaultValue;
-
-    await prefs.setBool(_isFirstLaunchKey, false);
-
-    return val;
-  }
 
   Future<bool?> getBool(String key) => _prefs.then(
         (SharedPreferences prefs) => prefs.getBool(key),
@@ -76,12 +51,6 @@ class PreferenceRepository {
 
   void setInt(String key, int val) => _prefs.then(
         (SharedPreferences prefs) => prefs.setInt(key, val),
-      );
-
-  Future<bool> get shouldShowNotification async => _prefs.then(
-        (SharedPreferences prefs) =>
-            prefs.getBool(_notificationModeKey) ??
-            _notificationModeDefaultValue,
       );
 
   Future<bool> hasPushed(int commentId) async =>
@@ -141,18 +110,6 @@ class PreferenceRepository {
   Future<void> removeAuth() async {
     await _secureStorage.delete(key: _usernameKey);
     await _secureStorage.delete(key: _passwordKey);
-  }
-
-  Future<void> selectFetchMode(FetchMode fetchMode) async {
-    final SharedPreferences prefs = await _prefs;
-    final int index = fetchMode.index;
-    await prefs.setInt(_fetchModeKey, index);
-  }
-
-  Future<void> selectCommentsOrder(CommentsOrder order) async {
-    final SharedPreferences prefs = await _prefs;
-    final int index = order.index;
-    await prefs.setInt(_commentsOrderKey, index);
   }
 
   //#region fav
