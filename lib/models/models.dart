@@ -1,5 +1,8 @@
 export 'buildable_comment.dart';
 export 'comment.dart';
+export 'comments_order.dart';
+export 'fetch_mode.dart';
+export 'font_size.dart';
 export 'item.dart';
 export 'poll_option.dart';
 export 'post_data.dart';

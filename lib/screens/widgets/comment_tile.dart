@@ -235,13 +235,13 @@ class CommentTile extends StatelessWidget {
                                                 fontSize: MediaQuery.of(
                                                       context,
                                                     ).textScaleFactor *
-                                                    TextDimens.pt15,
+                                                    prefState.fontSize.fontSize,
                                               ),
                                               linkStyle: TextStyle(
                                                 fontSize: MediaQuery.of(
                                                       context,
                                                     ).textScaleFactor *
-                                                    TextDimens.pt15,
+                                                    prefState.fontSize.fontSize,
                                                 decoration:
                                                     TextDecoration.underline,
                                                 color: Palette.orange,
@@ -263,12 +263,12 @@ class CommentTile extends StatelessWidget {
                                             style: TextStyle(
                                               fontSize: MediaQuery.of(context)
                                                       .textScaleFactor *
-                                                  TextDimens.pt15,
+                                                  prefState.fontSize.fontSize,
                                             ),
                                             linkStyle: TextStyle(
                                               fontSize: MediaQuery.of(context)
                                                       .textScaleFactor *
-                                                  TextDimens.pt15,
+                                                  prefState.fontSize.fontSize,
                                               color: Palette.orange,
                                             ),
                                             onOpen: (LinkableElement link) {

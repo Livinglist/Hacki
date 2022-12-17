@@ -1,11 +1,10 @@
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
-import 'package:hacki/cubits/comments/comments_cubit.dart'
-    show CommentsOrder, FetchMode;
 import 'package:hacki/models/displayable.dart';
+import 'package:hacki/models/models.dart';
 
-abstract class Preference<T> extends Equatable with Displayable {
+abstract class Preference<T> extends Equatable with SettingsDisplayable {
   const Preference({required this.val});
 
   final T val;
@@ -17,6 +16,7 @@ abstract class Preference<T> extends Equatable with Displayable {
   static List<Preference<dynamic>> allPreferences = <Preference<dynamic>>[
     FetchModePreference(),
     CommentsOrderPreference(),
+    FontSizePreference(),
     // order here reflects the order on settings screen.
     const NotificationModePreference(),
     const CollapseModePreference(),
@@ -49,30 +49,11 @@ const bool _eyeCandyModeDefaultValue = false;
 const bool _trueDarkModeDefaultValue = false;
 const bool _readerModeDefaultValue = true;
 const bool _markReadStoriesModeDefaultValue = true;
-const bool _isFirstLaunchKeyDefaultValue = true;
 const bool _metadataModeDefaultValue = true;
 const bool _collapseModeDefaultValue = false;
 final int _fetchModeDefaultValue = FetchMode.eager.index;
 final int _commentsOrderDefaultValue = CommentsOrder.natural.index;
-
-class IsFirstLaunch extends BooleanPreference {
-  const IsFirstLaunch({bool? val})
-      : super(val: val ?? _isFirstLaunchKeyDefaultValue);
-
-  @override
-  IsFirstLaunch copyWith({required bool? val}) {
-    return IsFirstLaunch(val: val);
-  }
-
-  @override
-  String get key => 'isFirstLaunch';
-
-  @override
-  String get title => '';
-
-  @override
-  bool get isDisplayable => false;
-}
+final int _fontSizeDefaultValue = FontSize.regular.index;
 
 class NotificationModePreference extends BooleanPreference {
   const NotificationModePreference({bool? val})
@@ -197,7 +178,7 @@ class ReaderModePreference extends BooleanPreference {
       '''enter reader mode in Safari directly when it is available.''';
 
   @override
-  bool get isDisplayable => Platform.isIOS;
+  bool get isDisplayableInSettings => Platform.isIOS;
 }
 
 class MarkReadStoriesModePreference extends BooleanPreference {
@@ -286,4 +267,22 @@ class CommentsOrderPreference extends IntPreference {
 
   @override
   String get title => 'Default comments order';
+}
+
+class FontSizePreference extends IntPreference {
+  FontSizePreference({int? val}) : super(val: val ?? _fontSizeDefaultValue);
+
+  @override
+  FontSizePreference copyWith({required int? val}) {
+    return FontSizePreference(val: val);
+  }
+
+  @override
+  String get key => 'fontSize';
+
+  @override
+  String get title => 'Default font size';
+
+  @override
+  bool get isDisplayableInSettings => false;
 }

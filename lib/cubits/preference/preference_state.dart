@@ -72,6 +72,9 @@ class PreferenceState extends Equatable {
   CommentsOrder get order => CommentsOrder.values
       .elementAt(preferences.singleWhereType<CommentsOrderPreference>().val);
 
+  FontSize get fontSize => FontSize.values
+      .elementAt(preferences.singleWhereType<FontSizePreference>().val);
+
   @override
   List<Object?> get props => <Object?>[
         ...preferences.map<dynamic>((Preference<dynamic> e) => e.val),

@@ -379,7 +379,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       .whereType<BooleanPreference>()
                                       .where(
                                         (Preference<dynamic> e) =>
-                                            e.isDisplayable,
+                                            e.isDisplayableInSettings,
                                       ))
                                 SwitchListTile(
                                   title: Text(preference.title),

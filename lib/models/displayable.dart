@@ -1,7 +1,7 @@
-mixin Displayable {
+mixin SettingsDisplayable {
   String get title;
 
   String get subtitle => '';
 
-  bool get isDisplayable => true;
+  bool get isDisplayableInSettings => true;
 }
