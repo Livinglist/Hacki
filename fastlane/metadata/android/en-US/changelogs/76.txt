@@ -1,2 +1,2 @@
-- Bumped Flutter version.
-- Updated navigation bar background color.
+- Fixed app icon.
+- Added font size setting to comments screen.
