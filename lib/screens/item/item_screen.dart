@@ -447,6 +447,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
               ),
             ),
             onTap: () {
+              HapticFeedback.lightImpact();
               context.read<PreferenceCubit>().update(
                     FontSizePreference(),
                     to: fontSize.index,
