@@ -3,5 +3,7 @@ mixin SettingsDisplayable {
 
   String get subtitle => '';
 
-  bool get isDisplayableInSettings => true;
+  /// Whether or not this should be displayed
+  /// in settings.
+  bool get isDisplayable => true;
 }

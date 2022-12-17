@@ -178,7 +178,7 @@ class ReaderModePreference extends BooleanPreference {
       '''enter reader mode in Safari directly when it is available.''';
 
   @override
-  bool get isDisplayableInSettings => Platform.isIOS;
+  bool get isDisplayable => Platform.isIOS;
 }
 
 class MarkReadStoriesModePreference extends BooleanPreference {
@@ -284,5 +284,5 @@ class FontSizePreference extends IntPreference {
   String get title => 'Default font size';
 
   @override
-  bool get isDisplayableInSettings => false;
+  bool get isDisplayable => false;
 }
