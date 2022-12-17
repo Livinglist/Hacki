@@ -282,7 +282,4 @@ class FontSizePreference extends IntPreference {
 
   @override
   String get title => 'Default font size';
-
-  @override
-  bool get isDisplayable => false;
 }
