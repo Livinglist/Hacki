@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hacki/config/locator.dart';
-import 'package:hacki/cubits/comments/comments_cubit.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:synced_shared_preferences/synced_shared_preferences.dart';
@@ -25,39 +24,6 @@ class PreferenceRepository {
   static const String _pinnedStoriesIdsKey = 'pinnedStoriesIds';
   static const String _unreadCommentsIdsKey = 'unreadCommentsIds';
   static const String _lastReadStoryIdKey = 'lastReadStoryId';
-  static const String _isFirstLaunchKey = 'isFirstLaunch';
-  static const String _metadataModeKey = 'metadataMode';
-
-  static const String _notificationModeKey = 'notificationMode';
-  static const String _readerModeKey = 'readerMode';
-
-  /// Exposing this val for main func.
-  static const String trueDarkModeKey = 'trueDarkMode';
-
-  /// The key of a boolean value deciding whether or not the story
-  /// tile should display link preview. Defaults to true.
-  static const String _displayModeKey = 'displayMode';
-
-  /// The key of a boolean value deciding whether or not user should be
-  /// navigated to web view first. Defaults to false.
-  static const String _navigationModeKey = 'navigationMode';
-  static const String _eyeCandyModeKey = 'eyeCandyMode';
-  static const String _markReadStoriesModeKey = 'markReadStoriesMode';
-  static const String _fetchModeKey = 'fetchMode';
-  static const String _commentsOrderKey = 'commentsOrder';
-
-  static const bool _notificationModeDefaultValue = true;
-  static const bool _displayModeDefaultValue = true;
-  static const bool _navigationModeDefaultValueIOS = true;
-  static const bool _navigationModeDefaultValueAndroid = false;
-  static const bool _eyeCandyModeDefaultValue = false;
-  static const bool _trueDarkModeDefaultValue = false;
-  static const bool _readerModeDefaultValue = true;
-  static const bool _markReadStoriesModeDefaultValue = true;
-  static const bool _isFirstLaunchKeyDefaultValue = true;
-  static const bool _metadataModeDefaultValue = true;
-  static final int _fetchModeDefaultValue = FetchMode.eager.index;
-  static final int _commentsOrderDefaultValue = CommentsOrder.natural.index;
 
   final SyncedSharedPreferences _syncedPrefs;
   final Future<SharedPreferences> _prefs;
@@ -70,70 +36,21 @@ class PreferenceRepository {
 
   Future<String?> get password async => _secureStorage.read(key: _passwordKey);
 
-  Future<bool> get isFirstLaunch async {
-    final SharedPreferences prefs = await _prefs;
-    final bool val =
-        prefs.getBool(_isFirstLaunchKey) ?? _isFirstLaunchKeyDefaultValue;
-
-    await prefs.setBool(_isFirstLaunchKey, false);
-
-    return val;
-  }
-
-  Future<bool> get shouldShowNotification async => _prefs.then(
-        (SharedPreferences prefs) =>
-            prefs.getBool(_notificationModeKey) ??
-            _notificationModeDefaultValue,
+  Future<bool?> getBool(String key) => _prefs.then(
+        (SharedPreferences prefs) => prefs.getBool(key),
       );
 
-  Future<bool> get shouldShowComplexStoryTile async => _prefs.then(
-        (SharedPreferences prefs) =>
-            prefs.getBool(_displayModeKey) ?? _displayModeDefaultValue,
+  Future<int?> getInt(String key) => _prefs.then(
+        (SharedPreferences prefs) => prefs.getInt(key),
       );
 
-  Future<bool> get shouldShowWebFirst async => _prefs.then(
-        (SharedPreferences prefs) =>
-            prefs.getBool(_navigationModeKey) ??
-            (Platform.isAndroid
-                ? _navigationModeDefaultValueAndroid
-                : _navigationModeDefaultValueIOS),
+  //ignore: avoid_positional_boolean_parameters
+  void setBool(String key, bool val) => _prefs.then(
+        (SharedPreferences prefs) => prefs.setBool(key, val),
       );
 
-  Future<bool> get shouldShowEyeCandy async => _prefs.then(
-        (SharedPreferences prefs) =>
-            prefs.getBool(_eyeCandyModeKey) ?? _eyeCandyModeDefaultValue,
-      );
-
-  Future<bool> get shouldShowMetadata async => _prefs.then(
-        (SharedPreferences prefs) =>
-            prefs.getBool(_metadataModeKey) ?? _metadataModeDefaultValue,
-      );
-
-  Future<bool> get trueDarkMode async => _prefs.then(
-        (SharedPreferences prefs) =>
-            prefs.getBool(trueDarkModeKey) ?? _trueDarkModeDefaultValue,
-      );
-
-  Future<bool> get readerMode async => _prefs.then(
-        (SharedPreferences prefs) =>
-            prefs.getBool(_readerModeKey) ?? _readerModeDefaultValue,
-      );
-
-  Future<bool> get markReadStories async => _prefs.then(
-        (SharedPreferences prefs) =>
-            prefs.getBool(_markReadStoriesModeKey) ??
-            _markReadStoriesModeDefaultValue,
-      );
-
-  Future<FetchMode> get fetchMode async => _prefs.then(
-        (SharedPreferences prefs) => FetchMode.values
-            .elementAt(prefs.getInt(_fetchModeKey) ?? _fetchModeDefaultValue),
-      );
-
-  Future<CommentsOrder> get commentsOrder async => _prefs.then(
-        (SharedPreferences prefs) => CommentsOrder.values.elementAt(
-          prefs.getInt(_commentsOrderKey) ?? _commentsOrderDefaultValue,
-        ),
+  void setInt(String key, int val) => _prefs.then(
+        (SharedPreferences prefs) => prefs.setInt(key, val),
       );
 
   Future<bool> hasPushed(int commentId) async =>
@@ -193,76 +110,6 @@ class PreferenceRepository {
   Future<void> removeAuth() async {
     await _secureStorage.delete(key: _usernameKey);
     await _secureStorage.delete(key: _passwordKey);
-  }
-
-  Future<void> toggleNotificationMode() async {
-    final SharedPreferences prefs = await _prefs;
-    final bool currentMode =
-        prefs.getBool(_notificationModeKey) ?? _notificationModeDefaultValue;
-    await prefs.setBool(_notificationModeKey, !currentMode);
-  }
-
-  Future<void> toggleDisplayMode() async {
-    final SharedPreferences prefs = await _prefs;
-    final bool currentMode =
-        prefs.getBool(_displayModeKey) ?? _displayModeDefaultValue;
-    await prefs.setBool(_displayModeKey, !currentMode);
-  }
-
-  Future<void> toggleNavigationMode() async {
-    final SharedPreferences prefs = await _prefs;
-    final bool currentMode = prefs.getBool(_navigationModeKey) ??
-        (Platform.isAndroid
-            ? _navigationModeDefaultValueAndroid
-            : _navigationModeDefaultValueIOS);
-    await prefs.setBool(_navigationModeKey, !currentMode);
-  }
-
-  Future<void> toggleEyeCandyMode() async {
-    final SharedPreferences prefs = await _prefs;
-    final bool currentMode =
-        prefs.getBool(_eyeCandyModeKey) ?? _eyeCandyModeDefaultValue;
-    await prefs.setBool(_eyeCandyModeKey, !currentMode);
-  }
-
-  Future<void> toggleTrueDarkMode() async {
-    final SharedPreferences prefs = await _prefs;
-    final bool currentMode =
-        prefs.getBool(trueDarkModeKey) ?? _trueDarkModeDefaultValue;
-    await prefs.setBool(trueDarkModeKey, !currentMode);
-  }
-
-  Future<void> toggleReaderMode() async {
-    final SharedPreferences prefs = await _prefs;
-    final bool currentMode =
-        prefs.getBool(_readerModeKey) ?? _readerModeDefaultValue;
-    await prefs.setBool(_readerModeKey, !currentMode);
-  }
-
-  Future<void> toggleMarkReadStoriesMode() async {
-    final SharedPreferences prefs = await _prefs;
-    final bool currentMode = prefs.getBool(_markReadStoriesModeKey) ??
-        _markReadStoriesModeDefaultValue;
-    await prefs.setBool(_markReadStoriesModeKey, !currentMode);
-  }
-
-  Future<void> toggleMetadataMode() async {
-    final SharedPreferences prefs = await _prefs;
-    final bool currentMode =
-        prefs.getBool(_metadataModeKey) ?? _metadataModeDefaultValue;
-    await prefs.setBool(_metadataModeKey, !currentMode);
-  }
-
-  Future<void> selectFetchMode(FetchMode fetchMode) async {
-    final SharedPreferences prefs = await _prefs;
-    final int index = fetchMode.index;
-    await prefs.setInt(_fetchModeKey, index);
-  }
-
-  Future<void> selectCommentsOrder(CommentsOrder order) async {
-    final SharedPreferences prefs = await _prefs;
-    final int index = order.index;
-    await prefs.setInt(_commentsOrderKey, index);
   }
 
   //#region fav

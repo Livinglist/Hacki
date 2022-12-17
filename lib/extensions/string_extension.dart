@@ -1,10 +1,12 @@
 extension StringExtension on String {
-  int? getItemId() {
+  int? get itemId {
     final RegExp regex = RegExp(r'\d+$');
     final RegExp exception = RegExp(r'\)|].*$');
     final String match = regex.stringMatch(replaceAll(exception, '')) ?? '';
     return int.tryParse(match);
   }
+
+  bool get isStoryLink => contains('news.ycombinator.com/item');
 
   String removeAllEmojis() {
     final RegExp regex = RegExp(

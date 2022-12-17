@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/services.dart';
 import 'package:hacki/config/locator.dart';
-import 'package:hacki/cubits/comments/comments_cubit.dart';
+import 'package:hacki/extensions/extensions.dart';
+import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 
 part 'preference_state.dart';
@@ -11,87 +11,67 @@ class PreferenceCubit extends Cubit<PreferenceState> {
   PreferenceCubit({PreferenceRepository? storageRepository})
       : _preferenceRepository =
             storageRepository ?? locator.get<PreferenceRepository>(),
-        super(const PreferenceState.init()) {
+        super(PreferenceState.init()) {
     init();
   }
 
   final PreferenceRepository _preferenceRepository;
 
   void init() {
-    _preferenceRepository.shouldShowNotification
-        .then((bool value) => emit(state.copyWith(showNotification: value)));
-    _preferenceRepository.shouldShowComplexStoryTile.then(
-      (bool value) => emit(state.copyWith(showComplexStoryTile: value)),
-    );
-    _preferenceRepository.shouldShowWebFirst
-        .then((bool value) => emit(state.copyWith(showWebFirst: value)));
-    _preferenceRepository.shouldShowEyeCandy
-        .then((bool value) => emit(state.copyWith(showEyeCandy: value)));
-    _preferenceRepository.trueDarkMode
-        .then((bool value) => emit(state.copyWith(useTrueDark: value)));
-    _preferenceRepository.readerMode
-        .then((bool value) => emit(state.copyWith(useReader: value)));
-    _preferenceRepository.markReadStories
-        .then((bool value) => emit(state.copyWith(markReadStories: value)));
-    _preferenceRepository.shouldShowMetadata
-        .then((bool value) => emit(state.copyWith(showMetadata: value)));
-    _preferenceRepository.fetchMode
-        .then((FetchMode value) => emit(state.copyWith(fetchMode: value)));
-    _preferenceRepository.commentsOrder
-        .then((CommentsOrder value) => emit(state.copyWith(order: value)));
+    for (final BooleanPreference p
+        in Preference.allPreferences.whereType<BooleanPreference>()) {
+      initPreference<bool>(p).then<bool?>((bool? value) {
+        final Preference<dynamic> updatedPreference = p.copyWith(val: value);
+        emit(state.copyWithPreference(updatedPreference));
+        return null;
+      });
+    }
+
+    for (final IntPreference p
+        in Preference.allPreferences.whereType<IntPreference>()) {
+      initPreference<int>(p).then<int?>((int? value) {
+        final Preference<dynamic> updatedPreference = p.copyWith(val: value);
+        emit(state.copyWithPreference(updatedPreference));
+        return null;
+      });
+    }
   }
 
-  void toggleNotificationMode() {
-    emit(state.copyWith(showNotification: !state.showNotification));
-    _preferenceRepository.toggleNotificationMode();
+  Future<T?> initPreference<T>(Preference<T> preference) async {
+    switch (T) {
+      case int:
+        final int? value = await _preferenceRepository.getInt(preference.key);
+        return value as T?;
+      case bool:
+        final bool? value = await _preferenceRepository.getBool(preference.key);
+        return value as T?;
+      default:
+        throw UnimplementedError();
+    }
   }
 
-  void toggleDisplayMode() {
-    emit(state.copyWith(showComplexStoryTile: !state.showComplexStoryTile));
-    _preferenceRepository.toggleDisplayMode();
+  void toggle(BooleanPreference preference) {
+    final BooleanPreference updatedPreference =
+        preference.copyWith(val: !preference.val) as BooleanPreference;
+    emit(state.copyWithPreference(updatedPreference));
+    _preferenceRepository.setBool(preference.key, !preference.val);
   }
 
-  void toggleNavigationMode() {
-    emit(state.copyWith(showWebFirst: !state.showWebFirst));
-    _preferenceRepository.toggleNavigationMode();
-  }
+  void update<T>(Preference<T> preference, {required T to}) {
+    final T value = to;
+    final Preference<T> updatedPreference = preference.copyWith(val: value);
 
-  void toggleEyeCandyMode() {
-    emit(state.copyWith(showEyeCandy: !state.showEyeCandy));
-    _preferenceRepository.toggleEyeCandyMode();
-  }
+    emit(state.copyWithPreference(updatedPreference));
 
-  void toggleTrueDarkMode() {
-    emit(state.copyWith(useTrueDark: !state.useTrueDark));
-    _preferenceRepository.toggleTrueDarkMode();
-  }
-
-  void toggleReaderMode() {
-    emit(state.copyWith(useReader: !state.useReader));
-    _preferenceRepository.toggleReaderMode();
-  }
-
-  void toggleMarkReadStoriesMode() {
-    emit(state.copyWith(markReadStories: !state.markReadStories));
-    _preferenceRepository.toggleMarkReadStoriesMode();
-  }
-
-  void toggleMetadataMode() {
-    emit(state.copyWith(showMetadata: !state.showMetadata));
-    _preferenceRepository.toggleMetadataMode();
-  }
-
-  void selectFetchMode(FetchMode? fetchMode) {
-    if (fetchMode == null || state.fetchMode == fetchMode) return;
-    HapticFeedback.lightImpact();
-    emit(state.copyWith(fetchMode: fetchMode));
-    _preferenceRepository.selectFetchMode(fetchMode);
-  }
-
-  void selectCommentsOrder(CommentsOrder? order) {
-    if (order == null || state.order == order) return;
-    HapticFeedback.lightImpact();
-    emit(state.copyWith(order: order));
-    _preferenceRepository.selectCommentsOrder(order);
+    switch (T) {
+      case int:
+        _preferenceRepository.setInt(preference.key, value as int);
+        break;
+      case bool:
+        _preferenceRepository.setBool(preference.key, value as bool);
+        break;
+      default:
+        throw UnimplementedError();
+    }
   }
 }

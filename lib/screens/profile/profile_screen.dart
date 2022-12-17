@@ -266,23 +266,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 },
                               ),
                               const OfflineListTile(),
-                              SwitchListTile(
-                                title: const Text('Notification on New Reply'),
-                                subtitle: const Text(
-                                  'Hacki scans for new replies to your 15 '
-                                  'most recent comments or stories '
-                                  'every 5 minutes while the app is '
-                                  'running in the foreground.',
-                                ),
-                                value: preferenceState.showNotification,
-                                onChanged: (bool val) {
-                                  HapticFeedback.lightImpact();
-                                  context
-                                      .read<PreferenceCubit>()
-                                      .toggleNotificationMode();
-                                },
-                                activeColor: Palette.orange,
-                              ),
                               const SizedBox(
                                 height: Dimens.pt8,
                               ),
@@ -324,30 +307,30 @@ class _ProfileScreenState extends State<ProfileScreen>
                                         DropdownButton<FetchMode>(
                                           value: preferenceState.fetchMode,
                                           underline: const SizedBox.shrink(),
-                                          items: const <
-                                              DropdownMenuItem<FetchMode>>[
-                                            DropdownMenuItem<FetchMode>(
-                                              value: FetchMode.lazy,
-                                              child: Text(
-                                                'Lazy',
-                                                style: TextStyle(
-                                                  fontSize: TextDimens.pt16,
+                                          items: FetchMode.values
+                                              .map(
+                                                (FetchMode val) =>
+                                                    DropdownMenuItem<FetchMode>(
+                                                  value: val,
+                                                  child: Text(
+                                                    val.description,
+                                                    style: const TextStyle(
+                                                      fontSize: TextDimens.pt16,
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
-                                            ),
-                                            DropdownMenuItem<FetchMode>(
-                                              value: FetchMode.eager,
-                                              child: Text(
-                                                'Eager',
-                                                style: TextStyle(
-                                                  fontSize: TextDimens.pt16,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                          onChanged: context
-                                              .read<PreferenceCubit>()
-                                              .selectFetchMode,
+                                              )
+                                              .toList(),
+                                          onChanged: (FetchMode? fetchMode) {
+                                            if (fetchMode != null) {
+                                              context
+                                                  .read<PreferenceCubit>()
+                                                  .update(
+                                                    FetchModePreference(),
+                                                    to: fetchMode.index,
+                                                  );
+                                            }
+                                          },
                                         ),
                                         const Spacer(),
                                       ],
@@ -359,39 +342,31 @@ class _ProfileScreenState extends State<ProfileScreen>
                                         DropdownButton<CommentsOrder>(
                                           value: preferenceState.order,
                                           underline: const SizedBox.shrink(),
-                                          items: const <
-                                              DropdownMenuItem<CommentsOrder>>[
-                                            DropdownMenuItem<CommentsOrder>(
-                                              value: CommentsOrder.natural,
-                                              child: Text(
-                                                'Natural',
-                                                style: TextStyle(
-                                                  fontSize: TextDimens.pt16,
+                                          items: CommentsOrder.values
+                                              .map(
+                                                (CommentsOrder val) =>
+                                                    DropdownMenuItem<
+                                                        CommentsOrder>(
+                                                  value: val,
+                                                  child: Text(
+                                                    val.description,
+                                                    style: const TextStyle(
+                                                      fontSize: TextDimens.pt16,
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
-                                            ),
-                                            DropdownMenuItem<CommentsOrder>(
-                                              value: CommentsOrder.newestFirst,
-                                              child: Text(
-                                                'Newest first',
-                                                style: TextStyle(
-                                                  fontSize: TextDimens.pt16,
-                                                ),
-                                              ),
-                                            ),
-                                            DropdownMenuItem<CommentsOrder>(
-                                              value: CommentsOrder.oldestFirst,
-                                              child: Text(
-                                                'Oldest first',
-                                                style: TextStyle(
-                                                  fontSize: TextDimens.pt16,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                          onChanged: context
-                                              .read<PreferenceCubit>()
-                                              .selectCommentsOrder,
+                                              )
+                                              .toList(),
+                                          onChanged: (CommentsOrder? order) {
+                                            if (order != null) {
+                                              context
+                                                  .read<PreferenceCubit>()
+                                                  .update(
+                                                    CommentsOrderPreference(),
+                                                    to: order.index,
+                                                  );
+                                            }
+                                          },
                                         ),
                                         const Spacer(),
                                       ],
@@ -399,113 +374,38 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   ),
                                 ],
                               ),
-                              SwitchListTile(
-                                title: const Text('Complex Story Tile'),
-                                subtitle: const Text(
-                                  'show web preview in story tile.',
-                                ),
-                                value: preferenceState.showComplexStoryTile,
-                                onChanged: (bool val) {
-                                  HapticFeedback.lightImpact();
-                                  context
-                                      .read<PreferenceCubit>()
-                                      .toggleDisplayMode();
-                                },
-                                activeColor: Palette.orange,
-                              ),
-                              SwitchListTile(
-                                title: const Text('Show Metadata'),
-                                subtitle: const Text(
-                                  'show number of comments and post date'
-                                  ' in story tile.',
-                                ),
-                                value: preferenceState.showMetadata,
-                                onChanged: (bool val) {
-                                  HapticFeedback.lightImpact();
-                                  context
-                                      .read<PreferenceCubit>()
-                                      .toggleMetadataMode();
-                                },
-                                activeColor: Palette.orange,
-                              ),
-                              SwitchListTile(
-                                title: const Text('Show Web Page First'),
-                                subtitle: const Text(
-                                  'show web page first after tapping'
-                                  ' on story.',
-                                ),
-                                value: preferenceState.showWebFirst,
-                                onChanged: (bool val) {
-                                  HapticFeedback.lightImpact();
-                                  context
-                                      .read<PreferenceCubit>()
-                                      .toggleNavigationMode();
-                                },
-                                activeColor: Palette.orange,
-                              ),
-                              if (Platform.isIOS)
+                              for (final Preference<dynamic> preference
+                                  in preferenceState.preferences
+                                      .whereType<BooleanPreference>()
+                                      .where(
+                                        (Preference<dynamic> e) =>
+                                            e.isDisplayable,
+                                      ))
                                 SwitchListTile(
-                                  title: const Text('Use Reader'),
-                                  subtitle: const Text(
-                                    'enter reader mode in Safari directly'
-                                    ' when it is available.',
+                                  title: Text(preference.title),
+                                  subtitle: preference.subtitle.isNotEmpty
+                                      ? Text(preference.subtitle)
+                                      : null,
+                                  value: preferenceState.isOn(
+                                    preference as BooleanPreference,
                                   ),
-                                  value: preferenceState.useReader,
                                   onChanged: (bool val) {
                                     HapticFeedback.lightImpact();
+
                                     context
                                         .read<PreferenceCubit>()
-                                        .toggleReaderMode();
+                                        .update(preference, to: val);
+
+                                    if (preference
+                                            is MarkReadStoriesModePreference &&
+                                        val == false) {
+                                      context
+                                          .read<StoriesBloc>()
+                                          .add(ClearAllReadStories());
+                                    }
                                   },
                                   activeColor: Palette.orange,
                                 ),
-                              SwitchListTile(
-                                title: const Text('Mark Read Stories'),
-                                subtitle: const Text(
-                                  'grey out stories you have read.',
-                                ),
-                                value: preferenceState.markReadStories,
-                                onChanged: (bool val) {
-                                  HapticFeedback.lightImpact();
-
-                                  if (!val) {
-                                    context
-                                        .read<StoriesBloc>()
-                                        .add(ClearAllReadStories());
-                                  }
-
-                                  context
-                                      .read<PreferenceCubit>()
-                                      .toggleMarkReadStoriesMode();
-                                },
-                                activeColor: Palette.orange,
-                              ),
-                              SwitchListTile(
-                                title: const Text('Eye Candy'),
-                                subtitle: const Text('some sort of magic.'),
-                                value: preferenceState.showEyeCandy,
-                                onChanged: (bool val) {
-                                  HapticFeedback.lightImpact();
-                                  context
-                                      .read<PreferenceCubit>()
-                                      .toggleEyeCandyMode();
-                                },
-                                activeColor: Palette.orange,
-                              ),
-                              SwitchListTile(
-                                title: const Text('True Dark Mode'),
-                                subtitle: const Text(
-                                  'you might need to restart the app.',
-                                ),
-                                value: preferenceState.useTrueDark,
-                                onChanged: (bool val) {
-                                  HapticFeedback.lightImpact();
-                                  context
-                                      .read<PreferenceCubit>()
-                                      .toggleTrueDarkMode();
-                                },
-                                activeColor: Palette.orange,
-                              ),
                               ListTile(
                                 title: const Text(
                                   'Theme',
@@ -526,7 +426,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   showAboutDialog(
                                     context: context,
                                     applicationName: 'Hacki',
-                                    applicationVersion: 'v0.2.32',
+                                    applicationVersion: 'v0.2.33',
                                     applicationIcon: ClipRRect(
                                       borderRadius: const BorderRadius.all(
                                         Radius.circular(

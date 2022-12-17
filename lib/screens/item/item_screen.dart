@@ -6,10 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fadein/flutter_fadein.dart';
-import 'package:flutter_feather_icons/flutter_feather_icons.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
@@ -18,23 +14,14 @@ import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
+import 'package:hacki/screens/item/models/models.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
-import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:share_plus/share_plus.dart';
-
-enum _MenuAction {
-  upvote,
-  downvote,
-  share,
-  block,
-  flag,
-  cancel,
-}
 
 class ItemScreenArgs extends Equatable {
   const ItemScreenArgs({
@@ -172,6 +159,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
   final Throttle featureDiscoveryDismissThrottle = Throttle(
     delay: _featureDiscoveryDismissThrottleDelay,
   );
+  final GlobalKey fontSizeIconButtonKey = GlobalKey();
 
   static const Duration _storyLinkTapThrottleDelay = Duration(seconds: 2);
   static const Duration _featureDiscoveryDismissThrottleDelay =
@@ -278,420 +266,19 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
               }
             },
             builder: (BuildContext context, CommentsState state) {
-              final SmartRefresher mainView = SmartRefresher(
+              final Widget mainView = MainView(
                 scrollController: scrollController,
-                enablePullUp: !state.onlyShowTargetComment,
-                enablePullDown: !state.onlyShowTargetComment,
-                header: WaterDropMaterialHeader(
-                  backgroundColor: Palette.orange,
-                  offset: topPadding,
-                ),
-                footer: CustomFooter(
-                  loadStyle: LoadStyle.ShowWhenLoading,
-                  builder: (BuildContext context, LoadStatus? mode) {
-                    const double height = 55;
-                    late final Widget body;
-
-                    if (mode == LoadStatus.idle) {
-                      body = const Text('');
-                    } else if (mode == LoadStatus.loading) {
-                      body = const Text('');
-                    } else if (mode == LoadStatus.failed) {
-                      body = const Text(
-                        '',
-                      );
-                    } else if (mode == LoadStatus.canLoading) {
-                      body = const Text(
-                        '',
-                      );
-                    } else {
-                      body = const Text('');
-                    }
-                    return SizedBox(
-                      height: height,
-                      child: Center(child: body),
-                    );
-                  },
-                ),
-                controller: refreshController,
-                onRefresh: () {
-                  HapticFeedback.lightImpact();
-
-                  if (context.read<StoriesBloc>().state.offlineReading) {
-                    refreshController.refreshCompleted();
-                  } else {
-                    context.read<CommentsCubit>().refresh();
-
-                    if (state.item.isPoll) {
-                      context.read<PollCubit>().refresh();
-                    }
-                  }
-                },
-                onLoading: () {
-                  if (state.fetchMode == FetchMode.eager) {
-                    context.read<CommentsCubit>().loadMore();
-                  } else {
-                    refreshController.loadComplete();
-                  }
-                },
-                child: ListView.builder(
-                  primary: false,
-                  itemCount: state.comments.length + 2,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == 0) {
-                      return Column(
-                        children: <Widget>[
-                          SizedBox(
-                            height: topPadding,
-                          ),
-                          if (!widget.splitViewEnabled)
-                            const Padding(
-                              padding: EdgeInsets.only(bottom: Dimens.pt6),
-                              child: OfflineBanner(),
-                            ),
-                          Slidable(
-                            startActionPane: ActionPane(
-                              motion: const BehindMotion(),
-                              children: <Widget>[
-                                SlidableAction(
-                                  onPressed: (_) {
-                                    HapticFeedback.lightImpact();
-
-                                    if (state.item.id !=
-                                        context
-                                            .read<EditCubit>()
-                                            .state
-                                            .replyingTo
-                                            ?.id) {
-                                      commentEditingController.clear();
-                                    }
-                                    context
-                                        .read<EditCubit>()
-                                        .onReplyTapped(state.item);
-                                    focusNode.requestFocus();
-                                  },
-                                  backgroundColor: Palette.orange,
-                                  foregroundColor: Palette.white,
-                                  icon: Icons.message,
-                                ),
-                                SlidableAction(
-                                  onPressed: (BuildContext context) =>
-                                      onMoreTapped(state.item, context.rect),
-                                  backgroundColor: Palette.orange,
-                                  foregroundColor: Palette.white,
-                                  icon: Icons.more_horiz,
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: Dimens.pt6,
-                                    right: Dimens.pt6,
-                                  ),
-                                  child: Row(
-                                    children: <Widget>[
-                                      Text(
-                                        state.item.by,
-                                        style: const TextStyle(
-                                          color: Palette.orange,
-                                        ),
-                                      ),
-                                      const Spacer(),
-                                      Text(
-                                        state.item.postedDate,
-                                        style: const TextStyle(
-                                          color: Palette.grey,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                if (state.item is Story)
-                                  InkWell(
-                                    onTap: () => LinkUtil.launch(
-                                      state.item.url,
-                                      useReader: context
-                                          .read<PreferenceCubit>()
-                                          .state
-                                          .useReader,
-                                      offlineReading: context
-                                          .read<StoriesBloc>()
-                                          .state
-                                          .offlineReading,
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                        left: Dimens.pt6,
-                                        right: Dimens.pt6,
-                                        bottom: Dimens.pt12,
-                                        top: Dimens.pt12,
-                                      ),
-                                      child: Text(
-                                        state.item.title,
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: state.item.url.isNotEmpty
-                                              ? Palette.orange
-                                              : null,
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                else
-                                  const SizedBox(
-                                    height: Dimens.pt6,
-                                  ),
-                                if (state.item.text.isNotEmpty)
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: Dimens.pt10,
-                                    ),
-                                    child: SelectableLinkify(
-                                      text: state.item.text,
-                                      style: TextStyle(
-                                        fontSize: MediaQuery.of(context)
-                                                .textScaleFactor *
-                                            TextDimens.pt15,
-                                      ),
-                                      linkStyle: TextStyle(
-                                        fontSize: MediaQuery.of(context)
-                                                .textScaleFactor *
-                                            TextDimens.pt15,
-                                        color: Palette.orange,
-                                      ),
-                                      onOpen: (LinkableElement link) {
-                                        if (link.url.contains(
-                                          'news.ycombinator.com/item',
-                                        )) {
-                                          onStoryLinkTapped(link.url);
-                                        } else {
-                                          LinkUtil.launch(link.url);
-                                        }
-                                      },
-                                    ),
-                                  ),
-                                if (state.item.isPoll)
-                                  BlocProvider<PollCubit>(
-                                    create: (BuildContext context) =>
-                                        PollCubit(story: state.item as Story)
-                                          ..init(),
-                                    child: PollView(
-                                      onLoginTapped: onLoginTapped,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                          if (state.item.text.isNotEmpty)
-                            const SizedBox(
-                              height: Dimens.pt8,
-                            ),
-                          const Divider(
-                            height: Dimens.zero,
-                          ),
-                          if (state.onlyShowTargetComment) ...<Widget>[
-                            Center(
-                              child: TextButton(
-                                onPressed: () => context
-                                    .read<CommentsCubit>()
-                                    .loadAll(state.item as Story),
-                                child: const Text('View all comments'),
-                              ),
-                            ),
-                            const Divider(
-                              height: Dimens.zero,
-                            ),
-                          ] else ...<Widget>[
-                            Row(
-                              children: <Widget>[
-                                if (state.item is Story) ...<Widget>[
-                                  const SizedBox(
-                                    width: Dimens.pt12,
-                                  ),
-                                  Text(
-                                    '''${state.item.score} karma, ${state.item.descendants} comment${state.item.descendants > 1 ? 's' : ''}''',
-                                    style: const TextStyle(
-                                      fontSize: TextDimens.pt13,
-                                    ),
-                                  ),
-                                ] else ...<Widget>[
-                                  const SizedBox(
-                                    width: Dimens.pt4,
-                                  ),
-                                  TextButton(
-                                    onPressed: context
-                                        .read<CommentsCubit>()
-                                        .loadParentThread,
-                                    child: state.fetchParentStatus ==
-                                            CommentsStatus.loading
-                                        ? const SizedBox(
-                                            height: Dimens.pt12,
-                                            width: Dimens.pt12,
-                                            child:
-                                                CustomCircularProgressIndicator(
-                                              strokeWidth: Dimens.pt2,
-                                            ),
-                                          )
-                                        : const Text(
-                                            'View parent thread',
-                                            style: TextStyle(
-                                              fontSize: TextDimens.pt13,
-                                            ),
-                                          ),
-                                  ),
-                                ],
-                                const Spacer(),
-                                if (!state.offlineReading)
-                                  DropdownButton<FetchMode>(
-                                    value: state.fetchMode,
-                                    underline: const SizedBox.shrink(),
-                                    items: const <DropdownMenuItem<FetchMode>>[
-                                      DropdownMenuItem<FetchMode>(
-                                        value: FetchMode.lazy,
-                                        child: Text(
-                                          'Lazy',
-                                          style: TextStyle(
-                                            fontSize: TextDimens.pt13,
-                                          ),
-                                        ),
-                                      ),
-                                      DropdownMenuItem<FetchMode>(
-                                        value: FetchMode.eager,
-                                        child: Text(
-                                          'Eager',
-                                          style: TextStyle(
-                                            fontSize: TextDimens.pt13,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                    onChanged: context
-                                        .read<CommentsCubit>()
-                                        .onFetchModeChanged,
-                                  ),
-                                const SizedBox(
-                                  width: Dimens.pt6,
-                                ),
-                                DropdownButton<CommentsOrder>(
-                                  value: state.order,
-                                  underline: const SizedBox.shrink(),
-                                  items: const <
-                                      DropdownMenuItem<CommentsOrder>>[
-                                    DropdownMenuItem<CommentsOrder>(
-                                      value: CommentsOrder.natural,
-                                      child: Text(
-                                        'Natural',
-                                        style: TextStyle(
-                                          fontSize: TextDimens.pt13,
-                                        ),
-                                      ),
-                                    ),
-                                    DropdownMenuItem<CommentsOrder>(
-                                      value: CommentsOrder.newestFirst,
-                                      child: Text(
-                                        'Newest first',
-                                        style: TextStyle(
-                                          fontSize: TextDimens.pt13,
-                                        ),
-                                      ),
-                                    ),
-                                    DropdownMenuItem<CommentsOrder>(
-                                      value: CommentsOrder.oldestFirst,
-                                      child: Text(
-                                        'Oldest first',
-                                        style: TextStyle(
-                                          fontSize: TextDimens.pt13,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                  onChanged: context
-                                      .read<CommentsCubit>()
-                                      .onOrderChanged,
-                                ),
-                                const SizedBox(
-                                  width: Dimens.pt4,
-                                ),
-                              ],
-                            ),
-                            const Divider(
-                              height: Dimens.zero,
-                            ),
-                          ],
-                          if (state.comments.isEmpty &&
-                              state.status ==
-                                  CommentsStatus.allLoaded) ...<Widget>[
-                            const SizedBox(
-                              height: 240,
-                            ),
-                            const Center(
-                              child: Text(
-                                'Nothing yet',
-                                style: TextStyle(color: Palette.grey),
-                              ),
-                            ),
-                          ],
-                        ],
-                      );
-                    } else if (index == state.comments.length + 1) {
-                      if ((state.status == CommentsStatus.allLoaded &&
-                              state.comments.isNotEmpty) ||
-                          state.onlyShowTargetComment) {
-                        return SizedBox(
-                          height: 240,
-                          child: Center(
-                            child: Text(happyFace),
-                          ),
-                        );
-                      } else {
-                        return const SizedBox.shrink();
-                      }
-                    }
-
-                    index = index - 1;
-                    final Comment comment = state.comments.elementAt(index);
-                    return FadeIn(
-                      key: ValueKey<String>('${comment.id}-FadeIn'),
-                      child: CommentTile(
-                        comment: comment,
-                        level: comment.level,
-                        myUsername:
-                            authState.isLoggedIn ? authState.username : null,
-                        opUsername: state.item.by,
-                        fetchMode: state.fetchMode,
-                        onReplyTapped: (Comment cmt) {
-                          HapticFeedback.lightImpact();
-                          if (cmt.deleted || cmt.dead) {
-                            return;
-                          }
-
-                          if (cmt.id !=
-                              context.read<EditCubit>().state.replyingTo?.id) {
-                            commentEditingController.clear();
-                          }
-
-                          context.read<EditCubit>().onReplyTapped(cmt);
-                          focusNode.requestFocus();
-                        },
-                        onEditTapped: (Comment cmt) {
-                          HapticFeedback.lightImpact();
-                          if (cmt.deleted || cmt.dead) {
-                            return;
-                          }
-                          commentEditingController.clear();
-                          context.read<EditCubit>().onEditTapped(cmt);
-                          focusNode.requestFocus();
-                        },
-                        onMoreTapped: onMoreTapped,
-                        onStoryLinkTapped: onStoryLinkTapped,
-                        onRightMoreTapped: onRightMoreTapped,
-                      ),
-                    );
-                  },
-                ),
+                refreshController: refreshController,
+                commentEditingController: commentEditingController,
+                authState: authState,
+                state: state,
+                focusNode: focusNode,
+                topPadding: topPadding,
+                splitViewEnabled: widget.splitViewEnabled,
+                onMoreTapped: onMoreTapped,
+                onStoryLinkTapped: onStoryLinkTapped,
+                onLoginTapped: onLoginTapped,
+                onRightMoreTapped: onRightMoreTapped,
               );
 
               return BlocListener<EditCubit, EditState>(
@@ -751,6 +338,9 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                                     expanded: state.expanded,
                                     onZoomTap:
                                         context.read<SplitViewCubit>().zoom,
+                                    onFontSizeTap: onFontSizeTapped,
+                                    fontSizeIconButtonKey:
+                                        fontSizeIconButtonKey,
                                   ),
                                 );
                               },
@@ -786,6 +376,8 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                           scrollController: scrollController,
                           onBackgroundTap: onFeatureDiscoveryDismissed,
                           onDismiss: onFeatureDiscoveryDismissed,
+                          onFontSizeTap: onFontSizeTapped,
+                          fontSizeIconButtonKey: fontSizeIconButtonKey,
                         ),
                         body: mainView,
                         bottomSheet: ReplyBox(
@@ -815,6 +407,55 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
       showSnackBar(content: 'Tap on icon to continue');
     });
     return Future<bool>.value(false);
+  }
+
+  void onFontSizeTapped() {
+    const Offset offset = Offset.zero;
+    final RenderBox overlay =
+        Navigator.of(context).overlay!.context.findRenderObject()! as RenderBox;
+    final RenderBox? box =
+        fontSizeIconButtonKey.currentContext?.findRenderObject() as RenderBox?;
+
+    if (box == null) return;
+
+    final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromPoints(
+        box.localToGlobal(offset, ancestor: overlay),
+        box.localToGlobal(
+          box.size.bottomRight(Offset.zero) + offset,
+          ancestor: overlay,
+        ),
+      ),
+      Offset.zero & overlay.size,
+    );
+
+    showMenu<FontSize>(
+      context: context,
+      position: position,
+      items: <PopupMenuItem<FontSize>>[
+        for (final FontSize fontSize in FontSize.values)
+          PopupMenuItem<FontSize>(
+            value: fontSize,
+            child: Text(
+              fontSize.description,
+              style: TextStyle(
+                fontSize: fontSize.fontSize,
+                color:
+                    context.read<PreferenceCubit>().state.fontSize == fontSize
+                        ? Colors.deepOrange
+                        : null,
+              ),
+            ),
+            onTap: () {
+              HapticFeedback.lightImpact();
+              context.read<PreferenceCubit>().update(
+                    FontSizePreference(),
+                    to: fontSize.index,
+                  );
+            },
+          ),
+      ],
+    );
   }
 
   void onRightMoreTapped(Comment comment) {
@@ -872,80 +513,19 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
     showDialog<void>(
       context: context,
       builder: (BuildContext context) {
-        return BlocProvider<TimeMachineCubit>.value(
-          value: TimeMachineCubit()..activateTimeMachine(comment),
-          child: BlocBuilder<TimeMachineCubit, TimeMachineState>(
-            builder: (BuildContext context, TimeMachineState state) {
-              return Center(
-                child: Material(
-                  color: Theme.of(context).canvasColor,
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(
-                      Dimens.pt4,
-                    ),
-                  ),
-                  child: SizedBox(
-                    height: size.height * 0.8,
-                    width: size.width * widthFactor,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Dimens.pt8,
-                        vertical: Dimens.pt12,
-                      ),
-                      child: Column(
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              const SizedBox(
-                                width: Dimens.pt8,
-                              ),
-                              const Text('Parents:'),
-                              const Spacer(),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.close,
-                                  size: Dimens.pt16,
-                                ),
-                                onPressed: () => Navigator.pop(context),
-                                padding: EdgeInsets.zero,
-                              ),
-                            ],
-                          ),
-                          Expanded(
-                            child: ListView(
-                              children: <Widget>[
-                                for (final Comment c
-                                    in state.parents) ...<Widget>[
-                                  CommentTile(
-                                    comment: c,
-                                    myUsername:
-                                        context.read<AuthBloc>().state.username,
-                                    onStoryLinkTapped: onStoryLinkTapped,
-                                    actionable: false,
-                                    fetchMode: FetchMode.eager,
-                                  ),
-                                  const Divider(
-                                    height: Dimens.zero,
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
+        return TimeMachineDialog(
+          comment: comment,
+          size: size,
+          deviceType: deviceType,
+          widthFactor: widthFactor,
+          onStoryLinkTapped: onStoryLinkTapped,
         );
       },
     );
   }
 
   Future<void> onStoryLinkTapped(String link) async {
-    final int? id = link.getItemId();
+    final int? id = link.itemId;
     if (id != null) {
       storyLinkTapThrottle.run(() {
         locator.get<StoriesRepository>().fetchItemBy(id: id).then((Item? item) {
@@ -973,215 +553,34 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
 
     final bool isBlocked =
         context.read<BlocklistCubit>().state.blocklist.contains(item.by);
-    showModalBottomSheet<_MenuAction>(
+    showModalBottomSheet<MenuAction>(
       context: context,
       builder: (BuildContext context) {
-        return BlocProvider<VoteCubit>(
-          create: (BuildContext context) => VoteCubit(
-            item: item,
-            authBloc: context.read<AuthBloc>(),
-          ),
-          child: BlocConsumer<VoteCubit, VoteState>(
-            listenWhen: (VoteState previous, VoteState current) {
-              return previous.status != current.status;
-            },
-            listener: (BuildContext context, VoteState voteState) {
-              if (voteState.status == VoteStatus.submitted) {
-                showSnackBar(content: 'Vote submitted successfully.');
-              } else if (voteState.status == VoteStatus.canceled) {
-                showSnackBar(content: 'Vote canceled.');
-              } else if (voteState.status == VoteStatus.failure) {
-                showSnackBar(content: 'Something went wrong...');
-              } else if (voteState.status ==
-                  VoteStatus.failureKarmaBelowThreshold) {
-                showSnackBar(
-                  content: "You can't downvote because you are karmaly broke.",
-                );
-              } else if (voteState.status == VoteStatus.failureNotLoggedIn) {
-                showSnackBar(
-                  content: 'Not logged in, no voting! (;｀O´)o',
-                  action: onLoginTapped,
-                  label: 'Log in',
-                );
-              } else if (voteState.status == VoteStatus.failureBeHumble) {
-                showSnackBar(content: 'No voting on your own post! (;｀O´)o');
-              }
-
-              Navigator.pop(
-                context,
-                _MenuAction.upvote,
-              );
-            },
-            builder: (BuildContext context, VoteState voteState) {
-              final bool upvoted = voteState.vote == Vote.up;
-              final bool downvoted = voteState.vote == Vote.down;
-              return Container(
-                height: item is Comment ? 430 : 450,
-                color: Theme.of(context).canvasColor,
-                child: Material(
-                  color: Palette.transparent,
-                  child: Column(
-                    children: <Widget>[
-                      BlocProvider<UserCubit>(
-                        create: (BuildContext context) =>
-                            UserCubit()..init(userId: item.by),
-                        child: BlocBuilder<UserCubit, UserState>(
-                          builder: (BuildContext context, UserState state) {
-                            return ListTile(
-                              leading: const Icon(
-                                Icons.account_circle,
-                              ),
-                              title: Text(item.by),
-                              subtitle: Text(
-                                state.user.description,
-                              ),
-                              onTap: () {
-                                showDialog<void>(
-                                  context: context,
-                                  builder: (BuildContext context) =>
-                                      AlertDialog(
-                                    title: Text('About ${state.user.id}'),
-                                    content: state.user.about.isEmpty
-                                        ? Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: const <Widget>[
-                                              Text(
-                                                'empty',
-                                                style: TextStyle(
-                                                  color: Palette.grey,
-                                                ),
-                                              ),
-                                            ],
-                                          )
-                                        : SelectableLinkify(
-                                            text: HtmlUtil.parseHtml(
-                                              state.user.about,
-                                            ),
-                                            linkStyle: const TextStyle(
-                                              color: Palette.orange,
-                                            ),
-                                            onOpen: (LinkableElement link) {
-                                              if (link.url.contains(
-                                                'news.ycombinator.com/item',
-                                              )) {
-                                                onStoryLinkTapped
-                                                    .call(link.url);
-                                              } else {
-                                                LinkUtil.launch(link.url);
-                                              }
-                                            },
-                                          ),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: const Text(
-                                          'Okay',
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                      ListTile(
-                        leading: Icon(
-                          FeatherIcons.chevronUp,
-                          color: upvoted ? Palette.orange : null,
-                        ),
-                        title: Text(
-                          upvoted ? 'Upvoted' : 'Upvote',
-                          style: upvoted
-                              ? const TextStyle(color: Palette.orange)
-                              : null,
-                        ),
-                        subtitle:
-                            item is Story ? Text(item.score.toString()) : null,
-                        onTap: context.read<VoteCubit>().upvote,
-                      ),
-                      ListTile(
-                        leading: Icon(
-                          FeatherIcons.chevronDown,
-                          color: downvoted ? Palette.orange : null,
-                        ),
-                        title: Text(
-                          downvoted ? 'Downvoted' : 'Downvote',
-                          style: downvoted
-                              ? const TextStyle(color: Palette.orange)
-                              : null,
-                        ),
-                        onTap: context.read<VoteCubit>().downvote,
-                      ),
-                      ListTile(
-                        leading: const Icon(FeatherIcons.share),
-                        title: const Text(
-                          'Share',
-                        ),
-                        onTap: () => Navigator.pop(
-                          context,
-                          _MenuAction.share,
-                        ),
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.local_police),
-                        title: const Text(
-                          'Flag',
-                        ),
-                        onTap: () => Navigator.pop(
-                          context,
-                          _MenuAction.flag,
-                        ),
-                      ),
-                      ListTile(
-                        leading: Icon(
-                          isBlocked ? Icons.visibility : Icons.visibility_off,
-                        ),
-                        title: Text(
-                          isBlocked ? 'Unblock' : 'Block',
-                        ),
-                        onTap: () => Navigator.pop(
-                          context,
-                          _MenuAction.block,
-                        ),
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.close),
-                        title: const Text(
-                          'Cancel',
-                        ),
-                        onTap: () => Navigator.pop(
-                          context,
-                          _MenuAction.cancel,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
+        return MorePopupMenu(
+          item: item,
+          isBlocked: isBlocked,
+          showSnackBar: showSnackBar,
+          onStoryLinkTapped: onStoryLinkTapped,
+          onLoginTapped: onLoginTapped,
         );
       },
-    ).then((_MenuAction? action) {
+    ).then((MenuAction? action) {
       if (action != null) {
         switch (action) {
-          case _MenuAction.upvote:
+          case MenuAction.upvote:
             break;
-          case _MenuAction.downvote:
+          case MenuAction.downvote:
             break;
-          case _MenuAction.share:
+          case MenuAction.share:
             onShareTapped(item, rect);
             break;
-          case _MenuAction.flag:
+          case MenuAction.flag:
             onFlagTapped(item);
             break;
-          case _MenuAction.block:
+          case MenuAction.block:
             onBlockTapped(item, isBlocked: isBlocked);
             break;
-          case _MenuAction.cancel:
+          case MenuAction.cancel:
             break;
         }
       }
@@ -1299,186 +698,14 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
   void onLoginTapped() {
     final TextEditingController usernameController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
-    final String? sadFace = Constants.sadFaces.pickRandomly();
-    final String? happyFace = Constants.happyFaces.pickRandomly();
     showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return BlocConsumer<AuthBloc, AuthState>(
-          listener: (BuildContext context, AuthState state) {
-            if (state.isLoggedIn) {
-              Navigator.pop(context);
-              showSnackBar(content: 'Logged in successfully! $happyFace');
-            }
-          },
-          builder: (BuildContext context, AuthState state) {
-            return SimpleDialog(
-              children: <Widget>[
-                if (state.status == AuthStatus.loading)
-                  const SizedBox(
-                    height: Dimens.pt36,
-                    width: Dimens.pt36,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: Palette.orange,
-                      ),
-                    ),
-                  )
-                else if (!state.isLoggedIn) ...<Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: Dimens.pt18,
-                    ),
-                    child: TextField(
-                      controller: usernameController,
-                      cursorColor: Palette.orange,
-                      autocorrect: false,
-                      decoration: const InputDecoration(
-                        hintText: 'Username',
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Palette.orange),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: Dimens.pt16,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: Dimens.pt18,
-                    ),
-                    child: TextField(
-                      controller: passwordController,
-                      cursorColor: Palette.orange,
-                      obscureText: true,
-                      autocorrect: false,
-                      decoration: const InputDecoration(
-                        hintText: 'Password',
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Palette.orange),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: Dimens.pt16,
-                  ),
-                  if (state.status == AuthStatus.failure)
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: Dimens.pt18,
-                      ),
-                      child: Text(
-                        'Something went wrong... $sadFace',
-                        style: const TextStyle(
-                          color: Palette.grey,
-                          fontSize: TextDimens.pt12,
-                        ),
-                      ),
-                    ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      IconButton(
-                        icon: Icon(
-                          state.agreedToEULA
-                              ? Icons.check_box
-                              : Icons.check_box_outline_blank,
-                          color: state.agreedToEULA
-                              ? Palette.deepOrange
-                              : Palette.grey,
-                        ),
-                        onPressed: () => context
-                            .read<AuthBloc>()
-                            .add(AuthToggleAgreeToEULA()),
-                      ),
-                      Text.rich(
-                        TextSpan(
-                          children: <InlineSpan>[
-                            const TextSpan(
-                              text: 'I agree to ',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            WidgetSpan(
-                              child: Transform.translate(
-                                offset: const Offset(0, 1),
-                                child: TapDownWrapper(
-                                  onTap: () => LinkUtil.launch(
-                                    Constants.endUserAgreementLink,
-                                  ),
-                                  child: const Text(
-                                    'End User Agreement',
-                                    style: TextStyle(
-                                      color: Palette.deepOrange,
-                                      decoration: TextDecoration.underline,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      right: Dimens.pt12,
-                    ),
-                    child: ButtonBar(
-                      children: <Widget>[
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            context.read<AuthBloc>().add(AuthInitialize());
-                          },
-                          child: const Text(
-                            'Cancel',
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            if (state.agreedToEULA) {
-                              final String username = usernameController.text;
-                              final String password = passwordController.text;
-                              if (username.isNotEmpty && password.isNotEmpty) {
-                                context.read<AuthBloc>().add(
-                                      AuthLogin(
-                                        username: username,
-                                        password: password,
-                                      ),
-                                    );
-                              }
-                            }
-                          },
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(
-                              state.agreedToEULA
-                                  ? Palette.deepOrange
-                                  : Palette.grey,
-                            ),
-                          ),
-                          child: const Text(
-                            'Log in',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Palette.white,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ],
-            );
-          },
+        return LoginDialog(
+          usernameController: usernameController,
+          passwordController: passwordController,
+          showSnackBar: showSnackBar,
         );
       },
     );

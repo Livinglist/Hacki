@@ -13,6 +13,8 @@ class CustomAppBar extends AppBar {
     required Color backgroundColor,
     required Future<bool> Function() onBackgroundTap,
     required Future<bool> Function() onDismiss,
+    required VoidCallback onFontSizeTap,
+    required GlobalKey fontSizeIconButtonKey,
     bool splitViewEnabled = false,
     VoidCallback? onZoomTap,
     bool? expanded,
@@ -38,6 +40,13 @@ class CustomAppBar extends AppBar {
             ],
             ScrollUpIconButton(
               scrollController: scrollController,
+            ),
+            IconButton(
+              key: fontSizeIconButtonKey,
+              icon: const Icon(
+                Icons.format_size,
+              ),
+              onPressed: onFontSizeTap,
             ),
             if (item is Story)
               PinIconButton(

@@ -2,78 +2,81 @@ part of 'preference_cubit.dart';
 
 class PreferenceState extends Equatable {
   const PreferenceState({
-    required this.showNotification,
-    required this.showComplexStoryTile,
-    required this.showWebFirst,
-    required this.showEyeCandy,
-    required this.useTrueDark,
-    required this.useReader,
-    required this.markReadStories,
-    required this.showMetadata,
-    required this.fetchMode,
-    required this.order,
+    required this.preferences,
   });
 
-  const PreferenceState.init()
-      : showNotification = false,
-        showComplexStoryTile = false,
-        showWebFirst = false,
-        showEyeCandy = false,
-        useTrueDark = false,
-        useReader = false,
-        markReadStories = false,
-        showMetadata = false,
-        fetchMode = FetchMode.eager,
-        order = CommentsOrder.natural;
+  PreferenceState.init()
+      : preferences = <Preference<dynamic>>{...Preference.allPreferences};
 
-  final bool showNotification;
-  final bool showComplexStoryTile;
-  final bool showWebFirst;
-  final bool showEyeCandy;
-  final bool useTrueDark;
-  final bool useReader;
-  final bool markReadStories;
-  final bool showMetadata;
-  final FetchMode fetchMode;
-  final CommentsOrder order;
+  final Set<Preference<dynamic>> preferences;
 
   PreferenceState copyWith({
-    bool? showNotification,
-    bool? showComplexStoryTile,
-    bool? showWebFirst,
-    bool? showEyeCandy,
-    bool? useTrueDark,
-    bool? useReader,
-    bool? markReadStories,
-    bool? showMetadata,
-    FetchMode? fetchMode,
-    CommentsOrder? order,
+    Set<Preference<dynamic>>? preferences,
   }) {
     return PreferenceState(
-      showNotification: showNotification ?? this.showNotification,
-      showComplexStoryTile: showComplexStoryTile ?? this.showComplexStoryTile,
-      showWebFirst: showWebFirst ?? this.showWebFirst,
-      showEyeCandy: showEyeCandy ?? this.showEyeCandy,
-      useTrueDark: useTrueDark ?? this.useTrueDark,
-      useReader: useReader ?? this.useReader,
-      markReadStories: markReadStories ?? this.markReadStories,
-      showMetadata: showMetadata ?? this.showMetadata,
-      fetchMode: fetchMode ?? this.fetchMode,
-      order: order ?? this.order,
+      preferences: preferences ?? this.preferences,
     );
   }
 
+  PreferenceState copyWithPreference<T extends Preference<dynamic>>(
+    T preference,
+  ) {
+    return PreferenceState(
+      preferences: <Preference<dynamic>>{
+        ...preferences.toList()
+          ..remove(preference)
+          ..insert(Preference.allPreferences.indexOf(preference), preference),
+      },
+    );
+  }
+
+  bool isOn<T extends BooleanPreference>(T preference) {
+    return preferences
+        .whereType<BooleanPreference>()
+        .singleWhere(
+          (BooleanPreference e) => e.runtimeType == preference.runtimeType,
+        )
+        .val;
+  }
+
+  bool _isOn<T extends BooleanPreference>() {
+    return preferences
+        .whereType<BooleanPreference>()
+        .singleWhere(
+          (BooleanPreference e) => e.runtimeType == T,
+        )
+        .val;
+  }
+
+  bool get showNotification => _isOn<NotificationModePreference>();
+
+  bool get showComplexStoryTile => _isOn<DisplayModePreference>();
+
+  bool get showWebFirst => _isOn<NavigationModePreference>();
+
+  bool get showEyeCandy => _isOn<EyeCandyModePreference>();
+
+  bool get useTrueDark => _isOn<TrueDarkModePreference>();
+
+  bool get useReader => _isOn<ReaderModePreference>();
+
+  bool get markReadStories => _isOn<MarkReadStoriesModePreference>();
+
+  bool get showMetadata => _isOn<MetadataModePreference>();
+
+  bool get tapAnywhereToCollapse => _isOn<CollapseModePreference>();
+
+  FetchMode get fetchMode => FetchMode.values
+      .elementAt(preferences.singleWhereType<FetchModePreference>().val);
+
+  CommentsOrder get order => CommentsOrder.values
+      .elementAt(preferences.singleWhereType<CommentsOrderPreference>().val);
+
+  FontSize get fontSize => FontSize.values
+      .elementAt(preferences.singleWhereType<FontSizePreference>().val);
+
   @override
   List<Object?> get props => <Object?>[
-        showNotification,
-        showComplexStoryTile,
-        showWebFirst,
-        showEyeCandy,
-        useTrueDark,
-        useReader,
-        markReadStories,
-        showMetadata,
-        fetchMode,
-        order,
+        ...preferences.map<dynamic>((Preference<dynamic> e) => e.val),
       ];
 }

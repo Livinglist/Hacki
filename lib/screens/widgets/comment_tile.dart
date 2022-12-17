@@ -232,22 +232,22 @@ class CommentTile extends StatelessWidget {
                                               (comment as BuildableComment)
                                                   .elements,
                                               style: TextStyle(
-                                                fontSize: MediaQuery.of(context)
-                                                        .textScaleFactor *
-                                                    TextDimens.pt15,
+                                                fontSize: MediaQuery.of(
+                                                      context,
+                                                    ).textScaleFactor *
+                                                    prefState.fontSize.fontSize,
                                               ),
                                               linkStyle: TextStyle(
-                                                fontSize: MediaQuery.of(context)
-                                                        .textScaleFactor *
-                                                    TextDimens.pt15,
+                                                fontSize: MediaQuery.of(
+                                                      context,
+                                                    ).textScaleFactor *
+                                                    prefState.fontSize.fontSize,
                                                 decoration:
                                                     TextDecoration.underline,
                                                 color: Palette.orange,
                                               ),
                                               onOpen: (LinkableElement link) {
-                                                if (link.url.contains(
-                                                  'news.ycombinator.com/item',
-                                                )) {
+                                                if (link.url.isStoryLink) {
                                                   onStoryLinkTapped
                                                       .call(link.url);
                                                 } else {
@@ -255,6 +255,7 @@ class CommentTile extends StatelessWidget {
                                                 }
                                               },
                                             ),
+                                            onTap: () => onTextTapped(context),
                                           )
                                         : SelectableLinkify(
                                             key: ValueKey<int>(comment.id),
@@ -262,24 +263,23 @@ class CommentTile extends StatelessWidget {
                                             style: TextStyle(
                                               fontSize: MediaQuery.of(context)
                                                       .textScaleFactor *
-                                                  TextDimens.pt15,
+                                                  prefState.fontSize.fontSize,
                                             ),
                                             linkStyle: TextStyle(
                                               fontSize: MediaQuery.of(context)
                                                       .textScaleFactor *
-                                                  TextDimens.pt15,
+                                                  prefState.fontSize.fontSize,
                                               color: Palette.orange,
                                             ),
                                             onOpen: (LinkableElement link) {
-                                              if (link.url.contains(
-                                                'news.ycombinator.com/item',
-                                              )) {
+                                              if (link.url.isStoryLink) {
                                                 onStoryLinkTapped
                                                     .call(link.url);
                                               } else {
                                                 LinkUtil.launch(link.url);
                                               }
                                             },
+                                            onTap: () => onTextTapped(context),
                                           ),
                                   ),
                                 if (!state.collapsed &&
@@ -309,7 +309,9 @@ class CommentTile extends StatelessWidget {
                                                 HapticFeedback.selectionClick();
                                                 context
                                                     .read<CommentsCubit>()
-                                                    .loadMore(comment: comment);
+                                                    .loadMore(
+                                                      comment: comment,
+                                                    );
                                               },
                                               child: Text(
                                                 '''Load ${comment.kids.length} ${comment.kids.length > 1 ? 'replies' : 'reply'}''',
@@ -415,5 +417,12 @@ class CommentTile extends StatelessWidget {
 
     _colors[initialLevel] = color;
     return color;
+  }
+
+  void onTextTapped(BuildContext context) {
+    if (context.read<PreferenceCubit>().state.tapAnywhereToCollapse) {
+      HapticFeedback.selectionClick();
+      context.read<CollapseCubit>().collapse();
+    }
   }
 }

@@ -14,7 +14,7 @@ import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
-import 'package:hacki/repositories/repositories.dart' show PreferenceRepository;
+import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/services/custom_bloc_observer.dart';
 import 'package:hacki/services/fetcher.dart';
@@ -111,7 +111,7 @@ Future<void> main({bool testing = false}) async {
   final AdaptiveThemeMode? savedThemeMode = await AdaptiveTheme.getThemeMode();
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final bool trueDarkMode =
-      prefs.getBool(PreferenceRepository.trueDarkModeKey) ?? false;
+      prefs.getBool(const TrueDarkModePreference().key) ?? false;
 
   Bloc.observer = CustomBlocObserver();
   HydratedBloc.storage = storage;

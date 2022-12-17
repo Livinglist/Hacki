@@ -8,17 +8,6 @@ enum CommentsStatus {
   failure,
 }
 
-enum CommentsOrder {
-  natural,
-  newestFirst,
-  oldestFirst,
-}
-
-enum FetchMode {
-  lazy,
-  eager,
-}
-
 class CommentsState extends Equatable {
   const CommentsState({
     required this.item,

@@ -1,5 +1,3 @@
-// ignore_for_file: lines_longer_than_80_chars
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -446,7 +444,7 @@ class _HomeScreenState extends State<HomeScreen>
   void onShareExtensionTapped(String? event) {
     if (event == null) return;
 
-    final int? id = event.getItemId();
+    final int? id = event.itemId;
 
     if (id != null) {
       locator.get<StoriesRepository>().fetchItemBy(id: id).then((Item? item) {
