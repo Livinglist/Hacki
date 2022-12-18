@@ -11,27 +11,27 @@ class SearchState extends Equatable {
   const SearchState({
     required this.status,
     required this.results,
-    required this.searchFilters,
+    required this.params,
   });
 
   SearchState.init()
       : status = SearchStatus.initial,
         results = <Story>[],
-        searchFilters = SearchFilters.init();
+        params = SearchParams.init();
 
   final List<Story> results;
   final SearchStatus status;
-  final SearchFilters searchFilters;
+  final SearchParams params;
 
   SearchState copyWith({
     List<Story>? results,
     SearchStatus? status,
-    SearchFilters? searchFilters,
+    SearchParams? params,
   }) {
     return SearchState(
       results: results ?? this.results,
       status: status ?? this.status,
-      searchFilters: searchFilters ?? this.searchFilters,
+      params: params ?? this.params,
     );
   }
 
@@ -39,6 +39,6 @@ class SearchState extends Equatable {
   List<Object?> get props => <Object?>[
         status,
         results,
-        searchFilters,
+        params,
       ];
 }

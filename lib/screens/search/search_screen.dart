@@ -71,8 +71,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           width: 8,
                         ),
                         DateTimeRangeFilterChip(
-                          filter:
-                              state.searchFilters.get<DateTimeRangeFilter>(),
+                          filter: state.params.get<DateTimeRangeFilter>(),
                           onDateTimeRangeUpdated:
                               (DateTime start, DateTime end) =>
                                   context.read<SearchCubit>().addFilter(
@@ -91,7 +90,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         CustomChip(
                           onSelected: (_) =>
                               context.read<SearchCubit>().onSortToggled(),
-                          selected: state.searchFilters.sorted,
+                          selected: state.params.sorted,
                           label: '''newest first''',
                         ),
                         const SizedBox(

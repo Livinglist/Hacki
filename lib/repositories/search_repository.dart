@@ -11,9 +11,9 @@ class SearchRepository {
   final Dio _dio;
 
   Stream<Story> search({
-    required SearchFilters filters,
+    required SearchParams params,
   }) async* {
-    final String url = '$_baseUrl${filters.filteredQuery}';
+    final String url = '$_baseUrl${params.filteredQuery}';
     final Response<Map<String, dynamic>> response =
         await _dio.get<Map<String, dynamic>>(url);
     final Map<String, dynamic>? data = response.data;

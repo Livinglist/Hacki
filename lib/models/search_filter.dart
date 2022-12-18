@@ -1,4 +1,4 @@
-part of 'search_filters.dart';
+part of 'search_params.dart';
 
 abstract class SearchFilter {
   String get query;
