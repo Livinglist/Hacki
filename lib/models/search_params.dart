@@ -3,15 +3,15 @@ import 'package:equatable/equatable.dart';
 
 part 'search_filter.dart';
 
-class SearchFilters extends Equatable {
-  const SearchFilters({
+class SearchParams extends Equatable {
+  const SearchParams({
     required this.filters,
     required this.query,
     required this.page,
     this.sorted = false,
   });
 
-  SearchFilters.init()
+  SearchParams.init()
       : filters = <SearchFilter>{},
         query = '',
         page = 0,
@@ -22,13 +22,13 @@ class SearchFilters extends Equatable {
   final int page;
   final bool sorted;
 
-  SearchFilters copyWith({
+  SearchParams copyWith({
     Set<SearchFilter>? filters,
     String? query,
     int? page,
     bool? sorted,
   }) {
-    return SearchFilters(
+    return SearchParams(
       filters: filters ?? this.filters,
       query: query ?? this.query,
       page: page ?? this.page,
@@ -36,8 +36,8 @@ class SearchFilters extends Equatable {
     );
   }
 
-  SearchFilters copyWithFilterRemoved<T extends SearchFilter>() {
-    return SearchFilters(
+  SearchParams copyWithFilterRemoved<T extends SearchFilter>() {
+    return SearchParams(
       filters: <SearchFilter>{...filters}
         ..removeWhere((SearchFilter e) => e is T),
       query: query,
@@ -46,10 +46,10 @@ class SearchFilters extends Equatable {
     );
   }
 
-  SearchFilters copyWithFilterAdded(
+  SearchParams copyWithFilterAdded(
     SearchFilter filter,
   ) {
-    return SearchFilters(
+    return SearchParams(
       filters: <SearchFilter>{...filters, filter},
       query: query,
       page: page,

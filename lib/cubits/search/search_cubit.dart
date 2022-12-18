@@ -23,73 +23,71 @@ class SearchCubit extends Cubit<SearchState> {
       state.copyWith(
         results: <Story>[],
         status: SearchStatus.loading,
-        searchFilters: state.searchFilters.copyWith(query: query, page: 0),
+        params: state.params.copyWith(query: query, page: 0),
       ),
     );
-    streamSubscription = _searchRepository
-        .search(filters: state.searchFilters)
-        .listen(_onStoryFetched)
-      ..onDone(() {
-        emit(state.copyWith(status: SearchStatus.loaded));
-      });
+    streamSubscription =
+        _searchRepository.search(params: state.params).listen(_onStoryFetched)
+          ..onDone(() {
+            emit(state.copyWith(status: SearchStatus.loaded));
+          });
   }
 
   void loadMore() {
     if (state.status != SearchStatus.loading) {
-      final int updatedPage = state.searchFilters.page + 1;
+      final int updatedPage = state.params.page + 1;
       emit(
         state.copyWith(
           status: SearchStatus.loadingMore,
-          searchFilters: state.searchFilters.copyWith(page: updatedPage),
+          params: state.params.copyWith(page: updatedPage),
         ),
       );
-      streamSubscription = _searchRepository
-          .search(filters: state.searchFilters)
-          .listen(_onStoryFetched)
-        ..onDone(() {
-          emit(state.copyWith(status: SearchStatus.loaded));
-        });
+      streamSubscription =
+          _searchRepository.search(params: state.params).listen(_onStoryFetched)
+            ..onDone(() {
+              emit(state.copyWith(status: SearchStatus.loaded));
+            });
     }
   }
 
   void addFilter<T extends SearchFilter>(T filter) {
-    if (state.searchFilters.contains<T>()) {
+    if (state.params.contains<T>()) {
       emit(
         state.copyWith(
-          searchFilters: state.searchFilters.copyWithFilterRemoved<T>(),
+          params: state.params.copyWithFilterRemoved<T>(),
         ),
       );
     }
 
     emit(
       state.copyWith(
-        searchFilters: state.searchFilters.copyWithFilterAdded(filter),
+        params: state.params.copyWithFilterAdded(filter),
       ),
     );
 
-    search(state.searchFilters.query);
+    search(state.params.query);
   }
 
   void removeFilter<T extends SearchFilter>() {
     emit(
       state.copyWith(
-        searchFilters: state.searchFilters.copyWithFilterRemoved<T>(),
+        params: state.params.copyWithFilterRemoved<T>(),
       ),
     );
 
-    search(state.searchFilters.query);
+    search(state.params.query);
   }
 
   void onSortToggled() {
     emit(
       state.copyWith(
-        searchFilters: state.searchFilters.copyWith(
-          sorted: !state.searchFilters.sorted,
+        params: state.params.copyWith(
+          sorted: !state.params.sorted,
         ),
       ),
     );
 
-    search(state.searchFilters.query);
+    search(state.params.query);
   }
 
   void _onStoryFetched(Story story) {

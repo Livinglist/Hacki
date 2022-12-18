@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hacki/models/search_filters.dart';
+import 'package:hacki/models/search_params.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 
 class PostedByFilterChip extends StatelessWidget {
