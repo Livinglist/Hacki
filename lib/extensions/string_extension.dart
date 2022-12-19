@@ -1,7 +1,9 @@
+import 'package:hacki/config/constants.dart';
+
 extension StringExtension on String {
   int? get itemId {
-    final RegExp regex = RegExp(r'\d+$');
-    final RegExp exception = RegExp(r'\)|].*$');
+    final RegExp regex = RegExp(RegExpConstants.number);
+    final RegExp exception = RegExp(RegExpConstants.linkSuffix);
     final String match = regex.stringMatch(replaceAll(exception, '')) ?? '';
     return int.tryParse(match);
   }

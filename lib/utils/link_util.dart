@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/main.dart';
 import 'package:hacki/repositories/repositories.dart';
@@ -35,7 +36,7 @@ abstract class LinkUtil {
     }
 
     Uri rinseLink(String link) {
-      final RegExp regex = RegExp(r'\)|].*$');
+      final RegExp regex = RegExp(RegExpConstants.linkSuffix);
       if (!link.contains('en.wikipedia.org') && link.contains(regex)) {
         final String match = regex.stringMatch(link) ?? '';
         return Uri.parse(link.replaceAll(match, ''));
