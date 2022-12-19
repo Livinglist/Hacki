@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - "**"
-    branches-ignore:
-      - master
+      - '!master'
 
 jobs:
   releases:
