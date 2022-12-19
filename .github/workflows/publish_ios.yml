@@ -5,6 +5,8 @@ on:
   workflow_dispatch: {}
   # Run the workflow whenever a new tag named 'v*' is pushed
   push:
+    branches:
+      - main
     tags:
       - "v*"
 
