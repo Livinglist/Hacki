@@ -2,6 +2,6 @@
 set -euo pipefail
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-export PATH="$DIR/flutter/bin:$PATH"
+export PATH="$DIR/submodules/flutter/bin:$PATH"
 
 exec flutter $@

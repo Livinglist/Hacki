@@ -10,4 +10,4 @@ linter:
 
 analyzer:
   exclude:
-    - "flutter"
+    - "submodules/**"
