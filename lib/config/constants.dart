@@ -48,3 +48,8 @@ abstract class Constants {
     '(ㆆ_ㆆ)',
   ];
 }
+
+abstract class RegExpConstants {
+  static const String linkSuffix = r'(\)|])(.)*$';
+  static const String number = r'\d+$';
+}
