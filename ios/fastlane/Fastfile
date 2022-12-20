@@ -72,9 +72,11 @@ latest_testflight_build_number
       *extra_config_args
     )
 
-#     increment_version_number(
-#       version_number: options[:build_name].delete_prefix('v').delete_suffix('-rc')
-#     )
+    version = get_version_number(xcodeproj: "Project.xcodeproj")
+
+    increment_version_number(
+      version_number: version
+    )
 
     increment_build_number({
       build_number: latest_testflight_build_number + 1
