@@ -72,7 +72,7 @@ latest_testflight_build_number
       *extra_config_args
     )
 
-    version = get_version_number(xcodeproj: "Runner.xcodeproj")
+    version = get_version_number(xcodeproj: "Runner.xcodeproj", target: 'Runner')
 
     increment_version_number(
       version_number: version
