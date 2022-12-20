@@ -68,8 +68,7 @@ latest_testflight_build_number
     sh(
       "flutter", "build", "ios", "--config-only",
       "--release", "--no-pub", "--no-codesign",
-      "--build-number", new_build_number.to_s,
-      *extra_config_args
+      "--build-number", new_build_number.to_s
     )
 
     version = get_version_number(xcodeproj: "Runner.xcodeproj", target: 'Runner')
