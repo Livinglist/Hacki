@@ -171,87 +171,93 @@ class MainView extends StatelessWidget {
                           ],
                         ),
                       ),
-                      if (state.item is Story)
-                        InkWell(
-                          onTap: () => LinkUtil.launch(
-                            state.item.url,
-                            useReader:
-                                context.read<PreferenceCubit>().state.useReader,
-                            offlineReading: context
-                                .read<StoriesBloc>()
-                                .state
-                                .offlineReading,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              left: Dimens.pt6,
-                              right: Dimens.pt6,
-                              bottom: Dimens.pt12,
-                              top: Dimens.pt12,
-                            ),
-                            child: Text(
-                              state.item.title,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: state.item.url.isNotEmpty
-                                    ? Palette.orange
-                                    : null,
-                              ),
-                            ),
-                          ),
-                        )
-                      else
-                        const SizedBox(
-                          height: Dimens.pt6,
-                        ),
-                      if (state.item.text.isNotEmpty)
-                        BlocBuilder<PreferenceCubit, PreferenceState>(
-                          buildWhen: (
-                            PreferenceState previous,
-                            PreferenceState current,
-                          ) =>
-                              previous.fontSize != current.fontSize,
-                          builder: (
-                            BuildContext context,
-                            PreferenceState prefState,
-                          ) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: Dimens.pt10,
-                              ),
-                              child: SelectableLinkify(
-                                text: state.item.text,
-                                style: TextStyle(
-                                  fontSize:
-                                      MediaQuery.of(context).textScaleFactor *
+                      BlocBuilder<PreferenceCubit, PreferenceState>(
+                        buildWhen: (
+                          PreferenceState previous,
+                          PreferenceState current,
+                        ) =>
+                            previous.fontSize != current.fontSize,
+                        builder: (
+                          BuildContext context,
+                          PreferenceState prefState,
+                        ) {
+                          return Column(
+                            children: <Widget>[
+                              if (state.item is Story)
+                                InkWell(
+                                  onTap: () => LinkUtil.launch(
+                                    state.item.url,
+                                    useReader: context
+                                        .read<PreferenceCubit>()
+                                        .state
+                                        .useReader,
+                                    offlineReading: context
+                                        .read<StoriesBloc>()
+                                        .state
+                                        .offlineReading,
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                      left: Dimens.pt6,
+                                      right: Dimens.pt6,
+                                      bottom: Dimens.pt12,
+                                      top: Dimens.pt12,
+                                    ),
+                                    child: Text(
+                                      state.item.title,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: state.item.url.isNotEmpty
+                                            ? Palette.orange
+                                            : null,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              else
+                                const SizedBox(
+                                  height: Dimens.pt6,
+                                ),
+                              if (state.item.text.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: Dimens.pt10,
+                                  ),
+                                  child: SelectableLinkify(
+                                    text: state.item.text,
+                                    style: TextStyle(
+                                      fontSize: MediaQuery.of(context)
+                                              .textScaleFactor *
                                           context
                                               .read<PreferenceCubit>()
                                               .state
                                               .fontSize
                                               .fontSize,
-                                ),
-                                linkStyle: TextStyle(
-                                  fontSize:
-                                      MediaQuery.of(context).textScaleFactor *
+                                    ),
+                                    linkStyle: TextStyle(
+                                      fontSize: MediaQuery.of(context)
+                                              .textScaleFactor *
                                           context
                                               .read<PreferenceCubit>()
                                               .state
                                               .fontSize
                                               .fontSize,
-                                  color: Palette.orange,
+                                      color: Palette.orange,
+                                    ),
+                                    onOpen: (LinkableElement link) {
+                                      if (link.url.isStoryLink) {
+                                        onStoryLinkTapped(link.url);
+                                      } else {
+                                        LinkUtil.launch(link.url);
+                                      }
+                                    },
+                                  ),
                                 ),
-                                onOpen: (LinkableElement link) {
-                                  if (link.url.isStoryLink) {
-                                    onStoryLinkTapped(link.url);
-                                  } else {
-                                    LinkUtil.launch(link.url);
-                                  }
-                                },
-                              ),
-                            );
-                          },
-                        ),
+                            ],
+                          );
+                        },
+                      ),
                       if (state.item.isPoll)
                         BlocProvider<PollCubit>(
                           create: (BuildContext context) =>
