@@ -72,5 +72,7 @@
 	<array>
 		<string>applinks:example.com</string>
 	</array>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>

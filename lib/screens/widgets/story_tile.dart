@@ -42,90 +42,8 @@ class StoryTile extends StatelessWidget {
               story: story,
               link: story.url,
               offlineReading: context.read<StoriesBloc>().state.offlineReading,
-              placeholderWidget: FadeIn(
-                child: SizedBox(
-                  height: height,
-                  child: Shimmer.fromColors(
-                    baseColor: Palette.orange,
-                    highlightColor: Palette.orangeAccent,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            right: Dimens.pt5,
-                            bottom: Dimens.pt5,
-                            top: Dimens.pt5,
-                          ),
-                          child: Container(
-                            height: height,
-                            width: height,
-                            color: Palette.white,
-                          ),
-                        ),
-                        Expanded(
-                          flex: 4,
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              left: Dimens.pt4,
-                              top: Dimens.pt6,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Container(
-                                  width: double.infinity,
-                                  height: Dimens.pt14,
-                                  color: Palette.white,
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: Dimens.pt4,
-                                  ),
-                                ),
-                                Container(
-                                  width: double.infinity,
-                                  height: Dimens.pt10,
-                                  color: Palette.white,
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: Dimens.pt3,
-                                  ),
-                                ),
-                                Container(
-                                  width: double.infinity,
-                                  height: Dimens.pt10,
-                                  color: Palette.white,
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: Dimens.pt3,
-                                  ),
-                                ),
-                                Container(
-                                  width: double.infinity,
-                                  height: Dimens.pt10,
-                                  color: Palette.white,
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: Dimens.pt3,
-                                  ),
-                                ),
-                                Container(
-                                  width: Dimens.pt40,
-                                  height: Dimens.pt10,
-                                  color: Palette.white,
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
+              placeholderWidget: _LinkPreviewPlaceholder(
+                height: height,
               ),
               errorImage: Constants.hackerNewsLogoLink,
               backgroundColor: Palette.transparent,
@@ -136,7 +54,7 @@ class StoryTile extends StatelessWidget {
               titleStyle: TextStyle(
                 color: hasRead
                     ? Palette.grey[500]
-                    : Theme.of(context).textTheme.subtitle1!.color,
+                    : Theme.of(context).textTheme.subtitle1?.color,
                 fontWeight: FontWeight.bold,
               ),
               showMetadata: showMetadata,
@@ -191,5 +109,103 @@ class StoryTile extends StatelessWidget {
         ),
       );
     }
+  }
+}
+
+class _LinkPreviewPlaceholder extends StatelessWidget {
+  const _LinkPreviewPlaceholder({
+    Key? key,
+    required this.height,
+  }) : super(key: key);
+
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeIn(
+      child: SizedBox(
+        height: height,
+        child: Shimmer.fromColors(
+          baseColor: Palette.orange,
+          highlightColor: Palette.orangeAccent,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(
+                  right: Dimens.pt5,
+                  bottom: Dimens.pt5,
+                  top: Dimens.pt5,
+                ),
+                child: Container(
+                  height: height,
+                  width: height,
+                  color: Palette.white,
+                ),
+              ),
+              Expanded(
+                flex: 4,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    left: Dimens.pt4,
+                    top: Dimens.pt6,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        width: double.infinity,
+                        height: Dimens.pt14,
+                        color: Palette.white,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: Dimens.pt4,
+                        ),
+                      ),
+                      Container(
+                        width: double.infinity,
+                        height: Dimens.pt10,
+                        color: Palette.white,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: Dimens.pt3,
+                        ),
+                      ),
+                      Container(
+                        width: double.infinity,
+                        height: Dimens.pt10,
+                        color: Palette.white,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: Dimens.pt3,
+                        ),
+                      ),
+                      Container(
+                        width: double.infinity,
+                        height: Dimens.pt10,
+                        color: Palette.white,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: Dimens.pt3,
+                        ),
+                      ),
+                      Container(
+                        width: Dimens.pt40,
+                        height: Dimens.pt10,
+                        color: Palette.white,
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
