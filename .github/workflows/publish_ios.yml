@@ -51,4 +51,4 @@ jobs:
           APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: cd ios && bundle exec fastlane beta "build_name:${{ github.ref_name }}"
+        run: cd ios && bundle exec fastlane beta

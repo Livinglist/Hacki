@@ -31,25 +31,12 @@ platform :ios do
 
     is_example_repo = ENV['CI'] && ENV['GITHUB_REPOSITORY'] == 'jorgenpt/flutter_github_example'
 
-    if !is_example_repo && APP_IDENTIFIER == 'no.tjer.HelloWorld' then
-      UI.user_error! "You need to update your Fastfile to use your own `APP_IDENTIFIER`"
-    end
-
     # Download code signing certificates using `match` (and the `MATCH_PASSWORD` secret)
     sync_code_signing(
       type: "appstore",
       app_identifier: [APP_IDENTIFIER, "#{APP_IDENTIFIER}.Share-Extension", "#{APP_IDENTIFIER}.Action-Extension"],
       readonly: true
     )
-
-    if !is_example_repo then
-      if APPSTORECONNECT_ISSUER_ID == '69a6de83-feb7-47e3-e053-5b8c7c11a4d1' then
-        UI.user_error! "You need to update your Fastfile to use your own `APPSTORECONNECT_ISSUER_ID`"
-      end
-      if APPSTORECONNECT_KEY_ID == 'YRQDJRKMR9' then
-        UI.user_error! "You need to update your Fastfile to use your own `APPSTORECONNECT_KEY_ID`"
-      end
-    end
 
     # We expose the key data using `APP_STORE_CONNECT_API_KEY_KEY` secret on GH
     app_store_connect_api_key(
@@ -59,21 +46,18 @@ platform :ios do
 latest_testflight_build_number
     # Figure out the build number (and optionally build name)
     new_build_number = ( + 1)
-    extra_config_args = []
-    if options.key?(:build_name) then
-      extra_config_args = ["--build-name", options[:build_name].delete_prefix('v')]
-    end
 
     # Prep the xcodeproject from Flutter without building (`--config-only`)
     sh(
       "flutter", "build", "ios", "--config-only",
       "--release", "--no-pub", "--no-codesign",
-      "--build-number", new_build_number.to_s,
-      *extra_config_args
+      "--build-number", new_build_number.to_s
     )
 
+    version = get_version_number(xcodeproj: "Runner.xcodeproj", target: 'Runner')
+
     increment_version_number(
-      version_number: options[:build_name].delete_prefix('v').delete_suffix('-rc')
+      version_number: version
     )
 
     increment_build_number({
