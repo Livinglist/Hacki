@@ -208,6 +208,9 @@ class MainView extends StatelessWidget {
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
+                                        fontSize: MediaQuery.of(context)
+                                                .textScaleFactor *
+                                            prefState.fontSize.fontSize,
                                         color: state.item.url.isNotEmpty
                                             ? Palette.orange
                                             : null,
