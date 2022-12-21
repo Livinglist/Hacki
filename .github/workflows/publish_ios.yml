@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - master
-      - ci-fix
     tags:
       - "v*"
 
