@@ -60,9 +60,8 @@ latest_testflight_build_number
       version_number: version
     )
 
-    build_number = number_of_commits(all: true)
     increment_build_number({
-      build_number: build_number
+      build_number: 347
     })
   
     # Build & sign using Runner.xcworkspace
