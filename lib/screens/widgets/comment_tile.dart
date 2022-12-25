@@ -57,6 +57,8 @@ class CommentTile extends StatelessWidget {
           PreferenceState prefState,
           BlocklistState blocklistState,
         ) {
+          if (actionable && state.hidden) return const SizedBox.shrink();
+
           const Color orange = Color.fromRGBO(255, 152, 0, 1);
           final Color color = _getColor(level);
 
