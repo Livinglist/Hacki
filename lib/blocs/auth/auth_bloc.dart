@@ -20,7 +20,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             storiesRepository ?? locator.get<StoriesRepository>(),
         _sembastRepository =
             sembastRepository ?? locator.get<SembastRepository>(),
-        super(AuthState.init()) {
+        super(const AuthState.init()) {
     on<AuthInitialize>(onInitialize);
     on<AuthLogin>(onLogin);
     on<AuthLogout>(onLogout);
@@ -101,7 +101,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> onLogout(AuthLogout event, Emitter<AuthState> emit) async {
     emit(
       state.copyWith(
-        user: User.empty(),
+        user: const User.empty(),
         isLoggedIn: false,
         agreedToEULA: false,
       ),

@@ -1,7 +1,8 @@
+import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
 
-class User {
-  User({
+class User extends Equatable {
+  const User({
     required this.about,
     required this.created,
     required this.delay,
@@ -9,7 +10,7 @@ class User {
     required this.karma,
   });
 
-  User.empty()
+  const User.empty()
       : about = '',
         created = 0,
         delay = 0,
@@ -39,4 +40,13 @@ class User {
   String toString() {
     return 'User $about, $created, $delay, $id, $karma';
   }
+
+  @override
+  List<Object?> get props => <Object?>[
+        about,
+        created,
+        delay,
+        id,
+        karma,
+      ];
 }

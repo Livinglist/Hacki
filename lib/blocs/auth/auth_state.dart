@@ -14,8 +14,8 @@ class AuthState extends Equatable {
     required this.agreedToEULA,
   });
 
-  AuthState.init()
-      : user = User.empty(),
+  const AuthState.init()
+      : user = const User.empty(),
         isLoggedIn = false,
         status = AuthStatus.loaded,
         agreedToEULA = false;

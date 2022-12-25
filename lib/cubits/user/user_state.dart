@@ -13,8 +13,8 @@ class UserState extends Equatable {
     required this.status,
   });
 
-  UserState.init()
-      : user = User.empty(),
+  const UserState.init()
+      : user = const User.empty(),
         status = UserStatus.initial;
 
   final User user;
