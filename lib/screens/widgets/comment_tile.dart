@@ -336,7 +336,10 @@ class CommentTile extends StatelessWidget {
 
           if (isMyComment && level == 0) {
             return Container(
-              color: Palette.orange.withOpacity(0.2),
+              clipBehavior: Clip.hardEdge,
+              decoration: BoxDecoration(
+                color: Palette.orange.withOpacity(0.2),
+              ),
               child: wrapper,
             );
           }
