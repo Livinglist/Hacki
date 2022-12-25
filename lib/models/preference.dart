@@ -155,7 +155,7 @@ class NavigationModePreference extends BooleanPreference {
   String get title => 'Show Web Page First';
 
   @override
-  String get subtitle => ''''show web page first after tapping on story.''';
+  String get subtitle => '''show web page first after tapping on story.''';
 }
 
 class ReaderModePreference extends BooleanPreference {

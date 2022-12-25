@@ -345,7 +345,7 @@ class CommentTile extends StatelessWidget {
             wrapper = Container(
               clipBehavior: Clip.hardEdge,
               margin: const EdgeInsets.only(
-                left: Dimens.pt12,
+                left: Dimens.pt8,
               ),
               decoration: BoxDecoration(
                 border: i != 0
