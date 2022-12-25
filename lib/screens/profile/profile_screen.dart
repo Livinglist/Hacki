@@ -426,7 +426,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   showAboutDialog(
                                     context: context,
                                     applicationName: 'Hacki',
-                                    applicationVersion: 'v0.3.0',
+                                    applicationVersion: 'v1.0.0',
                                     applicationIcon: ClipRRect(
                                       borderRadius: const BorderRadius.all(
                                         Radius.circular(
