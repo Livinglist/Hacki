@@ -10,7 +10,7 @@ class UserCubit extends Cubit<UserState> {
   UserCubit({StoriesRepository? storiesRepository})
       : _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
-        super(UserState.init());
+        super(const UserState.init());
 
   final StoriesRepository _storiesRepository;
 
