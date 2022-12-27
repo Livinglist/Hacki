@@ -15,7 +15,7 @@ class CollapseCache {
     addIfParentIsHiddenOrCollapsed(commentId, to);
   }
 
-  int collapse(int commentId) {
+  Set<int> collapse(int commentId) {
     _collapsed.add(commentId);
 
     Set<int> findHiddenComments(int commentId) {
@@ -35,7 +35,7 @@ class CollapseCache {
 
     _hiddenCommentsSubject.add(_hidden);
 
-    return hiddenComments.length;
+    return hiddenComments;
   }
 
   void uncollapse(int commentId) {
