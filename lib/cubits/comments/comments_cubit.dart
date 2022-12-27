@@ -213,7 +213,7 @@ class CommentsCubit extends Cubit<CommentsState> {
 
   /// [comment] is only used for lazy fetching.
   void loadMore({Comment? comment}) {
-    if (state.status == CommentsStatus.loading) return;
+    if (comment == null && state.status == CommentsStatus.loading) return;
 
     switch (state.fetchMode) {
       case FetchMode.lazy:
