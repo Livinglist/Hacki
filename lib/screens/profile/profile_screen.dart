@@ -20,6 +20,7 @@ import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:tuple/tuple.dart';
 
@@ -422,93 +423,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 title: const Text('About'),
                                 subtitle:
                                     const Text('nothing interesting here.'),
-                                onTap: () {
-                                  showAboutDialog(
-                                    context: context,
-                                    applicationName: 'Hacki',
-                                    applicationVersion: 'v1.0.0',
-                                    applicationIcon: ClipRRect(
-                                      borderRadius: const BorderRadius.all(
-                                        Radius.circular(
-                                          Dimens.pt12,
-                                        ),
-                                      ),
-                                      child: Image.asset(
-                                        Constants.hackiIconPath,
-                                        height: Dimens.pt50,
-                                        width: Dimens.pt50,
-                                      ),
-                                    ),
-                                    children: <Widget>[
-                                      ElevatedButton(
-                                        onPressed: () => LinkUtil.launch(
-                                          Constants.portfolioLink,
-                                        ),
-                                        child: Row(
-                                          children: const <Widget>[
-                                            Icon(
-                                              FontAwesomeIcons.addressCard,
-                                            ),
-                                            SizedBox(
-                                              width: Dimens.pt12,
-                                            ),
-                                            Text('Developer'),
-                                          ],
-                                        ),
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () => LinkUtil.launch(
-                                          Constants.githubLink,
-                                        ),
-                                        child: Row(
-                                          children: const <Widget>[
-                                            Icon(
-                                              FontAwesomeIcons.github,
-                                            ),
-                                            SizedBox(
-                                              width: Dimens.pt12,
-                                            ),
-                                            Text('Source code'),
-                                          ],
-                                        ),
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () => LinkUtil.launch(
-                                          Platform.isIOS
-                                              ? Constants.appStoreLink
-                                              : Constants.googlePlayLink,
-                                        ),
-                                        child: Row(
-                                          children: const <Widget>[
-                                            Icon(
-                                              Icons.thumb_up,
-                                            ),
-                                            SizedBox(
-                                              width: Dimens.pt12,
-                                            ),
-                                            Text('Like the app?'),
-                                          ],
-                                        ),
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () => LinkUtil.launch(
-                                          Constants.sponsorLink,
-                                        ),
-                                        child: Row(
-                                          children: const <Widget>[
-                                            Icon(
-                                              FeatherIcons.coffee,
-                                            ),
-                                            SizedBox(
-                                              width: Dimens.pt12,
-                                            ),
-                                            Text('Buy me a coffee'),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                },
+                                onTap: showAboutHackiDialog,
                               ),
                               const SizedBox(
                                 height: Dimens.pt48,
@@ -715,6 +630,96 @@ class _ProfileScreenState extends State<ProfileScreen>
           ],
         );
       },
+    );
+  }
+
+  Future<void> showAboutHackiDialog() async {
+    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+    final String version = packageInfo.version;
+
+    showAboutDialog(
+      context: context,
+      applicationName: 'Hacki',
+      applicationVersion: 'v$version',
+      applicationIcon: ClipRRect(
+        borderRadius: const BorderRadius.all(
+          Radius.circular(
+            Dimens.pt12,
+          ),
+        ),
+        child: Image.asset(
+          Constants.hackiIconPath,
+          height: Dimens.pt50,
+          width: Dimens.pt50,
+        ),
+      ),
+      children: <Widget>[
+        ElevatedButton(
+          onPressed: () => LinkUtil.launch(
+            Constants.portfolioLink,
+          ),
+          child: Row(
+            children: const <Widget>[
+              Icon(
+                FontAwesomeIcons.addressCard,
+              ),
+              SizedBox(
+                width: Dimens.pt12,
+              ),
+              Text('Developer'),
+            ],
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () => LinkUtil.launch(
+            Constants.githubLink,
+          ),
+          child: Row(
+            children: const <Widget>[
+              Icon(
+                FontAwesomeIcons.github,
+              ),
+              SizedBox(
+                width: Dimens.pt12,
+              ),
+              Text('Source code'),
+            ],
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () => LinkUtil.launch(
+            Platform.isIOS ? Constants.appStoreLink : Constants.googlePlayLink,
+          ),
+          child: Row(
+            children: const <Widget>[
+              Icon(
+                Icons.thumb_up,
+              ),
+              SizedBox(
+                width: Dimens.pt12,
+              ),
+              Text('Like the app?'),
+            ],
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () => LinkUtil.launch(
+            Constants.sponsorLink,
+          ),
+          child: Row(
+            children: const <Widget>[
+              Icon(
+                FeatherIcons.coffee,
+              ),
+              SizedBox(
+                width: Dimens.pt12,
+              ),
+              Text('Buy me a coffee'),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
