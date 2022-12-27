@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/services/services.dart';
 
 part 'collapse_state.dart';
@@ -10,13 +11,16 @@ part 'collapse_state.dart';
 class CollapseCubit extends Cubit<CollapseState> {
   CollapseCubit({
     required int commentId,
+    required CommentsCubit commentsCubit,
     CollapseCache? collapseCache,
   })  : _commentId = commentId,
         _collapseCache = collapseCache ?? locator.get<CollapseCache>(),
+        _commentsCubit = commentsCubit,
         super(const CollapseState.init());
 
   final int _commentId;
   final CollapseCache _collapseCache;
+  final CommentsCubit _commentsCubit;
   late final StreamSubscription<Map<int, Set<int>>> _streamSubscription;
 
   void init() {
@@ -43,12 +47,19 @@ class CollapseCubit extends Cubit<CollapseState> {
         ),
       );
     } else {
-      final int count = _collapseCache.collapse(_commentId);
+      final Set<int> collapsedCommentIds = _collapseCache.collapse(_commentId);
+      final int lastCommentId = _commentsCubit.state.comments.last.id;
+      final bool shouldLoadMore = _commentId == lastCommentId ||
+          collapsedCommentIds.contains(lastCommentId);
+
+      if (shouldLoadMore) {
+        _commentsCubit.loadMore();
+      }
 
       emit(
         state.copyWith(
           collapsed: true,
-          collapsedCount: state.collapsed ? 0 : count,
+          collapsedCount: state.collapsed ? 0 : collapsedCommentIds.length,
         ),
       );
     }
