@@ -635,7 +635,6 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   Future<void> showAboutHackiDialog() async {
     final PackageInfo packageInfo = await PackageInfo.fromPlatform();
-
     final String version = packageInfo.version;
 
     showAboutDialog(
