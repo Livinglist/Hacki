@@ -11,7 +11,7 @@ part 'collapse_state.dart';
 class CollapseCubit extends Cubit<CollapseState> {
   CollapseCubit({
     required int commentId,
-    required CommentsCubit commentsCubit,
+    required CommentsCubit? commentsCubit,
     CollapseCache? collapseCache,
   })  : _commentId = commentId,
         _collapseCache = collapseCache ?? locator.get<CollapseCache>(),
@@ -20,7 +20,7 @@ class CollapseCubit extends Cubit<CollapseState> {
 
   final int _commentId;
   final CollapseCache _collapseCache;
-  final CommentsCubit _commentsCubit;
+  final CommentsCubit? _commentsCubit;
   late final StreamSubscription<Map<int, Set<int>>> _streamSubscription;
 
   void init() {
@@ -47,13 +47,15 @@ class CollapseCubit extends Cubit<CollapseState> {
         ),
       );
     } else {
+      if (_commentsCubit == null) return;
+
       final Set<int> collapsedCommentIds = _collapseCache.collapse(_commentId);
-      final int lastCommentId = _commentsCubit.state.comments.last.id;
+      final int lastCommentId = _commentsCubit!.state.comments.last.id;
       final bool shouldLoadMore = _commentId == lastCommentId ||
           collapsedCommentIds.contains(lastCommentId);
 
       if (shouldLoadMore) {
-        _commentsCubit.loadMore();
+        _commentsCubit!.loadMore();
       }
 
       emit(
