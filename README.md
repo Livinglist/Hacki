@@ -11,12 +11,10 @@ A [Hacker News](https://news.ycombinator.com/) client made with Flutter that is 
 
 [<img src="assets/images/app_store_badge.png" height="50">](https://apps.apple.com/us/app/hacki/id1602043763?platform=iphone) [<img src="assets/images/google_play_badge.png" height="50">](https://play.google.com/store/apps/details?id=com.jiaqifeng.hacki&hl=en_US&gl=US) [<img src="assets/images/f_droid_badge.png" height="50">](https://f-droid.org/en/packages/com.jiaqifeng.hacki/)
 
-<details><summary>Class Diagram</summary> 
+### Class Diagram
 <img src="assets/github_images/diagram.png">
-</details>
 
-
-Features:
+### Features
 - Log in using your Hacker News account.
 - Browse stories from various categories.
 - Search for stories.
@@ -36,7 +34,7 @@ Features:
 - Launch from system share sheet.
 - And more...
 
-
+### Screenshots
 <p align="center">
    <img width="200" alt="01" src="assets/screenshots/01.png"> 
    <img width="200" alt="02" src="assets/screenshots/02.png"> 
