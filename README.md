@@ -11,6 +11,10 @@ A [Hacker News](https://news.ycombinator.com/) client made with Flutter that is 
 
 [<img src="assets/images/app_store_badge.png" height="50">](https://apps.apple.com/us/app/hacki/id1602043763?platform=iphone) [<img src="assets/images/google_play_badge.png" height="50">](https://play.google.com/store/apps/details?id=com.jiaqifeng.hacki&hl=en_US&gl=US) [<img src="assets/images/f_droid_badge.png" height="50">](https://f-droid.org/en/packages/com.jiaqifeng.hacki/)
 
+<details><summary>Class Diagram</summary> 
+<img src="https://user-images.githubusercontent.com/7277662/209757586-77a3eb53-22da-4a62-8af6-dc123e42c65e.png">
+</details>
+
 
 Features:
 - Log in using your Hacker News account.
@@ -52,4 +56,5 @@ Features:
    <img width="400" alt="ipad-03" src="assets/screenshots/ipad-03.png"> 
    <img width="400" alt="ipad-04" src="assets/screenshots/ipad-04.png"> 
 </p>
+
 
