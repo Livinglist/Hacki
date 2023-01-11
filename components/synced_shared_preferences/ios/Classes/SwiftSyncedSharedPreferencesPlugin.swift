@@ -7,8 +7,8 @@ typealias APNSHandler = ()->Void
 let keyKey = "key"
 let valKey = "val"
 
-final class HackiCore {
-    fileprivate static let shared: HackiCore = HackiCore()
+final class SharedPrefsCore {
+    fileprivate static let shared: SharedPrefsCore = SharedPrefsCore()
 
     fileprivate func setBool(key: String?, val: Bool?) -> Bool {
         guard let key = key,
@@ -92,7 +92,7 @@ public class SwiftSyncedSharedPreferencesPlugin: NSObject, FlutterPlugin {
                 let val = params[valKey] as? Bool
                 let key = params[keyKey] as? String
 
-                let res = HackiCore.shared.setBool(key: key, val: val)
+                let res = SharedPrefsCore.shared.setBool(key: key, val: val)
                 result(res)
             }
 
@@ -100,7 +100,7 @@ public class SwiftSyncedSharedPreferencesPlugin: NSObject, FlutterPlugin {
         case "getBool":
             if let params  = call.arguments as? [String: Any] {
                 let key = params[keyKey] as? String
-                let res = HackiCore.shared.getBool(key: key)
+                let res = SharedPrefsCore.shared.getBool(key: key)
                 result(res)
             }
 
@@ -110,7 +110,7 @@ public class SwiftSyncedSharedPreferencesPlugin: NSObject, FlutterPlugin {
                 let val = params[valKey] as? [String]
                 let key = params[keyKey] as? String
 
-                let res = HackiCore.shared.setStringList(key: key, val: val)
+                let res = SharedPrefsCore.shared.setStringList(key: key, val: val)
                 result(res)
             }
 
@@ -118,14 +118,14 @@ public class SwiftSyncedSharedPreferencesPlugin: NSObject, FlutterPlugin {
         case "getStringList":
             if let params  = call.arguments as? [String: Any] {
                 let key = params[keyKey] as? String
-                let res = HackiCore.shared.getStringList(key: key)
+                let res = SharedPrefsCore.shared.getStringList(key: key)
                 result(res)
             }
 
             return
         case "clearAll":
             if let params  = call.arguments as? [String: Any] {
-                let res = HackiCore.shared.clearAll()
+                let res = SharedPrefsCore.shared.clearAll()
                 result(res)
             }
             
