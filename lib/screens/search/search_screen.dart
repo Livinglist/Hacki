@@ -166,6 +166,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                       showWebPreview:
                                           prefState.showComplexStoryTile,
                                       showMetadata: prefState.showMetadata,
+                                      showUrl: prefState.showUrl,
                                       story: e,
                                       onTap: () => goToItemScreen(
                                         args: ItemScreenArgs(item: e),

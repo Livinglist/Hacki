@@ -190,6 +190,7 @@ class _HomeScreenState extends State<HomeScreen>
                           onTap: () => onStoryTapped(story, isPin: true),
                           showWebPreview: preferenceState.showComplexStoryTile,
                           showMetadata: preferenceState.showMetadata,
+                          showUrl: preferenceState.showUrl,
                         ),
                       ),
                     ),

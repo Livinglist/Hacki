@@ -123,6 +123,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             return ItemsListView<Item>(
                               showWebPreview: false,
                               showMetadata: false,
+                              showUrl: false,
                               useConsistentFontSize: true,
                               refreshController: refreshControllerHistory,
                               items: historyState.submittedItems
@@ -175,6 +176,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               showWebPreview:
                                   preferenceState.showComplexStoryTile,
                               showMetadata: preferenceState.showMetadata,
+                              showUrl: preferenceState.showUrl,
                               useCommentTile: true,
                               refreshController: refreshControllerFav,
                               items: favState.favItems,

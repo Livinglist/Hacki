@@ -203,17 +203,47 @@ class MainView extends StatelessWidget {
                                       bottom: Dimens.pt12,
                                       top: Dimens.pt12,
                                     ),
-                                    child: Text(
-                                      state.item.title,
+                                    child: RichText(
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: MediaQuery.of(context)
-                                                .textScaleFactor *
-                                            prefState.fontSize.fontSize,
-                                        color: state.item.url.isNotEmpty
-                                            ? Palette.orange
-                                            : null,
+                                      text: TextSpan(
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: MediaQuery.of(context)
+                                                  .textScaleFactor *
+                                              prefState.fontSize.fontSize,
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1
+                                              ?.color,
+                                        ),
+                                        children: <TextSpan>[
+                                          TextSpan(
+                                            text: state.item.title,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: MediaQuery.of(context)
+                                                      .textScaleFactor *
+                                                  prefState.fontSize.fontSize,
+                                              color: state.item.url.isNotEmpty
+                                                  ? Palette.orange
+                                                  : null,
+                                            ),
+                                          ),
+                                          if (state.item.url.isNotEmpty)
+                                            TextSpan(
+                                              text:
+                                                  ''' (${(state.item as Story).readableUrl})''',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: MediaQuery.of(context)
+                                                        .textScaleFactor *
+                                                    (prefState
+                                                            .fontSize.fontSize -
+                                                        4),
+                                                color: Palette.orange,
+                                              ),
+                                            ),
+                                        ],
                                       ),
                                     ),
                                   ),

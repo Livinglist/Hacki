@@ -91,6 +91,12 @@ class Story extends Item {
   String get simpleMetadata =>
       '''$score point${score > 1 ? 's' : ''} $descendants comment${descendants > 1 ? 's' : ''} $postedDate''';
 
+  String get readableUrl {
+    final Uri url = Uri.parse(this.url);
+    final String authority = url.authority.replaceFirst('www.', '');
+    return authority;
+  }
+
   @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{

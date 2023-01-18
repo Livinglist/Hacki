@@ -15,6 +15,7 @@ class StoryTile extends StatelessWidget {
     this.hasRead = false,
     required this.showWebPreview,
     required this.showMetadata,
+    required this.showUrl,
     required this.story,
     required this.onTap,
     this.simpleTileFontSize = 16,
@@ -22,6 +23,7 @@ class StoryTile extends StatelessWidget {
 
   final bool showWebPreview;
   final bool showMetadata;
+  final bool showUrl;
   final bool hasRead;
   final Story story;
   final VoidCallback onTap;
@@ -58,6 +60,7 @@ class StoryTile extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
               showMetadata: showMetadata,
+              showUrl: showUrl,
             ),
           ),
         ),
@@ -76,11 +79,31 @@ class StoryTile extends StatelessWidget {
               Row(
                 children: <Widget>[
                   Expanded(
-                    child: Text(
-                      story.title,
-                      style: TextStyle(
-                        color: hasRead ? Palette.grey[500] : null,
-                        fontSize: simpleTileFontSize,
+                    child: RichText(
+                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                      text: TextSpan(
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: story.title,
+                            style: TextStyle(
+                              color: hasRead
+                                  ? Palette.grey[500]
+                                  : Theme.of(context)
+                                      .textTheme
+                                      .bodyText1
+                                      ?.color,
+                              fontSize: simpleTileFontSize,
+                            ),
+                          ),
+                          if (story.url.isNotEmpty)
+                            TextSpan(
+                              text: ' (${story.readableUrl})',
+                              style: TextStyle(
+                                color: Palette.grey[500],
+                                fontSize: simpleTileFontSize - 4,
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                   ),

@@ -18,10 +18,11 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
     CommentsOrderPreference(),
     FontSizePreference(),
     // order here reflects the order on settings screen.
-    const NotificationModePreference(),
-    const CollapseModePreference(),
     const DisplayModePreference(),
     const MetadataModePreference(),
+    const StoryUrlModePreference(),
+    const NotificationModePreference(),
+    const CollapseModePreference(),
     NavigationModePreference(),
     const ReaderModePreference(),
     const MarkReadStoriesModePreference(),
@@ -50,6 +51,7 @@ const bool _trueDarkModeDefaultValue = false;
 const bool _readerModeDefaultValue = true;
 const bool _markReadStoriesModeDefaultValue = true;
 const bool _metadataModeDefaultValue = true;
+const bool _storyUrlModeDefaultValue = true;
 const bool _collapseModeDefaultValue = false;
 final int _fetchModeDefaultValue = FetchMode.eager.index;
 final int _commentsOrderDefaultValue = CommentsOrder.natural.index;
@@ -130,6 +132,25 @@ class MetadataModePreference extends BooleanPreference {
   @override
   String get subtitle =>
       '''show number of comments and post date in story tile.''';
+}
+
+class StoryUrlModePreference extends BooleanPreference {
+  const StoryUrlModePreference({bool? val})
+      : super(val: val ?? _storyUrlModeDefaultValue);
+
+  @override
+  StoryUrlModePreference copyWith({required bool? val}) {
+    return StoryUrlModePreference(val: val);
+  }
+
+  @override
+  String get key => 'storyUrlMode';
+
+  @override
+  String get title => 'Show Url';
+
+  @override
+  String get subtitle => '''show url in story tile.''';
 }
 
 /// The value deciding whether or not user should be
