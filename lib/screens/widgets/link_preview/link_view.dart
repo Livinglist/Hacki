@@ -216,7 +216,7 @@ class LinkView extends StatelessWidget {
                   overflow: bodyTextOverflow ?? TextOverflow.ellipsis,
                   maxLines: (bodyMaxLines ?? _maxLines) -
                       (showMetadata ? 1 : 0) -
-                      (showUrl ? 1 : 0),
+                      (showUrl && url.isNotEmpty ? 1 : 0),
                 ),
               ),
             ),
