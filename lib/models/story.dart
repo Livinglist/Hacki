@@ -1,3 +1,4 @@
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/item.dart';
 
 enum StoryType {
@@ -58,6 +59,24 @@ class Story extends Item {
           by: '',
           title: '',
           url: '',
+          kids: <int>[],
+          dead: false,
+          parts: <int>[],
+          deleted: false,
+          parent: 0,
+          text: '',
+          type: '',
+        );
+
+  Story.placeholder()
+      : super(
+          id: 0,
+          score: 0,
+          descendants: 0,
+          time: 1171872000,
+          by: 'Y Combinator',
+          title: 'Hacker News Guidelines',
+          url: Constants.guidelineLink,
           kids: <int>[],
           dead: false,
           parts: <int>[],

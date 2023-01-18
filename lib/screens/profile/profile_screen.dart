@@ -377,6 +377,17 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   ),
                                 ],
                               ),
+                              const Divider(),
+                              StoryTile(
+                                showWebPreview:
+                                    preferenceState.showComplexStoryTile,
+                                showMetadata: preferenceState.showMetadata,
+                                showUrl: preferenceState.showUrl,
+                                story: Story.placeholder(),
+                                onTap: () =>
+                                    LinkUtil.launch(Constants.guidelineLink),
+                              ),
+                              const Divider(),
                               for (final Preference<dynamic> preference
                                   in preferenceState.preferences
                                       .whereType<BooleanPreference>()

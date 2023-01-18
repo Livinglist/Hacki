@@ -150,11 +150,12 @@ class LinkView extends StatelessWidget {
   }
 
   Widget _buildTitleContainer(TextStyle _titleTS, int _maxLines) {
+    final bool showUrl = this.showUrl && url.isNotEmpty;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 2, 3, 0),
+      padding: EdgeInsets.fromLTRB(4, showUrl ? 0 : 2, 3, 0),
       child: Column(
         children: <Widget>[
-          if (showUrl && url.isNotEmpty)
+          if (showUrl)
             Container(
               alignment: Alignment.topLeft,
               child: Text(
@@ -213,9 +214,8 @@ class LinkView extends StatelessWidget {
                   textAlign: TextAlign.left,
                   style: _bodyTS,
                   overflow: bodyTextOverflow ?? TextOverflow.ellipsis,
-                  maxLines: (bodyMaxLines ?? _maxLines) -
-                      (showMetadata ? 1 : 0) -
-                      (showUrl ? 1 : 0),
+                  maxLines:
+                      (bodyMaxLines ?? _maxLines) - (showMetadata ? 1 : 0),
                 ),
               ),
             ),
