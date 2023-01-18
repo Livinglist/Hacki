@@ -434,6 +434,8 @@ class MainView extends StatelessWidget {
                   child: Text(Constants.happyFaces.pickRandomly()!),
                 ),
               );
+            } else if (state.status == CommentsStatus.loading) {
+              return const LinearProgressIndicator();
             } else {
               return const SizedBox.shrink();
             }

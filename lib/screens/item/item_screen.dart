@@ -442,7 +442,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                 fontSize: fontSize.fontSize,
                 color:
                     context.read<PreferenceCubit>().state.fontSize == fontSize
-                        ? Colors.deepOrange
+                        ? Palette.deepOrange
                         : null,
               ),
             ),

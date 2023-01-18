@@ -90,9 +90,9 @@ Future<void> main({bool testing = false}) async {
   } else if (Platform.isAndroid) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        systemNavigationBarColor: Colors.transparent,
-        systemNavigationBarDividerColor: Colors.transparent,
+        statusBarColor: Palette.transparent,
+        systemNavigationBarColor: Palette.transparent,
+        systemNavigationBarDividerColor: Palette.transparent,
       ),
     );
 
