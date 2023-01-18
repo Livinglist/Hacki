@@ -255,7 +255,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
               },
             ),
           ],
-          child: BlocConsumer<CommentsCubit, CommentsState>(
+          child: BlocListener<CommentsCubit, CommentsState>(
             listenWhen: (CommentsState previous, CommentsState current) =>
                 previous.status != current.status,
             listener: (BuildContext context, CommentsState state) {
@@ -265,135 +265,141 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                   ..loadComplete();
               }
             },
-            builder: (BuildContext context, CommentsState state) {
-              final Widget mainView = MainView(
-                scrollController: scrollController,
-                refreshController: refreshController,
-                commentEditingController: commentEditingController,
-                authState: authState,
-                state: state,
-                focusNode: focusNode,
-                topPadding: topPadding,
-                splitViewEnabled: widget.splitViewEnabled,
-                onMoreTapped: onMoreTapped,
-                onStoryLinkTapped: onStoryLinkTapped,
-                onLoginTapped: onLoginTapped,
-                onRightMoreTapped: onRightMoreTapped,
-              );
-
-              return BlocListener<EditCubit, EditState>(
-                listenWhen: (EditState previous, EditState current) {
-                  return previous.replyingTo != current.replyingTo ||
-                      previous.itemBeingEdited != current.itemBeingEdited ||
-                      commentEditingController.text != current.text;
-                },
-                listener: (BuildContext context, EditState editState) {
-                  if (editState.replyingTo != null ||
-                      editState.itemBeingEdited != null) {
-                    if (editState.text == null) {
-                      commentEditingController.clear();
-                    } else {
-                      final String text = editState.text!;
-                      commentEditingController
-                        ..text = text
-                        ..selection = TextSelection.fromPosition(
-                          TextPosition(offset: text.length),
-                        );
-                    }
-                  } else {
+            child: BlocListener<EditCubit, EditState>(
+              listenWhen: (EditState previous, EditState current) {
+                return previous.replyingTo != current.replyingTo ||
+                    previous.itemBeingEdited != current.itemBeingEdited ||
+                    commentEditingController.text != current.text;
+              },
+              listener: (BuildContext context, EditState editState) {
+                if (editState.replyingTo != null ||
+                    editState.itemBeingEdited != null) {
+                  if (editState.text == null) {
                     commentEditingController.clear();
+                  } else {
+                    final String text = editState.text!;
+                    commentEditingController
+                      ..text = text
+                      ..selection = TextSelection.fromPosition(
+                        TextPosition(offset: text.length),
+                      );
                   }
-                },
-                child: widget.splitViewEnabled
-                    ? Material(
-                        child: Stack(
-                          children: <Widget>[
-                            Positioned.fill(
-                              child: mainView,
+                } else {
+                  commentEditingController.clear();
+                }
+              },
+              child: widget.splitViewEnabled
+                  ? Material(
+                      child: Stack(
+                        children: <Widget>[
+                          Positioned.fill(
+                            child: MainView(
+                              scrollController: scrollController,
+                              refreshController: refreshController,
+                              commentEditingController:
+                                  commentEditingController,
+                              authState: authState,
+                              focusNode: focusNode,
+                              topPadding: topPadding,
+                              splitViewEnabled: widget.splitViewEnabled,
+                              onMoreTapped: onMoreTapped,
+                              onStoryLinkTapped: onStoryLinkTapped,
+                              onLoginTapped: onLoginTapped,
+                              onRightMoreTapped: onRightMoreTapped,
                             ),
-                            BlocBuilder<SplitViewCubit, SplitViewState>(
-                              buildWhen: (
-                                SplitViewState previous,
-                                SplitViewState current,
-                              ) =>
-                                  previous.expanded != current.expanded,
-                              builder: (
-                                BuildContext context,
-                                SplitViewState state,
-                              ) {
-                                return Positioned(
-                                  top: Dimens.zero,
-                                  left: Dimens.zero,
-                                  right: Dimens.zero,
-                                  child: CustomAppBar(
-                                    backgroundColor: Theme.of(context)
-                                        .canvasColor
-                                        .withOpacity(0.6),
-                                    item: widget.item,
-                                    scrollController: scrollController,
-                                    onBackgroundTap:
-                                        onFeatureDiscoveryDismissed,
-                                    onDismiss: onFeatureDiscoveryDismissed,
-                                    splitViewEnabled: state.enabled,
-                                    expanded: state.expanded,
-                                    onZoomTap:
-                                        context.read<SplitViewCubit>().zoom,
-                                    onFontSizeTap: onFontSizeTapped,
-                                    fontSizeIconButtonKey:
-                                        fontSizeIconButtonKey,
-                                  ),
-                                );
+                          ),
+                          BlocBuilder<SplitViewCubit, SplitViewState>(
+                            buildWhen: (
+                              SplitViewState previous,
+                              SplitViewState current,
+                            ) =>
+                                previous.expanded != current.expanded,
+                            builder: (
+                              BuildContext context,
+                              SplitViewState state,
+                            ) {
+                              return Positioned(
+                                top: Dimens.zero,
+                                left: Dimens.zero,
+                                right: Dimens.zero,
+                                child: CustomAppBar(
+                                  backgroundColor: Theme.of(context)
+                                      .canvasColor
+                                      .withOpacity(0.6),
+                                  item: widget.item,
+                                  scrollController: scrollController,
+                                  onBackgroundTap: onFeatureDiscoveryDismissed,
+                                  onDismiss: onFeatureDiscoveryDismissed,
+                                  splitViewEnabled: state.enabled,
+                                  expanded: state.expanded,
+                                  onZoomTap:
+                                      context.read<SplitViewCubit>().zoom,
+                                  onFontSizeTap: onFontSizeTapped,
+                                  fontSizeIconButtonKey: fontSizeIconButtonKey,
+                                ),
+                              );
+                            },
+                          ),
+                          Positioned(
+                            bottom: Dimens.zero,
+                            left: Dimens.zero,
+                            right: Dimens.zero,
+                            child: ReplyBox(
+                              splitViewEnabled: true,
+                              focusNode: focusNode,
+                              textEditingController: commentEditingController,
+                              onSendTapped: onSendTapped,
+                              onCloseTapped: () {
+                                context.read<EditCubit>().onReplyBoxClosed();
+                                commentEditingController.clear();
+                                focusNode.unfocus();
                               },
+                              onChanged:
+                                  context.read<EditCubit>().onTextChanged,
                             ),
-                            Positioned(
-                              bottom: Dimens.zero,
-                              left: Dimens.zero,
-                              right: Dimens.zero,
-                              child: ReplyBox(
-                                splitViewEnabled: true,
-                                focusNode: focusNode,
-                                textEditingController: commentEditingController,
-                                onSendTapped: onSendTapped,
-                                onCloseTapped: () {
-                                  context.read<EditCubit>().onReplyBoxClosed();
-                                  commentEditingController.clear();
-                                  focusNode.unfocus();
-                                },
-                                onChanged:
-                                    context.read<EditCubit>().onTextChanged,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : Scaffold(
-                        extendBodyBehindAppBar: true,
-                        resizeToAvoidBottomInset: true,
-                        appBar: CustomAppBar(
-                          backgroundColor:
-                              Theme.of(context).canvasColor.withOpacity(0.6),
-                          item: widget.item,
-                          scrollController: scrollController,
-                          onBackgroundTap: onFeatureDiscoveryDismissed,
-                          onDismiss: onFeatureDiscoveryDismissed,
-                          onFontSizeTap: onFontSizeTapped,
-                          fontSizeIconButtonKey: fontSizeIconButtonKey,
-                        ),
-                        body: mainView,
-                        bottomSheet: ReplyBox(
-                          focusNode: focusNode,
-                          textEditingController: commentEditingController,
-                          onSendTapped: onSendTapped,
-                          onCloseTapped: () {
-                            context.read<EditCubit>().onReplyBoxClosed();
-                            commentEditingController.clear();
-                            focusNode.unfocus();
-                          },
-                          onChanged: context.read<EditCubit>().onTextChanged,
-                        ),
+                          ),
+                        ],
                       ),
-              );
-            },
+                    )
+                  : Scaffold(
+                      extendBodyBehindAppBar: true,
+                      resizeToAvoidBottomInset: true,
+                      appBar: CustomAppBar(
+                        backgroundColor:
+                            Theme.of(context).canvasColor.withOpacity(0.6),
+                        item: widget.item,
+                        scrollController: scrollController,
+                        onBackgroundTap: onFeatureDiscoveryDismissed,
+                        onDismiss: onFeatureDiscoveryDismissed,
+                        onFontSizeTap: onFontSizeTapped,
+                        fontSizeIconButtonKey: fontSizeIconButtonKey,
+                      ),
+                      body: MainView(
+                        scrollController: scrollController,
+                        refreshController: refreshController,
+                        commentEditingController: commentEditingController,
+                        authState: authState,
+                        focusNode: focusNode,
+                        topPadding: topPadding,
+                        splitViewEnabled: widget.splitViewEnabled,
+                        onMoreTapped: onMoreTapped,
+                        onStoryLinkTapped: onStoryLinkTapped,
+                        onLoginTapped: onLoginTapped,
+                        onRightMoreTapped: onRightMoreTapped,
+                      ),
+                      bottomSheet: ReplyBox(
+                        focusNode: focusNode,
+                        textEditingController: commentEditingController,
+                        onSendTapped: onSendTapped,
+                        onCloseTapped: () {
+                          context.read<EditCubit>().onReplyBoxClosed();
+                          commentEditingController.clear();
+                          focusNode.unfocus();
+                        },
+                        onChanged: context.read<EditCubit>().onTextChanged,
+                      ),
+                    ),
+            ),
           ),
         );
       },
