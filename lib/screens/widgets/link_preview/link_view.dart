@@ -8,10 +8,12 @@ class LinkView extends StatelessWidget {
     super.key,
     required this.metadata,
     required this.url,
+    required this.readableUrl,
     required this.title,
     required this.description,
     required this.onTap,
     required this.showMetadata,
+    required this.showUrl,
     this.imageUri,
     this.imagePath,
     this.titleTextStyle,
@@ -30,6 +32,7 @@ class LinkView extends StatelessWidget {
 
   final String metadata;
   final String url;
+  final String readableUrl;
   final String title;
   final String description;
   final String? imageUri;
@@ -44,6 +47,7 @@ class LinkView extends StatelessWidget {
   final double radius;
   final Color? bgColor;
   final bool showMetadata;
+  final bool showUrl;
 
   double computeTitleFontSize(double width) {
     double size = width * 0.13;
@@ -146,10 +150,27 @@ class LinkView extends StatelessWidget {
   }
 
   Widget _buildTitleContainer(TextStyle _titleTS, int _maxLines) {
+    final bool showUrl = this.showUrl && url.isNotEmpty;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 2, 3, 0),
+      padding: EdgeInsets.fromLTRB(4, showUrl ? 0 : 2, 3, 0),
       child: Column(
         children: <Widget>[
+          if (showUrl)
+            Container(
+              alignment: Alignment.topLeft,
+              child: Text(
+                readableUrl,
+                textAlign: TextAlign.left,
+                style: _titleTS.copyWith(
+                  color: Palette.grey,
+                  fontSize:
+                      _titleTS.fontSize == null ? 12 : _titleTS.fontSize! - 4,
+                  fontWeight: FontWeight.w400,
+                ),
+                overflow: bodyTextOverflow ?? TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
           Container(
             alignment: Alignment.topLeft,
             child: Text(

@@ -1,3 +1,4 @@
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/item.dart';
 
 enum StoryType {
@@ -67,6 +68,24 @@ class Story extends Item {
           type: '',
         );
 
+  Story.placeholder()
+      : super(
+          id: 0,
+          score: 0,
+          descendants: 0,
+          time: 1171872000,
+          by: 'Y Combinator',
+          title: 'Hacker News Guidelines',
+          url: Constants.guidelineLink,
+          kids: <int>[],
+          dead: false,
+          parts: <int>[],
+          deleted: false,
+          parent: 0,
+          text: '',
+          type: '',
+        );
+
   Story.fromJson(Map<String, dynamic> json)
       : super(
           descendants: json['descendants'] as int? ?? 0,
@@ -90,6 +109,12 @@ class Story extends Item {
 
   String get simpleMetadata =>
       '''$score point${score > 1 ? 's' : ''} $descendants comment${descendants > 1 ? 's' : ''} $postedDate''';
+
+  String get readableUrl {
+    final Uri url = Uri.parse(this.url);
+    final String authority = url.authority.replaceFirst('www.', '');
+    return authority;
+  }
 
   @override
   Map<String, dynamic> toJson() {

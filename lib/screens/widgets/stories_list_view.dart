@@ -68,6 +68,7 @@ class _StoriesListViewState extends State<StoriesListView> {
                   context.read<PreferenceCubit>().state.markReadStories,
               showWebPreview: preferenceState.showComplexStoryTile,
               showMetadata: preferenceState.showMetadata,
+              showUrl: preferenceState.showUrl,
               refreshController: refreshController,
               items: state.storiesByType[storyType]!,
               onRefresh: () {

@@ -21,7 +21,6 @@
 		E530B1AD283B54DA004E8EB6 /* ActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E530B1AC283B54DA004E8EB6 /* ActionViewController.swift */; };
 		E530B1B0283B54DA004E8EB6 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E530B1AE283B54DA004E8EB6 /* MainInterface.storyboard */; };
 		E530B1B4283B54DA004E8EB6 /* Action Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = E530B1A6283B54DA004E8EB6 /* Action Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		E54B4753282B3B8900579261 /* HackiCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = E54B4752282B3B8900579261 /* HackiCore.swift */; };
 		E575B6F127EBC6DB002B1508 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E575B6F027EBC6DA002B1508 /* CloudKit.framework */; };
 		FC507E94AA7767C155787DB3 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BFB5AA41D6C22D228077D166 /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
@@ -97,7 +96,6 @@
 		E530B1AF283B54DA004E8EB6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		E530B1B1283B54DA004E8EB6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E530B1B9283B54E4004E8EB6 /* Action Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Action Extension.entitlements"; sourceTree = "<group>"; };
-		E54B4752282B3B8900579261 /* HackiCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HackiCore.swift; sourceTree = "<group>"; };
 		E575B6EF27EBC6C6002B1508 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		E575B6F027EBC6DA002B1508 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		E59F28EE283B477D00512089 /* Share Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Share Extension.entitlements"; sourceTree = "<group>"; };
@@ -177,7 +175,6 @@
 				1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */,
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
-				E54B4752282B3B8900579261 /* HackiCore.swift */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -437,7 +434,6 @@
 			files = (
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
-				E54B4753282B3B8900579261 /* HackiCore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

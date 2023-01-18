@@ -64,6 +64,8 @@ class PreferenceState extends Equatable {
 
   bool get showMetadata => _isOn<MetadataModePreference>();
 
+  bool get showUrl => _isOn<StoryUrlModePreference>();
+
   bool get tapAnywhereToCollapse => _isOn<CollapseModePreference>();
 
   FetchMode get fetchMode => FetchMode.values

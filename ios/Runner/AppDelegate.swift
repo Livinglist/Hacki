@@ -16,8 +16,6 @@ import flutter_local_notifications
         
         let center = UNUserNotificationCenter.current()
         center.delegate = self
-
-        HackiCore.start()
         
         WorkmanagerPlugin.register(with: self.registrar(forPlugin: "be.tramckrijte.workmanager.WorkmanagerPlugin")!)
         

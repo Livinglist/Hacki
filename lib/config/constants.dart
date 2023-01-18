@@ -10,6 +10,8 @@ abstract class Constants {
   static const String googlePlayLink =
       'https://play.google.com/store/apps/details?id=com.jiaqifeng.hacki&hl=en_US&gl=US';
   static const String sponsorLink = 'https://github.com/sponsors/Livinglist';
+  static const String guidelineLink =
+      'https://news.ycombinator.com/newsguidelines.html';
 
   static const String _imagePath = 'assets/images';
   static const String hackerNewsLogoPath = '$_imagePath/hacker_news_logo.png';
