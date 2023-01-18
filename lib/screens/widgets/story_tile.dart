@@ -95,7 +95,7 @@ class StoryTile extends StatelessWidget {
                               fontSize: simpleTileFontSize,
                             ),
                           ),
-                          if (story.url.isNotEmpty)
+                          if (showUrl && story.url.isNotEmpty)
                             TextSpan(
                               text: ' (${story.readableUrl})',
                               style: TextStyle(
