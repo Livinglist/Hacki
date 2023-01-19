@@ -80,7 +80,7 @@ class CommentsCubit extends Cubit<CommentsState> {
         state.copyWith(
           comments: targetParents,
           onlyShowTargetComment: true,
-          status: CommentsStatus.loaded,
+          status: CommentsStatus.allLoaded,
         ),
       );
 
@@ -141,20 +141,20 @@ class CommentsCubit extends Cubit<CommentsState> {
   }
 
   Future<void> refresh() async {
-    if (state.offlineReading) {
-      emit(
-        state.copyWith(
-          status: CommentsStatus.loaded,
-        ),
-      );
-      return;
-    }
-
     emit(
       state.copyWith(
         status: CommentsStatus.loading,
       ),
     );
+
+    if (state.offlineReading) {
+      emit(
+        state.copyWith(
+          status: CommentsStatus.allLoaded,
+        ),
+      );
+      return;
+    }
 
     _collapseCache.resetCollapsedComments();
 
@@ -195,7 +195,6 @@ class CommentsCubit extends Cubit<CommentsState> {
     emit(
       state.copyWith(
         item: updatedItem,
-        status: CommentsStatus.loaded,
       ),
     );
   }
@@ -370,12 +369,17 @@ class CommentsCubit extends Cubit<CommentsState> {
 
           if (!isHidden) {
             _streamSubscription?.pause();
+
+            emit(
+              state.copyWith(
+                status: CommentsStatus.loaded,
+              ),
+            );
           }
 
           emit(
             state.copyWith(
               currentPage: state.currentPage + 1,
-              status: CommentsStatus.loaded,
             ),
           );
         }
