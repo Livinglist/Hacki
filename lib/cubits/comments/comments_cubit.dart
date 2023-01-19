@@ -141,6 +141,12 @@ class CommentsCubit extends Cubit<CommentsState> {
   }
 
   Future<void> refresh() async {
+    emit(
+      state.copyWith(
+        status: CommentsStatus.loading,
+      ),
+    );
+
     if (state.offlineReading) {
       emit(
         state.copyWith(
@@ -363,12 +369,17 @@ class CommentsCubit extends Cubit<CommentsState> {
 
           if (!isHidden) {
             _streamSubscription?.pause();
+
+            emit(
+              state.copyWith(
+                status: CommentsStatus.loaded,
+              ),
+            );
           }
 
           emit(
             state.copyWith(
               currentPage: state.currentPage + 1,
-              status: CommentsStatus.loaded,
             ),
           );
         }
