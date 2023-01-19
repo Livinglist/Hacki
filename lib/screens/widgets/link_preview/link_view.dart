@@ -168,7 +168,7 @@ class LinkView extends StatelessWidget {
             Container(
               alignment: Alignment.topLeft,
               child: Text(
-                ' ($readableUrl)',
+                '($readableUrl)',
                 textAlign: TextAlign.left,
                 style: _titleTS.copyWith(
                   color: Palette.grey,
