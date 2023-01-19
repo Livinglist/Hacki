@@ -259,7 +259,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
             listenWhen: (CommentsState previous, CommentsState current) =>
                 previous.status != current.status,
             listener: (BuildContext context, CommentsState state) {
-              if (state.status == CommentsStatus.loaded) {
+              if (state.status != CommentsStatus.loading) {
                 refreshController
                   ..refreshCompleted()
                   ..loadComplete();
