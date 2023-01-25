@@ -650,89 +650,93 @@ class _ProfileScreenState extends State<ProfileScreen>
     final PackageInfo packageInfo = await PackageInfo.fromPlatform();
     final String version = packageInfo.version;
 
-    showAboutDialog(
-      context: context,
-      applicationName: 'Hacki',
-      applicationVersion: 'v$version',
-      applicationIcon: ClipRRect(
-        borderRadius: const BorderRadius.all(
-          Radius.circular(
-            Dimens.pt12,
+    if (mounted) {
+      showAboutDialog(
+        context: context,
+        applicationName: 'Hacki',
+        applicationVersion: 'v$version',
+        applicationIcon: ClipRRect(
+          borderRadius: const BorderRadius.all(
+            Radius.circular(
+              Dimens.pt12,
+            ),
+          ),
+          child: Image.asset(
+            Constants.hackiIconPath,
+            height: Dimens.pt50,
+            width: Dimens.pt50,
           ),
         ),
-        child: Image.asset(
-          Constants.hackiIconPath,
-          height: Dimens.pt50,
-          width: Dimens.pt50,
-        ),
-      ),
-      children: <Widget>[
-        ElevatedButton(
-          onPressed: () => LinkUtil.launch(
-            Constants.portfolioLink,
+        children: <Widget>[
+          ElevatedButton(
+            onPressed: () => LinkUtil.launch(
+              Constants.portfolioLink,
+            ),
+            child: Row(
+              children: const <Widget>[
+                Icon(
+                  FontAwesomeIcons.addressCard,
+                ),
+                SizedBox(
+                  width: Dimens.pt12,
+                ),
+                Text('Developer'),
+              ],
+            ),
           ),
-          child: Row(
-            children: const <Widget>[
-              Icon(
-                FontAwesomeIcons.addressCard,
-              ),
-              SizedBox(
-                width: Dimens.pt12,
-              ),
-              Text('Developer'),
-            ],
+          ElevatedButton(
+            onPressed: () => LinkUtil.launch(
+              Constants.githubLink,
+            ),
+            child: Row(
+              children: const <Widget>[
+                Icon(
+                  FontAwesomeIcons.github,
+                ),
+                SizedBox(
+                  width: Dimens.pt12,
+                ),
+                Text('Source code'),
+              ],
+            ),
           ),
-        ),
-        ElevatedButton(
-          onPressed: () => LinkUtil.launch(
-            Constants.githubLink,
+          ElevatedButton(
+            onPressed: () => LinkUtil.launch(
+              Platform.isIOS
+                  ? Constants.appStoreLink
+                  : Constants.googlePlayLink,
+            ),
+            child: Row(
+              children: const <Widget>[
+                Icon(
+                  Icons.thumb_up,
+                ),
+                SizedBox(
+                  width: Dimens.pt12,
+                ),
+                Text('Like the app?'),
+              ],
+            ),
           ),
-          child: Row(
-            children: const <Widget>[
-              Icon(
-                FontAwesomeIcons.github,
-              ),
-              SizedBox(
-                width: Dimens.pt12,
-              ),
-              Text('Source code'),
-            ],
+          ElevatedButton(
+            onPressed: () => LinkUtil.launch(
+              Constants.sponsorLink,
+            ),
+            child: Row(
+              children: const <Widget>[
+                Icon(
+                  FeatherIcons.coffee,
+                ),
+                SizedBox(
+                  width: Dimens.pt12,
+                ),
+                Text('Buy me a coffee'),
+              ],
+            ),
           ),
-        ),
-        ElevatedButton(
-          onPressed: () => LinkUtil.launch(
-            Platform.isIOS ? Constants.appStoreLink : Constants.googlePlayLink,
-          ),
-          child: Row(
-            children: const <Widget>[
-              Icon(
-                Icons.thumb_up,
-              ),
-              SizedBox(
-                width: Dimens.pt12,
-              ),
-              Text('Like the app?'),
-            ],
-          ),
-        ),
-        ElevatedButton(
-          onPressed: () => LinkUtil.launch(
-            Constants.sponsorLink,
-          ),
-          child: Row(
-            children: const <Widget>[
-              Icon(
-                FeatherIcons.coffee,
-              ),
-              SizedBox(
-                width: Dimens.pt12,
-              ),
-              Text('Buy me a coffee'),
-            ],
-          ),
-        ),
-      ],
-    );
+        ],
+      );
+    }
   }
 
   void onCommentTapped(Comment comment, {VoidCallback? then}) {
