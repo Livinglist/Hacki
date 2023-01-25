@@ -22,7 +22,7 @@ class InboxView extends StatelessWidget {
   final RefreshController refreshController;
   final List<Comment> comments;
   final List<int> unreadCommentsIds;
-  final Function(Comment) onCommentTapped;
+  final void Function(Comment) onCommentTapped;
   final VoidCallback onMarkAllAsReadTapped;
   final VoidCallback onLoadMore;
   final VoidCallback onRefresh;

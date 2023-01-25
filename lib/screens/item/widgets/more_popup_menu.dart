@@ -12,17 +12,17 @@ import 'package:hacki/utils/utils.dart';
 
 class MorePopupMenu extends StatelessWidget {
   const MorePopupMenu({
-    Key? key,
+    super.key,
     required this.item,
     required this.isBlocked,
     required this.showSnackBar,
     required this.onStoryLinkTapped,
     required this.onLoginTapped,
-  }) : super(key: key);
+  });
 
   final Item item;
   final bool isBlocked;
-  final Function({
+  final void Function({
     required String content,
     VoidCallback? action,
     String? label,

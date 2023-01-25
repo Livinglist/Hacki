@@ -22,12 +22,12 @@ extension ContextExtension on BuildContext {
   static double _screenWidth = 0;
   static double _storyTileHeight = 0;
   static int _storyTileMaxLines = 4;
-  static const double _screenWidthLowerBound = 430,
-      _screenWidthUpperBound = 850,
-      _picHeightLowerBound = 110,
-      _picHeightUpperBound = 128,
-      _smallPicHeight = 100,
-      _picHeightFactor = 0.3;
+  static const double _screenWidthLowerBound = 430;
+  static const double _screenWidthUpperBound = 850;
+  static const double _picHeightLowerBound = 110;
+  static const double _picHeightUpperBound = 128;
+  static const double _smallPicHeight = 100;
+  static const double _picHeightFactor = 0.3;
 
   double get storyTileHeight {
     final double screenWidth =

@@ -17,7 +17,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class MainView extends StatelessWidget {
   const MainView({
-    Key? key,
+    super.key,
     required this.scrollController,
     required this.refreshController,
     required this.commentEditingController,
@@ -29,7 +29,7 @@ class MainView extends StatelessWidget {
     required this.onStoryLinkTapped,
     required this.onLoginTapped,
     required this.onRightMoreTapped,
-  }) : super(key: key);
+  });
 
   final ScrollController scrollController;
   final RefreshController refreshController;
@@ -38,7 +38,7 @@ class MainView extends StatelessWidget {
   final FocusNode focusNode;
   final double topPadding;
   final bool splitViewEnabled;
-  final Function(Item item, Rect? rect) onMoreTapped;
+  final void Function(Item item, Rect? rect) onMoreTapped;
   final ValueChanged<String> onStoryLinkTapped;
   final VoidCallback onLoginTapped;
   final ValueChanged<Comment> onRightMoreTapped;
@@ -208,7 +208,6 @@ class MainView extends StatelessWidget {
 
 class _ParentItemSection extends StatelessWidget {
   const _ParentItemSection({
-    Key? key,
     required this.scrollController,
     required this.refreshController,
     required this.commentEditingController,
@@ -221,7 +220,7 @@ class _ParentItemSection extends StatelessWidget {
     required this.onStoryLinkTapped,
     required this.onLoginTapped,
     required this.onRightMoreTapped,
-  }) : super(key: key);
+  });
 
   final ScrollController scrollController;
   final RefreshController refreshController;
@@ -231,7 +230,7 @@ class _ParentItemSection extends StatelessWidget {
   final FocusNode focusNode;
   final double topPadding;
   final bool splitViewEnabled;
-  final Function(Item item, Rect? rect) onMoreTapped;
+  final void Function(Item item, Rect? rect) onMoreTapped;
   final ValueChanged<String> onStoryLinkTapped;
   final VoidCallback onLoginTapped;
   final ValueChanged<Comment> onRightMoreTapped;
@@ -342,7 +341,7 @@ class _ParentItemSection extends StatelessWidget {
                                       prefState.fontSize.fontSize,
                                   color: Theme.of(context)
                                       .textTheme
-                                      .bodyText1
+                                      .bodySmall
                                       ?.color,
                                 ),
                                 children: <TextSpan>[

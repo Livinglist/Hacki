@@ -179,8 +179,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     ),
                                 ],
                               )
-                              .expand((List<Widget> e) => e)
-                              .toList(),
+                              .expand((List<Widget> e) => e),
                           const SizedBox(
                             height: Dimens.pt40,
                           ),

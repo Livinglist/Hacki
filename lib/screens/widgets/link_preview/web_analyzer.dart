@@ -63,7 +63,7 @@ class WebImageInfo extends InfoBase {
 
 /// Video Information
 class WebVideoInfo extends WebImageInfo {
-  WebVideoInfo({String? image}) : super(image: image);
+  WebVideoInfo({super.image});
 }
 
 /// Web analyzer

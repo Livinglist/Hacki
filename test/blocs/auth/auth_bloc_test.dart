@@ -20,8 +20,11 @@ void main() {
   final MockStoriesRepository mockStoriesRepository = MockStoriesRepository();
   final MockSembastRepository mockSembastRepository = MockSembastRepository();
 
-  const int created = 0, delay = 1, karma = 2;
-  const String about = 'about', id = 'id';
+  const int created = 0;
+  const int delay = 1;
+  const int karma = 2;
+  const String about = 'about';
+  const String id = 'id';
 
   const User tUser = User(
     about: about,
@@ -57,7 +60,8 @@ void main() {
   );
 
   group('AuthAppStarted', () {
-    const String username = 'username', password = 'password';
+    const String username = 'username';
+    const String password = 'password';
     setUp(() {
       when(() => mockAuthRepository.username)
           .thenAnswer((_) => Future<String?>.value(username));

@@ -4,9 +4,9 @@ import 'package:hacki/screens/widgets/widgets.dart';
 
 class PostedByFilterChip extends StatelessWidget {
   const PostedByFilterChip({
-    Key? key,
+    super.key,
     required this.filter,
-  }) : super(key: key);
+  });
 
   final PostedByFilter? filter;
 

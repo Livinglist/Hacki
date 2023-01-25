@@ -37,7 +37,7 @@ class LinkView extends StatelessWidget {
   final String description;
   final String? imageUri;
   final String? imagePath;
-  final Function(String) onTap;
+  final void Function(String) onTap;
   final TextStyle? titleTextStyle;
   final TextStyle? bodyTextStyle;
   final bool showMultiMedia;
@@ -76,13 +76,13 @@ class LinkView extends StatelessWidget {
         final double layoutWidth = constraints.biggest.width;
         final double layoutHeight = constraints.biggest.height;
 
-        final TextStyle _titleFontSize = titleTextStyle ??
+        final TextStyle titleFontSize = titleTextStyle ??
             TextStyle(
               fontSize: computeTitleFontSize(layoutWidth),
               color: Palette.black,
               fontWeight: FontWeight.bold,
             );
-        final TextStyle _bodyFontSize = bodyTextStyle ??
+        final TextStyle bodyFontSize = bodyTextStyle ??
             TextStyle(
               fontSize: computeTitleFontSize(layoutWidth) - 1,
               color: Palette.grey,
@@ -131,11 +131,11 @@ class LinkView extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       _buildTitleContainer(
-                        _titleFontSize,
+                        titleFontSize,
                         computeTitleLines(layoutHeight),
                       ),
                       _buildBodyContainer(
-                        _bodyFontSize,
+                        bodyFontSize,
                         computeBodyLines(layoutHeight),
                       )
                     ],
@@ -149,7 +149,7 @@ class LinkView extends StatelessWidget {
     );
   }
 
-  Widget _buildTitleContainer(TextStyle _titleTS, int _maxLines) {
+  Widget _buildTitleContainer(TextStyle titleTS, int maxLines) {
     final bool showUrl = this.showUrl && url.isNotEmpty;
     return Padding(
       padding: const EdgeInsets.fromLTRB(4, 2, 3, 0),
@@ -159,9 +159,9 @@ class LinkView extends StatelessWidget {
             alignment: Alignment.topLeft,
             child: Text(
               title,
-              style: _titleTS,
+              style: titleTS,
               overflow: TextOverflow.ellipsis,
-              maxLines: _maxLines,
+              maxLines: maxLines,
             ),
           ),
           if (showUrl)
@@ -170,10 +170,10 @@ class LinkView extends StatelessWidget {
               child: Text(
                 '($readableUrl)',
                 textAlign: TextAlign.left,
-                style: _titleTS.copyWith(
+                style: titleTS.copyWith(
                   color: Palette.grey,
                   fontSize:
-                      _titleTS.fontSize == null ? 12 : _titleTS.fontSize! - 4,
+                      titleTS.fontSize == null ? 12 : titleTS.fontSize! - 4,
                   fontWeight: FontWeight.w400,
                 ),
                 overflow: bodyTextOverflow ?? TextOverflow.ellipsis,
@@ -185,7 +185,7 @@ class LinkView extends StatelessWidget {
     );
   }
 
-  Widget _buildBodyContainer(TextStyle _bodyTS, int _maxLines) {
+  Widget _buildBodyContainer(TextStyle bodyTS, int maxLines) {
     return Expanded(
       flex: 2,
       child: Padding(
@@ -198,9 +198,9 @@ class LinkView extends StatelessWidget {
                 child: Text(
                   metadata,
                   textAlign: TextAlign.left,
-                  style: _bodyTS.copyWith(
+                  style: bodyTS.copyWith(
                     fontSize:
-                        _bodyTS.fontSize == null ? 12 : _bodyTS.fontSize! - 2,
+                        bodyTS.fontSize == null ? 12 : bodyTS.fontSize! - 2,
                   ),
                   overflow: bodyTextOverflow ?? TextOverflow.ellipsis,
                   maxLines: 1,
@@ -212,9 +212,9 @@ class LinkView extends StatelessWidget {
                 child: Text(
                   description,
                   textAlign: TextAlign.left,
-                  style: _bodyTS,
+                  style: bodyTS,
                   overflow: bodyTextOverflow ?? TextOverflow.ellipsis,
-                  maxLines: (bodyMaxLines ?? _maxLines) -
+                  maxLines: (bodyMaxLines ?? maxLines) -
                       (showMetadata ? 1 : 0) -
                       (showUrl && url.isNotEmpty ? 1 : 0),
                 ),

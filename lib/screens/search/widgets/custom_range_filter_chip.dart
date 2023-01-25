@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 
-typedef DateRangeCallback = Function(DateTime, DateTime);
+typedef DateRangeCallback = void Function(DateTime, DateTime);
 
 enum CustomDateTimeRange {
   pastDay(Duration(days: 1), label: 'past day'),
@@ -17,10 +17,10 @@ enum CustomDateTimeRange {
 
 class CustomRangeFilterChip extends StatelessWidget {
   const CustomRangeFilterChip({
-    Key? key,
+    super.key,
     required this.range,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   final CustomDateTimeRange range;
   final DateRangeCallback onTap;

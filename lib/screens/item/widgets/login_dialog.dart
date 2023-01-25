@@ -9,15 +9,15 @@ import 'package:hacki/utils/utils.dart';
 
 class LoginDialog extends StatelessWidget {
   const LoginDialog({
-    Key? key,
+    super.key,
     required this.usernameController,
     required this.passwordController,
     required this.showSnackBar,
-  }) : super(key: key);
+  });
 
   final TextEditingController usernameController;
   final TextEditingController passwordController;
-  final Function({
+  final void Function({
     required String content,
     VoidCallback? action,
     String? label,

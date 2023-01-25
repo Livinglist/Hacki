@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:dio/dio.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/postable_repository.dart';
@@ -9,13 +8,12 @@ import 'package:logger/logger.dart';
 
 class AuthRepository extends PostableRepository {
   AuthRepository({
-    Dio? dio,
+    super.dio,
     PreferenceRepository? preferenceRepository,
     Logger? logger,
   })  : _preferenceRepository =
             preferenceRepository ?? locator.get<PreferenceRepository>(),
-        _logger = logger ?? locator.get<Logger>(),
-        super(dio: dio);
+        _logger = logger ?? locator.get<Logger>();
 
   final PreferenceRepository _preferenceRepository;
   final Logger _logger;

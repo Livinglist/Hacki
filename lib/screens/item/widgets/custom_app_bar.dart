@@ -7,10 +7,10 @@ import 'package:hacki/styles/styles.dart';
 
 class CustomAppBar extends AppBar {
   CustomAppBar({
-    Key? key,
+    super.key,
     required ScrollController scrollController,
     required Item item,
-    required Color backgroundColor,
+    required Color super.backgroundColor,
     required Future<bool> Function() onBackgroundTap,
     required Future<bool> Function() onDismiss,
     required VoidCallback onFontSizeTap,
@@ -19,8 +19,6 @@ class CustomAppBar extends AppBar {
     VoidCallback? onZoomTap,
     bool? expanded,
   }) : super(
-          key: key,
-          backgroundColor: backgroundColor,
           elevation: Dimens.zero,
           actions: <Widget>[
             if (splitViewEnabled) ...<Widget>[

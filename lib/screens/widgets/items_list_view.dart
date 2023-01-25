@@ -57,7 +57,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   final VoidCallback? onRefresh;
   final VoidCallback? onLoadMore;
   final ValueChanged<Story>? onPinned;
-  final Function(T) onTap;
+  final void Function(T) onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -249,11 +249,10 @@ class ItemsListView<T extends Item> extends StatelessWidget {
 
 class _CommentTile extends StatelessWidget {
   const _CommentTile({
-    Key? key,
     required this.comment,
     required this.onTap,
     this.fontSize = 16,
-  }) : super(key: key);
+  });
 
   final Comment comment;
   final VoidCallback onTap;
