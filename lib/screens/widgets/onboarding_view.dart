@@ -6,7 +6,7 @@ import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 
 class OnboardingView extends StatefulWidget {
-  const OnboardingView({Key? key}) : super(key: key);
+  const OnboardingView({super.key});
 
   @override
   State<OnboardingView> createState() => _OnboardingViewState();
@@ -106,10 +106,9 @@ class _OnboardingViewState extends State<OnboardingView> {
 
 class _PageViewChild extends StatelessWidget {
   const _PageViewChild({
-    Key? key,
     required this.path,
     required this.description,
-  }) : super(key: key);
+  });
 
   final String path;
   final String description;

@@ -9,19 +9,19 @@ import 'package:responsive_builder/responsive_builder.dart';
 
 class TimeMachineDialog extends StatelessWidget {
   const TimeMachineDialog({
-    Key? key,
+    super.key,
     required this.comment,
     required this.size,
     required this.deviceType,
     required this.widthFactor,
     required this.onStoryLinkTapped,
-  }) : super(key: key);
+  });
 
   final Comment comment;
   final Size size;
   final DeviceScreenType deviceType;
   final double widthFactor;
-  final Function(String) onStoryLinkTapped;
+  final void Function(String) onStoryLinkTapped;
 
   @override
   Widget build(BuildContext context) {

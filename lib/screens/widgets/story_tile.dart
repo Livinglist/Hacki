@@ -56,7 +56,7 @@ class StoryTile extends StatelessWidget {
               titleStyle: TextStyle(
                 color: hasRead
                     ? Palette.grey[500]
-                    : Theme.of(context).textTheme.subtitle1?.color,
+                    : Theme.of(context).textTheme.bodySmall?.color,
                 fontWeight: FontWeight.bold,
               ),
               showMetadata: showMetadata,
@@ -90,7 +90,7 @@ class StoryTile extends StatelessWidget {
                                   ? Palette.grey[500]
                                   : Theme.of(context)
                                       .textTheme
-                                      .bodyText1
+                                      .bodySmall
                                       ?.color,
                               fontSize: simpleTileFontSize,
                             ),
@@ -137,9 +137,8 @@ class StoryTile extends StatelessWidget {
 
 class _LinkPreviewPlaceholder extends StatelessWidget {
   const _LinkPreviewPlaceholder({
-    Key? key,
     required this.height,
-  }) : super(key: key);
+  });
 
   final double height;
 

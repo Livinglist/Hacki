@@ -113,7 +113,8 @@ class LinkPreview extends StatefulWidget {
 
 class _LinkPreviewState extends State<LinkPreview> {
   InfoBase? _info;
-  String? _errorTitle, _errorBody;
+  String? _errorTitle;
+  String? _errorBody;
   bool _loading = false;
 
   @override
@@ -158,7 +159,7 @@ class _LinkPreviewState extends State<LinkPreview> {
   }
 
   Widget _buildLinkContainer(
-    double _height, {
+    double height, {
     String? title = '',
     String? desc = '',
     String? imageUri = '',
@@ -177,7 +178,7 @@ class _LinkPreviewState extends State<LinkPreview> {
                   const BoxShadow(blurRadius: 3, color: Palette.grey),
                 ],
       ),
-      height: _height,
+      height: height,
       child: LinkView(
         key: widget.key ?? Key(widget.link),
         metadata: widget.story.simpleMetadata,

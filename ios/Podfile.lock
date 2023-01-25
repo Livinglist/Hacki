@@ -12,7 +12,7 @@ PODS:
     - OrderedSet (~> 5.0)
   - flutter_local_notifications (0.0.1):
     - Flutter
-  - flutter_secure_storage (3.3.1):
+  - flutter_secure_storage (6.0.0):
     - Flutter
   - flutter_siri_suggestions (0.0.1):
     - Flutter
@@ -24,6 +24,9 @@ PODS:
   - OrderedSet (5.0.0)
   - package_info_plus (0.4.5):
     - Flutter
+  - path_provider_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
   - path_provider_ios (0.0.1):
     - Flutter
   - ReachabilitySwift (5.0.0)
@@ -31,6 +34,9 @@ PODS:
     - Flutter
   - share_plus (0.0.1):
     - Flutter
+  - shared_preferences_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
   - shared_preferences_ios (0.0.1):
     - Flutter
   - sqflite (0.0.2):
@@ -56,9 +62,11 @@ DEPENDENCIES:
   - flutter_siri_suggestions (from `.symlinks/plugins/flutter_siri_suggestions/ios`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/ios`)
   - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
   - receive_sharing_intent (from `.symlinks/plugins/receive_sharing_intent/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/ios`)
   - shared_preferences_ios (from `.symlinks/plugins/shared_preferences_ios/ios`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
   - synced_shared_preferences (from `.symlinks/plugins/synced_shared_preferences/ios`)
@@ -90,12 +98,16 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/integration_test/ios"
   package_info_plus:
     :path: ".symlinks/plugins/package_info_plus/ios"
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/ios"
   path_provider_ios:
     :path: ".symlinks/plugins/path_provider_ios/ios"
   receive_sharing_intent:
     :path: ".symlinks/plugins/receive_sharing_intent/ios"
   share_plus:
     :path: ".symlinks/plugins/share_plus/ios"
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/ios"
   shared_preferences_ios:
     :path: ".symlinks/plugins/shared_preferences_ios/ios"
   sqflite:
@@ -116,20 +128,22 @@ SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_inappwebview: bfd58618f49dc62f2676de690fc6dcda1d6c3721
   flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
-  flutter_secure_storage: 7953c38a04c3fdbb00571bcd87d8e3b5ceb9daec
+  flutter_secure_storage: 23fc622d89d073675f2eaa109381aefbcf5a49be
   flutter_siri_suggestions: 226fb7ef33d25d3fe0d4aa2a8bcf4b72730c466f
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   integration_test: a1e7d09bd98eca2fc37aefd79d4f41ad37bdbbe5
   OrderedSet: aaeb196f7fef5a9edf55d89760da9176ad40b93c
   package_info_plus: 6c92f08e1f853dc01228d6f553146438dafcd14e
+  path_provider_foundation: 37748e03f12783f9de2cb2c4eadfaa25fe6d4852
   path_provider_ios: 14f3d2fd28c4fdb42f44e0f751d12861c43cee02
   ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
   receive_sharing_intent: c0d87310754e74c0f9542947e7cbdf3a0335a3b1
   share_plus: 056a1e8ac890df3e33cb503afffaf1e9b4fbae68
+  shared_preferences_foundation: 297b3ebca31b34ec92be11acd7fb0ba932c822ca
   shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
   sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
   synced_shared_preferences: f722742b06d65c7315b8e9f56b794c9fbd5597f7
-  url_launcher_ios: 839c58cdb4279282219f5e248c3321761ff3c4de
+  url_launcher_ios: ae1517e5e344f5544fb090b079e11f399dfbe4d2
   wakelock: d0fc7c864128eac40eba1617cb5264d9c940b46f
   webview_flutter_wkwebview: b7e70ef1ddded7e69c796c7390ee74180182971f
   workmanager: 0afdcf5628bbde6924c21af7836fed07b42e30e6

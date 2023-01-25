@@ -5,14 +5,14 @@ import 'package:intl/intl.dart';
 
 class DateTimeRangeFilterChip extends StatelessWidget {
   const DateTimeRangeFilterChip({
-    Key? key,
+    super.key,
     required this.filter,
     required this.onDateTimeRangeUpdated,
     required this.onDateTimeRangeRemoved,
-  }) : super(key: key);
+  });
 
   final DateTimeRangeFilter? filter;
-  final Function(DateTime, DateTime) onDateTimeRangeUpdated;
+  final void Function(DateTime, DateTime) onDateTimeRangeUpdated;
   final VoidCallback onDateTimeRangeRemoved;
 
   static final DateFormat _dateTimeFormatter = DateFormat.yMMMd();

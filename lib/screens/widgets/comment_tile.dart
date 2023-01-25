@@ -33,11 +33,11 @@ class CommentTile extends StatelessWidget {
   final Comment comment;
   final int level;
   final bool actionable;
-  final Function(Comment)? onReplyTapped;
-  final Function(Comment, Rect?)? onMoreTapped;
-  final Function(Comment)? onEditTapped;
-  final Function(Comment)? onRightMoreTapped;
-  final Function(String) onStoryLinkTapped;
+  final void Function(Comment)? onReplyTapped;
+  final void Function(Comment, Rect?)? onMoreTapped;
+  final void Function(Comment)? onEditTapped;
+  final void Function(Comment)? onRightMoreTapped;
+  final void Function(String) onStoryLinkTapped;
   final FetchMode fetchMode;
 
   @override

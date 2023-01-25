@@ -8,10 +8,9 @@ import 'package:hacki/repositories/preference_repository.dart';
 import 'package:hacki/utils/utils.dart';
 
 class PostRepository extends PostableRepository {
-  PostRepository({Dio? dio, PreferenceRepository? storageRepository})
+  PostRepository({super.dio, PreferenceRepository? storageRepository})
       : _preferenceRepository =
-            storageRepository ?? locator.get<PreferenceRepository>(),
-        super(dio: dio);
+            storageRepository ?? locator.get<PreferenceRepository>();
 
   final PreferenceRepository _preferenceRepository;
 

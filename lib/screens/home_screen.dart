@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:badges/badges.dart';
 import 'package:feature_discovery/feature_discovery.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Badge;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -182,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen>
                           ),
                         ],
                       ),
-                      child: Container(
+                      child: ColoredBox(
                         color: Palette.orangeAccent.withOpacity(0.2),
                         child: StoryTile(
                           key: ValueKey<String>('${story.id}-PinnedStoryTile'),
@@ -508,9 +508,8 @@ class _HomeScreenState extends State<HomeScreen>
 
 class _MobileHomeScreen extends StatelessWidget {
   const _MobileHomeScreen({
-    Key? key,
     required this.homeScreen,
-  }) : super(key: key);
+  });
 
   final Widget homeScreen;
 
@@ -534,9 +533,8 @@ class _MobileHomeScreen extends StatelessWidget {
 
 class _TabletHomeScreen extends StatelessWidget {
   const _TabletHomeScreen({
-    Key? key,
     required this.homeScreen,
-  }) : super(key: key);
+  });
 
   final Widget homeScreen;
 
@@ -592,7 +590,7 @@ class _TabletHomeScreen extends StatelessWidget {
 }
 
 class _TabletStoryView extends StatelessWidget {
-  const _TabletStoryView({Key? key}) : super(key: key);
+  const _TabletStoryView();
 
   @override
   Widget build(BuildContext context) {
@@ -605,7 +603,7 @@ class _TabletStoryView extends StatelessWidget {
         }
 
         return Material(
-          child: Container(
+          child: ColoredBox(
             color: Theme.of(context).canvasColor,
             child: const Center(
               child: Text('Tap on story tile to view comments.'),
