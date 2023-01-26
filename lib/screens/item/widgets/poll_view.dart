@@ -168,7 +168,7 @@ class PollView extends StatelessWidget {
             ? SnackBarAction(
                 label: label,
                 onPressed: action,
-                textColor: Theme.of(context).textTheme.bodySmall?.color,
+                textColor: Theme.of(context).textTheme.bodyLarge?.color,
               )
             : null,
         behavior: SnackBarBehavior.floating,

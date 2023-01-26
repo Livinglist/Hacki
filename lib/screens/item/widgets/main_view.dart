@@ -341,7 +341,7 @@ class _ParentItemSection extends StatelessWidget {
                                       prefState.fontSize.fontSize,
                                   color: Theme.of(context)
                                       .textTheme
-                                      .bodySmall
+                                      .bodyLarge
                                       ?.color,
                                 ),
                                 children: <TextSpan>[
