@@ -111,7 +111,8 @@ class _ReplyBoxState extends State<ReplyBox> {
                               ...<Widget>[
                                 if (replyingTo != null)
                                   AnimatedOpacity(
-                                    opacity: expanded ? 1 : 0,
+                                    opacity:
+                                        expanded ? NumSwitch.on : NumSwitch.off,
                                     duration: const Duration(milliseconds: 300),
                                     child: IconButton(
                                       key: const Key('quote'),
