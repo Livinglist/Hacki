@@ -43,6 +43,9 @@ class MainView extends StatelessWidget {
   final VoidCallback onLoginTapped;
   final ValueChanged<Comment> onRightMoreTapped;
 
+  static const int _loadingIndicatorOpacityAnimationDuration = 300;
+  static const double _trailingBoxHeight = 240;
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -130,7 +133,7 @@ class MainView extends StatelessWidget {
                               state.comments.isNotEmpty) ||
                           state.onlyShowTargetComment) {
                         return SizedBox(
-                          height: 240,
+                          height: _trailingBoxHeight,
                           child: Center(
                             child: Text(Constants.happyFaces.pickRandomly()!),
                           ),
@@ -194,8 +197,13 @@ class MainView extends StatelessWidget {
             buildWhen: (CommentsState prev, CommentsState current) =>
                 prev.status != current.status,
             builder: (BuildContext context, CommentsState state) {
-              return Visibility(
-                visible: state.status == CommentsStatus.loading,
+              return AnimatedOpacity(
+                opacity: state.status == CommentsStatus.loading
+                    ? NumSwitch.on
+                    : NumSwitch.off,
+                duration: const Duration(
+                  milliseconds: _loadingIndicatorOpacityAnimationDuration,
+                ),
                 child: const LinearProgressIndicator(),
               );
             },
@@ -341,7 +349,7 @@ class _ParentItemSection extends StatelessWidget {
                                       prefState.fontSize.fontSize,
                                   color: Theme.of(context)
                                       .textTheme
-                                      .bodySmall
+                                      .bodyLarge
                                       ?.color,
                                 ),
                                 children: <TextSpan>[

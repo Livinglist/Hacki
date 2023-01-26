@@ -84,6 +84,9 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       const StoriesState.init().copyWith(
         offlineReading: hasCachedStories,
         currentPageSize: pageSize,
+        downloadStatus: state.downloadStatus,
+        storiesDownloaded: state.storiesDownloaded,
+        storiesToBeDownloaded: state.storiesToBeDownloaded,
       ),
     );
     for (final StoryType type in types) {
@@ -374,7 +377,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     StoriesPageSizeChanged event,
     Emitter<StoriesState> emit,
   ) async {
-    emit(const StoriesState.init());
     add(StoriesInitialize());
   }
 

@@ -56,7 +56,7 @@ class StoryTile extends StatelessWidget {
               titleStyle: TextStyle(
                 color: hasRead
                     ? Palette.grey[500]
-                    : Theme.of(context).textTheme.bodySmall?.color,
+                    : Theme.of(context).textTheme.bodyLarge?.color,
                 fontWeight: FontWeight.bold,
               ),
               showMetadata: showMetadata,
@@ -90,7 +90,7 @@ class StoryTile extends StatelessWidget {
                                   ? Palette.grey[500]
                                   : Theme.of(context)
                                       .textTheme
-                                      .bodySmall
+                                      .bodyLarge
                                       ?.color,
                               fontSize: simpleTileFontSize,
                             ),
