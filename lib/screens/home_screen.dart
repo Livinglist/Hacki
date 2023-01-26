@@ -559,7 +559,7 @@ class _TabletHomeScreen extends StatelessWidget {
                   left: Dimens.zero,
                   top: Dimens.zero,
                   bottom: Dimens.zero,
-                  width: state.expanded ? Dimens.zero : homeScreenWidth,
+                  width: homeScreenWidth,
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.elasticOut,
                   child: homeScreen,
