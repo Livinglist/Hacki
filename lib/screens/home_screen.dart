@@ -221,19 +221,23 @@ class _HomeScreenState extends State<HomeScreen>
                 ],
               ),
             ),
-            body: TabBarView(
-              physics: const NeverScrollableScrollPhysics(),
-              controller: tabController,
-              children: <Widget>[
-                for (final StoryType type in StoriesBloc.types)
-                  StoriesListView(
-                    key: ValueKey<StoryType>(type),
-                    storyType: type,
-                    header: pinnedStories,
-                    onStoryTapped: onStoryTapped,
-                  ),
-                const ProfileScreen(),
-              ],
+            body: BlocBuilder<TabCubit, TabState>(
+              builder: (BuildContext context, TabState state) {
+                return TabBarView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  controller: tabController,
+                  children: <Widget>[
+                    for (final StoryType type in state.tabs)
+                      StoriesListView(
+                        key: ValueKey<StoryType>(type),
+                        storyType: type,
+                        header: pinnedStories,
+                        onStoryTapped: onStoryTapped,
+                      ),
+                    const ProfileScreen(),
+                  ],
+                );
+              },
             ),
           ),
         );

@@ -15,15 +15,25 @@ class _TabBarSettingsState extends State<TabBarSettings> {
   Widget build(BuildContext context) {
     return BlocBuilder<TabCubit, TabState>(
       builder: (BuildContext context, TabState state) {
-        return ReorderableListView(
-          onReorder: context.read<TabCubit>().update,
-          children: <Widget>[
-            for (final StoryType tab in state.tabs!)
-              ListTile(
-                key: ValueKey<StoryType>(tab),
-                title: Text(tab.label),
-              )
-          ],
+        return Center(
+          child: SizedBox(
+            height: 100,
+            child: ReorderableListView(
+              scrollDirection: Axis.horizontal,
+              physics: const NeverScrollableScrollPhysics(),
+              onReorder: context.read<TabCubit>().update,
+              children: <Widget>[
+                for (final StoryType tab in state.tabs)
+                  Padding(
+                    key: ValueKey<StoryType>(tab),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Tab(
+                      child: Text(tab.label),
+                    ),
+                  )
+              ],
+            ),
+          ),
         );
       },
     );

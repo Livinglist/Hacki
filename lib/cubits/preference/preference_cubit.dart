@@ -4,18 +4,23 @@ import 'package:hacki/config/locator.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
+import 'package:logger/logger.dart';
 
 part 'preference_state.dart';
 
 class PreferenceCubit extends Cubit<PreferenceState> {
-  PreferenceCubit({PreferenceRepository? storageRepository})
-      : _preferenceRepository =
-            storageRepository ?? locator.get<PreferenceRepository>(),
+  PreferenceCubit({
+    PreferenceRepository? preferenceRepository,
+    Logger? logger,
+  })  : _preferenceRepository =
+            preferenceRepository ?? locator.get<PreferenceRepository>(),
+        _logger = logger ?? locator.get<Logger>(),
         super(PreferenceState.init()) {
     init();
   }
 
   final PreferenceRepository _preferenceRepository;
+  final Logger _logger;
 
   void init() {
     for (final BooleanPreference p
@@ -32,6 +37,12 @@ class PreferenceCubit extends Cubit<PreferenceState> {
       initPreference<int>(p).then<int?>((int? value) {
         final Preference<dynamic> updatedPreference = p.copyWith(val: value);
         emit(state.copyWithPreference(updatedPreference));
+
+        if (p is TabOrderPreference) {
+          print('asdasd');
+          print(updatedPreference.val);
+        }
+
         return null;
       });
     }
@@ -60,6 +71,8 @@ class PreferenceCubit extends Cubit<PreferenceState> {
   void update<T>(Preference<T> preference, {required T to}) {
     final T value = to;
     final Preference<T> updatedPreference = preference.copyWith(val: value);
+
+    _logger.i('updating $preference to $value');
 
     emit(state.copyWithPreference(updatedPreference));
 

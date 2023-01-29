@@ -17,6 +17,7 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/profile/models/page_type.dart';
 import 'package:hacki/screens/profile/widgets/offline_list_tile.dart';
+import 'package:hacki/screens/profile/widgets/tab_bar_settings.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
@@ -176,6 +177,7 @@ class _SettingsState extends State<Settings> {
                       ),
                     ],
                   ),
+                  const TabBarSettings(),
                   const Divider(),
                   StoryTile(
                     showWebPreview: preferenceState.showComplexStoryTile,

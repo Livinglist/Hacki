@@ -26,6 +26,14 @@ enum StoryType {
         return 'SHOW';
     }
   }
+
+  static int convertToSettingsValue(List<StoryType> tabs) {
+    return int.parse(
+      tabs
+          .map((StoryType e) => e.index.toString())
+          .reduce((String value, String element) => '$value$element'),
+    );
+  }
 }
 
 class Story extends Item {

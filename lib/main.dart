@@ -219,7 +219,6 @@ class HackiApp extends StatelessWidget {
           create: (BuildContext context) => EditCubit(),
         ),
         BlocProvider<TabCubit>(
-          lazy: false,
           create: (BuildContext context) => TabCubit(
             preferenceCubit: context.read<PreferenceCubit>(),
           )..init(),
