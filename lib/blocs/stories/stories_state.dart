@@ -11,6 +11,7 @@ enum StoriesDownloadStatus {
   downloading,
   finished,
   failure,
+  canceled,
 }
 
 class StoriesState extends Equatable {

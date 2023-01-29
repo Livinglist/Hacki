@@ -37,6 +37,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     on<StoryRead>(onStoryRead);
     on<StoriesLoaded>(onStoriesLoaded);
     on<StoriesDownload>(onDownload);
+    on<StoriesCancelDownload>(onCancelDownload);
     on<StoryDownloaded>(onStoryDownloaded);
     on<StoriesExitOffline>(onExitOffline);
     on<StoriesPageSizeChanged>(onPageSizeChanged);
@@ -299,12 +300,30 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     }
   }
 
+  Future<void> onCancelDownload(
+    StoriesCancelDownload event,
+    Emitter<StoriesState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        downloadStatus: StoriesDownloadStatus.canceled,
+      ),
+    );
+
+    await _offlineRepository.deleteAllStoryIds();
+    await _offlineRepository.deleteAllStories();
+    await _offlineRepository.deleteAllComments();
+  }
+
   Future<void> fetchAndCacheStories(
     Iterable<int> ids, {
     required bool includingWebPage,
     required bool isPrioritized,
   }) async {
     for (final int id in ids) {
+      if (state.downloadStatus == StoriesDownloadStatus.canceled) break;
+
+      _logger.d('fetching story $id');
       final Story? story = await _storiesRepository.fetchStoryBy(id);
 
       if (story == null) {
@@ -332,11 +351,13 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
           .fetchAllChildrenComments(ids: story.kids)
           .whereType<Comment>()
           .listen(
-            (Comment comment) => unawaited(
-              _offlineRepository.cacheComment(comment: comment),
-            ),
-          )
-          .onDone(() => add(StoryDownloaded(skipped: false)));
+        (Comment comment) {
+          _logger.d('fetched comment ${comment.id}');
+          unawaited(
+            _offlineRepository.cacheComment(comment: comment),
+          );
+        },
+      ).onDone(() => add(StoryDownloaded(skipped: false)));
     }
   }
 

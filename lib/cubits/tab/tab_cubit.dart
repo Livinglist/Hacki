@@ -20,11 +20,9 @@ class TabCubit extends Cubit<TabState> {
     emit(state.copyWith(tabs: tabs));
   }
 
-  void update(StoryType a, StoryType b) {
-    final int indexA = a.index;
-    final int indexB = b.index;
+  void update(int a, int b) {
     final List<StoryType> updatedTabs = List<StoryType>.from(state.tabs!)
-      ..swap(indexA, indexB);
+      ..swap(a, b);
     emit(state.copyWith(tabs: updatedTabs));
 
     // TODO(jiaqi): sync to pref settings.

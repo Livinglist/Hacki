@@ -50,6 +50,8 @@ class _HomeScreenState extends State<HomeScreen>
   late final StreamSubscription<String?> notificationStreamSubscription;
   late final StreamSubscription<String?> siriSuggestionStreamSubscription;
 
+  static final int tabLength = StoryType.values.length + 1;
+
   @override
   void didPopNext() {
     super.didPopNext();
@@ -111,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen>
             .subscribe(this, route);
       });
 
-    tabController = TabController(length: 6, vsync: this);
+    tabController = TabController(length: tabLength, vsync: this);
   }
 
   @override
@@ -193,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen>
         );
 
         return DefaultTabController(
-          length: 6,
+          length: tabLength,
           child: Scaffold(
             resizeToAvoidBottomInset: false,
             appBar: PreferredSize(
