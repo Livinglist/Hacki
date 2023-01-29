@@ -460,41 +460,43 @@ class _ProfileScreenState extends State<ProfileScreen>
                             const SizedBox(
                               width: Dimens.pt12,
                             ),
-                            CustomChip(
-                              label: 'Submit',
-                              selected: false,
-                              onSelected: (bool val) {
-                                if (authState.isLoggedIn) {
-                                  HackiApp.navigatorKey.currentState
-                                      ?.pushNamed(SubmitScreen.routeName);
-                                } else {
-                                  showSnackBar(
-                                    content: 'You need to log in first.',
-                                    label: 'Log in',
-                                    action: onLoginTapped,
-                                  );
-                                }
-                              },
-                            ),
-                            const SizedBox(
-                              width: Dimens.pt12,
-                            ),
-                            CustomChip(
-                              label: 'Inbox : '
-                                  // ignore: lines_longer_than_80_chars
-                                  '${notificationState.unreadCommentsIds.length}',
-                              selected: pageType == _PageType.notification,
-                              onSelected: (bool val) {
-                                if (val) {
-                                  setState(() {
-                                    pageType = _PageType.notification;
-                                  });
-                                }
-                              },
-                            ),
-                            const SizedBox(
-                              width: Dimens.pt12,
-                            ),
+                            if (authState.isLoggedIn) ...<Widget>[
+                              CustomChip(
+                                label: 'Submit',
+                                selected: false,
+                                onSelected: (bool val) {
+                                  if (authState.isLoggedIn) {
+                                    HackiApp.navigatorKey.currentState
+                                        ?.pushNamed(SubmitScreen.routeName);
+                                  } else {
+                                    showSnackBar(
+                                      content: 'You need to log in first.',
+                                      label: 'Log in',
+                                      action: onLoginTapped,
+                                    );
+                                  }
+                                },
+                              ),
+                              const SizedBox(
+                                width: Dimens.pt12,
+                              ),
+                              CustomChip(
+                                label: 'Inbox : '
+                                    // ignore: lines_longer_than_80_chars
+                                    '${notificationState.unreadCommentsIds.length}',
+                                selected: pageType == _PageType.notification,
+                                onSelected: (bool val) {
+                                  if (val) {
+                                    setState(() {
+                                      pageType = _PageType.notification;
+                                    });
+                                  }
+                                },
+                              ),
+                              const SizedBox(
+                                width: Dimens.pt12,
+                              ),
+                            ],
                             CustomChip(
                               label: 'Favorite',
                               selected: pageType == _PageType.fav,
@@ -509,20 +511,22 @@ class _ProfileScreenState extends State<ProfileScreen>
                             const SizedBox(
                               width: Dimens.pt12,
                             ),
-                            CustomChip(
-                              label: 'Submitted',
-                              selected: pageType == _PageType.history,
-                              onSelected: (bool val) {
-                                if (val) {
-                                  setState(() {
-                                    pageType = _PageType.history;
-                                  });
-                                }
-                              },
-                            ),
-                            const SizedBox(
-                              width: Dimens.pt12,
-                            ),
+                            if (authState.isLoggedIn) ...<Widget>[
+                              CustomChip(
+                                label: 'Submitted',
+                                selected: pageType == _PageType.history,
+                                onSelected: (bool val) {
+                                  if (val) {
+                                    setState(() {
+                                      pageType = _PageType.history;
+                                    });
+                                  }
+                                },
+                              ),
+                              const SizedBox(
+                                width: Dimens.pt12,
+                              ),
+                            ],
                             CustomChip(
                               label: 'Search',
                               selected: pageType == _PageType.search,

@@ -6,8 +6,7 @@ enum StoryType {
   best('beststories'),
   latest('newstories'),
   ask('askstories'),
-  show('showstories'),
-  jobs('jobstories');
+  show('showstories');
 
   const StoryType(this.path);
 
@@ -25,8 +24,6 @@ enum StoryType {
         return 'ASK';
       case StoryType.show:
         return 'SHOW';
-      case StoryType.jobs:
-        return 'JOBS';
     }
   }
 }

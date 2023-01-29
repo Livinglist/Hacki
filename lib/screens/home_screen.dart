@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:badges/badges.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart' hide Badge;
 import 'package:flutter/scheduler.dart';
@@ -46,18 +45,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin, RouteAware {
-  final Throttle featureDiscoveryDismissThrottle = Throttle(
-    delay: _throttleDelay,
-  );
-
   late final TabController tabController;
   late final StreamSubscription<String> intentDataStreamSubscription;
   late final StreamSubscription<String?> notificationStreamSubscription;
   late final StreamSubscription<String?> siriSuggestionStreamSubscription;
-
-  int currentIndex = 0;
-
-  static const Duration _throttleDelay = Duration(seconds: 1);
 
   @override
   void didPopNext() {
@@ -120,12 +111,7 @@ class _HomeScreenState extends State<HomeScreen>
             .subscribe(this, route);
       });
 
-    tabController = TabController(vsync: this, length: 6)
-      ..addListener(() {
-        setState(() {
-          currentIndex = tabController.index;
-        });
-      });
+    tabController = TabController(length: 6, vsync: this);
   }
 
   @override
@@ -141,7 +127,6 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   void dispose() {
-    featureDiscoveryDismissThrottle.dispose();
     tabController.dispose();
     intentDataStreamSubscription.cancel();
     notificationStreamSubscription.cancel();
@@ -227,102 +212,8 @@ class _HomeScreenState extends State<HomeScreen>
                       splashColor: Palette.transparent,
                       primaryColor: Theme.of(context).primaryColor,
                     ),
-                    child: TabBar(
-                      isScrollable: true,
-                      controller: tabController,
-                      indicatorColor: Palette.orange,
-                      indicator: CircleTabIndicator(
-                        color: Palette.orange,
-                        radius: Dimens.pt2,
-                      ),
-                      indicatorPadding: const EdgeInsets.only(
-                        bottom: Dimens.pt8,
-                      ),
-                      onTap: (_) {
-                        HapticFeedback.selectionClick();
-                      },
-                      tabs: <Widget>[
-                        for (int i = 0; i < StoriesBloc.types.length; i++)
-                          Tab(
-                            key: ValueKey<StoryType>(
-                              StoriesBloc.types.elementAt(i),
-                            ),
-                            child: Text(
-                              StoriesBloc.types.elementAt(i).label,
-                              style: TextStyle(
-                                fontSize: currentIndex == i
-                                    ? TextDimens.pt14
-                                    : TextDimens.pt10,
-                                color: currentIndex == i
-                                    ? Palette.orange
-                                    : Palette.grey,
-                              ),
-                            ),
-                          ),
-                        Tab(
-                          child: DescribedFeatureOverlay(
-                            onBackgroundTap: onFeatureDiscoveryDismissed,
-                            onDismiss: onFeatureDiscoveryDismissed,
-                            onComplete: () async {
-                              ScaffoldMessenger.of(context).clearSnackBars();
-                              unawaited(HapticFeedback.lightImpact());
-                              showOnboarding();
-                              return true;
-                            },
-                            overflowMode: OverflowMode.extendBackground,
-                            targetColor: Theme.of(context).primaryColor,
-                            tapTarget: const Icon(
-                              Icons.person,
-                              size: TextDimens.pt16,
-                              color: Palette.white,
-                            ),
-                            featureId: Constants.featureLogIn,
-                            title: const Text('Log in for more'),
-                            description: const Text(
-                              'Log in using your Hacker News account '
-                              'to check out stories and comments you have '
-                              'posted in the past, and get in-app '
-                              'notification when there is new reply to '
-                              'your comments or stories.',
-                              style: TextStyle(fontSize: TextDimens.pt16),
-                            ),
-                            child: BlocBuilder<NotificationCubit,
-                                NotificationState>(
-                              buildWhen: (
-                                NotificationState previous,
-                                NotificationState current,
-                              ) =>
-                                  previous.unreadCommentsIds.length !=
-                                  current.unreadCommentsIds.length,
-                              builder: (
-                                BuildContext context,
-                                NotificationState state,
-                              ) {
-                                return Badge(
-                                  showBadge: state.unreadCommentsIds.isNotEmpty,
-                                  badgeContent: Container(
-                                    height: Dimens.pt3,
-                                    width: Dimens.pt3,
-                                    decoration: const BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Palette.white,
-                                    ),
-                                  ),
-                                  child: Icon(
-                                    Icons.person,
-                                    size: currentIndex == 5
-                                        ? TextDimens.pt16
-                                        : TextDimens.pt12,
-                                    color: currentIndex == 5
-                                        ? Palette.orange
-                                        : Palette.grey,
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
+                    child: CustomTabBar(
+                      tabController: tabController,
                     ),
                   ),
                 ],
@@ -358,16 +249,6 @@ class _HomeScreenState extends State<HomeScreen>
         homeScreen: homeScreen,
       ),
     );
-  }
-
-  Future<bool> onFeatureDiscoveryDismissed() {
-    featureDiscoveryDismissThrottle.run(() {
-      HapticFeedback.lightImpact();
-      ScaffoldMessenger.of(context).clearSnackBars();
-      showSnackBar(content: 'Tap on icon to continue');
-    });
-
-    return Future<bool>.value(false);
   }
 
   void onStoryTapped(Story story, {bool isPin = false}) {
@@ -429,16 +310,6 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       );
     }
-  }
-
-  void showOnboarding() {
-    Navigator.push<dynamic>(
-      context,
-      MaterialPageRoute<dynamic>(
-        builder: (BuildContext context) => const OnboardingView(),
-        fullscreenDialog: true,
-      ),
-    );
   }
 
   void onShareExtensionTapped(String? event) {
