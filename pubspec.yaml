@@ -26,6 +26,7 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^8.1.1
   flutter_cache_manager: ^3.3.0
+  flutter_email_sender: ^5.2.0
   flutter_fadein: ^2.0.0
   flutter_feather_icons: 2.0.0+1
   flutter_inappwebview: ^5.7.2+3

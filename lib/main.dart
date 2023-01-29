@@ -60,6 +60,8 @@ Future<void> main({bool testing = false}) async {
           details.exceptionAsString(),
           details.stack,
         );
+
+    FlutterError.dumpErrorToConsole(details);
   };
 
   final HydratedStorage storage = await HydratedStorage.build(

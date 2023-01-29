@@ -28,7 +28,11 @@ class CustomBlocObserver extends BlocObserver {
 
   @override
   void onChange(BlocBase<dynamic> bloc, Change<dynamic> change) {
-    if (bloc is! StoriesBloc && bloc is! CommentsCubit) {
+    if (bloc is! StoriesBloc &&
+        bloc is! CommentsCubit &&
+        bloc is! HistoryCubit &&
+        bloc is! FavCubit &&
+        bloc is! NotificationCubit) {
       locator.get<Logger>().d(change);
     }
 

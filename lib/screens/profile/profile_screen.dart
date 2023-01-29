@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hacki/blocs/blocs.dart';
@@ -20,8 +21,11 @@ import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
+import 'package:logger/logger.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:tuple/tuple.dart';
 
 enum _PageType {
@@ -685,9 +689,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             ),
           ),
           ElevatedButton(
-            onPressed: () => LinkUtil.launch(
-              Constants.githubLink,
-            ),
+            onPressed: onReportIssueTapped,
             child: Row(
               children: const <Widget>[
                 Icon(
@@ -1001,6 +1003,86 @@ class _ProfileScreenState extends State<ProfileScreen>
         );
       },
     );
+  }
+
+  Future<void> onReportIssueTapped() async {
+    await showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: onSendEmailTapped,
+              child: Row(
+                children: const <Widget>[
+                  Icon(
+                    Icons.email,
+                  ),
+                  SizedBox(
+                    width: Dimens.pt12,
+                  ),
+                  Text('Email'),
+                ],
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () => onGithubTapped(context.rect),
+              child: Row(
+                children: const <Widget>[
+                  Icon(
+                    Icons.bug_report_outlined,
+                  ),
+                  SizedBox(
+                    width: Dimens.pt12,
+                  ),
+                  Text('GitHub'),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Send an email with log attached.
+  Future<void> onSendEmailTapped() async {
+    final Directory tempDir = await getTemporaryDirectory();
+    final String logPath = '${tempDir.path}/${Constants.logFilename}';
+
+    final Email email = Email(
+      body:
+          '''Please describe how to reproduce the bug or what you have down before the bug occurred:''',
+      subject: 'Found a bug in Hacki',
+      recipients: <String>[Constants.supportEmail],
+      attachmentPaths: <String>[logPath],
+    );
+
+    await FlutterEmailSender.send(email);
+  }
+
+  /// Open an issue on GitHub.
+  Future<void> onGithubTapped(Rect? rect) async {
+    try {
+      final Directory tempDir = await getTemporaryDirectory();
+      final String logPath = '${tempDir.path}/${Constants.logFilename}';
+      final XFile file = XFile(logPath);
+      final ShareResult result = await Share.shareXFiles(
+        <XFile>[file],
+        subject: 'hacki_log',
+        sharePositionOrigin: rect,
+      );
+
+      if (result.status == ShareResultStatus.success) {
+        LinkUtil.launchInExternalBrowser(Constants.githubIssueLink);
+      }
+    } catch (error, stackTrace) {
+      locator.get<Logger>().e(
+            'Error caught in onGithubTapped',
+            error,
+            stackTrace,
+          );
+    }
   }
 
   @override

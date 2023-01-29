@@ -12,6 +12,9 @@ abstract class Constants {
   static const String sponsorLink = 'https://github.com/sponsors/Livinglist';
   static const String guidelineLink =
       'https://news.ycombinator.com/newsguidelines.html';
+  static const String githubIssueLink =
+      '$githubLink/issues/new?title=Found+a+bug+in+Hacki&body=Please+describe+the+problem.';
+  static const String supportEmail = 'georgefung98@gmail.com';
 
   static const String _imagePath = 'assets/images';
   static const String hackerNewsLogoPath = '$_imagePath/hacker_news_logo.png';
@@ -22,6 +25,7 @@ abstract class Constants {
       '$_imagePath/comment_tile_right_slide.png';
   static const String commentTileTopTapPath =
       '$_imagePath/comment_tile_top_tap.png';
+  static const String logFilename = 'hacki_log.txt';
 
   /// Feature ids for feature discovery.
   static const String featureAddStoryToFavList = 'add_story_to_fav_list';
