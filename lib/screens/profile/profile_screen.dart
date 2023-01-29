@@ -714,7 +714,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                 SizedBox(
                   width: Dimens.pt12,
                 ),
-                Text('Like the app?'),
+                Text('Like this app?'),
               ],
             ),
           ),
