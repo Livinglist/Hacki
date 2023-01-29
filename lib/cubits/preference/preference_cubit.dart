@@ -38,11 +38,6 @@ class PreferenceCubit extends Cubit<PreferenceState> {
         final Preference<dynamic> updatedPreference = p.copyWith(val: value);
         emit(state.copyWithPreference(updatedPreference));
 
-        if (p is TabOrderPreference) {
-          print('asdasd');
-          print(updatedPreference.val);
-        }
-
         return null;
       });
     }

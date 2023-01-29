@@ -59,11 +59,8 @@ const bool _collapseModeDefaultValue = true;
 final int _fetchModeDefaultValue = FetchMode.eager.index;
 final int _commentsOrderDefaultValue = CommentsOrder.natural.index;
 final int _fontSizeDefaultValue = FontSize.regular.index;
-final int _tabOrderDefaultValue = int.parse(
-  StoryType.values
-      .map((StoryType e) => e.index.toString())
-      .reduce((String value, String element) => '$value$element'),
-);
+final int _tabOrderDefaultValue =
+    StoryType.convertToSettingsValue(StoryType.values);
 
 class NotificationModePreference extends BooleanPreference {
   const NotificationModePreference({bool? val})
