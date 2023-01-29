@@ -26,7 +26,7 @@ Future<void> setUpLocator() async {
         output: MultiOutput(
           <LogOutput>[
             ConsoleOutput(),
-            FileOutput(
+            CustomFileOutput(
               file: outputFile,
               overrideExisting: true,
             ),

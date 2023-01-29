@@ -4,8 +4,11 @@ import 'dart:io';
 import 'package:logger/logger.dart';
 
 /// Writes the log output to a file.
-class FileOutput extends LogOutput {
-  FileOutput({
+/// Temporary solution to not being able to access
+// ignore: comment_references
+/// the original [FileOutput] from [Logger]
+class CustomFileOutput extends LogOutput {
+  CustomFileOutput({
     required this.file,
     this.overrideExisting = false,
     this.encoding = utf8,
