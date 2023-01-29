@@ -691,6 +691,22 @@ class _ProfileScreenState extends State<ProfileScreen>
             child: Row(
               children: const <Widget>[
                 Icon(
+                  Icons.bug_report_outlined,
+                ),
+                SizedBox(
+                  width: Dimens.pt12,
+                ),
+                Text('Report issue'),
+              ],
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => LinkUtil.launch(
+              Constants.githubLink,
+            ),
+            child: Row(
+              children: const <Widget>[
+                Icon(
                   FontAwesomeIcons.github,
                 ),
                 SizedBox(

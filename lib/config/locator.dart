@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:hacki/config/custom_console_output.dart';
 import 'package:hacki/config/custom_log_filter.dart';
 import 'package:hacki/config/file_output.dart';
 import 'package:hacki/repositories/repositories.dart';
