@@ -8,7 +8,7 @@ class CustomBlocObserver extends BlocObserver {
   @override
   void onCreate(BlocBase<dynamic> bloc) {
     if (bloc is! CollapseCubit) {
-      locator.get<Logger>().v('$bloc created');
+      locator.get<Logger>().i('$bloc created');
     }
 
     super.onCreate(bloc);
@@ -20,22 +20,19 @@ class CustomBlocObserver extends BlocObserver {
     Object? event,
   ) {
     if (event is! StoriesEvent) {
-      locator.get<Logger>().v(event);
+      locator.get<Logger>().i(event);
     }
 
     super.onEvent(bloc, event);
   }
 
   @override
-  void onTransition(
-    Bloc<dynamic, dynamic> bloc,
-    Transition<dynamic, dynamic> transition,
-  ) {
-    if (bloc is! StoriesBloc) {
-      locator.get<Logger>().v(transition);
+  void onChange(BlocBase<dynamic> bloc, Change<dynamic> change) {
+    if (bloc is! StoriesBloc && bloc is! CommentsCubit) {
+      locator.get<Logger>().d(change);
     }
 
-    super.onTransition(bloc, transition);
+    super.onChange(bloc, change);
   }
 
   @override

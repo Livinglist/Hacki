@@ -98,6 +98,7 @@ class InboxView extends StatelessWidget {
                                         child: Linkify(
                                           text: '${e.by} : ${e.text}',
                                           style: TextStyle(
+                                            fontSize: TextDimens.pt16,
                                             color:
                                                 unreadCommentsIds.contains(e.id)
                                                     ? textColor

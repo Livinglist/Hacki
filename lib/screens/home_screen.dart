@@ -300,7 +300,6 @@ class _HomeScreenState extends State<HomeScreen>
                               ) {
                                 return Badge(
                                   showBadge: state.unreadCommentsIds.isNotEmpty,
-                                  borderRadius: BorderRadius.circular(100),
                                   badgeContent: Container(
                                     height: Dimens.pt3,
                                     width: Dimens.pt3,

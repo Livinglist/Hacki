@@ -1,17 +1,40 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hacki/config/custom_console_output.dart';
 import 'package:hacki/config/custom_log_filter.dart';
+import 'package:hacki/config/file_output.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/services/services.dart';
 import 'package:logger/logger.dart';
+import 'package:path_provider/path_provider.dart';
 
 /// Global [GetIt.instance].
 final GetIt locator = GetIt.instance;
 
 /// Set up [GetIt] locator.
 Future<void> setUpLocator() async {
+  final Directory tempDir = await getTemporaryDirectory();
+  final File outputFile = File('${tempDir.path}/hacki_log');
   locator
-    ..registerSingleton<Logger>(Logger(filter: CustomLogFilter()))
+    ..registerSingleton<Logger>(
+      Logger(
+        filter: CustomLogFilter(),
+        printer: PrettyPrinter(
+          methodCount: 0,
+        ),
+        output: MultiOutput(
+          <LogOutput>[
+            ConsoleOutput(),
+            FileOutput(
+              file: outputFile,
+              overrideExisting: true,
+            ),
+          ],
+        ),
+      ),
+    )
     ..registerSingleton<StoriesRepository>(StoriesRepository())
     ..registerSingleton<PreferenceRepository>(PreferenceRepository())
     ..registerSingleton<SearchRepository>(SearchRepository())

@@ -9,9 +9,9 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/utils/html_util.dart';
 import 'package:path_provider_android/path_provider_android.dart';
-import 'package:path_provider_ios/path_provider_ios.dart';
+import 'package:path_provider_foundation/path_provider_foundation.dart';
 import 'package:shared_preferences_android/shared_preferences_android.dart';
-import 'package:shared_preferences_ios/shared_preferences_ios.dart';
+import 'package:shared_preferences_foundation/shared_preferences_foundation.dart';
 import 'package:workmanager/workmanager.dart';
 
 void fetcherCallbackDispatcher() {
@@ -20,10 +20,9 @@ void fetcherCallbackDispatcher() {
     if (Platform.isAndroid) {
       PathProviderAndroid.registerWith();
       SharedPreferencesAndroid.registerWith();
-    }
-    if (Platform.isIOS) {
-      PathProviderIOS.registerWith();
-      SharedPreferencesIOS.registerWith();
+    } else if (Platform.isIOS) {
+      PathProviderFoundation.registerWith();
+      SharedPreferencesFoundation.registerWith();
     }
 
     await Fetcher.fetchReplies();
@@ -127,7 +126,7 @@ abstract class Fetcher {
           'You have a new reply! $happyFace',
           '${newReply?.by}: $text',
           const NotificationDetails(
-            iOS: IOSNotificationDetails(
+            iOS: DarwinNotificationDetails(
               presentBadge: false,
               threadIdentifier: 'hacki',
             ),

@@ -42,9 +42,9 @@ class HistoryState extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        submittedIds,
-        submittedItems,
         status,
         currentPage,
+        submittedIds,
+        submittedItems,
       ];
 }

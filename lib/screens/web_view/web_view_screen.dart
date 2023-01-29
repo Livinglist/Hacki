@@ -17,6 +17,25 @@ class WebViewScreen extends StatefulWidget {
 }
 
 class _WebViewScreenState extends State<WebViewScreen> {
+  final WebViewController controller = WebViewController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    getUrlAndLoadWebView();
+  }
+
+  Future<void> getUrlAndLoadWebView() async {
+    final String? html = await locator.get<OfflineRepository>().getHtml(
+          url: widget.url,
+        );
+
+    if (html != null) {
+      await controller.loadHtmlString(html);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,16 +51,8 @@ class _WebViewScreenState extends State<WebViewScreen> {
         ),
         centerTitle: true,
       ),
-      body: WebView(
-        onWebViewCreated: (WebViewController controller) async {
-          final String? html = await locator.get<OfflineRepository>().getHtml(
-                url: widget.url,
-              );
-
-          if (html != null) {
-            await controller.loadHtmlString(html);
-          }
-        },
+      body: WebViewWidget(
+        controller: controller,
       ),
     );
   }

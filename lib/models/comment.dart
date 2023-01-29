@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:hacki/models/item.dart';
 
 class Comment extends Item {
@@ -74,11 +72,7 @@ class Comment extends Item {
       };
 
   @override
-  String toString() {
-    final String prettyString =
-        const JsonEncoder.withIndent('  ').convert(this);
-    return 'Comment $prettyString';
-  }
+  bool? get stringify => false;
 
   @override
   List<Object?> get props => <Object?>[
