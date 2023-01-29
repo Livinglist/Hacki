@@ -1,9 +1,9 @@
 import UIKit
 import Flutter
 import workmanager
-import shared_preferences_ios
+import shared_preferences_foundation
 import flutter_secure_storage
-import path_provider_ios
+import path_provider_foundation
 import flutter_local_notifications
 
 @UIApplicationMain
@@ -26,8 +26,8 @@ import flutter_local_notifications
         
         WorkmanagerPlugin.setPluginRegistrantCallback { registry in
             GeneratedPluginRegistrant.register(with: registry)
-            FLTSharedPreferencesPlugin.register(with: registry.registrar(forPlugin: "io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin")!)
-            FLTPathProviderPlugin.register(with: registry.registrar(forPlugin: "io.flutter.plugins.pathprovider.PathProviderPlugin")!)
+            SharedPreferencesPlugin.register(with: registry.registrar(forPlugin: "io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin")!)
+            PathProviderPlugin.register(with: registry.registrar(forPlugin: "io.flutter.plugins.pathprovider.PathProviderPlugin")!)
             FlutterLocalNotificationsPlugin.register(with: registry.registrar(forPlugin: "com.dexterous.flutterlocalnotifications.FlutterLocalNotificationsPlugin")!)
         }
         
