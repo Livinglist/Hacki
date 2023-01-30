@@ -84,10 +84,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                 /// If swipe gesture is enabled on home screen, use long press
                 /// instead of slide action to trigger the action menu.
                 onLongPress: swipeGestureEnabled
-                    ? () {
-                        HapticFeedback.lightImpact();
-                        onMoreTapped?.call(e, context.rect);
-                      }
+                    ? () => onMoreTapped?.call(e, context.rect)
                     : null,
                 child: FadeIn(
                   child: Slidable(
@@ -109,10 +106,8 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                                 label: showWebPreview ? null : 'Pin to top',
                               ),
                               SlidableAction(
-                                onPressed: (_) {
-                                  HapticFeedback.lightImpact();
-                                  onMoreTapped?.call(e, context.rect);
-                                },
+                                onPressed: (_) =>
+                                    onMoreTapped?.call(e, context.rect),
                                 backgroundColor: Palette.orange,
                                 foregroundColor: Palette.white,
                                 icon: showWebPreview ? Icons.more_horiz : null,
