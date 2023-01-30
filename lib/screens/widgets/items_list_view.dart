@@ -106,10 +106,8 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                                 label: showWebPreview ? null : 'Pin to top',
                               ),
                               SlidableAction(
-                                onPressed: (_) {
-                                  HapticFeedback.selectionClick();
-                                  onMoreTapped?.call(e, context.rect);
-                                },
+                                onPressed: (_) =>
+                                    onMoreTapped?.call(e, context.rect),
                                 backgroundColor: Palette.orange,
                                 foregroundColor: Palette.white,
                                 icon: showWebPreview ? Icons.more_horiz : null,

@@ -1,10 +1,29 @@
 import 'dart:io';
-import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/config/file_output.dart';
+import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
 abstract class LogUtil {
+  static LogPrinter get logPrinter => kReleaseMode
+      ? SimplePrinter(colors: false)
+      : PrettyPrinter(
+          methodCount: 0,
+          colors: false,
+        );
+
+  static LogOutput getLogOutput(File outputFile) => MultiOutput(
+        <LogOutput>[
+          ConsoleOutput(),
+          CustomFileOutput(
+            file: outputFile,
+            overrideExisting: true,
+          ),
+        ],
+      );
+
   static Future<File> initLogFile() async {
     final Directory tempDir = await getTemporaryDirectory();
     final File logFile = File('${tempDir.path}/${Constants.logFilename}');

@@ -1,10 +1,8 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hacki/config/custom_log_filter.dart';
-import 'package:hacki/config/file_output.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
@@ -21,20 +19,8 @@ Future<void> setUpLocator() async {
     ..registerSingleton<Logger>(
       Logger(
         filter: CustomLogFilter(),
-        printer: kReleaseMode
-            ? SimplePrinter()
-            : PrettyPrinter(
-                methodCount: 0,
-              ),
-        output: MultiOutput(
-          <LogOutput>[
-            ConsoleOutput(),
-            CustomFileOutput(
-              file: logOutputFile,
-              overrideExisting: true,
-            ),
-          ],
-        ),
+        printer: LogUtil.logPrinter,
+        output: LogUtil.getLogOutput(logOutputFile),
       ),
     )
     ..registerSingleton<StoriesRepository>(StoriesRepository())
