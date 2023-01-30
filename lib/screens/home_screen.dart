@@ -143,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen>
       buildWhen: (PreferenceState previous, PreferenceState current) =>
           previous.showComplexStoryTile != current.showComplexStoryTile ||
           previous.showMetadata != current.showMetadata ||
-          previous.enableSwipeGesture != current.enableSwipeGesture,
+          previous.swipeGestureEnabled != current.swipeGestureEnabled,
       builder: (BuildContext context, PreferenceState preferenceState) {
         final BlocBuilder<PinCubit, PinState> pinnedStories =
             BlocBuilder<PinCubit, PinState>(
@@ -225,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen>
             body: BlocBuilder<TabCubit, TabState>(
               builder: (BuildContext context, TabState state) {
                 return TabBarView(
-                  physics: preferenceState.enableSwipeGesture
+                  physics: preferenceState.swipeGestureEnabled
                       ? const PageScrollPhysics()
                       : const NeverScrollableScrollPhysics(),
                   controller: tabController,

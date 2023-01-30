@@ -68,7 +68,7 @@ class PreferenceState extends Equatable {
 
   bool get tapAnywhereToCollapse => _isOn<CollapseModePreference>();
 
-  bool get enableSwipeGesture => _isOn<SwipeGesturePreference>();
+  bool get swipeGestureEnabled => _isOn<SwipeGesturePreference>();
 
   List<StoryType> get tabs {
     final String result =
