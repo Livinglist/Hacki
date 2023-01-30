@@ -5,6 +5,8 @@ import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
+import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/context_extension.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
@@ -31,6 +33,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.onLoadMore,
     this.onPinned,
     this.header,
+    this.onMoreTapped,
   }) : assert(
           !pinnable || (pinnable && onPinned != null),
           'onPinned cannot be null when pinnable is true',
@@ -59,6 +62,9 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   final ValueChanged<Story>? onPinned;
   final void Function(T) onTap;
 
+  /// Used for home screen.
+  final void Function(Story, Rect?)? onMoreTapped;
+
   @override
   Widget build(BuildContext context) {
     final ListView child = ListView(
@@ -71,39 +77,59 @@ class ItemsListView<T extends Item> extends StatelessWidget {
         ...items.map((T e) {
           if (e is Story) {
             final bool hasRead = context.read<StoriesBloc>().hasRead(e);
+            final bool swipeGestureEnabled =
+                context.read<PreferenceCubit>().state.enableSwipeGesture;
             return <Widget>[
-              FadeIn(
-                child: Slidable(
-                  startActionPane: pinnable
-                      ? ActionPane(
-                          motion: const BehindMotion(),
-                          children: <Widget>[
-                            SlidableAction(
-                              onPressed: (_) {
-                                HapticFeedback.lightImpact();
-                                onPinned?.call(e);
-                              },
-                              backgroundColor: Palette.orange,
-                              foregroundColor: Palette.white,
-                              icon: showWebPreview
-                                  ? Icons.push_pin_outlined
-                                  : null,
-                              label: 'Pin to top',
-                            ),
-                          ],
-                        )
-                      : null,
-                  child: StoryTile(
-                    key: ValueKey<int>(e.id),
-                    story: e,
-                    onTap: () => onTap(e),
-                    showWebPreview: showWebPreview,
-                    showMetadata: showMetadata,
-                    showUrl: showUrl,
-                    hasRead: markReadStories && hasRead,
-                    simpleTileFontSize: useConsistentFontSize
-                        ? TextDimens.pt14
-                        : TextDimens.pt16,
+              GestureDetector(
+                /// If swipe gesture is enabled on home screen, use long press
+                /// instead of slide action to trigger the action menu.
+                onLongPress: swipeGestureEnabled
+                    ? () => onMoreTapped?.call(e, context.rect)
+                    : null,
+                child: FadeIn(
+                  child: Slidable(
+                    enabled: !swipeGestureEnabled,
+                    startActionPane: pinnable
+                        ? ActionPane(
+                            motion: const BehindMotion(),
+                            children: <Widget>[
+                              SlidableAction(
+                                onPressed: (_) {
+                                  HapticFeedback.lightImpact();
+                                  onPinned?.call(e);
+                                },
+                                backgroundColor: Palette.orange,
+                                foregroundColor: Palette.white,
+                                icon: showWebPreview
+                                    ? Icons.push_pin_outlined
+                                    : null,
+                                label: showWebPreview ? null : 'Pin to top',
+                              ),
+                              SlidableAction(
+                                onPressed: (_) {
+                                  HapticFeedback.selectionClick();
+                                  onMoreTapped?.call(e, context.rect);
+                                },
+                                backgroundColor: Palette.orange,
+                                foregroundColor: Palette.white,
+                                icon: showWebPreview ? Icons.more_horiz : null,
+                                label: showWebPreview ? null : 'More',
+                              ),
+                            ],
+                          )
+                        : null,
+                    child: StoryTile(
+                      key: ValueKey<int>(e.id),
+                      story: e,
+                      onTap: () => onTap(e),
+                      showWebPreview: showWebPreview,
+                      showMetadata: showMetadata,
+                      showUrl: showUrl,
+                      hasRead: markReadStories && hasRead,
+                      simpleTileFontSize: useConsistentFontSize
+                          ? TextDimens.pt14
+                          : TextDimens.pt16,
+                    ),
                   ),
                 ),
               ),
