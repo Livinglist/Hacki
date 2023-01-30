@@ -18,6 +18,7 @@ final GetIt locator = GetIt.instance;
 Future<void> setUpLocator() async {
   final Directory tempDir = await getTemporaryDirectory();
   final File outputFile = File('${tempDir.path}/${Constants.logFilename}');
+  await outputFile.copy('${tempDir.path}/${Constants.previousLogFileName}');
   locator
     ..registerSingleton<Logger>(
       Logger(

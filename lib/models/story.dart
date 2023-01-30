@@ -6,8 +6,7 @@ enum StoryType {
   best('beststories'),
   latest('newstories'),
   ask('askstories'),
-  show('showstories'),
-  jobs('jobstories');
+  show('showstories');
 
   const StoryType(this.path);
 
@@ -25,9 +24,15 @@ enum StoryType {
         return 'ASK';
       case StoryType.show:
         return 'SHOW';
-      case StoryType.jobs:
-        return 'JOBS';
     }
+  }
+
+  static int convertToSettingsValue(List<StoryType> tabs) {
+    return int.parse(
+      tabs
+          .map((StoryType e) => e.index.toString())
+          .reduce((String value, String element) => '$value$element'),
+    );
   }
 }
 

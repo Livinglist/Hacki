@@ -46,6 +46,13 @@ class StoriesDownload extends StoriesEvent {
   List<Object?> get props => <Object?>[includingWebPage];
 }
 
+class StoriesCancelDownload extends StoriesEvent {
+  StoriesCancelDownload();
+
+  @override
+  List<Object?> get props => <Object?>[];
+}
+
 class StoryDownloaded extends StoriesEvent {
   StoryDownloaded({required this.skipped});
 

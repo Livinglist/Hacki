@@ -68,6 +68,23 @@ class PreferenceState extends Equatable {
 
   bool get tapAnywhereToCollapse => _isOn<CollapseModePreference>();
 
+  List<StoryType> get tabs {
+    final String result =
+        preferences.singleWhereType<TabOrderPreference>().val.toString();
+    final List<int> tabIndexes = List<int>.generate(
+      result.length,
+      (int index) => result.codeUnitAt(index) - 48,
+    );
+    final List<StoryType> tabs = tabIndexes
+        .map((int index) => StoryType.values.elementAt(index))
+        .toList();
+
+    if (tabs.length < StoryType.values.length) {
+      tabs.insert(0, StoryType.values.first);
+    }
+    return tabs;
+  }
+
   FetchMode get fetchMode => FetchMode.values
       .elementAt(preferences.singleWhereType<FetchModePreference>().val);
 

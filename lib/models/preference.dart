@@ -18,6 +18,7 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
     FetchModePreference(),
     CommentsOrderPreference(),
     FontSizePreference(),
+    TabOrderPreference(),
     // Order of items below matters and
     // reflects the order on settings screen.
     const DisplayModePreference(),
@@ -58,6 +59,8 @@ const bool _collapseModeDefaultValue = true;
 final int _fetchModeDefaultValue = FetchMode.eager.index;
 final int _commentsOrderDefaultValue = CommentsOrder.natural.index;
 final int _fontSizeDefaultValue = FontSize.regular.index;
+final int _tabOrderDefaultValue =
+    StoryType.convertToSettingsValue(StoryType.values);
 
 class NotificationModePreference extends BooleanPreference {
   const NotificationModePreference({bool? val})
@@ -305,4 +308,19 @@ class FontSizePreference extends IntPreference {
 
   @override
   String get title => 'Default font size';
+}
+
+class TabOrderPreference extends IntPreference {
+  TabOrderPreference({int? val}) : super(val: val ?? _tabOrderDefaultValue);
+
+  @override
+  TabOrderPreference copyWith({required int? val}) {
+    return TabOrderPreference(val: val);
+  }
+
+  @override
+  String get key => 'tabOrder';
+
+  @override
+  String get title => 'Tab order';
 }

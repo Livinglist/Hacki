@@ -60,8 +60,6 @@ Future<void> main({bool testing = false}) async {
           details.exceptionAsString(),
           details.stack,
         );
-
-    FlutterError.dumpErrorToConsole(details);
   };
 
   final HydratedStorage storage = await HydratedStorage.build(
@@ -220,6 +218,11 @@ class HackiApp extends StatelessWidget {
           lazy: false,
           create: (BuildContext context) => EditCubit(),
         ),
+        BlocProvider<TabCubit>(
+          create: (BuildContext context) => TabCubit(
+            preferenceCubit: context.read<PreferenceCubit>(),
+          )..init(),
+        )
       ],
       child: AdaptiveTheme(
         light: ThemeData(
