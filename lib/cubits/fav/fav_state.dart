@@ -42,9 +42,9 @@ class FavState extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        favIds,
-        favItems,
         status,
         currentPage,
+        favIds,
+        favItems,
       ];
 }

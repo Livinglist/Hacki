@@ -77,11 +77,11 @@ class NotificationState extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        comments,
-        unreadCommentsIds,
-        allCommentsIds,
         currentPage,
         offset,
         status,
+        comments,
+        unreadCommentsIds,
+        allCommentsIds,
       ];
 }

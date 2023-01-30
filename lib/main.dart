@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:equatable/equatable.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,7 @@ import 'package:hacki/services/fetcher.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hive/hive.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart' show BehaviorSubject;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -36,10 +38,29 @@ final BehaviorSubject<String?> siriSuggestionSubject =
 
 late final bool isTesting;
 
+void notificationReceiver(NotificationResponse details) =>
+    selectNotificationSubject.add(details.payload);
+
 Future<void> main({bool testing = false}) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   isTesting = testing;
+
+  final Directory tempDir = await getTemporaryDirectory();
+  final String tempPath = tempDir.path;
+  Hive.init(tempPath);
+
+  await setUpLocator();
+
+  EquatableConfig.stringify = true;
+
+  FlutterError.onError = (FlutterErrorDetails details) {
+    locator.get<Logger>().e(
+          details.summary,
+          details.exceptionAsString(),
+          details.stack,
+        );
+  };
 
   final HydratedStorage storage = await HydratedStorage.build(
     storageDirectory: kIsWeb
@@ -58,8 +79,8 @@ Future<void> main({bool testing = false}) async {
         FlutterLocalNotificationsPlugin();
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-    const IOSInitializationSettings initializationSettingsIOS =
-        IOSInitializationSettings();
+    const DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings();
     const InitializationSettings initializationSettings =
         InitializationSettings(
       android: initializationSettingsAndroid,
@@ -67,7 +88,8 @@ Future<void> main({bool testing = false}) async {
     );
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onSelectNotification: selectNotificationSubject.add,
+      onDidReceiveBackgroundNotificationResponse: notificationReceiver,
+      onDidReceiveNotificationResponse: notificationReceiver,
     );
     await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
@@ -102,18 +124,13 @@ Future<void> main({bool testing = false}) async {
     );
   }
 
-  final Directory tempDir = await getTemporaryDirectory();
-  final String tempPath = tempDir.path;
-  Hive.init(tempPath);
-
-  await setUpLocator();
-
   final AdaptiveThemeMode? savedThemeMode = await AdaptiveTheme.getThemeMode();
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final bool trueDarkMode =
       prefs.getBool(const TrueDarkModePreference().key) ?? false;
 
   Bloc.observer = CustomBlocObserver();
+
   HydratedBloc.storage = storage;
 
   runApp(
@@ -201,6 +218,11 @@ class HackiApp extends StatelessWidget {
           lazy: false,
           create: (BuildContext context) => EditCubit(),
         ),
+        BlocProvider<TabCubit>(
+          create: (BuildContext context) => TabCubit(
+            preferenceCubit: context.read<PreferenceCubit>(),
+          )..init(),
+        )
       ],
       child: AdaptiveTheme(
         light: ThemeData(

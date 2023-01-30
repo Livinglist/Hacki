@@ -72,7 +72,6 @@ class CommentsState extends Equatable {
   @override
   List<Object?> get props => <Object?>[
         item,
-        comments,
         status,
         fetchParentStatus,
         order,
@@ -80,5 +79,6 @@ class CommentsState extends Equatable {
         onlyShowTargetComment,
         offlineReading,
         currentPage,
+        comments,
       ];
 }

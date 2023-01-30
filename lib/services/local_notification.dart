@@ -22,7 +22,7 @@ class LocalNotification {
       'You have a new reply! $happyFace',
       '${newReply.by}: ${newReply.text}',
       const NotificationDetails(
-        iOS: IOSNotificationDetails(
+        iOS: DarwinNotificationDetails(
           presentBadge: false,
           threadIdentifier: 'hacki',
         ),

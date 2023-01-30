@@ -14,10 +14,13 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
   Preference<T> copyWith({required T? val});
 
   static List<Preference<dynamic>> allPreferences = <Preference<dynamic>>[
+    // Order of these first three preferences does not matter.
     FetchModePreference(),
     CommentsOrderPreference(),
     FontSizePreference(),
-    // order here reflects the order on settings screen.
+    TabOrderPreference(),
+    // Order of items below matters and
+    // reflects the order on settings screen.
     const DisplayModePreference(),
     const MetadataModePreference(),
     const StoryUrlModePreference(),
@@ -52,10 +55,12 @@ const bool _readerModeDefaultValue = true;
 const bool _markReadStoriesModeDefaultValue = true;
 const bool _metadataModeDefaultValue = true;
 const bool _storyUrlModeDefaultValue = true;
-const bool _collapseModeDefaultValue = false;
+const bool _collapseModeDefaultValue = true;
 final int _fetchModeDefaultValue = FetchMode.eager.index;
 final int _commentsOrderDefaultValue = CommentsOrder.natural.index;
 final int _fontSizeDefaultValue = FontSize.regular.index;
+final int _tabOrderDefaultValue =
+    StoryType.convertToSettingsValue(StoryType.values);
 
 class NotificationModePreference extends BooleanPreference {
   const NotificationModePreference({bool? val})
@@ -303,4 +308,19 @@ class FontSizePreference extends IntPreference {
 
   @override
   String get title => 'Default font size';
+}
+
+class TabOrderPreference extends IntPreference {
+  TabOrderPreference({int? val}) : super(val: val ?? _tabOrderDefaultValue);
+
+  @override
+  TabOrderPreference copyWith({required int? val}) {
+    return TabOrderPreference(val: val);
+  }
+
+  @override
+  String get key => 'tabOrder';
+
+  @override
+  String get title => 'Tab order';
 }

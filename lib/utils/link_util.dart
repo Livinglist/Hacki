@@ -13,6 +13,16 @@ import 'package:url_launcher/url_launcher.dart';
 abstract class LinkUtil {
   static final ChromeSafariBrowser _browser = ChromeSafariBrowser();
 
+  static void launchInExternalBrowser(
+    String link,
+  ) {
+    final Uri uri = Uri.parse(link);
+    launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    );
+  }
+
   static void launch(
     String link, {
     bool useReader = false,

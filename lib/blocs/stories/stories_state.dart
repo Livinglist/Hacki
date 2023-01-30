@@ -11,6 +11,7 @@ enum StoriesDownloadStatus {
   downloading,
   finished,
   failure,
+  canceled,
 }
 
 class StoriesState extends Equatable {
@@ -34,7 +35,6 @@ class StoriesState extends Equatable {
       StoryType.latest: <Story>[],
       StoryType.ask: <Story>[],
       StoryType.show: <Story>[],
-      StoryType.jobs: <Story>[],
     },
     this.storyIdsByType = const <StoryType, List<int>>{
       StoryType.top: <int>[],
@@ -42,7 +42,6 @@ class StoriesState extends Equatable {
       StoryType.latest: <int>[],
       StoryType.ask: <int>[],
       StoryType.show: <int>[],
-      StoryType.jobs: <int>[],
     },
     this.statusByType = const <StoryType, StoriesStatus>{
       StoryType.top: StoriesStatus.initial,
@@ -50,7 +49,6 @@ class StoriesState extends Equatable {
       StoryType.latest: StoriesStatus.initial,
       StoryType.ask: StoriesStatus.initial,
       StoryType.show: StoriesStatus.initial,
-      StoryType.jobs: StoriesStatus.initial,
     },
     this.currentPageByType = const <StoryType, int>{
       StoryType.top: 0,
@@ -58,7 +56,6 @@ class StoriesState extends Equatable {
       StoryType.latest: 0,
       StoryType.ask: 0,
       StoryType.show: 0,
-      StoryType.jobs: 0,
     },
   })  : offlineReading = false,
         downloadStatus = StoriesDownloadStatus.initial,
