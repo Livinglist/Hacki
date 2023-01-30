@@ -250,9 +250,9 @@ class HackiApp extends StatelessWidget {
               return BlocBuilder<PreferenceCubit, PreferenceState>(
                 buildWhen:
                     (PreferenceState previous, PreferenceState current) =>
-                        previous.useTrueDark != current.useTrueDark,
+                        previous.trueDarkEnabled != current.trueDarkEnabled,
                 builder: (BuildContext context, PreferenceState prefState) {
-                  final bool useTrueDark = prefState.useTrueDark &&
+                  final bool useTrueDark = prefState.trueDarkEnabled &&
                       (mode == AdaptiveThemeMode.dark ||
                           (mode == AdaptiveThemeMode.system &&
                               SchedulerBinding

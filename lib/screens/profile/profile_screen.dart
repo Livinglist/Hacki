@@ -159,18 +159,19 @@ class _ProfileScreenState extends State<ProfileScreen>
                             PreferenceState previous,
                             PreferenceState current,
                           ) =>
-                              previous.showComplexStoryTile !=
-                                  current.showComplexStoryTile ||
-                              previous.showMetadata != current.showMetadata ||
-                              previous.showUrl != current.showUrl,
+                              previous.complexStoryTileEnabled !=
+                                  current.complexStoryTileEnabled ||
+                              previous.metadataEnabled !=
+                                  current.metadataEnabled ||
+                              previous.urlEnabled != current.urlEnabled,
                           builder: (
                             BuildContext context,
                             PreferenceState prefState,
                           ) {
                             return ItemsListView<Item>(
-                              showWebPreview: prefState.showComplexStoryTile,
-                              showMetadata: prefState.showMetadata,
-                              showUrl: prefState.showUrl,
+                              showWebPreview: prefState.complexStoryTileEnabled,
+                              showMetadata: prefState.metadataEnabled,
+                              showUrl: prefState.urlEnabled,
                               useCommentTile: true,
                               refreshController: refreshControllerFav,
                               items: favState.favItems,

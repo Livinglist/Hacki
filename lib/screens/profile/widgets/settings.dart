@@ -180,9 +180,9 @@ class _SettingsState extends State<Settings> {
                   const TabBarSettings(),
                   const Divider(),
                   StoryTile(
-                    showWebPreview: preferenceState.showComplexStoryTile,
-                    showMetadata: preferenceState.showMetadata,
-                    showUrl: preferenceState.showUrl,
+                    showWebPreview: preferenceState.complexStoryTileEnabled,
+                    showMetadata: preferenceState.metadataEnabled,
+                    showUrl: preferenceState.urlEnabled,
                     story: Story.placeholder(),
                     onTap: () => LinkUtil.launch(Constants.guidelineLink),
                   ),

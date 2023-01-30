@@ -324,8 +324,10 @@ class _ParentItemSection extends StatelessWidget {
                         InkWell(
                           onTap: () => LinkUtil.launch(
                             state.item.url,
-                            useReader:
-                                context.read<PreferenceCubit>().state.useReader,
+                            useReader: context
+                                .read<PreferenceCubit>()
+                                .state
+                                .readerEnabled,
                             offlineReading: context
                                 .read<StoriesBloc>()
                                 .state

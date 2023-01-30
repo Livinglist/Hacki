@@ -78,7 +78,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
           if (e is Story) {
             final bool hasRead = context.read<StoriesBloc>().hasRead(e);
             final bool swipeGestureEnabled =
-                context.read<PreferenceCubit>().state.enableSwipeGesture;
+                context.read<PreferenceCubit>().state.swipeGestureEnabled;
             return <Widget>[
               GestureDetector(
                 /// If swipe gesture is enabled on home screen, use long press
