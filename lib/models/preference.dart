@@ -49,7 +49,7 @@ abstract class IntPreference extends Preference<int> {
 const bool _notificationModeDefaultValue = true;
 const bool _swipeGestureModeDefaultValue = false;
 const bool _displayModeDefaultValue = true;
-const bool _navigationModeDefaultValueIOS = true;
+const bool _navigationModeDefaultValueIOS = false;
 const bool _navigationModeDefaultValueAndroid = false;
 const bool _eyeCandyModeDefaultValue = false;
 const bool _trueDarkModeDefaultValue = false;
