@@ -135,8 +135,9 @@ class CommentTile extends StatelessWidget {
                               Text(
                                 comment.by,
                                 style: TextStyle(
-                                  color:
-                                      prefState.showEyeCandy ? orange : color,
+                                  color: prefState.eyeCandyEnabled
+                                      ? orange
+                                      : color,
                                 ),
                               ),
                               if (comment.by == opUsername)
@@ -328,7 +329,7 @@ class CommentTile extends StatelessWidget {
           final double commentBackgroundColorOpacity =
               Theme.of(context).brightness == Brightness.dark ? 0.03 : 0.15;
 
-          final Color commentColor = prefState.showEyeCandy
+          final Color commentColor = prefState.eyeCandyEnabled
               ? color.withOpacity(commentBackgroundColorOpacity)
               : Palette.transparent;
           final bool isMyComment = myUsername == comment.by;
@@ -406,7 +407,7 @@ class CommentTile extends StatelessWidget {
   }
 
   void onTextTapped(BuildContext context) {
-    if (context.read<PreferenceCubit>().state.tapAnywhereToCollapse) {
+    if (context.read<PreferenceCubit>().state.tapAnywhereToCollapseEnabled) {
       HapticFeedback.selectionClick();
       context.read<CollapseCubit>().collapse();
     }

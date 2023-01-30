@@ -48,25 +48,25 @@ class PreferenceState extends Equatable {
         .val;
   }
 
-  bool get showNotification => _isOn<NotificationModePreference>();
+  bool get notificationEnabled => _isOn<NotificationModePreference>();
 
-  bool get showComplexStoryTile => _isOn<DisplayModePreference>();
+  bool get complexStoryTileEnabled => _isOn<DisplayModePreference>();
 
-  bool get showWebFirst => _isOn<NavigationModePreference>();
+  bool get webFirstEnabled => _isOn<NavigationModePreference>();
 
-  bool get showEyeCandy => _isOn<EyeCandyModePreference>();
+  bool get eyeCandyEnabled => _isOn<EyeCandyModePreference>();
 
-  bool get useTrueDark => _isOn<TrueDarkModePreference>();
+  bool get trueDarkEnabled => _isOn<TrueDarkModePreference>();
 
-  bool get useReader => _isOn<ReaderModePreference>();
+  bool get readerEnabled => _isOn<ReaderModePreference>();
 
-  bool get markReadStories => _isOn<MarkReadStoriesModePreference>();
+  bool get markReadStoriesEnabled => _isOn<MarkReadStoriesModePreference>();
 
-  bool get showMetadata => _isOn<MetadataModePreference>();
+  bool get metadataEnabled => _isOn<MetadataModePreference>();
 
-  bool get showUrl => _isOn<StoryUrlModePreference>();
+  bool get urlEnabled => _isOn<StoryUrlModePreference>();
 
-  bool get tapAnywhereToCollapse => _isOn<CollapseModePreference>();
+  bool get tapAnywhereToCollapseEnabled => _isOn<CollapseModePreference>();
 
   bool get swipeGestureEnabled => _isOn<SwipeGesturePreference>();
 

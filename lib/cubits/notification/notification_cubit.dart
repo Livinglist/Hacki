@@ -30,16 +30,16 @@ class NotificationCubit extends Cubit<NotificationState> {
     _authBloc.stream.listen((AuthState authState) {
       if (authState.isLoggedIn && authState.username != _username) {
         // Get the user setting.
-        if (_preferenceCubit.state.showNotification) {
+        if (_preferenceCubit.state.notificationEnabled) {
           Future<void>.delayed(const Duration(seconds: 2), init);
         }
 
         // Listen for setting changes in the future.
         _preferenceCubit.stream.listen((PreferenceState prefState) {
           final bool isActive = _timer?.isActive ?? false;
-          if (prefState.showNotification && !isActive) {
+          if (prefState.notificationEnabled && !isActive) {
             init();
-          } else if (!prefState.showNotification) {
+          } else if (!prefState.notificationEnabled) {
             _timer?.cancel();
           }
         });
@@ -126,7 +126,8 @@ class NotificationCubit extends Cubit<NotificationState> {
   }
 
   Future<void> refresh() async {
-    if (_authBloc.state.isLoggedIn && _preferenceCubit.state.showNotification) {
+    if (_authBloc.state.isLoggedIn &&
+        _preferenceCubit.state.notificationEnabled) {
       emit(
         state.copyWith(
           status: NotificationStatus.loading,

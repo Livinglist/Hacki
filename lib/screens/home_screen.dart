@@ -141,8 +141,8 @@ class _HomeScreenState extends State<HomeScreen>
     final BlocBuilder<PreferenceCubit, PreferenceState> homeScreen =
         BlocBuilder<PreferenceCubit, PreferenceState>(
       buildWhen: (PreferenceState previous, PreferenceState current) =>
-          previous.showComplexStoryTile != current.showComplexStoryTile ||
-          previous.showMetadata != current.showMetadata ||
+          previous.complexStoryTileEnabled != current.complexStoryTileEnabled ||
+          previous.metadataEnabled != current.metadataEnabled ||
           previous.swipeGestureEnabled != current.swipeGestureEnabled,
       builder: (BuildContext context, PreferenceState preferenceState) {
         final BlocBuilder<PinCubit, PinState> pinnedStories =
@@ -163,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen>
                             },
                             backgroundColor: Palette.red,
                             foregroundColor: Palette.white,
-                            icon: preferenceState.showComplexStoryTile
+                            icon: preferenceState.complexStoryTileEnabled
                                 ? Icons.close
                                 : null,
                             label: 'Unpin',
@@ -176,9 +176,10 @@ class _HomeScreenState extends State<HomeScreen>
                           key: ValueKey<String>('${story.id}-PinnedStoryTile'),
                           story: story,
                           onTap: () => onStoryTapped(story, isPin: true),
-                          showWebPreview: preferenceState.showComplexStoryTile,
-                          showMetadata: preferenceState.showMetadata,
-                          showUrl: preferenceState.showUrl,
+                          showWebPreview:
+                              preferenceState.complexStoryTileEnabled,
+                          showMetadata: preferenceState.metadataEnabled,
+                          showUrl: preferenceState.urlEnabled,
                         ),
                       ),
                     ),
@@ -262,8 +263,8 @@ class _HomeScreenState extends State<HomeScreen>
 
   void onStoryTapped(Story story, {bool isPin = false}) {
     final bool showWebFirst =
-        context.read<PreferenceCubit>().state.showWebFirst;
-    final bool useReader = context.read<PreferenceCubit>().state.useReader;
+        context.read<PreferenceCubit>().state.webFirstEnabled;
+    final bool useReader = context.read<PreferenceCubit>().state.readerEnabled;
     final bool offlineReading =
         context.read<StoriesBloc>().state.offlineReading;
     final bool hasRead = isPin || context.read<StoriesBloc>().hasRead(story);
