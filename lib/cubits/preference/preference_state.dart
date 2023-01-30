@@ -68,6 +68,8 @@ class PreferenceState extends Equatable {
 
   bool get tapAnywhereToCollapse => _isOn<CollapseModePreference>();
 
+  bool get enableSwipeGesture => _isOn<SwipeGesturePreference>();
+
   List<StoryType> get tabs {
     final String result =
         preferences.singleWhereType<TabOrderPreference>().val.toString();

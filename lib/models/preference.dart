@@ -25,6 +25,7 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
     const MetadataModePreference(),
     const StoryUrlModePreference(),
     const NotificationModePreference(),
+    const SwipeGesturePreference(),
     const CollapseModePreference(),
     NavigationModePreference(),
     const ReaderModePreference(),
@@ -46,8 +47,9 @@ abstract class IntPreference extends Preference<int> {
 }
 
 const bool _notificationModeDefaultValue = true;
+const bool _swipeGestureModeDefaultValue = false;
 const bool _displayModeDefaultValue = true;
-const bool _navigationModeDefaultValueIOS = true;
+const bool _navigationModeDefaultValueIOS = false;
 const bool _navigationModeDefaultValueAndroid = false;
 const bool _eyeCandyModeDefaultValue = false;
 const bool _trueDarkModeDefaultValue = false;
@@ -61,6 +63,26 @@ final int _commentsOrderDefaultValue = CommentsOrder.natural.index;
 final int _fontSizeDefaultValue = FontSize.regular.index;
 final int _tabOrderDefaultValue =
     StoryType.convertToSettingsValue(StoryType.values);
+
+class SwipeGesturePreference extends BooleanPreference {
+  const SwipeGesturePreference({bool? val})
+      : super(val: val ?? _swipeGestureModeDefaultValue);
+
+  @override
+  SwipeGesturePreference copyWith({required bool? val}) {
+    return SwipeGesturePreference(val: val);
+  }
+
+  @override
+  String get key => 'swipeGestureMode';
+
+  @override
+  String get title => 'Enable Swipe Gesture';
+
+  @override
+  String get subtitle =>
+      '''Enable swipe gesture for switching between tabs. If enabled, long press on Story tile to trigger the action menu.''';
+}
 
 class NotificationModePreference extends BooleanPreference {
   const NotificationModePreference({bool? val})

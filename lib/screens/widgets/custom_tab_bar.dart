@@ -26,8 +26,7 @@ class CustomTabBar extends StatefulWidget {
   State<CustomTabBar> createState() => _CustomTabBarState();
 }
 
-class _CustomTabBarState extends State<CustomTabBar>
-    with SingleTickerProviderStateMixin {
+class _CustomTabBarState extends State<CustomTabBar> {
   final Throttle featureDiscoveryDismissThrottle = Throttle(
     delay: _throttleDelay,
   );
@@ -72,12 +71,18 @@ class _CustomTabBarState extends State<CustomTabBar>
                 key: ValueKey<StoryType>(
                   state.tabs.elementAt(i),
                 ),
-                child: Text(
-                  state.tabs.elementAt(i).label,
+                child: AnimatedDefaultTextStyle(
                   style: TextStyle(
                     fontSize:
                         currentIndex == i ? TextDimens.pt14 : TextDimens.pt10,
                     color: currentIndex == i ? Palette.orange : Palette.grey,
+                  ),
+                  duration: const Duration(milliseconds: 200),
+                  child: Text(
+                    state.tabs.elementAt(i).label,
+                    key: ValueKey<String>(
+                      '${state.tabs.elementAt(i).label}-${currentIndex == i}',
+                    ),
                   ),
                 ),
               ),

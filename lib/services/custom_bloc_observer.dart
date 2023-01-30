@@ -8,7 +8,7 @@ class CustomBlocObserver extends BlocObserver {
   @override
   void onCreate(BlocBase<dynamic> bloc) {
     if (bloc is! CollapseCubit) {
-      locator.get<Logger>().i('$bloc created');
+      locator.get<Logger>().d('$bloc created');
     }
 
     super.onCreate(bloc);
@@ -20,7 +20,7 @@ class CustomBlocObserver extends BlocObserver {
     Object? event,
   ) {
     if (event is! StoriesEvent) {
-      locator.get<Logger>().i(event);
+      locator.get<Logger>().d(event);
     }
 
     super.onEvent(bloc, event);
