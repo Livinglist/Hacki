@@ -518,14 +518,17 @@ class _SettingsState extends State<Settings> {
   /// Send an email with log attached.
   Future<void> onSendEmailTapped() async {
     final Directory tempDir = await getTemporaryDirectory();
-    final String logPath = '${tempDir.path}/${Constants.logFilename}';
+    final String previousLogPath =
+        '${tempDir.path}/${Constants.previousLogFileName}';
+
+    await LogUtil.exportLog();
 
     final Email email = Email(
       body:
           '''Please describe how to reproduce the bug or what you have down before the bug occurred:''',
       subject: 'Found a bug in Hacki',
       recipients: <String>[Constants.supportEmail],
-      attachmentPaths: <String>[logPath],
+      attachmentPaths: <String>[previousLogPath],
     );
 
     await FlutterEmailSender.send(email);
@@ -534,9 +537,8 @@ class _SettingsState extends State<Settings> {
   /// Open an issue on GitHub.
   Future<void> onGithubTapped(Rect? rect) async {
     try {
-      final Directory tempDir = await getTemporaryDirectory();
-      final String logPath = '${tempDir.path}/${Constants.logFilename}';
-      final XFile file = XFile(logPath);
+      final File originalFile = await LogUtil.exportLog();
+      final XFile file = XFile(originalFile.path);
       final ShareResult result = await Share.shareXFiles(
         <XFile>[file],
         subject: 'hacki_log',

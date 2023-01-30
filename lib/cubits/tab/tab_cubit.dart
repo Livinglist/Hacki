@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
@@ -27,14 +26,21 @@ class TabCubit extends Cubit<TabState> {
     emit(state.copyWith(tabs: tabs));
   }
 
-  void update(int a, int b) {
+  void update(int startIndex, int endIndex) {
+    _logger.d('updating ${state.tabs} by moving $startIndex to $endIndex');
+    final StoryType tab = state.tabs.elementAt(startIndex);
     final List<StoryType> updatedTabs = List<StoryType>.from(state.tabs)
-      ..swap(a, b);
+      ..insert(endIndex, tab)
+      ..removeAt(startIndex < endIndex ? startIndex : startIndex + 1);
+    _logger.d(updatedTabs);
     emit(state.copyWith(tabs: updatedTabs));
 
-    _preferenceCubit.update<int>(
-      TabOrderPreference(),
-      to: StoryType.convertToSettingsValue(updatedTabs),
-    );
+    // Check to make sure there's no duplicate.
+    if (updatedTabs.toSet().length == StoryType.values.length) {
+      _preferenceCubit.update<int>(
+        TabOrderPreference(),
+        to: StoryType.convertToSettingsValue(updatedTabs),
+      );
+    }
   }
 }

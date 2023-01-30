@@ -26,6 +26,7 @@ abstract class Constants {
   static const String commentTileTopTapPath =
       '$_imagePath/comment_tile_top_tap.png';
   static const String logFilename = 'hacki_log.txt';
+  static const String previousLogFileName = 'old_hacki_log.txt';
 
   /// Feature ids for feature discovery.
   static const String featureAddStoryToFavList = 'add_story_to_fav_list';
