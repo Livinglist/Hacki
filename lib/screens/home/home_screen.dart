@@ -5,11 +5,8 @@ import 'dart:io';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart' hide Badge;
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_siri_suggestions/flutter_siri_suggestions.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
@@ -18,6 +15,7 @@ import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
+import 'package:hacki/screens/home/widgets/widgets.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
@@ -145,57 +143,6 @@ class _HomeScreenState extends State<HomeScreen>
           previous.metadataEnabled != current.metadataEnabled ||
           previous.swipeGestureEnabled != current.swipeGestureEnabled,
       builder: (BuildContext context, PreferenceState preferenceState) {
-        final BlocBuilder<PinCubit, PinState> pinnedStories =
-            BlocBuilder<PinCubit, PinState>(
-          builder: (BuildContext context, PinState state) {
-            return Column(
-              children: <Widget>[
-                for (final Story story in state.pinnedStories)
-                  FadeIn(
-                    child: Slidable(
-                      startActionPane: ActionPane(
-                        motion: const BehindMotion(),
-                        children: <Widget>[
-                          SlidableAction(
-                            onPressed: (_) {
-                              HapticFeedback.lightImpact();
-                              context.read<PinCubit>().unpinStory(story);
-                            },
-                            backgroundColor: Palette.red,
-                            foregroundColor: Palette.white,
-                            icon: preferenceState.complexStoryTileEnabled
-                                ? Icons.close
-                                : null,
-                            label: 'Unpin',
-                          ),
-                        ],
-                      ),
-                      child: ColoredBox(
-                        color: Palette.orangeAccent.withOpacity(0.2),
-                        child: StoryTile(
-                          key: ValueKey<String>('${story.id}-PinnedStoryTile'),
-                          story: story,
-                          onTap: () => onStoryTapped(story, isPin: true),
-                          showWebPreview:
-                              preferenceState.complexStoryTileEnabled,
-                          showMetadata: preferenceState.metadataEnabled,
-                          showUrl: preferenceState.urlEnabled,
-                        ),
-                      ),
-                    ),
-                  ),
-                if (state.pinnedStories.isNotEmpty)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: Dimens.pt12),
-                    child: Divider(
-                      color: Palette.orangeAccent,
-                    ),
-                  ),
-              ],
-            );
-          },
-        );
-
         return DefaultTabController(
           length: tabLength,
           child: Scaffold(
@@ -235,7 +182,10 @@ class _HomeScreenState extends State<HomeScreen>
                       StoriesListView(
                         key: ValueKey<StoryType>(type),
                         storyType: type,
-                        header: pinnedStories,
+                        header: PinnedStories(
+                          preferenceState: preferenceState,
+                          onStoryTapped: onStoryTapped,
+                        ),
                         onStoryTapped: onStoryTapped,
                       ),
                     const ProfileScreen(),
@@ -251,11 +201,11 @@ class _HomeScreenState extends State<HomeScreen>
     return ScreenTypeLayout.builder(
       mobile: (BuildContext context) {
         context.read<SplitViewCubit>().disableSplitView();
-        return _MobileHomeScreen(
+        return MobileHomeScreen(
           homeScreen: homeScreen,
         );
       },
-      tablet: (BuildContext context) => _TabletHomeScreen(
+      tablet: (BuildContext context) => TabletHomeScreen(
         homeScreen: homeScreen,
       ),
     );
@@ -383,114 +333,5 @@ class _HomeScreenState extends State<HomeScreen>
         goToItemScreen(args: args);
       });
     }
-  }
-}
-
-class _MobileHomeScreen extends StatelessWidget {
-  const _MobileHomeScreen({
-    required this.homeScreen,
-  });
-
-  final Widget homeScreen;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        Positioned.fill(child: homeScreen),
-        if (!context.read<ReminderCubit>().state.hasShown)
-          const Positioned(
-            left: Dimens.pt24,
-            right: Dimens.pt24,
-            bottom: Dimens.pt36,
-            height: Dimens.pt40,
-            child: CountdownReminder(),
-          ),
-      ],
-    );
-  }
-}
-
-class _TabletHomeScreen extends StatelessWidget {
-  const _TabletHomeScreen({
-    required this.homeScreen,
-  });
-
-  final Widget homeScreen;
-
-  @override
-  Widget build(BuildContext context) {
-    return ResponsiveBuilder(
-      builder: (BuildContext context, SizingInformation sizeInfo) {
-        context.read<SplitViewCubit>().enableSplitView();
-        double homeScreenWidth = 428;
-
-        if (sizeInfo.screenSize.width < homeScreenWidth * 2) {
-          homeScreenWidth = 345;
-        }
-
-        return BlocBuilder<SplitViewCubit, SplitViewState>(
-          buildWhen: (SplitViewState previous, SplitViewState current) =>
-              previous.expanded != current.expanded,
-          builder: (BuildContext context, SplitViewState state) {
-            return Stack(
-              children: <Widget>[
-                AnimatedPositioned(
-                  left: Dimens.zero,
-                  top: Dimens.zero,
-                  bottom: Dimens.zero,
-                  width: homeScreenWidth,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.elasticOut,
-                  child: homeScreen,
-                ),
-                Positioned(
-                  left: Dimens.pt24,
-                  bottom: Dimens.pt36,
-                  height: Dimens.pt40,
-                  width: homeScreenWidth - Dimens.pt24,
-                  child: const CountdownReminder(),
-                ),
-                AnimatedPositioned(
-                  right: Dimens.zero,
-                  top: Dimens.zero,
-                  bottom: Dimens.zero,
-                  left: state.expanded ? Dimens.zero : homeScreenWidth,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.elasticOut,
-                  child: const _TabletStoryView(),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-}
-
-class _TabletStoryView extends StatelessWidget {
-  const _TabletStoryView();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<SplitViewCubit, SplitViewState>(
-      buildWhen: (SplitViewState previous, SplitViewState current) =>
-          previous.itemScreenArgs != current.itemScreenArgs,
-      builder: (BuildContext context, SplitViewState state) {
-        if (state.itemScreenArgs != null) {
-          return ItemScreen.build(context, state.itemScreenArgs!);
-        }
-
-        return Material(
-          child: ColoredBox(
-            color: Theme.of(context).canvasColor,
-            child: const Center(
-              child: Text('Tap on story tile to view comments.'),
-            ),
-          ),
-        );
-      },
-    );
   }
 }
