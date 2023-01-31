@@ -41,24 +41,9 @@ class PollOption extends Item {
           type: '',
         );
 
-  PollOption.fromJson(Map<String, dynamic> json)
+  PollOption.fromJson(super.json)
       : ratio = 0,
-        super(
-          descendants: 0,
-          id: json['id'] as int? ?? 0,
-          score: json['score'] as int? ?? 0,
-          time: json['time'] as int? ?? 0,
-          by: json['by'] as String? ?? '',
-          title: json['title'] as String? ?? '',
-          url: json['url'] as String? ?? '',
-          kids: <int>[],
-          text: json['text'] as String? ?? '',
-          dead: json['dead'] as bool? ?? false,
-          deleted: json['deleted'] as bool? ?? false,
-          type: json['type'] as String? ?? '',
-          parts: <int>[],
-          parent: 0,
-        );
+        super.fromJson();
 
   final double ratio;
 
