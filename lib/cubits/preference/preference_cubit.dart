@@ -56,13 +56,6 @@ class PreferenceCubit extends Cubit<PreferenceState> {
     }
   }
 
-  void toggle(BooleanPreference preference) {
-    final BooleanPreference updatedPreference =
-        preference.copyWith(val: !preference.val) as BooleanPreference;
-    emit(state.copyWithPreference(updatedPreference));
-    _preferenceRepository.setBool(preference.key, !preference.val);
-  }
-
   void update<T>(Preference<T> preference, {required T to}) {
     final T value = to;
     final Preference<T> updatedPreference = preference.copyWith(val: value);
