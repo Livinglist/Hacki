@@ -44,11 +44,11 @@ class Item extends Equatable {
         title = json['title'] as String? ?? '',
         text = json['text'] as String? ?? '',
         url = json['url'] as String? ?? '',
-        kids = <int>[],
+        kids = (json['kids'] as List<dynamic>?)?.cast<int>() ?? <int>[],
         dead = json['dead'] as bool? ?? false,
         deleted = json['deleted'] as bool? ?? false,
         parent = json['parent'] as int? ?? 0,
-        parts = <int>[],
+        parts = (json['parts'] as List<dynamic>?)?.cast<int>() ?? <int>[],
         type = json['type'] as String? ?? '';
 
   final int id;
