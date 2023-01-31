@@ -4,7 +4,6 @@ import 'dart:math';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hacki/config/constants.dart';
-import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/utils/html_util.dart';
@@ -43,7 +42,6 @@ abstract class Fetcher {
     final SembastRepository sembastRepository = SembastRepository();
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();
-    final String happyFace = Constants.happyFaces.pickRandomly()!;
     final String? username = await authRepository.username;
     final List<int> unreadIds = await preferenceRepository.unreadCommentsIds;
 
@@ -123,7 +121,7 @@ abstract class Fetcher {
 
         await flutterLocalNotificationsPlugin.show(
           newReply?.id ?? 0,
-          'You have a new reply! $happyFace',
+          'You have a new reply! ${Constants.happyFace}',
           '${newReply?.by}: $text',
           const NotificationDetails(
             iOS: DarwinNotificationDetails(

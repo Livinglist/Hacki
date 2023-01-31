@@ -1,3 +1,5 @@
+import 'package:hacki/extensions/extensions.dart';
+
 abstract class Constants {
   static const String endUserAgreementLink =
       'https://www.termsfeed.com/live/c1417f5c-a48b-4bd7-93b2-9cd4577bfc45';
@@ -34,16 +36,16 @@ abstract class Constants {
   static const String featureLogIn = 'log_in';
   static const String featurePinToTop = 'pin_to_top';
 
-  static const List<String> happyFaces = <String>[
+  static final String happyFace = <String>[
     '(๑•̀ㅂ•́)و✧',
     '( ͡• ͜ʖ ͡•)',
     '( ͡~ ͜ʖ ͡°)',
     '٩(˘◡˘)۶',
     '(─‿‿─)',
     '(¬‿¬)',
-  ];
+  ].pickRandomly()!;
 
-  static const List<String> sadFaces = <String>[
+  static final String sadFace = <String>[
     'ಥ_ಥ',
     '(╯°□°）╯︵ ┻━┻',
     r'¯\_(ツ)_/¯',
@@ -53,7 +55,7 @@ abstract class Constants {
     '(ㆆ_ㆆ)',
     'ʕ•́ᴥ•̀ʔっ',
     '(ㆆ_ㆆ)',
-  ];
+  ].pickRandomly()!;
 }
 
 abstract class RegExpConstants {

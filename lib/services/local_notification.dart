@@ -2,14 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hacki/config/constants.dart';
-import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 
 class LocalNotification {
   Future<void> pushForNewReply(Comment newReply, int storyId) async {
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();
-    final String happyFace = Constants.happyFaces.pickRandomly()!;
 
     final Map<String, int> payloadJson = <String, int>{
       'commentId': newReply.id,
@@ -19,7 +17,7 @@ class LocalNotification {
 
     return flutterLocalNotificationsPlugin.show(
       newReply.id,
-      'You have a new reply! $happyFace',
+      'You have a new reply! ${Constants.happyFace}',
       '${newReply.by}: ${newReply.text}',
       const NotificationDetails(
         iOS: DarwinNotificationDetails(

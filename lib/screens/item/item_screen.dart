@@ -149,7 +149,6 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
     initialRefreshStatus: RefreshStatus.refreshing,
   );
   final FocusNode focusNode = FocusNode();
-  final String happyFace = Constants.happyFaces.pickRandomly()!;
   final Throttle storyLinkTapThrottle = Throttle(
     delay: _storyLinkTapThrottleDelay,
   );
@@ -233,8 +232,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                       context.read<EditCubit>().state.replyingTo == null
                           ? 'updated'
                           : 'submitted';
-                  final String msg =
-                      'Comment $verb! ${Constants.happyFaces.pickRandomly()}';
+                  final String msg = 'Comment $verb! ${Constants.happyFace}';
                   focusNode.unfocus();
                   HapticFeedback.lightImpact();
                   showSnackBar(content: msg);
@@ -243,7 +241,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                 } else if (postState.status == PostStatus.failure) {
                   showSnackBar(
                     content: 'Something went wrong...'
-                        '${Constants.sadFaces.pickRandomly()}',
+                        '${Constants.sadFace}',
                     label: 'Okay',
                     action: ScaffoldMessenger.of(context).hideCurrentSnackBar,
                   );
