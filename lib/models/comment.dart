@@ -20,23 +20,7 @@ class Comment extends Item {
           type: '',
         );
 
-  Comment.fromJson(Map<String, dynamic> json, {this.level = 0})
-      : super(
-          id: json['id'] as int? ?? 0,
-          time: json['time'] as int? ?? 0,
-          by: json['by'] as String? ?? '',
-          text: json['text'] as String? ?? '',
-          kids: (json['kids'] as List<dynamic>?)?.cast<int>() ?? <int>[],
-          parent: json['parent'] as int? ?? 0,
-          deleted: json['deleted'] as bool? ?? false,
-          score: json['score'] as int? ?? 0,
-          descendants: 0,
-          dead: json['dead'] as bool? ?? false,
-          parts: <int>[],
-          title: '',
-          url: '',
-          type: '',
-        );
+  Comment.fromJson(super.json, {this.level = 0}) : super.fromJson();
 
   final int level;
 

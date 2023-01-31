@@ -91,23 +91,7 @@ class Story extends Item {
           type: '',
         );
 
-  Story.fromJson(Map<String, dynamic> json)
-      : super(
-          descendants: json['descendants'] as int? ?? 0,
-          id: json['id'] as int? ?? 0,
-          score: json['score'] as int? ?? 0,
-          time: json['time'] as int? ?? 0,
-          by: json['by'] as String? ?? '',
-          title: json['title'] as String? ?? '',
-          url: json['url'] as String? ?? '',
-          kids: (json['kids'] as List<dynamic>?)?.cast<int>() ?? <int>[],
-          text: json['text'] as String? ?? '',
-          dead: json['dead'] as bool? ?? false,
-          deleted: json['deleted'] as bool? ?? false,
-          type: json['type'] as String? ?? '',
-          parts: (json['parts'] as List<dynamic>?)?.cast<int>() ?? <int>[],
-          parent: 0,
-        );
+  Story.fromJson(super.json) : super.fromJson();
 
   String get metadata =>
       '''$score point${score > 1 ? 's' : ''} by $by $postedDate | $descendants comment${descendants > 1 ? 's' : ''}''';
