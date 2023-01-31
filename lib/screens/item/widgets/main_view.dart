@@ -135,7 +135,7 @@ class MainView extends StatelessWidget {
                         return SizedBox(
                           height: _trailingBoxHeight,
                           child: Center(
-                            child: Text(Constants.happyFaces.pickRandomly()!),
+                            child: Text(Constants.happyFace),
                           ),
                         );
                       } else {

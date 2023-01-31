@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
-import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
@@ -28,9 +27,10 @@ class LoginDialog extends StatelessWidget {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (BuildContext context, AuthState state) {
         if (state.isLoggedIn) {
-          final String happyFace = Constants.happyFaces.pickRandomly()!;
           Navigator.pop(context);
-          showSnackBar(content: 'Logged in successfully! $happyFace');
+          showSnackBar(
+            content: 'Logged in successfully! ${Constants.happyFace}',
+          );
         }
       },
       builder: (BuildContext context, AuthState state) {
