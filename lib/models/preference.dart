@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
@@ -13,26 +14,29 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
 
   Preference<T> copyWith({required T? val});
 
-  static List<Preference<dynamic>> allPreferences = <Preference<dynamic>>[
-    // Order of these first three preferences does not matter.
-    FetchModePreference(),
-    CommentsOrderPreference(),
-    FontSizePreference(),
-    TabOrderPreference(),
-    // Order of items below matters and
-    // reflects the order on settings screen.
-    const DisplayModePreference(),
-    const MetadataModePreference(),
-    const StoryUrlModePreference(),
-    const NotificationModePreference(),
-    const SwipeGesturePreference(),
-    const CollapseModePreference(),
-    NavigationModePreference(),
-    const ReaderModePreference(),
-    const MarkReadStoriesModePreference(),
-    const EyeCandyModePreference(),
-    const TrueDarkModePreference(),
-  ];
+  static final List<Preference<dynamic>> allPreferences =
+      UnmodifiableListView<Preference<dynamic>>(
+    <Preference<dynamic>>[
+      // Order of these first four preferences does not matter.
+      FetchModePreference(),
+      CommentsOrderPreference(),
+      FontSizePreference(),
+      TabOrderPreference(),
+      // Order of items below matters and
+      // reflects the order on settings screen.
+      const DisplayModePreference(),
+      const MetadataModePreference(),
+      const StoryUrlModePreference(),
+      const NotificationModePreference(),
+      const SwipeGesturePreference(),
+      const CollapseModePreference(),
+      NavigationModePreference(),
+      const ReaderModePreference(),
+      const MarkReadStoriesModePreference(),
+      const EyeCandyModePreference(),
+      const TrueDarkModePreference(),
+    ],
+  );
 
   @override
   List<Object?> get props => <Object?>[key];
