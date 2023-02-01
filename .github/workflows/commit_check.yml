@@ -12,12 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      FLUTTER_VERSION: "3.7.0"
+      FLUTTER_VERSION: "3.7.1"
     steps:
       - uses: actions/checkout@v2
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.7.0'
+          flutter-version: '3.7.1'
           channel: 'stable'
       - run: flutter pub get
       - run: flutter format --set-exit-if-changed .
