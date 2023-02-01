@@ -85,7 +85,7 @@ class SwipeGesturePreference extends BooleanPreference {
 
   @override
   String get subtitle =>
-      '''Enable swipe gesture for switching between tabs. If enabled, long press on Story tile to trigger the action menu.''';
+      '''enable swipe gesture for switching between tabs. If enabled, long press on Story tile to trigger the action menu.''';
 }
 
 class NotificationModePreference extends BooleanPreference {
@@ -122,6 +122,10 @@ class CollapseModePreference extends BooleanPreference {
 
   @override
   String get title => 'Tap Anywhere to Collapse';
+
+  @override
+  String get subtitle =>
+      '''if disabled, tap on the top of comment tile to collapse.''';
 }
 
 /// The value deciding whether or not the story
