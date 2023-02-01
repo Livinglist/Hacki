@@ -24,22 +24,7 @@ class PollOption extends Item {
 
   PollOption.empty()
       : ratio = 0,
-        super(
-          id: 0,
-          score: 0,
-          descendants: 0,
-          time: 0,
-          by: '',
-          title: '',
-          url: '',
-          kids: <int>[],
-          dead: false,
-          parts: <int>[],
-          deleted: false,
-          parent: 0,
-          text: '',
-          type: '',
-        );
+        super.empty();
 
   PollOption.fromJson(super.json)
       : ratio = 0,

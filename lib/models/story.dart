@@ -1,41 +1,6 @@
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/item.dart';
 
-enum StoryType {
-  top('topstories'),
-  best('beststories'),
-  latest('newstories'),
-  ask('askstories'),
-  show('showstories');
-
-  const StoryType(this.path);
-
-  final String path;
-
-  String get label {
-    switch (this) {
-      case StoryType.top:
-        return 'TOP';
-      case StoryType.best:
-        return 'BEST';
-      case StoryType.latest:
-        return 'NEW';
-      case StoryType.ask:
-        return 'ASK';
-      case StoryType.show:
-        return 'SHOW';
-    }
-  }
-
-  static int convertToSettingsValue(List<StoryType> tabs) {
-    return int.parse(
-      tabs
-          .map((StoryType e) => e.index.toString())
-          .reduce((String value, String element) => '$value$element'),
-    );
-  }
-}
-
 class Story extends Item {
   const Story({
     required super.descendants,
@@ -55,23 +20,7 @@ class Story extends Item {
           parent: 0,
         );
 
-  Story.empty()
-      : super(
-          id: 0,
-          score: 0,
-          descendants: 0,
-          time: 0,
-          by: '',
-          title: '',
-          url: '',
-          kids: <int>[],
-          dead: false,
-          parts: <int>[],
-          deleted: false,
-          parent: 0,
-          text: '',
-          type: '',
-        );
+  Story.empty() : super.empty();
 
   Story.placeholder()
       : super(
