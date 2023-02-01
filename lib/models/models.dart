@@ -9,4 +9,5 @@ export 'post_data.dart';
 export 'preference.dart';
 export 'search_params.dart';
 export 'story.dart';
+export 'story_type.dart';
 export 'user.dart';
