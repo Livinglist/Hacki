@@ -37,10 +37,7 @@ class PinnedStories extends StatelessWidget {
                         },
                         backgroundColor: Palette.red,
                         foregroundColor: Palette.white,
-                        icon: context
-                                .read<PreferenceCubit>()
-                                .state
-                                .complexStoryTileEnabled
+                        icon: preferenceState.complexStoryTileEnabled
                             ? Icons.close
                             : null,
                         label: 'Unpin',
