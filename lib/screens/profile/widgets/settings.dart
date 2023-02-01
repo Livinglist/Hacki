@@ -131,6 +131,7 @@ class _SettingsState extends State<Settings> {
                                   .toList(),
                               onChanged: (FetchMode? fetchMode) {
                                 if (fetchMode != null) {
+                                  HapticFeedback.selectionClick();
                                   context.read<PreferenceCubit>().update(
                                         FetchModePreference(),
                                         to: fetchMode.index,
@@ -164,6 +165,7 @@ class _SettingsState extends State<Settings> {
                                   .toList(),
                               onChanged: (CommentsOrder? order) {
                                 if (order != null) {
+                                  HapticFeedback.selectionClick();
                                   context.read<PreferenceCubit>().update(
                                         CommentsOrderPreference(),
                                         to: order.index,

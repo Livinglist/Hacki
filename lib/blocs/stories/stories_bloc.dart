@@ -83,7 +83,9 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     final int pageSize = _getPageSize(isComplexTile: isComplexTile);
     emit(
       const StoriesState.init().copyWith(
-        offlineReading: hasCachedStories,
+        offlineReading: hasCachedStories &&
+            // Only go into offline mode in the next session.
+            state.downloadStatus == StoriesDownloadStatus.initial,
         currentPageSize: pageSize,
         downloadStatus: state.downloadStatus,
         storiesDownloaded: state.storiesDownloaded,
