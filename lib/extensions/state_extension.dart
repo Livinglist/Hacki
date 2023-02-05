@@ -119,11 +119,45 @@ extension StateExtension on State {
     }
   }
 
-  void onShareTapped(Item item, Rect? rect) {
-    Share.share(
-      'https://news.ycombinator.com/item?id=${item.id}',
-      sharePositionOrigin: rect,
-    );
+  Future<void> onShareTapped(Item item, Rect? rect) async {
+    late final String? linkToShare;
+    if (item.url.isNotEmpty) {
+      linkToShare = await showModalBottomSheet<String>(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            height: 140,
+            color: Theme.of(context).canvasColor,
+            child: Material(
+              child: Column(
+                children: <Widget>[
+                  ListTile(
+                    onTap: () => Navigator.pop(context, item.url),
+                    title: const Text('Link to article'),
+                  ),
+                  ListTile(
+                    onTap: () => Navigator.pop(
+                      context,
+                      'https://news.ycombinator.com/item?id=${item.id}',
+                    ),
+                    title: const Text('Link to HN'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    } else {
+      linkToShare = 'https://news.ycombinator.com/item?id=${item.id}';
+    }
+
+    if (linkToShare != null) {
+      await Share.share(
+        linkToShare,
+        sharePositionOrigin: rect,
+      );
+    }
   }
 
   void onFlagTapped(Item item) {
