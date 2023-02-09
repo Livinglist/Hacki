@@ -11,15 +11,12 @@ jobs:
     name: Check commit
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    env:
-      FLUTTER_VERSION: "3.7.2"
     steps:
-      - uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v2
+      - name: checkout all the submodules
+        uses: actions/checkout@v2
         with:
-          flutter-version: '3.7.2'
-          channel: 'stable'
-      - run: flutter pub get
-      - run: flutter format --set-exit-if-changed .
-      - run: flutter analyze
-      - run: flutter test
+          submodules: recursive
+      - run: submodules/flutter/bin/flutter pub get
+      - run: submodules/flutter/bin/flutter format --set-exit-if-changed .
+      - run: submodules/flutter/bin/flutter analyze
+      - run: submodules/flutter/bin/flutter test
