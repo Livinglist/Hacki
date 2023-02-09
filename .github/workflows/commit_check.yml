@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: checkout all the submodules
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: recursive
       - run: submodules/flutter/bin/flutter doctor
