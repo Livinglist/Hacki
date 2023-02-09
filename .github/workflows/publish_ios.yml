@@ -20,23 +20,21 @@ jobs:
 
     steps:
       - name: Check out from git
-        uses: actions/checkout@v2
-      # Configure ruby according to our .ruby-version
-      - name: Setup ruby & Bundler
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-      # Set up flutter
-      - name: Setup flutter
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: recursive
-          cacahe: true
       - run: submodules/flutter/bin/flutter doctor
       - run: submodules/flutter/bin/flutter pub get
       - run: submodules/flutter/bin/dart format --set-exit-if-changed lib test integration_test
       - run: submodules/flutter/bin/flutter analyze lib test integration_test
       - run: submodules/flutter/bin/flutter test
+      
+      # Configure ruby according to our .ruby-version
+      - name: Setup ruby & Bundler
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
       # Start an ssh-agent that will provide the SSH key from the
       # SSH_PRIVATE_KEY secret to `fastlane match`
       - name: Setup SSH key
