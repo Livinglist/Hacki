@@ -31,6 +31,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: recursive
+          cacahe: true
       - run: submodules/flutter/bin/flutter doctor
       - run: submodules/flutter/bin/flutter pub get
       - run: submodules/flutter/bin/dart format --set-exit-if-changed lib test integration_test
