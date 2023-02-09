@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/screens/screens.dart';
 
 /// Custom router.
@@ -39,8 +40,8 @@ class CustomRouter {
         appBar: AppBar(
           title: const Text('Error'),
         ),
-        body: const Center(
-          child: Text('Something went wrong!'),
+        body: Center(
+          child: Text(Constants.errorMessage),
         ),
       ),
     );

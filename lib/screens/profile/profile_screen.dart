@@ -453,13 +453,13 @@ class _ProfileScreenState extends State<ProfileScreen>
                     height: Dimens.pt16,
                   ),
                   if (state.status == AuthStatus.failure)
-                    const Padding(
-                      padding: EdgeInsets.only(
+                    Padding(
+                      padding: const EdgeInsets.only(
                         left: Dimens.pt18,
                       ),
                       child: Text(
-                        'Something went wrong...',
-                        style: TextStyle(
+                        Constants.errorMessage,
+                        style: const TextStyle(
                           color: Palette.grey,
                           fontSize: TextDimens.pt12,
                         ),
