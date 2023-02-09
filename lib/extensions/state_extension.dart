@@ -21,21 +21,14 @@ extension StateExtension on State {
     VoidCallback? action,
     String? label,
   }) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: Palette.deepOrange,
-        content: Text(content),
-        action: action != null && label != null
-            ? SnackBarAction(
-                label: label,
-                onPressed: action,
-                textColor: Theme.of(context).textTheme.bodyLarge?.color,
-              )
-            : null,
-        behavior: SnackBarBehavior.floating,
-      ),
+    context.showSnackBar(
+      content: content,
+      action: action,
+      label: label,
     );
   }
+
+  void showErrorSnackBar() => context.showErrorSnackBar();
 
   Future<void>? goToItemScreen({
     required ItemScreenArgs args,
@@ -70,7 +63,6 @@ extension StateExtension on State {
         return MorePopupMenu(
           item: item,
           isBlocked: isBlocked,
-          showSnackBar: showSnackBar,
           onStoryLinkTapped: onStoryLinkTapped,
           onLoginTapped: onLoginTapped,
         );

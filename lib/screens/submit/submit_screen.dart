@@ -50,9 +50,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
             content: 'Post submitted successfully.',
           );
         } else if (state.status == SubmitStatus.failure) {
-          showSnackBar(
-            content: 'Something went wrong...',
-          );
+          showErrorSnackBar();
         }
       },
       builder: (BuildContext context, SubmitState state) {

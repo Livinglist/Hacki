@@ -111,7 +111,7 @@ class _CountDownReminderState extends State<CountdownReminder>
                           .fetchStoryBy(state.storyId!)
                           .then((Story? story) {
                         if (story == null) {
-                          showSnackBar(content: 'Something went wrong...');
+                          showErrorSnackBar();
                           return;
                         }
                         final ItemScreenArgs args = ItemScreenArgs(item: story);

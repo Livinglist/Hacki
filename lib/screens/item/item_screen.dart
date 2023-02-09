@@ -239,12 +239,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                   context.read<EditCubit>().onReplySubmittedSuccessfully();
                   context.read<PostCubit>().reset();
                 } else if (postState.status == PostStatus.failure) {
-                  showSnackBar(
-                    content: 'Something went wrong...'
-                        '${Constants.sadFace}',
-                    label: 'Okay',
-                    action: ScaffoldMessenger.of(context).hideCurrentSnackBar,
-                  );
+                  showErrorSnackBar();
                   context.read<PostCubit>().reset();
                 }
               },

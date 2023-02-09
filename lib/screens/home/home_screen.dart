@@ -301,7 +301,7 @@ class _HomeScreenState extends State<HomeScreen>
         .fetchStoryBy(storyId)
         .then((Story? story) {
       if (story == null) {
-        showSnackBar(content: 'Something went wrong...');
+        showErrorSnackBar();
         return;
       }
       final ItemScreenArgs args = ItemScreenArgs(item: story);
@@ -326,7 +326,7 @@ class _HomeScreenState extends State<HomeScreen>
           .fetchStoryBy(storyId)
           .then((Story? story) {
         if (story == null) {
-          showSnackBar(content: 'Something went wrong...');
+          showErrorSnackBar();
           return;
         }
         final ItemScreenArgs args = ItemScreenArgs(item: story);
