@@ -16,6 +16,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: recursive
+      - run: submodules/flutter/bin/flutter doctor
       - run: submodules/flutter/bin/flutter pub get
       - run: submodules/flutter/bin/flutter format --set-exit-if-changed .
       - run: submodules/flutter/bin/flutter analyze
