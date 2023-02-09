@@ -49,7 +49,7 @@ latest_testflight_build_number
 
     # Prep the xcodeproject from Flutter without building (`--config-only`)
     sh(
-      "flutter", "build", "ios", "--config-only",
+      "submodules/flutter/bin/flutter", "build", "ios", "--config-only",
       "--release", "--no-pub", "--no-codesign",
       "--build-number", new_build_number.to_s
     )
