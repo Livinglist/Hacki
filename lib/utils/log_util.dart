@@ -43,7 +43,7 @@ abstract class LogUtil {
 
     final Uint8List fileContent = await currentSessionLog.readAsBytes();
     await previousSessionLog.writeAsString(
-      'Current session logs:',
+      'Current session logs:\n',
       mode: FileMode.append,
     );
     return previousSessionLog.writeAsBytes(
