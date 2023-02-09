@@ -5,7 +5,7 @@ import 'package:hacki/config/constants.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/link_preview/link_view.dart';
-import 'package:hacki/screens/widgets/link_preview/web_analyzer.dart';
+import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:url_launcher/url_launcher.dart';
 

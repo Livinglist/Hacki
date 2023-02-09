@@ -157,167 +157,181 @@ class CommentTile extends StatelessWidget {
                             ],
                           ),
                         ),
-                        if (actionable && state.collapsed)
-                          Center(
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: Dimens.pt12,
-                              ),
-                              child: Text(
-                                'collapsed '
-                                '(${state.collapsedCount + 1})',
-                                style: const TextStyle(
-                                  color: Palette.orangeAccent,
-                                ),
-                              ),
-                            ),
-                          )
-                        else if (comment.deleted)
-                          const Center(
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                bottom: Dimens.pt12,
-                              ),
-                              child: Text(
-                                'deleted',
-                                style: TextStyle(
-                                  color: Palette.grey,
-                                ),
-                              ),
-                            ),
-                          )
-                        else if (comment.dead)
-                          const Center(
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                bottom: Dimens.pt12,
-                              ),
-                              child: Text(
-                                'dead',
-                                style: TextStyle(
-                                  color: Palette.grey,
-                                ),
-                              ),
-                            ),
-                          )
-                        else if (blocklistState.blocklist.contains(comment.by))
-                          const Center(
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                bottom: Dimens.pt12,
-                              ),
-                              child: Text(
-                                'blocked',
-                                style: TextStyle(
-                                  color: Palette.grey,
-                                ),
-                              ),
-                            ),
-                          )
-                        else
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              left: Dimens.pt8,
-                              right: Dimens.pt8,
-                              top: Dimens.pt6,
-                              bottom: Dimens.pt12,
-                            ),
-                            child: comment is BuildableComment
-                                ? SelectableText.rich(
-                                    key: ValueKey<int>(comment.id),
-                                    buildTextSpan(
-                                      (comment as BuildableComment).elements,
+                        AnimatedSize(
+                          duration: const Duration(milliseconds: 200),
+                          child: Column(
+                            children: <Widget>[
+                              if (actionable && state.collapsed)
+                                Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                      bottom: Dimens.pt12,
+                                    ),
+                                    child: Text(
+                                      'collapsed '
+                                      '(${state.collapsedCount + 1})',
+                                      style: const TextStyle(
+                                        color: Palette.orangeAccent,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              else if (comment.deleted)
+                                const Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                      bottom: Dimens.pt12,
+                                    ),
+                                    child: Text(
+                                      'deleted',
                                       style: TextStyle(
-                                        fontSize: MediaQuery.of(
-                                              context,
-                                            ).textScaleFactor *
-                                            prefState.fontSize.fontSize,
+                                        color: Palette.grey,
                                       ),
-                                      linkStyle: TextStyle(
-                                        fontSize: MediaQuery.of(
-                                              context,
-                                            ).textScaleFactor *
-                                            prefState.fontSize.fontSize,
-                                        decoration: TextDecoration.underline,
-                                        color: Palette.orange,
-                                      ),
-                                      onOpen: (LinkableElement link) {
-                                        if (link.url.isStoryLink) {
-                                          onStoryLinkTapped.call(link.url);
-                                        } else {
-                                          LinkUtil.launch(link.url);
-                                        }
-                                      },
                                     ),
-                                    onTap: () => onTextTapped(context),
-                                  )
-                                : SelectableLinkify(
-                                    key: ValueKey<int>(comment.id),
-                                    text: comment.text,
-                                    style: TextStyle(
-                                      fontSize: MediaQuery.of(context)
-                                              .textScaleFactor *
-                                          prefState.fontSize.fontSize,
-                                    ),
-                                    linkStyle: TextStyle(
-                                      fontSize: MediaQuery.of(context)
-                                              .textScaleFactor *
-                                          prefState.fontSize.fontSize,
-                                      color: Palette.orange,
-                                    ),
-                                    onOpen: (LinkableElement link) {
-                                      if (link.url.isStoryLink) {
-                                        onStoryLinkTapped.call(link.url);
-                                      } else {
-                                        LinkUtil.launch(link.url);
-                                      }
-                                    },
-                                    onTap: () => onTextTapped(context),
                                   ),
-                          ),
-                        if (!state.collapsed &&
-                            fetchMode == FetchMode.lazy &&
-                            comment.kids.isNotEmpty &&
-                            !context
-                                .read<CommentsCubit>()
-                                .state
-                                .commentIds
-                                .contains(comment.kids.first) &&
-                            !context
-                                .read<CommentsCubit>()
-                                .state
-                                .onlyShowTargetComment)
-                          Center(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: Dimens.pt12,
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Expanded(
-                                    child: TextButton(
-                                      onPressed: () {
-                                        HapticFeedback.selectionClick();
-                                        context.read<CommentsCubit>().loadMore(
-                                              comment: comment,
-                                            );
-                                      },
-                                      child: Text(
-                                        '''Load ${comment.kids.length} ${comment.kids.length > 1 ? 'replies' : 'reply'}''',
-                                        style: const TextStyle(
-                                          fontSize: TextDimens.pt12,
+                                )
+                              else if (comment.dead)
+                                const Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                      bottom: Dimens.pt12,
+                                    ),
+                                    child: Text(
+                                      'dead',
+                                      style: TextStyle(
+                                        color: Palette.grey,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              else if (blocklistState.blocklist
+                                  .contains(comment.by))
+                                const Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                      bottom: Dimens.pt12,
+                                    ),
+                                    child: Text(
+                                      'blocked',
+                                      style: TextStyle(
+                                        color: Palette.grey,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              else
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: Dimens.pt8,
+                                    right: Dimens.pt8,
+                                    top: Dimens.pt6,
+                                    bottom: Dimens.pt12,
+                                  ),
+                                  child: comment is BuildableComment
+                                      ? SelectableText.rich(
+                                          key: ValueKey<int>(comment.id),
+                                          buildTextSpan(
+                                            (comment as BuildableComment)
+                                                .elements,
+                                            style: TextStyle(
+                                              fontSize: MediaQuery.of(
+                                                    context,
+                                                  ).textScaleFactor *
+                                                  prefState.fontSize.fontSize,
+                                            ),
+                                            linkStyle: TextStyle(
+                                              fontSize: MediaQuery.of(
+                                                    context,
+                                                  ).textScaleFactor *
+                                                  prefState.fontSize.fontSize,
+                                              decoration:
+                                                  TextDecoration.underline,
+                                              color: Palette.orange,
+                                            ),
+                                            onOpen: (LinkableElement link) {
+                                              if (link.url.isStoryLink) {
+                                                onStoryLinkTapped
+                                                    .call(link.url);
+                                              } else {
+                                                LinkUtil.launch(link.url);
+                                              }
+                                            },
+                                          ),
+                                          onTap: () => onTextTapped(context),
+                                        )
+                                      : SelectableLinkify(
+                                          key: ValueKey<int>(comment.id),
+                                          text: comment.text,
+                                          style: TextStyle(
+                                            fontSize: MediaQuery.of(context)
+                                                    .textScaleFactor *
+                                                prefState.fontSize.fontSize,
+                                          ),
+                                          linkStyle: TextStyle(
+                                            fontSize: MediaQuery.of(context)
+                                                    .textScaleFactor *
+                                                prefState.fontSize.fontSize,
+                                            color: Palette.orange,
+                                          ),
+                                          onOpen: (LinkableElement link) {
+                                            if (link.url.isStoryLink) {
+                                              onStoryLinkTapped.call(link.url);
+                                            } else {
+                                              LinkUtil.launch(link.url);
+                                            }
+                                          },
+                                          onTap: () => onTextTapped(context),
                                         ),
-                                      ),
+                                ),
+                              if (!state.collapsed &&
+                                  fetchMode == FetchMode.lazy &&
+                                  comment.kids.isNotEmpty &&
+                                  !context
+                                      .read<CommentsCubit>()
+                                      .state
+                                      .commentIds
+                                      .contains(comment.kids.first) &&
+                                  !context
+                                      .read<CommentsCubit>()
+                                      .state
+                                      .onlyShowTargetComment)
+                                Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: Dimens.pt12,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        Expanded(
+                                          child: TextButton(
+                                            onPressed: () {
+                                              HapticFeedback.selectionClick();
+                                              context
+                                                  .read<CommentsCubit>()
+                                                  .loadMore(
+                                                    comment: comment,
+                                                  );
+                                            },
+                                            child: Text(
+                                              '''Load ${comment.kids.length} ${comment.kids.length > 1 ? 'replies' : 'reply'}''',
+                                              style: const TextStyle(
+                                                fontSize: TextDimens.pt12,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ],
+                                ),
+                              const Divider(
+                                height: Dimens.zero,
                               ),
-                            ),
+                            ],
                           ),
-                        const Divider(
-                          height: Dimens.zero,
-                        ),
+                        )
                       ],
                     ),
                   ),
