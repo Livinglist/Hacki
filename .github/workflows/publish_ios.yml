@@ -26,15 +26,16 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      # Set up flutter (feel free to adjust the version below)
+      # Set up flutter
       - name: Setup flutter
-        uses: subosito/flutter-action@v2
+        uses: actions/checkout@v2
         with:
-          cache: true
-          flutter-version: 3.7.3
-      - run: flutter pub get
-      - run: flutter format --set-exit-if-changed .
-      - run: flutter analyze
+          submodules: recursive
+      - run: submodules/flutter/bin/flutter doctor
+      - run: submodules/flutter/bin/flutter pub get
+      - run: submodules/flutter/bin/dart format --set-exit-if-changed lib test integration_test
+      - run: submodules/flutter/bin/flutter analyze lib test integration_test
+      - run: submodules/flutter/bin/flutter test
       # Start an ssh-agent that will provide the SSH key from the
       # SSH_PRIVATE_KEY secret to `fastlane match`
       - name: Setup SSH key
