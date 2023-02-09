@@ -119,7 +119,7 @@ class _LinkPreviewState extends State<LinkPreview> {
 
   @override
   void initState() {
-    _errorTitle = widget.errorTitle ?? 'Something went wrong!';
+    _errorTitle = widget.errorTitle ?? Constants.errorMessage;
     _errorBody = widget.errorBody ??
         'Oops! Unable to parse the url. We have '
             'sent feedback to our developers & '

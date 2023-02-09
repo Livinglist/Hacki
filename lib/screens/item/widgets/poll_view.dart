@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/blocs/auth/auth_bloc.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/context_extension.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/styles/styles.dart';
 
@@ -66,23 +67,18 @@ class PollView extends StatelessWidget {
                           content: 'Vote submitted successfully.',
                         );
                       } else if (voteState.status == VoteStatus.canceled) {
-                        showSnackBar(context, content: 'Vote canceled.');
+                        context.showSnackBar(content: 'Vote canceled.');
                       } else if (voteState.status == VoteStatus.failure) {
-                        showSnackBar(
-                          context,
-                          content: 'Something went wrong...',
-                        );
+                        context.showErrorSnackBar();
                       } else if (voteState.status ==
                           VoteStatus.failureKarmaBelowThreshold) {
-                        showSnackBar(
-                          context,
+                        context.showSnackBar(
                           content: "You can't downvote because"
                               ' you are karmaly broke.',
                         );
                       } else if (voteState.status ==
                           VoteStatus.failureNotLoggedIn) {
-                        showSnackBar(
-                          context,
+                        context.showSnackBar(
                           content: 'Not logged in, no voting! (;｀O´)o',
                           action: onLoginTapped,
                           label: 'Log in',

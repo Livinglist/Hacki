@@ -160,6 +160,7 @@ class CommentTile extends StatelessWidget {
                         AnimatedSize(
                           duration: const Duration(milliseconds: 200),
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               if (actionable && state.collapsed)
                                 Center(

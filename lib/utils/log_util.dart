@@ -14,7 +14,7 @@ abstract class LogUtil {
           colors: false,
         );
 
-  static LogOutput getLogOutput(File outputFile) => MultiOutput(
+  static LogOutput logOutput(File outputFile) => MultiOutput(
         <LogOutput>[
           ConsoleOutput(),
           CustomFileOutput(
@@ -43,7 +43,7 @@ abstract class LogUtil {
 
     final Uint8List fileContent = await currentSessionLog.readAsBytes();
     await previousSessionLog.writeAsString(
-      'Current session logs:',
+      'Current session logs:\n',
       mode: FileMode.append,
     );
     return previousSessionLog.writeAsBytes(

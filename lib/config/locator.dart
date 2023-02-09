@@ -20,7 +20,7 @@ Future<void> setUpLocator() async {
       Logger(
         filter: CustomLogFilter(),
         printer: LogUtil.logPrinter,
-        output: LogUtil.getLogOutput(logOutputFile),
+        output: LogUtil.logOutput(logOutputFile),
       ),
     )
     ..registerSingleton<StoriesRepository>(StoriesRepository())

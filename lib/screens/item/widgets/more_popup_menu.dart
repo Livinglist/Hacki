@@ -15,18 +15,12 @@ class MorePopupMenu extends StatelessWidget {
     super.key,
     required this.item,
     required this.isBlocked,
-    required this.showSnackBar,
     required this.onStoryLinkTapped,
     required this.onLoginTapped,
   });
 
   final Item item;
   final bool isBlocked;
-  final void Function({
-    required String content,
-    VoidCallback? action,
-    String? label,
-  }) showSnackBar;
   final ValueChanged<String> onStoryLinkTapped;
   final VoidCallback onLoginTapped;
 
@@ -43,24 +37,26 @@ class MorePopupMenu extends StatelessWidget {
         },
         listener: (BuildContext context, VoteState voteState) {
           if (voteState.status == VoteStatus.submitted) {
-            showSnackBar(content: 'Vote submitted successfully.');
+            context.showSnackBar(content: 'Vote submitted successfully.');
           } else if (voteState.status == VoteStatus.canceled) {
-            showSnackBar(content: 'Vote canceled.');
+            context.showSnackBar(content: 'Vote canceled.');
           } else if (voteState.status == VoteStatus.failure) {
-            showSnackBar(content: 'Something went wrong...');
+            context.showErrorSnackBar();
           } else if (voteState.status ==
               VoteStatus.failureKarmaBelowThreshold) {
-            showSnackBar(
+            context.showSnackBar(
               content: "You can't downvote because you are karmaly broke.",
             );
           } else if (voteState.status == VoteStatus.failureNotLoggedIn) {
-            showSnackBar(
+            context.showSnackBar(
               content: 'Not logged in, no voting! (;｀O´)o',
               action: onLoginTapped,
               label: 'Log in',
             );
           } else if (voteState.status == VoteStatus.failureBeHumble) {
-            showSnackBar(content: 'No voting on your own post! (;｀O´)o');
+            context.showSnackBar(
+              content: 'No voting on your own post! (;｀O´)o',
+            );
           }
 
           Navigator.pop(
