@@ -18,6 +18,6 @@ jobs:
           submodules: recursive
       - run: submodules/flutter/bin/flutter doctor
       - run: submodules/flutter/bin/flutter pub get
-      - run: submodules/flutter/bin/flutter format --set-exit-if-changed .
-      - run: submodules/flutter/bin/flutter analyze
+      - run: submodules/flutter/bin/dart format --set-exit-if-changed lib test integration_test
+      - run: submodules/flutter/bin/flutter analyze lib test integration_test
       - run: submodules/flutter/bin/flutter test
