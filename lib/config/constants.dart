@@ -57,7 +57,7 @@ abstract class Constants {
     '(ㆆ_ㆆ)',
   ].pickRandomly()!;
 
-  static final String errorMessage = 'Something went wrong...$sadFace}';
+  static final String errorMessage = 'Something went wrong...$sadFace';
 }
 
 abstract class RegExpConstants {
