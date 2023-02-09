@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/cubits/cubits.dart';
-import 'package:hacki/screens/widgets/link_preview/web_analyzer.dart';
+import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 
 class OfflineBanner extends StatelessWidget {
