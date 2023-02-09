@@ -14,7 +14,7 @@ abstract class LogUtil {
           colors: false,
         );
 
-  static LogOutput getLogOutput(File outputFile) => MultiOutput(
+  static LogOutput logOutput(File outputFile) => MultiOutput(
         <LogOutput>[
           ConsoleOutput(),
           CustomFileOutput(
