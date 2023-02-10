@@ -12,6 +12,8 @@ class PostableRepository {
   }) : _dio = dio ?? Dio();
 
   final Dio _dio;
+
+  @protected
   final String authority;
 
   @protected
