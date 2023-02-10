@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/postable_repository.dart';
-import 'package:hacki/repositories/repositories.dart';
+import 'package:hacki/repositories/preference_repository.dart';
 import 'package:logger/logger.dart';
 
 class AuthRepository extends PostableRepository {
@@ -18,8 +18,6 @@ class AuthRepository extends PostableRepository {
   final PreferenceRepository _preferenceRepository;
   final Logger _logger;
 
-  static const String _authority = 'news.ycombinator.com';
-
   Future<bool> get loggedIn async => _preferenceRepository.loggedIn;
 
   Future<String?> get username async => _preferenceRepository.username;
@@ -30,7 +28,7 @@ class AuthRepository extends PostableRepository {
     required String username,
     required String password,
   }) async {
-    final Uri uri = Uri.https(_authority, 'login');
+    final Uri uri = Uri.https(authority, 'login');
     final PostDataMixin data = LoginPostData(
       acct: username,
       pw: password,
@@ -64,7 +62,7 @@ class AuthRepository extends PostableRepository {
     required int id,
     required bool flag,
   }) async {
-    final Uri uri = Uri.https(_authority, 'flag');
+    final Uri uri = Uri.https(authority, 'flag');
     final String? username = await _preferenceRepository.username;
     final String? password = await _preferenceRepository.password;
     final PostDataMixin data = FlagPostData(
@@ -81,7 +79,7 @@ class AuthRepository extends PostableRepository {
     required int id,
     required bool favorite,
   }) async {
-    final Uri uri = Uri.https(_authority, 'fave');
+    final Uri uri = Uri.https(authority, 'fave');
     final String? username = await _preferenceRepository.username;
     final String? password = await _preferenceRepository.password;
     final PostDataMixin data = FavoritePostData(
@@ -98,7 +96,7 @@ class AuthRepository extends PostableRepository {
     required int id,
     required bool upvote,
   }) async {
-    final Uri uri = Uri.https(_authority, 'vote');
+    final Uri uri = Uri.https(authority, 'vote');
     final String? username = await _preferenceRepository.username;
     final String? password = await _preferenceRepository.password;
     final PostDataMixin data = VotePostData(
@@ -115,7 +113,7 @@ class AuthRepository extends PostableRepository {
     required int id,
     required bool downvote,
   }) async {
-    final Uri uri = Uri.https(_authority, 'vote');
+    final Uri uri = Uri.https(authority, 'vote');
     final String? username = await _preferenceRepository.username;
     final String? password = await _preferenceRepository.password;
     final PostDataMixin data = VotePostData(

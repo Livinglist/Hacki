@@ -8,9 +8,13 @@ import 'package:hacki/utils/service_exception.dart';
 class PostableRepository {
   PostableRepository({
     Dio? dio,
+    this.authority = 'news.ycombinator.com',
   }) : _dio = dio ?? Dio();
 
   final Dio _dio;
+
+  @protected
+  final String authority;
 
   @protected
   Future<bool> performDefaultPost(
@@ -59,5 +63,30 @@ class PostableRepository {
     } on DioError catch (e) {
       throw ServiceException(e.message);
     }
+  }
+
+  @protected
+  Future<Response<List<int>>> getFormResponse({
+    required String username,
+    required String password,
+    required String path,
+    int? id,
+  }) async {
+    final Uri uri = Uri.https(
+      authority,
+      path,
+      <String, dynamic>{if (id != null) 'id': id.toString()},
+    );
+    final PostDataMixin data = FormPostData(
+      acct: username,
+      pw: password,
+      id: id,
+    );
+    return performPost(
+      uri,
+      data,
+      responseType: ResponseType.bytes,
+      validateStatus: (int? status) => status == HttpStatus.ok,
+    );
   }
 }

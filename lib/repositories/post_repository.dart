@@ -14,15 +14,13 @@ class PostRepository extends PostableRepository {
 
   final PreferenceRepository _preferenceRepository;
 
-  static const String _authority = 'news.ycombinator.com';
-
   Future<bool> comment({
     required int parentId,
     required String text,
   }) async {
     final String? username = await _preferenceRepository.username;
     final String? password = await _preferenceRepository.password;
-    final Uri uri = Uri.https(_authority, 'comment');
+    final Uri uri = Uri.https(authority, 'comment');
 
     if (username == null || password == null) {
       return false;
@@ -54,7 +52,7 @@ class PostRepository extends PostableRepository {
       return false;
     }
 
-    final Response<List<int>> formResponse = await _getFormResponse(
+    final Response<List<int>> formResponse = await getFormResponse(
       username: username,
       password: password,
       path: 'submitlink',
@@ -69,7 +67,7 @@ class PostRepository extends PostableRepository {
     final String? cookie =
         formResponse.headers.value(HttpHeaders.setCookieHeader);
 
-    final Uri uri = Uri.https(_authority, 'r');
+    final Uri uri = Uri.https(authority, 'r');
     final PostDataMixin data = SubmitPostData(
       fnid: formValues['fnid']!,
       fnop: formValues['fnop']!,
@@ -97,7 +95,7 @@ class PostRepository extends PostableRepository {
       return false;
     }
 
-    final Response<List<int>> formResponse = await _getFormResponse(
+    final Response<List<int>> formResponse = await getFormResponse(
       username: username,
       password: password,
       id: id,
@@ -113,7 +111,7 @@ class PostRepository extends PostableRepository {
     final String? cookie =
         formResponse.headers.value(HttpHeaders.setCookieHeader);
 
-    final Uri uri = Uri.https(_authority, 'xedit');
+    final Uri uri = Uri.https(authority, 'xedit');
     final PostDataMixin data = EditPostData(
       hmac: formValues['hmac']!,
       id: id,
@@ -124,30 +122,6 @@ class PostRepository extends PostableRepository {
       uri,
       data,
       cookie: cookie,
-    );
-  }
-
-  Future<Response<List<int>>> _getFormResponse({
-    required String username,
-    required String password,
-    required String path,
-    int? id,
-  }) async {
-    final Uri uri = Uri.https(
-      _authority,
-      path,
-      <String, dynamic>{if (id != null) 'id': id.toString()},
-    );
-    final PostDataMixin data = FormPostData(
-      acct: username,
-      pw: password,
-      id: id,
-    );
-    return performPost(
-      uri,
-      data,
-      responseType: ResponseType.bytes,
-      validateStatus: (int? status) => status == HttpStatus.ok,
     );
   }
 }

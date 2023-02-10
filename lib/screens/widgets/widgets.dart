@@ -1,4 +1,5 @@
 export 'bloc_builder_3.dart';
+export 'centered_text.dart';
 export 'circle_tab_indicator.dart';
 export 'comment_tile.dart';
 export 'countdown_reminder.dart';
