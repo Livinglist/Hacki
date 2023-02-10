@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/postable_repository.dart';
-import 'package:hacki/repositories/repositories.dart';
+import 'package:hacki/repositories/preference_repository.dart';
 import 'package:logger/logger.dart';
 
 class AuthRepository extends PostableRepository {
