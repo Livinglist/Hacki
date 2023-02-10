@@ -8,6 +8,7 @@ import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/bloc_builder_3.dart';
+import 'package:hacki/screens/widgets/centered_text.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
@@ -39,6 +40,8 @@ class CommentTile extends StatelessWidget {
   final void Function(Comment)? onRightMoreTapped;
   final void Function(String) onStoryLinkTapped;
   final FetchMode fetchMode;
+
+  static final Map<int, Color> _colors = <int, Color>{};
 
   @override
   Widget build(BuildContext context) {
@@ -163,63 +166,18 @@ class CommentTile extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               if (actionable && state.collapsed)
-                                Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                      bottom: Dimens.pt12,
-                                    ),
-                                    child: Text(
-                                      'collapsed '
-                                      '(${state.collapsedCount + 1})',
-                                      style: const TextStyle(
-                                        color: Palette.orangeAccent,
-                                      ),
-                                    ),
-                                  ),
+                                CenteredText(
+                                  text:
+                                      '''collapsed (${state.collapsedCount + 1})''',
+                                  color: Palette.orangeAccent,
                                 )
                               else if (comment.deleted)
-                                const Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.only(
-                                      bottom: Dimens.pt12,
-                                    ),
-                                    child: Text(
-                                      'deleted',
-                                      style: TextStyle(
-                                        color: Palette.grey,
-                                      ),
-                                    ),
-                                  ),
-                                )
+                                const CenteredText.deleted()
                               else if (comment.dead)
-                                const Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.only(
-                                      bottom: Dimens.pt12,
-                                    ),
-                                    child: Text(
-                                      'dead',
-                                      style: TextStyle(
-                                        color: Palette.grey,
-                                      ),
-                                    ),
-                                  ),
-                                )
+                                const CenteredText.dead()
                               else if (blocklistState.blocklist
                                   .contains(comment.by))
-                                const Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.only(
-                                      bottom: Dimens.pt12,
-                                    ),
-                                    child: Text(
-                                      'blocked',
-                                      style: TextStyle(
-                                        color: Palette.grey,
-                                      ),
-                                    ),
-                                  ),
-                                )
+                                const CenteredText.blocked()
                               else
                                 Padding(
                                   padding: const EdgeInsets.only(
@@ -284,55 +242,41 @@ class CommentTile extends StatelessWidget {
                                           onTap: () => onTextTapped(context),
                                         ),
                                 ),
-                              if (!state.collapsed &&
-                                  fetchMode == FetchMode.lazy &&
-                                  comment.kids.isNotEmpty &&
-                                  !context
-                                      .read<CommentsCubit>()
-                                      .state
-                                      .commentIds
-                                      .contains(comment.kids.first) &&
-                                  !context
-                                      .read<CommentsCubit>()
-                                      .state
-                                      .onlyShowTargetComment)
-                                Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: Dimens.pt12,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Expanded(
-                                          child: TextButton(
-                                            onPressed: () {
-                                              HapticFeedback.selectionClick();
-                                              context
-                                                  .read<CommentsCubit>()
-                                                  .loadMore(
-                                                    comment: comment,
-                                                  );
-                                            },
-                                            child: Text(
-                                              '''Load ${comment.kids.length} ${comment.kids.length > 1 ? 'replies' : 'reply'}''',
-                                              style: const TextStyle(
-                                                fontSize: TextDimens.pt12,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              const Divider(
-                                height: Dimens.zero,
-                              ),
                             ],
                           ),
-                        )
+                        ),
+                        if (_shouldShowLoadButton(context))
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: Dimens.pt12,
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Expanded(
+                                    child: TextButton(
+                                      onPressed: () {
+                                        HapticFeedback.selectionClick();
+                                        context.read<CommentsCubit>().loadMore(
+                                              comment: comment,
+                                            );
+                                      },
+                                      child: Text(
+                                        '''Load ${comment.kids.length} ${comment.kids.length > 1 ? 'replies' : 'reply'}''',
+                                        style: const TextStyle(
+                                          fontSize: TextDimens.pt12,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        const Divider(
+                          height: Dimens.zero,
+                        ),
                       ],
                     ),
                   ),
@@ -391,7 +335,12 @@ class CommentTile extends StatelessWidget {
     );
   }
 
-  static final Map<int, Color> _colors = <int, Color>{};
+  void onTextTapped(BuildContext context) {
+    if (context.read<PreferenceCubit>().state.tapAnywhereToCollapseEnabled) {
+      HapticFeedback.selectionClick();
+      context.read<CollapseCubit>().collapse();
+    }
+  }
 
   Color _getColor(int level) {
     final int initialLevel = level;
@@ -421,10 +370,13 @@ class CommentTile extends StatelessWidget {
     return color;
   }
 
-  void onTextTapped(BuildContext context) {
-    if (context.read<PreferenceCubit>().state.tapAnywhereToCollapseEnabled) {
-      HapticFeedback.selectionClick();
-      context.read<CollapseCubit>().collapse();
-    }
+  bool _shouldShowLoadButton(BuildContext context) {
+    final CollapseState collapseState = context.read<CollapseCubit>().state;
+    final CommentsState commentsState = context.read<CommentsCubit>().state;
+    return fetchMode == FetchMode.lazy &&
+        comment.kids.isNotEmpty &&
+        collapseState.collapsed == false &&
+        commentsState.commentIds.contains(comment.kids.first) == false &&
+        commentsState.onlyShowTargetComment == false;
   }
 }

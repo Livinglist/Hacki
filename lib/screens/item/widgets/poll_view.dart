@@ -62,8 +62,7 @@ class PollView extends StatelessWidget {
                     listener: (BuildContext context, VoteState voteState) {
                       ScaffoldMessenger.of(context).clearSnackBars();
                       if (voteState.status == VoteStatus.submitted) {
-                        showSnackBar(
-                          context,
+                        context.showSnackBar(
                           content: 'Vote submitted successfully.',
                         );
                       } else if (voteState.status == VoteStatus.canceled) {
@@ -85,8 +84,7 @@ class PollView extends StatelessWidget {
                         );
                       } else if (voteState.status ==
                           VoteStatus.failureBeHumble) {
-                        showSnackBar(
-                          context,
+                        context.showSnackBar(
                           content: 'No voting on your own post! (;｀O´)o',
                         );
                       }
@@ -147,28 +145,6 @@ class PollView extends StatelessWidget {
           ],
         );
       },
-    );
-  }
-
-  void showSnackBar(
-    BuildContext context, {
-    required String content,
-    VoidCallback? action,
-    String? label,
-  }) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: Palette.deepOrange,
-        content: Text(content),
-        action: action != null && label != null
-            ? SnackBarAction(
-                label: label,
-                onPressed: action,
-                textColor: Theme.of(context).textTheme.bodyLarge?.color,
-              )
-            : null,
-        behavior: SnackBarBehavior.floating,
-      ),
     );
   }
 }
