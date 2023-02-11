@@ -12,7 +12,7 @@ class StoriesRepository {
   final FirebaseClient _firebaseClient;
   static const String _baseUrl = 'https://hacker-news.firebaseio.com/v0/';
 
-  Future<User> fetchUserBy({required String userId}) async {
+  Future<User> fetchUser({required String userId}) async {
     final User user = await _firebaseClient
         .get('${_baseUrl}user/$userId.json')
         .then((dynamic val) {
@@ -24,9 +24,9 @@ class StoriesRepository {
     return user;
   }
 
-  Future<List<int>> fetchStoryIds({required StoryType of}) async {
+  Future<List<int>> fetchStoryIds({required StoryType type}) async {
     final List<int> ids = await _firebaseClient
-        .get('$_baseUrl${of.path}.json')
+        .get('$_baseUrl${type.path}.json')
         .then((dynamic val) {
       final List<int> ids = (val as List<dynamic>).cast<int>();
       return ids;
@@ -35,7 +35,7 @@ class StoriesRepository {
     return ids;
   }
 
-  Future<Story?> fetchStoryBy(int id) async {
+  Future<Story?> fetchStory(int id) async {
     final Story? story = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
         .then((dynamic json) => _parseJson(json as Map<String, dynamic>?))
@@ -163,7 +163,7 @@ class StoriesRepository {
     }
   }
 
-  Future<Comment?> fetchCommentBy({required int id}) async {
+  Future<Comment?> fetchComment({required int id}) async {
     final Comment? comment = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
         .then((dynamic json) => _parseJson(json as Map<String, dynamic>?))
@@ -177,7 +177,7 @@ class StoriesRepository {
     return comment;
   }
 
-  Future<Comment?> fetchRawCommentBy({required int id}) async {
+  Future<Comment?> fetchRawComment({required int id}) async {
     final Comment? comment = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
         .then((dynamic val) async {
@@ -191,7 +191,7 @@ class StoriesRepository {
     return comment;
   }
 
-  Future<Item?> fetchItemBy({required int id}) async {
+  Future<Item?> fetchItem({required int id}) async {
     final Item? item = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
         .then((dynamic json) => _parseJson(json as Map<String, dynamic>?))
@@ -212,7 +212,7 @@ class StoriesRepository {
     return item;
   }
 
-  Future<Item?> fetchRawItemBy({required int id}) async {
+  Future<Item?> fetchRawItem({required int id}) async {
     final Item? item = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
         .then((dynamic val) {
@@ -254,7 +254,7 @@ class StoriesRepository {
     Item? item;
 
     do {
-      item = await fetchItemBy(id: item?.parent ?? id);
+      item = await fetchItem(id: item?.parent ?? id);
       if (item == null) return null;
     } while (item is Comment);
 
@@ -265,7 +265,7 @@ class StoriesRepository {
     Item? item;
 
     do {
-      item = await fetchRawItemBy(id: item?.parent ?? id);
+      item = await fetchRawItem(id: item?.parent ?? id);
       if (item == null) return null;
     } while (item is Comment);
 
@@ -279,7 +279,7 @@ class StoriesRepository {
     final List<Comment> parentComments = <Comment>[];
 
     do {
-      item = await fetchItemBy(id: item?.parent ?? id);
+      item = await fetchItem(id: item?.parent ?? id);
       if (item is Comment) {
         parentComments.add(item);
       }
@@ -299,7 +299,7 @@ class StoriesRepository {
 
   Stream<Comment?> fetchAllChildrenComments({required List<int> ids}) async* {
     for (final int id in ids) {
-      final Comment? comment = await fetchCommentBy(id: id);
+      final Comment? comment = await fetchComment(id: id);
       if (comment != null) {
         yield comment;
         yield* fetchAllChildrenComments(ids: comment.kids);

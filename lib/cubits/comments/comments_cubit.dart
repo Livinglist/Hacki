@@ -106,7 +106,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     final Item item = state.item;
     final Item updatedItem = state.offlineReading
         ? item
-        : await _storiesRepository.fetchItemBy(id: item.id) ?? item;
+        : await _storiesRepository.fetchItem(id: item.id) ?? item;
     final List<int> kids = sortKids(updatedItem.kids);
 
     emit(state.copyWith(item: updatedItem));
@@ -173,7 +173,7 @@ class CommentsCubit extends Cubit<CommentsState> {
 
     final Item item = state.item;
     final Item updatedItem =
-        await _storiesRepository.fetchItemBy(id: item.id) ?? item;
+        await _storiesRepository.fetchItem(id: item.id) ?? item;
     final List<int> kids = sortKids(updatedItem.kids);
 
     if (state.fetchMode == FetchMode.lazy) {

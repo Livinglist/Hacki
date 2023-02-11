@@ -118,7 +118,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         add(StoriesLoaded(type: of));
       });
     } else {
-      final List<int> ids = await _storiesRepository.fetchStoryIds(of: of);
+      final List<int> ids = await _storiesRepository.fetchStoryIds(type: of);
       emit(
         state
             .copyWithStoryIdsUpdated(of: of, to: ids)
@@ -262,7 +262,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       ..remove(StoryType.latest);
 
     for (final StoryType type in prioritizedTypes) {
-      final List<int> ids = await _storiesRepository.fetchStoryIds(of: type);
+      final List<int> ids = await _storiesRepository.fetchStoryIds(type: type);
       await _offlineRepository.cacheStoryIds(of: type, ids: ids);
       prioritizedIds.addAll(ids);
     }
@@ -283,7 +283,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
 
       final Set<int> latestIds = <int>{};
       final List<int> ids = await _storiesRepository.fetchStoryIds(
-        of: StoryType.latest,
+        type: StoryType.latest,
       );
       await _offlineRepository.cacheStoryIds(of: StoryType.latest, ids: ids);
       latestIds.addAll(ids);
@@ -326,7 +326,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       if (state.downloadStatus == StoriesDownloadStatus.canceled) break;
 
       _logger.d('fetching story $id');
-      final Story? story = await _storiesRepository.fetchStoryBy(id);
+      final Story? story = await _storiesRepository.fetchStory(id);
 
       if (story == null) {
         if (isPrioritized) {
