@@ -1,5 +1,3 @@
-// ignore_for_file: comment_references
-
 import 'package:equatable/equatable.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +11,7 @@ import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/repositories/stories_repository.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
@@ -33,7 +32,7 @@ class ItemScreenArgs extends Equatable {
   final List<Comment>? targetComments;
 
   /// when a user is trying to view a sub-thread from a main thread, we don't
-  /// need to fetch comments from [StoryRepository] since we have some, if not
+  /// need to fetch comments from [StoriesRepository] since we have some, if not
   /// all, comments cached in [CommentCache].
   final bool useCommentCache;
 
