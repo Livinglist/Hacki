@@ -56,15 +56,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   static const int _tabletSmallPageSize = 15;
   static const int _tabletLargePageSize = 25;
 
-  /// Types of story to be shown in the tab bar.
-  static const Set<StoryType> types = <StoryType>{
-    StoryType.top,
-    StoryType.best,
-    StoryType.latest,
-    StoryType.ask,
-    StoryType.show,
-  };
-
   Future<void> onInitialize(
     StoriesInitialize event,
     Emitter<StoriesState> emit,
@@ -92,7 +83,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         storiesToBeDownloaded: state.storiesToBeDownloaded,
       ),
     );
-    for (final StoryType type in types) {
+    for (final StoryType type in StoryType.values) {
       await loadStories(of: type, emit: emit);
     }
   }
@@ -258,7 +249,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     await _offlineRepository.deleteAllComments();
 
     final Set<int> prioritizedIds = <int>{};
-    final List<StoryType> prioritizedTypes = <StoryType>[...types]
+    final List<StoryType> prioritizedTypes = <StoryType>[...StoryType.values]
       ..remove(StoryType.latest);
 
     for (final StoryType type in prioritizedTypes) {
@@ -311,10 +302,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         downloadStatus: StoriesDownloadStatus.canceled,
       ),
     );
-
-    await _offlineRepository.deleteAllStoryIds();
-    await _offlineRepository.deleteAllStories();
-    await _offlineRepository.deleteAllComments();
   }
 
   Future<void> fetchAndCacheStories(
@@ -322,8 +309,18 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     required bool includingWebPage,
     required bool isPrioritized,
   }) async {
+    late StreamSubscription<Comment> downloadStream;
     for (final int id in ids) {
-      if (state.downloadStatus == StoriesDownloadStatus.canceled) break;
+      if (state.downloadStatus == StoriesDownloadStatus.canceled) {
+        _logger.d('aborting downloading');
+        await downloadStream.cancel();
+
+        _logger.d('deleting downloaded contents');
+        await _offlineRepository.deleteAllStoryIds();
+        await _offlineRepository.deleteAllStories();
+        await _offlineRepository.deleteAllComments();
+        break;
+      }
 
       _logger.d('fetching story $id');
       final Story? story = await _storiesRepository.fetchStory(id: id);
@@ -349,17 +346,32 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         await _offlineRepository.cacheUrl(url: story.url);
       }
 
-      _storiesRepository
+      final Completer<void> completer = Completer<void>();
+      downloadStream = _storiesRepository
           .fetchAllChildrenComments(ids: story.kids)
           .whereType<Comment>()
           .listen(
         (Comment comment) {
+          if (state.downloadStatus == StoriesDownloadStatus.canceled) {
+            _logger.d('aborting downloading from comments stream');
+            completer.complete();
+            return;
+          }
+
           _logger.d('fetched comment ${comment.id}');
           unawaited(
             _offlineRepository.cacheComment(comment: comment),
           );
         },
-      ).onDone(() => add(StoryDownloaded(skipped: false)));
+      )..onDone(() {
+          _logger.d(
+            '''finished downloading story ${story.id} with ${story.descendants} comments''',
+          );
+          completer.complete();
+          add(StoryDownloaded(skipped: false));
+        });
+
+      await completer.future;
     }
   }
 
