@@ -186,61 +186,14 @@ class CommentTile extends StatelessWidget {
                                     top: Dimens.pt6,
                                     bottom: Dimens.pt12,
                                   ),
-                                  child: comment is BuildableComment
-                                      ? SelectableText.rich(
-                                          key: ValueKey<int>(comment.id),
-                                          buildTextSpan(
-                                            (comment as BuildableComment)
-                                                .elements,
-                                            style: TextStyle(
-                                              fontSize: MediaQuery.of(
-                                                    context,
-                                                  ).textScaleFactor *
-                                                  prefState.fontSize.fontSize,
-                                            ),
-                                            linkStyle: TextStyle(
-                                              fontSize: MediaQuery.of(
-                                                    context,
-                                                  ).textScaleFactor *
-                                                  prefState.fontSize.fontSize,
-                                              decoration:
-                                                  TextDecoration.underline,
-                                              color: Palette.orange,
-                                            ),
-                                            onOpen: (LinkableElement link) {
-                                              if (link.url.isStoryLink) {
-                                                onStoryLinkTapped
-                                                    .call(link.url);
-                                              } else {
-                                                LinkUtil.launch(link.url);
-                                              }
-                                            },
-                                          ),
-                                          onTap: () => onTextTapped(context),
-                                        )
-                                      : SelectableLinkify(
-                                          key: ValueKey<int>(comment.id),
-                                          text: comment.text,
-                                          style: TextStyle(
-                                            fontSize: MediaQuery.of(context)
-                                                    .textScaleFactor *
-                                                prefState.fontSize.fontSize,
-                                          ),
-                                          linkStyle: TextStyle(
-                                            fontSize: MediaQuery.of(context)
-                                                    .textScaleFactor *
-                                                prefState.fontSize.fontSize,
-                                            color: Palette.orange,
-                                          ),
-                                          onOpen: (LinkableElement link) {
-                                            if (link.url.isStoryLink) {
-                                              onStoryLinkTapped.call(link.url);
-                                            } else {
-                                              LinkUtil.launch(link.url);
-                                            }
-                                          },
-                                          onTap: () => onTextTapped(context),
-                                        ),
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    child: _CommentText(
+                                      key: ValueKey<int>(comment.id),
+                                      comment: comment,
+                                      onLinkTapped: _onLinkTapped,
+                                    ),
+                                  ),
                                 ),
                             ],
                           ),
@@ -335,13 +288,6 @@ class CommentTile extends StatelessWidget {
     );
   }
 
-  void onTextTapped(BuildContext context) {
-    if (context.read<PreferenceCubit>().state.tapAnywhereToCollapseEnabled) {
-      HapticFeedback.selectionClick();
-      context.read<CollapseCubit>().collapse();
-    }
-  }
-
   Color _getColor(int level) {
     final int initialLevel = level;
     if (_colors[initialLevel] != null) return _colors[initialLevel]!;
@@ -378,5 +324,63 @@ class CommentTile extends StatelessWidget {
         collapseState.collapsed == false &&
         commentsState.commentIds.contains(comment.kids.first) == false &&
         commentsState.onlyShowTargetComment == false;
+  }
+
+  void _onLinkTapped(LinkableElement link) {
+    if (link.url.isStoryLink) {
+      onStoryLinkTapped.call(link.url);
+    } else {
+      LinkUtil.launch(link.url);
+    }
+  }
+}
+
+class _CommentText extends StatelessWidget {
+  const _CommentText({
+    super.key,
+    required this.comment,
+    required this.onLinkTapped,
+  });
+
+  final Comment comment;
+  final void Function(LinkableElement) onLinkTapped;
+
+  @override
+  Widget build(BuildContext context) {
+    final PreferenceState prefState = context.read<PreferenceCubit>().state;
+    final TextStyle style = TextStyle(
+      fontSize: prefState.fontSize.fontSize,
+    );
+    final TextStyle linkStyle = TextStyle(
+      fontSize: prefState.fontSize.fontSize,
+      decoration: TextDecoration.underline,
+      color: Palette.orange,
+    );
+    if (comment is BuildableComment) {
+      return SelectableText.rich(
+        buildTextSpan(
+          (comment as BuildableComment).elements,
+          style: style,
+          linkStyle: linkStyle,
+          onOpen: onLinkTapped,
+        ),
+        onTap: () => onTextTapped(context),
+      );
+    } else {
+      return SelectableLinkify(
+        text: comment.text,
+        style: style,
+        linkStyle: linkStyle,
+        onOpen: onLinkTapped,
+        onTap: () => onTextTapped(context),
+      );
+    }
+  }
+
+  void onTextTapped(BuildContext context) {
+    if (context.read<PreferenceCubit>().state.tapAnywhereToCollapseEnabled) {
+      HapticFeedback.selectionClick();
+      context.read<CollapseCubit>().collapse();
+    }
   }
 }
