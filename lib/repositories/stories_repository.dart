@@ -35,7 +35,7 @@ class StoriesRepository {
     return ids;
   }
 
-  Future<Story?> fetchStory(int id) async {
+  Future<Story?> fetchStory({required int id}) async {
     final Story? story = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
         .then((dynamic json) => _parseJson(json as Map<String, dynamic>?))

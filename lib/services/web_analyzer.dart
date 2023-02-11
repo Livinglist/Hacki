@@ -294,7 +294,7 @@ class WebAnalyzer {
     // Kids of stories from search results are always empty, so here we try
     // to fetch the story itself first and see if the kids are still empty.
     if (kids.isEmpty) {
-      final Story? story = await storiesRepository.fetchStory(storyId);
+      final Story? story = await storiesRepository.fetchStory(id: storyId);
 
       if (story == null) return null;
 

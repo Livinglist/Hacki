@@ -298,7 +298,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     await locator
         .get<StoriesRepository>()
-        .fetchStory(storyId)
+        .fetchStory(id: storyId)
         .then((Story? story) {
       if (story == null) {
         showErrorSnackBar();
@@ -323,7 +323,7 @@ class _HomeScreenState extends State<HomeScreen>
 
       await locator
           .get<StoriesRepository>()
-          .fetchStory(storyId)
+          .fetchStory(id: storyId)
           .then((Story? story) {
         if (story == null) {
           showErrorSnackBar();

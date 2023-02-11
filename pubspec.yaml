@@ -32,7 +32,7 @@ dependencies:
   flutter_inappwebview: ^5.7.2+3
   flutter_linkify: ^5.0.2
   flutter_local_notifications: ^13.0.0
-  flutter_secure_storage: ^7.0.1
+  flutter_secure_storage: ^8.0.0
   flutter_siri_suggestions: ^2.1.0
   flutter_slidable: ^2.0.0
   font_awesome_flutter: ^10.3.0
@@ -81,7 +81,7 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   mocktail: ^0.3.0
-  very_good_analysis: ^3.1.0
+  very_good_analysis: ^4.0.0+1
 
 flutter:
   uses-material-design: true

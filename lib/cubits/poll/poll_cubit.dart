@@ -33,7 +33,7 @@ class PollCubit extends Cubit<PollState> {
 
     if (pollOptionsIds.isEmpty || refresh) {
       final Story? updatedStory =
-          await _storiesRepository.fetchStory(_story.id);
+          await _storiesRepository.fetchStory(id: _story.id);
 
       if (updatedStory != null) {
         pollOptionsIds = updatedStory.parts;

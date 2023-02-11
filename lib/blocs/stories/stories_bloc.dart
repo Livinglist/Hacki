@@ -326,7 +326,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       if (state.downloadStatus == StoriesDownloadStatus.canceled) break;
 
       _logger.d('fetching story $id');
-      final Story? story = await _storiesRepository.fetchStory(id);
+      final Story? story = await _storiesRepository.fetchStory(id: id);
 
       if (story == null) {
         if (isPrioritized) {
