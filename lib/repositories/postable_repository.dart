@@ -3,8 +3,12 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/repositories/auth_repository.dart';
+import 'package:hacki/repositories/post_repository.dart';
 import 'package:hacki/utils/service_exception.dart';
 
+/// [PostableRepository] is solely for hosting functionalities shared between
+/// [AuthRepository] and [PostRepository].
 class PostableRepository {
   PostableRepository({
     Dio? dio,

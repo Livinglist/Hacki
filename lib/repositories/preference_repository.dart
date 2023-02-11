@@ -7,6 +7,7 @@ import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:synced_shared_preferences/synced_shared_preferences.dart';
 
+/// [PreferenceRepository] is for storing user preferences.
 class PreferenceRepository {
   PreferenceRepository({
     SyncedSharedPreferences? syncedPrefs,

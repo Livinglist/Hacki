@@ -4,9 +4,14 @@ import 'package:hacki/models/models.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';
+import 'package:path_provider/path_provider.dart';
 
-/// [OfflineRepository] is for storing stories and comments for offline reading.
-/// It's using [Hive] as its database which is being stored in temp directory.
+/// [OfflineRepository] is for storing [Story] and [Comment] for
+/// offline reading.
+///
+/// [Hive] is used as its database and is being stored in the temporary
+/// directory assigned by host system which you can retrieve
+/// by calling [getTemporaryDirectory].
 class OfflineRepository {
   OfflineRepository({
     Future<Box<List<int>>>? storyIdBox,

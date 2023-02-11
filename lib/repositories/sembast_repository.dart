@@ -7,7 +7,10 @@ import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 
 /// [SembastRepository] is for storing stories and comments for faster loading.
-/// It's using Sembast as its database which is being stored in doc directory.
+///
+/// Sembast [Database] is used as its database and is being stored in the
+/// documents directory assigned by host system which you can retrieve
+/// by calling [getApplicationDocumentsDirectory].
 class SembastRepository {
   SembastRepository({Database? database}) {
     if (database == null) {

@@ -50,7 +50,7 @@ abstract class Fetcher {
     Comment? newReply;
 
     await storiesRepository
-        .fetchSubmitted(of: username)
+        .fetchSubmitted(userId: username)
         .then((List<int>? submittedItems) async {
       if (submittedItems != null) {
         final List<int> subscribedItems = submittedItems.sublist(

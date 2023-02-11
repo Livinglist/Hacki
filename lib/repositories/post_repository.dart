@@ -7,6 +7,7 @@ import 'package:hacki/repositories/postable_repository.dart';
 import 'package:hacki/repositories/preference_repository.dart';
 import 'package:hacki/utils/utils.dart';
 
+/// [PostRepository] is for posting contents to Hacker News.
 class PostRepository extends PostableRepository {
   PostRepository({super.dio, PreferenceRepository? storageRepository})
       : _preferenceRepository =

@@ -184,7 +184,7 @@ class NotificationCubit extends Cubit<NotificationState> {
 
   Future<void> _fetchReplies() {
     return _storiesRepository
-        .fetchSubmitted(of: _authBloc.state.username)
+        .fetchSubmitted(userId: _authBloc.state.username)
         .then((List<int>? submittedItems) async {
       if (submittedItems != null) {
         final List<int> subscribedItems = submittedItems.sublist(

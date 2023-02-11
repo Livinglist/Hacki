@@ -4,6 +4,11 @@ import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:tuple/tuple.dart';
 
+/// [StoriesRepository] is for fetching
+/// [Item] such as [Story], [PollOption], [Comment] or [User].
+///
+/// You can learn more about the Hacker News API at
+/// https://github.com/HackerNews/API.
 class StoriesRepository {
   StoriesRepository({
     FirebaseClient? firebaseClient,
@@ -12,6 +17,8 @@ class StoriesRepository {
   final FirebaseClient _firebaseClient;
   static const String _baseUrl = 'https://hacker-news.firebaseio.com/v0/';
 
+  /// Fetch a [User] by its [id].
+  /// Hacker News uses user's username as [id].
   Future<User> fetchUser({required String id}) async {
     final User user = await _firebaseClient
         .get('${_baseUrl}user/$id.json')
@@ -24,6 +31,7 @@ class StoriesRepository {
     return user;
   }
 
+  /// Fetch ids of stories of a certain [StoryType].
   Future<List<int>> fetchStoryIds({required StoryType type}) async {
     final List<int> ids = await _firebaseClient
         .get('$_baseUrl${type.path}.json')
@@ -35,6 +43,7 @@ class StoriesRepository {
     return ids;
   }
 
+  /// Fetch a [Story] based on its id.
   Future<Story?> fetchStory({required int id}) async {
     final Story? story = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
@@ -48,6 +57,8 @@ class StoriesRepository {
     return story;
   }
 
+  /// Fetch a list of [Comment] based on ids and return results
+  /// using a stream.
   Stream<Comment> fetchCommentsStream({
     required List<int> ids,
     int level = 0,
@@ -73,6 +84,8 @@ class StoriesRepository {
     return;
   }
 
+  /// Fetch a list of [Comment] based on ids recursively and
+  /// return results using a stream.
   Stream<Comment> fetchAllCommentsRecursivelyStream({
     required List<int> ids,
     int level = 0,
@@ -104,6 +117,8 @@ class StoriesRepository {
     return;
   }
 
+  /// Fetch a list of [Item] based on ids and return results
+  /// using a stream.
   Stream<Item> fetchItemsStream({required List<int> ids}) async* {
     for (final int id in ids) {
       final Item? item = await _firebaseClient
@@ -129,6 +144,8 @@ class StoriesRepository {
     }
   }
 
+  /// Fetch a list of [Story] based on ids and return results
+  /// using a stream.
   Stream<Story> fetchStoriesStream({required List<int> ids}) async* {
     for (final int id in ids) {
       final Story? story = await _firebaseClient
@@ -146,6 +163,8 @@ class StoriesRepository {
     }
   }
 
+  /// Fetch a list of [PollOption] based on ids and return results
+  /// using a stream.
   Stream<PollOption> fetchPollOptionsStream({required List<int> ids}) async* {
     for (final int id in ids) {
       final PollOption? option = await _firebaseClient
@@ -163,6 +182,7 @@ class StoriesRepository {
     }
   }
 
+  /// Fetch a [Comment] based on its id.
   Future<Comment?> fetchComment({required int id}) async {
     final Comment? comment = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
@@ -177,6 +197,9 @@ class StoriesRepository {
     return comment;
   }
 
+  /// Fetch a raw [Comment] based on its id.
+  /// The content of [Comment] will not be parsed, use this function only if
+  /// the format of content doesn't matter, otherwise, use [fetchComment].
   Future<Comment?> fetchRawComment({required int id}) async {
     final Comment? comment = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
@@ -191,6 +214,7 @@ class StoriesRepository {
     return comment;
   }
 
+  /// Fetch a [Item] based on its id.
   Future<Item?> fetchItem({required int id}) async {
     final Item? item = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
@@ -212,6 +236,9 @@ class StoriesRepository {
     return item;
   }
 
+  /// Fetch a raw [Item] based on its id.
+  /// The content of [Item] will not be parsed, use this function only if
+  /// the format of content doesn't matter, otherwise, use [fetchItem].
   Future<Item?> fetchRawItem({required int id}) async {
     final Item? item = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
@@ -234,9 +261,10 @@ class StoriesRepository {
     return item;
   }
 
-  Future<List<int>?> fetchSubmitted({required String of}) async {
+  /// Fetch a list of ids of [Story] or [Comment] submitted by the user.
+  Future<List<int>?> fetchSubmitted({required String userId}) async {
     final List<int>? submitted = await _firebaseClient
-        .get('${_baseUrl}user/$of.json')
+        .get('${_baseUrl}user/$userId.json')
         .then((dynamic val) {
       if (val == null) {
         return null;
@@ -250,6 +278,7 @@ class StoriesRepository {
     return submitted;
   }
 
+  /// Fetch the parent [Story] of a [Comment].
   Future<Story?> fetchParentStory({required int id}) async {
     Item? item;
 
@@ -261,6 +290,9 @@ class StoriesRepository {
     return item as Story;
   }
 
+  /// Fetch the raw parent [Story] of a [Comment].
+  /// The content of [Story] will not be parsed, use this function only if
+  /// the format of content doesn't matter, otherwise, use [fetchParentStory].
   Future<Story?> fetchRawParentStory({required int id}) async {
     Item? item;
 
@@ -272,6 +304,8 @@ class StoriesRepository {
     return item as Story;
   }
 
+  /// Fetch the parent [Story] of a [Comment] as well as
+  /// the list of [Comment] traversed in order to reach the parent.
   Future<Tuple2<Story, List<Comment>>?> fetchParentStoryWithComments({
     required int id,
   }) async {
@@ -297,6 +331,7 @@ class StoriesRepository {
     );
   }
 
+  /// Fetch a list of [Comment] based on ids recursively.
   Stream<Comment?> fetchAllChildrenComments({required List<int> ids}) async* {
     for (final int id in ids) {
       final Comment? comment = await fetchComment(id: id);
@@ -307,6 +342,7 @@ class StoriesRepository {
     }
   }
 
+  /// Parse the json of an [Item] by removing useless HTML tags.
   Future<Map<String, dynamic>?> _parseJson(Map<String, dynamic>? json) async {
     if (json == null) return null;
     final String text = json['text'] as String? ?? '';
