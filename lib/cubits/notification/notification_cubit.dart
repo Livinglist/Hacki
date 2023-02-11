@@ -81,7 +81,7 @@ class NotificationCubit extends Cubit<NotificationState> {
 
     for (final int id in commentsToBeLoaded) {
       Comment? comment = await _sembastRepository.getComment(id: id);
-      comment ??= await _storiesRepository.fetchCommentBy(id: id);
+      comment ??= await _storiesRepository.fetchComment(id: id);
       if (comment != null) {
         emit(
           state.copyWith(
@@ -159,7 +159,7 @@ class NotificationCubit extends Cubit<NotificationState> {
 
       for (final int id in commentsToBeLoaded) {
         Comment? comment = await _sembastRepository.getComment(id: id);
-        comment ??= await _storiesRepository.fetchCommentBy(id: id);
+        comment ??= await _storiesRepository.fetchComment(id: id);
         if (comment != null) {
           emit(state.copyWith(comments: <Comment>[...state.comments, comment]));
         }
@@ -184,7 +184,7 @@ class NotificationCubit extends Cubit<NotificationState> {
 
   Future<void> _fetchReplies() {
     return _storiesRepository
-        .fetchSubmitted(of: _authBloc.state.username)
+        .fetchSubmitted(userId: _authBloc.state.username)
         .then((List<int>? submittedItems) async {
       if (submittedItems != null) {
         final List<int> subscribedItems = submittedItems.sublist(
@@ -193,7 +193,7 @@ class NotificationCubit extends Cubit<NotificationState> {
         );
 
         for (final int id in subscribedItems) {
-          await _storiesRepository.fetchItemBy(id: id).then((Item? item) async {
+          await _storiesRepository.fetchItem(id: id).then((Item? item) async {
             final List<int> kids = item?.kids ?? <int>[];
             final List<int> previousKids =
                 (await _sembastRepository.kids(of: id)) ?? <int>[];
@@ -216,7 +216,7 @@ class NotificationCubit extends Cubit<NotificationState> {
                     ]..sort((int lhs, int rhs) => rhs.compareTo(lhs)),
                   );
                   await _storiesRepository
-                      .fetchCommentBy(id: newCommentId)
+                      .fetchComment(id: newCommentId)
                       .then((Comment? comment) {
                     if (comment != null && !comment.dead && !comment.deleted) {
                       _sembastRepository

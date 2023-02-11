@@ -4,6 +4,11 @@ import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:tuple/tuple.dart';
 
+/// [StoriesRepository] is for fetching
+/// [Item] such as [Story], [PollOption], [Comment] or [User].
+///
+/// You can learn more about the Hacker News API at
+/// https://github.com/HackerNews/API.
 class StoriesRepository {
   StoriesRepository({
     FirebaseClient? firebaseClient,
@@ -12,9 +17,11 @@ class StoriesRepository {
   final FirebaseClient _firebaseClient;
   static const String _baseUrl = 'https://hacker-news.firebaseio.com/v0/';
 
-  Future<User> fetchUserBy({required String userId}) async {
+  /// Fetch a [User] by its [id].
+  /// Hacker News uses user's username as [id].
+  Future<User> fetchUser({required String id}) async {
     final User user = await _firebaseClient
-        .get('${_baseUrl}user/$userId.json')
+        .get('${_baseUrl}user/$id.json')
         .then((dynamic val) {
       final Map<String, dynamic> json = val as Map<String, dynamic>;
       final User user = User.fromJson(json);
@@ -24,9 +31,10 @@ class StoriesRepository {
     return user;
   }
 
-  Future<List<int>> fetchStoryIds({required StoryType of}) async {
+  /// Fetch ids of stories of a certain [StoryType].
+  Future<List<int>> fetchStoryIds({required StoryType type}) async {
     final List<int> ids = await _firebaseClient
-        .get('$_baseUrl${of.path}.json')
+        .get('$_baseUrl${type.path}.json')
         .then((dynamic val) {
       final List<int> ids = (val as List<dynamic>).cast<int>();
       return ids;
@@ -35,7 +43,8 @@ class StoriesRepository {
     return ids;
   }
 
-  Future<Story?> fetchStoryBy(int id) async {
+  /// Fetch a [Story] based on its id.
+  Future<Story?> fetchStory({required int id}) async {
     final Story? story = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
         .then((dynamic json) => _parseJson(json as Map<String, dynamic>?))
@@ -48,6 +57,8 @@ class StoriesRepository {
     return story;
   }
 
+  /// Fetch a list of [Comment] based on ids and return results
+  /// using a stream.
   Stream<Comment> fetchCommentsStream({
     required List<int> ids,
     int level = 0,
@@ -73,6 +84,8 @@ class StoriesRepository {
     return;
   }
 
+  /// Fetch a list of [Comment] based on ids recursively and
+  /// return results using a stream.
   Stream<Comment> fetchAllCommentsRecursivelyStream({
     required List<int> ids,
     int level = 0,
@@ -104,6 +117,8 @@ class StoriesRepository {
     return;
   }
 
+  /// Fetch a list of [Item] based on ids and return results
+  /// using a stream.
   Stream<Item> fetchItemsStream({required List<int> ids}) async* {
     for (final int id in ids) {
       final Item? item = await _firebaseClient
@@ -129,6 +144,8 @@ class StoriesRepository {
     }
   }
 
+  /// Fetch a list of [Story] based on ids and return results
+  /// using a stream.
   Stream<Story> fetchStoriesStream({required List<int> ids}) async* {
     for (final int id in ids) {
       final Story? story = await _firebaseClient
@@ -146,6 +163,8 @@ class StoriesRepository {
     }
   }
 
+  /// Fetch a list of [PollOption] based on ids and return results
+  /// using a stream.
   Stream<PollOption> fetchPollOptionsStream({required List<int> ids}) async* {
     for (final int id in ids) {
       final PollOption? option = await _firebaseClient
@@ -163,7 +182,8 @@ class StoriesRepository {
     }
   }
 
-  Future<Comment?> fetchCommentBy({required int id}) async {
+  /// Fetch a [Comment] based on its id.
+  Future<Comment?> fetchComment({required int id}) async {
     final Comment? comment = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
         .then((dynamic json) => _parseJson(json as Map<String, dynamic>?))
@@ -177,7 +197,10 @@ class StoriesRepository {
     return comment;
   }
 
-  Future<Comment?> fetchRawCommentBy({required int id}) async {
+  /// Fetch a raw [Comment] based on its id.
+  /// The content of [Comment] will not be parsed, use this function only if
+  /// the format of content doesn't matter, otherwise, use [fetchComment].
+  Future<Comment?> fetchRawComment({required int id}) async {
     final Comment? comment = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
         .then((dynamic val) async {
@@ -191,7 +214,8 @@ class StoriesRepository {
     return comment;
   }
 
-  Future<Item?> fetchItemBy({required int id}) async {
+  /// Fetch a [Item] based on its id.
+  Future<Item?> fetchItem({required int id}) async {
     final Item? item = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
         .then((dynamic json) => _parseJson(json as Map<String, dynamic>?))
@@ -212,7 +236,10 @@ class StoriesRepository {
     return item;
   }
 
-  Future<Item?> fetchRawItemBy({required int id}) async {
+  /// Fetch a raw [Item] based on its id.
+  /// The content of [Item] will not be parsed, use this function only if
+  /// the format of content doesn't matter, otherwise, use [fetchItem].
+  Future<Item?> fetchRawItem({required int id}) async {
     final Item? item = await _firebaseClient
         .get('${_baseUrl}item/$id.json')
         .then((dynamic val) {
@@ -234,9 +261,10 @@ class StoriesRepository {
     return item;
   }
 
-  Future<List<int>?> fetchSubmitted({required String of}) async {
+  /// Fetch a list of ids of [Story] or [Comment] submitted by the user.
+  Future<List<int>?> fetchSubmitted({required String userId}) async {
     final List<int>? submitted = await _firebaseClient
-        .get('${_baseUrl}user/$of.json')
+        .get('${_baseUrl}user/$userId.json')
         .then((dynamic val) {
       if (val == null) {
         return null;
@@ -250,28 +278,34 @@ class StoriesRepository {
     return submitted;
   }
 
+  /// Fetch the parent [Story] of a [Comment].
   Future<Story?> fetchParentStory({required int id}) async {
     Item? item;
 
     do {
-      item = await fetchItemBy(id: item?.parent ?? id);
+      item = await fetchItem(id: item?.parent ?? id);
       if (item == null) return null;
     } while (item is Comment);
 
     return item as Story;
   }
 
+  /// Fetch the raw parent [Story] of a [Comment].
+  /// The content of [Story] will not be parsed, use this function only if
+  /// the format of content doesn't matter, otherwise, use [fetchParentStory].
   Future<Story?> fetchRawParentStory({required int id}) async {
     Item? item;
 
     do {
-      item = await fetchRawItemBy(id: item?.parent ?? id);
+      item = await fetchRawItem(id: item?.parent ?? id);
       if (item == null) return null;
     } while (item is Comment);
 
     return item as Story;
   }
 
+  /// Fetch the parent [Story] of a [Comment] as well as
+  /// the list of [Comment] traversed in order to reach the parent.
   Future<Tuple2<Story, List<Comment>>?> fetchParentStoryWithComments({
     required int id,
   }) async {
@@ -279,7 +313,7 @@ class StoriesRepository {
     final List<Comment> parentComments = <Comment>[];
 
     do {
-      item = await fetchItemBy(id: item?.parent ?? id);
+      item = await fetchItem(id: item?.parent ?? id);
       if (item is Comment) {
         parentComments.add(item);
       }
@@ -297,9 +331,10 @@ class StoriesRepository {
     );
   }
 
+  /// Fetch a list of [Comment] based on ids recursively.
   Stream<Comment?> fetchAllChildrenComments({required List<int> ids}) async* {
     for (final int id in ids) {
-      final Comment? comment = await fetchCommentBy(id: id);
+      final Comment? comment = await fetchComment(id: id);
       if (comment != null) {
         yield comment;
         yield* fetchAllChildrenComments(ids: comment.kids);
@@ -307,6 +342,7 @@ class StoriesRepository {
     }
   }
 
+  /// Parse the json of an [Item] by removing useless HTML tags.
   Future<Map<String, dynamic>?> _parseJson(Map<String, dynamic>? json) async {
     if (json == null) return null;
     final String text = json['text'] as String? ?? '';

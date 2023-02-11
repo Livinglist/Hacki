@@ -1,6 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:hacki/extensions/date_time_extension.dart';
+import 'package:hacki/models/comment.dart';
+import 'package:hacki/models/poll_option.dart';
+import 'package:hacki/models/story.dart';
 
+/// [Item] is the base type of [Story], [Comment] and [PollOption].
 class Item extends Equatable {
   const Item({
     required this.id,

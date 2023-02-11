@@ -50,7 +50,7 @@ abstract class Fetcher {
     Comment? newReply;
 
     await storiesRepository
-        .fetchSubmitted(of: username)
+        .fetchSubmitted(userId: username)
         .then((List<int>? submittedItems) async {
       if (submittedItems != null) {
         final List<int> subscribedItems = submittedItems.sublist(
@@ -59,9 +59,7 @@ abstract class Fetcher {
         );
 
         for (final int id in subscribedItems) {
-          await storiesRepository
-              .fetchRawItemBy(id: id)
-              .then((Item? item) async {
+          await storiesRepository.fetchRawItem(id: id).then((Item? item) async {
             final List<int> kids = item?.kids ?? <int>[];
             final List<int> previousKids =
                 (await sembastRepository.kids(of: id)) ?? <int>[];
@@ -76,7 +74,7 @@ abstract class Fetcher {
                 if (unreadIds.contains(newCommentId)) continue;
 
                 await storiesRepository
-                    .fetchRawCommentBy(id: newCommentId)
+                    .fetchRawComment(id: newCommentId)
                     .then((Comment? comment) async {
                   final bool hasPushedBefore =
                       await preferenceRepository.hasPushed(newReply!.id);

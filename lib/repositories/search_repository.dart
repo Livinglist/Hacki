@@ -3,6 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/utils/utils.dart';
 
+/// [SearchRepository] is for searching contents on Hacker News.
+///
+/// You can learn about the search API at https://hn.algolia.com/api.
 class SearchRepository {
   SearchRepository({Dio? dio}) : _dio = dio ?? Dio();
 

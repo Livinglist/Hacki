@@ -278,7 +278,7 @@ class _HomeScreenState extends State<HomeScreen>
     final int? id = event.itemId;
 
     if (id != null) {
-      locator.get<StoriesRepository>().fetchItemBy(id: id).then((Item? item) {
+      locator.get<StoriesRepository>().fetchItem(id: id).then((Item? item) {
         if (mounted) {
           if (item != null) {
             goToItemScreen(
@@ -298,7 +298,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     await locator
         .get<StoriesRepository>()
-        .fetchStoryBy(storyId)
+        .fetchStory(id: storyId)
         .then((Story? story) {
       if (story == null) {
         showErrorSnackBar();
@@ -323,7 +323,7 @@ class _HomeScreenState extends State<HomeScreen>
 
       await locator
           .get<StoriesRepository>()
-          .fetchStoryBy(storyId)
+          .fetchStory(id: storyId)
           .then((Story? story) {
         if (story == null) {
           showErrorSnackBar();

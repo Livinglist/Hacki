@@ -73,7 +73,7 @@ class FavCubit extends Cubit<FavState> {
       ),
     );
 
-    final Item? item = await _storiesRepository.fetchItemBy(id: id);
+    final Item? item = await _storiesRepository.fetchItem(id: id);
 
     if (item == null) return;
 

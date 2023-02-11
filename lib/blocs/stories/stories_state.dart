@@ -103,13 +103,13 @@ class StoriesState extends Equatable {
   }
 
   StoriesState copyWithStoryAdded({
-    required StoryType of,
+    required StoryType type,
     required Story story,
     required bool hasRead,
   }) {
     final Map<StoryType, List<Story>> newMap =
         Map<StoryType, List<Story>>.from(storiesByType);
-    newMap[of] = List<Story>.from(newMap[of]!)..add(story);
+    newMap[type] = List<Story>.from(newMap[type]!)..add(story);
     return copyWith(
       storiesByType: newMap,
       readStoriesIds: <int>{
@@ -120,54 +120,54 @@ class StoriesState extends Equatable {
   }
 
   StoriesState copyWithStoryIdsUpdated({
-    required StoryType of,
+    required StoryType type,
     required List<int> to,
   }) {
     final Map<StoryType, List<int>> newMap =
         Map<StoryType, List<int>>.from(storyIdsByType);
-    newMap[of] = to;
+    newMap[type] = to;
     return copyWith(
       storyIdsByType: newMap,
     );
   }
 
   StoriesState copyWithStatusUpdated({
-    required StoryType of,
+    required StoryType type,
     required StoriesStatus to,
   }) {
     final Map<StoryType, StoriesStatus> newMap =
         Map<StoryType, StoriesStatus>.from(statusByType);
-    newMap[of] = to;
+    newMap[type] = to;
     return copyWith(
       statusByType: newMap,
     );
   }
 
   StoriesState copyWithCurrentPageUpdated({
-    required StoryType of,
+    required StoryType type,
     required int to,
   }) {
     final Map<StoryType, int> newMap =
         Map<StoryType, int>.from(currentPageByType);
-    newMap[of] = to;
+    newMap[type] = to;
     return copyWith(
       currentPageByType: newMap,
     );
   }
 
-  StoriesState copyWithRefreshed({required StoryType of}) {
+  StoriesState copyWithRefreshed({required StoryType type}) {
     final Map<StoryType, List<Story>> newStoriesMap =
         Map<StoryType, List<Story>>.from(storiesByType);
-    newStoriesMap[of] = <Story>[];
+    newStoriesMap[type] = <Story>[];
     final Map<StoryType, List<int>> newStoryIdsMap =
         Map<StoryType, List<int>>.from(storyIdsByType);
-    newStoryIdsMap[of] = <int>[];
+    newStoryIdsMap[type] = <int>[];
     final Map<StoryType, StoriesStatus> newStatusMap =
         Map<StoryType, StoriesStatus>.from(statusByType);
-    newStatusMap[of] = StoriesStatus.loading;
+    newStatusMap[type] = StoriesStatus.loading;
     final Map<StoryType, int> newCurrentPageMap =
         Map<StoryType, int>.from(currentPageByType);
-    newCurrentPageMap[of] = 0;
+    newCurrentPageMap[type] = 0;
     return copyWith(
       storiesByType: newStoriesMap,
       storyIdsByType: newStoryIdsMap,

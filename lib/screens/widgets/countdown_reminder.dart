@@ -108,7 +108,7 @@ class _CountDownReminderState extends State<CountdownReminder>
                     if (state.storyId != null) {
                       locator
                           .get<StoriesRepository>()
-                          .fetchStoryBy(state.storyId!)
+                          .fetchStory(id: state.storyId!)
                           .then((Story? story) {
                         if (story == null) {
                           showErrorSnackBar();

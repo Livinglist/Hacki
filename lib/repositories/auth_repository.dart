@@ -2,10 +2,16 @@ import 'dart:async';
 
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/repositories/post_repository.dart';
 import 'package:hacki/repositories/postable_repository.dart';
 import 'package:hacki/repositories/preference_repository.dart';
 import 'package:logger/logger.dart';
 
+/// [AuthRepository] if for logging user in/out and performing actions
+/// that require a logged in user such as [flag], [favorite], [upvote],
+/// and [downvote].
+///
+/// For posting actions such as posting a comment, see [PostRepository].
 class AuthRepository extends PostableRepository {
   AuthRepository({
     super.dio,

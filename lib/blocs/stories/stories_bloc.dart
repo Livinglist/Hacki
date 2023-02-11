@@ -56,15 +56,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   static const int _tabletSmallPageSize = 15;
   static const int _tabletLargePageSize = 25;
 
-  /// Types of story to be shown in the tab bar.
-  static const Set<StoryType> types = <StoryType>{
-    StoryType.top,
-    StoryType.best,
-    StoryType.latest,
-    StoryType.ask,
-    StoryType.show,
-  };
-
   Future<void> onInitialize(
     StoriesInitialize event,
     Emitter<StoriesState> emit,
@@ -92,44 +83,45 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         storiesToBeDownloaded: state.storiesToBeDownloaded,
       ),
     );
-    for (final StoryType type in types) {
-      await loadStories(of: type, emit: emit);
+    for (final StoryType type in StoryType.values) {
+      await loadStories(type: type, emit: emit);
     }
   }
 
   Future<void> loadStories({
-    required StoryType of,
+    required StoryType type,
     required Emitter<StoriesState> emit,
   }) async {
     if (state.offlineReading) {
-      final List<int> ids = await _offlineRepository.getCachedStoryIds(of: of);
+      final List<int> ids =
+          await _offlineRepository.getCachedStoryIds(type: type);
       emit(
         state
-            .copyWithStoryIdsUpdated(of: of, to: ids)
-            .copyWithCurrentPageUpdated(of: of, to: 0),
+            .copyWithStoryIdsUpdated(type: type, to: ids)
+            .copyWithCurrentPageUpdated(type: type, to: 0),
       );
       _offlineRepository
           .getCachedStoriesStream(
         ids: ids.sublist(0, min(ids.length, state.currentPageSize)),
       )
           .listen((Story story) {
-        add(StoryLoaded(story: story, type: of));
+        add(StoryLoaded(story: story, type: type));
       }).onDone(() {
-        add(StoriesLoaded(type: of));
+        add(StoriesLoaded(type: type));
       });
     } else {
-      final List<int> ids = await _storiesRepository.fetchStoryIds(of: of);
+      final List<int> ids = await _storiesRepository.fetchStoryIds(type: type);
       emit(
         state
-            .copyWithStoryIdsUpdated(of: of, to: ids)
-            .copyWithCurrentPageUpdated(of: of, to: 0),
+            .copyWithStoryIdsUpdated(type: type, to: ids)
+            .copyWithCurrentPageUpdated(type: type, to: 0),
       );
       _storiesRepository
           .fetchStoriesStream(ids: ids.sublist(0, state.currentPageSize))
           .listen((Story story) {
-        add(StoryLoaded(story: story, type: of));
+        add(StoryLoaded(story: story, type: type));
       }).onDone(() {
-        add(StoriesLoaded(type: of));
+        add(StoriesLoaded(type: type));
       });
     }
   }
@@ -140,7 +132,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   ) async {
     emit(
       state.copyWithStatusUpdated(
-        of: event.type,
+        type: event.type,
         to: StoriesStatus.loading,
       ),
     );
@@ -148,27 +140,29 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     if (state.offlineReading) {
       emit(
         state.copyWithStatusUpdated(
-          of: event.type,
+          type: event.type,
           to: StoriesStatus.loaded,
         ),
       );
     } else {
-      emit(state.copyWithRefreshed(of: event.type));
-      await loadStories(of: event.type, emit: emit);
+      emit(state.copyWithRefreshed(type: event.type));
+      await loadStories(type: event.type, emit: emit);
     }
   }
 
   void onLoadMore(StoriesLoadMore event, Emitter<StoriesState> emit) {
     emit(
       state.copyWithStatusUpdated(
-        of: event.type,
+        type: event.type,
         to: StoriesStatus.loading,
       ),
     );
 
     final int currentPage = state.currentPageByType[event.type]!;
     final int len = state.storyIdsByType[event.type]!.length;
-    emit(state.copyWithCurrentPageUpdated(of: event.type, to: currentPage + 1));
+    emit(
+      state.copyWithCurrentPageUpdated(type: event.type, to: currentPage + 1),
+    );
     final int currentPageSize = state.currentPageSize;
     final int lower = currentPageSize * (currentPage + 1);
     int upper = currentPageSize + lower;
@@ -218,7 +212,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     } else {
       emit(
         state.copyWithStatusUpdated(
-          of: event.type,
+          type: event.type,
           to: StoriesStatus.loaded,
         ),
       );
@@ -232,7 +226,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     final bool hasRead = await _preferenceRepository.hasRead(event.story.id);
     emit(
       state.copyWithStoryAdded(
-        of: event.type,
+        type: event.type,
         story: event.story,
         hasRead: hasRead,
       ),
@@ -240,7 +234,9 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   }
 
   void onStoriesLoaded(StoriesLoaded event, Emitter<StoriesState> emit) {
-    emit(state.copyWithStatusUpdated(of: event.type, to: StoriesStatus.loaded));
+    emit(
+      state.copyWithStatusUpdated(type: event.type, to: StoriesStatus.loaded),
+    );
   }
 
   Future<void> onDownload(
@@ -258,12 +254,12 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     await _offlineRepository.deleteAllComments();
 
     final Set<int> prioritizedIds = <int>{};
-    final List<StoryType> prioritizedTypes = <StoryType>[...types]
+    final List<StoryType> prioritizedTypes = <StoryType>[...StoryType.values]
       ..remove(StoryType.latest);
 
     for (final StoryType type in prioritizedTypes) {
-      final List<int> ids = await _storiesRepository.fetchStoryIds(of: type);
-      await _offlineRepository.cacheStoryIds(of: type, ids: ids);
+      final List<int> ids = await _storiesRepository.fetchStoryIds(type: type);
+      await _offlineRepository.cacheStoryIds(type: type, ids: ids);
       prioritizedIds.addAll(ids);
     }
 
@@ -283,9 +279,9 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
 
       final Set<int> latestIds = <int>{};
       final List<int> ids = await _storiesRepository.fetchStoryIds(
-        of: StoryType.latest,
+        type: StoryType.latest,
       );
-      await _offlineRepository.cacheStoryIds(of: StoryType.latest, ids: ids);
+      await _offlineRepository.cacheStoryIds(type: StoryType.latest, ids: ids);
       latestIds.addAll(ids);
 
       await fetchAndCacheStories(
@@ -311,10 +307,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         downloadStatus: StoriesDownloadStatus.canceled,
       ),
     );
-
-    await _offlineRepository.deleteAllStoryIds();
-    await _offlineRepository.deleteAllStories();
-    await _offlineRepository.deleteAllComments();
   }
 
   Future<void> fetchAndCacheStories(
@@ -322,11 +314,21 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     required bool includingWebPage,
     required bool isPrioritized,
   }) async {
+    late StreamSubscription<Comment> downloadStream;
     for (final int id in ids) {
-      if (state.downloadStatus == StoriesDownloadStatus.canceled) break;
+      if (state.downloadStatus == StoriesDownloadStatus.canceled) {
+        _logger.d('aborting downloading');
+        await downloadStream.cancel();
+
+        _logger.d('deleting downloaded contents');
+        await _offlineRepository.deleteAllStoryIds();
+        await _offlineRepository.deleteAllStories();
+        await _offlineRepository.deleteAllComments();
+        break;
+      }
 
       _logger.d('fetching story $id');
-      final Story? story = await _storiesRepository.fetchStoryBy(id);
+      final Story? story = await _storiesRepository.fetchStory(id: id);
 
       if (story == null) {
         if (isPrioritized) {
@@ -349,17 +351,32 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         await _offlineRepository.cacheUrl(url: story.url);
       }
 
-      _storiesRepository
+      final Completer<void> completer = Completer<void>();
+      downloadStream = _storiesRepository
           .fetchAllChildrenComments(ids: story.kids)
           .whereType<Comment>()
           .listen(
         (Comment comment) {
+          if (state.downloadStatus == StoriesDownloadStatus.canceled) {
+            _logger.d('aborting downloading from comments stream');
+            completer.complete();
+            return;
+          }
+
           _logger.d('fetched comment ${comment.id}');
           unawaited(
             _offlineRepository.cacheComment(comment: comment),
           );
         },
-      ).onDone(() => add(StoryDownloaded(skipped: false)));
+      )..onDone(() {
+          _logger.d(
+            '''finished downloading story ${story.id} with ${story.descendants} comments''',
+          );
+          completer.complete();
+          add(StoryDownloaded(skipped: false));
+        });
+
+      await completer.future;
     }
   }
 

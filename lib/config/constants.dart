@@ -61,6 +61,6 @@ abstract class Constants {
 }
 
 abstract class RegExpConstants {
-  static const String linkSuffix = r'(\)|])(.)*$';
+  static const String linkSuffix = r'(\)|]|,|\*)(.)*$';
   static const String number = '[0-9]+';
 }

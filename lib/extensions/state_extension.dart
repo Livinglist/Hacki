@@ -95,7 +95,7 @@ extension StateExtension on State {
     if (id != null) {
       await locator
           .get<StoriesRepository>()
-          .fetchItemBy(id: id)
+          .fetchItem(id: id)
           .then((Item? item) {
         if (mounted) {
           if (item != null) {
