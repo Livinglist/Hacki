@@ -12,9 +12,9 @@ class StoriesRepository {
   final FirebaseClient _firebaseClient;
   static const String _baseUrl = 'https://hacker-news.firebaseio.com/v0/';
 
-  Future<User> fetchUser({required String userId}) async {
+  Future<User> fetchUser({required String id}) async {
     final User user = await _firebaseClient
-        .get('${_baseUrl}user/$userId.json')
+        .get('${_baseUrl}user/$id.json')
         .then((dynamic val) {
       final Map<String, dynamic> json = val as Map<String, dynamic>;
       final User user = User.fromJson(json);

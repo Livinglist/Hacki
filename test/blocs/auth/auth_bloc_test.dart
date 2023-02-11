@@ -67,7 +67,7 @@ void main() {
           .thenAnswer((_) => Future<String?>.value(username));
       when(() => mockAuthRepository.password)
           .thenAnswer((_) => Future<String>.value(password));
-      when(() => mockStoriesRepository.fetchUser(userId: username))
+      when(() => mockStoriesRepository.fetchUser(id: username))
           .thenAnswer((_) => Future<User>.value(tUser));
       when(() => mockAuthRepository.loggedIn)
           .thenAnswer((_) => Future<bool>.value(false));
@@ -91,7 +91,7 @@ void main() {
       verify: (_) {
         verify(() => mockAuthRepository.loggedIn).called(2);
         verifyNever(() => mockAuthRepository.username);
-        verifyNever(() => mockStoriesRepository.fetchUser(userId: username));
+        verifyNever(() => mockStoriesRepository.fetchUser(id: username));
       },
     );
 
@@ -154,8 +154,7 @@ void main() {
             password: password,
           ),
         ).called(1);
-        verify(() => mockStoriesRepository.fetchUser(userId: username))
-            .called(1);
+        verify(() => mockStoriesRepository.fetchUser(id: username)).called(1);
       },
     );
   });
