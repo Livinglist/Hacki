@@ -336,6 +336,8 @@ class _ReplyBoxState extends State<ReplyBox> {
                       child: SingleChildScrollView(
                         child: SelectableLinkify(
                           scrollPhysics: const NeverScrollableScrollPhysics(),
+                          textScaleFactor:
+                              MediaQuery.of(context).textScaleFactor,
                           linkStyle: const TextStyle(
                             fontSize: TextDimens.pt15,
                             color: Palette.orange,
