@@ -342,13 +342,13 @@ class _ParentItemSection extends StatelessWidget {
                             ),
                             child: RichText(
                               textAlign: TextAlign.center,
+                              textScaleFactor: MediaQuery.of(
+                                context,
+                              ).textScaleFactor,
                               text: TextSpan(
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: MediaQuery.of(
-                                        context,
-                                      ).textScaleFactor *
-                                      prefState.fontSize.fontSize,
+                                  fontSize: prefState.fontSize.fontSize,
                                   color: Theme.of(context)
                                       .textTheme
                                       .bodyLarge
@@ -359,10 +359,7 @@ class _ParentItemSection extends StatelessWidget {
                                     text: state.item.title,
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: MediaQuery.of(
-                                            context,
-                                          ).textScaleFactor *
-                                          prefState.fontSize.fontSize,
+                                      fontSize: prefState.fontSize.fontSize,
                                       color: state.item.url.isNotEmpty
                                           ? Palette.orange
                                           : null,
@@ -374,10 +371,8 @@ class _ParentItemSection extends StatelessWidget {
                                           ''' (${(state.item as Story).readableUrl})''',
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: MediaQuery.of(
-                                              context,
-                                            ).textScaleFactor *
-                                            (prefState.fontSize.fontSize - 4),
+                                        fontSize:
+                                            prefState.fontSize.fontSize - 4,
                                         color: Palette.orange,
                                       ),
                                     ),
@@ -391,36 +386,39 @@ class _ParentItemSection extends StatelessWidget {
                           height: Dimens.pt6,
                         ),
                       if (state.item.text.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: Dimens.pt10,
-                          ),
-                          child: SelectableLinkify(
-                            text: state.item.text,
-                            style: TextStyle(
-                              fontSize: MediaQuery.of(context).textScaleFactor *
-                                  context
-                                      .read<PreferenceCubit>()
-                                      .state
-                                      .fontSize
-                                      .fontSize,
+                        SizedBox(
+                          width: double.infinity,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: Dimens.pt10,
                             ),
-                            linkStyle: TextStyle(
-                              fontSize: MediaQuery.of(context).textScaleFactor *
-                                  context
-                                      .read<PreferenceCubit>()
-                                      .state
-                                      .fontSize
-                                      .fontSize,
-                              color: Palette.orange,
+                            child: SelectableLinkify(
+                              text: state.item.text,
+                              textScaleFactor:
+                                  MediaQuery.of(context).textScaleFactor,
+                              style: TextStyle(
+                                fontSize: context
+                                    .read<PreferenceCubit>()
+                                    .state
+                                    .fontSize
+                                    .fontSize,
+                              ),
+                              linkStyle: TextStyle(
+                                fontSize: context
+                                    .read<PreferenceCubit>()
+                                    .state
+                                    .fontSize
+                                    .fontSize,
+                                color: Palette.orange,
+                              ),
+                              onOpen: (LinkableElement link) {
+                                if (link.url.isStoryLink) {
+                                  onStoryLinkTapped(link.url);
+                                } else {
+                                  LinkUtil.launch(link.url);
+                                }
+                              },
                             ),
-                            onOpen: (LinkableElement link) {
-                              if (link.url.isStoryLink) {
-                                onStoryLinkTapped(link.url);
-                              } else {
-                                LinkUtil.launch(link.url);
-                              }
-                            },
                           ),
                         ),
                     ],
