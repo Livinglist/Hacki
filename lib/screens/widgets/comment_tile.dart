@@ -318,12 +318,13 @@ class CommentTile extends StatelessWidget {
 
   bool _shouldShowLoadButton(BuildContext context) {
     final CollapseState collapseState = context.read<CollapseCubit>().state;
-    final CommentsState commentsState = context.read<CommentsCubit>().state;
+    final CommentsState? commentsState =
+        context.tryRead<CommentsCubit>()?.state;
     return fetchMode == FetchMode.lazy &&
         comment.kids.isNotEmpty &&
         collapseState.collapsed == false &&
-        commentsState.commentIds.contains(comment.kids.first) == false &&
-        commentsState.onlyShowTargetComment == false;
+        commentsState?.commentIds.contains(comment.kids.first) == false &&
+        commentsState?.onlyShowTargetComment == false;
   }
 
   void _onLinkTapped(LinkableElement link) {
