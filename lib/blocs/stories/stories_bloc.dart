@@ -84,43 +84,44 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       ),
     );
     for (final StoryType type in StoryType.values) {
-      await loadStories(of: type, emit: emit);
+      await loadStories(type: type, emit: emit);
     }
   }
 
   Future<void> loadStories({
-    required StoryType of,
+    required StoryType type,
     required Emitter<StoriesState> emit,
   }) async {
     if (state.offlineReading) {
-      final List<int> ids = await _offlineRepository.getCachedStoryIds(of: of);
+      final List<int> ids =
+          await _offlineRepository.getCachedStoryIds(type: type);
       emit(
         state
-            .copyWithStoryIdsUpdated(of: of, to: ids)
-            .copyWithCurrentPageUpdated(of: of, to: 0),
+            .copyWithStoryIdsUpdated(type: type, to: ids)
+            .copyWithCurrentPageUpdated(type: type, to: 0),
       );
       _offlineRepository
           .getCachedStoriesStream(
         ids: ids.sublist(0, min(ids.length, state.currentPageSize)),
       )
           .listen((Story story) {
-        add(StoryLoaded(story: story, type: of));
+        add(StoryLoaded(story: story, type: type));
       }).onDone(() {
-        add(StoriesLoaded(type: of));
+        add(StoriesLoaded(type: type));
       });
     } else {
-      final List<int> ids = await _storiesRepository.fetchStoryIds(type: of);
+      final List<int> ids = await _storiesRepository.fetchStoryIds(type: type);
       emit(
         state
-            .copyWithStoryIdsUpdated(of: of, to: ids)
-            .copyWithCurrentPageUpdated(of: of, to: 0),
+            .copyWithStoryIdsUpdated(type: type, to: ids)
+            .copyWithCurrentPageUpdated(type: type, to: 0),
       );
       _storiesRepository
           .fetchStoriesStream(ids: ids.sublist(0, state.currentPageSize))
           .listen((Story story) {
-        add(StoryLoaded(story: story, type: of));
+        add(StoryLoaded(story: story, type: type));
       }).onDone(() {
-        add(StoriesLoaded(type: of));
+        add(StoriesLoaded(type: type));
       });
     }
   }
@@ -131,7 +132,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   ) async {
     emit(
       state.copyWithStatusUpdated(
-        of: event.type,
+        type: event.type,
         to: StoriesStatus.loading,
       ),
     );
@@ -139,27 +140,28 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     if (state.offlineReading) {
       emit(
         state.copyWithStatusUpdated(
-          of: event.type,
+          type: event.type,
           to: StoriesStatus.loaded,
         ),
       );
     } else {
-      emit(state.copyWithRefreshed(of: event.type));
-      await loadStories(of: event.type, emit: emit);
+      emit(state.copyWithRefreshed(type: event.type));
+      await loadStories(type: event.type, emit: emit);
     }
   }
 
   void onLoadMore(StoriesLoadMore event, Emitter<StoriesState> emit) {
     emit(
       state.copyWithStatusUpdated(
-        of: event.type,
+        type: event.type,
         to: StoriesStatus.loading,
       ),
     );
 
     final int currentPage = state.currentPageByType[event.type]!;
     final int len = state.storyIdsByType[event.type]!.length;
-    emit(state.copyWithCurrentPageUpdated(of: event.type, to: currentPage + 1));
+    emit(state.copyWithCurrentPageUpdated(
+        type: event.type, to: currentPage + 1));
     final int currentPageSize = state.currentPageSize;
     final int lower = currentPageSize * (currentPage + 1);
     int upper = currentPageSize + lower;
@@ -209,7 +211,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     } else {
       emit(
         state.copyWithStatusUpdated(
-          of: event.type,
+          type: event.type,
           to: StoriesStatus.loaded,
         ),
       );
@@ -223,7 +225,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     final bool hasRead = await _preferenceRepository.hasRead(event.story.id);
     emit(
       state.copyWithStoryAdded(
-        of: event.type,
+        type: event.type,
         story: event.story,
         hasRead: hasRead,
       ),
@@ -231,7 +233,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   }
 
   void onStoriesLoaded(StoriesLoaded event, Emitter<StoriesState> emit) {
-    emit(state.copyWithStatusUpdated(of: event.type, to: StoriesStatus.loaded));
+    emit(state.copyWithStatusUpdated(
+        type: event.type, to: StoriesStatus.loaded));
   }
 
   Future<void> onDownload(
@@ -254,7 +257,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
 
     for (final StoryType type in prioritizedTypes) {
       final List<int> ids = await _storiesRepository.fetchStoryIds(type: type);
-      await _offlineRepository.cacheStoryIds(of: type, ids: ids);
+      await _offlineRepository.cacheStoryIds(type: type, ids: ids);
       prioritizedIds.addAll(ids);
     }
 
@@ -276,7 +279,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       final List<int> ids = await _storiesRepository.fetchStoryIds(
         type: StoryType.latest,
       );
-      await _offlineRepository.cacheStoryIds(of: StoryType.latest, ids: ids);
+      await _offlineRepository.cacheStoryIds(type: StoryType.latest, ids: ids);
       latestIds.addAll(ids);
 
       await fetchAndCacheStories(
