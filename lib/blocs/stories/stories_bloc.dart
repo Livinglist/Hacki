@@ -63,7 +63,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     _streamSubscription ??=
         _preferenceCubit.stream.listen((PreferenceState event) {
       final bool isComplexTile = event.complexStoryTileEnabled;
-      final int pageSize = _getPageSize(isComplexTile: isComplexTile);
+      final int pageSize = getPageSize(isComplexTile: isComplexTile);
 
       if (pageSize != state.currentPageSize) {
         add(StoriesPageSizeChanged(pageSize: pageSize));
@@ -71,7 +71,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     });
     final bool hasCachedStories = await _offlineRepository.hasCachedStories;
     final bool isComplexTile = _preferenceCubit.state.complexStoryTileEnabled;
-    final int pageSize = _getPageSize(isComplexTile: isComplexTile);
+    final int pageSize = getPageSize(isComplexTile: isComplexTile);
     emit(
       const StoriesState.init().copyWith(
         offlineReading: hasCachedStories &&
@@ -254,6 +254,9 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     await _offlineRepository.deleteAllComments();
 
     final Set<int> prioritizedIds = <int>{};
+
+    /// Prioritizing all types of stories except StoryType.latest since
+    /// new stories tend to have less or no comment at all.
     final List<StoryType> prioritizedTypes = <StoryType>[...StoryType.values]
       ..remove(StoryType.latest);
 
@@ -314,11 +317,15 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     required bool includingWebPage,
     required bool isPrioritized,
   }) async {
-    late StreamSubscription<Comment> downloadStream;
+    final List<StreamSubscription<Comment>> downloadStreams =
+        <StreamSubscription<Comment>>[];
     for (final int id in ids) {
       if (state.downloadStatus == StoriesDownloadStatus.canceled) {
         _logger.d('aborting downloading');
-        await downloadStream.cancel();
+
+        for (final StreamSubscription<Comment> stream in downloadStreams) {
+          await stream.cancel();
+        }
 
         _logger.d('deleting downloaded contents');
         await _offlineRepository.deleteAllStoryIds();
@@ -351,7 +358,13 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         await _offlineRepository.cacheUrl(url: story.url);
       }
 
-      final Completer<void> completer = Completer<void>();
+      /// Not awaiting the completion of comments stream because otherwise
+      /// it's going to take forever to finish downloading all the stories
+      /// since we need to make a single http call for each comment.
+      ///
+      /// In other words, we are prioritizing the story itself instead of
+      /// the comments in the story.
+      late final StreamSubscription<Comment>? downloadStream;
       downloadStream = _storiesRepository
           .fetchAllChildrenComments(ids: story.kids)
           .whereType<Comment>()
@@ -359,7 +372,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         (Comment comment) {
           if (state.downloadStatus == StoriesDownloadStatus.canceled) {
             _logger.d('aborting downloading from comments stream');
-            completer.complete();
+            downloadStream?.cancel();
             return;
           }
 
@@ -372,11 +385,10 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
           _logger.d(
             '''finished downloading story ${story.id} with ${story.descendants} comments''',
           );
-          completer.complete();
           add(StoryDownloaded(skipped: false));
         });
 
-      await completer.future;
+      downloadStreams.add(downloadStream);
     }
   }
 
@@ -460,7 +472,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
 
   bool hasRead(Story story) => state.readStoriesIds.contains(story.id);
 
-  int _getPageSize({required bool isComplexTile}) {
+  int getPageSize({required bool isComplexTile}) {
     int pageSize = isComplexTile ? _smallPageSize : _largePageSize;
 
     if (deviceScreenType != DeviceScreenType.mobile) {
