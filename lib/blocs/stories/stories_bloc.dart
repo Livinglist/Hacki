@@ -160,8 +160,9 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
 
     final int currentPage = state.currentPageByType[event.type]!;
     final int len = state.storyIdsByType[event.type]!.length;
-    emit(state.copyWithCurrentPageUpdated(
-        type: event.type, to: currentPage + 1));
+    emit(
+      state.copyWithCurrentPageUpdated(type: event.type, to: currentPage + 1),
+    );
     final int currentPageSize = state.currentPageSize;
     final int lower = currentPageSize * (currentPage + 1);
     int upper = currentPageSize + lower;
@@ -233,8 +234,9 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   }
 
   void onStoriesLoaded(StoriesLoaded event, Emitter<StoriesState> emit) {
-    emit(state.copyWithStatusUpdated(
-        type: event.type, to: StoriesStatus.loaded));
+    emit(
+      state.copyWithStatusUpdated(type: event.type, to: StoriesStatus.loaded),
+    );
   }
 
   Future<void> onDownload(
