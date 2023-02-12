@@ -101,6 +101,7 @@ class Item extends Equatable {
       'deleted': deleted,
       'type': type,
       'parts': parts,
+      'parent': parent,
     };
   }
 
