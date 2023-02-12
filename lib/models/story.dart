@@ -55,48 +55,10 @@ class Story extends Item {
   }
 
   @override
-  Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'descendants': descendants,
-      'id': id,
-      'score': score,
-      'time': time,
-      'by': by,
-      'title': title,
-      'url': url,
-      'kids': kids,
-      'text': text,
-      'dead': dead,
-      'deleted': deleted,
-      'type': type,
-      'parts': parts,
-    };
-  }
-
-  @override
   String toString() {
     // final String prettyString =
     //     const JsonEncoder.withIndent('  ').convert(this);
     // return 'Story $prettyString';
     return 'Story $id';
   }
-
-  @override
-  List<Object?> get props => <Object?>[
-        id,
-        score,
-        descendants,
-        time,
-        by,
-        title,
-        text,
-        url,
-        kids,
-        dead,
-        parts,
-        deleted,
-        parent,
-        text,
-        type,
-      ];
 }
