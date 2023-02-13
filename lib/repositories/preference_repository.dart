@@ -52,6 +52,7 @@ class PreferenceRepository {
       return _isFirstLaunch!;
     }
 
+    _isFirstLaunch = false;
     return false;
   }
 
