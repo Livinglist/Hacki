@@ -24,12 +24,12 @@ class LinkIconButton extends StatelessWidget {
       icon: DescribedFeatureOverlay(
         onDismiss: () {
           unawaited(HapticFeedback.lightImpact());
-          FeatureDiscovery.dismissAll(context);
+          FeatureDiscovery.completeCurrentStep(context);
           return Future<bool>.value(true);
         },
         onBackgroundTap: () {
           unawaited(HapticFeedback.lightImpact());
-          FeatureDiscovery.dismissAll(context);
+          FeatureDiscovery.completeCurrentStep(context);
           return Future<bool>.value(true);
         },
         onComplete: () async {

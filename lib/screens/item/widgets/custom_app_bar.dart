@@ -40,8 +40,14 @@ class CustomAppBar extends AppBar {
             ),
             IconButton(
               key: fontSizeIconButtonKey,
-              icon: const Icon(
-                Icons.format_size,
+              icon: Text(
+                String.fromCharCode(FeatherIcons.type.codePoint),
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: TextDimens.pt18,
+                  fontFamily: FeatherIcons.type.fontFamily,
+                  package: FeatherIcons.type.fontPackage,
+                ),
               ),
               onPressed: onFontSizeTap,
             ),
