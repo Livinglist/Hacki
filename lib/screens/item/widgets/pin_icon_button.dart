@@ -1,13 +1,12 @@
-import 'dart:async';
 import 'dart:math';
 
-import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 
 class PinIconButton extends StatelessWidget {
@@ -29,23 +28,7 @@ class PinIconButton extends StatelessWidget {
             offset: const Offset(2, 0),
             child: IconButton(
               tooltip: 'Pin to home screen',
-              icon: DescribedFeatureOverlay(
-                onDismiss: () {
-                  HapticFeedback.lightImpact();
-                  FeatureDiscovery.completeCurrentStep(context);
-                  return Future<bool>.value(false);
-                },
-                onBackgroundTap: () {
-                  HapticFeedback.lightImpact();
-                  FeatureDiscovery.completeCurrentStep(context);
-                  return Future<bool>.value(false);
-                },
-                onComplete: () async {
-                  unawaited(HapticFeedback.lightImpact());
-                  return true;
-                },
-                overflowMode: OverflowMode.extendBackground,
-                targetColor: Theme.of(context).primaryColor,
+              icon: CustomDescribedFeatureOverlay(
                 tapTarget: Icon(
                   pinned ? Icons.push_pin : Icons.push_pin_outlined,
                   color: Palette.white,
