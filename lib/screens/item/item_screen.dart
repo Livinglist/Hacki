@@ -9,9 +9,8 @@ import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
-import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
-import 'package:hacki/repositories/stories_repository.dart';
+import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
@@ -174,16 +173,14 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
 
     SchedulerBinding.instance
       ..addPostFrameCallback((_) {
-        if (!isTesting) {
-          FeatureDiscovery.discoverFeatures(
-            context,
-            const <String>{
-              Constants.featurePinToTop,
-              Constants.featureAddStoryToFavList,
-              Constants.featureOpenStoryInWebView,
-            },
-          );
-        }
+        FeatureDiscoveryUtil.discoverFeaturesOnFirstLaunch(
+          context,
+          featureIds: <String>{
+            Constants.featurePinToTop,
+            Constants.featureAddStoryToFavList,
+            Constants.featureOpenStoryInWebView,
+          },
+        );
       })
       ..addPostFrameCallback((_) {
         final ModalRoute<dynamic>? route = ModalRoute.of(context);
@@ -317,7 +314,6 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                                       .withOpacity(0.6),
                                   item: widget.item,
                                   scrollController: scrollController,
-                                  onBackgroundTap: onFeatureDiscoveryDismissed,
                                   onDismiss: onFeatureDiscoveryDismissed,
                                   splitViewEnabled: state.enabled,
                                   expanded: state.expanded,
@@ -358,7 +354,6 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                             Theme.of(context).canvasColor.withOpacity(0.6),
                         item: widget.item,
                         scrollController: scrollController,
-                        onBackgroundTap: onFeatureDiscoveryDismissed,
                         onDismiss: onFeatureDiscoveryDismissed,
                         onFontSizeTap: onFontSizeTapped,
                         fontSizeIconButtonKey: fontSizeIconButtonKey,
@@ -396,11 +391,8 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
   }
 
   Future<bool> onFeatureDiscoveryDismissed() {
-    featureDiscoveryDismissThrottle.run(() {
-      HapticFeedback.lightImpact();
-      ScaffoldMessenger.of(context).clearSnackBars();
-      showSnackBar(content: 'Tap on icon to continue');
-    });
+    HapticFeedback.lightImpact();
+    FeatureDiscovery.completeCurrentStep(context);
     return Future<bool>.value(false);
   }
 

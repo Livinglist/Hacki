@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
-import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/circle_tab_indicator.dart';
 import 'package:hacki/screens/widgets/onboarding_view.dart';
@@ -88,10 +87,18 @@ class _CustomTabBarState extends State<CustomTabBar> {
               ),
             Tab(
               child: DescribedFeatureOverlay(
-                onBackgroundTap: onFeatureDiscoveryDismissed,
-                onDismiss: onFeatureDiscoveryDismissed,
+                onDismiss: () {
+                  unawaited(HapticFeedback.lightImpact());
+                  showOnboarding();
+                  return Future<bool>.value(true);
+                },
+                onBackgroundTap: () {
+                  unawaited(HapticFeedback.lightImpact());
+                  FeatureDiscovery.dismissAll(context);
+                  showOnboarding();
+                  return Future<bool>.value(true);
+                },
                 onComplete: () async {
-                  ScaffoldMessenger.of(context).clearSnackBars();
                   unawaited(HapticFeedback.lightImpact());
                   showOnboarding();
                   return true;
@@ -161,16 +168,6 @@ class _CustomTabBarState extends State<CustomTabBar> {
         fullscreenDialog: true,
       ),
     );
-  }
-
-  Future<bool> onFeatureDiscoveryDismissed() {
-    featureDiscoveryDismissThrottle.run(() {
-      HapticFeedback.lightImpact();
-      ScaffoldMessenger.of(context).clearSnackBars();
-      showSnackBar(content: 'Tap on icon to continue');
-    });
-
-    return Future<bool>.value(false);
   }
 
   @override
