@@ -11,7 +11,6 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/circle_tab_indicator.dart';
 import 'package:hacki/screens/widgets/onboarding_view.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/utils/utils.dart';
 
 class CustomTabBar extends StatefulWidget {
   const CustomTabBar({
@@ -26,11 +25,6 @@ class CustomTabBar extends StatefulWidget {
 }
 
 class _CustomTabBarState extends State<CustomTabBar> {
-  final Throttle featureDiscoveryDismissThrottle = Throttle(
-    delay: _throttleDelay,
-  );
-  static const Duration _throttleDelay = Duration(seconds: 1);
-
   late List<StoryType> tabs = context.read<TabCubit>().state.tabs;
 
   int currentIndex = 0;
@@ -89,12 +83,13 @@ class _CustomTabBarState extends State<CustomTabBar> {
               child: DescribedFeatureOverlay(
                 onDismiss: () {
                   unawaited(HapticFeedback.lightImpact());
+                  FeatureDiscovery.completeCurrentStep(context);
                   showOnboarding();
                   return Future<bool>.value(true);
                 },
                 onBackgroundTap: () {
                   unawaited(HapticFeedback.lightImpact());
-                  FeatureDiscovery.dismissAll(context);
+                  FeatureDiscovery.completeCurrentStep(context);
                   showOnboarding();
                   return Future<bool>.value(true);
                 },
@@ -168,11 +163,5 @@ class _CustomTabBarState extends State<CustomTabBar> {
         fullscreenDialog: true,
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    featureDiscoveryDismissThrottle.dispose();
-    super.dispose();
   }
 }
