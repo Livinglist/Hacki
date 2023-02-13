@@ -388,12 +388,6 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
     );
   }
 
-  Future<bool> onFeatureDiscoveryDismissed() {
-    HapticFeedback.lightImpact();
-    FeatureDiscovery.completeCurrentStep(context);
-    return Future<bool>.value(false);
-  }
-
   void onFontSizeTapped() {
     const Offset offset = Offset.zero;
     final RenderBox overlay =
