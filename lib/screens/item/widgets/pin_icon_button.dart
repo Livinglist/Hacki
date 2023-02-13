@@ -32,8 +32,16 @@ class PinIconButton extends StatelessWidget {
             child: IconButton(
               tooltip: 'Pin to home screen',
               icon: DescribedFeatureOverlay(
-                onDismiss: onDismiss,
-                onBackgroundTap: onDismiss,
+                onDismiss: () {
+                  HapticFeedback.lightImpact();
+                  FeatureDiscovery.completeCurrentStep(context);
+                  return Future<bool>.value(false);
+                },
+                onBackgroundTap: () {
+                  HapticFeedback.lightImpact();
+                  FeatureDiscovery.completeCurrentStep(context);
+                  return Future<bool>.value(false);
+                },
                 onComplete: () async {
                   unawaited(HapticFeedback.lightImpact());
                   return true;

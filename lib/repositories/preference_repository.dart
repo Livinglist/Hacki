@@ -38,7 +38,7 @@ class PreferenceRepository {
 
   Future<String?> get password async => _secureStorage.read(key: _passwordKey);
 
-  static bool? _isFirstLaunch;
+  static bool? _isFirstLaunch = true;
 
   Future<bool> get isFirstLaunch async {
     if (_isFirstLaunch != null) return _isFirstLaunch!;

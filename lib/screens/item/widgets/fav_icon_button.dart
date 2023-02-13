@@ -26,8 +26,16 @@ class FavIconButton extends StatelessWidget {
         return IconButton(
           tooltip: 'Add to favorites',
           icon: DescribedFeatureOverlay(
-            onDismiss: onDismiss,
-            onBackgroundTap: onDismiss,
+            onDismiss: () {
+              HapticFeedback.lightImpact();
+              FeatureDiscovery.completeCurrentStep(context);
+              return Future<bool>.value(false);
+            },
+            onBackgroundTap: () {
+              HapticFeedback.lightImpact();
+              FeatureDiscovery.completeCurrentStep(context);
+              return Future<bool>.value(false);
+            },
             onComplete: () async {
               unawaited(HapticFeedback.lightImpact());
               return true;
