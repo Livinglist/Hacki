@@ -11,12 +11,10 @@ class LinkIconButton extends StatelessWidget {
   const LinkIconButton({
     super.key,
     required this.storyId,
-    required this.onBackgroundTap,
     required this.onDismiss,
   });
 
   final int storyId;
-  final Future<bool> Function() onBackgroundTap;
   final Future<bool> Function() onDismiss;
 
   @override
@@ -24,8 +22,16 @@ class LinkIconButton extends StatelessWidget {
     return IconButton(
       tooltip: 'Open this story in browser',
       icon: DescribedFeatureOverlay(
-        onBackgroundTap: onBackgroundTap,
-        onDismiss: onDismiss,
+        onDismiss: () {
+          unawaited(HapticFeedback.lightImpact());
+          FeatureDiscovery.dismissAll(context);
+          return Future<bool>.value(true);
+        },
+        onBackgroundTap: () {
+          unawaited(HapticFeedback.lightImpact());
+          FeatureDiscovery.dismissAll(context);
+          return Future<bool>.value(true);
+        },
         onComplete: () async {
           unawaited(HapticFeedback.lightImpact());
           return true;

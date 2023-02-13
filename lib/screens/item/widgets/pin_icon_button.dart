@@ -14,12 +14,10 @@ class PinIconButton extends StatelessWidget {
   const PinIconButton({
     super.key,
     required this.story,
-    required this.onBackgroundTap,
     required this.onDismiss,
   });
 
   final Story story;
-  final Future<bool> Function() onBackgroundTap;
   final Future<bool> Function() onDismiss;
 
   @override
@@ -34,8 +32,8 @@ class PinIconButton extends StatelessWidget {
             child: IconButton(
               tooltip: 'Pin to home screen',
               icon: DescribedFeatureOverlay(
-                onBackgroundTap: onBackgroundTap,
                 onDismiss: onDismiss,
+                onBackgroundTap: onDismiss,
                 onComplete: () async {
                   unawaited(HapticFeedback.lightImpact());
                   return true;

@@ -12,12 +12,10 @@ class FavIconButton extends StatelessWidget {
   const FavIconButton({
     super.key,
     required this.storyId,
-    required this.onBackgroundTap,
     required this.onDismiss,
   });
 
   final int storyId;
-  final Future<bool> Function() onBackgroundTap;
   final Future<bool> Function() onDismiss;
 
   @override
@@ -28,8 +26,8 @@ class FavIconButton extends StatelessWidget {
         return IconButton(
           tooltip: 'Add to favorites',
           icon: DescribedFeatureOverlay(
-            onBackgroundTap: onBackgroundTap,
             onDismiss: onDismiss,
+            onBackgroundTap: onDismiss,
             onComplete: () async {
               unawaited(HapticFeedback.lightImpact());
               return true;

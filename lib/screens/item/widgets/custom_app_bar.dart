@@ -11,7 +11,6 @@ class CustomAppBar extends AppBar {
     required ScrollController scrollController,
     required Item item,
     required Color super.backgroundColor,
-    required Future<bool> Function() onBackgroundTap,
     required Future<bool> Function() onDismiss,
     required VoidCallback onFontSizeTap,
     required GlobalKey fontSizeIconButtonKey,
@@ -49,17 +48,14 @@ class CustomAppBar extends AppBar {
             if (item is Story)
               PinIconButton(
                 story: item,
-                onBackgroundTap: onBackgroundTap,
                 onDismiss: onDismiss,
               ),
             FavIconButton(
               storyId: item.id,
-              onBackgroundTap: onBackgroundTap,
               onDismiss: onDismiss,
             ),
             LinkIconButton(
               storyId: item.id,
-              onBackgroundTap: onBackgroundTap,
               onDismiss: onDismiss,
             ),
           ],
