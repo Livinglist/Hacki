@@ -31,12 +31,7 @@ class CustomDescribedFeatureOverlay extends StatelessWidget {
       tapTarget: tapTarget,
       title: title,
       description: description,
-      onDismiss: () {
-        unawaited(HapticFeedback.lightImpact());
-        FeatureDiscovery.completeCurrentStep(context);
-        onComplete?.call();
-        return Future<bool>.value(true);
-      },
+      barrierDismissible: false,
       onBackgroundTap: () {
         unawaited(HapticFeedback.lightImpact());
         FeatureDiscovery.completeCurrentStep(context);
