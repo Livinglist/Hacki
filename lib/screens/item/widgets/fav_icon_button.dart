@@ -12,11 +12,9 @@ class FavIconButton extends StatelessWidget {
   const FavIconButton({
     super.key,
     required this.storyId,
-    required this.onDismiss,
   });
 
   final int storyId;
-  final Future<bool> Function() onDismiss;
 
   @override
   Widget build(BuildContext context) {

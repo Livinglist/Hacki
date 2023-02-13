@@ -314,7 +314,6 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                                       .withOpacity(0.6),
                                   item: widget.item,
                                   scrollController: scrollController,
-                                  onDismiss: onFeatureDiscoveryDismissed,
                                   splitViewEnabled: state.enabled,
                                   expanded: state.expanded,
                                   onZoomTap:
@@ -354,7 +353,6 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                             Theme.of(context).canvasColor.withOpacity(0.6),
                         item: widget.item,
                         scrollController: scrollController,
-                        onDismiss: onFeatureDiscoveryDismissed,
                         onFontSizeTap: onFontSizeTapped,
                         fontSizeIconButtonKey: fontSizeIconButtonKey,
                       ),

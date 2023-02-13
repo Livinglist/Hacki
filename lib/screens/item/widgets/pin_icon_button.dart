@@ -14,11 +14,9 @@ class PinIconButton extends StatelessWidget {
   const PinIconButton({
     super.key,
     required this.story,
-    required this.onDismiss,
   });
 
   final Story story;
-  final Future<bool> Function() onDismiss;
 
   @override
   Widget build(BuildContext context) {
