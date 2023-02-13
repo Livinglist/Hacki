@@ -173,9 +173,9 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
 
     SchedulerBinding.instance
       ..addPostFrameCallback((_) {
-        FeatureDiscoveryUtil.discoverFeaturesOnFirstLaunch(
+        FeatureDiscovery.discoverFeatures(
           context,
-          featureIds: <String>{
+          <String>{
             Constants.featurePinToTop,
             Constants.featureAddStoryToFavList,
             Constants.featureOpenStoryInWebView,
