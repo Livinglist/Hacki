@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart' hide Badge;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -91,9 +92,9 @@ class _HomeScreenState extends State<HomeScreen>
 
     SchedulerBinding.instance
       ..addPostFrameCallback((_) {
-        FeatureDiscoveryUtil.discoverFeaturesOnFirstLaunch(
+        FeatureDiscovery.discoverFeatures(
           context,
-          featureIds: <String>{
+          <String>{
             Constants.featureLogIn,
           },
         );

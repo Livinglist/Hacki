@@ -1,17 +1,12 @@
-import 'dart:async';
-
 import 'package:badges/badges.dart';
-import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart' hide Badge;
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
-import 'package:hacki/screens/widgets/circle_tab_indicator.dart';
-import 'package:hacki/screens/widgets/onboarding_view.dart';
+import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/utils/utils.dart';
 
 class CustomTabBar extends StatefulWidget {
   const CustomTabBar({
@@ -26,11 +21,6 @@ class CustomTabBar extends StatefulWidget {
 }
 
 class _CustomTabBarState extends State<CustomTabBar> {
-  final Throttle featureDiscoveryDismissThrottle = Throttle(
-    delay: _throttleDelay,
-  );
-  static const Duration _throttleDelay = Duration(seconds: 1);
-
   late List<StoryType> tabs = context.read<TabCubit>().state.tabs;
 
   int currentIndex = 0;
@@ -86,25 +76,8 @@ class _CustomTabBarState extends State<CustomTabBar> {
                 ),
               ),
             Tab(
-              child: DescribedFeatureOverlay(
-                onDismiss: () {
-                  unawaited(HapticFeedback.lightImpact());
-                  showOnboarding();
-                  return Future<bool>.value(true);
-                },
-                onBackgroundTap: () {
-                  unawaited(HapticFeedback.lightImpact());
-                  FeatureDiscovery.dismissAll(context);
-                  showOnboarding();
-                  return Future<bool>.value(true);
-                },
-                onComplete: () async {
-                  unawaited(HapticFeedback.lightImpact());
-                  showOnboarding();
-                  return true;
-                },
-                overflowMode: OverflowMode.extendBackground,
-                targetColor: Theme.of(context).primaryColor,
+              child: CustomDescribedFeatureOverlay(
+                onComplete: showOnboarding,
                 tapTarget: const Icon(
                   Icons.person,
                   size: TextDimens.pt16,
@@ -168,11 +141,5 @@ class _CustomTabBarState extends State<CustomTabBar> {
         fullscreenDialog: true,
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    featureDiscoveryDismissThrottle.dispose();
-    super.dispose();
   }
 }

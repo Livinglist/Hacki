@@ -1,11 +1,9 @@
-import 'dart:async';
-
-import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 
 class FavIconButton extends StatelessWidget {
@@ -23,23 +21,7 @@ class FavIconButton extends StatelessWidget {
         final bool isFav = favState.favIds.contains(storyId);
         return IconButton(
           tooltip: 'Add to favorites',
-          icon: DescribedFeatureOverlay(
-            onDismiss: () {
-              HapticFeedback.lightImpact();
-              FeatureDiscovery.completeCurrentStep(context);
-              return Future<bool>.value(false);
-            },
-            onBackgroundTap: () {
-              HapticFeedback.lightImpact();
-              FeatureDiscovery.completeCurrentStep(context);
-              return Future<bool>.value(false);
-            },
-            onComplete: () async {
-              unawaited(HapticFeedback.lightImpact());
-              return true;
-            },
-            overflowMode: OverflowMode.extendBackground,
-            targetColor: Theme.of(context).primaryColor,
+          icon: CustomDescribedFeatureOverlay(
             tapTarget: Icon(
               isFav ? Icons.favorite : Icons.favorite_border,
               color: Palette.white,
