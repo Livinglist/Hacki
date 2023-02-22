@@ -56,7 +56,7 @@ class EmphasisLinkifier extends Linkifier {
   }
 }
 
-/// Represents an element containing an user tag
+/// Represents an element wrapped around '*'.
 @immutable
 class EmphasisElement extends LinkifyElement {
   EmphasisElement(super.text);

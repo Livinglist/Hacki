@@ -50,7 +50,7 @@ class QuoteLinkifier extends Linkifier {
   }
 }
 
-/// Represents an element containing an user tag
+/// Represents an element that starts with '>'.
 @immutable
 class QuoteElement extends LinkifyElement {
   QuoteElement(super.text);
