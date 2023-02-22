@@ -11,8 +11,8 @@ import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart';
-import 'package:hacki/screens/widgets/custom_linkify/linkifiers/linkifiers.dart';
 import 'package:hacki/services/services.dart';
+import 'package:hacki/utils/linkifier_util.dart';
 import 'package:logger/logger.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -385,7 +385,7 @@ class CommentsCubit extends Cubit<CommentsState> {
 
     final List<LinkifyElement> elements =
         await compute<String, List<LinkifyElement>>(
-      _linkify,
+      LinkifierUtil.linkify,
       comment.text,
     );
 
@@ -393,31 +393,6 @@ class CommentsCubit extends Cubit<CommentsState> {
         BuildableComment.fromComment(comment, elements: elements);
 
     return buildableComment;
-  }
-
-  static List<LinkifyElement> _linkify(String text) {
-    const LinkifyOptions options = LinkifyOptions();
-    const List<Linkifier> linkifiers = <Linkifier>[
-      UrlLinkifier(),
-      EmailLinkifier(),
-      QuoteLinkifier(),
-      EmphasisLinkifier(),
-    ];
-    List<LinkifyElement> list = <LinkifyElement>[TextElement(text)];
-
-    if (text.isEmpty) {
-      return <LinkifyElement>[];
-    }
-
-    if (linkifiers.isEmpty) {
-      return list;
-    }
-
-    for (final Linkifier linkifier in linkifiers) {
-      list = linkifier.parse(list, options);
-    }
-
-    return list;
   }
 
   @override

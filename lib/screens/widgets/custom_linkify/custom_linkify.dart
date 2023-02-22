@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:hacki/screens/widgets/custom_linkify/linkifiers/linkifiers.dart';
+import 'package:hacki/utils/utils.dart';
 import 'package:linkify/linkify.dart';
 
 export 'package:linkify/linkify.dart'
@@ -273,12 +274,7 @@ class SelectableLinkify extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<LinkifyElement> elements = linkify(
-      text,
-      options: options,
-      linkifiers: linkifiers,
-    );
-
+    final List<LinkifyElement> elements = LinkifierUtil.linkify(text);
     return SelectableText.rich(
       buildTextSpan(
         elements,
