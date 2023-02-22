@@ -364,6 +364,15 @@ class _CommentText extends StatelessWidget {
           onOpen: onLinkTapped,
         ),
         onTap: () => onTextTapped(context),
+        contextMenuBuilder: (
+          BuildContext context,
+          EditableTextState editableTextState,
+        ) =>
+            contextMenuBuilder(
+          context,
+          editableTextState,
+          comment: comment as BuildableComment,
+        ),
       );
     } else {
       return SelectableLinkify(
