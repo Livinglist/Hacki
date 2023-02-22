@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:hacki/config/locator.dart';
@@ -227,12 +228,14 @@ class CommentsCubit extends Cubit<CommentsState> {
         final StreamSubscription<Comment> streamSubscription =
             _storiesRepository
                 .fetchCommentsStream(ids: comment.kids)
-                .listen((Comment cmt) {
+                .listen((Comment cmt) async {
           _collapseCache.addKid(cmt.id, to: cmt.parent);
           _commentCache.cacheComment(cmt);
-          _sembastRepository.cacheComment(cmt);
+          unawaited(_sembastRepository.cacheComment(cmt));
 
-          final List<LinkifyElement> elements = _linkify(
+          final List<LinkifyElement> elements =
+              await compute<String, List<LinkifyElement>>(
+            _linkify,
             cmt.text,
           );
 
@@ -340,13 +343,15 @@ class CommentsCubit extends Cubit<CommentsState> {
     );
   }
 
-  void _onCommentFetched(Comment? comment) {
+  Future<void> _onCommentFetched(Comment? comment) async {
     if (comment != null) {
       _collapseCache.addKid(comment.id, to: comment.parent);
       _commentCache.cacheComment(comment);
-      _sembastRepository.cacheComment(comment);
+      unawaited(_sembastRepository.cacheComment(comment));
 
-      final List<LinkifyElement> elements = _linkify(
+      final List<LinkifyElement> elements =
+          await compute<String, List<LinkifyElement>>(
+        _linkify,
         comment.text,
       );
 
@@ -387,14 +392,12 @@ class CommentsCubit extends Cubit<CommentsState> {
     }
   }
 
-  static List<LinkifyElement> _linkify(
-    String text, {
-    LinkifyOptions options = const LinkifyOptions(),
-    List<Linkifier> linkifiers = const <Linkifier>[
+  static List<LinkifyElement> _linkify(String text) {
+    const LinkifyOptions options = LinkifyOptions();
+    const List<Linkifier> linkifiers = <Linkifier>[
       UrlLinkifier(),
       EmailLinkifier(),
-    ],
-  }) {
+    ];
     List<LinkifyElement> list = <LinkifyElement>[TextElement(text)];
 
     if (text.isEmpty) {
