@@ -79,9 +79,8 @@ class StoryTile extends StatelessWidget {
               Row(
                 children: <Widget>[
                   Expanded(
-                    child: RichText(
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                      text: TextSpan(
+                    child: Text.rich(
+                      TextSpan(
                         children: <TextSpan>[
                           TextSpan(
                             text: story.title,
@@ -105,6 +104,7 @@ class StoryTile extends StatelessWidget {
                             ),
                         ],
                       ),
+                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
                     ),
                   ),
                 ],

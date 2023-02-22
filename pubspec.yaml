@@ -91,4 +91,21 @@ flutter:
   assets:
     - assets/images/
 
+  fonts:
+    - family: RobotoSlab
+      fonts:
+        - asset: assets/fonts/roboto_slab/RobotoSlab-Regular.ttf
+        - asset: assets/fonts/roboto_slab/RobotoSlab-Bold.ttf
+          weight: 700
+    - family: Ubuntu
+      fonts:
+        - asset: assets/fonts/ubuntu/Ubuntu-Regular.ttf
+        - asset: assets/fonts/ubuntu/Ubuntu-Bold.ttf
+          weight: 700
+    - family: UbuntuMono
+      fonts:
+        - asset: assets/fonts/ubuntu_mono/UbuntuMono-Regular.ttf
+        - asset: assets/fonts/ubuntu_mono/UbuntuMono-Bold.ttf
+          weight: 700
+
 

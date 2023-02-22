@@ -367,7 +367,7 @@ TextSpan buildTextSpan(
             return TextSpan(
               text: element.text,
               style: style?.copyWith(
-                backgroundColor: Palette.orange.withOpacity(0.1),
+                backgroundColor: Palette.orangeAccent.withOpacity(0.3),
               ),
             );
           } else if (element is EmphasisElement) {

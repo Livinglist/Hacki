@@ -96,6 +96,9 @@ class PreferenceState extends Equatable {
   FontSize get fontSize => FontSize.values
       .elementAt(preferences.singleWhereType<FontSizePreference>().val);
 
+  Font get font =>
+      Font.values.elementAt(preferences.singleWhereType<FontPreference>().val);
+
   @override
   List<Object?> get props => <Object?>[
         ...preferences.map<dynamic>((Preference<dynamic> e) => e.val),
