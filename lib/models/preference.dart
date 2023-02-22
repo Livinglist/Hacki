@@ -20,6 +20,7 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
       // Order of these first four preferences does not matter.
       FetchModePreference(),
       CommentsOrderPreference(),
+      FontPreference(),
       FontSizePreference(),
       TabOrderPreference(),
       // Order of items below matters and
@@ -65,6 +66,7 @@ const bool _collapseModeDefaultValue = true;
 final int _fetchModeDefaultValue = FetchMode.eager.index;
 final int _commentsOrderDefaultValue = CommentsOrder.natural.index;
 final int _fontSizeDefaultValue = FontSize.regular.index;
+final int _fontDefaultValue = Font.roboto.index;
 final int _tabOrderDefaultValue =
     StoryType.convertToSettingsValue(StoryType.values);
 
@@ -323,6 +325,21 @@ class CommentsOrderPreference extends IntPreference {
 
   @override
   String get title => 'Default comments order';
+}
+
+class FontPreference extends IntPreference {
+  FontPreference({int? val}) : super(val: val ?? _fontDefaultValue);
+
+  @override
+  FontPreference copyWith({required int? val}) {
+    return FontPreference(val: val);
+  }
+
+  @override
+  String get key => 'font';
+
+  @override
+  String get title => 'Default font';
 }
 
 class FontSizePreference extends IntPreference {

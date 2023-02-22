@@ -128,6 +128,9 @@ Future<void> main({bool testing = false}) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final bool trueDarkMode =
       prefs.getBool(const TrueDarkModePreference().key) ?? false;
+  final Font font = Font.values.elementAt(
+    prefs.getInt(FontPreference().key) ?? Font.roboto.index,
+  );
 
   Bloc.observer = CustomBlocObserver();
 
@@ -137,6 +140,7 @@ Future<void> main({bool testing = false}) async {
     HackiApp(
       savedThemeMode: savedThemeMode,
       trueDarkMode: trueDarkMode,
+      font: font,
     ),
   );
 }
@@ -146,9 +150,11 @@ class HackiApp extends StatelessWidget {
     super.key,
     this.savedThemeMode,
     required this.trueDarkMode,
+    required this.font,
   });
 
   final AdaptiveThemeMode? savedThemeMode;
+  final Font font;
   final bool trueDarkMode;
 
   static final GlobalKey<NavigatorState> navigatorKey =
@@ -227,11 +233,13 @@ class HackiApp extends StatelessWidget {
       child: AdaptiveTheme(
         light: ThemeData(
           primarySwatch: Palette.orange,
+          fontFamily: font.name,
         ),
         dark: ThemeData(
           brightness: Brightness.dark,
           primarySwatch: Palette.orange,
           canvasColor: trueDarkMode ? Palette.black : null,
+          fontFamily: font.name,
         ),
         initial: savedThemeMode ?? AdaptiveThemeMode.system,
         builder: (ThemeData theme, ThemeData darkTheme) {
@@ -239,6 +247,7 @@ class HackiApp extends StatelessWidget {
             brightness: Brightness.dark,
             primarySwatch: Palette.orange,
             canvasColor: Palette.black,
+            fontFamily: font.name,
           );
           return FutureBuilder<AdaptiveThemeMode?>(
             future: AdaptiveTheme.getThemeMode(),

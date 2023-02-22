@@ -37,7 +37,7 @@ class EmphasisLinkifier extends Linkifier {
           bool added = false;
 
           for (final String text in splitTexts) {
-            list.add(TextElement(text));
+            list.addAll(parse(<LinkifyElement>[TextElement(text)], options));
 
             curPos += text.length;
 

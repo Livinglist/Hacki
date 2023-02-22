@@ -339,12 +339,8 @@ class _ParentItemSection extends StatelessWidget {
                               bottom: Dimens.pt12,
                               top: Dimens.pt12,
                             ),
-                            child: RichText(
-                              textAlign: TextAlign.center,
-                              textScaleFactor: MediaQuery.of(
-                                context,
-                              ).textScaleFactor,
-                              text: TextSpan(
+                            child: Text.rich(
+                              TextSpan(
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: prefState.fontSize.fontSize,
@@ -377,6 +373,10 @@ class _ParentItemSection extends StatelessWidget {
                                     ),
                                 ],
                               ),
+                              textAlign: TextAlign.center,
+                              textScaleFactor: MediaQuery.of(
+                                context,
+                              ).textScaleFactor,
                             ),
                           ),
                         )

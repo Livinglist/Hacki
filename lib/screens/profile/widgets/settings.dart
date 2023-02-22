@@ -221,6 +221,12 @@ class _SettingsState extends State<Settings> {
                     ),
                   ListTile(
                     title: const Text(
+                      'Font',
+                    ),
+                    onTap: showFontSettingDialog,
+                  ),
+                  ListTile(
+                    title: const Text(
                       'Theme',
                     ),
                     onTap: showThemeSettingDialog,
@@ -280,6 +286,56 @@ class _SettingsState extends State<Settings> {
               ),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  void showFontSettingDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (_) {
+        return BlocBuilder<PreferenceCubit, PreferenceState>(
+          buildWhen: (PreferenceState previous, PreferenceState current) =>
+              previous.font != current.font,
+          builder: (BuildContext context, PreferenceState state) {
+            return AlertDialog(
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  for (final Font font in Font.values)
+                    RadioListTile<Font>(
+                      value: font,
+                      groupValue: state.font,
+                      onChanged: (Font? val) {
+                        if (val != null) {
+                          context.read<PreferenceCubit>().update(
+                                FontPreference(),
+                                to: val.index,
+                              );
+                        }
+                      },
+                      title: Text(
+                        font.label,
+                        style: TextStyle(fontFamily: font.name),
+                      ),
+                    ),
+                  Row(
+                    children: const <Widget>[
+                      Text(
+                        '*Restart required',
+                        style: TextStyle(
+                          fontSize: TextDimens.pt12,
+                          color: Palette.grey,
+                        ),
+                      ),
+                      Spacer(),
+                    ],
+                  )
+                ],
+              ),
+            );
+          },
         );
       },
     );
