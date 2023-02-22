@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 
 final RegExp _quoteRegex = RegExp(
-  r'(?=^> )(.*?)(?=\n)',
+  r'(?=^> )(.*?)(?=\n|$)',
   multiLine: true,
 );
 
