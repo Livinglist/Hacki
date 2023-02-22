@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:hacki/screens/widgets/custom_linkify/linkifiers/linkifiers.dart';
+import 'package:hacki/styles/palette.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:linkify/linkify.dart';
 
@@ -366,16 +367,14 @@ TextSpan buildTextSpan(
             return TextSpan(
               text: element.text,
               style: style?.copyWith(
-                fontStyle: FontStyle.italic,
+                backgroundColor: Palette.orange.withOpacity(0.1),
               ),
             );
           } else if (element is EmphasisElement) {
             return TextSpan(
               text: element.text,
               style: style?.copyWith(
-                fontStyle:
-                    element.text.startsWith('>') ? FontStyle.italic : null,
-                fontWeight: FontWeight.bold,
+                fontStyle: FontStyle.italic,
               ),
             );
           }
