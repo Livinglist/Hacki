@@ -137,10 +137,12 @@ class Linkify extends StatelessWidget {
 const UrlLinkifier _urlLinkifier = UrlLinkifier();
 const EmailLinkifier _emailLinkifier = EmailLinkifier();
 const QuoteLinkifier _quoteLinkifier = QuoteLinkifier();
+const EmphasisLinkifier _emphasisLinkifier = EmphasisLinkifier();
 const List<Linkifier> defaultLinkifiers = <Linkifier>[
   _urlLinkifier,
   _emailLinkifier,
   _quoteLinkifier,
+  _emphasisLinkifier,
 ];
 
 /// Turns URLs into links
@@ -369,6 +371,15 @@ TextSpan buildTextSpan(
               text: element.text,
               style: style?.copyWith(
                 fontStyle: FontStyle.italic,
+              ),
+            );
+          } else if (element is EmphasisElement) {
+            return TextSpan(
+              text: element.text,
+              style: style?.copyWith(
+                fontStyle:
+                    element.text.startsWith('>') ? FontStyle.italic : null,
+                fontWeight: FontWeight.bold,
               ),
             );
           }

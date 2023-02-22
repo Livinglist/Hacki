@@ -401,6 +401,7 @@ class CommentsCubit extends Cubit<CommentsState> {
       UrlLinkifier(),
       EmailLinkifier(),
       QuoteLinkifier(),
+      EmphasisLinkifier(),
     ];
     List<LinkifyElement> list = <LinkifyElement>[TextElement(text)];
 

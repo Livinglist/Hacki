@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 
-final RegExp _quoteRegex = RegExp(
-  r'(?=^> )(.*?)(?=\n)',
+final RegExp _emphasisRegex = RegExp(
+  r'\*(.*?)\*',
   multiLine: true,
 );
 
-class QuoteLinkifier extends Linkifier {
-  const QuoteLinkifier();
+class EmphasisLinkifier extends Linkifier {
+  const EmphasisLinkifier();
 
   @override
   List<LinkifyElement> parse(
@@ -18,26 +18,32 @@ class QuoteLinkifier extends Linkifier {
 
     for (final LinkifyElement element in elements) {
       if (element is TextElement) {
-        final RegExpMatch? match = _quoteRegex.firstMatch(
+        final RegExpMatch? match = _emphasisRegex.firstMatch(
           element.text.trimLeft(),
         );
 
-        if (match == null) {
+        if (element.text == '* * *' ||
+            match == null ||
+            match.group(0) == null ||
+            match.group(1) == null) {
           list.add(element);
         } else {
-          final String matchedText = match.group(0)!;
-          final int pos = element.text.indexOf(matchedText);
-          final List<String> splitTexts = element.text.split(matchedText);
+          final String matchedText = match.group(1)!;
+          final num pos =
+              (element.text.indexOf(matchedText) - 1).clamp(0, double.infinity);
+          final List<String> splitTexts = element.text.split(match.group(0)!);
 
           int curPos = 0;
           bool added = false;
 
           for (final String text in splitTexts) {
-            list.addAll(parse(<TextElement>[TextElement(text)], options));
+            list.add(TextElement(text));
+
             curPos += text.length;
+
             if (!added && curPos >= pos) {
               added = true;
-              list.add(QuoteElement(matchedText));
+              list.add(EmphasisElement(matchedText));
             }
           }
         }
@@ -52,19 +58,19 @@ class QuoteLinkifier extends Linkifier {
 
 /// Represents an element containing an user tag
 @immutable
-class QuoteElement extends LinkifyElement {
-  QuoteElement(super.text);
+class EmphasisElement extends LinkifyElement {
+  EmphasisElement(super.text);
 
   @override
   String toString() {
-    return "QuoteElement: '$text'";
+    return "EmphasisElement: '$text'";
   }
 
   @override
   bool operator ==(Object other) => equals(other);
 
   @override
-  bool equals(dynamic other) => other is QuoteElement && super.equals(other);
+  bool equals(dynamic other) => other is EmphasisElement && super.equals(other);
 
   @override
   int get hashCode => text.hashCode;
