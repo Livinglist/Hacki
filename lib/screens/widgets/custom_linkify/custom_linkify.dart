@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:hacki/screens/widgets/custom_linkify/linkifiers/linkifiers.dart';
+import 'package:hacki/utils/utils.dart';
 import 'package:linkify/linkify.dart';
 
 export 'package:linkify/linkify.dart'
@@ -273,48 +275,56 @@ class SelectableLinkify extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<LinkifyElement> elements = linkify(
-      text,
-      options: options,
-      linkifiers: linkifiers,
-    );
-
-    return SelectableText.rich(
-      buildTextSpan(
-        elements,
-        style: Theme.of(context).textTheme.bodyMedium?.merge(style),
-        onOpen: onOpen,
-        linkStyle: Theme.of(context)
-            .textTheme
-            .bodyMedium
-            ?.merge(style)
-            .copyWith(
-              color: Colors.blueAccent,
-              decoration: TextDecoration.underline,
-            )
-            .merge(linkStyle),
-      ),
-      textAlign: textAlign,
-      textDirection: textDirection,
-      minLines: minLines,
-      maxLines: maxLines,
-      focusNode: focusNode,
-      strutStyle: strutStyle,
-      showCursor: showCursor,
-      textScaleFactor: textScaleFactor,
-      autofocus: autofocus,
-      cursorWidth: cursorWidth,
-      cursorRadius: cursorRadius,
-      cursorColor: cursorColor,
-      dragStartBehavior: dragStartBehavior,
-      enableInteractiveSelection: enableInteractiveSelection,
-      onTap: onTap,
-      scrollPhysics: scrollPhysics,
-      textWidthBasis: textWidthBasis,
-      textHeightBehavior: textHeightBehavior,
-      cursorHeight: cursorHeight,
-      selectionControls: selectionControls,
-      onSelectionChanged: onSelectionChanged,
+    return FutureBuilder<List<LinkifyElement>>(
+      future: compute(LinkifierUtil.linkify, text),
+      builder:
+          (BuildContext context, AsyncSnapshot<List<LinkifyElement>> snapshot) {
+        if (snapshot.hasData && snapshot.data != null) {
+          final List<LinkifyElement> elements = snapshot.data!;
+          return SelectableText.rich(
+            buildTextSpan(
+              elements,
+              style: Theme.of(context).textTheme.bodyMedium?.merge(style),
+              onOpen: onOpen,
+              linkStyle: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.merge(style)
+                  .copyWith(
+                    color: Colors.blueAccent,
+                    decoration: TextDecoration.underline,
+                  )
+                  .merge(linkStyle),
+            ),
+            textAlign: textAlign,
+            textDirection: textDirection,
+            minLines: minLines,
+            maxLines: maxLines,
+            focusNode: focusNode,
+            strutStyle: strutStyle,
+            showCursor: showCursor,
+            textScaleFactor: textScaleFactor,
+            autofocus: autofocus,
+            cursorWidth: cursorWidth,
+            cursorRadius: cursorRadius,
+            cursorColor: cursorColor,
+            dragStartBehavior: dragStartBehavior,
+            enableInteractiveSelection: enableInteractiveSelection,
+            onTap: onTap,
+            scrollPhysics: scrollPhysics,
+            textWidthBasis: textWidthBasis,
+            textHeightBehavior: textHeightBehavior,
+            cursorHeight: cursorHeight,
+            selectionControls: selectionControls,
+            onSelectionChanged: onSelectionChanged,
+          );
+        } else {
+          return Text(
+            text,
+            style: style,
+          );
+        }
+      },
     );
   }
 }
