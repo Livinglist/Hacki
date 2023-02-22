@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:hacki/config/locator.dart';
@@ -10,8 +11,10 @@ import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart';
+import 'package:hacki/screens/widgets/custom_linkify/linkifiers/linkifiers.dart';
 import 'package:hacki/services/services.dart';
 import 'package:logger/logger.dart';
+import 'package:rxdart/rxdart.dart';
 
 part 'comments_state.dart';
 
@@ -89,6 +92,8 @@ class CommentsCubit extends Cubit<CommentsState> {
             ids: targetParents!.last.kids,
             level: targetParents.last.level + 1,
           )
+          .asyncMap(_toBuildableComment)
+          .whereNotNull()
           .listen(_onCommentFetched)
         ..onDone(_onDone);
 
@@ -111,33 +116,32 @@ class CommentsCubit extends Cubit<CommentsState> {
 
     emit(state.copyWith(item: updatedItem));
 
+    late final Stream<Comment> commentStream;
+
     if (state.offlineReading) {
-      _streamSubscription = _offlineRepository
-          .getCachedCommentsStream(ids: kids)
-          .listen(_onCommentFetched)
-        ..onDone(_onDone);
+      commentStream = _offlineRepository.getCachedCommentsStream(ids: kids);
     } else {
       switch (state.fetchMode) {
         case FetchMode.lazy:
-          _streamSubscription = _storiesRepository
-              .fetchCommentsStream(
-                ids: kids,
-                getFromCache: useCommentCache ? _commentCache.getComment : null,
-              )
-              .listen(_onCommentFetched)
-            ..onDone(_onDone);
+          commentStream = _storiesRepository.fetchCommentsStream(
+            ids: kids,
+            getFromCache: useCommentCache ? _commentCache.getComment : null,
+          );
           break;
         case FetchMode.eager:
-          _streamSubscription = _storiesRepository
-              .fetchAllCommentsRecursivelyStream(
-                ids: kids,
-                getFromCache: useCommentCache ? _commentCache.getComment : null,
-              )
-              .listen(_onCommentFetched)
-            ..onDone(_onDone);
+          commentStream = _storiesRepository.fetchAllCommentsRecursivelyStream(
+            ids: kids,
+            getFromCache: useCommentCache ? _commentCache.getComment : null,
+          );
           break;
       }
     }
+
+    _streamSubscription = commentStream
+        .asyncMap(_toBuildableComment)
+        .whereNotNull()
+        .listen(_onCommentFetched)
+      ..onDone(_onDone);
   }
 
   Future<void> refresh() async {
@@ -176,21 +180,22 @@ class CommentsCubit extends Cubit<CommentsState> {
         await _storiesRepository.fetchItem(id: item.id) ?? item;
     final List<int> kids = sortKids(updatedItem.kids);
 
+    late final Stream<Comment> commentStream;
     if (state.fetchMode == FetchMode.lazy) {
-      _streamSubscription = _storiesRepository
-          .fetchCommentsStream(
-            ids: kids,
-          )
-          .listen(_onCommentFetched)
-        ..onDone(_onDone);
+      commentStream = _storiesRepository.fetchCommentsStream(
+        ids: kids,
+      );
     } else {
-      _streamSubscription = _storiesRepository
-          .fetchAllCommentsRecursivelyStream(
-            ids: kids,
-          )
-          .listen(_onCommentFetched)
-        ..onDone(_onDone);
+      commentStream = _storiesRepository.fetchAllCommentsRecursivelyStream(
+        ids: kids,
+      );
     }
+
+    _streamSubscription = commentStream
+        .asyncMap(_toBuildableComment)
+        .whereNotNull()
+        .listen(_onCommentFetched)
+      ..onDone(_onDone);
 
     emit(
       state.copyWith(
@@ -227,23 +232,18 @@ class CommentsCubit extends Cubit<CommentsState> {
         final StreamSubscription<Comment> streamSubscription =
             _storiesRepository
                 .fetchCommentsStream(ids: comment.kids)
+                .asyncMap(_toBuildableComment)
+                .whereNotNull()
                 .listen((Comment cmt) {
           _collapseCache.addKid(cmt.id, to: cmt.parent);
           _commentCache.cacheComment(cmt);
           _sembastRepository.cacheComment(cmt);
 
-          final List<LinkifyElement> elements = _linkify(
-            cmt.text,
-          );
-
-          final BuildableComment buildableComment =
-              BuildableComment.fromComment(cmt, elements: elements);
-
           emit(
             state.copyWith(
               comments: <Comment>[...state.comments]..insert(
                   state.comments.indexOf(comment) + offset + 1,
-                  buildableComment.copyWith(level: level),
+                  comment.copyWith(level: level),
                 ),
             ),
           );
@@ -340,22 +340,15 @@ class CommentsCubit extends Cubit<CommentsState> {
     );
   }
 
-  void _onCommentFetched(Comment? comment) {
+  void _onCommentFetched(BuildableComment? comment) {
     if (comment != null) {
       _collapseCache.addKid(comment.id, to: comment.parent);
       _commentCache.cacheComment(comment);
       _sembastRepository.cacheComment(comment);
 
-      final List<LinkifyElement> elements = _linkify(
-        comment.text,
-      );
-
-      final BuildableComment buildableComment =
-          BuildableComment.fromComment(comment, elements: elements);
-
       final List<Comment> updatedComments = <Comment>[
         ...state.comments,
-        buildableComment
+        comment
       ];
 
       emit(state.copyWith(comments: updatedComments));
@@ -387,14 +380,29 @@ class CommentsCubit extends Cubit<CommentsState> {
     }
   }
 
-  static List<LinkifyElement> _linkify(
-    String text, {
-    LinkifyOptions options = const LinkifyOptions(),
-    List<Linkifier> linkifiers = const <Linkifier>[
+  static Future<BuildableComment?> _toBuildableComment(Comment? comment) async {
+    if (comment == null) return null;
+
+    final List<LinkifyElement> elements =
+        await compute<String, List<LinkifyElement>>(
+      _linkify,
+      comment.text,
+    );
+
+    final BuildableComment buildableComment =
+        BuildableComment.fromComment(comment, elements: elements);
+
+    return buildableComment;
+  }
+
+  static List<LinkifyElement> _linkify(String text) {
+    const LinkifyOptions options = LinkifyOptions();
+    const List<Linkifier> linkifiers = <Linkifier>[
       UrlLinkifier(),
       EmailLinkifier(),
-    ],
-  }) {
+      QuoteLinkifier(),
+      EmphasisLinkifier(),
+    ];
     List<LinkifyElement> list = <LinkifyElement>[TextElement(text)];
 
     if (text.isEmpty) {
