@@ -234,10 +234,10 @@ class CommentsCubit extends Cubit<CommentsState> {
                 .fetchCommentsStream(ids: comment.kids)
                 .asyncMap(_toBuildableComment)
                 .whereNotNull()
-                .listen((Comment cmt) async {
+                .listen((Comment cmt) {
           _collapseCache.addKid(cmt.id, to: cmt.parent);
           _commentCache.cacheComment(cmt);
-          unawaited(_sembastRepository.cacheComment(cmt));
+          _sembastRepository.cacheComment(cmt);
 
           emit(
             state.copyWith(
@@ -340,11 +340,11 @@ class CommentsCubit extends Cubit<CommentsState> {
     );
   }
 
-  Future<void> _onCommentFetched(BuildableComment? comment) async {
+  void _onCommentFetched(BuildableComment? comment) {
     if (comment != null) {
       _collapseCache.addKid(comment.id, to: comment.parent);
       _commentCache.cacheComment(comment);
-      unawaited(_sembastRepository.cacheComment(comment));
+      _sembastRepository.cacheComment(comment);
 
       final List<Comment> updatedComments = <Comment>[
         ...state.comments,
