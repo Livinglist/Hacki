@@ -5,7 +5,6 @@ import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
@@ -13,6 +12,7 @@ import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/linkifier_util.dart';
+import 'package:linkify/linkify.dart';
 import 'package:logger/logger.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -243,7 +243,7 @@ class CommentsCubit extends Cubit<CommentsState> {
             state.copyWith(
               comments: <Comment>[...state.comments]..insert(
                   state.comments.indexOf(comment) + offset + 1,
-                  comment.copyWith(level: level),
+                  cmt.copyWith(level: level),
                 ),
             ),
           );

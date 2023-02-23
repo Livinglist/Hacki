@@ -332,14 +332,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.7.2+3"
-  flutter_linkify:
-    dependency: "direct main"
-    description:
-      name: flutter_linkify
-      sha256: c89fe74de985ec22f23d3538d2249add085a4f37ac1c29fd79e1a207efb81d63
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.0.2"
   flutter_local_notifications:
     dependency: "direct main"
     description:
@@ -1359,4 +1351,4 @@ packages:
     version: "3.1.1"
 sdks:
   dart: ">=2.19.0 <3.0.0"
-  flutter: ">=3.7.3"
+  flutter: ">=3.7.5"

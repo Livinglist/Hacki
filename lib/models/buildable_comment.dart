@@ -1,6 +1,6 @@
-import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:hacki/models/comment.dart';
 import 'package:hacki/models/models.dart';
+import 'package:linkify/linkify.dart';
 
 /// [BuildableComment] is a subtype of [Comment] which stores
 /// the corresponding [LinkifyElement] for faster widget building.
