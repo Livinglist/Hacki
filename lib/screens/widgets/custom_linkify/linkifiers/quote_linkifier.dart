@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:linkify/linkify.dart';
 
 final RegExp _quoteRegex = RegExp(
   r'(?=^> )(.*?)(?=\n|$)',

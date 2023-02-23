@@ -30,7 +30,6 @@ dependencies:
   flutter_fadein: ^2.0.0
   flutter_feather_icons: 2.0.0+1
   flutter_inappwebview: ^5.7.2+3
-  flutter_linkify: ^5.0.2
   flutter_local_notifications: ^13.0.0
   flutter_secure_storage: ^8.0.0
   flutter_siri_suggestions: ^2.1.0
