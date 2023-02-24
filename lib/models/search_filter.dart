@@ -92,6 +92,15 @@ class StoryFilter implements TagFilter {
   }
 }
 
+class CommentFilter implements TagFilter {
+  CommentFilter();
+
+  @override
+  String get query {
+    return 'comment';
+  }
+}
+
 class CombinedFilter implements TagFilter {
   CombinedFilter({required this.filters});
 

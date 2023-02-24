@@ -16,15 +16,15 @@ class SearchState extends Equatable {
 
   SearchState.init()
       : status = SearchStatus.initial,
-        results = <Story>[],
+        results = <Item>[],
         params = SearchParams.init();
 
-  final List<Story> results;
+  final List<Item> results;
   final SearchStatus status;
   final SearchParams params;
 
   SearchState copyWith({
-    List<Story>? results,
+    List<Item>? results,
     SearchStatus? status,
     SearchParams? params,
   }) {

@@ -171,19 +171,30 @@ class _SearchScreenState extends State<SearchScreen> {
                         children: <Widget>[
                           ...state.results
                               .map(
-                                (Story e) => <Widget>[
-                                  FadeIn(
-                                    child: StoryTile(
-                                      showWebPreview:
-                                          prefState.complexStoryTileEnabled,
-                                      showMetadata: prefState.metadataEnabled,
-                                      showUrl: prefState.urlEnabled,
-                                      story: e,
-                                      onTap: () => goToItemScreen(
-                                        args: ItemScreenArgs(item: e),
+                                (Item e) => <Widget>[
+                                  if (e is Story)
+                                    FadeIn(
+                                      child: StoryTile(
+                                        showWebPreview:
+                                            prefState.complexStoryTileEnabled,
+                                        showMetadata: prefState.metadataEnabled,
+                                        showUrl: prefState.urlEnabled,
+                                        story: e,
+                                        onTap: () => goToItemScreen(
+                                          args: ItemScreenArgs(item: e),
+                                        ),
+                                      ),
+                                    )
+                                  else if (e is Comment)
+                                    FadeIn(
+                                      child: CommentTile(
+                                        myUsername: '',
+                                        actionable: false,
+                                        comment: e,
+                                        onStoryLinkTapped: (_) {},
+                                        fetchMode: FetchMode.eager,
                                       ),
                                     ),
-                                  ),
                                   if (!prefState.complexStoryTileEnabled)
                                     const Divider(
                                       height: Dimens.zero,

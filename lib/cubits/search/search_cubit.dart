@@ -15,19 +15,19 @@ class SearchCubit extends Cubit<SearchState> {
 
   final SearchRepository _searchRepository;
 
-  StreamSubscription<Story>? streamSubscription;
+  StreamSubscription<Item>? streamSubscription;
 
   void search(String query) {
     streamSubscription?.cancel();
     emit(
       state.copyWith(
-        results: <Story>[],
+        results: <Item>[],
         status: SearchStatus.loading,
         params: state.params.copyWith(query: query, page: 0),
       ),
     );
     streamSubscription =
-        _searchRepository.search(params: state.params).listen(_onStoryFetched)
+        _searchRepository.search(params: state.params).listen(_onItemFetched)
           ..onDone(() {
             emit(state.copyWith(status: SearchStatus.loaded));
           });
@@ -43,7 +43,7 @@ class SearchCubit extends Cubit<SearchState> {
         ),
       );
       streamSubscription =
-          _searchRepository.search(params: state.params).listen(_onStoryFetched)
+          _searchRepository.search(params: state.params).listen(_onItemFetched)
             ..onDone(() {
               emit(state.copyWith(status: SearchStatus.loaded));
             });
@@ -126,10 +126,10 @@ class SearchCubit extends Cubit<SearchState> {
     }
   }
 
-  void _onStoryFetched(Story story) {
+  void _onItemFetched(Item item) {
     emit(
       state.copyWith(
-        results: List<Story>.from(state.results)..add(story),
+        results: List<Item>.from(state.results)..add(item),
       ),
     );
   }

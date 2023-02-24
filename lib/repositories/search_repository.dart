@@ -13,7 +13,7 @@ class SearchRepository {
 
   final Dio _dio;
 
-  Stream<Story> search({
+  Stream<Item> search({
     required SearchParams params,
   }) async* {
     final String url = '$_baseUrl${params.filteredQuery}';
@@ -36,37 +36,53 @@ class SearchRepository {
       final int score = hit['points'] as int? ?? 0;
       final int descendants = hit['num_comments'] as int? ?? 0;
 
-      // Getting rid of comments, only keeping stories for convenience.
-      // Don't judge me.
-      if (title.isEmpty) {
-        continue;
-      }
-
       final String url = hit['url'] as String? ?? '';
       final String type =
           title.toLowerCase().contains('poll:') ? 'poll' : 'story';
-      final String text = hit['story_text'] as String? ?? '';
-      final String parsedText = await compute<String, String>(
-        HtmlUtil.parseHtml,
-        text,
-      );
       final int id = int.parse(hit['objectID'] as String? ?? '0');
 
-      final Story story = Story(
-        descendants: descendants,
-        id: id,
-        score: score,
-        time: createdAt,
-        by: by,
-        title: title,
-        text: parsedText,
-        url: url,
-        type: type,
-        // response doesn't contain kids and parts.
-        kids: const <int>[],
-        parts: const <int>[],
-      );
-      yield story;
+      if (title.isEmpty) {
+        final String text = hit['comment_text'] as String? ?? '';
+        final String parsedText = await compute<String, String>(
+          HtmlUtil.parseHtml,
+          text,
+        );
+        final int parentId = hit['parent_id'] as int? ?? 0;
+        final Comment comment = Comment(
+          id: id,
+          score: score,
+          time: createdAt,
+          by: by,
+          text: parsedText,
+          kids: const <int>[],
+          parent: parentId,
+          dead: false,
+          deleted: false,
+          level: 0,
+        );
+        yield comment;
+      } else {
+        final String text = hit['story_text'] as String? ?? '';
+        final String parsedText = await compute<String, String>(
+          HtmlUtil.parseHtml,
+          text,
+        );
+        final Story story = Story(
+          descendants: descendants,
+          id: id,
+          score: score,
+          time: createdAt,
+          by: by,
+          title: title,
+          text: parsedText,
+          url: url,
+          type: type,
+          // response doesn't contain kids and parts.
+          kids: const <int>[],
+          parts: const <int>[],
+        );
+        yield story;
+      }
     }
     return;
   }
