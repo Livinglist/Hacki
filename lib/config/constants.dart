@@ -66,6 +66,8 @@ abstract class Constants {
   ].pickRandomly()!;
 
   static final String errorMessage = 'Something went wrong...$sadFace';
+  static final String loginErrorMessage =
+      '''Failed to log in $sadFace, this could happen if your account requires a CAPTCHA, please try logging in inside a browser to see if this is the case, if so, you may try logging in here again later after CAPTCHA is no longer needed.''';
 }
 
 abstract class RegExpConstants {
