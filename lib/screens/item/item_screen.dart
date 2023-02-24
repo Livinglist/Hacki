@@ -74,7 +74,7 @@ class ItemScreen extends StatefulWidget {
                     context.read<PreferenceCubit>().state.order,
               )..init(
                   onlyShowTargetComment: args.onlyShowTargetComment,
-                  targetParents: args.targetComments,
+                  targetAncestors: args.targetComments,
                   useCommentCache: args.useCommentCache,
                 ),
             ),
@@ -116,7 +116,7 @@ class ItemScreen extends StatefulWidget {
                     context.read<PreferenceCubit>().state.order,
               )..init(
                   onlyShowTargetComment: args.onlyShowTargetComment,
-                  targetParents: args.targetComments,
+                  targetAncestors: args.targetComments,
                 ),
             ),
           ],
@@ -453,7 +453,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
               children: <Widget>[
                 ListTile(
                   leading: const Icon(Icons.av_timer),
-                  title: const Text('View parents'),
+                  title: const Text('View ancestors'),
                   onTap: () {
                     Navigator.pop(context);
                     onTimeMachineActivated(comment);

@@ -52,7 +52,7 @@ class TimeMachineDialog extends StatelessWidget {
                           const SizedBox(
                             width: Dimens.pt8,
                           ),
-                          const Text('Parents:'),
+                          const Text('Ancestors:'),
                           const Spacer(),
                           IconButton(
                             icon: const Icon(
@@ -67,7 +67,8 @@ class TimeMachineDialog extends StatelessWidget {
                       Expanded(
                         child: ListView(
                           children: <Widget>[
-                            for (final Comment c in state.parents) ...<Widget>[
+                            for (final Comment c
+                                in state.ancestors) ...<Widget>[
                               CommentTile(
                                 comment: c,
                                 myUsername:

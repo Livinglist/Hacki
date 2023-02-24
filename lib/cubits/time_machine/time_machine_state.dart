@@ -1,18 +1,18 @@
 part of 'time_machine_cubit.dart';
 
 class TimeMachineState extends Equatable {
-  const TimeMachineState({required this.parents});
+  const TimeMachineState({required this.ancestors});
 
-  TimeMachineState.init() : parents = <Comment>[];
+  TimeMachineState.init() : ancestors = <Comment>[];
 
-  final List<Comment> parents;
+  final List<Comment> ancestors;
 
   TimeMachineState copyWith({
-    List<Comment>? parents,
+    List<Comment>? ancestors,
   }) {
-    return TimeMachineState(parents: parents ?? this.parents);
+    return TimeMachineState(ancestors: ancestors ?? this.ancestors);
   }
 
   @override
-  List<Object?> get props => <Object?>[parents];
+  List<Object?> get props => <Object?>[ancestors];
 }
