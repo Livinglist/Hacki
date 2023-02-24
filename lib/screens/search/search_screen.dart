@@ -12,7 +12,15 @@ import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  const SearchScreen({
+    super.key,
+    this.fromUserDialog = false,
+  });
+
+  /// If user gets to [SearchScreen] from user dialog on Tablet,
+  /// we navigate to [ItemScreen] directly instead of injecting the
+  /// item into [SplitViewCubit].
+  final bool fromUserDialog;
 
   @override
   _SearchScreenState createState() => _SearchScreenState();
@@ -37,6 +45,7 @@ class _SearchScreenState extends State<SearchScreen> {
               resizeToAvoidBottomInset: false,
               body: Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.symmetric(
@@ -68,7 +77,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     child: Row(
                       children: <Widget>[
                         const SizedBox(
-                          width: 8,
+                          width: Dimens.pt8,
                         ),
                         DateTimeRangeFilterChip(
                           filter: state.params.get<DateTimeRangeFilter>(),
@@ -121,7 +130,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         for (final TypeTagFilter filter
                             in TypeTagFilter.all) ...<Widget>[
                           const SizedBox(
-                            width: 8,
+                            width: Dimens.pt8,
                           ),
                           CustomChip(
                             onSelected: (_) =>
@@ -143,17 +152,21 @@ class _SearchScreenState extends State<SearchScreen> {
                     const SizedBox(
                       height: Dimens.pt100,
                     ),
-                    const CustomCircularProgressIndicator(),
+                    const Center(
+                      child: CustomCircularProgressIndicator(),
+                    ),
                   ],
                   if (state.status == SearchStatus.loaded &&
                       state.results.isEmpty) ...<Widget>[
                     const SizedBox(
                       height: Dimens.pt100,
                     ),
-                    const Text(
-                      'Nothing found...',
-                      style: TextStyle(
-                        color: Palette.grey,
+                    const Center(
+                      child: Text(
+                        'Nothing found...',
+                        style: TextStyle(
+                          color: Palette.grey,
+                        ),
                       ),
                     ),
                   ],
@@ -206,6 +219,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         story: e,
                                         onTap: () => goToItemScreen(
                                           args: ItemScreenArgs(item: e),
+                                          forceNewScreen: widget.fromUserDialog,
                                         ),
                                       ),
                                     )
@@ -219,6 +233,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         fetchMode: FetchMode.eager,
                                         onTap: () => goToItemScreen(
                                           args: ItemScreenArgs(item: e),
+                                          forceNewScreen: widget.fromUserDialog,
                                         ),
                                       ),
                                     ),
