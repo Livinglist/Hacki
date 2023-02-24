@@ -1,2 +1,0 @@
-- Fixed app icon.
-- Added font size setting to comments screen.

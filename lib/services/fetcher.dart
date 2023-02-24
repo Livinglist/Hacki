@@ -6,7 +6,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
-import 'package:hacki/utils/html_util.dart';
+import 'package:hacki/utils/utils.dart';
+import 'package:logger/logger.dart';
 import 'package:path_provider_android/path_provider_android.dart';
 import 'package:path_provider_foundation/path_provider_foundation.dart';
 import 'package:shared_preferences_android/shared_preferences_android.dart';
@@ -34,14 +35,21 @@ abstract class Fetcher {
   static const int _subscriptionUpperLimit = 15;
 
   static Future<void> fetchReplies() async {
-    final PreferenceRepository preferenceRepository = PreferenceRepository();
+    final logger = Logger();
+    final PreferenceRepository preferenceRepository =
+        PreferenceRepository(logger: logger);
+
     final AuthRepository authRepository = AuthRepository(
       preferenceRepository: preferenceRepository,
+      logger: logger,
     );
+
     final StoriesRepository storiesRepository = StoriesRepository();
     final SembastRepository sembastRepository = SembastRepository();
+
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();
+
     final String? username = await authRepository.username;
     final List<int> unreadIds = await preferenceRepository.unreadCommentsIds;
 
