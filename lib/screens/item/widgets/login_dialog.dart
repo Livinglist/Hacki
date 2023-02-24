@@ -90,9 +90,10 @@ class LoginDialog extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(
                     left: Dimens.pt18,
+                    right: Dimens.pt6,
                   ),
                   child: Text(
-                    Constants.errorMessage,
+                    Constants.loginErrorMessage,
                     style: const TextStyle(
                       color: Palette.grey,
                       fontSize: TextDimens.pt12,

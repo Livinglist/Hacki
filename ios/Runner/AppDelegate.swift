@@ -18,6 +18,8 @@ import flutter_local_notifications
         center.delegate = self
         
         WorkmanagerPlugin.register(with: self.registrar(forPlugin: "be.tramckrijte.workmanager.WorkmanagerPlugin")!)
+
+        WorkmanagerPlugin.registerTask(withIdentifier: "workmanager.background.task")
         
         if #available(iOS 10.0, *) {
             UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate

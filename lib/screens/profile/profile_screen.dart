@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
@@ -34,15 +35,6 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   PageType pageType = PageType.notification;
 
-  final List<String> magicWords = <String>[
-    'to be a lord.',
-    'to conquer the world.',
-    'to be over the rainbow!',
-    'to bless humanity with long-lasting peace.',
-    'to save the world',
-    'to infinity and beyond!',
-  ];
-
   @override
   void dispose() {
     super.dispose();
@@ -56,7 +48,6 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final String magicWord = (magicWords..shuffle()).first;
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (BuildContext context, AuthState authState) {
         return BlocConsumer<NotificationCubit, NotificationState>(
@@ -238,7 +229,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ),
                 Settings(
                   authState: authState,
-                  magicWord: magicWord,
+                  magicWord: Constants.magicWord,
                   pageType: pageType,
                   onLoginTapped: onLoginTapped,
                 ),
