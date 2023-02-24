@@ -8,8 +8,19 @@ abstract class NumericFilter extends SearchFilter {}
 
 abstract class TagFilter extends SearchFilter {}
 
+abstract class TypeTagFilter extends TagFilter {
+  static List<TypeTagFilter> all = <TypeTagFilter>[
+    const StoryFilter(),
+    const PollFilter(),
+    const CommentFilter(),
+    const FrontPageFilter(),
+    const AskHnFilter(),
+    const ShowHnFilter(),
+  ];
+}
+
 class DateTimeRangeFilter implements NumericFilter {
-  DateTimeRangeFilter({
+  const DateTimeRangeFilter({
     this.startTime,
     this.endTime,
   });
@@ -37,7 +48,7 @@ class DateTimeRangeFilter implements NumericFilter {
 }
 
 class PostedByFilter implements TagFilter {
-  PostedByFilter({required this.author});
+  const PostedByFilter({required this.author});
 
   final String author;
 
@@ -47,8 +58,8 @@ class PostedByFilter implements TagFilter {
   }
 }
 
-class FrontPageFilter implements TagFilter {
-  FrontPageFilter();
+class FrontPageFilter implements TypeTagFilter {
+  const FrontPageFilter();
 
   @override
   String get query {
@@ -56,8 +67,8 @@ class FrontPageFilter implements TagFilter {
   }
 }
 
-class ShowHnFilter implements TagFilter {
-  ShowHnFilter();
+class ShowHnFilter implements TypeTagFilter {
+  const ShowHnFilter();
 
   @override
   String get query {
@@ -65,8 +76,8 @@ class ShowHnFilter implements TagFilter {
   }
 }
 
-class AskHnFilter implements TagFilter {
-  AskHnFilter();
+class AskHnFilter implements TypeTagFilter {
+  const AskHnFilter();
 
   @override
   String get query {
@@ -74,8 +85,8 @@ class AskHnFilter implements TagFilter {
   }
 }
 
-class PollFilter implements TagFilter {
-  PollFilter();
+class PollFilter implements TypeTagFilter {
+  const PollFilter();
 
   @override
   String get query {
@@ -83,8 +94,8 @@ class PollFilter implements TagFilter {
   }
 }
 
-class StoryFilter implements TagFilter {
-  StoryFilter();
+class StoryFilter implements TypeTagFilter {
+  const StoryFilter();
 
   @override
   String get query {
@@ -92,8 +103,8 @@ class StoryFilter implements TagFilter {
   }
 }
 
-class CommentFilter implements TagFilter {
-  CommentFilter();
+class CommentFilter implements TypeTagFilter {
+  const CommentFilter();
 
   @override
   String get query {
@@ -102,7 +113,7 @@ class CommentFilter implements TagFilter {
 }
 
 class CombinedFilter implements TagFilter {
-  CombinedFilter({required this.filters});
+  const CombinedFilter({required this.filters});
 
   final List<TagFilter> filters;
 

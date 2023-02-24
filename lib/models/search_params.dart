@@ -70,13 +70,6 @@ class SearchParams extends Equatable {
         filters.whereType<NumericFilter>();
     final List<TagFilter> tagFilters = <TagFilter>[
       ...filters.whereType<TagFilter>(),
-      CombinedFilter(
-        filters: <TagFilter>[
-          StoryFilter(),
-          PollFilter(),
-          CommentFilter(),
-        ],
-      ),
     ];
 
     if (numericFilters.isNotEmpty) {

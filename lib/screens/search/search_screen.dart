@@ -114,6 +114,30 @@ class _SearchScreenState extends State<SearchScreen> {
                       ],
                     ),
                   ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: <Widget>[
+                        for (final TypeTagFilter filter
+                            in TypeTagFilter.all) ...<Widget>[
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          CustomChip(
+                            onSelected: (_) =>
+                                context.read<SearchCubit>().onToggled(filter),
+                            selected: context
+                                    .read<SearchCubit>()
+                                    .state
+                                    .params
+                                    .get<TypeTagFilter>() ==
+                                filter,
+                            label: filter.query,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
                   if (state.status == SearchStatus.loading &&
                       state.results.isEmpty) ...<Widget>[
                     const SizedBox(
@@ -193,6 +217,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                         comment: e,
                                         onStoryLinkTapped: (_) {},
                                         fetchMode: FetchMode.eager,
+                                        onTap: () => goToItemScreen(
+                                          args: ItemScreenArgs(item: e),
+                                        ),
                                       ),
                                     ),
                                   if (!prefState.complexStoryTileEnabled)

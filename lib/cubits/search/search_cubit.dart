@@ -80,6 +80,16 @@ class SearchCubit extends Cubit<SearchState> {
     search(state.params.query);
   }
 
+  void onToggled(TypeTagFilter filter) {
+    if (state.params.contains<TypeTagFilter>() &&
+        state.params.get<TypeTagFilter>() == filter) {
+      removeFilter<TypeTagFilter>();
+    } else {
+      removeFilter<TypeTagFilter>();
+      addFilter<TypeTagFilter>(filter);
+    }
+  }
+
   void onSortToggled() {
     emit(
       state.copyWith(

@@ -25,6 +25,7 @@ class CommentTile extends StatelessWidget {
     this.opUsername,
     this.actionable = true,
     this.level = 0,
+    this.onTap,
   });
 
   final String? myUsername;
@@ -37,6 +38,7 @@ class CommentTile extends StatelessWidget {
   final void Function(Comment)? onEditTapped;
   final void Function(Comment)? onRightMoreTapped;
   final void Function(String) onStoryLinkTapped;
+  final VoidCallback? onTap;
   final FetchMode fetchMode;
 
   static final Map<int, Color> _colors = <int, Color>{};
@@ -120,6 +122,8 @@ class CommentTile extends StatelessWidget {
                       if (actionable) {
                         HapticFeedback.selectionClick();
                         context.read<CollapseCubit>().collapse();
+                      } else {
+                        onTap?.call();
                       }
                     },
                     child: Column(

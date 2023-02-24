@@ -24,7 +24,7 @@ class PostedByFilterChip extends StatelessWidget {
         onChanged(username);
       },
       selected: filter != null,
-      label: '''posted by ${filter?.author ?? ''}''',
+      label: '''posted by ${filter?.author ?? ''}'''.trimRight(),
     );
   }
 
