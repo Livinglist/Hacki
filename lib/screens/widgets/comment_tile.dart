@@ -33,13 +33,16 @@ class CommentTile extends StatelessWidget {
   final Comment comment;
   final int level;
   final bool actionable;
+  final FetchMode fetchMode;
+
   final void Function(Comment)? onReplyTapped;
   final void Function(Comment, Rect?)? onMoreTapped;
   final void Function(Comment)? onEditTapped;
   final void Function(Comment)? onRightMoreTapped;
   final void Function(String) onStoryLinkTapped;
+
+  /// Override for search screen.
   final VoidCallback? onTap;
-  final FetchMode fetchMode;
 
   static final Map<int, Color> _colors = <int, Color>{};
 
@@ -194,6 +197,7 @@ class CommentTile extends StatelessWidget {
                                       key: ValueKey<int>(comment.id),
                                       comment: comment,
                                       onLinkTapped: _onLinkTapped,
+                                      onTap: onTap,
                                     ),
                                   ),
                                 ),
@@ -343,10 +347,14 @@ class _CommentText extends StatelessWidget {
     super.key,
     required this.comment,
     required this.onLinkTapped,
+    this.onTap,
   });
 
   final Comment comment;
   final void Function(LinkableElement) onLinkTapped;
+
+  /// Override for search screen.
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -367,7 +375,13 @@ class _CommentText extends StatelessWidget {
           linkStyle: linkStyle,
           onOpen: onLinkTapped,
         ),
-        onTap: () => onTextTapped(context),
+        onTap: () {
+          if (onTap == null) {
+            onTextTapped(context);
+          } else {
+            onTap!.call();
+          }
+        },
         contextMenuBuilder: (
           BuildContext context,
           EditableTextState editableTextState,
@@ -384,7 +398,13 @@ class _CommentText extends StatelessWidget {
         style: style,
         linkStyle: linkStyle,
         onOpen: onLinkTapped,
-        onTap: () => onTextTapped(context),
+        onTap: () {
+          if (onTap == null) {
+            onTextTapped(context);
+          } else {
+            onTap!.call();
+          }
+        },
       );
     }
   }
