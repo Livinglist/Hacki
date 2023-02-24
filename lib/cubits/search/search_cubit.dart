@@ -69,6 +69,8 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   void removeFilter<T extends SearchFilter>() {
+    if (state.params.contains<T>() == false) return;
+
     emit(
       state.copyWith(
         params: state.params.copyWithFilterRemoved<T>(),
@@ -88,6 +90,40 @@ class SearchCubit extends Cubit<SearchState> {
     );
 
     search(state.params.query);
+  }
+
+  void onDateTimeRangeUpdated(DateTime start, DateTime end) {
+    final DateTime updatedStart = start.copyWith(
+      second: 0,
+      millisecond: 0,
+      microsecond: 0,
+    );
+    final DateTime updatedEnd = end.copyWith(
+      second: 0,
+      millisecond: 0,
+      microsecond: 0,
+    );
+    final DateTime? existingStart =
+        state.params.get<DateTimeRangeFilter>()?.startTime;
+    final DateTime? existingEnd =
+        state.params.get<DateTimeRangeFilter>()?.endTime;
+
+    if (existingStart == updatedStart && existingEnd == updatedEnd) return;
+
+    addFilter(
+      DateTimeRangeFilter(
+        startTime: updatedStart,
+        endTime: updatedEnd,
+      ),
+    );
+  }
+
+  void onPostedByChanged(String? username) {
+    if (username == null) {
+      removeFilter<PostedByFilter>();
+    } else {
+      addFilter(PostedByFilter(author: username));
+    }
   }
 
   void _onStoryFetched(Story story) {

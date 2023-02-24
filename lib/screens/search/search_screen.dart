@@ -72,17 +72,20 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                         DateTimeRangeFilterChip(
                           filter: state.params.get<DateTimeRangeFilter>(),
-                          onDateTimeRangeUpdated:
-                              (DateTime start, DateTime end) =>
-                                  context.read<SearchCubit>().addFilter(
-                                        DateTimeRangeFilter(
-                                          startTime: start,
-                                          endTime: end,
-                                        ),
-                                      ),
+                          onDateTimeRangeUpdated: context
+                              .read<SearchCubit>()
+                              .onDateTimeRangeUpdated,
                           onDateTimeRangeRemoved: context
                               .read<SearchCubit>()
                               .removeFilter<DateTimeRangeFilter>,
+                        ),
+                        const SizedBox(
+                          width: Dimens.pt8,
+                        ),
+                        PostedByFilterChip(
+                          filter: state.params.get<PostedByFilter>(),
+                          onChanged:
+                              context.read<SearchCubit>().onPostedByChanged,
                         ),
                         const SizedBox(
                           width: Dimens.pt8,
@@ -100,13 +103,9 @@ class _SearchScreenState extends State<SearchScreen> {
                             in CustomDateTimeRange.values) ...<Widget>[
                           CustomRangeFilterChip(
                             range: range,
-                            onTap: (DateTime start, DateTime end) =>
-                                context.read<SearchCubit>().addFilter(
-                                      DateTimeRangeFilter(
-                                        startTime: start,
-                                        endTime: end,
-                                      ),
-                                    ),
+                            onTap: context
+                                .read<SearchCubit>()
+                                .onDateTimeRangeUpdated,
                           ),
                           const SizedBox(
                             width: Dimens.pt8,
@@ -121,6 +120,18 @@ class _SearchScreenState extends State<SearchScreen> {
                       height: Dimens.pt100,
                     ),
                     const CustomCircularProgressIndicator(),
+                  ],
+                  if (state.status == SearchStatus.loaded &&
+                      state.results.isEmpty) ...<Widget>[
+                    const SizedBox(
+                      height: Dimens.pt100,
+                    ),
+                    const Text(
+                      'Nothing found...',
+                      style: TextStyle(
+                        color: Palette.grey,
+                      ),
+                    ),
                   ],
                   Expanded(
                     child: SmartRefresher(
