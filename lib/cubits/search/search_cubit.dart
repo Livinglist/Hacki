@@ -15,19 +15,19 @@ class SearchCubit extends Cubit<SearchState> {
 
   final SearchRepository _searchRepository;
 
-  StreamSubscription<Story>? streamSubscription;
+  StreamSubscription<Item>? streamSubscription;
 
   void search(String query) {
     streamSubscription?.cancel();
     emit(
       state.copyWith(
-        results: <Story>[],
+        results: <Item>[],
         status: SearchStatus.loading,
         params: state.params.copyWith(query: query, page: 0),
       ),
     );
     streamSubscription =
-        _searchRepository.search(params: state.params).listen(_onStoryFetched)
+        _searchRepository.search(params: state.params).listen(_onItemFetched)
           ..onDone(() {
             emit(state.copyWith(status: SearchStatus.loaded));
           });
@@ -43,7 +43,7 @@ class SearchCubit extends Cubit<SearchState> {
         ),
       );
       streamSubscription =
-          _searchRepository.search(params: state.params).listen(_onStoryFetched)
+          _searchRepository.search(params: state.params).listen(_onItemFetched)
             ..onDone(() {
               emit(state.copyWith(status: SearchStatus.loaded));
             });
@@ -69,6 +69,8 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   void removeFilter<T extends SearchFilter>() {
+    if (state.params.contains<T>() == false) return;
+
     emit(
       state.copyWith(
         params: state.params.copyWithFilterRemoved<T>(),
@@ -76,6 +78,16 @@ class SearchCubit extends Cubit<SearchState> {
     );
 
     search(state.params.query);
+  }
+
+  void onToggled(TypeTagFilter filter) {
+    if (state.params.contains<TypeTagFilter>() &&
+        state.params.get<TypeTagFilter>() == filter) {
+      removeFilter<TypeTagFilter>();
+    } else {
+      removeFilter<TypeTagFilter>();
+      addFilter<TypeTagFilter>(filter);
+    }
   }
 
   void onSortToggled() {
@@ -90,10 +102,44 @@ class SearchCubit extends Cubit<SearchState> {
     search(state.params.query);
   }
 
-  void _onStoryFetched(Story story) {
+  void onDateTimeRangeUpdated(DateTime start, DateTime end) {
+    final DateTime updatedStart = start.copyWith(
+      second: 0,
+      millisecond: 0,
+      microsecond: 0,
+    );
+    final DateTime updatedEnd = end.copyWith(
+      second: 0,
+      millisecond: 0,
+      microsecond: 0,
+    );
+    final DateTime? existingStart =
+        state.params.get<DateTimeRangeFilter>()?.startTime;
+    final DateTime? existingEnd =
+        state.params.get<DateTimeRangeFilter>()?.endTime;
+
+    if (existingStart == updatedStart && existingEnd == updatedEnd) return;
+
+    addFilter(
+      DateTimeRangeFilter(
+        startTime: updatedStart,
+        endTime: updatedEnd,
+      ),
+    );
+  }
+
+  void onPostedByChanged(String? username) {
+    if (username == null) {
+      removeFilter<PostedByFilter>();
+    } else {
+      addFilter(PostedByFilter(author: username));
+    }
+  }
+
+  void _onItemFetched(Item item) {
     emit(
       state.copyWith(
-        results: List<Story>.from(state.results)..add(story),
+        results: List<Item>.from(state.results)..add(item),
       ),
     );
   }

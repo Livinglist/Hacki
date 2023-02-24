@@ -6,6 +6,7 @@ import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/item/models/models.dart';
+import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
@@ -88,6 +89,7 @@ class MorePopupMenu extends StatelessWidget {
                             state.user.description,
                           ),
                           onTap: () {
+                            Navigator.pop(context);
                             showDialog<void>(
                               context: context,
                               builder: (BuildContext context) => AlertDialog(
@@ -121,6 +123,15 @@ class MorePopupMenu extends StatelessWidget {
                                         },
                                       ),
                                 actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      onSearchUserTapped(context);
+                                    },
+                                    child: const Text(
+                                      'Search',
+                                    ),
+                                  ),
                                   TextButton(
                                     onPressed: () => Navigator.pop(context),
                                     child: const Text(
@@ -211,6 +222,47 @@ class MorePopupMenu extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+
+  void onSearchUserTapped(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return BlocProvider<SearchCubit>(
+          create: (_) => SearchCubit()
+            ..addFilter(
+              PostedByFilter(
+                author: item.by,
+              ),
+            ),
+          child: Container(
+            height: MediaQuery.of(context).size.height - Dimens.pt120,
+            color: Theme.of(context).canvasColor,
+            margin: const EdgeInsets.only(top: Dimens.pt12),
+            child: Material(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    height: Dimens.pt4,
+                    width: Dimens.pt24,
+                    decoration: BoxDecoration(
+                      color: Palette.grey,
+                      borderRadius: BorderRadius.circular(Dimens.pt16),
+                    ),
+                  ),
+                  const Expanded(
+                    child: SearchScreen(
+                      fromUserDialog: true,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

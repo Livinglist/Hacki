@@ -20,20 +20,20 @@ class TimeMachineCubit extends Cubit<TimeMachineState> {
   final CommentCache _commentCache;
 
   Future<void> activateTimeMachine(Comment comment) async {
-    emit(state.copyWith(parents: <Comment>[]));
+    emit(state.copyWith(ancestors: <Comment>[]));
 
-    final List<Comment> parents = <Comment>[];
+    final List<Comment> ancestors = <Comment>[];
     Comment? parent = _commentCache.getComment(comment.parent);
     parent ??= await _sembastRepository.getCachedComment(id: comment.parent);
 
     while (parent != null) {
-      parents.insert(0, parent);
+      ancestors.insert(0, parent);
 
       final int parentId = parent.parent;
       parent = _commentCache.getComment(parentId);
       parent ??= await _sembastRepository.getCachedComment(id: parentId);
     }
 
-    emit(state.copyWith(parents: parents));
+    emit(state.copyWith(ancestors: ancestors));
   }
 }

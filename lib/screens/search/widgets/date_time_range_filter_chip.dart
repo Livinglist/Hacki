@@ -35,7 +35,7 @@ class DateTimeRangeFilterChip extends StatelessWidget {
       },
       selected: filter != null,
       label:
-          '''from ${_formatDateTime(filter?.startTime) ?? 'START DATE'} to ${_formatDateTime(filter?.endTime) ?? 'END DATE'}''',
+          '''from ${_formatDateTime(filter?.startTime) ?? 'X'} to ${_formatDateTime(filter?.endTime) ?? 'Y'}''',
     );
   }
 

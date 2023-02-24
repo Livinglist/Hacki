@@ -12,7 +12,15 @@ import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  const SearchScreen({
+    super.key,
+    this.fromUserDialog = false,
+  });
+
+  /// If user gets to [SearchScreen] from user dialog on Tablet,
+  /// we navigate to [ItemScreen] directly instead of injecting the
+  /// item into [SplitViewCubit].
+  final bool fromUserDialog;
 
   @override
   _SearchScreenState createState() => _SearchScreenState();
@@ -37,6 +45,7 @@ class _SearchScreenState extends State<SearchScreen> {
               resizeToAvoidBottomInset: false,
               body: Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.symmetric(
@@ -68,21 +77,24 @@ class _SearchScreenState extends State<SearchScreen> {
                     child: Row(
                       children: <Widget>[
                         const SizedBox(
-                          width: 8,
+                          width: Dimens.pt8,
                         ),
                         DateTimeRangeFilterChip(
                           filter: state.params.get<DateTimeRangeFilter>(),
-                          onDateTimeRangeUpdated:
-                              (DateTime start, DateTime end) =>
-                                  context.read<SearchCubit>().addFilter(
-                                        DateTimeRangeFilter(
-                                          startTime: start,
-                                          endTime: end,
-                                        ),
-                                      ),
+                          onDateTimeRangeUpdated: context
+                              .read<SearchCubit>()
+                              .onDateTimeRangeUpdated,
                           onDateTimeRangeRemoved: context
                               .read<SearchCubit>()
                               .removeFilter<DateTimeRangeFilter>,
+                        ),
+                        const SizedBox(
+                          width: Dimens.pt8,
+                        ),
+                        PostedByFilterChip(
+                          filter: state.params.get<PostedByFilter>(),
+                          onChanged:
+                              context.read<SearchCubit>().onPostedByChanged,
                         ),
                         const SizedBox(
                           width: Dimens.pt8,
@@ -100,16 +112,36 @@ class _SearchScreenState extends State<SearchScreen> {
                             in CustomDateTimeRange.values) ...<Widget>[
                           CustomRangeFilterChip(
                             range: range,
-                            onTap: (DateTime start, DateTime end) =>
-                                context.read<SearchCubit>().addFilter(
-                                      DateTimeRangeFilter(
-                                        startTime: start,
-                                        endTime: end,
-                                      ),
-                                    ),
+                            onTap: context
+                                .read<SearchCubit>()
+                                .onDateTimeRangeUpdated,
                           ),
                           const SizedBox(
                             width: Dimens.pt8,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: <Widget>[
+                        for (final TypeTagFilter filter
+                            in TypeTagFilter.all) ...<Widget>[
+                          const SizedBox(
+                            width: Dimens.pt8,
+                          ),
+                          CustomChip(
+                            onSelected: (_) =>
+                                context.read<SearchCubit>().onToggled(filter),
+                            selected: context
+                                    .read<SearchCubit>()
+                                    .state
+                                    .params
+                                    .get<TypeTagFilter>() ==
+                                filter,
+                            label: filter.query,
                           ),
                         ],
                       ],
@@ -120,7 +152,23 @@ class _SearchScreenState extends State<SearchScreen> {
                     const SizedBox(
                       height: Dimens.pt100,
                     ),
-                    const CustomCircularProgressIndicator(),
+                    const Center(
+                      child: CustomCircularProgressIndicator(),
+                    ),
+                  ],
+                  if (state.status == SearchStatus.loaded &&
+                      state.results.isEmpty) ...<Widget>[
+                    const SizedBox(
+                      height: Dimens.pt100,
+                    ),
+                    const Center(
+                      child: Text(
+                        'Nothing found...',
+                        style: TextStyle(
+                          color: Palette.grey,
+                        ),
+                      ),
+                    ),
                   ],
                   Expanded(
                     child: SmartRefresher(
@@ -160,19 +208,35 @@ class _SearchScreenState extends State<SearchScreen> {
                         children: <Widget>[
                           ...state.results
                               .map(
-                                (Story e) => <Widget>[
-                                  FadeIn(
-                                    child: StoryTile(
-                                      showWebPreview:
-                                          prefState.complexStoryTileEnabled,
-                                      showMetadata: prefState.metadataEnabled,
-                                      showUrl: prefState.urlEnabled,
-                                      story: e,
-                                      onTap: () => goToItemScreen(
-                                        args: ItemScreenArgs(item: e),
+                                (Item e) => <Widget>[
+                                  if (e is Story)
+                                    FadeIn(
+                                      child: StoryTile(
+                                        showWebPreview:
+                                            prefState.complexStoryTileEnabled,
+                                        showMetadata: prefState.metadataEnabled,
+                                        showUrl: prefState.urlEnabled,
+                                        story: e,
+                                        onTap: () => goToItemScreen(
+                                          args: ItemScreenArgs(item: e),
+                                          forceNewScreen: widget.fromUserDialog,
+                                        ),
+                                      ),
+                                    )
+                                  else if (e is Comment)
+                                    FadeIn(
+                                      child: CommentTile(
+                                        myUsername: '',
+                                        actionable: false,
+                                        comment: e,
+                                        onStoryLinkTapped: (_) {},
+                                        fetchMode: FetchMode.eager,
+                                        onTap: () => goToItemScreen(
+                                          args: ItemScreenArgs(item: e),
+                                          forceNewScreen: widget.fromUserDialog,
+                                        ),
                                       ),
                                     ),
-                                  ),
                                   if (!prefState.complexStoryTileEnabled)
                                     const Divider(
                                       height: Dimens.zero,

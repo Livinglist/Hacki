@@ -76,12 +76,12 @@ class CommentsCubit extends Cubit<CommentsState> {
   Future<void> init({
     bool onlyShowTargetComment = false,
     bool useCommentCache = false,
-    List<Comment>? targetParents,
+    List<Comment>? targetAncestors,
   }) async {
-    if (onlyShowTargetComment && (targetParents?.isNotEmpty ?? false)) {
+    if (onlyShowTargetComment && (targetAncestors?.isNotEmpty ?? false)) {
       emit(
         state.copyWith(
-          comments: targetParents,
+          comments: targetAncestors,
           onlyShowTargetComment: true,
           status: CommentsStatus.allLoaded,
         ),
@@ -89,8 +89,8 @@ class CommentsCubit extends Cubit<CommentsState> {
 
       _streamSubscription = _storiesRepository
           .fetchAllCommentsRecursivelyStream(
-            ids: targetParents!.last.kids,
-            level: targetParents.last.level + 1,
+            ids: targetAncestors!.last.kids,
+            level: targetAncestors.last.level + 1,
           )
           .asyncMap(_toBuildableComment)
           .whereNotNull()
