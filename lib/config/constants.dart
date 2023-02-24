@@ -59,6 +59,12 @@ abstract class Constants {
     '(ㆆ_ㆆ)',
   ].pickRandomly()!;
 
+  static final String magicWord = <String>[
+    'to be over the rainbow!',
+    'to infinity and beyond!',
+    'to see the future.',
+  ].pickRandomly()!;
+
   static final String errorMessage = 'Something went wrong...$sadFace';
 }
 

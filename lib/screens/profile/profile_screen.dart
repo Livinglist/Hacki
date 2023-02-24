@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
@@ -33,13 +34,6 @@ class _ProfileScreenState extends State<ProfileScreen>
   final Throttle throttle = Throttle(delay: const Duration(seconds: 2));
 
   PageType pageType = PageType.notification;
-
-  static final String magicWord = <String>[
-    'to be over the rainbow!',
-    'to bless humanity with long-lasting peace.',
-    'to save the world.',
-    'to infinity and beyond!',
-  ].pickRandomly()!;
 
   @override
   void dispose() {
@@ -235,7 +229,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ),
                 Settings(
                   authState: authState,
-                  magicWord: magicWord,
+                  magicWord: Constants.magicWord,
                   pageType: pageType,
                   onLoginTapped: onLoginTapped,
                 ),
