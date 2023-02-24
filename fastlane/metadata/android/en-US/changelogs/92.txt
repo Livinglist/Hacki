@@ -1,0 +1,5 @@
+- Customization of tab bar.
+- Option to enable swipe gesture for switching between tabs.
+- Access to action menu from home screen.
+- Access to Wikipedia and Wiktionary from text selection toolbar.
+- Quotes and emphasis rendering.

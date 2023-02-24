@@ -35,7 +35,7 @@ abstract class Fetcher {
   static const int _subscriptionUpperLimit = 15;
 
   static Future<void> fetchReplies() async {
-    final logger = Logger();
+    final Logger logger = Logger();
     final PreferenceRepository preferenceRepository =
         PreferenceRepository(logger: logger);
 

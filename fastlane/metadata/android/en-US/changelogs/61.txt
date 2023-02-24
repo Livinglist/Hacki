@@ -1,0 +1,1 @@
+- Offline mode now includes web pages.
