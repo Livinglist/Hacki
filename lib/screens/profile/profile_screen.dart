@@ -34,14 +34,12 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   PageType pageType = PageType.notification;
 
-  final List<String> magicWords = <String>[
-    'to be a lord.',
-    'to conquer the world.',
+  static final String magicWord = <String>[
     'to be over the rainbow!',
     'to bless humanity with long-lasting peace.',
-    'to save the world',
+    'to save the world.',
     'to infinity and beyond!',
-  ];
+  ].pickRandomly()!;
 
   @override
   void dispose() {
@@ -56,7 +54,6 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final String magicWord = (magicWords..shuffle()).first;
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (BuildContext context, AuthState authState) {
         return BlocConsumer<NotificationCubit, NotificationState>(
