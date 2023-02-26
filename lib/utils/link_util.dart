@@ -103,8 +103,6 @@ abstract class LinkUtil {
           );
         }
       });
-    } else {
-      launch(link);
     }
   }
 }

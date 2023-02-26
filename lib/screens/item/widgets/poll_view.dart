@@ -62,29 +62,29 @@ class _PollViewState extends State<PollView> {
                     listener: (BuildContext context, VoteState voteState) {
                       ScaffoldMessenger.of(context).clearSnackBars();
                       if (voteState.status == VoteStatus.submitted) {
-                        context.showSnackBar(
+                        showSnackBar(
                           content: 'Vote submitted successfully.',
                         );
                       } else if (voteState.status == VoteStatus.canceled) {
-                        context.showSnackBar(content: 'Vote canceled.');
+                        showSnackBar(content: 'Vote canceled.');
                       } else if (voteState.status == VoteStatus.failure) {
-                        context.showErrorSnackBar();
+                        showErrorSnackBar();
                       } else if (voteState.status ==
                           VoteStatus.failureKarmaBelowThreshold) {
-                        context.showSnackBar(
+                        showSnackBar(
                           content: "You can't downvote because"
                               ' you are karmaly broke.',
                         );
                       } else if (voteState.status ==
                           VoteStatus.failureNotLoggedIn) {
-                        context.showSnackBar(
+                        showSnackBar(
                           content: 'Not logged in, no voting! (;｀O´)o',
                           action: onLoginTapped,
                           label: 'Log in',
                         );
                       } else if (voteState.status ==
                           VoteStatus.failureBeHumble) {
-                        context.showSnackBar(
+                        showSnackBar(
                           content: 'No voting on your own post! (;｀O´)o',
                         );
                       }

@@ -4,7 +4,7 @@ import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart' show ReminderCubit, ReminderState;
 import 'package:hacki/extensions/extensions.dart';
-import 'package:hacki/models/item/story.dart';
+import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/styles/styles.dart';
