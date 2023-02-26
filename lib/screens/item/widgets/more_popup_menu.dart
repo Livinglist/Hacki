@@ -69,7 +69,7 @@ class MorePopupMenu extends StatelessWidget {
           final bool upvoted = voteState.vote == Vote.up;
           final bool downvoted = voteState.vote == Vote.down;
           return Container(
-            height: item is Comment ? 430 : 450,
+            height: item is Comment ? 490 : 510,
             color: Theme.of(context).canvasColor,
             child: Material(
               color: Palette.transparent,
@@ -173,6 +173,24 @@ class MorePopupMenu extends StatelessWidget {
                           : null,
                     ),
                     onTap: context.read<VoteCubit>().downvote,
+                  ),
+                  BlocBuilder<FavCubit, FavState>(
+                    builder: (BuildContext context, FavState state) {
+                      final bool isFav = state.favIds.contains(item.id);
+                      return ListTile(
+                        leading: Icon(
+                          isFav ? Icons.favorite : Icons.favorite_border,
+                          color: isFav ? Palette.orange : null,
+                        ),
+                        title: Text(
+                          isFav ? 'Unfavorite' : 'Favorite',
+                        ),
+                        onTap: () => Navigator.pop(
+                          context,
+                          MenuAction.fav,
+                        ),
+                      );
+                    },
                   ),
                   ListTile(
                     leading: const Icon(FeatherIcons.share),
