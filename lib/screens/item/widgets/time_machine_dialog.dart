@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
@@ -69,8 +68,6 @@ class TimeMachineDialog extends StatelessWidget {
                                 in state.ancestors) ...<Widget>[
                               CommentTile(
                                 comment: c,
-                                myUsername:
-                                    context.read<AuthBloc>().state.username,
                                 actionable: false,
                                 fetchMode: FetchMode.eager,
                               ),

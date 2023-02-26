@@ -143,8 +143,6 @@ class MainView extends StatelessWidget {
                       child: CommentTile(
                         comment: comment,
                         level: comment.level,
-                        myUsername:
-                            authState.isLoggedIn ? authState.username : null,
                         opUsername: state.item.by,
                         fetchMode: state.fetchMode,
                         onReplyTapped: (Comment cmt) {

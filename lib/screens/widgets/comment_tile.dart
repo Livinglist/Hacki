@@ -13,7 +13,6 @@ import 'package:hacki/styles/styles.dart';
 class CommentTile extends StatelessWidget {
   const CommentTile({
     super.key,
-    required this.myUsername,
     required this.comment,
     required this.fetchMode,
     this.onReplyTapped,
@@ -26,7 +25,6 @@ class CommentTile extends StatelessWidget {
     this.onTap,
   });
 
-  final String? myUsername;
   final String? opUsername;
   final Comment comment;
   final int level;
@@ -252,7 +250,8 @@ class CommentTile extends StatelessWidget {
           final Color commentColor = prefState.eyeCandyEnabled
               ? color.withOpacity(commentBackgroundColorOpacity)
               : Palette.transparent;
-          final bool isMyComment = myUsername == comment.by;
+          final bool isMyComment =
+              context.read<AuthState>().username == comment.by;
 
           Widget wrapper = child;
 
