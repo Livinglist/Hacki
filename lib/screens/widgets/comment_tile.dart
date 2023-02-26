@@ -251,7 +251,7 @@ class CommentTile extends StatelessWidget {
               ? color.withOpacity(commentBackgroundColorOpacity)
               : Palette.transparent;
           final bool isMyComment =
-              context.read<AuthState>().username == comment.by;
+              context.read<AuthBloc>().state.username == comment.by;
 
           Widget wrapper = child;
 

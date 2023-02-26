@@ -41,17 +41,11 @@ extension ContextExtension on BuildContext {
       );
 
   void onLoginTapped() {
-    final TextEditingController usernameController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
     showDialog<void>(
       context: this,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return LoginDialog(
-          usernameController: usernameController,
-          passwordController: passwordController,
-          showSnackBar: showSnackBar,
-        );
+        return const LoginDialog();
       },
     );
   }
