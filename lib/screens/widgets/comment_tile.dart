@@ -9,14 +9,12 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/utils/utils.dart';
 
 class CommentTile extends StatelessWidget {
   const CommentTile({
     super.key,
     required this.myUsername,
     required this.comment,
-    required this.onStoryLinkTapped,
     required this.fetchMode,
     this.onReplyTapped,
     this.onMoreTapped,
@@ -39,7 +37,6 @@ class CommentTile extends StatelessWidget {
   final void Function(Comment, Rect?)? onMoreTapped;
   final void Function(Comment)? onEditTapped;
   final void Function(Comment)? onRightMoreTapped;
-  final void Function(String) onStoryLinkTapped;
 
   /// Override for search screen.
   final VoidCallback? onTap;
@@ -193,11 +190,16 @@ class CommentTile extends StatelessWidget {
                                   ),
                                   child: SizedBox(
                                     width: double.infinity,
-                                    child: _CommentText(
+                                    child: ItemText(
                                       key: ValueKey<int>(comment.id),
-                                      comment: comment,
-                                      onLinkTapped: _onLinkTapped,
-                                      onTap: onTap,
+                                      item: comment,
+                                      onTap: () {
+                                        if (onTap == null) {
+                                          _onTextTapped(context);
+                                        } else {
+                                          onTap!.call();
+                                        }
+                                      },
                                     ),
                                   ),
                                 ),
@@ -333,83 +335,7 @@ class CommentTile extends StatelessWidget {
         commentsState?.onlyShowTargetComment == false;
   }
 
-  void _onLinkTapped(LinkableElement link) {
-    if (link.url.isStoryLink) {
-      onStoryLinkTapped.call(link.url);
-    } else {
-      LinkUtil.launch(link.url);
-    }
-  }
-}
-
-class _CommentText extends StatelessWidget {
-  const _CommentText({
-    super.key,
-    required this.comment,
-    required this.onLinkTapped,
-    this.onTap,
-  });
-
-  final Comment comment;
-  final void Function(LinkableElement) onLinkTapped;
-
-  /// Override for search screen.
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final PreferenceState prefState = context.read<PreferenceCubit>().state;
-    final TextStyle style = TextStyle(
-      fontSize: prefState.fontSize.fontSize,
-    );
-    final TextStyle linkStyle = TextStyle(
-      fontSize: prefState.fontSize.fontSize,
-      decoration: TextDecoration.underline,
-      color: Palette.orange,
-    );
-    if (comment is BuildableComment) {
-      return SelectableText.rich(
-        buildTextSpan(
-          (comment as BuildableComment).elements,
-          style: style,
-          linkStyle: linkStyle,
-          onOpen: onLinkTapped,
-        ),
-        onTap: () {
-          if (onTap == null) {
-            onTextTapped(context);
-          } else {
-            onTap!.call();
-          }
-        },
-        contextMenuBuilder: (
-          BuildContext context,
-          EditableTextState editableTextState,
-        ) =>
-            contextMenuBuilder(
-          context,
-          editableTextState,
-          comment: comment as BuildableComment,
-        ),
-      );
-    } else {
-      return SelectableLinkify(
-        text: comment.text,
-        style: style,
-        linkStyle: linkStyle,
-        onOpen: onLinkTapped,
-        onTap: () {
-          if (onTap == null) {
-            onTextTapped(context);
-          } else {
-            onTap!.call();
-          }
-        },
-      );
-    }
-  }
-
-  void onTextTapped(BuildContext context) {
+  void _onTextTapped(BuildContext context) {
     if (context.read<PreferenceCubit>().state.tapAnywhereToCollapseEnabled) {
       HapticFeedback.selectionClick();
       context.read<CollapseCubit>().collapse();

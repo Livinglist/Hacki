@@ -14,14 +14,12 @@ class TimeMachineDialog extends StatelessWidget {
     required this.size,
     required this.deviceType,
     required this.widthFactor,
-    required this.onStoryLinkTapped,
   });
 
   final Comment comment;
   final Size size;
   final DeviceScreenType deviceType;
   final double widthFactor;
-  final void Function(String) onStoryLinkTapped;
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +71,6 @@ class TimeMachineDialog extends StatelessWidget {
                                 comment: c,
                                 myUsername:
                                     context.read<AuthBloc>().state.username,
-                                onStoryLinkTapped: onStoryLinkTapped,
                                 actionable: false,
                                 fetchMode: FetchMode.eager,
                               ),

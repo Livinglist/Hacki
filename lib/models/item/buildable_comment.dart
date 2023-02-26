@@ -1,10 +1,10 @@
-import 'package:hacki/models/comment.dart';
-import 'package:hacki/models/models.dart';
+import 'package:hacki/models/item/buildable.dart';
+import 'package:hacki/models/item/comment.dart';
 import 'package:linkify/linkify.dart';
 
 /// [BuildableComment] is a subtype of [Comment] which stores
 /// the corresponding [LinkifyElement] for faster widget building.
-class BuildableComment extends Comment {
+class BuildableComment extends Comment with Buildable {
   BuildableComment({
     required super.id,
     required super.time,
@@ -33,5 +33,6 @@ class BuildableComment extends Comment {
           level: comment.level,
         );
 
+  @override
   final List<LinkifyElement> elements;
 }

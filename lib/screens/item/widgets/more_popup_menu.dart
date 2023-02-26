@@ -16,14 +16,10 @@ class MorePopupMenu extends StatelessWidget {
     super.key,
     required this.item,
     required this.isBlocked,
-    required this.onStoryLinkTapped,
-    required this.onLoginTapped,
   });
 
   final Item item;
   final bool isBlocked;
-  final ValueChanged<String> onStoryLinkTapped;
-  final VoidCallback onLoginTapped;
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +47,7 @@ class MorePopupMenu extends StatelessWidget {
           } else if (voteState.status == VoteStatus.failureNotLoggedIn) {
             context.showSnackBar(
               content: 'Not logged in, no voting! (;｀O´)o',
-              action: onLoginTapped,
+              action: context.onLoginTapped,
               label: 'Log in',
             );
           } else if (voteState.status == VoteStatus.failureBeHumble) {
@@ -114,13 +110,8 @@ class MorePopupMenu extends StatelessWidget {
                                         linkStyle: const TextStyle(
                                           color: Palette.orange,
                                         ),
-                                        onOpen: (LinkableElement link) {
-                                          if (link.url.isStoryLink) {
-                                            onStoryLinkTapped.call(link.url);
-                                          } else {
-                                            LinkUtil.launch(link.url);
-                                          }
-                                        },
+                                        onOpen: (LinkableElement link) =>
+                                            LinkUtil.launch,
                                       ),
                                 actions: <Widget>[
                                   TextButton(

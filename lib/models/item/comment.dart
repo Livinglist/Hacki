@@ -1,4 +1,4 @@
-import 'package:hacki/models/item.dart';
+import 'package:hacki/models/item/item.dart';
 
 class Comment extends Item {
   Comment({

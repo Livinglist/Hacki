@@ -111,7 +111,8 @@ class CommentsCubit extends Cubit<CommentsState> {
     final Item item = state.item;
     final Item updatedItem = state.offlineReading
         ? item
-        : await _storiesRepository.fetchItem(id: item.id) ?? item;
+        : await _storiesRepository.fetchItem(id: item.id).then(_toBuildable) ??
+            item;
     final List<int> kids = sortKids(updatedItem.kids);
 
     emit(state.copyWith(item: updatedItem));
@@ -273,8 +274,9 @@ class CommentsCubit extends Cubit<CommentsState> {
   Future<void> loadParentThread() async {
     unawaited(HapticFeedback.lightImpact());
     emit(state.copyWith(fetchParentStatus: CommentsStatus.loading));
-    final Story? parent =
-        await _storiesRepository.fetchParentStory(id: state.item.id);
+    final Story? parent = await _storiesRepository
+        .fetchParentStory(id: state.item.id)
+        .then(_toBuildableStory);
 
     if (parent == null) {
       return;
@@ -380,6 +382,19 @@ class CommentsCubit extends Cubit<CommentsState> {
     }
   }
 
+  static Future<Item?> _toBuildable(Item? item) async {
+    if (item == null) return null;
+
+    switch (item.runtimeType) {
+      case Comment:
+        return _toBuildableComment(item as Comment);
+      case Story:
+        return _toBuildableStory(item as Story);
+    }
+
+    return null;
+  }
+
   static Future<BuildableComment?> _toBuildableComment(Comment? comment) async {
     if (comment == null) return null;
 
@@ -393,6 +408,25 @@ class CommentsCubit extends Cubit<CommentsState> {
         BuildableComment.fromComment(comment, elements: elements);
 
     return buildableComment;
+  }
+
+  static Future<BuildableStory?> _toBuildableStory(Story? story) async {
+    if (story == null) {
+      return null;
+    } else if (story.text.isEmpty) {
+      return BuildableStory.fromTitleOnlyStory(story);
+    }
+
+    final List<LinkifyElement> elements =
+        await compute<String, List<LinkifyElement>>(
+      LinkifierUtil.linkify,
+      story.text,
+    );
+
+    final BuildableStory buildableStory =
+        BuildableStory.fromStory(story, elements: elements);
+
+    return buildableStory;
   }
 
   @override

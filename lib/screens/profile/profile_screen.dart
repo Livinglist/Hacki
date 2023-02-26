@@ -231,7 +231,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                   authState: authState,
                   magicWord: Constants.magicWord,
                   pageType: pageType,
-                  onLoginTapped: onLoginTapped,
                 ),
                 Align(
                   alignment: Alignment.topLeft,

@@ -32,13 +32,11 @@ class Settings extends StatefulWidget {
     required this.authState,
     required this.magicWord,
     required this.pageType,
-    required this.onLoginTapped,
   });
 
   final AuthState authState;
   final String magicWord;
   final PageType pageType;
-  final VoidCallback onLoginTapped;
 
   @override
   State<Settings> createState() => _SettingsState();
@@ -69,7 +67,7 @@ class _SettingsState extends State<Settings> {
                       if (widget.authState.isLoggedIn) {
                         onLogoutTapped();
                       } else {
-                        widget.onLoginTapped();
+                        onLoginTapped();
                       }
                     },
                   ),

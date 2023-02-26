@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/screens/item/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 
 extension ContextExtension on BuildContext {
@@ -38,6 +39,22 @@ extension ContextExtension on BuildContext {
   void showErrorSnackBar() => showSnackBar(
         content: Constants.errorMessage,
       );
+
+  void onLoginTapped() {
+    final TextEditingController usernameController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+    showDialog<void>(
+      context: this,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return LoginDialog(
+          usernameController: usernameController,
+          passwordController: passwordController,
+          showSnackBar: showSnackBar,
+        );
+      },
+    );
+  }
 
   Rect? get rect {
     final RenderBox? box = findRenderObject() as RenderBox?;

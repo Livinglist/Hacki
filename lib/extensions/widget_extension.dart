@@ -15,10 +15,8 @@ extension WidgetModifier on Widget {
   Widget contextMenuBuilder(
     BuildContext context,
     EditableTextState editableTextState, {
-    required BuildableComment comment,
+    required Item item,
   }) {
-    final Iterable<EmphasisElement> emphasisElements =
-        comment.elements.whereType<EmphasisElement>();
     final int start = editableTextState.textEditingValue.selection.base.offset;
     final int end = editableTextState.textEditingValue.selection.end;
 
@@ -27,22 +25,27 @@ extension WidgetModifier on Widget {
     ];
 
     if (start != -1 && end != -1) {
-      String selectedText = comment.text.substring(start, end);
+      String selectedText = item.text.substring(start, end);
 
-      int count = 1;
-      while (selectedText.contains(' ') && count <= emphasisElements.length) {
-        final int s = (start + count * 2).clamp(0, comment.text.length);
-        final int e = (end + count * 2).clamp(0, comment.text.length);
-        selectedText = comment.text.substring(s, e);
-        count++;
-      }
+      if (item is Buildable) {
+        final Iterable<EmphasisElement> emphasisElements =
+            (item as Buildable).elements.whereType<EmphasisElement>();
 
-      count = 1;
-      while (selectedText.contains(' ') && count <= emphasisElements.length) {
-        final int s = (start - count * 2).clamp(0, comment.text.length);
-        final int e = (end - count * 2).clamp(0, comment.text.length);
-        selectedText = comment.text.substring(s, e);
-        count++;
+        int count = 1;
+        while (selectedText.contains(' ') && count <= emphasisElements.length) {
+          final int s = (start + count * 2).clamp(0, item.text.length);
+          final int e = (end + count * 2).clamp(0, item.text.length);
+          selectedText = item.text.substring(s, e);
+          count++;
+        }
+
+        count = 1;
+        while (selectedText.contains(' ') && count <= emphasisElements.length) {
+          final int s = (start - count * 2).clamp(0, item.text.length);
+          final int e = (end - count * 2).clamp(0, item.text.length);
+          selectedText = item.text.substring(s, e);
+          count++;
+        }
       }
 
       items.addAll(<ContextMenuButtonItem>[

@@ -11,10 +11,7 @@ import 'package:hacki/styles/styles.dart';
 class PollView extends StatelessWidget {
   const PollView({
     super.key,
-    required this.onLoginTapped,
   });
-
-  final VoidCallback onLoginTapped;
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +76,7 @@ class PollView extends StatelessWidget {
                           VoteStatus.failureNotLoggedIn) {
                         context.showSnackBar(
                           content: 'Not logged in, no voting! (;｀O´)o',
-                          action: onLoginTapped,
+                          action: context.onLoginTapped,
                           label: 'Log in',
                         );
                       } else if (voteState.status ==

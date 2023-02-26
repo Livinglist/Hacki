@@ -25,8 +25,6 @@ class MainView extends StatelessWidget {
     required this.topPadding,
     required this.splitViewEnabled,
     required this.onMoreTapped,
-    required this.onStoryLinkTapped,
-    required this.onLoginTapped,
     required this.onRightMoreTapped,
   });
 
@@ -38,8 +36,6 @@ class MainView extends StatelessWidget {
   final double topPadding;
   final bool splitViewEnabled;
   final void Function(Item item, Rect? rect) onMoreTapped;
-  final ValueChanged<String> onStoryLinkTapped;
-  final VoidCallback onLoginTapped;
   final ValueChanged<Comment> onRightMoreTapped;
 
   static const int _loadingIndicatorOpacityAnimationDuration = 300;
@@ -123,8 +119,6 @@ class MainView extends StatelessWidget {
                         topPadding: topPadding,
                         splitViewEnabled: splitViewEnabled,
                         onMoreTapped: onMoreTapped,
-                        onStoryLinkTapped: onStoryLinkTapped,
-                        onLoginTapped: onLoginTapped,
                         onRightMoreTapped: onRightMoreTapped,
                       );
                     } else if (index == state.comments.length + 1) {
@@ -177,7 +171,6 @@ class MainView extends StatelessWidget {
                           focusNode.requestFocus();
                         },
                         onMoreTapped: onMoreTapped,
-                        onStoryLinkTapped: onStoryLinkTapped,
                         onRightMoreTapped: onRightMoreTapped,
                       ),
                     );
@@ -224,8 +217,6 @@ class _ParentItemSection extends StatelessWidget {
     required this.topPadding,
     required this.splitViewEnabled,
     required this.onMoreTapped,
-    required this.onStoryLinkTapped,
-    required this.onLoginTapped,
     required this.onRightMoreTapped,
   });
 
@@ -238,8 +229,6 @@ class _ParentItemSection extends StatelessWidget {
   final double topPadding;
   final bool splitViewEnabled;
   final void Function(Item item, Rect? rect) onMoreTapped;
-  final ValueChanged<String> onStoryLinkTapped;
-  final VoidCallback onLoginTapped;
   final ValueChanged<Comment> onRightMoreTapped;
 
   @override
@@ -391,32 +380,8 @@ class _ParentItemSection extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                               horizontal: Dimens.pt10,
                             ),
-                            child: SelectableLinkify(
-                              text: state.item.text,
-                              textScaleFactor:
-                                  MediaQuery.of(context).textScaleFactor,
-                              style: TextStyle(
-                                fontSize: context
-                                    .read<PreferenceCubit>()
-                                    .state
-                                    .fontSize
-                                    .fontSize,
-                              ),
-                              linkStyle: TextStyle(
-                                fontSize: context
-                                    .read<PreferenceCubit>()
-                                    .state
-                                    .fontSize
-                                    .fontSize,
-                                color: Palette.orange,
-                              ),
-                              onOpen: (LinkableElement link) {
-                                if (link.url.isStoryLink) {
-                                  onStoryLinkTapped(link.url);
-                                } else {
-                                  LinkUtil.launch(link.url);
-                                }
-                              },
+                            child: ItemText(
+                              item: state.item,
                             ),
                           ),
                         ),
@@ -428,9 +393,7 @@ class _ParentItemSection extends StatelessWidget {
                 BlocProvider<PollCubit>(
                   create: (BuildContext context) =>
                       PollCubit(story: state.item as Story)..init(),
-                  child: PollView(
-                    onLoginTapped: onLoginTapped,
-                  ),
+                  child: const PollView(),
                 ),
             ],
           ),

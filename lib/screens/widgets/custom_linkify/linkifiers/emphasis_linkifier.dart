@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:linkify/linkify.dart';
 
 final RegExp _emphasisRegex = RegExp(
