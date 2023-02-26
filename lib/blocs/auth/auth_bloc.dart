@@ -47,13 +47,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           state.copyWith(
             isLoggedIn: true,
             user: user,
+            status: AuthStatus.loaded,
           ),
         );
       } else {
         emit(
           state.copyWith(
-            status: AuthStatus.loaded,
             isLoggedIn: false,
+            status: AuthStatus.loaded,
           ),
         );
       }

@@ -55,6 +55,7 @@ class ItemText extends StatelessWidget {
         style: style,
         linkStyle: linkStyle,
         onOpen: (LinkableElement link) => LinkUtil.launch(link.url),
+        onTap: onTap,
         contextMenuBuilder: (
           BuildContext context,
           EditableTextState editableTextState,
