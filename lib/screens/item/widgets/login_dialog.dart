@@ -2,25 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 
-class LoginDialog extends StatelessWidget {
-  const LoginDialog({
-    super.key,
-    required this.usernameController,
-    required this.passwordController,
-    required this.showSnackBar,
-  });
+class LoginDialog extends StatefulWidget {
+  const LoginDialog({super.key});
 
-  final TextEditingController usernameController;
-  final TextEditingController passwordController;
-  final void Function({
-    required String content,
-    VoidCallback? action,
-    String? label,
-  }) showSnackBar;
+  @override
+  State<LoginDialog> createState() => _LoginDialogState();
+}
+
+class _LoginDialogState extends State<LoginDialog> {
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {

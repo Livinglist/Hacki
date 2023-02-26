@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
@@ -14,14 +13,12 @@ class TimeMachineDialog extends StatelessWidget {
     required this.size,
     required this.deviceType,
     required this.widthFactor,
-    required this.onStoryLinkTapped,
   });
 
   final Comment comment;
   final Size size;
   final DeviceScreenType deviceType;
   final double widthFactor;
-  final void Function(String) onStoryLinkTapped;
 
   @override
   Widget build(BuildContext context) {
@@ -71,9 +68,6 @@ class TimeMachineDialog extends StatelessWidget {
                                 in state.ancestors) ...<Widget>[
                               CommentTile(
                                 comment: c,
-                                myUsername:
-                                    context.read<AuthBloc>().state.username,
-                                onStoryLinkTapped: onStoryLinkTapped,
                                 actionable: false,
                                 fetchMode: FetchMode.eager,
                               ),

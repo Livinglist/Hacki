@@ -4,18 +4,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/blocs/auth/auth_bloc.dart';
 import 'package:hacki/cubits/cubits.dart';
-import 'package:hacki/extensions/context_extension.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/styles/styles.dart';
 
-class PollView extends StatelessWidget {
-  const PollView({
-    super.key,
-    required this.onLoginTapped,
-  });
+class PollView extends StatefulWidget {
+  const PollView({super.key});
 
-  final VoidCallback onLoginTapped;
+  @override
+  State<PollView> createState() => _PollViewState();
+}
 
+class _PollViewState extends State<PollView> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PollCubit, PollState>(

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:hacki/models/item.dart';
+import 'package:hacki/models/item/item.dart';
 
 class PollOption extends Item {
   const PollOption({

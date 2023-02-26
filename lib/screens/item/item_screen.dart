@@ -289,8 +289,6 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                               topPadding: topPadding,
                               splitViewEnabled: widget.splitViewEnabled,
                               onMoreTapped: onMoreTapped,
-                              onStoryLinkTapped: onStoryLinkTapped,
-                              onLoginTapped: onLoginTapped,
                               onRightMoreTapped: onRightMoreTapped,
                             ),
                           ),
@@ -365,8 +363,6 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                         topPadding: topPadding,
                         splitViewEnabled: widget.splitViewEnabled,
                         onMoreTapped: onMoreTapped,
-                        onStoryLinkTapped: onStoryLinkTapped,
-                        onLoginTapped: onLoginTapped,
                         onRightMoreTapped: onRightMoreTapped,
                       ),
                       bottomSheet: ReplyBox(
@@ -497,7 +493,6 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
           size: size,
           deviceType: deviceType,
           widthFactor: widthFactor,
-          onStoryLinkTapped: onStoryLinkTapped,
         );
       },
     );

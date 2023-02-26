@@ -1,5 +1,5 @@
 import 'package:hacki/config/constants.dart';
-import 'package:hacki/models/item.dart';
+import 'package:hacki/models/item/item.dart';
 
 class Story extends Item {
   const Story({

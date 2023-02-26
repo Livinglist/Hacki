@@ -226,10 +226,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                   else if (e is Comment)
                                     FadeIn(
                                       child: CommentTile(
-                                        myUsername: '',
                                         actionable: false,
                                         comment: e,
-                                        onStoryLinkTapped: (_) {},
                                         fetchMode: FetchMode.eager,
                                         onTap: () => goToItemScreen(
                                           args: ItemScreenArgs(item: e),

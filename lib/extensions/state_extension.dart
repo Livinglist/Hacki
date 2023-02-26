@@ -2,17 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/auth/auth_bloc.dart';
-import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
-import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/item/models/models.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
 import 'package:hacki/screens/screens.dart' show ItemScreen, ItemScreenArgs;
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/utils/utils.dart';
 import 'package:share_plus/share_plus.dart';
 
 extension StateExtension on State {
@@ -59,11 +56,11 @@ extension StateExtension on State {
         context.read<BlocklistCubit>().state.blocklist.contains(item.by);
     showModalBottomSheet<MenuAction>(
       context: context,
+      isScrollControlled: true,
       builder: (BuildContext context) {
         return MorePopupMenu(
           item: item,
           isBlocked: isBlocked,
-          onStoryLinkTapped: onStoryLinkTapped,
           onLoginTapped: onLoginTapped,
         );
       },
@@ -91,27 +88,6 @@ extension StateExtension on State {
         }
       }
     });
-  }
-
-  Future<void> onStoryLinkTapped(String link) async {
-    final int? id = link.itemId;
-    if (id != null) {
-      await locator
-          .get<StoriesRepository>()
-          .fetchItem(id: id)
-          .then((Item? item) {
-        if (mounted) {
-          if (item != null) {
-            HackiApp.navigatorKey.currentState!.pushNamed(
-              ItemScreen.routeName,
-              arguments: ItemScreenArgs(item: item),
-            );
-          }
-        }
-      });
-    } else {
-      LinkUtil.launch(link);
-    }
   }
 
   void onFavTapped(Item item) {
@@ -244,17 +220,11 @@ extension StateExtension on State {
   }
 
   void onLoginTapped() {
-    final TextEditingController usernameController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
     showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return LoginDialog(
-          usernameController: usernameController,
-          passwordController: passwordController,
-          showSnackBar: showSnackBar,
-        );
+        return const LoginDialog();
       },
     );
   }

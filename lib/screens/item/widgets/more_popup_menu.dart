@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
@@ -16,14 +18,23 @@ class MorePopupMenu extends StatelessWidget {
     super.key,
     required this.item,
     required this.isBlocked,
-    required this.onStoryLinkTapped,
     required this.onLoginTapped,
   });
 
   final Item item;
   final bool isBlocked;
-  final ValueChanged<String> onStoryLinkTapped;
   final VoidCallback onLoginTapped;
+
+  static double? _cachedStoryHeight;
+  static double? _cachedCommentHeight;
+
+  static double get storyHeight {
+    return _cachedStoryHeight ??= Platform.isIOS ? 500 : 530;
+  }
+
+  static double get commentHeight {
+    return _cachedCommentHeight ??= Platform.isIOS ? 480 : 520;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +80,7 @@ class MorePopupMenu extends StatelessWidget {
           final bool upvoted = voteState.vote == Vote.up;
           final bool downvoted = voteState.vote == Vote.down;
           return Container(
-            height: item is Comment ? 490 : 510,
+            height: item is Comment ? commentHeight : storyHeight,
             color: Theme.of(context).canvasColor,
             child: Material(
               color: Palette.transparent,
@@ -114,13 +125,8 @@ class MorePopupMenu extends StatelessWidget {
                                         linkStyle: const TextStyle(
                                           color: Palette.orange,
                                         ),
-                                        onOpen: (LinkableElement link) {
-                                          if (link.url.isStoryLink) {
-                                            onStoryLinkTapped.call(link.url);
-                                          } else {
-                                            LinkUtil.launch(link.url);
-                                          }
-                                        },
+                                        onOpen: (LinkableElement link) =>
+                                            LinkUtil.launch,
                                       ),
                                 actions: <Widget>[
                                   TextButton(

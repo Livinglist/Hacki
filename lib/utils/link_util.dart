@@ -4,9 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/main.dart';
+import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
-import 'package:hacki/screens/screens.dart' show WebViewScreen;
+import 'package:hacki/screens/screens.dart'
+    show ItemScreen, ItemScreenArgs, WebViewScreen;
 import 'package:hacki/styles/styles.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -45,6 +48,11 @@ abstract class LinkUtil {
       return;
     }
 
+    if (link.isStoryLink) {
+      _onStoryLinkTapped(link);
+      return;
+    }
+
     Uri rinseLink(String link) {
       final RegExp regex = RegExp(RegExpConstants.linkSuffix);
       if (!link.contains('en.wikipedia.org') && link.contains(regex)) {
@@ -79,5 +87,24 @@ abstract class LinkUtil {
         }
       }
     });
+  }
+
+  static Future<void> _onStoryLinkTapped(String link) async {
+    final int? id = link.itemId;
+    if (id != null) {
+      await locator
+          .get<StoriesRepository>()
+          .fetchItem(id: id)
+          .then((Item? item) {
+        if (item != null) {
+          HackiApp.navigatorKey.currentState!.pushNamed(
+            ItemScreen.routeName,
+            arguments: ItemScreenArgs(item: item),
+          );
+        }
+      });
+    } else {
+      launch(link);
+    }
   }
 }
