@@ -3,7 +3,6 @@ export 'fetch_mode.dart';
 export 'font.dart';
 export 'font_size.dart';
 export 'item/item.dart';
-export 'poll_option.dart';
 export 'post_data.dart';
 export 'preference.dart';
 export 'search_params.dart';

@@ -1,13 +1,14 @@
 import 'package:equatable/equatable.dart';
 import 'package:hacki/extensions/date_time_extension.dart';
 import 'package:hacki/models/item/comment.dart';
+import 'package:hacki/models/item/poll_option.dart';
 import 'package:hacki/models/item/story.dart';
-import 'package:hacki/models/poll_option.dart';
 
 export 'buildable.dart';
 export 'buildable_comment.dart';
 export 'buildable_story.dart';
 export 'comment.dart';
+export 'poll_option.dart';
 export 'story.dart';
 
 /// [Item] is the base type of [Story], [Comment] and [PollOption].
