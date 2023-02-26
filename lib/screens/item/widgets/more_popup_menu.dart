@@ -126,7 +126,7 @@ class MorePopupMenu extends StatelessWidget {
                                           color: Palette.orange,
                                         ),
                                         onOpen: (LinkableElement link) =>
-                                            LinkUtil.launch,
+                                            LinkUtil.launch(link.url),
                                       ),
                                 actions: <Widget>[
                                   TextButton(
