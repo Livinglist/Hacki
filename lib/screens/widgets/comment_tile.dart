@@ -250,7 +250,7 @@ class CommentTile extends StatelessWidget {
           final Color commentColor = prefState.eyeCandyEnabled
               ? color.withOpacity(commentBackgroundColorOpacity)
               : Palette.transparent;
-          final bool isMyComment =
+          final bool isMyComment = comment.deleted == false &&
               context.read<AuthBloc>().state.username == comment.by;
 
           Widget wrapper = child;

@@ -181,7 +181,7 @@ class SelectableLinkify extends StatelessWidget {
     this.cursorHeight,
     this.selectionControls,
     this.onSelectionChanged,
-    this.contextMenuBuilder,
+    this.contextMenuBuilder = _defaultContextMenuBuilder,
   });
 
   /// Text to be linkified
@@ -316,6 +316,15 @@ class SelectableLinkify extends StatelessWidget {
       selectionControls: selectionControls,
       onSelectionChanged: onSelectionChanged,
       contextMenuBuilder: contextMenuBuilder,
+    );
+  }
+
+  static Widget _defaultContextMenuBuilder(
+    BuildContext context,
+    EditableTextState editableTextState,
+  ) {
+    return AdaptiveTextSelectionToolbar.editableText(
+      editableTextState: editableTextState,
     );
   }
 }

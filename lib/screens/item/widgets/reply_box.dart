@@ -9,7 +9,6 @@ import 'package:hacki/models/item/item.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/utils/link_util.dart';
 
 class ReplyBox extends StatefulWidget {
   const ReplyBox({
@@ -256,6 +255,8 @@ class _ReplyBoxState extends State<ReplyBox> {
   void showTextPopup() {
     final Item? replyingTo = context.read<EditCubit>().state.replyingTo;
 
+    if (replyingTo == null) return;
+
     showDialog<void>(
       context: context,
       builder: (_) {
@@ -280,37 +281,49 @@ class _ReplyBoxState extends State<ReplyBox> {
                   child: Row(
                     children: <Widget>[
                       Text(
-                        replyingTo?.by ?? '',
-                        style: const TextStyle(color: Palette.grey),
+                        replyingTo.by,
+                        style: const TextStyle(
+                          fontSize: TextDimens.pt14,
+                          color: Palette.grey,
+                        ),
                       ),
                       const Spacer(),
-                      if (replyingTo != null)
-                        TextButton(
-                          child: const Text('View thread'),
-                          onPressed: () {
-                            HapticFeedback.lightImpact();
-                            setState(() {
-                              expanded = false;
-                            });
-                            Navigator.popUntil(
-                              context,
-                              (Route<dynamic> route) =>
-                                  route.settings.name == ItemScreen.routeName ||
-                                  route.isFirst,
-                            );
-                            goToItemScreen(
-                              args: ItemScreenArgs(
-                                item: replyingTo,
-                                useCommentCache: true,
-                              ),
-                              forceNewScreen: true,
-                            );
-                          },
-                        ),
                       TextButton(
-                        child: const Text('Copy all'),
+                        child: const Text(
+                          'View thread',
+                          style: TextStyle(
+                            fontSize: TextDimens.pt14,
+                          ),
+                        ),
+                        onPressed: () {
+                          HapticFeedback.lightImpact();
+                          setState(() {
+                            expanded = false;
+                          });
+                          Navigator.popUntil(
+                            context,
+                            (Route<dynamic> route) =>
+                                route.settings.name == ItemScreen.routeName ||
+                                route.isFirst,
+                          );
+                          goToItemScreen(
+                            args: ItemScreenArgs(
+                              item: replyingTo,
+                              useCommentCache: true,
+                            ),
+                            forceNewScreen: true,
+                          );
+                        },
+                      ),
+                      TextButton(
+                        child: const Text(
+                          'Copy all',
+                          style: TextStyle(
+                            fontSize: TextDimens.pt14,
+                          ),
+                        ),
                         onPressed: () => FlutterClipboard.copy(
-                          replyingTo?.text ?? '',
+                          replyingTo.text,
                         ).then((_) => HapticFeedback.selectionClick()),
                       ),
                       IconButton(
@@ -334,17 +347,8 @@ class _ReplyBoxState extends State<ReplyBox> {
                         top: Dimens.pt6,
                       ),
                       child: SingleChildScrollView(
-                        child: SelectableLinkify(
-                          scrollPhysics: const NeverScrollableScrollPhysics(),
-                          textScaleFactor:
-                              MediaQuery.of(context).textScaleFactor,
-                          linkStyle: const TextStyle(
-                            fontSize: TextDimens.pt15,
-                            color: Palette.orange,
-                          ),
-                          onOpen: (LinkableElement link) =>
-                              LinkUtil.launch(link.url),
-                          text: replyingTo?.text ?? '',
+                        child: ItemText(
+                          item: replyingTo,
                         ),
                       ),
                     ),
