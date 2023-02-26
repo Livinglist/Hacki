@@ -74,6 +74,9 @@ extension StateExtension on State {
             break;
           case MenuAction.downvote:
             break;
+          case MenuAction.fav:
+            onFavTapped(item);
+            break;
           case MenuAction.share:
             onShareTapped(item, rect);
             break;
@@ -108,6 +111,16 @@ extension StateExtension on State {
       });
     } else {
       LinkUtil.launch(link);
+    }
+  }
+
+  void onFavTapped(Item item) {
+    final FavCubit favCubit = context.read<FavCubit>();
+    final bool isFav = favCubit.state.favIds.contains(item.id);
+    if (isFav) {
+      favCubit.removeFav(item.id);
+    } else {
+      favCubit.addFav(item.id);
     }
   }
 

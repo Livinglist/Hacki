@@ -181,6 +181,7 @@ class SelectableLinkify extends StatelessWidget {
     this.cursorHeight,
     this.selectionControls,
     this.onSelectionChanged,
+    this.contextMenuBuilder,
   });
 
   /// Text to be linkified
@@ -273,6 +274,8 @@ class SelectableLinkify extends StatelessWidget {
   /// cursor location).
   final SelectionChangedCallback? onSelectionChanged;
 
+  final EditableTextContextMenuBuilder? contextMenuBuilder;
+
   @override
   Widget build(BuildContext context) {
     final List<LinkifyElement> elements = LinkifierUtil.linkify(text);
@@ -312,6 +315,7 @@ class SelectableLinkify extends StatelessWidget {
       cursorHeight: cursorHeight,
       selectionControls: selectionControls,
       onSelectionChanged: onSelectionChanged,
+      contextMenuBuilder: contextMenuBuilder,
     );
   }
 }
