@@ -24,7 +24,7 @@ class _LoginDialogState extends State<LoginDialog> {
       listener: (BuildContext context, AuthState state) {
         if (state.isLoggedIn) {
           Navigator.pop(context);
-          context.showSnackBar(
+          showSnackBar(
             content: 'Logged in successfully! ${Constants.happyFace}',
           );
         }

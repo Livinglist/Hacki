@@ -4,15 +4,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/blocs/auth/auth_bloc.dart';
 import 'package:hacki/cubits/cubits.dart';
-import 'package:hacki/extensions/context_extension.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/styles/styles.dart';
 
-class PollView extends StatelessWidget {
-  const PollView({
-    super.key,
-  });
+class PollView extends StatefulWidget {
+  const PollView({super.key});
 
+  @override
+  State<PollView> createState() => _PollViewState();
+}
+
+class _PollViewState extends State<PollView> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PollCubit, PollState>(
@@ -76,7 +79,7 @@ class PollView extends StatelessWidget {
                           VoteStatus.failureNotLoggedIn) {
                         context.showSnackBar(
                           content: 'Not logged in, no voting! (;｀O´)o',
-                          action: context.onLoginTapped,
+                          action: onLoginTapped,
                           label: 'Log in',
                         );
                       } else if (voteState.status ==

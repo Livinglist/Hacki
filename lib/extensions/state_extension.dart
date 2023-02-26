@@ -61,6 +61,7 @@ extension StateExtension on State {
         return MorePopupMenu(
           item: item,
           isBlocked: isBlocked,
+          onLoginTapped: onLoginTapped,
         );
       },
     ).then((MenuAction? action) {
@@ -218,5 +219,13 @@ extension StateExtension on State {
     });
   }
 
-  void onLoginTapped() => context.onLoginTapped();
+  void onLoginTapped() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const LoginDialog();
+      },
+    );
+  }
 }

@@ -16,10 +16,12 @@ class MorePopupMenu extends StatelessWidget {
     super.key,
     required this.item,
     required this.isBlocked,
+    required this.onLoginTapped,
   });
 
   final Item item;
   final bool isBlocked;
+  final VoidCallback onLoginTapped;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +49,7 @@ class MorePopupMenu extends StatelessWidget {
           } else if (voteState.status == VoteStatus.failureNotLoggedIn) {
             context.showSnackBar(
               content: 'Not logged in, no voting! (;｀O´)o',
-              action: context.onLoginTapped,
+              action: onLoginTapped,
               label: 'Log in',
             );
           } else if (voteState.status == VoteStatus.failureBeHumble) {
