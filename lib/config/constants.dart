@@ -2,7 +2,9 @@ import 'package:hacki/extensions/extensions.dart';
 
 abstract class Constants {
   static const String endUserAgreementLink =
-      'https://www.termsfeed.com/live/c1417f5c-a48b-4bd7-93b2-9cd4577bfc45';
+      'https://github.com/Livinglist/Hacki/blob/master/assets/eula.md';
+  static const String privacyPolicyLink =
+      'https://github.com/Livinglist/Hacki/blob/master/assets/privacy_policy.md';
   static const String hackerNewsLogoLink =
       'https://pbs.twimg.com/profile_images/469397708986269696/iUrYEOpJ_400x400.png';
   static const String portfolioLink = 'https://livinglist.github.io';
