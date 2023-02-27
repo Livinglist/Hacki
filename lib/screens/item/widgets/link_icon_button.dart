@@ -33,8 +33,10 @@ class LinkIconButton extends StatelessWidget {
           Icons.stream,
         ),
       ),
-      onPressed: () =>
-          LinkUtil.launch('https://news.ycombinator.com/item?id=$storyId'),
+      onPressed: () => LinkUtil.launch(
+        'https://news.ycombinator.com/item?id=$storyId',
+        useHackiForHnLinks: false,
+      ),
     );
   }
 }
