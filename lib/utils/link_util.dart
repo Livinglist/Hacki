@@ -30,6 +30,7 @@ abstract class LinkUtil {
     String link, {
     bool useReader = false,
     bool offlineReading = false,
+    bool useHackiForHnLink = true,
   }) {
     if (offlineReading) {
       locator
@@ -48,7 +49,7 @@ abstract class LinkUtil {
       return;
     }
 
-    if (link.isStoryLink) {
+    if (useHackiForHnLink && link.isStoryLink) {
       _onStoryLinkTapped(link);
       return;
     }
@@ -103,6 +104,8 @@ abstract class LinkUtil {
           );
         }
       });
+    } else {
+      launch(link, useHackiForHnLink: false);
     }
   }
 }
