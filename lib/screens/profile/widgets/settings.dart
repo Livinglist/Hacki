@@ -463,6 +463,22 @@ class _SettingsState extends State<Settings> {
             ),
           ),
           ElevatedButton(
+            onPressed: () => LinkUtil.launch(
+              Constants.privacyPolicyLink,
+            ),
+            child: Row(
+              children: const <Widget>[
+                Icon(
+                  Icons.privacy_tip_outlined,
+                ),
+                SizedBox(
+                  width: Dimens.pt12,
+                ),
+                Text('Privacy policy'),
+              ],
+            ),
+          ),
+          ElevatedButton(
             onPressed: onReportIssueTapped,
             child: Row(
               children: const <Widget>[
