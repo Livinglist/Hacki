@@ -7,7 +7,7 @@ Hacki collects anonymous statistics such as crash reports and feature usage. The
 ### Ads and analytics
 Hacki does not serve ads.
 
-Hacki collects aggregate, anonymous statistics to improve the app but thees data are only stored locally on your device and only got sent to us when you choose to do so.
+Hacki collects aggregate, anonymous statistics to improve the app but these data are only stored locally on your device and only got sent to us when you choose to do so.
 
 ### Information usage
 We use the information we collect to operate and improve our website, apps, and customer support.
