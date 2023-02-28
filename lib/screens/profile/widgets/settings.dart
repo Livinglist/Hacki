@@ -231,9 +231,9 @@ class _SettingsState extends State<Settings> {
                   ),
                   ListTile(
                     title: const Text(
-                      'Clear Data',
+                      'Clear Cache',
                     ),
-                    onTap: showClearDataDialog,
+                    onTap: showClearCacheDialog,
                   ),
                   ListTile(
                     title: const Text('About'),
@@ -376,12 +376,12 @@ class _SettingsState extends State<Settings> {
     );
   }
 
-  void showClearDataDialog() {
+  void showClearCacheDialog() {
     showDialog<void>(
       context: context,
       builder: (_) {
         return AlertDialog(
-          title: const Text('Clear Data?'),
+          title: const Text('Clear Cache?'),
           content: const Text(
             'Clear all cached images, stories and comments.',
           ),
