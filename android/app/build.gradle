@@ -50,7 +50,7 @@ android {
 
     defaultConfig {
         applicationId "com.jiaqifeng.hacki"
-        minSdkVersion 26
+        minSdkVersion 30
         targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

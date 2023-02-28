@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
@@ -25,16 +23,8 @@ class MorePopupMenu extends StatelessWidget {
   final bool isBlocked;
   final VoidCallback onLoginTapped;
 
-  static double? _cachedStoryHeight;
-  static double? _cachedCommentHeight;
-
-  static double get storyHeight {
-    return _cachedStoryHeight ??= Platform.isIOS ? 500 : 530;
-  }
-
-  static double get commentHeight {
-    return _cachedCommentHeight ??= Platform.isIOS ? 480 : 520;
-  }
+  static const double _storySheetHeight = 500;
+  static const double _commentSheetHeight = 480;
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +70,7 @@ class MorePopupMenu extends StatelessWidget {
           final bool upvoted = voteState.vote == Vote.up;
           final bool downvoted = voteState.vote == Vote.down;
           return Container(
-            height: item is Comment ? commentHeight : storyHeight,
+            height: item is Comment ? _commentSheetHeight : _storySheetHeight,
             color: Theme.of(context).canvasColor,
             child: Material(
               color: Palette.transparent,
