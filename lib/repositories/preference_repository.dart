@@ -207,6 +207,23 @@ class PreferenceRepository {
     }
   }
 
+  Future<void> clearAllFavs({required String username}) async {
+    final String key = _getFavKey(username);
+
+    if (Platform.isIOS) {
+      await _syncedPrefs.setStringList(
+        key: key,
+        val: <String>[],
+      );
+    } else {
+      final SharedPreferences prefs = await _prefs;
+      await prefs.setStringList(
+        key,
+        <String>[],
+      );
+    }
+  }
+
   static String _getFavKey(String username) => 'fav_$username';
 
   //#endregion

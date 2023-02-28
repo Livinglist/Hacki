@@ -31,7 +31,7 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
       const NotificationModePreference(),
       const SwipeGesturePreference(),
       const CollapseModePreference(),
-      NavigationModePreference(),
+      const NavigationModePreference(),
       const ReaderModePreference(),
       const MarkReadStoriesModePreference(),
       const EyeCandyModePreference(),
@@ -54,8 +54,7 @@ abstract class IntPreference extends Preference<int> {
 const bool _notificationModeDefaultValue = true;
 const bool _swipeGestureModeDefaultValue = false;
 const bool _displayModeDefaultValue = true;
-const bool _navigationModeDefaultValueIOS = false;
-const bool _navigationModeDefaultValueAndroid = false;
+const bool _navigationModeDefaultValue = false;
 const bool _eyeCandyModeDefaultValue = false;
 const bool _trueDarkModeDefaultValue = false;
 const bool _readerModeDefaultValue = true;
@@ -193,12 +192,9 @@ class StoryUrlModePreference extends BooleanPreference {
 /// The value deciding whether or not user should be
 /// navigated to web view first. Defaults to false.
 class NavigationModePreference extends BooleanPreference {
-  NavigationModePreference({bool? val})
+  const NavigationModePreference({bool? val})
       : super(
-          val: val ??
-              (Platform.isAndroid
-                  ? _navigationModeDefaultValueAndroid
-                  : _navigationModeDefaultValueIOS),
+          val: val ?? _navigationModeDefaultValue,
         );
 
   @override

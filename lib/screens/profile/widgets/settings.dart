@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,7 +22,6 @@ import 'package:hacki/screens/profile/widgets/tab_bar_settings.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
-import 'package:logger/logger.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -192,7 +192,7 @@ class _SettingsState extends State<Settings> {
                       .whereType<BooleanPreference>()
                       .where(
                         (Preference<dynamic> e) => e.isDisplayable,
-                      ))
+                      )) ...<Widget>[
                     SwitchListTile(
                       title: Text(preference.title),
                       subtitle: preference.subtitle.isNotEmpty
@@ -217,6 +217,8 @@ class _SettingsState extends State<Settings> {
                       },
                       activeColor: Palette.orange,
                     ),
+                    if (preference is StoryUrlModePreference) const Divider(),
+                  ],
                   ListTile(
                     title: const Text(
                       'Font',
@@ -228,6 +230,19 @@ class _SettingsState extends State<Settings> {
                       'Theme',
                     ),
                     onTap: showThemeSettingDialog,
+                  ),
+                  const Divider(),
+                  ListTile(
+                    title: const Text(
+                      'Export Favorites',
+                    ),
+                    onTap: onExportFavoritesTapped,
+                  ),
+                  ListTile(
+                    title: const Text(
+                      'Clear Favorites',
+                    ),
+                    onTap: showClearFavoritesDialog,
                   ),
                   ListTile(
                     title: const Text(
@@ -621,11 +636,64 @@ class _SettingsState extends State<Settings> {
         LinkUtil.launchInExternalBrowser(Constants.githubIssueLink);
       }
     } catch (error, stackTrace) {
-      locator.get<Logger>().e(
-            'Error caught in onGithubTapped',
-            error,
-            stackTrace,
-          );
+      error.logError(stackTrace: stackTrace);
     }
+  }
+
+  Future<void> onExportFavoritesTapped() async {
+    final List<int> allFavorites = context.read<FavCubit>().state.favIds;
+
+    if (allFavorites.isEmpty) {
+      showSnackBar(content: "You don't have any favorite item.");
+      return;
+    }
+
+    try {
+      await FlutterClipboard.copy(
+        allFavorites.join('\n'),
+      ).whenComplete(HapticFeedback.selectionClick);
+      showSnackBar(content: 'Ids of favorites have been copied to clipboard.');
+    } catch (error, stackTrace) {
+      error.logError(stackTrace: stackTrace);
+    }
+  }
+
+  void showClearFavoritesDialog() {
+    showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Remove all favorites?'),
+          content: const Text(
+            '''This will not effect favorites saved in your Hacker News account.''',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                'Cancel',
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                try {
+                  context.read<FavCubit>().removeAll();
+                  showSnackBar(content: 'All favorites have been removed.');
+                } catch (error, stackTrace) {
+                  error.logError(stackTrace: stackTrace);
+                }
+              },
+              child: const Text(
+                'Confirm',
+                style: TextStyle(
+                  color: Palette.red,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
