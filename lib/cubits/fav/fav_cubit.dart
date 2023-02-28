@@ -160,6 +160,13 @@ class FavCubit extends Cubit<FavState> {
     });
   }
 
+  void removeAll() {
+    _preferenceRepository
+      ..clearAllFavs(username: '')
+      ..clearAllFavs(username: _authBloc.state.username);
+    emit(FavState.init());
+  }
+
   void _onItemLoaded(Item item) {
     emit(
       state.copyWith(
