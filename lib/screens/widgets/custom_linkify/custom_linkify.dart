@@ -28,7 +28,7 @@ class Linkify extends StatelessWidget {
     required this.text,
     this.linkifiers = defaultLinkifiers,
     this.onOpen,
-    this.options = const LinkifyOptions(humanize: false),
+    this.options = LinkifierUtil.linkifyOptions,
     // TextSpan
     this.style,
     this.linkStyle,
@@ -155,7 +155,7 @@ class SelectableLinkify extends StatelessWidget {
     required this.text,
     this.linkifiers = defaultLinkifiers,
     this.onOpen,
-    this.options = const LinkifyOptions(humanize: false),
+    this.options = LinkifierUtil.linkifyOptions,
     // TextSpan
     this.style,
     this.linkStyle,
