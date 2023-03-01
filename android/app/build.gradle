@@ -64,6 +64,7 @@ android {
             storePassword keystoreProperties['storePassword']
         }
     }
+
     buildTypes {
         release {
             signingConfig signingConfigs.release
@@ -72,7 +73,6 @@ android {
             shrinkResources true
         }
     }
-
 }
 
 flutter {
