@@ -426,7 +426,7 @@ class _SettingsState extends State<Settings> {
                       DefaultCacheManager().emptyCache,
                     )
                     .whenComplete(() {
-                  showSnackBar(content: 'Data cleared!');
+                  showSnackBar(content: 'Cache cleared!');
                 });
               },
               child: const Text(
