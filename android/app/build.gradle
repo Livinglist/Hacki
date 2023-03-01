@@ -62,14 +62,14 @@ android {
             keyPassword keystoreProperties['keyPassword']
             storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
             storePassword keystoreProperties['storePassword']
-
-            minifyEnabled true
-            shrinkResources true
         }
     }
     buildTypes {
         release {
             signingConfig signingConfigs.release
+
+            minifyEnabled true
+            shrinkResources true
         }
     }
 
