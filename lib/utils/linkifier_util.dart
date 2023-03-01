@@ -3,7 +3,9 @@ import 'package:linkify/linkify.dart';
 
 abstract class LinkifierUtil {
   static List<LinkifyElement> linkify(String text) {
-    const LinkifyOptions options = LinkifyOptions();
+    const LinkifyOptions options = LinkifyOptions(
+      humanize: false,
+    );
     const List<Linkifier> linkifiers = <Linkifier>[
       UrlLinkifier(),
       EmailLinkifier(),

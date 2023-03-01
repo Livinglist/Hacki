@@ -5,6 +5,7 @@ import 'package:hacki/styles/palette.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:linkify/linkify.dart';
 
+export 'package:hacki/screens/widgets/custom_linkify/linkifiers/linkifiers.dart';
 export 'package:linkify/linkify.dart'
     show
         LinkifyElement,
@@ -27,7 +28,7 @@ class Linkify extends StatelessWidget {
     required this.text,
     this.linkifiers = defaultLinkifiers,
     this.onOpen,
-    this.options = const LinkifyOptions(),
+    this.options = const LinkifyOptions(humanize: false),
     // TextSpan
     this.style,
     this.linkStyle,
@@ -154,7 +155,7 @@ class SelectableLinkify extends StatelessWidget {
     required this.text,
     this.linkifiers = defaultLinkifiers,
     this.onOpen,
-    this.options = const LinkifyOptions(),
+    this.options = const LinkifyOptions(humanize: false),
     // TextSpan
     this.style,
     this.linkStyle,
