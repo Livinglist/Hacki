@@ -24,7 +24,7 @@ class Comment extends Item {
 
   final int level;
 
-  String get metadata => '''by $by $postedDate''';
+  String get metadata => '''by $by $timeAgo''';
 
   Comment copyWith({int? level}) {
     return Comment(

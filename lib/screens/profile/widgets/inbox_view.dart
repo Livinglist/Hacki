@@ -118,7 +118,7 @@ class InboxView extends StatelessWidget {
                                     Row(
                                       children: <Widget>[
                                         Text(
-                                          e.postedDate,
+                                          e.timeAgo,
                                           style: const TextStyle(
                                             color: Palette.grey,
                                           ),

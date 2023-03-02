@@ -43,10 +43,13 @@ class Story extends Item {
   Story.fromJson(super.json) : super.fromJson();
 
   String get metadata =>
-      '''$score point${score > 1 ? 's' : ''} by $by $postedDate | $descendants comment${descendants > 1 ? 's' : ''}''';
+      '''$score point${score > 1 ? 's' : ''} by $by $timeAgo | $descendants comment${descendants > 1 ? 's' : ''}''';
+
+  String get screenReaderLabel =>
+      '''$title at $readableUrl by $by $timeAgo. This story has $score point${score > 1 ? 's' : ''} and $descendants comment${descendants > 1 ? 's' : ''}''';
 
   String get simpleMetadata =>
-      '''$score point${score > 1 ? 's' : ''} $descendants comment${descendants > 1 ? 's' : ''} $postedDate''';
+      '''$score point${score > 1 ? 's' : ''} $descendants comment${descendants > 1 ? 's' : ''} $timeAgo''';
 
   String get readableUrl {
     final Uri url = Uri.parse(this.url);
@@ -55,10 +58,5 @@ class Story extends Item {
   }
 
   @override
-  String toString() {
-    // final String prettyString =
-    //     const JsonEncoder.withIndent('  ').convert(this);
-    // return 'Story $prettyString';
-    return 'Story $id';
-  }
+  String toString() => 'Story $id';
 }

@@ -1,5 +1,5 @@
 extension DateTimeExtension on DateTime {
-  String toReadableString() {
+  String toTimeAgoString() {
     final DateTime now = DateTime.now();
     final Duration diff = now.difference(this);
     if (diff.inDays > 365) {

@@ -200,7 +200,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                               Row(
                                 children: <Widget>[
                                   Text(
-                                    e.postedDate,
+                                    e.timeAgo,
                                     style: const TextStyle(
                                       color: Palette.grey,
                                     ),
