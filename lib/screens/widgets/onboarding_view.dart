@@ -53,7 +53,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                   _PageViewChild(
                     path: Constants.commentTileRightSlidePath,
                     description:
-                        '''''Swipe right to leave a comment, vote, and more.''',
+                        '''Swipe right to leave a comment, vote, and more.''',
                   ),
                   _PageViewChild(
                     path: Constants.commentTileLeftSlidePath,

@@ -24,9 +24,7 @@ class LinkIconButton extends StatelessWidget {
         featureId: Constants.featureOpenStoryInWebView,
         title: Text('Open in Browser'),
         description: Text(
-          'Want more than just reading and replying? '
-          'You can tap here to open this story in a '
-          'browser.',
+          '''You can tap here to open this story in browser.''',
           style: TextStyle(fontSize: TextDimens.pt16),
         ),
         child: Icon(
