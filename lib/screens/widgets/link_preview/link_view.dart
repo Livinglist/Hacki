@@ -19,9 +19,9 @@ class LinkView extends StatelessWidget {
     required this.showMetadata,
     required bool showUrl,
     required this.bodyMaxLines,
+    required this.titleTextStyle,
     this.imageUri,
     this.imagePath,
-    required this.titleTextStyle,
     this.showMultiMedia = true,
     this.bodyTextOverflow,
     this.isIcon = false,
@@ -52,7 +52,6 @@ class LinkView extends StatelessWidget {
   final bool showMetadata;
   final bool showUrl;
 
-  static const double _metadataAbovePadding = 2;
   static const double _bottomPadding = 6;
   static late TextStyle _urlStyle;
   static late TextStyle _metadataStyle;
@@ -77,7 +76,6 @@ class LinkView extends StatelessWidget {
     );
     _descriptionStyle = TextStyle(
       color: Palette.grey,
-      fontWeight: FontWeight.w400,
       fontFamily: params.fontFamily,
       fontSize: TextDimens.pt14,
     );
@@ -126,7 +124,7 @@ class LinkView extends StatelessWidget {
     final double height = <double>[
       params.titleHeight,
       if (params.showUrl) urlHeight,
-      if (params.showMetadata) _metadataAbovePadding + metadataHeight,
+      if (params.showMetadata) metadataHeight,
       allPaddings,
       _bottomPadding,
     ].reduce((double a, double b) => a + b);
@@ -239,10 +237,7 @@ class LinkView extends StatelessWidget {
                         overflow: bodyTextOverflow ?? TextOverflow.ellipsis,
                         maxLines: 1,
                       ),
-                    if (showMetadata) ...<Widget>[
-                      const SizedBox(
-                        height: _metadataAbovePadding,
-                      ),
+                    if (showMetadata)
                       Text(
                         metadata,
                         textAlign: TextAlign.left,
@@ -250,7 +245,6 @@ class LinkView extends StatelessWidget {
                         overflow: bodyTextOverflow ?? TextOverflow.ellipsis,
                         maxLines: 1,
                       ),
-                    ],
                     Text(
                       description,
                       textAlign: TextAlign.left,
