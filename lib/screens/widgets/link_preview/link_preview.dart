@@ -19,7 +19,6 @@ class LinkPreview extends StatefulWidget {
     required this.offlineReading,
     this.cache = const Duration(days: 30),
     this.titleStyle,
-    this.bodyStyle,
     this.showMultimedia = true,
     this.backgroundColor = const Color.fromRGBO(235, 235, 235, 1),
     this.bodyMaxLines = 3,
@@ -85,9 +84,6 @@ class LinkPreview extends StatefulWidget {
 
   /// Customize body `TextStyle`
   final TextStyle? titleStyle;
-
-  /// Customize body `TextStyle`
-  final TextStyle? bodyStyle;
 
   /// Show or Hide image if available defaults to `true`
   final bool showMultimedia;
@@ -190,7 +186,6 @@ class _LinkPreviewState extends State<LinkPreview> {
         imagePath: Constants.hackerNewsLogoPath,
         onTap: _launchURL,
         titleTextStyle: widget.titleStyle,
-        descriptionTextStyle: widget.bodyStyle,
         bodyTextOverflow: widget.bodyTextOverflow,
         bodyMaxLines: widget.bodyMaxLines,
         showMultiMedia: widget.showMultimedia,

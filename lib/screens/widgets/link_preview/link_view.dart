@@ -4,8 +4,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/screens/widgets/link_preview/models/models.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:memoize/function_defs.dart';
 import 'package:memoize/memoize.dart';
 
 class LinkView extends StatelessWidget {
@@ -23,7 +23,6 @@ class LinkView extends StatelessWidget {
     this.imageUri,
     this.imagePath,
     this.titleTextStyle,
-    this.descriptionTextStyle,
     this.showMultiMedia = true,
     this.bodyTextOverflow,
     this.isIcon = false,
@@ -45,7 +44,6 @@ class LinkView extends StatelessWidget {
   final String? imagePath;
   final void Function(String) onTap;
   final TextStyle? titleTextStyle;
-  final TextStyle? descriptionTextStyle;
   final bool showMultiMedia;
   final TextOverflow? bodyTextOverflow;
   final int bodyMaxLines;
@@ -68,83 +66,94 @@ class LinkView extends StatelessWidget {
 
   static const double _metadataAbovePadding = 2;
   static const double _bottomPadding = 6;
+  static late TextStyle urlStyle;
+  static late TextStyle metadataStyle;
+  static late TextStyle descriptionStyle;
 
-  static int computeDescriptionMaxLines(
-    TextStyle? titleStyle,
-    TextStyle? urlStyle,
-    TextStyle? metadataStyle,
-    TextStyle? descriptionStyle,
-    double layoutWidth,
-    double layoutHeight,
-    double textScaleFactor,
-    double titleHeight,
-    // ignore: avoid_positional_boolean_parameters
-    bool showUrl,
-    bool showMetadata,
+  static Map<MaxLineComputationParams, int> computationCache =
+      <MaxLineComputationParams, int>{};
+
+  static int getDescriptionMaxLines(
+    MaxLineComputationParams params,
+    TextStyle titleStyle,
   ) {
-    final Size urlSize = (TextPainter(
+    if (computationCache.containsKey(params)) {
+      return computationCache[params]!;
+    }
+
+    urlStyle = titleStyle.copyWith(
+      color: Palette.grey,
+      fontSize: titleStyle.fontSize == null ? 12 : titleStyle.fontSize! - 4,
+      fontWeight: FontWeight.w400,
+      fontFamily: params.fontFamily,
+    );
+    descriptionStyle = TextStyle(
+      fontSize: _getTitleFontSize(params.layoutWidth) - 1,
+      color: Palette.grey,
+      fontWeight: FontWeight.w400,
+      fontFamily: params.fontFamily,
+    );
+    metadataStyle = descriptionStyle.copyWith(
+      fontSize: descriptionStyle.fontSize == null
+          ? TextDimens.pt12
+          : descriptionStyle.fontSize! - 2,
+      fontFamily: params.fontFamily,
+    );
+
+    final double urlHeight = (TextPainter(
       text: TextSpan(
         text: '(url)',
         style: urlStyle,
       ),
       maxLines: 1,
-      textScaleFactor: textScaleFactor,
+      textScaleFactor: params.textScaleFactor,
       textDirection: TextDirection.ltr,
     )..layout())
-        .size;
-    final Size metadataSize = (TextPainter(
+        .size
+        .height;
+    final double metadataHeight = (TextPainter(
       text: TextSpan(
         text: '123metadata',
         style: metadataStyle,
       ),
       maxLines: 1,
-      textScaleFactor: textScaleFactor,
+      textScaleFactor: params.textScaleFactor,
       textDirection: TextDirection.ltr,
     )..layout())
-        .size;
-    final Size descriptionSize = (TextPainter(
+        .size
+        .height;
+    final double descriptionHeight = (TextPainter(
       text: TextSpan(
         text: 'DESCRIPTION',
         style: descriptionStyle,
       ),
       maxLines: 1,
-      textScaleFactor: textScaleFactor,
+      textScaleFactor: params.textScaleFactor,
       textDirection: TextDirection.ltr,
     )..layout())
-        .size;
+        .size
+        .height;
 
-    final double allPaddings = titleStyle?.fontFamily == Font.robotoSlab.name
-        ? Dimens.pt2
-        : Dimens.pt4;
+    final double allPaddings =
+        params.fontFamily == Font.robotoSlab.name ? Dimens.pt2 : Dimens.pt4;
 
     final double height = <double>[
-      titleHeight,
-      if (showUrl) urlSize.height,
-      if (showMetadata) _metadataAbovePadding + metadataSize.height,
+      params.titleHeight,
+      if (params.showUrl) urlHeight,
+      if (params.showMetadata) _metadataAbovePadding + metadataHeight,
       allPaddings,
       _bottomPadding,
     ].reduce((double a, double b) => a + b);
 
-    final double descriptionHeight = layoutHeight - height;
+    final double descriptionAllowedHeight = params.layoutHeight - height;
 
     final int maxLines =
-        max(1, (descriptionHeight / descriptionSize.height).floor());
+        max(1, (descriptionAllowedHeight / descriptionHeight).floor());
+
+    computationCache[params] = maxLines;
 
     return maxLines;
   }
-
-  final Func10<
-      TextStyle?,
-      TextStyle?,
-      TextStyle?,
-      TextStyle?,
-      double,
-      double,
-      double,
-      double,
-      bool,
-      bool,
-      int> getDescriptionMaxLines = memo10(computeDescriptionMaxLines);
 
   @override
   Widget build(BuildContext context) {
@@ -153,51 +162,40 @@ class LinkView extends StatelessWidget {
         final double layoutWidth = constraints.biggest.width;
         final double layoutHeight = constraints.biggest.height;
         final double bodyWidth = layoutWidth - layoutHeight - 8;
+        final String? fontFamily =
+            Theme.of(context).primaryTextTheme.bodyMedium?.fontFamily;
+        final double textScaleFactor = MediaQuery.of(context).textScaleFactor;
 
         final TextStyle titleStyle = titleTextStyle ??
             TextStyle(
               fontSize: _getTitleFontSize(layoutWidth),
               color: Palette.black,
               fontWeight: FontWeight.bold,
+              fontFamily: fontFamily,
             );
-        final TextStyle urlStyle = titleStyle.copyWith(
-          color: Palette.grey,
-          fontSize: titleStyle.fontSize == null ? 12 : titleStyle.fontSize! - 4,
-          fontWeight: FontWeight.w400,
-        );
-        final TextStyle descriptionStyle = descriptionTextStyle ??
-            TextStyle(
-              fontSize: _getTitleFontSize(layoutWidth) - 1,
-              color: Palette.grey,
-              fontWeight: FontWeight.w400,
-            );
-        final TextStyle metadataStyle = descriptionStyle.copyWith(
-          fontSize: descriptionStyle.fontSize == null
-              ? TextDimens.pt12
-              : descriptionStyle.fontSize! - 2,
-        );
-        final Size titleSize = (TextPainter(
+        final double titleHeight = (TextPainter(
           text: TextSpan(
             text: title,
             style: titleStyle,
           ),
           maxLines: 2,
-          textScaleFactor: MediaQuery.of(context).textScaleFactor,
+          textScaleFactor: textScaleFactor,
           textDirection: TextDirection.ltr,
         )..layout(maxWidth: bodyWidth))
-            .size;
+            .size
+            .height;
 
         final int descriptionMaxLines = getDescriptionMaxLines(
+          MaxLineComputationParams(
+            fontFamily ?? Font.roboto.name,
+            bodyWidth,
+            layoutHeight,
+            titleHeight,
+            textScaleFactor,
+            showUrl,
+            showMetadata,
+          ),
           titleStyle,
-          urlStyle,
-          metadataStyle,
-          descriptionStyle,
-          bodyWidth,
-          layoutHeight,
-          MediaQuery.of(context).textScaleFactor,
-          titleSize.height,
-          showUrl,
-          showMetadata,
         );
 
         return InkWell(
