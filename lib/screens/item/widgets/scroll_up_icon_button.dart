@@ -34,6 +34,7 @@ class _ScrollUpIconButtonState extends State<ScrollUpIconButton> {
       return Opacity(
         opacity: opacity.clamp(0, 1),
         child: IconButton(
+          tooltip: 'Scroll to top',
           icon: const Icon(
             FeatherIcons.chevronsUp,
             color: Palette.orange,
