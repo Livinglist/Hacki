@@ -173,14 +173,16 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
 
     SchedulerBinding.instance
       ..addPostFrameCallback((_) {
-        FeatureDiscovery.discoverFeatures(
-          context,
-          <String>{
-            Constants.featurePinToTop,
-            Constants.featureAddStoryToFavList,
-            Constants.featureOpenStoryInWebView,
-          },
-        );
+        if (context.isScreenReaderEnabled == false) {
+          FeatureDiscovery.discoverFeatures(
+            context,
+            <String>{
+              Constants.featurePinToTop,
+              Constants.featureAddStoryToFavList,
+              Constants.featureOpenStoryInWebView,
+            },
+          );
+        }
       })
       ..addPostFrameCallback((_) {
         final ModalRoute<dynamic>? route = ModalRoute.of(context);

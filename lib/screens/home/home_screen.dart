@@ -92,12 +92,14 @@ class _HomeScreenState extends State<HomeScreen>
 
     SchedulerBinding.instance
       ..addPostFrameCallback((_) {
-        FeatureDiscovery.discoverFeatures(
-          context,
-          <String>{
-            Constants.featureLogIn,
-          },
-        );
+        if (context.isScreenReaderEnabled == false) {
+          FeatureDiscovery.discoverFeatures(
+            context,
+            <String>{
+              Constants.featureLogIn,
+            },
+          );
+        }
       })
       ..addPostFrameCallback((_) {
         final ModalRoute<dynamic>? route = ModalRoute.of(context);
