@@ -17,8 +17,8 @@ class LinkPreview extends StatefulWidget {
     required this.showMetadata,
     required this.showUrl,
     required this.offlineReading,
+    required this.titleStyle,
     this.cache = const Duration(days: 30),
-    this.titleStyle,
     this.showMultimedia = true,
     this.backgroundColor = const Color.fromRGBO(235, 235, 235, 1),
     this.bodyMaxLines = 3,
@@ -83,7 +83,7 @@ class LinkPreview extends StatefulWidget {
   final Duration cache;
 
   /// Customize body `TextStyle`
-  final TextStyle? titleStyle;
+  final TextStyle titleStyle;
 
   /// Show or Hide image if available defaults to `true`
   final bool showMultimedia;

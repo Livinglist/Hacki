@@ -6,7 +6,6 @@ import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/link_preview/models/models.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:memoize/memoize.dart';
 
 class LinkView extends StatelessWidget {
   LinkView({
@@ -22,7 +21,7 @@ class LinkView extends StatelessWidget {
     required this.bodyMaxLines,
     this.imageUri,
     this.imagePath,
-    this.titleTextStyle,
+    required this.titleTextStyle,
     this.showMultiMedia = true,
     this.bodyTextOverflow,
     this.isIcon = false,
@@ -43,7 +42,7 @@ class LinkView extends StatelessWidget {
   final String? imageUri;
   final String? imagePath;
   final void Function(String) onTap;
-  final TextStyle? titleTextStyle;
+  final TextStyle titleTextStyle;
   final bool showMultiMedia;
   final TextOverflow? bodyTextOverflow;
   final int bodyMaxLines;
@@ -53,57 +52,44 @@ class LinkView extends StatelessWidget {
   final bool showMetadata;
   final bool showUrl;
 
-  static final double Function(double) _getTitleFontSize =
-      memo1(_computeTitleFontSize);
-
-  static double _computeTitleFontSize(double width) {
-    double size = width * 0.13;
-    if (size > 15) {
-      size = 15;
-    }
-    return size;
-  }
-
   static const double _metadataAbovePadding = 2;
   static const double _bottomPadding = 6;
-  static late TextStyle urlStyle;
-  static late TextStyle metadataStyle;
-  static late TextStyle descriptionStyle;
+  static late TextStyle _urlStyle;
+  static late TextStyle _metadataStyle;
+  static late TextStyle _descriptionStyle;
 
-  static Map<MaxLineComputationParams, int> computationCache =
+  static final Map<MaxLineComputationParams, int> _computationCache =
       <MaxLineComputationParams, int>{};
 
   static int getDescriptionMaxLines(
     MaxLineComputationParams params,
     TextStyle titleStyle,
   ) {
-    if (computationCache.containsKey(params)) {
-      return computationCache[params]!;
+    if (_computationCache.containsKey(params)) {
+      return _computationCache[params]!;
     }
 
-    urlStyle = titleStyle.copyWith(
+    _urlStyle = titleStyle.copyWith(
       color: Palette.grey,
-      fontSize: titleStyle.fontSize == null ? 12 : titleStyle.fontSize! - 4,
+      fontSize: TextDimens.pt12,
       fontWeight: FontWeight.w400,
       fontFamily: params.fontFamily,
     );
-    descriptionStyle = TextStyle(
-      fontSize: _getTitleFontSize(params.layoutWidth) - 1,
+    _descriptionStyle = TextStyle(
       color: Palette.grey,
       fontWeight: FontWeight.w400,
       fontFamily: params.fontFamily,
+      fontSize: TextDimens.pt14,
     );
-    metadataStyle = descriptionStyle.copyWith(
-      fontSize: descriptionStyle.fontSize == null
-          ? TextDimens.pt12
-          : descriptionStyle.fontSize! - 2,
+    _metadataStyle = _descriptionStyle.copyWith(
+      fontSize: TextDimens.pt12,
       fontFamily: params.fontFamily,
     );
 
     final double urlHeight = (TextPainter(
       text: TextSpan(
         text: '(url)',
-        style: urlStyle,
+        style: _urlStyle,
       ),
       maxLines: 1,
       textScaleFactor: params.textScaleFactor,
@@ -114,7 +100,7 @@ class LinkView extends StatelessWidget {
     final double metadataHeight = (TextPainter(
       text: TextSpan(
         text: '123metadata',
-        style: metadataStyle,
+        style: _metadataStyle,
       ),
       maxLines: 1,
       textScaleFactor: params.textScaleFactor,
@@ -125,7 +111,7 @@ class LinkView extends StatelessWidget {
     final double descriptionHeight = (TextPainter(
       text: TextSpan(
         text: 'DESCRIPTION',
-        style: descriptionStyle,
+        style: _descriptionStyle,
       ),
       maxLines: 1,
       textScaleFactor: params.textScaleFactor,
@@ -150,7 +136,7 @@ class LinkView extends StatelessWidget {
     final int maxLines =
         max(1, (descriptionAllowedHeight / descriptionHeight).floor());
 
-    computationCache[params] = maxLines;
+    _computationCache[params] = maxLines;
 
     return maxLines;
   }
@@ -166,13 +152,7 @@ class LinkView extends StatelessWidget {
             Theme.of(context).primaryTextTheme.bodyMedium?.fontFamily;
         final double textScaleFactor = MediaQuery.of(context).textScaleFactor;
 
-        final TextStyle titleStyle = titleTextStyle ??
-            TextStyle(
-              fontSize: _getTitleFontSize(layoutWidth),
-              color: Palette.black,
-              fontWeight: FontWeight.bold,
-              fontFamily: fontFamily,
-            );
+        final TextStyle titleStyle = titleTextStyle;
         final double titleHeight = (TextPainter(
           text: TextSpan(
             text: title,
@@ -255,7 +235,7 @@ class LinkView extends StatelessWidget {
                       Text(
                         '($readableUrl)',
                         textAlign: TextAlign.left,
-                        style: urlStyle,
+                        style: _urlStyle,
                         overflow: bodyTextOverflow ?? TextOverflow.ellipsis,
                         maxLines: 1,
                       ),
@@ -266,7 +246,7 @@ class LinkView extends StatelessWidget {
                       Text(
                         metadata,
                         textAlign: TextAlign.left,
-                        style: metadataStyle,
+                        style: _metadataStyle,
                         overflow: bodyTextOverflow ?? TextOverflow.ellipsis,
                         maxLines: 1,
                       ),
@@ -274,7 +254,7 @@ class LinkView extends StatelessWidget {
                     Text(
                       description,
                       textAlign: TextAlign.left,
-                      style: descriptionStyle,
+                      style: _descriptionStyle,
                       overflow: TextOverflow.ellipsis,
                       maxLines: descriptionMaxLines,
                     ),
