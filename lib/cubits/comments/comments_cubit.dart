@@ -359,6 +359,7 @@ class CommentsCubit extends Cubit<CommentsState> {
       emit(state.copyWith(comments: updatedComments));
 
       if (state.fetchMode == FetchMode.eager) {
+        /// If screen reader is on, fetch all the comments without paging.
         if (_isScreenReaderEnabled) return;
 
         if (updatedComments.length >=
