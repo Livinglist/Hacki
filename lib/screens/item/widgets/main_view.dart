@@ -286,7 +286,7 @@ class _ParentItemSection extends StatelessWidget {
                     ),
                     const Spacer(),
                     Text(
-                      state.item.postedDate,
+                      state.item.timeAgo,
                       style: const TextStyle(
                         color: Palette.grey,
                       ),

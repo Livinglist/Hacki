@@ -317,6 +317,7 @@ class SelectableLinkify extends StatelessWidget {
       selectionControls: selectionControls,
       onSelectionChanged: onSelectionChanged,
       contextMenuBuilder: contextMenuBuilder,
+      semanticsLabel: text,
     );
   }
 

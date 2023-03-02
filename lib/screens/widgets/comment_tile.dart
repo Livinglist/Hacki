@@ -152,7 +152,7 @@ class CommentTile extends StatelessWidget {
                                 ),
                               const Spacer(),
                               Text(
-                                comment.postedDate,
+                                comment.timeAgo,
                                 style: const TextStyle(
                                   color: Palette.grey,
                                 ),

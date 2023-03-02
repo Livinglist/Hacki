@@ -47,6 +47,7 @@ class ItemText extends StatelessWidget {
           editableTextState,
           item: item,
         ),
+        semanticsLabel: item.text,
       );
     } else {
       return SelectableLinkify(

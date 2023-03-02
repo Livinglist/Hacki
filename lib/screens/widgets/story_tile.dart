@@ -33,101 +33,108 @@ class StoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     if (showWebPreview) {
       final double height = context.storyTileHeight;
-      return TapDownWrapper(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: Dimens.pt12,
-          ),
-          child: AbsorbPointer(
-            child: LinkPreview(
-              story: story,
-              link: story.url,
-              offlineReading: context.read<StoriesBloc>().state.offlineReading,
-              placeholderWidget: _LinkPreviewPlaceholder(
-                height: height,
+      return Semantics(
+        label: story.screenReaderLabel,
+        child: TapDownWrapper(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: Dimens.pt12,
+            ),
+            child: AbsorbPointer(
+              child: LinkPreview(
+                story: story,
+                link: story.url,
+                offlineReading:
+                    context.read<StoriesBloc>().state.offlineReading,
+                placeholderWidget: _LinkPreviewPlaceholder(
+                  height: height,
+                ),
+                errorImage: Constants.hackerNewsLogoLink,
+                backgroundColor: Palette.transparent,
+                borderRadius: Dimens.zero,
+                removeElevation: true,
+                bodyMaxLines: context.storyTileMaxLines,
+                errorTitle: story.title,
+                titleStyle: TextStyle(
+                  color: hasRead
+                      ? Palette.grey[500]
+                      : Theme.of(context).textTheme.bodyLarge?.color,
+                  fontWeight: FontWeight.bold,
+                ),
+                showMetadata: showMetadata,
+                showUrl: showUrl,
               ),
-              errorImage: Constants.hackerNewsLogoLink,
-              backgroundColor: Palette.transparent,
-              borderRadius: Dimens.zero,
-              removeElevation: true,
-              bodyMaxLines: context.storyTileMaxLines,
-              errorTitle: story.title,
-              titleStyle: TextStyle(
-                color: hasRead
-                    ? Palette.grey[500]
-                    : Theme.of(context).textTheme.bodyLarge?.color,
-                fontWeight: FontWeight.bold,
-              ),
-              showMetadata: showMetadata,
-              showUrl: showUrl,
             ),
           ),
         ),
       );
     } else {
-      return InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.only(left: Dimens.pt12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(
-                height: Dimens.pt8,
-              ),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text.rich(
-                      TextSpan(
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: story.title,
-                            style: TextStyle(
-                              color: hasRead
-                                  ? Palette.grey[500]
-                                  : Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge
-                                      ?.color,
-                              fontSize: simpleTileFontSize,
-                            ),
-                          ),
-                          if (showUrl && story.url.isNotEmpty)
-                            TextSpan(
-                              text: ' (${story.readableUrl})',
-                              style: TextStyle(
-                                color: Palette.grey[500],
-                                fontSize: simpleTileFontSize - 4,
-                              ),
-                            ),
-                        ],
-                      ),
-                      textScaleFactor: MediaQuery.of(context).textScaleFactor,
-                    ),
-                  ),
-                ],
-              ),
-              if (showMetadata)
+      return Semantics(
+        label: story.screenReaderLabel,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.only(left: Dimens.pt12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(
+                  height: Dimens.pt8,
+                ),
                 Row(
                   children: <Widget>[
                     Expanded(
-                      child: Text(
-                        story.metadata,
-                        style: TextStyle(
-                          color: Palette.grey,
-                          fontSize: simpleTileFontSize - 2,
+                      child: Text.rich(
+                        TextSpan(
+                          children: <TextSpan>[
+                            TextSpan(
+                              text: story.title,
+                              style: TextStyle(
+                                color: hasRead
+                                    ? Palette.grey[500]
+                                    : Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge
+                                        ?.color,
+                                fontSize: simpleTileFontSize,
+                              ),
+                            ),
+                            if (showUrl && story.url.isNotEmpty)
+                              TextSpan(
+                                text: ' (${story.readableUrl})',
+                                style: TextStyle(
+                                  color: Palette.grey[500],
+                                  fontSize: simpleTileFontSize - 4,
+                                ),
+                              ),
+                          ],
                         ),
-                        maxLines: 1,
+                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
                       ),
                     ),
                   ],
                 ),
-              const SizedBox(
-                height: Dimens.pt8,
-              ),
-            ],
+                if (showMetadata)
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Text(
+                          story.metadata,
+                          style: TextStyle(
+                            color: Palette.grey,
+                            fontSize: simpleTileFontSize - 2,
+                          ),
+                          maxLines: 1,
+                        ),
+                      ),
+                    ],
+                  ),
+                const SizedBox(
+                  height: Dimens.pt8,
+                ),
+              ],
+            ),
           ),
         ),
       );
