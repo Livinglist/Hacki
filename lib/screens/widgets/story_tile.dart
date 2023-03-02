@@ -35,6 +35,7 @@ class StoryTile extends StatelessWidget {
       final double height = context.storyTileHeight;
       return Semantics(
         label: story.screenReaderLabel,
+        excludeSemantics: true,
         child: TapDownWrapper(
           onTap: onTap,
           child: Padding(
@@ -72,6 +73,7 @@ class StoryTile extends StatelessWidget {
     } else {
       return Semantics(
         label: story.screenReaderLabel,
+        excludeSemantics: true,
         child: InkWell(
           onTap: onTap,
           child: Padding(

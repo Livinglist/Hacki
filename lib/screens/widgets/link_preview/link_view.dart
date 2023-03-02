@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:memoize/function_defs.dart';
 import 'package:memoize/memoize.dart';
 
 class LinkView extends StatelessWidget {
@@ -20,7 +23,7 @@ class LinkView extends StatelessWidget {
     this.imageUri,
     this.imagePath,
     this.titleTextStyle,
-    this.bodyTextStyle,
+    this.descriptionTextStyle,
     this.showMultiMedia = true,
     this.bodyTextOverflow,
     this.isIcon = false,
@@ -42,7 +45,7 @@ class LinkView extends StatelessWidget {
   final String? imagePath;
   final void Function(String) onTap;
   final TextStyle? titleTextStyle;
-  final TextStyle? bodyTextStyle;
+  final TextStyle? descriptionTextStyle;
   final bool showMultiMedia;
   final TextOverflow? bodyTextOverflow;
   final int bodyMaxLines;
@@ -63,27 +66,85 @@ class LinkView extends StatelessWidget {
     return size;
   }
 
-  static final int Function(double) _getTitleLines = memo1(_computeTitleLines);
+  static const double _metadataAbovePadding = 2;
+  static const double _bottomPadding = 6;
 
-  static int _computeTitleLines(double layoutHeight) {
-    return layoutHeight >= 100 ? 2 : 1;
-  }
-
-  static final int Function(int, bool, bool, String?) _getBodyLines =
-      memo4(_computeBodyLines);
-
-  static int _computeBodyLines(
-    int bodyMaxLines,
-    bool showMetadata,
+  static int computeDescriptionMaxLines(
+    TextStyle? titleStyle,
+    TextStyle? urlStyle,
+    TextStyle? metadataStyle,
+    TextStyle? descriptionStyle,
+    double layoutWidth,
+    double layoutHeight,
+    double textScaleFactor,
+    double titleHeight,
+    // ignore: avoid_positional_boolean_parameters
     bool showUrl,
-    String? fontFamily,
+    bool showMetadata,
   ) {
-    final int maxLines = bodyMaxLines -
-        (showMetadata ? 1 : 0) -
-        (showUrl ? 1 : 0) +
-        (fontFamily == Font.ubuntuMono.name ? 1 : 0);
+    final Size urlSize = (TextPainter(
+      text: TextSpan(
+        text: '(url)',
+        style: urlStyle,
+      ),
+      maxLines: 1,
+      textScaleFactor: textScaleFactor,
+      textDirection: TextDirection.ltr,
+    )..layout())
+        .size;
+    final Size metadataSize = (TextPainter(
+      text: TextSpan(
+        text: '123metadata',
+        style: metadataStyle,
+      ),
+      maxLines: 1,
+      textScaleFactor: textScaleFactor,
+      textDirection: TextDirection.ltr,
+    )..layout())
+        .size;
+    final Size descriptionSize = (TextPainter(
+      text: TextSpan(
+        text: 'DESCRIPTION',
+        style: descriptionStyle,
+      ),
+      maxLines: 1,
+      textScaleFactor: textScaleFactor,
+      textDirection: TextDirection.ltr,
+    )..layout())
+        .size;
+
+    final double allPaddings = titleStyle?.fontFamily == Font.robotoSlab.name
+        ? Dimens.pt2
+        : Dimens.pt4;
+
+    final double height = <double>[
+      titleHeight,
+      if (showUrl) urlSize.height,
+      if (showMetadata) _metadataAbovePadding + metadataSize.height,
+      allPaddings,
+      _bottomPadding,
+    ].reduce((double a, double b) => a + b);
+
+    final double descriptionHeight = layoutHeight - height;
+
+    final int maxLines =
+        max(1, (descriptionHeight / descriptionSize.height).floor());
+
     return maxLines;
   }
+
+  final Func10<
+      TextStyle?,
+      TextStyle?,
+      TextStyle?,
+      TextStyle?,
+      double,
+      double,
+      double,
+      double,
+      bool,
+      bool,
+      int> getDescriptionMaxLines = memo10(computeDescriptionMaxLines);
 
   @override
   Widget build(BuildContext context) {
@@ -91,19 +152,53 @@ class LinkView extends StatelessWidget {
       builder: (BuildContext context, BoxConstraints constraints) {
         final double layoutWidth = constraints.biggest.width;
         final double layoutHeight = constraints.biggest.height;
+        final double bodyWidth = layoutWidth - layoutHeight - 8;
 
-        final TextStyle titleFontStyle = titleTextStyle ??
+        final TextStyle titleStyle = titleTextStyle ??
             TextStyle(
               fontSize: _getTitleFontSize(layoutWidth),
               color: Palette.black,
               fontWeight: FontWeight.bold,
             );
-        final TextStyle bodyFontStyle = bodyTextStyle ??
+        final TextStyle urlStyle = titleStyle.copyWith(
+          color: Palette.grey,
+          fontSize: titleStyle.fontSize == null ? 12 : titleStyle.fontSize! - 4,
+          fontWeight: FontWeight.w400,
+        );
+        final TextStyle descriptionStyle = descriptionTextStyle ??
             TextStyle(
               fontSize: _getTitleFontSize(layoutWidth) - 1,
               color: Palette.grey,
               fontWeight: FontWeight.w400,
             );
+        final TextStyle metadataStyle = descriptionStyle.copyWith(
+          fontSize: descriptionStyle.fontSize == null
+              ? TextDimens.pt12
+              : descriptionStyle.fontSize! - 2,
+        );
+        final Size titleSize = (TextPainter(
+          text: TextSpan(
+            text: title,
+            style: titleStyle,
+          ),
+          maxLines: 2,
+          textScaleFactor: MediaQuery.of(context).textScaleFactor,
+          textDirection: TextDirection.ltr,
+        )..layout(maxWidth: bodyWidth))
+            .size;
+
+        final int descriptionMaxLines = getDescriptionMaxLines(
+          titleStyle,
+          urlStyle,
+          metadataStyle,
+          descriptionStyle,
+          bodyWidth,
+          layoutHeight,
+          MediaQuery.of(context).textScaleFactor,
+          titleSize.height,
+          showUrl,
+          showMetadata,
+        );
 
         return InkWell(
           onTap: () => onTap(url),
@@ -138,85 +233,55 @@ class LinkView extends StatelessWidget {
                   ),
                 )
               else
-                const SizedBox(width: 5),
-              Expanded(
+                const SizedBox(width: Dimens.pt5),
+              SizedBox(
+                height: layoutHeight,
+                width: layoutWidth - layoutHeight - 8,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(
-                        top: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.fontFamily ==
-                                Font.robotoSlab.name
-                            ? 2
-                            : 4,
-                      ),
-                      child: Column(
-                        children: <Widget>[
-                          Container(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              title,
-                              style: titleFontStyle,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: _getTitleLines(layoutHeight),
-                            ),
-                          ),
-                          if (showUrl && url.isNotEmpty)
-                            Container(
-                              alignment: Alignment.topLeft,
-                              child: Text(
-                                '($readableUrl)',
-                                textAlign: TextAlign.left,
-                                style: titleFontStyle.copyWith(
-                                  color: Palette.grey,
-                                  fontSize: titleFontStyle.fontSize == null
-                                      ? 12
-                                      : titleFontStyle.fontSize! - 4,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                overflow:
-                                    bodyTextOverflow ?? TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
-                            ),
-                        ],
-                      ),
+                    SizedBox(
+                      height:
+                          Theme.of(context).textTheme.bodyMedium?.fontFamily ==
+                                  Font.robotoSlab.name
+                              ? Dimens.pt2
+                              : Dimens.pt4,
                     ),
-                    if (showMetadata)
-                      Container(
-                        alignment: Alignment.topLeft,
-                        margin: const EdgeInsets.only(top: 2),
-                        child: Text(
-                          metadata,
-                          textAlign: TextAlign.left,
-                          style: bodyFontStyle.copyWith(
-                            fontSize: bodyFontStyle.fontSize == null
-                                ? 12
-                                : bodyFontStyle.fontSize! - 2,
-                          ),
-                          overflow: bodyTextOverflow ?? TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
+                    Text(
+                      title,
+                      style: titleStyle,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
+                    if (showUrl)
+                      Text(
+                        '($readableUrl)',
+                        textAlign: TextAlign.left,
+                        style: urlStyle,
+                        overflow: bodyTextOverflow ?? TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
-                    Expanded(
-                      child: Container(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          description,
-                          textAlign: TextAlign.left,
-                          style: bodyFontStyle,
-                          overflow: bodyTextOverflow ?? TextOverflow.ellipsis,
-                          maxLines: _getBodyLines(
-                            bodyMaxLines,
-                            showMetadata,
-                            showUrl,
-                            Theme.of(context).textTheme.bodyMedium?.fontFamily,
-                          ),
-                        ),
+                    if (showMetadata) ...<Widget>[
+                      const SizedBox(
+                        height: _metadataAbovePadding,
                       ),
+                      Text(
+                        metadata,
+                        textAlign: TextAlign.left,
+                        style: metadataStyle,
+                        overflow: bodyTextOverflow ?? TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ],
+                    Text(
+                      description,
+                      textAlign: TextAlign.left,
+                      style: descriptionStyle,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: descriptionMaxLines,
+                    ),
+                    const SizedBox(
+                      height: _bottomPadding,
                     ),
                   ],
                 ),

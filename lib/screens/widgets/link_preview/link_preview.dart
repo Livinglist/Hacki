@@ -190,7 +190,7 @@ class _LinkPreviewState extends State<LinkPreview> {
         imagePath: Constants.hackerNewsLogoPath,
         onTap: _launchURL,
         titleTextStyle: widget.titleStyle,
-        bodyTextStyle: widget.bodyStyle,
+        descriptionTextStyle: widget.bodyStyle,
         bodyTextOverflow: widget.bodyTextOverflow,
         bodyMaxLines: widget.bodyMaxLines,
         showMultiMedia: widget.showMultimedia,
