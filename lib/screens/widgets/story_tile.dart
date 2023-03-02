@@ -46,8 +46,8 @@ class StoryTile extends StatelessWidget {
               child: LinkPreview(
                 story: story,
                 link: story.url,
-                offlineReading:
-                    context.read<StoriesBloc>().state.offlineReading,
+                isOfflineReading:
+                    context.read<StoriesBloc>().state.isOfflineReading,
                 placeholderWidget: _LinkPreviewPlaceholder(
                   height: height,
                 ),

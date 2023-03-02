@@ -23,11 +23,13 @@ class ItemScreenArgs extends Equatable {
     required this.item,
     this.onlyShowTargetComment = false,
     this.useCommentCache = false,
+    this.isScreenReaderEnabled = false,
     this.targetComments,
   });
 
   final Item item;
   final bool onlyShowTargetComment;
+  final bool isScreenReaderEnabled;
   final List<Comment>? targetComments;
 
   /// when a user is trying to view a sub-thread from a main thread, we don't
@@ -39,6 +41,7 @@ class ItemScreenArgs extends Equatable {
   List<Object?> get props => <Object?>[
         item,
         onlyShowTargetComment,
+        isScreenReaderEnabled,
         targetComments,
         useCommentCache,
       ];
@@ -64,14 +67,15 @@ class ItemScreen extends StatefulWidget {
           providers: <BlocProvider<dynamic>>[
             BlocProvider<CommentsCubit>(
               create: (BuildContext context) => CommentsCubit(
-                offlineReading:
-                    context.read<StoriesBloc>().state.offlineReading,
+                isOfflineReading:
+                    context.read<StoriesBloc>().state.isOfflineReading,
                 item: args.item,
                 collapseCache: context.read<CollapseCache>(),
                 defaultFetchMode:
                     context.read<PreferenceCubit>().state.fetchMode,
                 defaultCommentsOrder:
                     context.read<PreferenceCubit>().state.order,
+                isScreenReaderEnabled: args.isScreenReaderEnabled,
               )..init(
                   onlyShowTargetComment: args.onlyShowTargetComment,
                   targetAncestors: args.targetComments,
@@ -106,14 +110,15 @@ class ItemScreen extends StatefulWidget {
           providers: <BlocProvider<dynamic>>[
             BlocProvider<CommentsCubit>(
               create: (BuildContext context) => CommentsCubit(
-                offlineReading:
-                    context.read<StoriesBloc>().state.offlineReading,
+                isOfflineReading:
+                    context.read<StoriesBloc>().state.isOfflineReading,
                 item: args.item,
                 collapseCache: context.read<CollapseCache>(),
                 defaultFetchMode:
                     context.read<PreferenceCubit>().state.fetchMode,
                 defaultCommentsOrder:
                     context.read<PreferenceCubit>().state.order,
+                isScreenReaderEnabled: args.isScreenReaderEnabled,
               )..init(
                   onlyShowTargetComment: args.onlyShowTargetComment,
                   targetAncestors: args.targetComments,
@@ -320,6 +325,8 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                                       context.read<SplitViewCubit>().zoom,
                                   onFontSizeTap: onFontSizeTapped,
                                   fontSizeIconButtonKey: fontSizeIconButtonKey,
+                                  isScreenReaderEnabled:
+                                      context.isScreenReaderEnabled,
                                 ),
                               );
                             },
@@ -355,6 +362,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                         scrollController: scrollController,
                         onFontSizeTap: onFontSizeTapped,
                         fontSizeIconButtonKey: fontSizeIconButtonKey,
+                        isScreenReaderEnabled: context.isScreenReaderEnabled,
                       ),
                       body: MainView(
                         scrollController: scrollController,

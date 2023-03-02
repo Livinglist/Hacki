@@ -153,6 +153,7 @@ class SelectableLinkify extends StatelessWidget {
   const SelectableLinkify({
     super.key,
     required this.text,
+    this.semanticsLabel,
     this.linkifiers = defaultLinkifiers,
     this.onOpen,
     this.options = LinkifierUtil.linkifyOptions,
@@ -187,6 +188,8 @@ class SelectableLinkify extends StatelessWidget {
 
   /// Text to be linkified
   final String text;
+
+  final String? semanticsLabel;
 
   /// The number of font pixels for each logical pixel
   final double textScaleFactor;
@@ -317,7 +320,7 @@ class SelectableLinkify extends StatelessWidget {
       selectionControls: selectionControls,
       onSelectionChanged: onSelectionChanged,
       contextMenuBuilder: contextMenuBuilder,
-      semanticsLabel: text,
+      semanticsLabel: semanticsLabel,
     );
   }
 

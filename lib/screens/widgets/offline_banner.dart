@@ -17,9 +17,9 @@ class OfflineBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<StoriesBloc, StoriesState>(
       buildWhen: (StoriesState previous, StoriesState current) =>
-          previous.offlineReading != current.offlineReading,
+          previous.isOfflineReading != current.isOfflineReading,
       builder: (BuildContext context, StoriesState state) {
-        if (state.offlineReading) {
+        if (state.isOfflineReading) {
           return MaterialBanner(
             content: Text(
               'You are currently in offline mode. '

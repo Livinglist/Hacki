@@ -74,7 +74,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     final int pageSize = getPageSize(isComplexTile: isComplexTile);
     emit(
       const StoriesState.init().copyWith(
-        offlineReading: hasCachedStories &&
+        isOfflineReading: hasCachedStories &&
             // Only go into offline mode in the next session.
             state.downloadStatus == StoriesDownloadStatus.initial,
         currentPageSize: pageSize,
@@ -92,7 +92,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     required StoryType type,
     required Emitter<StoriesState> emit,
   }) async {
-    if (state.offlineReading) {
+    if (state.isOfflineReading) {
       final List<int> ids =
           await _offlineRepository.getCachedStoryIds(type: type);
       emit(
@@ -137,7 +137,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       ),
     );
 
-    if (state.offlineReading) {
+    if (state.isOfflineReading) {
       emit(
         state.copyWithStatusUpdated(
           type: event.type,
@@ -172,7 +172,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         upper = len;
       }
 
-      if (state.offlineReading) {
+      if (state.isOfflineReading) {
         _offlineRepository
             .getCachedStoriesStream(
           ids: state.storyIdsByType[event.type]!.sublist(
@@ -440,7 +440,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     await _offlineRepository.deleteAllStories();
     await _offlineRepository.deleteAllComments();
     await _offlineRepository.deleteAllWebPages();
-    emit(state.copyWith(offlineReading: false));
+    emit(state.copyWith(isOfflineReading: false));
     add(StoriesInitialize());
   }
 

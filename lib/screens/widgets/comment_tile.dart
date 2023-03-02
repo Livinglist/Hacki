@@ -70,6 +70,7 @@ class CommentTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Slidable(
+                  enabled: context.isScreenReaderEnabled == false,
                   startActionPane: actionable
                       ? ActionPane(
                           motion: const StretchMotion(),
@@ -117,6 +118,14 @@ class CommentTile extends StatelessWidget {
                       : null,
                   child: InkWell(
                     onTap: () {
+                      if (context.isScreenReaderEnabled) {
+                        onMoreTapped?.call(
+                          comment,
+                          context.rect,
+                        );
+                        return;
+                      }
+
                       if (actionable) {
                         HapticFeedback.selectionClick();
                         context.read<CollapseCubit>().collapse();
@@ -188,16 +197,19 @@ class CommentTile extends StatelessWidget {
                                   ),
                                   child: SizedBox(
                                     width: double.infinity,
-                                    child: ItemText(
-                                      key: ValueKey<int>(comment.id),
-                                      item: comment,
-                                      onTap: () {
-                                        if (onTap == null) {
-                                          _onTextTapped(context);
-                                        } else {
-                                          onTap!.call();
-                                        }
-                                      },
+                                    child: Semantics(
+                                      label: '''At level ${comment.level}.''',
+                                      child: ItemText(
+                                        key: ValueKey<int>(comment.id),
+                                        item: comment,
+                                        onTap: () {
+                                          if (onTap == null) {
+                                            _onTextTapped(context);
+                                          } else {
+                                            onTap!.call();
+                                          }
+                                        },
+                                      ),
                                     ),
                                   ),
                                 ),

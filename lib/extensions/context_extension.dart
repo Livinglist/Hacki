@@ -21,6 +21,8 @@ extension ContextExtension on BuildContext {
     VoidCallback? action,
     String? label,
   }) {
+    if (isScreenReaderEnabled) return;
+
     ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
         backgroundColor: Palette.deepOrange,

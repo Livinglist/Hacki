@@ -38,15 +38,17 @@ class ItemText extends StatelessWidget {
         ),
         onTap: onTap,
         textScaleFactor: MediaQuery.of(context).textScaleFactor,
-        contextMenuBuilder: (
-          BuildContext context,
-          EditableTextState editableTextState,
-        ) =>
-            contextMenuBuilder(
-          context,
-          editableTextState,
-          item: item,
-        ),
+        contextMenuBuilder: context.isScreenReaderEnabled
+            ? null
+            : (
+                BuildContext context,
+                EditableTextState editableTextState,
+              ) =>
+                contextMenuBuilder(
+                  context,
+                  editableTextState,
+                  item: item,
+                ),
         semanticsLabel: item.text,
       );
     } else {
@@ -57,15 +59,18 @@ class ItemText extends StatelessWidget {
         linkStyle: linkStyle,
         onOpen: (LinkableElement link) => LinkUtil.launch(link.url),
         onTap: onTap,
-        contextMenuBuilder: (
-          BuildContext context,
-          EditableTextState editableTextState,
-        ) =>
-            contextMenuBuilder(
-          context,
-          editableTextState,
-          item: item,
-        ),
+        contextMenuBuilder: context.isScreenReaderEnabled
+            ? null
+            : (
+                BuildContext context,
+                EditableTextState editableTextState,
+              ) =>
+                contextMenuBuilder(
+                  context,
+                  editableTextState,
+                  item: item,
+                ),
+        semanticsLabel: item.text,
       );
     }
   }

@@ -16,7 +16,7 @@ class LinkPreview extends StatefulWidget {
     required this.story,
     required this.showMetadata,
     required this.showUrl,
-    required this.offlineReading,
+    required this.isOfflineReading,
     required this.titleStyle,
     this.cache = const Duration(days: 30),
     this.showMultimedia = true,
@@ -101,7 +101,7 @@ class LinkPreview extends StatefulWidget {
 
   final bool showMetadata;
   final bool showUrl;
-  final bool offlineReading;
+  final bool isOfflineReading;
 
   @override
   _LinkPreviewState createState() => _LinkPreviewState();
@@ -131,7 +131,7 @@ class _LinkPreviewState extends State<LinkPreview> {
     _info = await WebAnalyzer.getInfo(
       story: widget.story,
       cache: widget.cache,
-      offlineReading: widget.offlineReading,
+      offlineReading: widget.isOfflineReading,
     );
 
     if (mounted) {

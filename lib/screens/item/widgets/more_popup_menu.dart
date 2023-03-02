@@ -81,63 +81,71 @@ class MorePopupMenu extends StatelessWidget {
                         UserCubit()..init(userId: item.by),
                     child: BlocBuilder<UserCubit, UserState>(
                       builder: (BuildContext context, UserState state) {
-                        return ListTile(
-                          leading: const Icon(
-                            Icons.account_circle,
-                          ),
-                          title: Text(item.by),
-                          subtitle: Text(
-                            state.user.description,
-                          ),
-                          onTap: () {
-                            Navigator.pop(context);
-                            showDialog<void>(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                title: Text('About ${state.user.id}'),
-                                content: state.user.about.isEmpty
-                                    ? Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: const <Widget>[
-                                          Text(
-                                            'empty',
-                                            style: TextStyle(
-                                              color: Palette.grey,
+                        return Semantics(
+                          excludeSemantics: state.status == UserStatus.loading,
+                          child: ListTile(
+                            leading: const Icon(
+                              Icons.account_circle,
+                            ),
+                            title: Text(item.by),
+                            subtitle: Text(
+                              state.user.description,
+                            ),
+                            onTap: () {
+                              Navigator.pop(context);
+                              showDialog<void>(
+                                context: context,
+                                builder: (BuildContext context) => AlertDialog(
+                                  semanticLabel:
+                                      '''About ${state.user.id}. ${state.user.about}''',
+                                  title: Text(
+                                    'About ${state.user.id}',
+                                  ),
+                                  content: state.user.about.isEmpty
+                                      ? Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: const <Widget>[
+                                            Text(
+                                              'empty',
+                                              style: TextStyle(
+                                                color: Palette.grey,
+                                              ),
                                             ),
+                                          ],
+                                        )
+                                      : SelectableLinkify(
+                                          text: HtmlUtil.parseHtml(
+                                            state.user.about,
                                           ),
-                                        ],
-                                      )
-                                    : SelectableLinkify(
-                                        text: HtmlUtil.parseHtml(
-                                          state.user.about,
+                                          linkStyle: const TextStyle(
+                                            color: Palette.orange,
+                                          ),
+                                          onOpen: (LinkableElement link) =>
+                                              LinkUtil.launch(link.url),
+                                          semanticsLabel: state.user.about,
                                         ),
-                                        linkStyle: const TextStyle(
-                                          color: Palette.orange,
-                                        ),
-                                        onOpen: (LinkableElement link) =>
-                                            LinkUtil.launch(link.url),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        onSearchUserTapped(context);
+                                      },
+                                      child: const Text(
+                                        'Search',
                                       ),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                      onSearchUserTapped(context);
-                                    },
-                                    child: const Text(
-                                      'Search',
                                     ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: const Text(
-                                      'Okay',
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text(
+                                        'Okay',
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
                         );
                       },
                     ),
