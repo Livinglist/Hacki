@@ -61,7 +61,7 @@ class ItemScreen extends StatefulWidget {
     return MaterialPageRoute<ItemScreen>(
       settings: const RouteSettings(name: routeName),
       builder: (BuildContext context) => RepositoryProvider<CollapseCache>(
-        create: (BuildContext context) => CollapseCache(),
+        create: (_) => CollapseCache(),
         lazy: false,
         child: MultiBlocProvider(
           providers: <BlocProvider<dynamic>>[
@@ -103,7 +103,7 @@ class ItemScreen extends StatefulWidget {
         }
       },
       child: RepositoryProvider<CollapseCache>(
-        create: (BuildContext context) => CollapseCache(),
+        create: (_) => CollapseCache(),
         lazy: false,
         child: MultiBlocProvider(
           key: ValueKey<ItemScreenArgs>(args),
