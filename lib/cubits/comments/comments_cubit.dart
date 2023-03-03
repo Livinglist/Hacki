@@ -26,7 +26,8 @@ class CommentsCubit extends Cubit<CommentsState> {
     StoriesRepository? storiesRepository,
     SembastRepository? sembastRepository,
     Logger? logger,
-    required bool offlineReading,
+    required bool isScreenReaderEnabled,
+    required bool isOfflineReading,
     required Item item,
     required FetchMode defaultFetchMode,
     required CommentsOrder defaultCommentsOrder,
@@ -39,9 +40,10 @@ class CommentsCubit extends Cubit<CommentsState> {
         _sembastRepository =
             sembastRepository ?? locator.get<SembastRepository>(),
         _logger = logger ?? locator.get<Logger>(),
+        _isScreenReaderEnabled = isScreenReaderEnabled,
         super(
           CommentsState.init(
-            offlineReading: offlineReading,
+            isOfflineReading: isOfflineReading,
             item: item,
             fetchMode: defaultFetchMode,
             order: defaultCommentsOrder,
@@ -54,6 +56,7 @@ class CommentsCubit extends Cubit<CommentsState> {
   final StoriesRepository _storiesRepository;
   final SembastRepository _sembastRepository;
   final Logger _logger;
+  final bool _isScreenReaderEnabled;
 
   /// The [StreamSubscription] for stream (both lazy or eager)
   /// fetching comments posted directly to the story.
@@ -109,7 +112,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     );
 
     final Item item = state.item;
-    final Item updatedItem = state.offlineReading
+    final Item updatedItem = state.isOfflineReading
         ? item
         : await _storiesRepository.fetchItem(id: item.id).then(_toBuildable) ??
             item;
@@ -119,7 +122,7 @@ class CommentsCubit extends Cubit<CommentsState> {
 
     late final Stream<Comment> commentStream;
 
-    if (state.offlineReading) {
+    if (state.isOfflineReading) {
       commentStream = _offlineRepository.getCachedCommentsStream(ids: kids);
     } else {
       switch (state.fetchMode) {
@@ -152,7 +155,7 @@ class CommentsCubit extends Cubit<CommentsState> {
       ),
     );
 
-    if (state.offlineReading) {
+    if (state.isOfflineReading) {
       emit(
         state.copyWith(
           status: CommentsStatus.allLoaded,
@@ -356,6 +359,9 @@ class CommentsCubit extends Cubit<CommentsState> {
       emit(state.copyWith(comments: updatedComments));
 
       if (state.fetchMode == FetchMode.eager) {
+        /// If screen reader is on, fetch all the comments without paging.
+        if (_isScreenReaderEnabled) return;
+
         if (updatedComments.length >=
                 _pageSize + _pageSize * state.currentPage &&
             updatedComments.length <=

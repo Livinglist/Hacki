@@ -16,6 +16,7 @@ class CustomAppBar extends AppBar {
     bool splitViewEnabled = false,
     VoidCallback? onZoomTap,
     bool? expanded,
+    bool isScreenReaderEnabled = false,
   }) : super(
           elevation: Dimens.zero,
           actions: <Widget>[
@@ -37,19 +38,20 @@ class CustomAppBar extends AppBar {
             ScrollUpIconButton(
               scrollController: scrollController,
             ),
-            IconButton(
-              key: fontSizeIconButtonKey,
-              icon: Text(
-                String.fromCharCode(FeatherIcons.type.codePoint),
-                style: TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: TextDimens.pt18,
-                  fontFamily: FeatherIcons.type.fontFamily,
-                  package: FeatherIcons.type.fontPackage,
+            if (isScreenReaderEnabled == false)
+              IconButton(
+                key: fontSizeIconButtonKey,
+                icon: Text(
+                  String.fromCharCode(FeatherIcons.type.codePoint),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: TextDimens.pt18,
+                    fontFamily: FeatherIcons.type.fontFamily,
+                    package: FeatherIcons.type.fontPackage,
+                  ),
                 ),
+                onPressed: onFontSizeTap,
               ),
-              onPressed: onFontSizeTap,
-            ),
             if (item is Story)
               PinIconButton(
                 story: item,

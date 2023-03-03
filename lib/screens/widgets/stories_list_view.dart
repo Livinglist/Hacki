@@ -86,7 +86,7 @@ class _StoriesListViewState extends State<StoriesListView> {
               },
               onTap: onStoryTapped,
               onPinned: context.read<PinCubit>().pinStory,
-              header: state.offlineReading ? null : header,
+              header: state.isOfflineReading ? null : header,
               onMoreTapped: onMoreTapped,
             );
           },

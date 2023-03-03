@@ -35,6 +35,7 @@ class StoryTile extends StatelessWidget {
       final double height = context.storyTileHeight;
       return Semantics(
         label: story.screenReaderLabel,
+        excludeSemantics: true,
         child: TapDownWrapper(
           onTap: onTap,
           child: Padding(
@@ -45,8 +46,8 @@ class StoryTile extends StatelessWidget {
               child: LinkPreview(
                 story: story,
                 link: story.url,
-                offlineReading:
-                    context.read<StoriesBloc>().state.offlineReading,
+                isOfflineReading:
+                    context.read<StoriesBloc>().state.isOfflineReading,
                 placeholderWidget: _LinkPreviewPlaceholder(
                   height: height,
                 ),
@@ -72,6 +73,7 @@ class StoryTile extends StatelessWidget {
     } else {
       return Semantics(
         label: story.screenReaderLabel,
+        excludeSemantics: true,
         child: InkWell(
           onTap: onTap,
           child: Padding(

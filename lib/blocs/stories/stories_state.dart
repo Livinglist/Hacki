@@ -21,7 +21,7 @@ class StoriesState extends Equatable {
     required this.statusByType,
     required this.currentPageByType,
     required this.readStoriesIds,
-    required this.offlineReading,
+    required this.isOfflineReading,
     required this.downloadStatus,
     required this.currentPageSize,
     required this.storiesDownloaded,
@@ -57,7 +57,7 @@ class StoriesState extends Equatable {
       StoryType.ask: 0,
       StoryType.show: 0,
     },
-  })  : offlineReading = false,
+  })  : isOfflineReading = false,
         downloadStatus = StoriesDownloadStatus.initial,
         currentPageSize = 0,
         readStoriesIds = const <int>{},
@@ -70,7 +70,7 @@ class StoriesState extends Equatable {
   final Map<StoryType, int> currentPageByType;
   final Set<int> readStoriesIds;
   final StoriesDownloadStatus downloadStatus;
-  final bool offlineReading;
+  final bool isOfflineReading;
   final int currentPageSize;
   final int storiesDownloaded;
   final int storiesToBeDownloaded;
@@ -82,7 +82,7 @@ class StoriesState extends Equatable {
     Map<StoryType, int>? currentPageByType,
     Set<int>? readStoriesIds,
     StoriesDownloadStatus? downloadStatus,
-    bool? offlineReading,
+    bool? isOfflineReading,
     int? currentPageSize,
     int? storiesDownloaded,
     int? storiesToBeDownloaded,
@@ -93,7 +93,7 @@ class StoriesState extends Equatable {
       statusByType: statusByType ?? this.statusByType,
       currentPageByType: currentPageByType ?? this.currentPageByType,
       readStoriesIds: readStoriesIds ?? this.readStoriesIds,
-      offlineReading: offlineReading ?? this.offlineReading,
+      isOfflineReading: isOfflineReading ?? this.isOfflineReading,
       downloadStatus: downloadStatus ?? this.downloadStatus,
       currentPageSize: currentPageSize ?? this.currentPageSize,
       storiesDownloaded: storiesDownloaded ?? this.storiesDownloaded,
@@ -183,7 +183,7 @@ class StoriesState extends Equatable {
         statusByType,
         currentPageByType,
         readStoriesIds,
-        offlineReading,
+        isOfflineReading,
         downloadStatus,
         currentPageSize,
         storiesDownloaded,

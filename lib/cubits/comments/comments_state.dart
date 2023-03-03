@@ -17,12 +17,12 @@ class CommentsState extends Equatable {
     required this.order,
     required this.fetchMode,
     required this.onlyShowTargetComment,
-    required this.offlineReading,
+    required this.isOfflineReading,
     required this.currentPage,
   });
 
   CommentsState.init({
-    required this.offlineReading,
+    required this.isOfflineReading,
     required this.item,
     required this.fetchMode,
     required this.order,
@@ -39,7 +39,7 @@ class CommentsState extends Equatable {
   final CommentsOrder order;
   final FetchMode fetchMode;
   final bool onlyShowTargetComment;
-  final bool offlineReading;
+  final bool isOfflineReading;
   final int currentPage;
 
   CommentsState copyWith({
@@ -50,7 +50,7 @@ class CommentsState extends Equatable {
     CommentsOrder? order,
     FetchMode? fetchMode,
     bool? onlyShowTargetComment,
-    bool? offlineReading,
+    bool? isOfflineReading,
     int? currentPage,
   }) {
     return CommentsState(
@@ -62,7 +62,7 @@ class CommentsState extends Equatable {
       fetchMode: fetchMode ?? this.fetchMode,
       onlyShowTargetComment:
           onlyShowTargetComment ?? this.onlyShowTargetComment,
-      offlineReading: offlineReading ?? this.offlineReading,
+      isOfflineReading: isOfflineReading ?? this.isOfflineReading,
       currentPage: currentPage ?? this.currentPage,
     );
   }
@@ -77,7 +77,7 @@ class CommentsState extends Equatable {
         order,
         fetchMode,
         onlyShowTargetComment,
-        offlineReading,
+        isOfflineReading,
         currentPage,
         comments,
       ];

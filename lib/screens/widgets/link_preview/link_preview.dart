@@ -16,10 +16,9 @@ class LinkPreview extends StatefulWidget {
     required this.story,
     required this.showMetadata,
     required this.showUrl,
-    required this.offlineReading,
+    required this.isOfflineReading,
+    required this.titleStyle,
     this.cache = const Duration(days: 30),
-    this.titleStyle,
-    this.bodyStyle,
     this.showMultimedia = true,
     this.backgroundColor = const Color.fromRGBO(235, 235, 235, 1),
     this.bodyMaxLines = 3,
@@ -84,10 +83,7 @@ class LinkPreview extends StatefulWidget {
   final Duration cache;
 
   /// Customize body `TextStyle`
-  final TextStyle? titleStyle;
-
-  /// Customize body `TextStyle`
-  final TextStyle? bodyStyle;
+  final TextStyle titleStyle;
 
   /// Show or Hide image if available defaults to `true`
   final bool showMultimedia;
@@ -105,7 +101,7 @@ class LinkPreview extends StatefulWidget {
 
   final bool showMetadata;
   final bool showUrl;
-  final bool offlineReading;
+  final bool isOfflineReading;
 
   @override
   _LinkPreviewState createState() => _LinkPreviewState();
@@ -135,7 +131,7 @@ class _LinkPreviewState extends State<LinkPreview> {
     _info = await WebAnalyzer.getInfo(
       story: widget.story,
       cache: widget.cache,
-      offlineReading: widget.offlineReading,
+      offlineReading: widget.isOfflineReading,
     );
 
     if (mounted) {
@@ -190,7 +186,6 @@ class _LinkPreviewState extends State<LinkPreview> {
         imagePath: Constants.hackerNewsLogoPath,
         onTap: _launchURL,
         titleTextStyle: widget.titleStyle,
-        bodyTextStyle: widget.bodyStyle,
         bodyTextOverflow: widget.bodyTextOverflow,
         bodyMaxLines: widget.bodyMaxLines,
         showMultiMedia: widget.showMultimedia,

@@ -92,12 +92,14 @@ class _HomeScreenState extends State<HomeScreen>
 
     SchedulerBinding.instance
       ..addPostFrameCallback((_) {
-        FeatureDiscovery.discoverFeatures(
-          context,
-          <String>{
-            Constants.featureLogIn,
-          },
-        );
+        if (context.isScreenReaderEnabled == false) {
+          FeatureDiscovery.discoverFeatures(
+            context,
+            <String>{
+              Constants.featureLogIn,
+            },
+          );
+        }
       })
       ..addPostFrameCallback((_) {
         final ModalRoute<dynamic>? route = ModalRoute.of(context);
@@ -214,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen>
         context.read<PreferenceCubit>().state.webFirstEnabled;
     final bool useReader = context.read<PreferenceCubit>().state.readerEnabled;
     final bool offlineReading =
-        context.read<StoriesBloc>().state.offlineReading;
+        context.read<StoriesBloc>().state.isOfflineReading;
     final bool hasRead = isPin || context.read<StoriesBloc>().hasRead(story);
     final bool splitViewEnabled = context.read<SplitViewCubit>().state.enabled;
 
@@ -225,7 +227,10 @@ class _HomeScreenState extends State<HomeScreen>
     if (isJobWithLink) {
       context.read<ReminderCubit>().removeLastReadStoryId();
     } else {
-      final ItemScreenArgs args = ItemScreenArgs(item: story);
+      final ItemScreenArgs args = ItemScreenArgs(
+        item: story,
+        isScreenReaderEnabled: context.isScreenReaderEnabled,
+      );
 
       context.read<ReminderCubit>().updateLastReadStoryId(story.id);
 
