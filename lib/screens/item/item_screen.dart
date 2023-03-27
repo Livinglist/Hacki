@@ -173,16 +173,14 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
 
     SchedulerBinding.instance
       ..addPostFrameCallback((_) {
-        if (context.isScreenReaderEnabled == false) {
-          FeatureDiscovery.discoverFeatures(
-            context,
-            <String>{
-              Constants.featurePinToTop,
-              Constants.featureAddStoryToFavList,
-              Constants.featureOpenStoryInWebView,
-            },
-          );
-        }
+        FeatureDiscovery.discoverFeatures(
+          context,
+          <String>{
+            Constants.featurePinToTop,
+            Constants.featureAddStoryToFavList,
+            Constants.featureOpenStoryInWebView,
+          },
+        );
       })
       ..addPostFrameCallback((_) {
         final ModalRoute<dynamic>? route = ModalRoute.of(context);
@@ -320,8 +318,6 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                                       context.read<SplitViewCubit>().zoom,
                                   onFontSizeTap: onFontSizeTapped,
                                   fontSizeIconButtonKey: fontSizeIconButtonKey,
-                                  isScreenReaderEnabled:
-                                      context.isScreenReaderEnabled,
                                 ),
                               );
                             },
@@ -357,7 +353,6 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                         scrollController: scrollController,
                         onFontSizeTap: onFontSizeTapped,
                         fontSizeIconButtonKey: fontSizeIconButtonKey,
-                        isScreenReaderEnabled: context.isScreenReaderEnabled,
                       ),
                       body: MainView(
                         scrollController: scrollController,
