@@ -58,10 +58,12 @@ extension StateExtension on State {
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return MorePopupMenu(
-          item: item,
-          isBlocked: isBlocked,
-          onLoginTapped: onLoginTapped,
+        return SafeArea(
+          child: MorePopupMenu(
+            item: item,
+            isBlocked: isBlocked,
+            onLoginTapped: onLoginTapped,
+          ),
         );
       },
     ).then((MenuAction? action) {
