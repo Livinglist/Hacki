@@ -70,7 +70,6 @@ class CommentTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Slidable(
-                  enabled: context.isScreenReaderEnabled == false,
                   startActionPane: actionable
                       ? ActionPane(
                           motion: const StretchMotion(),
@@ -118,14 +117,6 @@ class CommentTile extends StatelessWidget {
                       : null,
                   child: InkWell(
                     onTap: () {
-                      if (context.isScreenReaderEnabled) {
-                        onMoreTapped?.call(
-                          comment,
-                          context.rect,
-                        );
-                        return;
-                      }
-
                       if (actionable) {
                         HapticFeedback.selectionClick();
                         context.read<CollapseCubit>().collapse();

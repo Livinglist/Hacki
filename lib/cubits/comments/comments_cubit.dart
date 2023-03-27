@@ -26,7 +26,6 @@ class CommentsCubit extends Cubit<CommentsState> {
     StoriesRepository? storiesRepository,
     SembastRepository? sembastRepository,
     Logger? logger,
-    required bool isScreenReaderEnabled,
     required bool isOfflineReading,
     required Item item,
     required FetchMode defaultFetchMode,
@@ -40,7 +39,6 @@ class CommentsCubit extends Cubit<CommentsState> {
         _sembastRepository =
             sembastRepository ?? locator.get<SembastRepository>(),
         _logger = logger ?? locator.get<Logger>(),
-        _isScreenReaderEnabled = isScreenReaderEnabled,
         super(
           CommentsState.init(
             isOfflineReading: isOfflineReading,
@@ -56,7 +54,6 @@ class CommentsCubit extends Cubit<CommentsState> {
   final StoriesRepository _storiesRepository;
   final SembastRepository _sembastRepository;
   final Logger _logger;
-  final bool _isScreenReaderEnabled;
 
   /// The [StreamSubscription] for stream (both lazy or eager)
   /// fetching comments posted directly to the story.
@@ -359,9 +356,6 @@ class CommentsCubit extends Cubit<CommentsState> {
       emit(state.copyWith(comments: updatedComments));
 
       if (state.fetchMode == FetchMode.eager) {
-        /// If screen reader is on, fetch all the comments without paging.
-        if (_isScreenReaderEnabled) return;
-
         if (updatedComments.length >=
                 _pageSize + _pageSize * state.currentPage &&
             updatedComments.length <=

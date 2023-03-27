@@ -23,13 +23,11 @@ class ItemScreenArgs extends Equatable {
     required this.item,
     this.onlyShowTargetComment = false,
     this.useCommentCache = false,
-    this.isScreenReaderEnabled = false,
     this.targetComments,
   });
 
   final Item item;
   final bool onlyShowTargetComment;
-  final bool isScreenReaderEnabled;
   final List<Comment>? targetComments;
 
   /// when a user is trying to view a sub-thread from a main thread, we don't
@@ -41,7 +39,6 @@ class ItemScreenArgs extends Equatable {
   List<Object?> get props => <Object?>[
         item,
         onlyShowTargetComment,
-        isScreenReaderEnabled,
         targetComments,
         useCommentCache,
       ];
@@ -75,7 +72,6 @@ class ItemScreen extends StatefulWidget {
                     context.read<PreferenceCubit>().state.fetchMode,
                 defaultCommentsOrder:
                     context.read<PreferenceCubit>().state.order,
-                isScreenReaderEnabled: args.isScreenReaderEnabled,
               )..init(
                   onlyShowTargetComment: args.onlyShowTargetComment,
                   targetAncestors: args.targetComments,
@@ -118,7 +114,6 @@ class ItemScreen extends StatefulWidget {
                     context.read<PreferenceCubit>().state.fetchMode,
                 defaultCommentsOrder:
                     context.read<PreferenceCubit>().state.order,
-                isScreenReaderEnabled: args.isScreenReaderEnabled,
               )..init(
                   onlyShowTargetComment: args.onlyShowTargetComment,
                   targetAncestors: args.targetComments,

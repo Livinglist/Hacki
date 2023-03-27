@@ -229,7 +229,6 @@ class _HomeScreenState extends State<HomeScreen>
     } else {
       final ItemScreenArgs args = ItemScreenArgs(
         item: story,
-        isScreenReaderEnabled: context.isScreenReaderEnabled,
       );
 
       context.read<ReminderCubit>().updateLastReadStoryId(story.id);
