@@ -92,14 +92,12 @@ class _HomeScreenState extends State<HomeScreen>
 
     SchedulerBinding.instance
       ..addPostFrameCallback((_) {
-        if (context.isScreenReaderEnabled == false) {
-          FeatureDiscovery.discoverFeatures(
-            context,
-            <String>{
-              Constants.featureLogIn,
-            },
-          );
-        }
+        FeatureDiscovery.discoverFeatures(
+          context,
+          <String>{
+            Constants.featureLogIn,
+          },
+        );
       })
       ..addPostFrameCallback((_) {
         final ModalRoute<dynamic>? route = ModalRoute.of(context);
@@ -229,7 +227,6 @@ class _HomeScreenState extends State<HomeScreen>
     } else {
       final ItemScreenArgs args = ItemScreenArgs(
         item: story,
-        isScreenReaderEnabled: context.isScreenReaderEnabled,
       );
 
       context.read<ReminderCubit>().updateLastReadStoryId(story.id);

@@ -6,8 +6,6 @@ import 'package:hacki/config/constants.dart';
 import 'package:hacki/styles/styles.dart';
 
 extension ContextExtension on BuildContext {
-  bool get isScreenReaderEnabled => MediaQuery.of(this).accessibleNavigation;
-
   T? tryRead<T>() {
     try {
       return read<T>();
@@ -21,8 +19,6 @@ extension ContextExtension on BuildContext {
     VoidCallback? action,
     String? label,
   }) {
-    if (isScreenReaderEnabled) return;
-
     ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
         backgroundColor: Palette.deepOrange,

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:equatable/equatable.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/foundation.dart';
@@ -110,13 +111,27 @@ Future<void> main({bool testing = false}) async {
       },
     );
   } else if (Platform.isAndroid) {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Palette.transparent,
-        systemNavigationBarColor: Palette.transparent,
-        systemNavigationBarDividerColor: Palette.transparent,
-      ),
-    );
+    final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+    final AndroidDeviceInfo androidInfo = await deviceInfoPlugin.androidInfo;
+    final int sdk = androidInfo.version.sdkInt;
+
+    if (sdk > 28) {
+      SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(
+          statusBarColor: Palette.transparent,
+          systemNavigationBarColor: Palette.transparent,
+          systemNavigationBarDividerColor: Palette.transparent,
+        ),
+      );
+    } else {
+      SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(
+          statusBarBrightness: Brightness.light,
+          statusBarIconBrightness: Brightness.dark,
+          statusBarColor: Colors.transparent,
+        ),
+      );
+    }
 
     await SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.edgeToEdge,

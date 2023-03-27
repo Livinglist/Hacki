@@ -23,8 +23,8 @@ class MorePopupMenu extends StatelessWidget {
   final bool isBlocked;
   final VoidCallback onLoginTapped;
 
-  static const double _storySheetHeight = 500;
-  static const double _commentSheetHeight = 480;
+  static const double _storySheetHeight = 485;
+  static const double _commentSheetHeight = 470;
 
   @override
   Widget build(BuildContext context) {
