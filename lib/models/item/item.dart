@@ -28,6 +28,7 @@ class Item extends Equatable {
     required this.type,
     required this.parts,
     required this.descendants,
+    required this.hidden,
   });
 
   Item.empty()
@@ -39,9 +40,10 @@ class Item extends Equatable {
         title = '',
         url = '',
         kids = <int>[],
-        dead = false,
         parts = <int>[],
+        dead = false,
         deleted = false,
+        hidden = false,
         parent = 0,
         text = '',
         type = '';
@@ -60,7 +62,8 @@ class Item extends Equatable {
         deleted = json['deleted'] as bool? ?? false,
         parent = json['parent'] as int? ?? 0,
         parts = (json['parts'] as List<dynamic>?)?.cast<int>() ?? <int>[],
-        type = json['type'] as String? ?? '';
+        type = json['type'] as String? ?? '',
+        hidden = json['hidden'] as bool? ?? false;
 
   final int id;
   final int time;
@@ -72,6 +75,11 @@ class Item extends Equatable {
 
   final bool deleted;
   final bool dead;
+
+  /// Whether or not the item should be hidden.
+  /// true if any of filter keywords set by user presents in [text]
+  /// or [title].
+  final bool hidden;
 
   final String by;
   final String text;
@@ -128,5 +136,6 @@ class Item extends Equatable {
         type,
         parts,
         descendants,
+        hidden,
       ];
 }

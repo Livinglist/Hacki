@@ -234,6 +234,12 @@ class _SettingsState extends State<Settings> {
                   const Divider(),
                   ListTile(
                     title: const Text(
+                      'Filter Keywords',
+                    ),
+                    onTap: onFilterKeywordsTapped,
+                  ),
+                  ListTile(
+                    title: const Text(
                       'Export Favorites',
                     ),
                     onTap: onExportFavoritesTapped,
@@ -638,6 +644,100 @@ class _SettingsState extends State<Settings> {
     } catch (error, stackTrace) {
       error.logError(stackTrace: stackTrace);
     }
+  }
+
+  void onFilterKeywordsTapped() {
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Filter Keywords',
+            style: TextStyle(
+              fontSize: TextDimens.pt16,
+            ),
+          ),
+          content: BlocBuilder<FilterCubit, FilterState>(
+            builder: (BuildContext context, FilterState state) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  if (state.keywords.isEmpty)
+                    const CenteredText(
+                      text:
+                          '''story or comment that contains keywords here will be hidden.''',
+                    ),
+                  Wrap(
+                    spacing: Dimens.pt4,
+                    children: <Widget>[
+                      for (final String keyword in state.keywords)
+                        ActionChip(
+                          avatar: const Icon(
+                            Icons.close,
+                            size: TextDimens.pt14,
+                          ),
+                          label: Text(keyword),
+                          onPressed: () => context
+                              .read<FilterCubit>()
+                              .removeKeyword(keyword),
+                        ),
+                    ],
+                  ),
+                ],
+              );
+            },
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: onAddKeywordTapped,
+              child: const Text(
+                'Add keyword',
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                'Okay',
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void onAddKeywordTapped() {
+    final TextEditingController controller = TextEditingController();
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: TextField(
+            autofocus: true,
+            controller: controller,
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                'Cancel',
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                final String keyword = controller.text.trim();
+                if (keyword.isEmpty) return;
+                context.read<FilterCubit>().addKeyword(keyword.toLowerCase());
+                Navigator.pop(context);
+              },
+              child: const Text(
+                'Confirm',
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> onExportFavoritesTapped() async {

@@ -11,6 +11,7 @@ class Comment extends Item {
     required super.kids,
     required super.dead,
     required super.deleted,
+    required super.hidden,
     required this.level,
   }) : super(
           descendants: 0,
@@ -26,7 +27,10 @@ class Comment extends Item {
 
   String get metadata => '''by $by $timeAgo''';
 
-  Comment copyWith({int? level}) {
+  Comment copyWith({
+    int? level,
+    bool? hidden,
+  }) {
     return Comment(
       id: id,
       time: time,
@@ -37,6 +41,7 @@ class Comment extends Item {
       kids: kids,
       dead: dead,
       deleted: deleted,
+      hidden: hidden ?? this.hidden,
       level: level ?? this.level,
     );
   }

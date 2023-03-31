@@ -17,7 +17,7 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
   static final List<Preference<dynamic>> allPreferences =
       UnmodifiableListView<Preference<dynamic>>(
     <Preference<dynamic>>[
-      // Order of these first four preferences does not matter.
+      // Order of these preferences does not matter.
       FetchModePreference(),
       CommentsOrderPreference(),
       FontPreference(),

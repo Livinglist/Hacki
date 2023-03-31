@@ -43,6 +43,7 @@ class CommentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (comment.hidden) return const SizedBox.shrink();
     return BlocProvider<CollapseCubit>(
       key: ValueKey<String>('${comment.id}-BlocProvider'),
       lazy: false,

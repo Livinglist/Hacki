@@ -3,6 +3,7 @@ export 'collapse/collapse_cubit.dart';
 export 'comments/comments_cubit.dart';
 export 'edit/edit_cubit.dart';
 export 'fav/fav_cubit.dart';
+export 'filter/filter_cubit.dart';
 export 'history/history_cubit.dart';
 export 'notification/notification_cubit.dart';
 export 'pin/pin_cubit.dart';
