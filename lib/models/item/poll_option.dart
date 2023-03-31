@@ -20,6 +20,7 @@ class PollOption extends Item {
           descendants: 0,
           dead: false,
           deleted: false,
+          hidden: false,
         );
 
   PollOption.empty()

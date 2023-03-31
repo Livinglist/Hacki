@@ -17,6 +17,7 @@ class BuildableStory extends Story with Buildable {
     required super.type,
     required super.url,
     required super.parts,
+    required super.hidden,
     required this.elements,
   });
 
@@ -33,6 +34,7 @@ class BuildableStory extends Story with Buildable {
           type: story.type,
           url: story.url,
           parts: story.parts,
+          hidden: story.hidden,
         );
 
   BuildableStory.fromTitleOnlyStory(Story story)

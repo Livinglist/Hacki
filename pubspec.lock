@@ -1375,4 +1375,4 @@ packages:
     version: "3.1.1"
 sdks:
   dart: ">=2.19.0 <3.0.0"
-  flutter: ">=3.7.8"
+  flutter: ">=3.7.9"

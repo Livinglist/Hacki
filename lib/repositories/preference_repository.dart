@@ -22,6 +22,7 @@ class PreferenceRepository {
   static const String _usernameKey = 'username';
   static const String _passwordKey = 'password';
   static const String _blocklistKey = 'blocklist';
+  static const String _filterKeywordsKey = 'filterKeywords';
   static const String _pinnedStoriesIdsKey = 'pinnedStoriesIds';
   static const String _unreadCommentsIdsKey = 'unreadCommentsIds';
   static const String _lastReadStoryIdKey = 'lastReadStoryId';
@@ -270,6 +271,20 @@ class PreferenceRepository {
   Future<void> updateBlocklist(List<String> usernames) async {
     final SharedPreferences prefs = await _prefs;
     await prefs.setStringList(_blocklistKey, usernames);
+  }
+
+  //#endregion
+
+  //#region filter
+
+  Future<List<String>> get filterKeywords async => _prefs.then(
+        (SharedPreferences prefs) =>
+            prefs.getStringList(_filterKeywordsKey) ?? <String>[],
+      );
+
+  Future<void> updateFilterKeywords(List<String> keywords) async {
+    final SharedPreferences prefs = await _prefs;
+    await prefs.setStringList(_filterKeywordsKey, keywords);
   }
 
   //#endregion

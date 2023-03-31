@@ -58,6 +58,7 @@ class SearchRepository {
           parent: parentId,
           dead: false,
           deleted: false,
+          hidden: false,
           level: 0,
         );
         yield comment;
@@ -80,6 +81,7 @@ class SearchRepository {
           // response doesn't contain kids and parts.
           kids: const <int>[],
           parts: const <int>[],
+          hidden: false,
         );
         yield story;
       }

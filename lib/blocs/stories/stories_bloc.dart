@@ -17,11 +17,13 @@ part 'stories_state.dart';
 class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   StoriesBloc({
     required PreferenceCubit preferenceCubit,
+    required FilterCubit filterCubit,
     OfflineRepository? offlineRepository,
     StoriesRepository? storiesRepository,
     PreferenceRepository? preferenceRepository,
     Logger? logger,
   })  : _preferenceCubit = preferenceCubit,
+        _filterCubit = filterCubit,
         _offlineRepository =
             offlineRepository ?? locator.get<OfflineRepository>(),
         _storiesRepository =
@@ -45,6 +47,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   }
 
   final PreferenceCubit _preferenceCubit;
+  final FilterCubit _filterCubit;
   final OfflineRepository _offlineRepository;
   final StoriesRepository _storiesRepository;
   final PreferenceRepository _preferenceRepository;
@@ -224,10 +227,15 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     Emitter<StoriesState> emit,
   ) async {
     final bool hasRead = await _preferenceRepository.hasRead(event.story.id);
+    final bool hidden = _filterCubit.state.keywords.any(
+      (String keyword) =>
+          event.story.title.toLowerCase().contains(keyword) ||
+          event.story.text.toLowerCase().contains(keyword),
+    );
     emit(
       state.copyWithStoryAdded(
         type: event.type,
-        story: event.story,
+        story: event.story.copyWith(hidden: hidden),
         hasRead: hasRead,
       ),
     );

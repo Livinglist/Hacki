@@ -31,6 +31,7 @@ class StoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (story.hidden) return const SizedBox.shrink();
     if (showWebPreview) {
       final double height = context.storyTileHeight;
       return Semantics(

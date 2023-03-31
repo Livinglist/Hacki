@@ -15,6 +15,7 @@ class BuildableComment extends Comment with Buildable {
     required super.kids,
     required super.dead,
     required super.deleted,
+    required super.hidden,
     required super.level,
     required this.elements,
   });
@@ -31,6 +32,7 @@ class BuildableComment extends Comment with Buildable {
           dead: comment.dead,
           deleted: comment.deleted,
           level: comment.level,
+          hidden: comment.hidden,
         );
 
   @override

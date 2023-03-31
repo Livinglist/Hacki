@@ -14,6 +14,7 @@ class Story extends Item {
     required super.text,
     required super.kids,
     required super.parts,
+    required super.hidden,
   }) : super(
           dead: false,
           deleted: false,
@@ -38,9 +39,27 @@ class Story extends Item {
           parent: 0,
           text: '',
           type: '',
+          hidden: false,
         );
 
   Story.fromJson(super.json) : super.fromJson();
+
+  Story copyWith({bool? hidden}) {
+    return Story(
+      descendants: descendants,
+      id: id,
+      score: score,
+      time: time,
+      by: by,
+      title: title,
+      type: type,
+      url: url,
+      text: text,
+      kids: kids,
+      parts: parts,
+      hidden: hidden ?? this.hidden,
+    );
+  }
 
   String get metadata =>
       '''$score point${score > 1 ? 's' : ''} by $by $timeAgo | $descendants comment${descendants > 1 ? 's' : ''}''';

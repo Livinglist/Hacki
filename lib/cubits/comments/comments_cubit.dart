@@ -6,6 +6,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
@@ -20,6 +21,7 @@ part 'comments_state.dart';
 
 class CommentsCubit extends Cubit<CommentsState> {
   CommentsCubit({
+    required FilterCubit filterCubit,
     required CollapseCache collapseCache,
     CommentCache? commentCache,
     OfflineRepository? offlineRepository,
@@ -30,7 +32,8 @@ class CommentsCubit extends Cubit<CommentsState> {
     required Item item,
     required FetchMode defaultFetchMode,
     required CommentsOrder defaultCommentsOrder,
-  })  : _collapseCache = collapseCache,
+  })  : _filterCubit = filterCubit,
+        _collapseCache = collapseCache,
         _commentCache = commentCache ?? locator.get<CommentCache>(),
         _offlineRepository =
             offlineRepository ?? locator.get<OfflineRepository>(),
@@ -48,6 +51,7 @@ class CommentsCubit extends Cubit<CommentsState> {
           ),
         );
 
+  final FilterCubit _filterCubit;
   final CollapseCache _collapseCache;
   final CommentCache _commentCache;
   final OfflineRepository _offlineRepository;
@@ -348,9 +352,12 @@ class CommentsCubit extends Cubit<CommentsState> {
       _commentCache.cacheComment(comment);
       _sembastRepository.cacheComment(comment);
 
+      final bool hidden = _filterCubit.state.keywords.any(
+        (String keyword) => comment.text.toLowerCase().contains(keyword),
+      );
       final List<Comment> updatedComments = <Comment>[
         ...state.comments,
-        comment
+        comment.copyWith(hidden: hidden),
       ];
 
       emit(state.copyWith(comments: updatedComments));
