@@ -77,7 +77,8 @@ class Item extends Equatable {
   final bool dead;
 
   /// Whether or not the item should be hidden.
-  /// True if any filter keywords set by user presents in [text].
+  /// true if any of filter keywords set by user presents in [text]
+  /// or [title].
   final bool hidden;
 
   final String by;
