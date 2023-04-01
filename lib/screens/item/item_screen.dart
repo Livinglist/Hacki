@@ -436,45 +436,45 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
   }
 
   void onRightMoreTapped(Comment comment) {
-    const double bottomSheetHeight = 140;
-
     HapticFeedback.lightImpact();
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
-        return Container(
-          height: bottomSheetHeight,
-          color: Theme.of(context).canvasColor,
-          child: Material(
-            color: Palette.transparent,
-            child: Column(
-              children: <Widget>[
-                ListTile(
-                  leading: const Icon(Icons.av_timer),
-                  title: const Text('View ancestors'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    onTimeMachineActivated(comment);
-                  },
-                  enabled:
-                      comment.level > 0 && !(comment.dead || comment.deleted),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.list),
-                  title: const Text('View in separate thread'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    goToItemScreen(
-                      args: ItemScreenArgs(
-                        item: comment,
-                        useCommentCache: true,
-                      ),
-                      forceNewScreen: true,
-                    );
-                  },
-                  enabled: !(comment.dead || comment.deleted),
-                ),
-              ],
+        return SafeArea(
+          child: ColoredBox(
+            color: Theme.of(context).canvasColor,
+            child: Material(
+              color: Palette.transparent,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  ListTile(
+                    leading: const Icon(Icons.av_timer),
+                    title: const Text('View ancestors'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      onTimeMachineActivated(comment);
+                    },
+                    enabled:
+                        comment.level > 0 && !(comment.dead || comment.deleted),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.list),
+                    title: const Text('View in separate thread'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      goToItemScreen(
+                        args: ItemScreenArgs(
+                          item: comment,
+                          useCommentCache: true,
+                        ),
+                        forceNewScreen: true,
+                      );
+                    },
+                    enabled: !(comment.dead || comment.deleted),
+                  ),
+                ],
+              ),
             ),
           ),
         );

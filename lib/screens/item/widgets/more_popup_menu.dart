@@ -23,9 +23,6 @@ class MorePopupMenu extends StatelessWidget {
   final bool isBlocked;
   final VoidCallback onLoginTapped;
 
-  static const double _storySheetHeight = 485;
-  static const double _commentSheetHeight = 470;
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider<VoteCubit>(
@@ -69,12 +66,12 @@ class MorePopupMenu extends StatelessWidget {
         builder: (BuildContext context, VoteState voteState) {
           final bool upvoted = voteState.vote == Vote.up;
           final bool downvoted = voteState.vote == Vote.down;
-          return Container(
-            height: item is Comment ? _commentSheetHeight : _storySheetHeight,
+          return ColoredBox(
             color: Theme.of(context).canvasColor,
             child: Material(
               color: Palette.transparent,
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   BlocProvider<UserCubit>(
                     create: (BuildContext context) =>

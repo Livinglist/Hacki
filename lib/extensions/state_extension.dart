@@ -108,24 +108,26 @@ extension StateExtension on State {
       linkToShare = await showModalBottomSheet<String>(
         context: context,
         builder: (BuildContext context) {
-          return Container(
-            height: 140,
-            color: Theme.of(context).canvasColor,
-            child: Material(
-              child: Column(
-                children: <Widget>[
-                  ListTile(
-                    onTap: () => Navigator.pop(context, item.url),
-                    title: const Text('Link to article'),
-                  ),
-                  ListTile(
-                    onTap: () => Navigator.pop(
-                      context,
-                      'https://news.ycombinator.com/item?id=${item.id}',
+          return SafeArea(
+            child: ColoredBox(
+              color: Theme.of(context).canvasColor,
+              child: Material(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    ListTile(
+                      onTap: () => Navigator.pop(context, item.url),
+                      title: const Text('Link to article'),
                     ),
-                    title: const Text('Link to HN'),
-                  ),
-                ],
+                    ListTile(
+                      onTap: () => Navigator.pop(
+                        context,
+                        'https://news.ycombinator.com/item?id=${item.id}',
+                      ),
+                      title: const Text('Link to HN'),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
