@@ -74,11 +74,14 @@ class StoriesRepository {
 
   /// Fetch a [User] by its [id].
   /// Hacker News uses user's username as [id].
-  Future<User> fetchUser({required String id}) async {
-    final User user = await _firebaseClient
+  Future<User?> fetchUser({required String id}) async {
+    final User? user = await _firebaseClient
         .get('${_baseUrl}user/$id.json')
         .then((dynamic val) {
-      final Map<String, dynamic> json = val as Map<String, dynamic>;
+      final Map<String, dynamic>? json = val as Map<String, dynamic>?;
+
+      if (json == null) return null;
+
       final User user = User.fromJson(json);
       return user;
     });

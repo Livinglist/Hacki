@@ -41,7 +41,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     await _authRepository.loggedIn.then((bool loggedIn) async {
       if (loggedIn) {
         final String? username = await _authRepository.username;
-        final User user = await _storiesRepository.fetchUser(id: username!);
+        User? user = await _storiesRepository.fetchUser(id: username!);
+
+        /// According to Hacker News' API documentation,
+        /// if user has no public activity (posting a comment or story),
+        /// then it will not be available from the API.
+        user ??= User.emptyWithId(username);
 
         emit(
           state.copyWith(
@@ -84,10 +89,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
 
     if (successful) {
-      final User user = await _storiesRepository.fetchUser(id: event.username);
+      final User? user = await _storiesRepository.fetchUser(id: event.username);
       emit(
         state.copyWith(
-          user: user,
+          user: user ?? User.emptyWithId(event.username),
           isLoggedIn: true,
           status: AuthStatus.loaded,
         ),
