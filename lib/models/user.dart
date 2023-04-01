@@ -17,6 +17,12 @@ class User extends Equatable {
         id = '',
         karma = 0;
 
+  const User.emptyWithId(this.id)
+      : about = '',
+        created = 0,
+        delay = 0,
+        karma = 0;
+
   User.fromJson(Map<String, dynamic> json)
       : about = json['about'] as String? ?? '',
         created = json['created'] as int? ?? 0,
