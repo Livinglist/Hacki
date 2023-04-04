@@ -210,12 +210,9 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void onStoryTapped(Story story, {bool isPin = false}) {
-    final bool showWebFirst =
-        context.read<PreferenceCubit>().state.webFirstEnabled;
     final bool useReader = context.read<PreferenceCubit>().state.readerEnabled;
     final bool offlineReading =
         context.read<StoriesBloc>().state.isOfflineReading;
-    final bool hasRead = isPin || context.read<StoriesBloc>().hasRead(story);
     final bool splitViewEnabled = context.read<SplitViewCubit>().state.enabled;
 
     // If a story is a job story and it has a link to the job posting,
@@ -245,7 +242,7 @@ class _HomeScreenState extends State<HomeScreen>
       }
     }
 
-    if (story.url.isNotEmpty && (isJobWithLink || (showWebFirst && !hasRead))) {
+    if (story.url.isNotEmpty && isJobWithLink) {
       LinkUtil.launch(
         story.url,
         useReader: useReader,

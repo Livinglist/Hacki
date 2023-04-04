@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/link_preview/models/models.dart';
+import 'package:hacki/screens/widgets/tap_down_wrapper.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/utils/link_util.dart';
 
 class LinkView extends StatelessWidget {
   LinkView({
@@ -41,7 +43,7 @@ class LinkView extends StatelessWidget {
   final String description;
   final String? imageUri;
   final String? imagePath;
-  final void Function(String) onTap;
+  final VoidCallback onTap;
   final TextStyle titleTextStyle;
   final bool showMultiMedia;
   final TextOverflow? bodyTextOverflow;
@@ -176,17 +178,26 @@ class LinkView extends StatelessWidget {
           titleStyle,
         );
 
-        return InkWell(
-          onTap: () => onTap(url),
-          child: Row(
-            children: <Widget>[
-              if (showMultiMedia)
-                Padding(
-                  padding: const EdgeInsets.only(
-                    right: 8,
-                    top: 5,
-                    bottom: 5,
-                  ),
+        return Row(
+          children: <Widget>[
+            if (showMultiMedia)
+              Padding(
+                padding: const EdgeInsets.only(
+                  right: 8,
+                  top: 5,
+                  bottom: 5,
+                ),
+                child: TapDownWrapper(
+                  onTap: () {
+                    if (url.isNotEmpty) {
+                      LinkUtil.launch(
+                        url,
+                        useHackiForHnLink: false,
+                      );
+                    } else {
+                      onTap();
+                    }
+                  },
                   child: SizedBox(
                     height: layoutHeight,
                     width: layoutHeight,
@@ -207,10 +218,13 @@ class LinkView extends StatelessWidget {
                             },
                           ),
                   ),
-                )
-              else
-                const SizedBox(width: Dimens.pt5),
-              SizedBox(
+                ),
+              )
+            else
+              const SizedBox(width: Dimens.pt5),
+            TapDownWrapper(
+              onTap: onTap,
+              child: SizedBox(
                 height: layoutHeight,
                 width: layoutWidth - layoutHeight - 8,
                 child: Column(
@@ -258,8 +272,8 @@ class LinkView extends StatelessWidget {
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         );
       },
     );

@@ -7,13 +7,13 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/link_preview/link_view.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class LinkPreview extends StatefulWidget {
   const LinkPreview({
     super.key,
     required this.link,
     required this.story,
+    required this.onTap,
     required this.showMetadata,
     required this.showUrl,
     required this.isOfflineReading,
@@ -34,6 +34,7 @@ class LinkPreview extends StatefulWidget {
   });
 
   final Story story;
+  final VoidCallback onTap;
 
   /// Web address (Url that need to be parsed)
   /// For IOS & Web, only HTTP and HTTPS are support
@@ -141,19 +142,6 @@ class _LinkPreviewState extends State<LinkPreview> {
     }
   }
 
-  Future<void> _launchURL(String url) async {
-    final Uri uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      try {
-        await launchUrl(uri);
-      } catch (err) {
-        throw Exception('Could not launch $url. Error: $err');
-      }
-    }
-  }
-
   Widget _buildLinkContainer(
     double height, {
     String? title = '',
@@ -184,7 +172,7 @@ class _LinkPreviewState extends State<LinkPreview> {
         description: desc ?? title ?? 'no comment yet.',
         imageUri: imageUri,
         imagePath: Constants.hackerNewsLogoPath,
-        onTap: _launchURL,
+        onTap: widget.onTap,
         titleTextStyle: widget.titleStyle,
         bodyTextOverflow: widget.bodyTextOverflow,
         bodyMaxLines: widget.bodyMaxLines,

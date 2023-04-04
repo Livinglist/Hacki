@@ -37,37 +37,33 @@ class StoryTile extends StatelessWidget {
       return Semantics(
         label: story.screenReaderLabel,
         excludeSemantics: true,
-        child: TapDownWrapper(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: Dimens.pt12,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: Dimens.pt12,
+          ),
+          child: LinkPreview(
+            story: story,
+            link: story.url,
+            isOfflineReading:
+                context.read<StoriesBloc>().state.isOfflineReading,
+            placeholderWidget: _LinkPreviewPlaceholder(
+              height: height,
             ),
-            child: AbsorbPointer(
-              child: LinkPreview(
-                story: story,
-                link: story.url,
-                isOfflineReading:
-                    context.read<StoriesBloc>().state.isOfflineReading,
-                placeholderWidget: _LinkPreviewPlaceholder(
-                  height: height,
-                ),
-                errorImage: Constants.hackerNewsLogoLink,
-                backgroundColor: Palette.transparent,
-                borderRadius: Dimens.zero,
-                removeElevation: true,
-                bodyMaxLines: context.storyTileMaxLines,
-                errorTitle: story.title,
-                titleStyle: TextStyle(
-                  color: hasRead
-                      ? Palette.grey[500]
-                      : Theme.of(context).textTheme.bodyLarge?.color,
-                  fontWeight: FontWeight.bold,
-                ),
-                showMetadata: showMetadata,
-                showUrl: showUrl,
-              ),
+            errorImage: Constants.hackerNewsLogoLink,
+            backgroundColor: Palette.transparent,
+            borderRadius: Dimens.zero,
+            removeElevation: true,
+            bodyMaxLines: context.storyTileMaxLines,
+            errorTitle: story.title,
+            titleStyle: TextStyle(
+              color: hasRead
+                  ? Palette.grey[500]
+                  : Theme.of(context).textTheme.bodyLarge?.color,
+              fontWeight: FontWeight.bold,
             ),
+            showMetadata: showMetadata,
+            showUrl: showUrl,
+            onTap: onTap,
           ),
         ),
       );

@@ -31,7 +31,6 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
       const NotificationModePreference(),
       const SwipeGesturePreference(),
       const CollapseModePreference(),
-      const NavigationModePreference(),
       const ReaderModePreference(),
       const MarkReadStoriesModePreference(),
       const EyeCandyModePreference(),
@@ -54,7 +53,6 @@ abstract class IntPreference extends Preference<int> {
 const bool _notificationModeDefaultValue = true;
 const bool _swipeGestureModeDefaultValue = false;
 const bool _displayModeDefaultValue = true;
-const bool _navigationModeDefaultValue = false;
 const bool _eyeCandyModeDefaultValue = false;
 const bool _trueDarkModeDefaultValue = false;
 const bool _readerModeDefaultValue = true;
@@ -187,29 +185,6 @@ class StoryUrlModePreference extends BooleanPreference {
 
   @override
   String get subtitle => '''show url in story tile.''';
-}
-
-/// The value deciding whether or not user should be
-/// navigated to web view first. Defaults to false.
-class NavigationModePreference extends BooleanPreference {
-  const NavigationModePreference({bool? val})
-      : super(
-          val: val ?? _navigationModeDefaultValue,
-        );
-
-  @override
-  NavigationModePreference copyWith({required bool? val}) {
-    return NavigationModePreference(val: val);
-  }
-
-  @override
-  String get key => 'navigationMode';
-
-  @override
-  String get title => 'Show Web Page First';
-
-  @override
-  String get subtitle => '''show web page first after tapping on story.''';
 }
 
 class ReaderModePreference extends BooleanPreference {
