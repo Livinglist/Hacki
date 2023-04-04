@@ -52,8 +52,6 @@ class PreferenceState extends Equatable {
 
   bool get complexStoryTileEnabled => _isOn<DisplayModePreference>();
 
-  bool get webFirstEnabled => _isOn<NavigationModePreference>();
-
   bool get eyeCandyEnabled => _isOn<EyeCandyModePreference>();
 
   bool get trueDarkEnabled => _isOn<TrueDarkModePreference>();
