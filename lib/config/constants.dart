@@ -7,7 +7,7 @@ abstract class Constants {
       'https://github.com/Livinglist/Hacki/blob/master/assets/privacy_policy.md';
   static const String hackerNewsLogoLink =
       'https://pbs.twimg.com/profile_images/469397708986269696/iUrYEOpJ_400x400.png';
-  static const String portfolioLink = 'https://livinglist.github.io';
+  static const String portfolioLink = 'https://github.com/Livinglist';
   static const String githubLink = 'https://github.com/Livinglist/Hacki';
   static const String appStoreLink =
       'https://apps.apple.com/us/app/hacki/id1602043763?action=write-review';
