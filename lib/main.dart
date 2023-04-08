@@ -21,6 +21,7 @@ import 'package:hacki/screens/screens.dart';
 import 'package:hacki/services/custom_bloc_observer.dart';
 import 'package:hacki/services/fetcher.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/utils/theme_util.dart';
 import 'package:hive/hive.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logger/logger.dart';
@@ -115,20 +116,14 @@ Future<void> main({bool testing = false}) async {
     final AndroidDeviceInfo androidInfo = await deviceInfoPlugin.androidInfo;
     final int sdk = androidInfo.version.sdkInt;
 
+    /// Temp fix for this issue:
+    /// https://github.com/flutter/flutter/issues/119465
     if (sdk > 28) {
       SystemChrome.setSystemUIOverlayStyle(
         const SystemUiOverlayStyle(
           statusBarColor: Palette.transparent,
           systemNavigationBarColor: Palette.transparent,
           systemNavigationBarDividerColor: Palette.transparent,
-        ),
-      );
-    } else {
-      SystemChrome.setSystemUIOverlayStyle(
-        const SystemUiOverlayStyle(
-          statusBarBrightness: Brightness.light,
-          statusBarIconBrightness: Brightness.dark,
-          statusBarColor: Colors.transparent,
         ),
       );
     }
@@ -276,6 +271,10 @@ class HackiApp extends StatelessWidget {
               AsyncSnapshot<AdaptiveThemeMode?> snapshot,
             ) {
               final AdaptiveThemeMode? mode = snapshot.data;
+              ThemeUtil.updateAndroidStatusBarSetting(
+                Theme.of(context).brightness,
+                mode,
+              );
               return BlocBuilder<PreferenceCubit, PreferenceState>(
                 buildWhen:
                     (PreferenceState previous, PreferenceState current) =>

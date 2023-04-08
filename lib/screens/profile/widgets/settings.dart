@@ -372,22 +372,19 @@ class _SettingsState extends State<Settings> {
               RadioListTile<AdaptiveThemeMode>(
                 value: AdaptiveThemeMode.light,
                 groupValue: themeMode,
-                onChanged: (AdaptiveThemeMode? val) =>
-                    AdaptiveTheme.of(context).setLight(),
+                onChanged: updateThemeSetting,
                 title: const Text('Light'),
               ),
               RadioListTile<AdaptiveThemeMode>(
                 value: AdaptiveThemeMode.dark,
                 groupValue: themeMode,
-                onChanged: (AdaptiveThemeMode? val) =>
-                    AdaptiveTheme.of(context).setDark(),
+                onChanged: updateThemeSetting,
                 title: const Text('Dark'),
               ),
               RadioListTile<AdaptiveThemeMode>(
                 value: AdaptiveThemeMode.system,
                 groupValue: themeMode,
-                onChanged: (AdaptiveThemeMode? val) =>
-                    AdaptiveTheme.of(context).setSystem(),
+                onChanged: updateThemeSetting,
                 title: const Text('System'),
               ),
             ],
@@ -395,6 +392,24 @@ class _SettingsState extends State<Settings> {
         );
       },
     );
+  }
+
+  void updateThemeSetting(AdaptiveThemeMode? val) {
+    switch (val) {
+      case AdaptiveThemeMode.light:
+        AdaptiveTheme.of(context).setLight();
+        break;
+      case AdaptiveThemeMode.dark:
+        AdaptiveTheme.of(context).setDark();
+        break;
+      case AdaptiveThemeMode.system:
+      case null:
+        AdaptiveTheme.of(context).setSystem();
+        break;
+    }
+
+    final Brightness brightness = Theme.of(context).brightness;
+    ThemeUtil.updateAndroidStatusBarSetting(brightness, val);
   }
 
   void showClearCacheDialog() {
