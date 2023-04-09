@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/object_extension.dart';
 import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
@@ -16,6 +18,8 @@ import 'package:hacki/utils/linkifier_util.dart';
 import 'package:linkify/linkify.dart';
 import 'package:logger/logger.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 part 'comments_state.dart';
 
@@ -58,6 +62,7 @@ class CommentsCubit extends Cubit<CommentsState> {
   final StoriesRepository _storiesRepository;
   final SembastRepository _sembastRepository;
   final Logger _logger;
+  final Map<int, double> _cmtIdToVisibilityMap = <int, double>{};
 
   /// The [StreamSubscription] for stream (both lazy or eager)
   /// fetching comments posted directly to the story.
@@ -68,7 +73,7 @@ class CommentsCubit extends Cubit<CommentsState> {
   final Map<int, StreamSubscription<Comment>> _streamSubscriptions =
       <int, StreamSubscription<Comment>>{};
 
-  static const int _pageSize = 20;
+  static const int _pageSize = 500;
 
   @override
   void emit(CommentsState state) {
@@ -221,7 +226,11 @@ class CommentsCubit extends Cubit<CommentsState> {
   }
 
   /// [comment] is only used for lazy fetching.
-  void loadMore({Comment? comment}) {
+  void loadMore({
+    Comment? comment,
+    void Function(Comment)? onCommentFetched,
+    VoidCallback? onDone,
+  }) {
     if (comment == null && state.status == CommentsStatus.loading) return;
 
     switch (state.fetchMode) {
@@ -269,7 +278,9 @@ class CommentsCubit extends Cubit<CommentsState> {
       case FetchMode.eager:
         if (_streamSubscription != null) {
           emit(state.copyWith(status: CommentsStatus.loading));
-          _streamSubscription?.resume();
+          _streamSubscription
+            ?..resume()
+            ..onData(onCommentFetched);
         }
         break;
     }
@@ -323,6 +334,136 @@ class CommentsCubit extends Cubit<CommentsState> {
     _streamSubscriptions.clear();
     emit(state.copyWith(fetchMode: fetchMode));
     init(useCommentCache: true);
+  }
+
+  void onVisibilityChanged(Comment cmt, VisibilityInfo info) {
+    _cmtIdToVisibilityMap.update(
+      cmt.id,
+      (_) => info.visibleFraction,
+      ifAbsent: () => info.visibleFraction,
+    );
+  }
+
+  void jump(
+    ItemScrollController itemScrollController,
+    ItemPositionsListener itemPositionsListener,
+    double alignment,
+  ) {
+    final length = state.comments.length;
+    final lastIndex =
+        state.comments.lastIndexWhere((e) => _cmtIdToVisibilityMap[e.id] == 1);
+    for (int i = min(
+      lastIndex,
+      state.item is Story ? state.item.descendants : state.item.kids.length,
+    );
+        i < length;
+        i++) {
+      final Comment cmt = state.comments.elementAt(i);
+      i.log();
+      if (i != length - 1 &&
+          state.comments.elementAt(i).isRoot &&
+          _cmtIdToVisibilityMap[state.comments.elementAt(i).id] == 1 &&
+          state.comments.elementAt(i + 1).isRoot &&
+          _cmtIdToVisibilityMap[state.comments.elementAt(i + 1).id] == 1) {
+        print('break!');
+        continue;
+      }
+
+      print('${cmt.metadata}');
+      print('the fraction for $i ${_cmtIdToVisibilityMap[cmt.id]}');
+
+      if (_cmtIdToVisibilityMap[cmt.id] == 1) {
+        final int curIndex = i;
+        final int nextIndex = state.comments.indexWhere(
+          (Comment element) => element.isRoot,
+          min(curIndex + 1, state.comments.length - 1),
+        );
+        print('curIndex is $curIndex');
+        print('scrolling to ${nextIndex}');
+        if (nextIndex == -1) {
+          loadMore(
+            onCommentFetched: (Comment cmtFetched) {
+              if (cmtFetched.isRoot) {
+                itemScrollController.scrollTo(
+                  index: state.comments.lastIndexWhere(
+                    (Comment e) => e.id == cmtFetched.id,
+                  ),
+                  alignment: 0.2,
+                  duration: const Duration(milliseconds: 400),
+                );
+              } else {
+                if (state.status != CommentsStatus.loading &&
+                    state.comments.length >=
+                        _pageSize + _pageSize * state.currentPage &&
+                    state.comments.length <=
+                        _pageSize * 2 + _pageSize * state.currentPage) {
+                  jump(
+                    itemScrollController,
+                    itemPositionsListener,
+                    alignment,
+                  );
+                }
+              }
+            },
+          );
+        } else {
+          itemScrollController.scrollTo(
+            index: nextIndex,
+            alignment: 0.2,
+            duration: const Duration(milliseconds: 400),
+          );
+        }
+
+        return;
+      }
+    }
+  }
+
+  void jumpUp(
+    ItemScrollController itemScrollController,
+    ItemPositionsListener itemPositionsListener,
+  ) {
+    Comment? prevRootCmt;
+    for (final Comment cmt in state.comments) {
+      print(state.comments.indexOf(cmt));
+      print(cmt.isRoot);
+      print(_cmtIdToVisibilityMap[cmt.id]);
+      if (cmt.isRoot && (_cmtIdToVisibilityMap[cmt.id] ?? 0) == 1) {
+        final int curIndex = state.comments.indexOf(cmt);
+        final int nextIndex =
+            state.comments.sublist(0, curIndex).lastIndexWhere(
+                  (Comment element) => element.isRoot,
+                );
+
+        print('curIndex is $curIndex');
+        print('scrolling to ${nextIndex}');
+
+        if (nextIndex == -1) {
+          // TODO
+        } else {
+          itemScrollController.scrollTo(
+            index: nextIndex,
+            alignment: 0.2,
+            duration: const Duration(milliseconds: 400),
+          );
+        }
+
+        return;
+      } else if (state.comments.last.id == cmt.id && prevRootCmt != null) {
+        final index = state.comments.indexOf(prevRootCmt);
+        print('curIndex is last');
+        print('scrolling to ${index}');
+        itemScrollController.scrollTo(
+          index: index,
+          alignment: 0.2,
+          duration: const Duration(milliseconds: 400),
+        );
+      }
+
+      if (cmt.isRoot) {
+        prevRootCmt = cmt;
+      }
+    }
   }
 
   List<int> sortKids(List<int> kids) {

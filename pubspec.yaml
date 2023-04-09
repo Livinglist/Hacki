@@ -59,6 +59,7 @@ dependencies:
   receive_sharing_intent: ^1.4.5
   responsive_builder: ^0.5.1
   rxdart: ^0.27.7
+  scrollable_positioned_list: ^0.3.5
   sembast: ^3.4.0+6
   share_plus: ^6.3.1
   shared_preferences: ^2.0.17
@@ -70,6 +71,7 @@ dependencies:
   tuple: ^2.0.1
   universal_platform: ^1.0.0+1
   url_launcher: ^6.1.9
+  visibility_detector: ^0.4.0+2
   wakelock: ^0.6.1+2
   webview_flutter: ^4.0.2
   workmanager: ^0.5.1

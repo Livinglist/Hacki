@@ -18,7 +18,6 @@ import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/screens.dart';
-import 'package:hacki/services/custom_bloc_observer.dart';
 import 'package:hacki/services/fetcher.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hive/hive.dart';
@@ -147,7 +146,7 @@ Future<void> main({bool testing = false}) async {
     prefs.getInt(FontPreference().key) ?? Font.roboto.index,
   );
 
-  Bloc.observer = CustomBlocObserver();
+  //Bloc.observer = CustomBlocObserver();
 
   HydratedBloc.storage = storage;
 

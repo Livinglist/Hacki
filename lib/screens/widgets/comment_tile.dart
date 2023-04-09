@@ -183,7 +183,7 @@ class CommentTile extends StatelessWidget {
                                 Padding(
                                   padding: const EdgeInsets.only(
                                     left: Dimens.pt8,
-                                    right: Dimens.pt8,
+                                    right: Dimens.pt2,
                                     top: Dimens.pt6,
                                     bottom: Dimens.pt12,
                                   ),

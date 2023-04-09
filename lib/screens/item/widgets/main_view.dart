@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,13 +14,15 @@ import 'package:hacki/screens/item/widgets/widgets.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class MainView extends StatelessWidget {
   const MainView({
     super.key,
     required this.scrollController,
-    required this.refreshController,
+    required this.itemScrollController,
+    required this.itemPositionsListener,
     required this.commentEditingController,
     required this.authState,
     required this.focusNode,
@@ -29,7 +33,8 @@ class MainView extends StatelessWidget {
   });
 
   final ScrollController scrollController;
-  final RefreshController refreshController;
+  final ItemScrollController itemScrollController;
+  final ItemPositionsListener itemPositionsListener;
   final TextEditingController commentEditingController;
   final AuthState authState;
   final FocusNode focusNode;
@@ -48,133 +53,166 @@ class MainView extends StatelessWidget {
         Positioned.fill(
           child: BlocBuilder<CommentsCubit, CommentsState>(
             builder: (BuildContext context, CommentsState state) {
-              return SmartRefresher(
-                scrollController: scrollController,
-                enablePullUp: !state.onlyShowTargetComment,
-                enablePullDown: !state.onlyShowTargetComment,
-                header: WaterDropMaterialHeader(
-                  backgroundColor: Palette.orange,
-                  offset: topPadding,
-                ),
-                footer: CustomFooter(
-                  loadStyle: LoadStyle.ShowWhenLoading,
-                  builder: (BuildContext context, LoadStatus? mode) {
-                    const double height = 55;
-                    late final Widget body;
-
-                    if (mode == LoadStatus.idle) {
-                      body = const Text('');
-                    } else if (mode == LoadStatus.loading) {
-                      body = const Text('');
-                    } else if (mode == LoadStatus.failed) {
-                      body = const Text(
-                        '',
-                      );
-                    } else if (mode == LoadStatus.canLoading) {
-                      body = const Text(
-                        '',
-                      );
-                    } else {
-                      body = const Text('');
-                    }
-                    return SizedBox(
-                      height: height,
-                      child: Center(child: body),
-                    );
-                  },
-                ),
-                controller: refreshController,
-                onRefresh: () {
-                  HapticFeedback.lightImpact();
+              return RefreshIndicator(
+                onRefresh: () async {
+                  unawaited(HapticFeedback.lightImpact());
 
                   if (context.read<StoriesBloc>().state.isOfflineReading) {
-                    refreshController.refreshCompleted();
                   } else {
-                    context.read<CommentsCubit>().refresh();
+                    unawaited(context.read<CommentsCubit>().refresh());
 
                     if (state.item.isPoll) {
                       context.read<PollCubit>().refresh();
                     }
                   }
                 },
-                onLoading: () {
-                  if (state.fetchMode == FetchMode.eager) {
-                    context.read<CommentsCubit>().loadMore();
-                  } else {
-                    refreshController.loadComplete();
-                  }
-                },
-                child: ListView.builder(
-                  primary: false,
-                  itemCount: state.comments.length + 2,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == 0) {
-                      return _ParentItemSection(
-                        scrollController: scrollController,
-                        refreshController: refreshController,
-                        commentEditingController: commentEditingController,
-                        state: state,
-                        authState: authState,
-                        focusNode: focusNode,
-                        topPadding: topPadding,
-                        splitViewEnabled: splitViewEnabled,
-                        onMoreTapped: onMoreTapped,
-                        onRightMoreTapped: onRightMoreTapped,
-                      );
-                    } else if (index == state.comments.length + 1) {
-                      if ((state.status == CommentsStatus.allLoaded &&
-                              state.comments.isNotEmpty) ||
-                          state.onlyShowTargetComment) {
-                        return SizedBox(
-                          height: _trailingBoxHeight,
-                          child: Center(
-                            child: Text(Constants.happyFace),
-                          ),
+                child: Scrollbar(
+                  child: ScrollablePositionedList.builder(
+                    itemScrollController: itemScrollController,
+                    itemPositionsListener: itemPositionsListener,
+                    itemCount: state.comments.length + 2,
+                    padding: EdgeInsets.only(top: topPadding),
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == 0) {
+                        return _ParentItemSection(
+                          scrollController: scrollController,
+                          commentEditingController: commentEditingController,
+                          state: state,
+                          authState: authState,
+                          focusNode: focusNode,
+                          topPadding: topPadding,
+                          splitViewEnabled: splitViewEnabled,
+                          onMoreTapped: onMoreTapped,
+                          onRightMoreTapped: onRightMoreTapped,
                         );
-                      } else {
-                        return const SizedBox.shrink();
+                      } else if (index == state.comments.length + 1) {
+                        if ((state.status == CommentsStatus.allLoaded &&
+                                state.comments.isNotEmpty) ||
+                            state.onlyShowTargetComment) {
+                          return SizedBox(
+                            height: _trailingBoxHeight,
+                            child: Center(
+                              child: Text(Constants.happyFace),
+                            ),
+                          );
+                        } else {
+                          return const SizedBox.shrink();
+                        }
                       }
-                    }
 
-                    index = index - 1;
-                    final Comment comment = state.comments.elementAt(index);
-                    return FadeIn(
-                      key: ValueKey<String>('${comment.id}-FadeIn'),
-                      child: CommentTile(
-                        comment: comment,
-                        level: comment.level,
-                        opUsername: state.item.by,
-                        fetchMode: state.fetchMode,
-                        onReplyTapped: (Comment cmt) {
-                          HapticFeedback.lightImpact();
-                          if (cmt.deleted || cmt.dead) {
-                            return;
-                          }
+                      index = index - 1;
+                      final Comment comment = state.comments.elementAt(index);
+                      return FadeIn(
+                        key: ValueKey<String>('${comment.id}-FadeIn'),
+                        child: VisibilityDetector(
+                          key: ValueKey<int>(comment.id),
+                          onVisibilityChanged: (VisibilityInfo info) {
+                            context
+                                .tryRead<CommentsCubit>()
+                                ?.onVisibilityChanged(
+                                  comment,
+                                  info,
+                                );
+                          },
+                          child: CommentTile(
+                            comment: comment,
+                            level: comment.level,
+                            opUsername: state.item.by,
+                            fetchMode: state.fetchMode,
+                            onReplyTapped: (Comment cmt) {
+                              HapticFeedback.lightImpact();
+                              if (cmt.deleted || cmt.dead) {
+                                return;
+                              }
 
-                          if (cmt.id !=
-                              context.read<EditCubit>().state.replyingTo?.id) {
-                            commentEditingController.clear();
-                          }
+                              if (cmt.id !=
+                                  context
+                                      .read<EditCubit>()
+                                      .state
+                                      .replyingTo
+                                      ?.id) {
+                                commentEditingController.clear();
+                              }
 
-                          context.read<EditCubit>().onReplyTapped(cmt);
-                          focusNode.requestFocus();
-                        },
-                        onEditTapped: (Comment cmt) {
-                          HapticFeedback.lightImpact();
-                          if (cmt.deleted || cmt.dead) {
-                            return;
-                          }
-                          commentEditingController.clear();
-                          context.read<EditCubit>().onEditTapped(cmt);
-                          focusNode.requestFocus();
-                        },
-                        onMoreTapped: onMoreTapped,
-                        onRightMoreTapped: onRightMoreTapped,
-                      ),
-                    );
-                  },
+                              context.read<EditCubit>().onReplyTapped(cmt);
+                              focusNode.requestFocus();
+                            },
+                            onEditTapped: (Comment cmt) {
+                              HapticFeedback.lightImpact();
+                              if (cmt.deleted || cmt.dead) {
+                                return;
+                              }
+                              commentEditingController.clear();
+                              context.read<EditCubit>().onEditTapped(cmt);
+                              focusNode.requestFocus();
+                            },
+                            onMoreTapped: onMoreTapped,
+                            onRightMoreTapped: onRightMoreTapped,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               );
+              // return SmartRefresher(
+              //   scrollController: scrollController,
+              //   enablePullUp: !state.onlyShowTargetComment,
+              //   enablePullDown: !state.onlyShowTargetComment,
+              //   header: WaterDropMaterialHeader(
+              //     backgroundColor: Palette.orange,
+              //     offset: topPadding,
+              //   ),
+              //   footer: CustomFooter(
+              //     loadStyle: LoadStyle.ShowWhenLoading,
+              //     builder: (BuildContext context, LoadStatus? mode) {
+              //       const double height = 55;
+              //       late final Widget body;
+              //
+              //       if (mode == LoadStatus.idle) {
+              //         body = const Text('');
+              //       } else if (mode == LoadStatus.loading) {
+              //         body = const Text('');
+              //       } else if (mode == LoadStatus.failed) {
+              //         body = const Text(
+              //           '',
+              //         );
+              //       } else if (mode == LoadStatus.canLoading) {
+              //         body = const Text(
+              //           '',
+              //         );
+              //       } else {
+              //         body = const Text('');
+              //       }
+              //       return SizedBox(
+              //         height: height,
+              //         child: Center(child: body),
+              //       );
+              //     },
+              //   ),
+              //   controller: refreshController,
+              //   onRefresh: () {
+              //     HapticFeedback.lightImpact();
+              //
+              //     if (context.read<StoriesBloc>().state.isOfflineReading) {
+              //       refreshController.refreshCompleted();
+              //     } else {
+              //       context.read<CommentsCubit>().refresh();
+              //
+              //       if (state.item.isPoll) {
+              //         context.read<PollCubit>().refresh();
+              //       }
+              //     }
+              //   },
+              //   onLoading: () {
+              //     if (state.fetchMode == FetchMode.eager) {
+              //       context.read<CommentsCubit>().loadMore();
+              //     } else {
+              //       refreshController.loadComplete();
+              //     }
+              //   },
+              //   child: ,
+              // );
             },
           ),
         ),
@@ -207,7 +245,6 @@ class MainView extends StatelessWidget {
 class _ParentItemSection extends StatelessWidget {
   const _ParentItemSection({
     required this.scrollController,
-    required this.refreshController,
     required this.commentEditingController,
     required this.state,
     required this.authState,
@@ -219,7 +256,6 @@ class _ParentItemSection extends StatelessWidget {
   });
 
   final ScrollController scrollController;
-  final RefreshController refreshController;
   final TextEditingController commentEditingController;
   final CommentsState state;
   final AuthState authState;
@@ -236,9 +272,6 @@ class _ParentItemSection extends StatelessWidget {
           '''Posted by ${state.item.by} ${state.item.timeAgo}, ${state.item.title}. ${state.item.text}''',
       child: Column(
         children: <Widget>[
-          SizedBox(
-            height: topPadding,
-          ),
           if (!splitViewEnabled)
             const Padding(
               padding: EdgeInsets.only(bottom: Dimens.pt6),

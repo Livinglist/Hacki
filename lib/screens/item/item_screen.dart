@@ -17,6 +17,7 @@ import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class ItemScreenArgs extends Equatable {
   const ItemScreenArgs({
@@ -144,6 +145,9 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
   final TextEditingController commentEditingController =
       TextEditingController();
   final ScrollController scrollController = ScrollController();
+  final ItemScrollController itemScrollController = ItemScrollController();
+  final ItemPositionsListener itemPositionsListener =
+      ItemPositionsListener.create();
   final RefreshController refreshController = RefreshController(
     initialLoadStatus: LoadStatus.idle,
     initialRefreshStatus: RefreshStatus.refreshing,
@@ -283,7 +287,8 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                           Positioned.fill(
                             child: MainView(
                               scrollController: scrollController,
-                              refreshController: refreshController,
+                              itemScrollController: itemScrollController,
+                              itemPositionsListener: itemPositionsListener,
                               commentEditingController:
                                   commentEditingController,
                               authState: authState,
@@ -358,7 +363,8 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                       ),
                       body: MainView(
                         scrollController: scrollController,
-                        refreshController: refreshController,
+                        itemScrollController: itemScrollController,
+                        itemPositionsListener: itemPositionsListener,
                         commentEditingController: commentEditingController,
                         authState: authState,
                         focusNode: focusNode,
@@ -377,6 +383,11 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                           focusNode.unfocus();
                         },
                         onChanged: context.read<EditCubit>().onTextChanged,
+                      ),
+                      floatingActionButton: CustomFloatingActionButton(
+                        itemScrollController: itemScrollController,
+                        itemPositionsListener: itemPositionsListener,
+                        alignment: topPadding,
                       ),
                     ),
             ),
@@ -521,5 +532,60 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
     } else {
       onLoginTapped();
     }
+  }
+}
+
+class CustomFloatingActionButton extends StatelessWidget {
+  const CustomFloatingActionButton({
+    super.key,
+    required this.itemScrollController,
+    required this.itemPositionsListener,
+    required this.alignment,
+  });
+
+  final ItemScrollController itemScrollController;
+  final ItemPositionsListener itemPositionsListener;
+  final double alignment;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<CommentsCubit, CommentsState>(
+      builder: (BuildContext context, CommentsState state) {
+        return Offstage(
+          offstage: state.status == CommentsStatus.loading,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              FloatingActionButton.small(
+                key: const Key('placeholder'),
+                onPressed: () {
+                  context.read<CommentsCubit>().jumpUp(
+                        itemScrollController,
+                        itemPositionsListener,
+                      );
+                },
+                child: const Icon(
+                  Icons.arrow_upward_rounded,
+                  color: Palette.orange,
+                ),
+              ),
+              FloatingActionButton.small(
+                onPressed: () {
+                  context.read<CommentsCubit>().jump(
+                        itemScrollController,
+                        itemPositionsListener,
+                        alignment,
+                      );
+                },
+                child: const Icon(
+                  Icons.arrow_downward_rounded,
+                  color: Palette.orange,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
