@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:hacki/styles/styles.dart';
 
 abstract class ThemeUtil {
+  /// Temp fix for the issue:
+  /// https://github.com/flutter/flutter/issues/119465
   static Future<void> updateAndroidStatusBarSetting(
     Brightness brightness,
     AdaptiveThemeMode? mode,
@@ -16,8 +18,6 @@ abstract class ThemeUtil {
     final AndroidDeviceInfo androidInfo = await deviceInfoPlugin.androidInfo;
     final int sdk = androidInfo.version.sdkInt;
 
-    /// Temp fix for this issue:
-    /// https://github.com/flutter/flutter/issues/119465
     if (sdk > 28) return;
     switch (mode) {
       case AdaptiveThemeMode.light:

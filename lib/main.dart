@@ -116,8 +116,6 @@ Future<void> main({bool testing = false}) async {
     final AndroidDeviceInfo androidInfo = await deviceInfoPlugin.androidInfo;
     final int sdk = androidInfo.version.sdkInt;
 
-    /// Temp fix for this issue:
-    /// https://github.com/flutter/flutter/issues/119465
     if (sdk > 28) {
       SystemChrome.setSystemUIOverlayStyle(
         const SystemUiOverlayStyle(
