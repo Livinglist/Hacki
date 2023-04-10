@@ -142,7 +142,11 @@ Future<void> main({bool testing = false}) async {
     prefs.getInt(FontPreference().key) ?? Font.roboto.index,
   );
 
-  Bloc.observer = CustomBlocObserver();
+  // ignore: prefer_asserts_with_message
+  assert(() {
+    Bloc.observer = CustomBlocObserver();
+    return true;
+  }());
 
   HydratedBloc.storage = storage;
 
