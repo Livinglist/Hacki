@@ -49,6 +49,7 @@ class MainView extends StatelessWidget {
           child: BlocBuilder<CommentsCubit, CommentsState>(
             builder: (BuildContext context, CommentsState state) {
               return Scrollbar(
+                interactive: true,
                 child: SmartRefresher(
                   scrollController: scrollController,
                   enablePullUp: !state.onlyShowTargetComment,
