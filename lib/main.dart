@@ -21,6 +21,7 @@ import 'package:hacki/screens/screens.dart';
 import 'package:hacki/services/custom_bloc_observer.dart';
 import 'package:hacki/services/fetcher.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/utils/theme_util.dart';
 import 'package:hive/hive.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logger/logger.dart';
@@ -123,14 +124,6 @@ Future<void> main({bool testing = false}) async {
           systemNavigationBarDividerColor: Palette.transparent,
         ),
       );
-    } else {
-      SystemChrome.setSystemUIOverlayStyle(
-        const SystemUiOverlayStyle(
-          statusBarBrightness: Brightness.light,
-          statusBarIconBrightness: Brightness.dark,
-          statusBarColor: Colors.transparent,
-        ),
-      );
     }
 
     await SystemChrome.setEnabledSystemUIMode(
@@ -147,7 +140,11 @@ Future<void> main({bool testing = false}) async {
     prefs.getInt(FontPreference().key) ?? Font.roboto.index,
   );
 
-  Bloc.observer = CustomBlocObserver();
+  // ignore: prefer_asserts_with_message
+  assert(() {
+    Bloc.observer = CustomBlocObserver();
+    return true;
+  }());
 
   HydratedBloc.storage = storage;
 
@@ -276,6 +273,10 @@ class HackiApp extends StatelessWidget {
               AsyncSnapshot<AdaptiveThemeMode?> snapshot,
             ) {
               final AdaptiveThemeMode? mode = snapshot.data;
+              ThemeUtil.updateAndroidStatusBarSetting(
+                Theme.of(context).brightness,
+                mode,
+              );
               return BlocBuilder<PreferenceCubit, PreferenceState>(
                 buildWhen:
                     (PreferenceState previous, PreferenceState current) =>
