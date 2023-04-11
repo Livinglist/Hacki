@@ -14,7 +14,6 @@ class ReplyBox extends StatefulWidget {
   const ReplyBox({
     super.key,
     this.splitViewEnabled = false,
-    required this.focusNode,
     required this.textEditingController,
     required this.onSendTapped,
     required this.onCloseTapped,
@@ -22,7 +21,6 @@ class ReplyBox extends StatefulWidget {
   });
 
   final bool splitViewEnabled;
-  final FocusNode focusNode;
   final TextEditingController textEditingController;
   final VoidCallback onSendTapped;
   final VoidCallback onCloseTapped;
@@ -47,206 +45,203 @@ class _ReplyBoxState extends State<ReplyBox> {
           previous.itemBeingEdited != current.itemBeingEdited ||
           previous.replyingTo != current.replyingTo,
       builder: (BuildContext context, EditState editState) {
-        return Visibility(
-          visible: editState.showReplyBox,
-          child: BlocBuilder<PostCubit, PostState>(
-            builder: (BuildContext context, PostState postState) {
-              final Item? replyingTo = editState.replyingTo;
-              final bool isLoading = postState.status == PostStatus.loading;
+        return BlocBuilder<PostCubit, PostState>(
+          builder: (BuildContext context, PostState postState) {
+            final Item? replyingTo = editState.replyingTo;
+            final bool isLoading = postState.status == PostStatus.loading;
 
-              return Padding(
-                padding: EdgeInsets.only(
-                  bottom: expanded
-                      ? Dimens.zero
-                      : widget.splitViewEnabled
-                          ? MediaQuery.of(context).viewInsets.bottom
-                          : Dimens.zero,
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: expanded
+                    ? Dimens.zero
+                    : widget.splitViewEnabled
+                        ? MediaQuery.of(context).viewInsets.bottom
+                        : Dimens.zero,
+              ),
+              child: AnimatedContainer(
+                height: expanded ? expandedHeight : _collapsedHeight,
+                duration: const Duration(milliseconds: 200),
+                decoration: BoxDecoration(
+                  boxShadow: <BoxShadow>[
+                    if (!context.read<SplitViewCubit>().state.enabled)
+                      BoxShadow(
+                        color: expanded ? Palette.transparent : Palette.black26,
+                        blurRadius: Dimens.pt40,
+                      ),
+                  ],
                 ),
-                child: AnimatedContainer(
-                  height: expanded ? expandedHeight : _collapsedHeight,
-                  duration: const Duration(milliseconds: 200),
-                  decoration: BoxDecoration(
-                    boxShadow: <BoxShadow>[
-                      if (!context.read<SplitViewCubit>().state.enabled)
-                        BoxShadow(
-                          color:
-                              expanded ? Palette.transparent : Palette.black26,
-                          blurRadius: Dimens.pt40,
+                child: Material(
+                  child: Column(
+                    children: <Widget>[
+                      if (context.read<SplitViewCubit>().state.enabled)
+                        const Divider(
+                          height: Dimens.zero,
                         ),
-                    ],
-                  ),
-                  child: Material(
-                    child: Column(
-                      children: <Widget>[
-                        if (context.read<SplitViewCubit>().state.enabled)
-                          const Divider(
-                            height: Dimens.zero,
-                          ),
-                        AnimatedContainer(
-                          height: expanded ? Dimens.pt36 : Dimens.zero,
-                          duration: const Duration(milliseconds: 200),
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                  left: Dimens.pt12,
-                                  top: Dimens.pt8,
-                                  bottom: Dimens.pt8,
-                                ),
-                                child: Text(
-                                  replyingTo == null
-                                      ? 'Editing'
-                                      : 'Replying '
-                                          '${replyingTo.by}',
-                                  style: const TextStyle(color: Palette.grey),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                      AnimatedContainer(
+                        height: expanded ? Dimens.pt36 : Dimens.zero,
+                        duration: const Duration(milliseconds: 200),
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                left: Dimens.pt12,
+                                top: Dimens.pt8,
+                                bottom: Dimens.pt8,
+                              ),
+                              child: Text(
+                                replyingTo == null
+                                    ? 'Editing'
+                                    : 'Replying '
+                                        '${replyingTo.by}',
+                                style: const TextStyle(color: Palette.grey),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            if (!isLoading) ...<Widget>[
-                              ...<Widget>[
-                                if (replyingTo != null)
-                                  AnimatedOpacity(
-                                    opacity:
-                                        expanded ? NumSwitch.on : NumSwitch.off,
-                                    duration: const Duration(milliseconds: 300),
-                                    child: IconButton(
-                                      key: const Key('quote'),
-                                      icon: const Icon(
-                                        FeatherIcons.code,
-                                        color: Palette.orange,
-                                        size: TextDimens.pt18,
-                                      ),
-                                      onPressed:
-                                          expanded ? showTextPopup : null,
+                          ),
+                          if (!isLoading) ...<Widget>[
+                            ...<Widget>[
+                              if (replyingTo != null)
+                                AnimatedOpacity(
+                                  opacity:
+                                      expanded ? NumSwitch.on : NumSwitch.off,
+                                  duration: const Duration(milliseconds: 300),
+                                  child: IconButton(
+                                    key: const Key('quote'),
+                                    icon: const Icon(
+                                      FeatherIcons.code,
+                                      color: Palette.orange,
+                                      size: TextDimens.pt18,
                                     ),
+                                    onPressed: expanded ? showTextPopup : null,
                                   ),
-                                IconButton(
-                                  key: const Key('expand'),
-                                  icon: Icon(
-                                    expanded
-                                        ? FeatherIcons.minimize2
-                                        : FeatherIcons.maximize2,
-                                    color: Palette.orange,
-                                    size: TextDimens.pt18,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      expanded = !expanded;
-                                    });
-                                  },
                                 ),
-                              ],
                               IconButton(
-                                key: const Key('close'),
-                                icon: const Icon(
-                                  Icons.close,
+                                key: const Key('expand'),
+                                icon: Icon(
+                                  expanded
+                                      ? FeatherIcons.minimize2
+                                      : FeatherIcons.maximize2,
                                   color: Palette.orange,
+                                  size: TextDimens.pt18,
                                 ),
                                 onPressed: () {
-                                  final EditState state =
-                                      context.read<EditCubit>().state;
-                                  if (state.replyingTo != null &&
-                                      state.text.isNotNullOrEmpty) {
-                                    showDialog<void>(
-                                      context: context,
-                                      builder: (BuildContext context) =>
-                                          AlertDialog(
-                                        title: const Text('Save draft?'),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            onPressed: () {
-                                              context
-                                                  .read<EditCubit>()
-                                                  .deleteDraft();
-                                              Navigator.pop(context);
-                                            },
-                                            child: const Text(
-                                              'No',
-                                              style: TextStyle(
-                                                color: Palette.red,
-                                              ),
-                                            ),
-                                          ),
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            child: const Text('Yes'),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  }
-                                  widget.onCloseTapped();
-                                  expanded = false;
+                                  setState(() {
+                                    expanded = !expanded;
+                                  });
                                 },
                               ),
                             ],
-                            if (isLoading)
-                              const Padding(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: Dimens.pt12,
-                                  horizontal: Dimens.pt16,
-                                ),
-                                child: SizedBox(
-                                  height: Dimens.pt24,
-                                  width: Dimens.pt24,
-                                  child: CircularProgressIndicator(
-                                    color: Palette.orange,
-                                    strokeWidth: Dimens.pt2,
-                                  ),
-                                ),
-                              )
-                            else
-                              IconButton(
-                                key: const Key('send'),
-                                icon: const Icon(
-                                  Icons.send,
-                                  color: Palette.orange,
-                                ),
-                                onPressed: () {
-                                  widget.onSendTapped();
-                                  expanded = false;
-                                },
+                            IconButton(
+                              key: const Key('close'),
+                              icon: const Icon(
+                                Icons.close,
+                                color: Palette.orange,
                               ),
+                              onPressed: () {
+                                Navigator.pop(context);
+
+                                final EditState state =
+                                    context.read<EditCubit>().state;
+                                if (state.replyingTo != null &&
+                                    state.text.isNotNullOrEmpty) {
+                                  showDialog<void>(
+                                    context: context,
+                                    builder: (BuildContext context) =>
+                                        AlertDialog(
+                                      title: const Text('Save draft?'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            context
+                                                .read<EditCubit>()
+                                                .deleteDraft();
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text(
+                                            'No',
+                                            style: TextStyle(
+                                              color: Palette.red,
+                                            ),
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context),
+                                          child: const Text('Yes'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                                widget.onCloseTapped();
+                                expanded = false;
+                              },
+                            ),
                           ],
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: Dimens.pt16,
-                            ),
-                            child: TextField(
-                              focusNode: widget.focusNode,
-                              controller: widget.textEditingController,
-                              maxLines: 100,
-                              decoration: const InputDecoration(
-                                alignLabelWithHint: true,
-                                contentPadding: EdgeInsets.zero,
-                                hintText: '...',
-                                hintStyle: TextStyle(
-                                  color: Palette.grey,
-                                ),
-                                focusedBorder: InputBorder.none,
-                                border: InputBorder.none,
+                          if (isLoading)
+                            const Padding(
+                              padding: EdgeInsets.symmetric(
+                                vertical: Dimens.pt12,
+                                horizontal: Dimens.pt16,
                               ),
-                              keyboardType: TextInputType.multiline,
-                              textCapitalization: TextCapitalization.sentences,
-                              textInputAction: TextInputAction.newline,
-                              onChanged: widget.onChanged,
+                              child: SizedBox(
+                                height: Dimens.pt24,
+                                width: Dimens.pt24,
+                                child: CircularProgressIndicator(
+                                  color: Palette.orange,
+                                  strokeWidth: Dimens.pt2,
+                                ),
+                              ),
+                            )
+                          else
+                            IconButton(
+                              key: const Key('send'),
+                              icon: const Icon(
+                                Icons.send,
+                                color: Palette.orange,
+                              ),
+                              onPressed: () {
+                                widget.onSendTapped();
+                                expanded = false;
+                              },
                             ),
+                        ],
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: Dimens.pt16,
+                          ),
+                          child: TextField(
+                            autofocus: true,
+                            controller: widget.textEditingController,
+                            maxLines: 100,
+                            decoration: const InputDecoration(
+                              alignLabelWithHint: true,
+                              contentPadding: EdgeInsets.zero,
+                              hintText: '...',
+                              hintStyle: TextStyle(
+                                color: Palette.grey,
+                              ),
+                              focusedBorder: InputBorder.none,
+                              border: InputBorder.none,
+                            ),
+                            keyboardType: TextInputType.multiline,
+                            textCapitalization: TextCapitalization.sentences,
+                            textInputAction: TextInputAction.newline,
+                            onChanged: widget.onChanged,
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         );
       },
     );

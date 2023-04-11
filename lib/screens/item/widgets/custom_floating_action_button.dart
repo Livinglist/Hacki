@@ -1,9 +1,11 @@
+import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/screens/widgets/custom_described_feature_overlay.dart';
+import 'package:hacki/styles/palette.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class CustomFloatingActionButton extends StatelessWidget {
@@ -18,6 +20,9 @@ class CustomFloatingActionButton extends StatelessWidget {
   final ItemPositionsListener itemPositionsListener;
   final double alignment;
 
+  static const String _heroTag1 = 'heroTag1';
+  static const String _heroTag2 = 'heroTag2';
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CommentsCubit, CommentsState>(
@@ -27,6 +32,7 @@ class CustomFloatingActionButton extends StatelessWidget {
           children: <Widget>[
             CustomDescribedFeatureOverlay(
               featureId: Constants.featureJumpUpButton,
+              contentLocation: ContentLocation.above,
               tapTarget: Icon(
                 Icons.keyboard_arrow_up,
                 color: Theme.of(context).colorScheme.primary,
@@ -37,8 +43,10 @@ class CustomFloatingActionButton extends StatelessWidget {
               ),
               child: FloatingActionButton.small(
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                heroTag: 'heroTag1',
+                heroTag: _heroTag1,
                 onPressed: () {
+                  if (state.status == CommentsStatus.loading) return;
+
                   HapticFeedback.selectionClick();
                   context.read<CommentsCubit>().jumpUp(
                         itemScrollController,
@@ -47,7 +55,9 @@ class CustomFloatingActionButton extends StatelessWidget {
                 },
                 child: Icon(
                   Icons.keyboard_arrow_up,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: state.status == CommentsStatus.loading
+                      ? Palette.grey
+                      : Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),
@@ -63,8 +73,10 @@ class CustomFloatingActionButton extends StatelessWidget {
               ),
               child: FloatingActionButton.small(
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                heroTag: 'heroTag2',
+                heroTag: _heroTag2,
                 onPressed: () {
+                  if (state.status == CommentsStatus.loading) return;
+
                   HapticFeedback.selectionClick();
                   context.read<CommentsCubit>().jump(
                         itemScrollController,
@@ -73,7 +85,9 @@ class CustomFloatingActionButton extends StatelessWidget {
                 },
                 child: Icon(
                   Icons.keyboard_arrow_down,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: state.status == CommentsStatus.loading
+                      ? Palette.grey
+                      : Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),

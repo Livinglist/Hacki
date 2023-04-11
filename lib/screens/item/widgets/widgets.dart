@@ -8,5 +8,4 @@ export 'more_popup_menu.dart';
 export 'pin_icon_button.dart';
 export 'poll_view.dart';
 export 'reply_box.dart';
-export 'scroll_up_icon_button.dart';
 export 'time_machine_dialog.dart';

@@ -19,28 +19,26 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 class MainView extends StatelessWidget {
   const MainView({
     super.key,
-    required this.scrollController,
     required this.itemScrollController,
     required this.itemPositionsListener,
     required this.commentEditingController,
     required this.authState,
-    required this.focusNode,
     required this.topPadding,
     required this.splitViewEnabled,
     required this.onMoreTapped,
     required this.onRightMoreTapped,
+    required this.onReplyTapped,
   });
 
-  final ScrollController scrollController;
   final ItemScrollController itemScrollController;
   final ItemPositionsListener itemPositionsListener;
   final TextEditingController commentEditingController;
   final AuthState authState;
-  final FocusNode focusNode;
   final double topPadding;
   final bool splitViewEnabled;
   final void Function(Item item, Rect? rect) onMoreTapped;
   final ValueChanged<Comment> onRightMoreTapped;
+  final VoidCallback onReplyTapped;
 
   static const int _loadingIndicatorOpacityAnimationDuration = 300;
   static const double _trailingBoxHeight = 240;
@@ -52,22 +50,24 @@ class MainView extends StatelessWidget {
         Positioned.fill(
           child: BlocBuilder<CommentsCubit, CommentsState>(
             builder: (BuildContext context, CommentsState state) {
-              return RefreshIndicator(
-                onRefresh: () async {
-                  unawaited(HapticFeedback.lightImpact());
+              return Scrollbar(
+                interactive: true,
+                child: RefreshIndicator(
+                  displacement: 100,
+                  onRefresh: () async {
+                    unawaited(HapticFeedback.lightImpact());
 
-                  if (context.read<StoriesBloc>().state.isOfflineReading) {
-                  } else {
-                    unawaited(context.read<CommentsCubit>().refresh());
+                    if (context.read<StoriesBloc>().state.isOfflineReading) {
+                    } else {
+                      unawaited(context.read<CommentsCubit>().refresh());
 
-                    if (state.item.isPoll) {
-                      context.read<PollCubit>().refresh();
+                      if (state.item.isPoll) {
+                        context.read<PollCubit>().refresh();
+                      }
                     }
-                  }
-                },
-                child: Scrollbar(
-                  interactive: true,
+                  },
                   child: ScrollablePositionedList.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
                     itemScrollController: itemScrollController,
                     itemPositionsListener: itemPositionsListener,
                     itemCount: state.comments.length + 2,
@@ -75,11 +75,9 @@ class MainView extends StatelessWidget {
                     itemBuilder: (BuildContext context, int index) {
                       if (index == 0) {
                         return _ParentItemSection(
-                          scrollController: scrollController,
                           commentEditingController: commentEditingController,
                           state: state,
                           authState: authState,
-                          focusNode: focusNode,
                           topPadding: topPadding,
                           splitViewEnabled: splitViewEnabled,
                           onMoreTapped: onMoreTapped,
@@ -125,7 +123,8 @@ class MainView extends StatelessWidget {
                             }
 
                             context.read<EditCubit>().onReplyTapped(cmt);
-                            focusNode.requestFocus();
+
+                            onReplyTapped();
                           },
                           onEditTapped: (Comment cmt) {
                             HapticFeedback.lightImpact();
@@ -134,7 +133,6 @@ class MainView extends StatelessWidget {
                             }
                             commentEditingController.clear();
                             context.read<EditCubit>().onEditTapped(cmt);
-                            focusNode.requestFocus();
                           },
                           onMoreTapped: onMoreTapped,
                           onRightMoreTapped: onRightMoreTapped,
@@ -175,22 +173,18 @@ class MainView extends StatelessWidget {
 
 class _ParentItemSection extends StatelessWidget {
   const _ParentItemSection({
-    required this.scrollController,
     required this.commentEditingController,
     required this.state,
     required this.authState,
-    required this.focusNode,
     required this.topPadding,
     required this.splitViewEnabled,
     required this.onMoreTapped,
     required this.onRightMoreTapped,
   });
 
-  final ScrollController scrollController;
   final TextEditingController commentEditingController;
   final CommentsState state;
   final AuthState authState;
-  final FocusNode focusNode;
   final double topPadding;
   final bool splitViewEnabled;
   final void Function(Item item, Rect? rect) onMoreTapped;
@@ -221,7 +215,6 @@ class _ParentItemSection extends StatelessWidget {
                       commentEditingController.clear();
                     }
                     context.read<EditCubit>().onReplyTapped(state.item);
-                    focusNode.requestFocus();
                   },
                   backgroundColor: Palette.orange,
                   foregroundColor: Palette.white,
