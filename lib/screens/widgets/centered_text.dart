@@ -8,6 +8,12 @@ class CenteredText extends StatelessWidget {
     this.color = Palette.grey,
   });
 
+  const CenteredText.hidden({Key? key})
+      : this(
+          key: key,
+          text: 'hidden',
+        );
+
   const CenteredText.deleted({Key? key})
       : this(
           key: key,

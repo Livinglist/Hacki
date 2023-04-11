@@ -185,6 +185,8 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
             Constants.featurePinToTop,
             Constants.featureAddStoryToFavList,
             Constants.featureOpenStoryInWebView,
+            Constants.featureJumpUpButton,
+            Constants.featureJumpDownButton,
           },
         );
       })
@@ -532,60 +534,5 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
     } else {
       onLoginTapped();
     }
-  }
-}
-
-class CustomFloatingActionButton extends StatelessWidget {
-  const CustomFloatingActionButton({
-    super.key,
-    required this.itemScrollController,
-    required this.itemPositionsListener,
-    required this.alignment,
-  });
-
-  final ItemScrollController itemScrollController;
-  final ItemPositionsListener itemPositionsListener;
-  final double alignment;
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<CommentsCubit, CommentsState>(
-      builder: (BuildContext context, CommentsState state) {
-        return Offstage(
-          offstage: state.status == CommentsStatus.loading,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              FloatingActionButton.small(
-                heroTag: 'heroTag1',
-                onPressed: () {
-                  HapticFeedback.lightImpact();
-                  context.read<CommentsCubit>().jumpUp(
-                        itemScrollController,
-                        itemPositionsListener,
-                      );
-                },
-                child: const Icon(
-                  Icons.arrow_upward_rounded,
-                ),
-              ),
-              FloatingActionButton.small(
-                heroTag: 'heroTag2',
-                onPressed: () {
-                  HapticFeedback.lightImpact();
-                  context.read<CommentsCubit>().jump(
-                        itemScrollController,
-                        itemPositionsListener,
-                      );
-                },
-                child: const Icon(
-                  Icons.arrow_downward_rounded,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
   }
 }

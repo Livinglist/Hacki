@@ -70,8 +70,6 @@ class CommentsCubit extends Cubit<CommentsState> {
   final Map<int, StreamSubscription<Comment>> _streamSubscriptions =
       <int, StreamSubscription<Comment>>{};
 
-  //static const int _pageSize = 500;
-
   @override
   void emit(CommentsState state) {
     if (!isClosed) {
@@ -362,7 +360,7 @@ class CommentsCubit extends Cubit<CommentsState> {
       if (cmt.isRoot && (cmt.deleted || cmt.dead) == false) {
         itemScrollController.scrollTo(
           index: i + 1,
-          alignment: 0.1,
+          alignment: 0.15,
           duration: const Duration(milliseconds: 400),
         );
         return;
@@ -390,7 +388,7 @@ class CommentsCubit extends Cubit<CommentsState> {
 
     /// The index of first comment visible on screen.
     final int firstVisibleIndex = state.comments.indexOf(
-      onScreenComments.first,
+      onScreenComments.firstOrNull ?? state.comments.last,
     );
     final int startIndex = max(0, firstVisibleIndex - 1);
 
@@ -400,7 +398,7 @@ class CommentsCubit extends Cubit<CommentsState> {
       if (cmt.isRoot && (cmt.deleted || cmt.dead) == false) {
         itemScrollController.scrollTo(
           index: i + 1,
-          alignment: 0.1,
+          alignment: 0.15,
           duration: const Duration(milliseconds: 400),
         );
         return;

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -66,76 +65,83 @@ class MainView extends StatelessWidget {
                     }
                   }
                 },
-                child: ScrollablePositionedList.builder(
-                  itemScrollController: itemScrollController,
-                  itemPositionsListener: itemPositionsListener,
-                  itemCount: state.comments.length + 2,
-                  padding: EdgeInsets.only(top: topPadding),
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == 0) {
-                      return _ParentItemSection(
-                        scrollController: scrollController,
-                        commentEditingController: commentEditingController,
-                        state: state,
-                        authState: authState,
-                        focusNode: focusNode,
-                        topPadding: topPadding,
-                        splitViewEnabled: splitViewEnabled,
-                        onMoreTapped: onMoreTapped,
-                        onRightMoreTapped: onRightMoreTapped,
-                      );
-                    } else if (index == state.comments.length + 1) {
-                      if ((state.status == CommentsStatus.allLoaded &&
-                              state.comments.isNotEmpty) ||
-                          state.onlyShowTargetComment) {
-                        return SizedBox(
-                          height: _trailingBoxHeight,
-                          child: Center(
-                            child: Text(Constants.happyFace),
-                          ),
+                child: Scrollbar(
+                  interactive: true,
+                  child: ScrollablePositionedList.builder(
+                    itemScrollController: itemScrollController,
+                    itemPositionsListener: itemPositionsListener,
+                    itemCount: state.comments.length + 2,
+                    padding: EdgeInsets.only(top: topPadding),
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == 0) {
+                        return _ParentItemSection(
+                          scrollController: scrollController,
+                          commentEditingController: commentEditingController,
+                          state: state,
+                          authState: authState,
+                          focusNode: focusNode,
+                          topPadding: topPadding,
+                          splitViewEnabled: splitViewEnabled,
+                          onMoreTapped: onMoreTapped,
+                          onRightMoreTapped: onRightMoreTapped,
                         );
-                      } else {
-                        return const SizedBox.shrink();
+                      } else if (index == state.comments.length + 1) {
+                        if ((state.status == CommentsStatus.allLoaded &&
+                                state.comments.isNotEmpty) ||
+                            state.onlyShowTargetComment) {
+                          return SizedBox(
+                            height: _trailingBoxHeight,
+                            child: Center(
+                              child: Text(Constants.happyFace),
+                            ),
+                          );
+                        } else {
+                          return const SizedBox.shrink();
+                        }
                       }
-                    }
 
-                    index = index - 1;
-                    final Comment comment = state.comments.elementAt(index);
-                    return FadeIn(
-                      key: ValueKey<String>('${comment.id}-FadeIn'),
-                      child: CommentTile(
-                        comment: comment,
-                        level: comment.level,
-                        opUsername: state.item.by,
-                        fetchMode: state.fetchMode,
-                        onReplyTapped: (Comment cmt) {
-                          HapticFeedback.lightImpact();
-                          if (cmt.deleted || cmt.dead) {
-                            return;
-                          }
+                      index = index - 1;
+                      final Comment comment = state.comments.elementAt(index);
+                      return FadeIn(
+                        key: ValueKey<String>('${comment.id}-FadeIn'),
+                        child: CommentTile(
+                          comment: comment,
+                          level: comment.level,
+                          opUsername: state.item.by,
+                          fetchMode: state.fetchMode,
+                          onReplyTapped: (Comment cmt) {
+                            HapticFeedback.lightImpact();
+                            if (cmt.deleted || cmt.dead) {
+                              return;
+                            }
 
-                          if (cmt.id !=
-                              context.read<EditCubit>().state.replyingTo?.id) {
+                            if (cmt.id !=
+                                context
+                                    .read<EditCubit>()
+                                    .state
+                                    .replyingTo
+                                    ?.id) {
+                              commentEditingController.clear();
+                            }
+
+                            context.read<EditCubit>().onReplyTapped(cmt);
+                            focusNode.requestFocus();
+                          },
+                          onEditTapped: (Comment cmt) {
+                            HapticFeedback.lightImpact();
+                            if (cmt.deleted || cmt.dead) {
+                              return;
+                            }
                             commentEditingController.clear();
-                          }
-
-                          context.read<EditCubit>().onReplyTapped(cmt);
-                          focusNode.requestFocus();
-                        },
-                        onEditTapped: (Comment cmt) {
-                          HapticFeedback.lightImpact();
-                          if (cmt.deleted || cmt.dead) {
-                            return;
-                          }
-                          commentEditingController.clear();
-                          context.read<EditCubit>().onEditTapped(cmt);
-                          focusNode.requestFocus();
-                        },
-                        onMoreTapped: onMoreTapped,
-                        onRightMoreTapped: onRightMoreTapped,
-                      ),
-                    );
-                  },
+                            context.read<EditCubit>().onEditTapped(cmt);
+                            focusNode.requestFocus();
+                          },
+                          onMoreTapped: onMoreTapped,
+                          onRightMoreTapped: onRightMoreTapped,
+                        ),
+                      );
+                    },
+                  ),
                 ),
               );
             },
@@ -158,42 +164,6 @@ class MainView extends StatelessWidget {
                   milliseconds: _loadingIndicatorOpacityAnimationDuration,
                 ),
                 child: const LinearProgressIndicator(),
-              );
-            },
-          ),
-        ),
-        Positioned(
-          height: Dimens.pt4,
-          bottom: Dimens.zero,
-          left: Dimens.zero,
-          right: Dimens.zero,
-          child: BlocBuilder<CommentsCubit, CommentsState>(
-            buildWhen: (CommentsState prev, CommentsState current) =>
-                prev.status != current.status,
-            builder: (BuildContext context, CommentsState state) {
-              return ValueListenableBuilder<Iterable<ItemPosition>>(
-                valueListenable: itemPositionsListener.itemPositions,
-                builder: (
-                  BuildContext context,
-                  Iterable<ItemPosition> value,
-                  Widget? child,
-                ) {
-                  return AnimatedOpacity(
-                    opacity: state.status != CommentsStatus.loading
-                        ? NumSwitch.on
-                        : NumSwitch.off,
-                    duration: const Duration(
-                      milliseconds: _loadingIndicatorOpacityAnimationDuration,
-                    ),
-                    child: LinearProgressIndicator(
-                      value: value
-                              .sortedBy<num>((ItemPosition e) => e.index)
-                              .last
-                              .index /
-                          state.comments.length,
-                    ),
-                  );
-                },
               );
             },
           ),
