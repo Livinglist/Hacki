@@ -146,6 +146,7 @@ Future<void> main({bool testing = false}) async {
     prefs.getInt(FontPreference().key) ?? Font.roboto.index,
   );
 
+  //Uncomment this line to log events from bloc/cubit.
   //Bloc.observer = CustomBlocObserver();
 
   HydratedBloc.storage = storage;

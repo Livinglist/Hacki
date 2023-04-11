@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,7 +16,6 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 
 class MainView extends StatelessWidget {
   const MainView({
@@ -66,153 +66,78 @@ class MainView extends StatelessWidget {
                     }
                   }
                 },
-                child: Scrollbar(
-                  child: ScrollablePositionedList.builder(
-                    itemScrollController: itemScrollController,
-                    itemPositionsListener: itemPositionsListener,
-                    itemCount: state.comments.length + 2,
-                    padding: EdgeInsets.only(top: topPadding),
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index == 0) {
-                        return _ParentItemSection(
-                          scrollController: scrollController,
-                          commentEditingController: commentEditingController,
-                          state: state,
-                          authState: authState,
-                          focusNode: focusNode,
-                          topPadding: topPadding,
-                          splitViewEnabled: splitViewEnabled,
-                          onMoreTapped: onMoreTapped,
-                          onRightMoreTapped: onRightMoreTapped,
-                        );
-                      } else if (index == state.comments.length + 1) {
-                        if ((state.status == CommentsStatus.allLoaded &&
-                                state.comments.isNotEmpty) ||
-                            state.onlyShowTargetComment) {
-                          return SizedBox(
-                            height: _trailingBoxHeight,
-                            child: Center(
-                              child: Text(Constants.happyFace),
-                            ),
-                          );
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      }
-
-                      index = index - 1;
-                      final Comment comment = state.comments.elementAt(index);
-                      return FadeIn(
-                        key: ValueKey<String>('${comment.id}-FadeIn'),
-                        child: VisibilityDetector(
-                          key: ValueKey<int>(comment.id),
-                          onVisibilityChanged: (VisibilityInfo info) {
-                            context
-                                .tryRead<CommentsCubit>()
-                                ?.onVisibilityChanged(
-                                  comment,
-                                  info,
-                                );
-                          },
-                          child: CommentTile(
-                            comment: comment,
-                            level: comment.level,
-                            opUsername: state.item.by,
-                            fetchMode: state.fetchMode,
-                            onReplyTapped: (Comment cmt) {
-                              HapticFeedback.lightImpact();
-                              if (cmt.deleted || cmt.dead) {
-                                return;
-                              }
-
-                              if (cmt.id !=
-                                  context
-                                      .read<EditCubit>()
-                                      .state
-                                      .replyingTo
-                                      ?.id) {
-                                commentEditingController.clear();
-                              }
-
-                              context.read<EditCubit>().onReplyTapped(cmt);
-                              focusNode.requestFocus();
-                            },
-                            onEditTapped: (Comment cmt) {
-                              HapticFeedback.lightImpact();
-                              if (cmt.deleted || cmt.dead) {
-                                return;
-                              }
-                              commentEditingController.clear();
-                              context.read<EditCubit>().onEditTapped(cmt);
-                              focusNode.requestFocus();
-                            },
-                            onMoreTapped: onMoreTapped,
-                            onRightMoreTapped: onRightMoreTapped,
-                          ),
-                        ),
+                child: ScrollablePositionedList.builder(
+                  itemScrollController: itemScrollController,
+                  itemPositionsListener: itemPositionsListener,
+                  itemCount: state.comments.length + 2,
+                  padding: EdgeInsets.only(top: topPadding),
+                  itemBuilder: (BuildContext context, int index) {
+                    if (index == 0) {
+                      return _ParentItemSection(
+                        scrollController: scrollController,
+                        commentEditingController: commentEditingController,
+                        state: state,
+                        authState: authState,
+                        focusNode: focusNode,
+                        topPadding: topPadding,
+                        splitViewEnabled: splitViewEnabled,
+                        onMoreTapped: onMoreTapped,
+                        onRightMoreTapped: onRightMoreTapped,
                       );
-                    },
-                  ),
+                    } else if (index == state.comments.length + 1) {
+                      if ((state.status == CommentsStatus.allLoaded &&
+                              state.comments.isNotEmpty) ||
+                          state.onlyShowTargetComment) {
+                        return SizedBox(
+                          height: _trailingBoxHeight,
+                          child: Center(
+                            child: Text(Constants.happyFace),
+                          ),
+                        );
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    }
+
+                    index = index - 1;
+                    final Comment comment = state.comments.elementAt(index);
+                    return FadeIn(
+                      key: ValueKey<String>('${comment.id}-FadeIn'),
+                      child: CommentTile(
+                        comment: comment,
+                        level: comment.level,
+                        opUsername: state.item.by,
+                        fetchMode: state.fetchMode,
+                        onReplyTapped: (Comment cmt) {
+                          HapticFeedback.lightImpact();
+                          if (cmt.deleted || cmt.dead) {
+                            return;
+                          }
+
+                          if (cmt.id !=
+                              context.read<EditCubit>().state.replyingTo?.id) {
+                            commentEditingController.clear();
+                          }
+
+                          context.read<EditCubit>().onReplyTapped(cmt);
+                          focusNode.requestFocus();
+                        },
+                        onEditTapped: (Comment cmt) {
+                          HapticFeedback.lightImpact();
+                          if (cmt.deleted || cmt.dead) {
+                            return;
+                          }
+                          commentEditingController.clear();
+                          context.read<EditCubit>().onEditTapped(cmt);
+                          focusNode.requestFocus();
+                        },
+                        onMoreTapped: onMoreTapped,
+                        onRightMoreTapped: onRightMoreTapped,
+                      ),
+                    );
+                  },
                 ),
               );
-              // return SmartRefresher(
-              //   scrollController: scrollController,
-              //   enablePullUp: !state.onlyShowTargetComment,
-              //   enablePullDown: !state.onlyShowTargetComment,
-              //   header: WaterDropMaterialHeader(
-              //     backgroundColor: Palette.orange,
-              //     offset: topPadding,
-              //   ),
-              //   footer: CustomFooter(
-              //     loadStyle: LoadStyle.ShowWhenLoading,
-              //     builder: (BuildContext context, LoadStatus? mode) {
-              //       const double height = 55;
-              //       late final Widget body;
-              //
-              //       if (mode == LoadStatus.idle) {
-              //         body = const Text('');
-              //       } else if (mode == LoadStatus.loading) {
-              //         body = const Text('');
-              //       } else if (mode == LoadStatus.failed) {
-              //         body = const Text(
-              //           '',
-              //         );
-              //       } else if (mode == LoadStatus.canLoading) {
-              //         body = const Text(
-              //           '',
-              //         );
-              //       } else {
-              //         body = const Text('');
-              //       }
-              //       return SizedBox(
-              //         height: height,
-              //         child: Center(child: body),
-              //       );
-              //     },
-              //   ),
-              //   controller: refreshController,
-              //   onRefresh: () {
-              //     HapticFeedback.lightImpact();
-              //
-              //     if (context.read<StoriesBloc>().state.isOfflineReading) {
-              //       refreshController.refreshCompleted();
-              //     } else {
-              //       context.read<CommentsCubit>().refresh();
-              //
-              //       if (state.item.isPoll) {
-              //         context.read<PollCubit>().refresh();
-              //       }
-              //     }
-              //   },
-              //   onLoading: () {
-              //     if (state.fetchMode == FetchMode.eager) {
-              //       context.read<CommentsCubit>().loadMore();
-              //     } else {
-              //       refreshController.loadComplete();
-              //     }
-              //   },
-              //   child: ,
-              // );
             },
           ),
         ),
@@ -236,7 +161,43 @@ class MainView extends StatelessWidget {
               );
             },
           ),
-        )
+        ),
+        Positioned(
+          height: Dimens.pt4,
+          bottom: Dimens.zero,
+          left: Dimens.zero,
+          right: Dimens.zero,
+          child: BlocBuilder<CommentsCubit, CommentsState>(
+            buildWhen: (CommentsState prev, CommentsState current) =>
+                prev.status != current.status,
+            builder: (BuildContext context, CommentsState state) {
+              return ValueListenableBuilder<Iterable<ItemPosition>>(
+                valueListenable: itemPositionsListener.itemPositions,
+                builder: (
+                  BuildContext context,
+                  Iterable<ItemPosition> value,
+                  Widget? child,
+                ) {
+                  return AnimatedOpacity(
+                    opacity: state.status != CommentsStatus.loading
+                        ? NumSwitch.on
+                        : NumSwitch.off,
+                    duration: const Duration(
+                      milliseconds: _loadingIndicatorOpacityAnimationDuration,
+                    ),
+                    child: LinearProgressIndicator(
+                      value: value
+                              .sortedBy<num>((ItemPosition e) => e.index)
+                              .last
+                              .index /
+                          state.comments.length,
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
       ],
     );
   }

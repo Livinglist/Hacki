@@ -555,10 +555,11 @@ class CustomFloatingActionButton extends StatelessWidget {
           offstage: state.status == CommentsStatus.loading,
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: [
+            children: <Widget>[
               FloatingActionButton.small(
-                key: const Key('placeholder'),
+                heroTag: 'heroTag1',
                 onPressed: () {
+                  HapticFeedback.lightImpact();
                   context.read<CommentsCubit>().jumpUp(
                         itemScrollController,
                         itemPositionsListener,
@@ -566,20 +567,19 @@ class CustomFloatingActionButton extends StatelessWidget {
                 },
                 child: const Icon(
                   Icons.arrow_upward_rounded,
-                  color: Palette.orange,
                 ),
               ),
               FloatingActionButton.small(
+                heroTag: 'heroTag2',
                 onPressed: () {
+                  HapticFeedback.lightImpact();
                   context.read<CommentsCubit>().jump(
                         itemScrollController,
                         itemPositionsListener,
-                        alignment,
                       );
                 },
                 child: const Icon(
                   Icons.arrow_downward_rounded,
-                  color: Palette.orange,
                 ),
               ),
             ],
