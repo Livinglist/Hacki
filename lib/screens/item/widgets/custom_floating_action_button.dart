@@ -13,12 +13,10 @@ class CustomFloatingActionButton extends StatelessWidget {
     super.key,
     required this.itemScrollController,
     required this.itemPositionsListener,
-    required this.alignment,
   });
 
   final ItemScrollController itemScrollController;
   final ItemPositionsListener itemPositionsListener;
-  final double alignment;
 
   static const String _heroTag1 = 'heroTag1';
   static const String _heroTag2 = 'heroTag2';
@@ -35,7 +33,9 @@ class CustomFloatingActionButton extends StatelessWidget {
               contentLocation: ContentLocation.above,
               tapTarget: Icon(
                 Icons.keyboard_arrow_up,
-                color: Theme.of(context).colorScheme.primary,
+                color: state.status == CommentsStatus.loading
+                    ? Palette.grey
+                    : Theme.of(context).colorScheme.primary,
               ),
               title: const Text('Jump to previous root level comment.'),
               description: const Text(
@@ -65,7 +65,9 @@ class CustomFloatingActionButton extends StatelessWidget {
               featureId: Constants.featureJumpDownButton,
               tapTarget: Icon(
                 Icons.keyboard_arrow_down,
-                color: Theme.of(context).colorScheme.primary,
+                color: state.status == CommentsStatus.loading
+                    ? Palette.grey
+                    : Theme.of(context).colorScheme.primary,
               ),
               title: const Text('Jump to next root level comment.'),
               description: const Text(

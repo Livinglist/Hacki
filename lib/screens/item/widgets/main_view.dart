@@ -82,6 +82,7 @@ class MainView extends StatelessWidget {
                           splitViewEnabled: splitViewEnabled,
                           onMoreTapped: onMoreTapped,
                           onRightMoreTapped: onRightMoreTapped,
+                          onReplyTapped: onReplyTapped,
                         );
                       } else if (index == state.comments.length + 1) {
                         if ((state.status == CommentsStatus.allLoaded &&
@@ -133,6 +134,8 @@ class MainView extends StatelessWidget {
                             }
                             commentEditingController.clear();
                             context.read<EditCubit>().onEditTapped(cmt);
+
+                            onReplyTapped();
                           },
                           onMoreTapped: onMoreTapped,
                           onRightMoreTapped: onRightMoreTapped,
@@ -180,6 +183,7 @@ class _ParentItemSection extends StatelessWidget {
     required this.splitViewEnabled,
     required this.onMoreTapped,
     required this.onRightMoreTapped,
+    required this.onReplyTapped,
   });
 
   final TextEditingController commentEditingController;
@@ -189,6 +193,7 @@ class _ParentItemSection extends StatelessWidget {
   final bool splitViewEnabled;
   final void Function(Item item, Rect? rect) onMoreTapped;
   final ValueChanged<Comment> onRightMoreTapped;
+  final VoidCallback onReplyTapped;
 
   @override
   Widget build(BuildContext context) {
@@ -215,6 +220,8 @@ class _ParentItemSection extends StatelessWidget {
                       commentEditingController.clear();
                     }
                     context.read<EditCubit>().onReplyTapped(state.item);
+
+                    onReplyTapped();
                   },
                   backgroundColor: Palette.orange,
                   foregroundColor: Palette.white,

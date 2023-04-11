@@ -343,7 +343,6 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                       floatingActionButton: CustomFloatingActionButton(
                         itemScrollController: itemScrollController,
                         itemPositionsListener: itemPositionsListener,
-                        alignment: topPadding,
                       ),
                     ),
             ),

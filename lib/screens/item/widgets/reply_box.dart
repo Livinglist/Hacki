@@ -204,6 +204,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                                 color: Palette.orange,
                               ),
                               onPressed: () {
+                                Navigator.pop(context);
                                 widget.onSendTapped();
                                 expanded = false;
                               },
