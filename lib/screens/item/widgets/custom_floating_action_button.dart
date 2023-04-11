@@ -33,9 +33,7 @@ class CustomFloatingActionButton extends StatelessWidget {
               contentLocation: ContentLocation.above,
               tapTarget: Icon(
                 Icons.keyboard_arrow_up,
-                color: state.status == CommentsStatus.loading
-                    ? Palette.grey
-                    : Theme.of(context).colorScheme.primary,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
               title: const Text('Jump to previous root level comment.'),
               description: const Text(
@@ -65,9 +63,7 @@ class CustomFloatingActionButton extends StatelessWidget {
               featureId: Constants.featureJumpDownButton,
               tapTarget: Icon(
                 Icons.keyboard_arrow_down,
-                color: state.status == CommentsStatus.loading
-                    ? Palette.grey
-                    : Theme.of(context).colorScheme.primary,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
               title: const Text('Jump to next root level comment.'),
               description: const Text(
