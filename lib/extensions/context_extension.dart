@@ -30,7 +30,6 @@ extension ContextExtension on BuildContext {
                 textColor: Theme.of(this).textTheme.bodyLarge?.color,
               )
             : null,
-        behavior: SnackBarBehavior.floating,
       ),
     );
   }
