@@ -18,7 +18,6 @@ import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/screens.dart';
-import 'package:hacki/services/custom_bloc_observer.dart';
 import 'package:hacki/services/fetcher.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/theme_util.dart';
@@ -140,11 +139,8 @@ Future<void> main({bool testing = false}) async {
     prefs.getInt(FontPreference().key) ?? Font.roboto.index,
   );
 
-  // ignore: prefer_asserts_with_message
-  assert(() {
-    Bloc.observer = CustomBlocObserver();
-    return true;
-  }());
+  //Uncomment this line to log events from bloc/cubit.
+  //Bloc.observer = CustomBlocObserver();
 
   HydratedBloc.storage = storage;
 

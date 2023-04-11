@@ -12,6 +12,7 @@ class CustomDescribedFeatureOverlay extends StatelessWidget {
     required this.tapTarget,
     required this.title,
     required this.description,
+    this.contentLocation = ContentLocation.trivial,
     this.onComplete,
   });
 
@@ -20,6 +21,7 @@ class CustomDescribedFeatureOverlay extends StatelessWidget {
   final Widget title;
   final Widget description;
   final Widget child;
+  final ContentLocation contentLocation;
   final VoidCallback? onComplete;
 
   @override
@@ -32,6 +34,7 @@ class CustomDescribedFeatureOverlay extends StatelessWidget {
       title: title,
       description: description,
       barrierDismissible: false,
+      contentLocation: contentLocation,
       onBackgroundTap: () {
         unawaited(HapticFeedback.lightImpact());
         FeatureDiscovery.completeCurrentStep(context);

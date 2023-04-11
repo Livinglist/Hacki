@@ -8,7 +8,6 @@ import 'package:hacki/styles/styles.dart';
 class CustomAppBar extends AppBar {
   CustomAppBar({
     super.key,
-    required ScrollController scrollController,
     required Item item,
     required Color super.backgroundColor,
     required VoidCallback onFontSizeTap,
@@ -34,9 +33,6 @@ class CustomAppBar extends AppBar {
               ),
               const Spacer(),
             ],
-            ScrollUpIconButton(
-              scrollController: scrollController,
-            ),
             IconButton(
               key: fontSizeIconButtonKey,
               icon: Text(

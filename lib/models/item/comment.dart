@@ -27,6 +27,8 @@ class Comment extends Item {
 
   String get metadata => '''by $by $timeAgo''';
 
+  bool get isRoot => level == 0;
+
   Comment copyWith({
     int? level,
     bool? hidden,

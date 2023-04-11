@@ -43,7 +43,6 @@ class CommentTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (comment.hidden) return const SizedBox.shrink();
     return BlocProvider<CollapseCubit>(
       key: ValueKey<String>('${comment.id}-BlocProvider'),
       lazy: false,
@@ -172,6 +171,8 @@ class CommentTile extends StatelessWidget {
                                       '''collapsed (${state.collapsedCount + 1})''',
                                   color: Palette.orangeAccent,
                                 )
+                              else if (comment.hidden)
+                                const CenteredText.hidden()
                               else if (comment.deleted)
                                 const CenteredText.deleted()
                               else if (comment.dead)

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
@@ -16,6 +17,7 @@ import 'package:hacki/utils/linkifier_util.dart';
 import 'package:linkify/linkify.dart';
 import 'package:logger/logger.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 part 'comments_state.dart';
 
@@ -68,8 +70,6 @@ class CommentsCubit extends Cubit<CommentsState> {
   final Map<int, StreamSubscription<Comment>> _streamSubscriptions =
       <int, StreamSubscription<Comment>>{};
 
-  static const int _pageSize = 20;
-
   @override
   void emit(CommentsState state) {
     if (!isClosed) {
@@ -117,7 +117,7 @@ class CommentsCubit extends Cubit<CommentsState> {
         ? item
         : await _storiesRepository.fetchItem(id: item.id).then(_toBuildable) ??
             item;
-    final List<int> kids = sortKids(updatedItem.kids);
+    final List<int> kids = _sortKids(updatedItem.kids);
 
     emit(state.copyWith(item: updatedItem));
 
@@ -183,7 +183,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     final Item item = state.item;
     final Item updatedItem =
         await _storiesRepository.fetchItem(id: item.id) ?? item;
-    final List<int> kids = sortKids(updatedItem.kids);
+    final List<int> kids = _sortKids(updatedItem.kids);
 
     late final Stream<Comment> commentStream;
     if (state.fetchMode == FetchMode.lazy) {
@@ -221,7 +221,11 @@ class CommentsCubit extends Cubit<CommentsState> {
   }
 
   /// [comment] is only used for lazy fetching.
-  void loadMore({Comment? comment}) {
+  void loadMore({
+    Comment? comment,
+    void Function(Comment)? onCommentFetched,
+    VoidCallback? onDone,
+  }) {
     if (comment == null && state.status == CommentsStatus.loading) return;
 
     switch (state.fetchMode) {
@@ -269,7 +273,9 @@ class CommentsCubit extends Cubit<CommentsState> {
       case FetchMode.eager:
         if (_streamSubscription != null) {
           emit(state.copyWith(status: CommentsStatus.loading));
-          _streamSubscription?.resume();
+          _streamSubscription
+            ?..resume()
+            ..onData(onCommentFetched);
         }
         break;
     }
@@ -325,7 +331,82 @@ class CommentsCubit extends Cubit<CommentsState> {
     init(useCommentCache: true);
   }
 
-  List<int> sortKids(List<int> kids) {
+  void jump(
+    ItemScrollController itemScrollController,
+    ItemPositionsListener itemPositionsListener,
+  ) {
+    final int totalComments = state.comments.length;
+    final List<Comment> onScreenComments = itemPositionsListener
+        .itemPositions.value
+        // The header is also a part of the list view,
+        // thus ignoring it here.
+        .where((ItemPosition e) => e.index >= 1 && e.itemLeadingEdge < 0.7)
+        .sorted((ItemPosition a, ItemPosition b) => a.index.compareTo(b.index))
+        .map(
+          (ItemPosition e) => e.index <= state.comments.length
+              ? state.comments.elementAt(e.index - 1)
+              : null,
+        )
+        .whereNotNull()
+        .toList();
+
+    /// The index of last comment visible on screen.
+    final int lastVisibleIndex = state.comments.indexOf(onScreenComments.last);
+    final int startIndex = min(lastVisibleIndex + 1, totalComments);
+
+    for (int i = startIndex; i < totalComments; i++) {
+      final Comment cmt = state.comments.elementAt(i);
+
+      if (cmt.isRoot && (cmt.deleted || cmt.dead) == false) {
+        itemScrollController.scrollTo(
+          index: i + 1,
+          alignment: 0.15,
+          duration: const Duration(milliseconds: 400),
+        );
+        return;
+      }
+    }
+  }
+
+  void jumpUp(
+    ItemScrollController itemScrollController,
+    ItemPositionsListener itemPositionsListener,
+  ) {
+    final List<Comment> onScreenComments = itemPositionsListener
+        .itemPositions.value
+        // The header is also a part of the list view,
+        // thus ignoring it here.
+        .where((ItemPosition e) => e.index >= 1 && e.itemLeadingEdge > 0)
+        .sorted((ItemPosition a, ItemPosition b) => a.index.compareTo(b.index))
+        .map(
+          (ItemPosition e) => e.index <= state.comments.length
+              ? state.comments.elementAt(e.index - 1)
+              : null,
+        )
+        .whereNotNull()
+        .toList();
+
+    /// The index of first comment visible on screen.
+    final int firstVisibleIndex = state.comments.indexOf(
+      onScreenComments.firstOrNull ?? state.comments.last,
+    );
+    final int startIndex = max(0, firstVisibleIndex - 1);
+
+    for (int i = startIndex; i >= 0; i--) {
+      final Comment cmt = state.comments.elementAt(i);
+
+      if (cmt.isRoot && (cmt.deleted || cmt.dead) == false) {
+        itemScrollController.scrollTo(
+          index: i + 1,
+          alignment: 0.15,
+          duration: const Duration(milliseconds: 400),
+        );
+        return;
+      }
+    }
+  }
+
+  List<int> _sortKids(List<int> kids) {
     switch (state.order) {
       case CommentsOrder.natural:
         return kids;
@@ -361,31 +442,6 @@ class CommentsCubit extends Cubit<CommentsState> {
       ];
 
       emit(state.copyWith(comments: updatedComments));
-
-      if (state.fetchMode == FetchMode.eager) {
-        if (updatedComments.length >=
-                _pageSize + _pageSize * state.currentPage &&
-            updatedComments.length <=
-                _pageSize * 2 + _pageSize * state.currentPage) {
-          final bool isHidden = _collapseCache.isHidden(comment.id);
-
-          if (!isHidden) {
-            _streamSubscription?.pause();
-
-            emit(
-              state.copyWith(
-                status: CommentsStatus.loaded,
-              ),
-            );
-          }
-
-          emit(
-            state.copyWith(
-              currentPage: state.currentPage + 1,
-            ),
-          );
-        }
-      }
     }
   }
 
