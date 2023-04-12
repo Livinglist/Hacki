@@ -5,7 +5,6 @@ import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/main.dart';
@@ -13,7 +12,7 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/services/services.dart';
-import 'package:hacki/utils/linkifier_util.dart';
+import 'package:hacki/utils/utils.dart';
 import 'package:linkify/linkify.dart';
 import 'package:logger/logger.dart';
 import 'package:rxdart/rxdart.dart';
@@ -210,7 +209,7 @@ class CommentsCubit extends Cubit<CommentsState> {
   }
 
   void loadAll(Story story) {
-    HapticFeedback.lightImpact();
+    HapticFeedbackUtil.light();
     emit(
       state.copyWith(
         onlyShowTargetComment: false,
@@ -282,7 +281,7 @@ class CommentsCubit extends Cubit<CommentsState> {
   }
 
   Future<void> loadParentThread() async {
-    unawaited(HapticFeedback.lightImpact());
+    HapticFeedbackUtil.light();
     emit(state.copyWith(fetchParentStatus: CommentsStatus.loading));
     final Story? parent = await _storiesRepository
         .fetchParentStory(id: state.item.id)
@@ -307,7 +306,7 @@ class CommentsCubit extends Cubit<CommentsState> {
   void onOrderChanged(CommentsOrder? order) {
     if (order == null) return;
     if (state.order == order) return;
-    HapticFeedback.selectionClick();
+    HapticFeedbackUtil.selection();
     _streamSubscription?.cancel();
     for (final StreamSubscription<Comment> s in _streamSubscriptions.values) {
       s.cancel();
@@ -321,7 +320,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     if (fetchMode == null) return;
     if (state.fetchMode == fetchMode) return;
     _collapseCache.resetCollapsedComments();
-    HapticFeedback.selectionClick();
+    HapticFeedbackUtil.selection();
     _streamSubscription?.cancel();
     for (final StreamSubscription<Comment> s in _streamSubscriptions.values) {
       s.cancel();

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
@@ -9,6 +8,7 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/utils/utils.dart';
 
 class CommentTile extends StatelessWidget {
   const CommentTile({
@@ -118,7 +118,7 @@ class CommentTile extends StatelessWidget {
                   child: InkWell(
                     onTap: () {
                       if (actionable) {
-                        HapticFeedback.selectionClick();
+                        HapticFeedbackUtil.selection();
                         context.read<CollapseCubit>().collapse();
                       } else {
                         onTap?.call();
@@ -221,7 +221,7 @@ class CommentTile extends StatelessWidget {
                                   Expanded(
                                     child: TextButton(
                                       onPressed: () {
-                                        HapticFeedback.selectionClick();
+                                        HapticFeedbackUtil.selection();
                                         context.read<CommentsCubit>().loadMore(
                                               comment: comment,
                                             );
@@ -341,7 +341,7 @@ class CommentTile extends StatelessWidget {
 
   void _onTextTapped(BuildContext context) {
     if (context.read<PreferenceCubit>().state.tapAnywhereToCollapseEnabled) {
-      HapticFeedback.selectionClick();
+      HapticFeedbackUtil.selection();
       context.read<CollapseCubit>().collapse();
     }
   }

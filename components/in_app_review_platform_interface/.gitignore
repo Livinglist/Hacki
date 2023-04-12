@@ -1,0 +1,12 @@
+.DS_Store
+.dart_tool/
+
+.packages
+.pub/
+
+build/
+
+
+pubspec.lock
+.flutter-plugins
+.flutter-plugins-dependencies

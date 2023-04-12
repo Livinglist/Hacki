@@ -32,7 +32,8 @@ Future<void> setUpLocator() async {
     ..registerSingleton<OfflineRepository>(OfflineRepository())
     ..registerSingleton<DraftCache>(DraftCache())
     ..registerSingleton<CommentCache>(CommentCache())
-    ..registerSingleton<LocalNotification>(LocalNotification())
+    ..registerSingleton<LocalNotificationService>(LocalNotificationService())
+    ..registerSingleton(AppReviewService())
     ..registerSingleton<RouteObserver<ModalRoute<dynamic>>>(
       RouteObserver<ModalRoute<dynamic>>(),
     );

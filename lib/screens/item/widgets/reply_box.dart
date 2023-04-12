@@ -1,6 +1,5 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:hacki/cubits/cubits.dart';
@@ -9,6 +8,7 @@ import 'package:hacki/models/item/item.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/utils/utils.dart';
 
 class ReplyBox extends StatefulWidget {
   const ReplyBox({
@@ -204,7 +204,6 @@ class _ReplyBoxState extends State<ReplyBox> {
                                 color: Palette.orange,
                               ),
                               onPressed: () {
-                                Navigator.pop(context);
                                 widget.onSendTapped();
                                 expanded = false;
                               },
@@ -292,7 +291,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                           ),
                         ),
                         onPressed: () {
-                          HapticFeedback.lightImpact();
+                          HapticFeedbackUtil.light();
                           setState(() {
                             expanded = false;
                           });
@@ -320,7 +319,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                         ),
                         onPressed: () => FlutterClipboard.copy(
                           replyingTo.text,
-                        ).then((_) => HapticFeedback.selectionClick()),
+                        ).then((_) => HapticFeedbackUtil.selection()),
                       ),
                       IconButton(
                         icon: const Icon(

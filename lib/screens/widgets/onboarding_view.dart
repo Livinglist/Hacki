@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
@@ -75,7 +74,7 @@ class _OnboardingViewState extends State<OnboardingView> {
             right: Dimens.zero,
             child: ElevatedButton(
               onPressed: () {
-                HapticFeedback.lightImpact();
+                HapticFeedbackUtil.light();
                 if (pageController.page! >= 2) {
                   Navigator.pop(context);
                 } else {

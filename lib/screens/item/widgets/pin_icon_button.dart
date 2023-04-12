@@ -1,13 +1,13 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/utils/utils.dart';
 
 class PinIconButton extends StatelessWidget {
   const PinIconButton({
@@ -49,7 +49,7 @@ class PinIconButton extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-                HapticFeedback.lightImpact();
+                HapticFeedbackUtil.light();
                 if (pinned) {
                   context.read<PinCubit>().unpinStory(story);
                 } else {

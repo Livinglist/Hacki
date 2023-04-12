@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart' hide Badge;
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -7,6 +6,7 @@ import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/utils/utils.dart';
 
 class PinnedStories extends StatelessWidget {
   const PinnedStories({
@@ -32,7 +32,7 @@ class PinnedStories extends StatelessWidget {
                     children: <Widget>[
                       SlidableAction(
                         onPressed: (_) {
-                          HapticFeedback.lightImpact();
+                          HapticFeedbackUtil.light();
                           context.read<PinCubit>().unpinStory(story);
                         },
                         backgroundColor: Palette.red,

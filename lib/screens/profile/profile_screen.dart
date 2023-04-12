@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
@@ -102,7 +101,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               .where((Item e) => !e.dead && !e.deleted)
                               .toList(),
                           onRefresh: () {
-                            HapticFeedback.lightImpact();
+                            HapticFeedbackUtil.light();
                             context.read<HistoryCubit>().refresh();
                           },
                           onLoadMore: () {
@@ -166,7 +165,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               refreshController: refreshControllerFav,
                               items: favState.favItems,
                               onRefresh: () {
-                                HapticFeedback.lightImpact();
+                                HapticFeedbackUtil.light();
                                 context.read<FavCubit>().refresh();
                               },
                               onLoadMore: () {
@@ -221,7 +220,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               context.read<NotificationCubit>().loadMore();
                             },
                             onRefresh: () {
-                              HapticFeedback.lightImpact();
+                              HapticFeedbackUtil.light();
                               context.read<NotificationCubit>().refresh();
                             },
                           ),

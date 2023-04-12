@@ -2,7 +2,6 @@ import 'package:equatable/equatable.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
@@ -15,7 +14,6 @@ import 'package:hacki/screens/item/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -147,10 +145,6 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
   final ItemScrollController itemScrollController = ItemScrollController();
   final ItemPositionsListener itemPositionsListener =
       ItemPositionsListener.create();
-  final RefreshController refreshController = RefreshController(
-    initialLoadStatus: LoadStatus.idle,
-    initialRefreshStatus: RefreshStatus.refreshing,
-  );
   final Throttle storyLinkTapThrottle = Throttle(
     delay: _storyLinkTapThrottleDelay,
   );
@@ -220,132 +214,129 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
             BlocListener<PostCubit, PostState>(
               listener: (BuildContext context, PostState postState) {
                 if (postState.status == PostStatus.successful) {
+                  Navigator.popUntil(
+                    context,
+                    (Route<dynamic> route) =>
+                        route.settings.name == ItemScreen.routeName,
+                  );
                   final String verb =
                       context.read<EditCubit>().state.replyingTo == null
                           ? 'updated'
                           : 'submitted';
                   final String msg = 'Comment $verb! ${Constants.happyFace}';
-                  HapticFeedback.lightImpact();
+                  HapticFeedbackUtil.light();
                   showSnackBar(content: msg);
                   context.read<EditCubit>().onReplySubmittedSuccessfully();
                   context.read<PostCubit>().reset();
                 } else if (postState.status == PostStatus.failure) {
+                  Navigator.popUntil(
+                    context,
+                    (Route<dynamic> route) =>
+                        route.settings.name == ItemScreen.routeName,
+                  );
                   showErrorSnackBar();
                   context.read<PostCubit>().reset();
                 }
               },
             ),
           ],
-          child: BlocListener<CommentsCubit, CommentsState>(
-            listenWhen: (CommentsState previous, CommentsState current) =>
-                previous.status != current.status,
-            listener: (BuildContext context, CommentsState state) {
-              if (state.status != CommentsStatus.loading) {
-                refreshController
-                  ..refreshCompleted()
-                  ..loadComplete();
+          child: BlocListener<EditCubit, EditState>(
+            listenWhen: (EditState previous, EditState current) {
+              return previous.replyingTo != current.replyingTo ||
+                  previous.itemBeingEdited != current.itemBeingEdited ||
+                  commentEditingController.text != current.text;
+            },
+            listener: (BuildContext context, EditState editState) {
+              if (editState.replyingTo != null ||
+                  editState.itemBeingEdited != null) {
+                if (editState.text == null) {
+                  commentEditingController.clear();
+                } else {
+                  final String text = editState.text!;
+                  commentEditingController
+                    ..text = text
+                    ..selection = TextSelection.fromPosition(
+                      TextPosition(offset: text.length),
+                    );
+                }
+              } else {
+                commentEditingController.clear();
               }
             },
-            child: BlocListener<EditCubit, EditState>(
-              listenWhen: (EditState previous, EditState current) {
-                return previous.replyingTo != current.replyingTo ||
-                    previous.itemBeingEdited != current.itemBeingEdited ||
-                    commentEditingController.text != current.text;
-              },
-              listener: (BuildContext context, EditState editState) {
-                if (editState.replyingTo != null ||
-                    editState.itemBeingEdited != null) {
-                  if (editState.text == null) {
-                    commentEditingController.clear();
-                  } else {
-                    final String text = editState.text!;
-                    commentEditingController
-                      ..text = text
-                      ..selection = TextSelection.fromPosition(
-                        TextPosition(offset: text.length),
-                      );
-                  }
-                } else {
-                  commentEditingController.clear();
-                }
-              },
-              child: widget.splitViewEnabled
-                  ? Material(
-                      child: Stack(
-                        children: <Widget>[
-                          Positioned.fill(
-                            child: MainView(
-                              itemScrollController: itemScrollController,
-                              itemPositionsListener: itemPositionsListener,
-                              commentEditingController:
-                                  commentEditingController,
-                              authState: authState,
-                              topPadding: topPadding,
-                              splitViewEnabled: widget.splitViewEnabled,
-                              onMoreTapped: onMoreTapped,
-                              onRightMoreTapped: onRightMoreTapped,
-                              onReplyTapped: showReplyBox,
-                            ),
+            child: widget.splitViewEnabled
+                ? Material(
+                    child: Stack(
+                      children: <Widget>[
+                        Positioned.fill(
+                          child: MainView(
+                            itemScrollController: itemScrollController,
+                            itemPositionsListener: itemPositionsListener,
+                            commentEditingController: commentEditingController,
+                            authState: authState,
+                            topPadding: topPadding,
+                            splitViewEnabled: widget.splitViewEnabled,
+                            onMoreTapped: onMoreTapped,
+                            onRightMoreTapped: onRightMoreTapped,
+                            onReplyTapped: showReplyBox,
                           ),
-                          BlocBuilder<SplitViewCubit, SplitViewState>(
-                            buildWhen: (
-                              SplitViewState previous,
-                              SplitViewState current,
-                            ) =>
-                                previous.expanded != current.expanded,
-                            builder: (
-                              BuildContext context,
-                              SplitViewState state,
-                            ) {
-                              return Positioned(
-                                top: Dimens.zero,
-                                left: Dimens.zero,
-                                right: Dimens.zero,
-                                child: CustomAppBar(
-                                  backgroundColor: Theme.of(context)
-                                      .canvasColor
-                                      .withOpacity(0.6),
-                                  item: widget.item,
-                                  splitViewEnabled: state.enabled,
-                                  expanded: state.expanded,
-                                  onZoomTap:
-                                      context.read<SplitViewCubit>().zoom,
-                                  onFontSizeTap: onFontSizeTapped,
-                                  fontSizeIconButtonKey: fontSizeIconButtonKey,
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    )
-                  : Scaffold(
-                      extendBodyBehindAppBar: true,
-                      resizeToAvoidBottomInset: true,
-                      appBar: CustomAppBar(
-                        backgroundColor:
-                            Theme.of(context).canvasColor.withOpacity(0.6),
-                        item: widget.item,
-                        onFontSizeTap: onFontSizeTapped,
-                        fontSizeIconButtonKey: fontSizeIconButtonKey,
-                      ),
-                      body: MainView(
-                        itemScrollController: itemScrollController,
-                        itemPositionsListener: itemPositionsListener,
-                        commentEditingController: commentEditingController,
-                        authState: authState,
-                        topPadding: topPadding,
-                        splitViewEnabled: widget.splitViewEnabled,
-                        onMoreTapped: onMoreTapped,
-                        onRightMoreTapped: onRightMoreTapped,
-                        onReplyTapped: showReplyBox,
-                      ),
-                      floatingActionButton: CustomFloatingActionButton(
-                        itemScrollController: itemScrollController,
-                        itemPositionsListener: itemPositionsListener,
-                      ),
+                        ),
+                        BlocBuilder<SplitViewCubit, SplitViewState>(
+                          buildWhen: (
+                            SplitViewState previous,
+                            SplitViewState current,
+                          ) =>
+                              previous.expanded != current.expanded,
+                          builder: (
+                            BuildContext context,
+                            SplitViewState state,
+                          ) {
+                            return Positioned(
+                              top: Dimens.zero,
+                              left: Dimens.zero,
+                              right: Dimens.zero,
+                              child: CustomAppBar(
+                                backgroundColor: Theme.of(context)
+                                    .canvasColor
+                                    .withOpacity(0.6),
+                                item: widget.item,
+                                splitViewEnabled: state.enabled,
+                                expanded: state.expanded,
+                                onZoomTap: context.read<SplitViewCubit>().zoom,
+                                onFontSizeTap: onFontSizeTapped,
+                                fontSizeIconButtonKey: fontSizeIconButtonKey,
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
-            ),
+                  )
+                : Scaffold(
+                    extendBodyBehindAppBar: true,
+                    resizeToAvoidBottomInset: true,
+                    appBar: CustomAppBar(
+                      backgroundColor:
+                          Theme.of(context).canvasColor.withOpacity(0.6),
+                      item: widget.item,
+                      onFontSizeTap: onFontSizeTapped,
+                      fontSizeIconButtonKey: fontSizeIconButtonKey,
+                    ),
+                    body: MainView(
+                      itemScrollController: itemScrollController,
+                      itemPositionsListener: itemPositionsListener,
+                      commentEditingController: commentEditingController,
+                      authState: authState,
+                      topPadding: topPadding,
+                      splitViewEnabled: widget.splitViewEnabled,
+                      onMoreTapped: onMoreTapped,
+                      onRightMoreTapped: onRightMoreTapped,
+                      onReplyTapped: showReplyBox,
+                    ),
+                    floatingActionButton: CustomFloatingActionButton(
+                      itemScrollController: itemScrollController,
+                      itemPositionsListener: itemPositionsListener,
+                    ),
+                  ),
           ),
         );
       },
@@ -416,7 +407,8 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
               ),
             ),
             onTap: () {
-              HapticFeedback.lightImpact();
+              HapticFeedbackUtil.light();
+              locator.get<AppReviewService>().requestReview();
               context.read<PreferenceCubit>().update(
                     FontSizePreference(),
                     to: fontSize.index,
@@ -428,7 +420,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
   }
 
   void onRightMoreTapped(Comment comment) {
-    HapticFeedback.lightImpact();
+    HapticFeedbackUtil.light();
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {
@@ -454,6 +446,8 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                     leading: const Icon(Icons.list),
                     title: const Text('View in separate thread'),
                     onTap: () {
+                      locator.get<AppReviewService>().requestReview();
+
                       Navigator.pop(context);
                       goToItemScreen(
                         args: ItemScreenArgs(

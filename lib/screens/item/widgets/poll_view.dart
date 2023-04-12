@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/blocs/auth/auth_bloc.dart';
@@ -7,6 +6,7 @@ import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/utils/utils.dart';
 
 class PollView extends StatefulWidget {
   const PollView({super.key});
@@ -100,7 +100,7 @@ class _PollViewState extends State<PollView> {
                           children: <Widget>[
                             IconButton(
                               onPressed: () {
-                                HapticFeedback.lightImpact();
+                                HapticFeedbackUtil.light();
                                 context.read<VoteCubit>().upvote();
                               },
                               icon: Icon(

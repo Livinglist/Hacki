@@ -1,11 +1,11 @@
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/screens/widgets/custom_described_feature_overlay.dart';
 import 'package:hacki/styles/palette.dart';
+import 'package:hacki/utils/utils.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class CustomFloatingActionButton extends StatelessWidget {
@@ -17,9 +17,6 @@ class CustomFloatingActionButton extends StatelessWidget {
 
   final ItemScrollController itemScrollController;
   final ItemPositionsListener itemPositionsListener;
-
-  static const String _heroTag1 = 'heroTag1';
-  static const String _heroTag2 = 'heroTag2';
 
   @override
   Widget build(BuildContext context) {
@@ -41,11 +38,14 @@ class CustomFloatingActionButton extends StatelessWidget {
               ),
               child: FloatingActionButton.small(
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                heroTag: _heroTag1,
+
+                /// Randomly generated string as heroTag to prevent
+                /// default [FloatingActionButton] animation.
+                heroTag: UniqueKey().hashCode,
                 onPressed: () {
                   if (state.status == CommentsStatus.loading) return;
 
-                  HapticFeedback.selectionClick();
+                  HapticFeedbackUtil.selection();
                   context.read<CommentsCubit>().jumpUp(
                         itemScrollController,
                         itemPositionsListener,
@@ -71,11 +71,13 @@ class CustomFloatingActionButton extends StatelessWidget {
               ),
               child: FloatingActionButton.small(
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                heroTag: _heroTag2,
+
+                /// Same as above.
+                heroTag: UniqueKey().hashCode,
                 onPressed: () {
                   if (state.status == CommentsStatus.loading) return;
 
-                  HapticFeedback.selectionClick();
+                  HapticFeedbackUtil.selection();
                   context.read<CommentsCubit>().jump(
                         itemScrollController,
                         itemPositionsListener,
