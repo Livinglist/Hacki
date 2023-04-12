@@ -214,6 +214,11 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
             BlocListener<PostCubit, PostState>(
               listener: (BuildContext context, PostState postState) {
                 if (postState.status == PostStatus.successful) {
+                  Navigator.popUntil(
+                    context,
+                    (Route<dynamic> route) =>
+                        route.settings.name == ItemScreen.routeName,
+                  );
                   final String verb =
                       context.read<EditCubit>().state.replyingTo == null
                           ? 'updated'
@@ -224,6 +229,11 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                   context.read<EditCubit>().onReplySubmittedSuccessfully();
                   context.read<PostCubit>().reset();
                 } else if (postState.status == PostStatus.failure) {
+                  Navigator.popUntil(
+                    context,
+                    (Route<dynamic> route) =>
+                        route.settings.name == ItemScreen.routeName,
+                  );
                   showErrorSnackBar();
                   context.read<PostCubit>().reset();
                 }
@@ -398,6 +408,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
             ),
             onTap: () {
               HapticFeedbackUtil.light();
+              locator.get<AppReviewService>().requestReview();
               context.read<PreferenceCubit>().update(
                     FontSizePreference(),
                     to: fontSize.index,

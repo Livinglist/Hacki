@@ -91,7 +91,6 @@ class MorePopupMenu extends StatelessWidget {
                               state.user.description,
                             ),
                             onTap: () {
-                              locator.get<AppReviewService>().requestReview();
                               Navigator.pop(context);
                               showDialog<void>(
                                 context: context,
@@ -128,6 +127,9 @@ class MorePopupMenu extends StatelessWidget {
                                   actions: <Widget>[
                                     TextButton(
                                       onPressed: () {
+                                        locator
+                                            .get<AppReviewService>()
+                                            .requestReview();
                                         Navigator.pop(context);
                                         onSearchUserTapped(context);
                                       },
@@ -136,7 +138,12 @@ class MorePopupMenu extends StatelessWidget {
                                       ),
                                     ),
                                     TextButton(
-                                      onPressed: () => Navigator.pop(context),
+                                      onPressed: () {
+                                        locator
+                                            .get<AppReviewService>()
+                                            .requestReview();
+                                        Navigator.pop(context);
+                                      },
                                       child: const Text(
                                         'Okay',
                                       ),
