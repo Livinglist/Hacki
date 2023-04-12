@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class StoriesListView extends StatefulWidget {
@@ -73,7 +73,7 @@ class _StoriesListViewState extends State<StoriesListView> {
               refreshController: refreshController,
               items: state.storiesByType[storyType]!,
               onRefresh: () {
-                HapticFeedback.lightImpact();
+                HapticFeedbackUtil.light();
                 context
                     .read<StoriesBloc>()
                     .add(StoriesRefresh(type: storyType));

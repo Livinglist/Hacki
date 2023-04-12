@@ -43,6 +43,8 @@ dependencies:
   html_unescape: ^2.0.0
   http: ^0.13.5
   hydrated_bloc: ^9.1.0
+  in_app_review:
+    path: components/in_app_review
   intl: ^0.18.0
   linkify: ^4.1.0
   logger: ^1.3.0

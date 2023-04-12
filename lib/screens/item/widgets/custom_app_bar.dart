@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/utils/utils.dart';
 
 class CustomAppBar extends AppBar {
   CustomAppBar({
@@ -27,7 +27,7 @@ class CustomAppBar extends AppBar {
                   size: TextDimens.pt20,
                 ),
                 onPressed: () {
-                  HapticFeedback.lightImpact();
+                  HapticFeedbackUtil.light();
                   onZoomTap?.call();
                 },
               ),

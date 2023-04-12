@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:hacki/utils/utils.dart';
 
 class CustomDescribedFeatureOverlay extends StatelessWidget {
   const CustomDescribedFeatureOverlay({
@@ -36,13 +36,13 @@ class CustomDescribedFeatureOverlay extends StatelessWidget {
       barrierDismissible: false,
       contentLocation: contentLocation,
       onBackgroundTap: () {
-        unawaited(HapticFeedback.lightImpact());
+        HapticFeedbackUtil.light();
         FeatureDiscovery.completeCurrentStep(context);
         onComplete?.call();
         return Future<bool>.value(true);
       },
       onComplete: () async {
-        unawaited(HapticFeedback.lightImpact());
+        HapticFeedbackUtil.light();
         onComplete?.call();
         return true;
       },

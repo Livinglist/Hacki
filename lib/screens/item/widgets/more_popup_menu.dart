@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:hacki/blocs/blocs.dart';
+import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/item/models/models.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 
@@ -89,6 +91,7 @@ class MorePopupMenu extends StatelessWidget {
                               state.user.description,
                             ),
                             onTap: () {
+                              locator.get<AppReviewService>().requestReview();
                               Navigator.pop(context);
                               showDialog<void>(
                                 context: context,

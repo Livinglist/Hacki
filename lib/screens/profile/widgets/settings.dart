@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
@@ -129,7 +128,7 @@ class _SettingsState extends State<Settings> {
                                   .toList(),
                               onChanged: (FetchMode? fetchMode) {
                                 if (fetchMode != null) {
-                                  HapticFeedback.selectionClick();
+                                  HapticFeedbackUtil.selection();
                                   context.read<PreferenceCubit>().update(
                                         FetchModePreference(),
                                         to: fetchMode.index,
@@ -163,7 +162,7 @@ class _SettingsState extends State<Settings> {
                                   .toList(),
                               onChanged: (CommentsOrder? order) {
                                 if (order != null) {
-                                  HapticFeedback.selectionClick();
+                                  HapticFeedbackUtil.selection();
                                   context.read<PreferenceCubit>().update(
                                         CommentsOrderPreference(),
                                         to: order.index,
@@ -202,7 +201,7 @@ class _SettingsState extends State<Settings> {
                         preference as BooleanPreference,
                       ),
                       onChanged: (bool val) {
-                        HapticFeedback.lightImpact();
+                        HapticFeedbackUtil.light();
 
                         context
                             .read<PreferenceCubit>()
@@ -766,7 +765,7 @@ class _SettingsState extends State<Settings> {
     try {
       await FlutterClipboard.copy(
         allFavorites.join('\n'),
-      ).whenComplete(HapticFeedback.selectionClick);
+      ).whenComplete(HapticFeedbackUtil.selection);
       showSnackBar(content: 'Ids of favorites have been copied to clipboard.');
     } catch (error, stackTrace) {
       error.logError(stackTrace: stackTrace);

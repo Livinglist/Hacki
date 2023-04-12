@@ -4,7 +4,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/models.dart';
 
-class LocalNotification {
+class LocalNotificationService {
   Future<void> pushForNewReply(Comment newReply, int storyId) async {
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();

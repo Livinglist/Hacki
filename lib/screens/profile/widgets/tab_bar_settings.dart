@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/utils/utils.dart';
 
 class TabBarSettings extends StatefulWidget {
   const TabBarSettings({super.key});
@@ -39,7 +39,7 @@ class _TabBarSettingsState extends State<TabBarSettings> {
                   scrollDirection: Axis.horizontal,
                   physics: const NeverScrollableScrollPhysics(),
                   onReorder: context.read<TabCubit>().update,
-                  onReorderStart: (_) => HapticFeedback.lightImpact(),
+                  onReorderStart: (_) => HapticFeedbackUtil.light(),
                   children: <Widget>[
                     for (final StoryType tab in state.tabs)
                       InkWell(

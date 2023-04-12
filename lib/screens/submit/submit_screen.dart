@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/utils/utils.dart';
 
 class SubmitScreen extends StatefulWidget {
   const SubmitScreen({super.key});
@@ -45,7 +45,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
       listener: (BuildContext context, SubmitState state) {
         if (state.status == SubmitStatus.submitted) {
           Navigator.pop(context);
-          HapticFeedback.lightImpact();
+          HapticFeedbackUtil.light();
           showSnackBar(
             content: 'Post submitted successfully.',
           );

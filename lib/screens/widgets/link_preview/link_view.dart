@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/link_preview/models/models.dart';
@@ -193,6 +195,8 @@ class LinkView extends StatelessWidget {
                       LinkUtil.launch(
                         url,
                         useHackiForHnLink: false,
+                        offlineReading:
+                            context.read<StoriesBloc>().state.isOfflineReading,
                       );
                     } else {
                       onTap();

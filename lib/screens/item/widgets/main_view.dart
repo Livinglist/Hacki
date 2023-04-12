@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -55,10 +54,11 @@ class MainView extends StatelessWidget {
                 child: RefreshIndicator(
                   displacement: 100,
                   onRefresh: () async {
-                    unawaited(HapticFeedback.lightImpact());
+                    HapticFeedbackUtil.light();
 
-                    if (context.read<StoriesBloc>().state.isOfflineReading) {
-                    } else {
+                    if (context.read<StoriesBloc>().state.isOfflineReading ==
+                            false &&
+                        state.onlyShowTargetComment == false) {
                       unawaited(context.read<CommentsCubit>().refresh());
 
                       if (state.item.isPoll) {
@@ -109,7 +109,7 @@ class MainView extends StatelessWidget {
                           opUsername: state.item.by,
                           fetchMode: state.fetchMode,
                           onReplyTapped: (Comment cmt) {
-                            HapticFeedback.lightImpact();
+                            HapticFeedbackUtil.light();
                             if (cmt.deleted || cmt.dead) {
                               return;
                             }
@@ -128,7 +128,7 @@ class MainView extends StatelessWidget {
                             onReplyTapped();
                           },
                           onEditTapped: (Comment cmt) {
-                            HapticFeedback.lightImpact();
+                            HapticFeedbackUtil.light();
                             if (cmt.deleted || cmt.dead) {
                               return;
                             }
@@ -213,7 +213,7 @@ class _ParentItemSection extends StatelessWidget {
               children: <Widget>[
                 SlidableAction(
                   onPressed: (_) {
-                    HapticFeedback.lightImpact();
+                    HapticFeedbackUtil.light();
 
                     if (state.item.id !=
                         context.read<EditCubit>().state.replyingTo?.id) {
