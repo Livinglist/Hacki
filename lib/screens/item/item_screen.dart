@@ -308,6 +308,14 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                             );
                           },
                         ),
+                        Positioned(
+                          right: Dimens.pt12,
+                          bottom: Dimens.pt36,
+                          child: CustomFloatingActionButton(
+                            itemScrollController: itemScrollController,
+                            itemPositionsListener: itemPositionsListener,
+                          ),
+                        ),
                       ],
                     ),
                   )
