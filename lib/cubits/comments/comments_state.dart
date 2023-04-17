@@ -14,6 +14,7 @@ class CommentsState extends Equatable {
     required this.comments,
     required this.status,
     required this.fetchParentStatus,
+    required this.fetchRootStatus,
     required this.order,
     required this.fetchMode,
     required this.onlyShowTargetComment,
@@ -29,6 +30,7 @@ class CommentsState extends Equatable {
   })  : comments = <Comment>[],
         status = CommentsStatus.init,
         fetchParentStatus = CommentsStatus.init,
+        fetchRootStatus = CommentsStatus.init,
         onlyShowTargetComment = false,
         currentPage = 0;
 
@@ -36,6 +38,7 @@ class CommentsState extends Equatable {
   final List<Comment> comments;
   final CommentsStatus status;
   final CommentsStatus fetchParentStatus;
+  final CommentsStatus fetchRootStatus;
   final CommentsOrder order;
   final FetchMode fetchMode;
   final bool onlyShowTargetComment;
@@ -47,6 +50,7 @@ class CommentsState extends Equatable {
     List<Comment>? comments,
     CommentsStatus? status,
     CommentsStatus? fetchParentStatus,
+    CommentsStatus? fetchRootStatus,
     CommentsOrder? order,
     FetchMode? fetchMode,
     bool? onlyShowTargetComment,
@@ -57,6 +61,7 @@ class CommentsState extends Equatable {
       item: item ?? this.item,
       comments: comments ?? this.comments,
       fetchParentStatus: fetchParentStatus ?? this.fetchParentStatus,
+      fetchRootStatus: fetchRootStatus ?? this.fetchRootStatus,
       status: status ?? this.status,
       order: order ?? this.order,
       fetchMode: fetchMode ?? this.fetchMode,
@@ -74,6 +79,7 @@ class CommentsState extends Equatable {
         item,
         status,
         fetchParentStatus,
+        fetchRootStatus,
         order,
         fetchMode,
         onlyShowTargetComment,
