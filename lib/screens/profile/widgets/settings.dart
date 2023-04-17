@@ -334,7 +334,7 @@ class _SettingsState extends State<Settings> {
                         }
                       },
                       title: Text(
-                        font.label,
+                        font.uiLabel,
                         style: TextStyle(fontFamily: font.name),
                       ),
                     ),
