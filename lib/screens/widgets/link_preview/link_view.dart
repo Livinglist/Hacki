@@ -143,6 +143,8 @@ class LinkView extends StatelessWidget {
     return maxLines;
   }
 
+  static bool? isUsingSerifFont;
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -153,7 +155,6 @@ class LinkView extends StatelessWidget {
         final String? fontFamily =
             Theme.of(context).primaryTextTheme.bodyMedium?.fontFamily;
         final double textScaleFactor = MediaQuery.of(context).textScaleFactor;
-
         final TextStyle titleStyle = titleTextStyle;
         final double titleHeight = (TextPainter(
           text: TextSpan(
@@ -166,7 +167,6 @@ class LinkView extends StatelessWidget {
         )..layout(maxWidth: bodyWidth))
             .size
             .height;
-
         final int descriptionMaxLines = getDescriptionMaxLines(
           MaxLineComputationParams(
             fontFamily ?? Font.roboto.name,
@@ -179,6 +179,8 @@ class LinkView extends StatelessWidget {
           ),
           titleStyle,
         );
+
+        isUsingSerifFont ??= Font.fromString(fontFamily).isSerif;
 
         return Row(
           children: <Widget>[
@@ -235,11 +237,7 @@ class LinkView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     SizedBox(
-                      height:
-                          Theme.of(context).textTheme.bodyMedium?.fontFamily ==
-                                  Font.robotoSlab.name
-                              ? Dimens.pt2
-                              : Dimens.pt4,
+                      height: isUsingSerifFont! ? Dimens.pt2 : Dimens.pt4,
                     ),
                     Text(
                       title,
