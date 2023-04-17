@@ -283,6 +283,28 @@ class CommentsCubit extends Cubit<CommentsState> {
   Future<void> loadParentThread() async {
     HapticFeedbackUtil.light();
     emit(state.copyWith(fetchParentStatus: CommentsStatus.loading));
+    final Item? parent =
+        await _storiesRepository.fetchItem(id: state.item.parent);
+
+    if (parent == null) {
+      return;
+    } else {
+      await HackiApp.navigatorKey.currentState?.pushNamed(
+        ItemScreen.routeName,
+        arguments: ItemScreenArgs(item: parent),
+      );
+
+      emit(
+        state.copyWith(
+          fetchParentStatus: CommentsStatus.loaded,
+        ),
+      );
+    }
+  }
+
+  Future<void> loadRootThread() async {
+    HapticFeedbackUtil.light();
+    emit(state.copyWith(fetchRootStatus: CommentsStatus.loading));
     final Story? parent = await _storiesRepository
         .fetchParentStory(id: state.item.id)
         .then(_toBuildableStory);
@@ -297,7 +319,7 @@ class CommentsCubit extends Cubit<CommentsState> {
 
       emit(
         state.copyWith(
-          fetchParentStatus: CommentsStatus.loaded,
+          fetchRootStatus: CommentsStatus.loaded,
         ),
       );
     }

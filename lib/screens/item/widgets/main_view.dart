@@ -195,6 +195,9 @@ class _ParentItemSection extends StatelessWidget {
   final ValueChanged<Comment> onRightMoreTapped;
   final VoidCallback onReplyTapped;
 
+  static const double _viewParentButtonWidth = 100;
+  static const double _viewRootButtonWidth = 80;
+
   @override
   Widget build(BuildContext context) {
     return Semantics(
@@ -399,22 +402,45 @@ class _ParentItemSection extends StatelessWidget {
                   const SizedBox(
                     width: Dimens.pt4,
                   ),
-                  TextButton(
-                    onPressed: context.read<CommentsCubit>().loadParentThread,
-                    child: state.fetchParentStatus == CommentsStatus.loading
-                        ? const SizedBox(
-                            height: Dimens.pt12,
-                            width: Dimens.pt12,
-                            child: CustomCircularProgressIndicator(
-                              strokeWidth: Dimens.pt2,
+                  SizedBox(
+                    width: _viewParentButtonWidth,
+                    child: TextButton(
+                      onPressed: context.read<CommentsCubit>().loadParentThread,
+                      child: state.fetchParentStatus == CommentsStatus.loading
+                          ? const SizedBox(
+                              height: Dimens.pt12,
+                              width: Dimens.pt12,
+                              child: CustomCircularProgressIndicator(
+                                strokeWidth: Dimens.pt2,
+                              ),
+                            )
+                          : const Text(
+                              'View parent',
+                              style: TextStyle(
+                                fontSize: TextDimens.pt13,
+                              ),
                             ),
-                          )
-                        : const Text(
-                            'View parent thread',
-                            style: TextStyle(
-                              fontSize: TextDimens.pt13,
+                    ),
+                  ),
+                  SizedBox(
+                    width: _viewRootButtonWidth,
+                    child: TextButton(
+                      onPressed: context.read<CommentsCubit>().loadRootThread,
+                      child: state.fetchRootStatus == CommentsStatus.loading
+                          ? const SizedBox(
+                              height: Dimens.pt12,
+                              width: Dimens.pt12,
+                              child: CustomCircularProgressIndicator(
+                                strokeWidth: Dimens.pt2,
+                              ),
+                            )
+                          : const Text(
+                              'View root',
+                              style: TextStyle(
+                                fontSize: TextDimens.pt13,
+                              ),
                             ),
-                          ),
+                    ),
                   ),
                 ],
                 const Spacer(),
