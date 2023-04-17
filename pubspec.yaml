@@ -111,5 +111,10 @@ flutter:
         - asset: assets/fonts/ubuntu_mono/UbuntuMono-Regular.ttf
         - asset: assets/fonts/ubuntu_mono/UbuntuMono-Bold.ttf
           weight: 700
+    - family: NotoSerif
+      fonts:
+        - asset: assets/fonts/noto_serif/NotoSerif-Regular.ttf
+        - asset: assets/fonts/noto_serif/NotoSerif-Bold.ttf
+          weight: 700
 
 
