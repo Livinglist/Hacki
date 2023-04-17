@@ -28,9 +28,9 @@ class CustomFloatingActionButton extends StatelessWidget {
             CustomDescribedFeatureOverlay(
               featureId: Constants.featureJumpUpButton,
               contentLocation: ContentLocation.above,
-              tapTarget: Icon(
+              tapTarget: const Icon(
                 Icons.keyboard_arrow_up,
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: Palette.white,
               ),
               title: const Text('Jump to previous root level comment.'),
               description: const Text(
@@ -51,9 +51,11 @@ class CustomFloatingActionButton extends StatelessWidget {
                         itemPositionsListener,
                       );
                 },
-                child: const Icon(
+                child: Icon(
                   Icons.keyboard_arrow_up,
-                  color: Palette.white,
+                  color: state.status == CommentsStatus.loading
+                      ? Palette.grey
+                      : Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),
