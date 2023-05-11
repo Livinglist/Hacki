@@ -93,7 +93,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                               child: Text(
                                 replyingTo == null
                                     ? 'Editing'
-                                    : 'Replying '
+                                    : 'Replying to '
                                         '${replyingTo.by}',
                                 style: const TextStyle(color: Palette.grey),
                                 maxLines: 1,
