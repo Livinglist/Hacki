@@ -74,13 +74,13 @@ class _SettingsState extends State<Settings> {
                   const SizedBox(
                     height: Dimens.pt8,
                   ),
-                  Flex(
+                  const Flex(
                     direction: Axis.horizontal,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Flexible(
                         child: Row(
-                          children: const <Widget>[
+                          children: <Widget>[
                             SizedBox(
                               width: Dimens.pt16,
                             ),
@@ -91,7 +91,7 @@ class _SettingsState extends State<Settings> {
                       ),
                       Flexible(
                         child: Row(
-                          children: const <Widget>[
+                          children: <Widget>[
                             Text('Default comments order'),
                             Spacer(),
                           ],
@@ -338,8 +338,8 @@ class _SettingsState extends State<Settings> {
                         style: TextStyle(fontFamily: font.name),
                       ),
                     ),
-                  Row(
-                    children: const <Widget>[
+                  const Row(
+                    children: <Widget>[
                       Text(
                         '*Restart required',
                         style: TextStyle(
@@ -485,8 +485,8 @@ class _SettingsState extends State<Settings> {
             onPressed: () => LinkUtil.launch(
               Constants.portfolioLink,
             ),
-            child: Row(
-              children: const <Widget>[
+            child: const Row(
+              children: <Widget>[
                 Icon(
                   FontAwesomeIcons.addressCard,
                 ),
@@ -501,8 +501,8 @@ class _SettingsState extends State<Settings> {
             onPressed: () => LinkUtil.launch(
               Constants.privacyPolicyLink,
             ),
-            child: Row(
-              children: const <Widget>[
+            child: const Row(
+              children: <Widget>[
                 Icon(
                   Icons.privacy_tip_outlined,
                 ),
@@ -515,8 +515,8 @@ class _SettingsState extends State<Settings> {
           ),
           ElevatedButton(
             onPressed: onReportIssueTapped,
-            child: Row(
-              children: const <Widget>[
+            child: const Row(
+              children: <Widget>[
                 Icon(
                   Icons.bug_report_outlined,
                 ),
@@ -531,8 +531,8 @@ class _SettingsState extends State<Settings> {
             onPressed: () => LinkUtil.launch(
               Constants.githubLink,
             ),
-            child: Row(
-              children: const <Widget>[
+            child: const Row(
+              children: <Widget>[
                 Icon(
                   FontAwesomeIcons.github,
                 ),
@@ -549,8 +549,8 @@ class _SettingsState extends State<Settings> {
                   ? Constants.appStoreLink
                   : Constants.googlePlayLink,
             ),
-            child: Row(
-              children: const <Widget>[
+            child: const Row(
+              children: <Widget>[
                 Icon(
                   Icons.thumb_up,
                 ),
@@ -565,8 +565,8 @@ class _SettingsState extends State<Settings> {
             onPressed: () => LinkUtil.launch(
               Constants.sponsorLink,
             ),
-            child: Row(
-              children: const <Widget>[
+            child: const Row(
+              children: <Widget>[
                 Icon(
                   FeatherIcons.coffee,
                 ),
@@ -590,8 +590,8 @@ class _SettingsState extends State<Settings> {
           actions: <Widget>[
             ElevatedButton(
               onPressed: onSendEmailTapped,
-              child: Row(
-                children: const <Widget>[
+              child: const Row(
+                children: <Widget>[
                   Icon(
                     Icons.email,
                   ),
@@ -604,8 +604,8 @@ class _SettingsState extends State<Settings> {
             ),
             ElevatedButton(
               onPressed: () => onGithubTapped(context.rect),
-              child: Row(
-                children: const <Widget>[
+              child: const Row(
+                children: <Widget>[
                   Icon(
                     Icons.bug_report_outlined,
                   ),

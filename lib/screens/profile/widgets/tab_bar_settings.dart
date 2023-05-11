@@ -20,8 +20,8 @@ class _TabBarSettingsState extends State<TabBarSettings> {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        Row(
-          children: const <Widget>[
+        const Row(
+          children: <Widget>[
             SizedBox(
               width: Dimens.pt16,
             ),

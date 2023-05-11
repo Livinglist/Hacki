@@ -114,7 +114,7 @@ class CommentTile extends StatelessWidget {
                           ],
                         )
                       : null,
-                  child: InkWell(
+                  child: GestureDetector(
                     onTap: () {
                       if (actionable) {
                         HapticFeedbackUtil.selection();

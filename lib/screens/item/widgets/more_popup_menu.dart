@@ -101,10 +101,10 @@ class MorePopupMenu extends StatelessWidget {
                                     'About ${state.user.id}',
                                   ),
                                   content: state.user.about.isEmpty
-                                      ? Row(
+                                      ? const Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
-                                          children: const <Widget>[
+                                          children: <Widget>[
                                             Text(
                                               'empty',
                                               style: TextStyle(
