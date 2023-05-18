@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
-import 'package:tuple/tuple.dart';
 
 /// [StoriesRepository] is for fetching
 /// [Item] such as [Story], [PollOption], [Comment] or [User].
@@ -187,7 +186,7 @@ class StoriesRepository {
 
   /// Fetch the parent [Story] of a [Comment] as well as
   /// the list of [Comment] traversed in order to reach the parent.
-  Future<Tuple2<Story, List<Comment>>?> fetchParentStoryWithComments({
+  Future<(Story, List<Comment>)?> fetchParentStoryWithComments({
     required int id,
   }) async {
     Item? item;
@@ -206,7 +205,7 @@ class StoriesRepository {
           parentComments[i].copyWith(level: parentComments.length - i - 1);
     }
 
-    return Tuple2<Story, List<Comment>>(
+    return (
       item as Story,
       parentComments.reversed.toList(),
     );

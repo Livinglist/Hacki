@@ -15,7 +15,6 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:tuple/tuple.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -353,16 +352,18 @@ class _ProfileScreenState extends State<ProfileScreen>
       locator
           .get<StoriesRepository>()
           .fetchParentStoryWithComments(id: comment.parent)
-          .then((Tuple2<Story, List<Comment>>? tuple) {
-        if (tuple != null && mounted) {
+          .then(((Story, List<Comment>)? res) {
+        if (res != null && mounted) {
+          final Story parent = res.$1;
+          final List<Comment> children = res.$2;
           goToItemScreen(
             args: ItemScreenArgs(
-              item: tuple.item1,
-              targetComments: tuple.item2.isEmpty
+              item: parent,
+              targetComments: children.isEmpty
                   ? <Comment>[comment]
                   : <Comment>[
-                      ...tuple.item2,
-                      comment.copyWith(level: tuple.item2.length)
+                      ...children,
+                      comment.copyWith(level: children.length)
                     ],
               onlyShowTargetComment: true,
             ),

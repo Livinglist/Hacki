@@ -70,7 +70,6 @@ dependencies:
   shimmer: ^2.0.0
   synced_shared_preferences:
     path: components/synced_shared_preferences
-  tuple: ^2.0.1
   universal_platform: ^1.0.0+1
   url_launcher: ^6.1.9
   wakelock: ^0.6.2
