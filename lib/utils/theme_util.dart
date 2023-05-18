@@ -28,7 +28,6 @@ abstract class ThemeUtil {
             statusBarColor: Palette.transparent,
           ),
         );
-        break;
       case AdaptiveThemeMode.dark:
         SystemChrome.setSystemUIOverlayStyle(
           const SystemUiOverlayStyle(
@@ -37,7 +36,6 @@ abstract class ThemeUtil {
             statusBarColor: Palette.transparent,
           ),
         );
-        break;
       case AdaptiveThemeMode.system:
       case null:
         switch (brightness) {
@@ -49,7 +47,6 @@ abstract class ThemeUtil {
                 statusBarColor: Palette.transparent,
               ),
             );
-            break;
           case Brightness.dark:
             SystemChrome.setSystemUIOverlayStyle(
               const SystemUiOverlayStyle(
@@ -58,9 +55,7 @@ abstract class ThemeUtil {
                 statusBarColor: Palette.transparent,
               ),
             );
-            break;
         }
-        break;
     }
   }
 }

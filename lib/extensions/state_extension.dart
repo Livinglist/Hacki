@@ -75,16 +75,12 @@ extension StateExtension on State {
             break;
           case MenuAction.fav:
             onFavTapped(item);
-            break;
           case MenuAction.share:
             onShareTapped(item, rect);
-            break;
           case MenuAction.flag:
             onFlagTapped(item);
-            break;
           case MenuAction.block:
             onBlockTapped(item, isBlocked: isBlocked);
-            break;
           case MenuAction.cancel:
             break;
         }

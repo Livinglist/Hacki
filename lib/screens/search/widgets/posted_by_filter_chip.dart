@@ -5,9 +5,9 @@ import 'package:hacki/styles/styles.dart';
 
 class PostedByFilterChip extends StatelessWidget {
   const PostedByFilterChip({
-    super.key,
     required this.filter,
     required this.onChanged,
+    super.key,
   });
 
   final PostedByFilter? filter;

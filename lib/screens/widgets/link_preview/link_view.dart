@@ -13,7 +13,6 @@ import 'package:hacki/utils/link_util.dart';
 
 class LinkView extends StatelessWidget {
   LinkView({
-    super.key,
     required this.metadata,
     required this.url,
     required this.readableUrl,
@@ -24,6 +23,7 @@ class LinkView extends StatelessWidget {
     required bool showUrl,
     required this.bodyMaxLines,
     required this.titleTextStyle,
+    super.key,
     this.imageUri,
     this.imagePath,
     this.showMultiMedia = true,

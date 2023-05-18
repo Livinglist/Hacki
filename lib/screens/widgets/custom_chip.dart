@@ -3,10 +3,10 @@ import 'package:hacki/styles/styles.dart';
 
 class CustomChip extends StatelessWidget {
   CustomChip({
-    Key? key,
     required this.selected,
     required this.label,
     required this.onSelected,
+    Key? key,
   }) : super(key: key ?? Key(label));
 
   final bool selected;

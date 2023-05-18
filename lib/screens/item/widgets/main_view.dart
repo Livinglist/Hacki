@@ -17,7 +17,6 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class MainView extends StatelessWidget {
   const MainView({
-    super.key,
     required this.itemScrollController,
     required this.itemPositionsListener,
     required this.commentEditingController,
@@ -27,6 +26,7 @@ class MainView extends StatelessWidget {
     required this.onMoreTapped,
     required this.onRightMoreTapped,
     required this.onReplyTapped,
+    super.key,
   });
 
   final ItemScrollController itemScrollController;

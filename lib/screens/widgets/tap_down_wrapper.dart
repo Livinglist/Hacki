@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class TapDownWrapper extends StatefulWidget {
   const TapDownWrapper({
+    required this.child,
     super.key,
     this.onTap,
-    required this.child,
   });
 
   final VoidCallback? onTap;

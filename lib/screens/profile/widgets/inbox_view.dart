@@ -8,7 +8,6 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class InboxView extends StatelessWidget {
   const InboxView({
-    super.key,
     required this.refreshController,
     required this.comments,
     required this.unreadCommentsIds,
@@ -16,6 +15,7 @@ class InboxView extends StatelessWidget {
     required this.onMarkAllAsReadTapped,
     required this.onLoadMore,
     required this.onRefresh,
+    super.key,
   });
 
   final RefreshController refreshController;

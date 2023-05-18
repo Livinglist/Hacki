@@ -154,10 +154,10 @@ Future<void> main({bool testing = false}) async {
 
 class HackiApp extends StatelessWidget {
   const HackiApp({
-    super.key,
-    this.savedThemeMode,
     required this.trueDarkMode,
     required this.font,
+    super.key,
+    this.savedThemeMode,
   });
 
   final AdaptiveThemeMode? savedThemeMode;

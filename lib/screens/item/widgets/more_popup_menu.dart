@@ -15,10 +15,10 @@ import 'package:hacki/utils/utils.dart';
 
 class MorePopupMenu extends StatelessWidget {
   const MorePopupMenu({
-    super.key,
     required this.item,
     required this.isBlocked,
     required this.onLoginTapped,
+    super.key,
   });
 
   final Item item;

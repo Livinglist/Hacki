@@ -27,10 +27,10 @@ import 'package:share_plus/share_plus.dart';
 
 class Settings extends StatefulWidget {
   const Settings({
-    super.key,
     required this.authState,
     required this.magicWord,
     required this.pageType,
+    super.key,
   });
 
   final AuthState authState;
@@ -397,14 +397,11 @@ class _SettingsState extends State<Settings> {
     switch (val) {
       case AdaptiveThemeMode.light:
         AdaptiveTheme.of(context).setLight();
-        break;
       case AdaptiveThemeMode.dark:
         AdaptiveTheme.of(context).setDark();
-        break;
       case AdaptiveThemeMode.system:
       case null:
         AdaptiveTheme.of(context).setSystem();
-        break;
     }
 
     final Brightness brightness = Theme.of(context).brightness;

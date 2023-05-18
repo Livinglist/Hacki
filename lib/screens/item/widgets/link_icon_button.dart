@@ -6,8 +6,8 @@ import 'package:hacki/utils/utils.dart';
 
 class LinkIconButton extends StatelessWidget {
   const LinkIconButton({
-    super.key,
     required this.storyId,
+    super.key,
   });
 
   final int storyId;

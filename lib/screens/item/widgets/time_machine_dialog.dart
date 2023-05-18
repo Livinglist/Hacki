@@ -8,11 +8,11 @@ import 'package:responsive_builder/responsive_builder.dart';
 
 class TimeMachineDialog extends StatelessWidget {
   const TimeMachineDialog({
-    super.key,
     required this.comment,
     required this.size,
     required this.deviceType,
     required this.widthFactor,
+    super.key,
   });
 
   final Comment comment;

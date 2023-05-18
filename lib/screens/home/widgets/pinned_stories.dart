@@ -10,9 +10,9 @@ import 'package:hacki/utils/utils.dart';
 
 class PinnedStories extends StatelessWidget {
   const PinnedStories({
-    super.key,
     required this.preferenceState,
     required this.onStoryTapped,
+    super.key,
   });
 
   final PreferenceState preferenceState;

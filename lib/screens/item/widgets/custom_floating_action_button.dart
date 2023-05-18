@@ -10,9 +10,9 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class CustomFloatingActionButton extends StatelessWidget {
   const CustomFloatingActionButton({
-    super.key,
     required this.itemScrollController,
     required this.itemPositionsListener,
+    super.key,
   });
 
   final ItemScrollController itemScrollController;

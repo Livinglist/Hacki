@@ -5,10 +5,10 @@ import 'package:intl/intl.dart';
 
 class DateTimeRangeFilterChip extends StatelessWidget {
   const DateTimeRangeFilterChip({
-    super.key,
     required this.filter,
     required this.onDateTimeRangeUpdated,
     required this.onDateTimeRangeRemoved,
+    super.key,
   });
 
   final DateTimeRangeFilter? filter;

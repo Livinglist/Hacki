@@ -67,10 +67,8 @@ class PreferenceCubit extends Cubit<PreferenceState> {
     switch (T) {
       case int:
         _preferenceRepository.setInt(preference.key, value as int);
-        break;
       case bool:
         _preferenceRepository.setBool(preference.key, value as bool);
-        break;
       default:
         throw UnimplementedError();
     }

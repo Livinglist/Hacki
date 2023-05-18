@@ -11,8 +11,8 @@ import 'package:hacki/utils/utils.dart';
 
 class PinIconButton extends StatelessWidget {
   const PinIconButton({
-    super.key,
     required this.story,
+    super.key,
   });
 
   final Story story;

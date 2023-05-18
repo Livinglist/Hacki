@@ -24,15 +24,15 @@ class CommentsCubit extends Cubit<CommentsState> {
   CommentsCubit({
     required FilterCubit filterCubit,
     required CollapseCache collapseCache,
+    required bool isOfflineReading,
+    required Item item,
+    required FetchMode defaultFetchMode,
+    required CommentsOrder defaultCommentsOrder,
     CommentCache? commentCache,
     OfflineRepository? offlineRepository,
     StoriesRepository? storiesRepository,
     SembastRepository? sembastRepository,
     Logger? logger,
-    required bool isOfflineReading,
-    required Item item,
-    required FetchMode defaultFetchMode,
-    required CommentsOrder defaultCommentsOrder,
   })  : _filterCubit = filterCubit,
         _collapseCache = collapseCache,
         _commentCache = commentCache ?? locator.get<CommentCache>(),
@@ -131,13 +131,11 @@ class CommentsCubit extends Cubit<CommentsState> {
             ids: kids,
             getFromCache: useCommentCache ? _commentCache.getComment : null,
           );
-          break;
         case FetchMode.eager:
           commentStream = _storiesRepository.fetchAllCommentsRecursivelyStream(
             ids: kids,
             getFromCache: useCommentCache ? _commentCache.getComment : null,
           );
-          break;
       }
     }
 
@@ -268,7 +266,6 @@ class CommentsCubit extends Cubit<CommentsState> {
               });
 
         _streamSubscriptions[comment.id] = streamSubscription;
-        break;
       case FetchMode.eager:
         if (_streamSubscription != null) {
           emit(state.copyWith(status: CommentsStatus.loading));
@@ -276,7 +273,6 @@ class CommentsCubit extends Cubit<CommentsState> {
             ?..resume()
             ..onData(onCommentFetched);
         }
-        break;
     }
   }
 

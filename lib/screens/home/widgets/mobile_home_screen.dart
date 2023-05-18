@@ -6,8 +6,8 @@ import 'package:hacki/styles/styles.dart';
 
 class MobileHomeScreen extends StatelessWidget {
   const MobileHomeScreen({
-    super.key,
     required this.homeScreen,
+    super.key,
   });
 
   final Widget homeScreen;

@@ -10,8 +10,8 @@ import 'package:hacki/utils/haptic_feedback_util.dart';
 
 class CustomTabBar extends StatefulWidget {
   const CustomTabBar({
-    super.key,
     required this.tabController,
+    super.key,
   });
 
   final TabController tabController;

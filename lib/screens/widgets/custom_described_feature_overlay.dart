@@ -6,12 +6,12 @@ import 'package:hacki/utils/utils.dart';
 
 class CustomDescribedFeatureOverlay extends StatelessWidget {
   const CustomDescribedFeatureOverlay({
-    super.key,
     required this.featureId,
     required this.child,
     required this.tapTarget,
     required this.title,
     required this.description,
+    super.key,
     this.contentLocation = ContentLocation.trivial,
     this.onComplete,
   });

@@ -3,8 +3,8 @@ import 'package:hacki/styles/styles.dart';
 
 class CenteredMessageView extends StatelessWidget {
   const CenteredMessageView({
-    super.key,
     required this.content,
+    super.key,
   });
 
   final String content;
