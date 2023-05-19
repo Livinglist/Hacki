@@ -36,5 +36,26 @@ class BuildableComment extends Comment with Buildable {
         );
 
   @override
+  BuildableComment copyWith({
+    int? level,
+    bool? hidden,
+  }) {
+    return BuildableComment(
+      id: id,
+      time: time,
+      parent: parent,
+      score: score,
+      by: by,
+      text: text,
+      kids: kids,
+      dead: dead,
+      deleted: deleted,
+      hidden: hidden ?? this.hidden,
+      level: level ?? this.level,
+      elements: elements,
+    );
+  }
+
+  @override
   final List<LinkifyElement> elements;
 }

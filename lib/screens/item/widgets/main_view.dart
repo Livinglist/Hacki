@@ -343,14 +343,16 @@ class _ParentItemSection extends StatelessWidget {
                             height: Dimens.pt6,
                           ),
                         if (state.item.text.isNotEmpty)
-                          SizedBox(
-                            width: double.infinity,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: Dimens.pt10,
-                              ),
-                              child: ItemText(
-                                item: state.item,
+                          FadeIn(
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: Dimens.pt10,
+                                ),
+                                child: ItemText(
+                                  item: state.item,
+                                ),
                               ),
                             ),
                           ),
