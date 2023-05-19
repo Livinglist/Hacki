@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -64,12 +63,7 @@ class CommentTile extends StatelessWidget {
           const Color orange = Color.fromRGBO(255, 152, 0, 1);
           final Color color = _getColor(level);
 
-          /// Usage of MediaQuery here is a walk-around from
-          /// https://github.com/flutter/flutter/issues/124421#issuecomment-1500666795
-          final Widget child = MediaQuery(
-            data: const MediaQueryData(
-              gestureSettings: DeviceGestureSettings(touchSlop: 7.9),
-            ),
+          final Widget child = DeviceGestureWrapper(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
