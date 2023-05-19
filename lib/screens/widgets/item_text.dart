@@ -9,8 +9,8 @@ import 'package:hacki/utils/utils.dart';
 
 class ItemText extends StatelessWidget {
   const ItemText({
-    super.key,
     required this.item,
+    super.key,
     this.onTap,
   });
 

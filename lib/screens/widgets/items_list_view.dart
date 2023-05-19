@@ -13,13 +13,13 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class ItemsListView<T extends Item> extends StatelessWidget {
   const ItemsListView({
-    super.key,
     required this.showWebPreview,
     required this.showMetadata,
     required this.showUrl,
     required this.items,
     required this.onTap,
     required this.refreshController,
+    super.key,
     this.useCommentTile = false,
     this.showCommentBy = false,
     this.enablePullDown = true,

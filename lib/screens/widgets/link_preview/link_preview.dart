@@ -10,7 +10,6 @@ import 'package:hacki/styles/styles.dart';
 
 class LinkPreview extends StatefulWidget {
   const LinkPreview({
-    super.key,
     required this.link,
     required this.story,
     required this.onTap,
@@ -18,6 +17,7 @@ class LinkPreview extends StatefulWidget {
     required this.showUrl,
     required this.isOfflineReading,
     required this.titleStyle,
+    super.key,
     this.cache = const Duration(days: 30),
     this.showMultimedia = true,
     this.backgroundColor = const Color.fromRGBO(235, 235, 235, 1),

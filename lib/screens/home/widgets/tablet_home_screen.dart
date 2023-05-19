@@ -8,8 +8,8 @@ import 'package:responsive_builder/responsive_builder.dart';
 
 class TabletHomeScreen extends StatelessWidget {
   const TabletHomeScreen({
-    super.key,
     required this.homeScreen,
+    super.key,
   });
 
   final Widget homeScreen;

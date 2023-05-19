@@ -17,9 +17,9 @@ enum CustomDateTimeRange {
 
 class CustomRangeFilterChip extends StatelessWidget {
   const CustomRangeFilterChip({
-    super.key,
     required this.range,
     required this.onTap,
+    super.key,
   });
 
   final CustomDateTimeRange range;

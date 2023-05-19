@@ -8,15 +8,15 @@ import 'package:linkify/linkify.dart';
 export 'package:hacki/screens/widgets/custom_linkify/linkifiers/linkifiers.dart';
 export 'package:linkify/linkify.dart'
     show
+        EmailElement,
+        EmailLinkifier,
+        LinkableElement,
+        Linkifier,
         LinkifyElement,
         LinkifyOptions,
-        LinkableElement,
         TextElement,
-        Linkifier,
         UrlElement,
-        UrlLinkifier,
-        EmailElement,
-        EmailLinkifier;
+        UrlLinkifier;
 
 /// Callback clicked link
 typedef LinkCallback = void Function(LinkableElement link);
@@ -24,8 +24,8 @@ typedef LinkCallback = void Function(LinkableElement link);
 /// Turns URLs into links
 class Linkify extends StatelessWidget {
   const Linkify({
-    super.key,
     required this.text,
+    super.key,
     this.linkifiers = defaultLinkifiers,
     this.onOpen,
     this.options = LinkifierUtil.linkifyOptions,
@@ -151,8 +151,8 @@ const List<Linkifier> defaultLinkifiers = <Linkifier>[
 /// Turns URLs into links
 class SelectableLinkify extends StatelessWidget {
   const SelectableLinkify({
-    super.key,
     required this.text,
+    super.key,
     this.semanticsLabel,
     this.linkifiers = defaultLinkifiers,
     this.onOpen,

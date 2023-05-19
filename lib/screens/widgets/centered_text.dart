@@ -3,8 +3,8 @@ import 'package:hacki/styles/styles.dart';
 
 class CenteredText extends StatelessWidget {
   const CenteredText({
-    super.key,
     required this.text,
+    super.key,
     this.color = Palette.grey,
   });
 

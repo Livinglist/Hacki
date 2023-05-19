@@ -15,10 +15,10 @@ import 'package:hacki/utils/utils.dart';
 
 class MorePopupMenu extends StatelessWidget {
   const MorePopupMenu({
-    super.key,
     required this.item,
     required this.isBlocked,
     required this.onLoginTapped,
+    super.key,
   });
 
   final Item item;
@@ -101,10 +101,10 @@ class MorePopupMenu extends StatelessWidget {
                                     'About ${state.user.id}',
                                   ),
                                   content: state.user.about.isEmpty
-                                      ? Row(
+                                      ? const Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
-                                          children: const <Widget>[
+                                          children: <Widget>[
                                             Text(
                                               'empty',
                                               style: TextStyle(

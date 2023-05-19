@@ -6,8 +6,8 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewScreen extends StatefulWidget {
   const WebViewScreen({
-    super.key,
     required this.url,
+    super.key,
   });
 
   final String url;

@@ -12,12 +12,12 @@ import 'package:hacki/utils/utils.dart';
 
 class ReplyBox extends StatefulWidget {
   const ReplyBox({
-    super.key,
-    this.splitViewEnabled = false,
     required this.textEditingController,
     required this.onSendTapped,
     required this.onCloseTapped,
     required this.onChanged,
+    super.key,
+    this.splitViewEnabled = false,
   });
 
   final bool splitViewEnabled;
@@ -93,7 +93,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                               child: Text(
                                 replyingTo == null
                                     ? 'Editing'
-                                    : 'Replying '
+                                    : 'Replying to '
                                         '${replyingTo.by}',
                                 style: const TextStyle(color: Palette.grey),
                                 maxLines: 1,

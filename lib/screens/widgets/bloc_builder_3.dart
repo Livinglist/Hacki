@@ -17,8 +17,8 @@ class BlocBuilder3<
     BlocC extends StateStreamable<BlocCState>,
     BlocCState> extends StatelessWidget {
   const BlocBuilder3({
-    super.key,
     required this.builder,
+    super.key,
     this.blocA,
     this.blocB,
     this.blocC,

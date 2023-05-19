@@ -125,14 +125,14 @@ class _CountDownReminderState extends State<CountdownReminder>
                   },
                   child: Column(
                     children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(
+                      const Padding(
+                        padding: EdgeInsets.only(
                           left: Dimens.pt12,
                           top: Dimens.pt10,
                           right: Dimens.pt10,
                         ),
                         child: Row(
-                          children: const <Widget>[
+                          children: <Widget>[
                             Text(
                               'Pick up where you left off',
                               style: TextStyle(

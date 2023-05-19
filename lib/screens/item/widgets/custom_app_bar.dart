@@ -7,11 +7,11 @@ import 'package:hacki/utils/utils.dart';
 
 class CustomAppBar extends AppBar {
   CustomAppBar({
-    super.key,
     required Item item,
-    required Color super.backgroundColor,
+    required super.backgroundColor,
     required VoidCallback onFontSizeTap,
     required GlobalKey fontSizeIconButtonKey,
+    super.key,
     bool splitViewEnabled = false,
     VoidCallback? onZoomTap,
     bool? expanded,

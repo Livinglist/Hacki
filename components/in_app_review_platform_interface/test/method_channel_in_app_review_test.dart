@@ -19,21 +19,6 @@ void main() {
     log.clear();
   });
 
-  channel.setMockMethodCallHandler((MethodCall call) async {
-    log.add(call);
-
-    switch (call.method) {
-      case 'isAvailable':
-        return true;
-      case 'requestReview':
-      case 'openStoreListing':
-        return null;
-      default:
-        assert(false);
-        return null;
-    }
-  });
-
   group('isAvailable', () {
     test(
       'should invoke the isAvailable method channel',

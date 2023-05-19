@@ -45,10 +45,10 @@ class ItemScreenArgs extends Equatable {
 
 class ItemScreen extends StatefulWidget {
   const ItemScreen({
-    super.key,
-    this.splitViewEnabled = false,
     required this.item,
     required this.parentComments,
+    super.key,
+    this.splitViewEnabled = false,
   });
 
   static const String routeName = '/item';

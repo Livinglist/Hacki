@@ -12,9 +12,9 @@ import 'package:hacki/utils/utils.dart';
 
 class CommentTile extends StatelessWidget {
   const CommentTile({
-    super.key,
     required this.comment,
     required this.fetchMode,
+    super.key,
     this.onReplyTapped,
     this.onMoreTapped,
     this.onEditTapped,
@@ -114,7 +114,7 @@ class CommentTile extends StatelessWidget {
                           ],
                         )
                       : null,
-                  child: InkWell(
+                  child: GestureDetector(
                     onTap: () {
                       if (actionable) {
                         HapticFeedbackUtil.selection();

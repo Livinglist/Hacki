@@ -7,7 +7,6 @@ import 'package:equatable/equatable.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -155,10 +154,10 @@ Future<void> main({bool testing = false}) async {
 
 class HackiApp extends StatelessWidget {
   const HackiApp({
-    super.key,
-    this.savedThemeMode,
     required this.trueDarkMode,
     required this.font,
+    super.key,
+    this.savedThemeMode,
   });
 
   final AdaptiveThemeMode? savedThemeMode;
@@ -281,8 +280,9 @@ class HackiApp extends StatelessWidget {
                   final bool useTrueDark = prefState.trueDarkEnabled &&
                       (mode == AdaptiveThemeMode.dark ||
                           (mode == AdaptiveThemeMode.system &&
-                              SchedulerBinding
-                                      .instance.window.platformBrightness ==
+                              View.of(context)
+                                      .platformDispatcher
+                                      .platformBrightness ==
                                   Brightness.dark));
                   return FeatureDiscovery(
                     child: MaterialApp(

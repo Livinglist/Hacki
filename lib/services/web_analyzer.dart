@@ -9,7 +9,7 @@ import 'package:hacki/config/locator.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
-import 'package:html/dom.dart' hide Text, Comment;
+import 'package:html/dom.dart' hide Comment, Text;
 import 'package:html/parser.dart' as parser;
 import 'package:http/http.dart';
 import 'package:http/io_client.dart';
@@ -110,9 +110,9 @@ class WebAnalyzer {
   /// return [InfoBase]
   static Future<InfoBase?> getInfo({
     required Story story,
+    required bool offlineReading,
     Duration cache = const Duration(hours: 24),
     bool multimedia = true,
-    required bool offlineReading,
   }) async {
     final String key = getKey(story);
     final String url = story.url;
@@ -200,9 +200,9 @@ class WebAnalyzer {
   }
 
   static Future<InfoBase?> _getInfoByIsolate({
-    String? url,
     required bool multimedia,
     required Story story,
+    String? url,
   }) async {
     List<dynamic>? res;
 
