@@ -63,8 +63,7 @@ class CommentTile extends StatelessWidget {
           const Color orange = Color.fromRGBO(255, 152, 0, 1);
           final Color color = _getColor(level);
 
-          final Padding child = Padding(
-            padding: EdgeInsets.zero,
+          final Widget child = DeviceGestureWrapper(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -114,7 +113,7 @@ class CommentTile extends StatelessWidget {
                           ],
                         )
                       : null,
-                  child: GestureDetector(
+                  child: InkWell(
                     onTap: () {
                       if (actionable) {
                         HapticFeedbackUtil.selection();

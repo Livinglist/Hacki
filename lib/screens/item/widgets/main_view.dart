@@ -210,161 +210,165 @@ class _ParentItemSection extends StatelessWidget {
               padding: EdgeInsets.only(bottom: Dimens.pt6),
               child: OfflineBanner(),
             ),
-          Slidable(
-            startActionPane: ActionPane(
-              motion: const BehindMotion(),
-              children: <Widget>[
-                SlidableAction(
-                  onPressed: (_) {
-                    HapticFeedbackUtil.light();
+          DeviceGestureWrapper(
+            child: Slidable(
+              startActionPane: ActionPane(
+                motion: const BehindMotion(),
+                children: <Widget>[
+                  SlidableAction(
+                    onPressed: (_) {
+                      HapticFeedbackUtil.light();
 
-                    if (state.item.id !=
-                        context.read<EditCubit>().state.replyingTo?.id) {
-                      commentEditingController.clear();
-                    }
-                    context.read<EditCubit>().onReplyTapped(state.item);
+                      if (state.item.id !=
+                          context.read<EditCubit>().state.replyingTo?.id) {
+                        commentEditingController.clear();
+                      }
+                      context.read<EditCubit>().onReplyTapped(state.item);
 
-                    onReplyTapped();
-                  },
-                  backgroundColor: Palette.orange,
-                  foregroundColor: Palette.white,
-                  icon: Icons.message,
-                ),
-                SlidableAction(
-                  onPressed: (BuildContext context) =>
-                      onMoreTapped(state.item, context.rect),
-                  backgroundColor: Palette.orange,
-                  foregroundColor: Palette.white,
-                  icon: Icons.more_horiz,
-                ),
-              ],
-            ),
-            child: Column(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: Dimens.pt6,
-                    right: Dimens.pt6,
+                      onReplyTapped();
+                    },
+                    backgroundColor: Palette.orange,
+                    foregroundColor: Palette.white,
+                    icon: Icons.message,
                   ),
-                  child: Row(
-                    children: <Widget>[
-                      Text(
-                        state.item.by,
-                        style: const TextStyle(
-                          color: Palette.orange,
-                        ),
-                      ),
-                      const Spacer(),
-                      Text(
-                        state.item.timeAgo,
-                        style: const TextStyle(
-                          color: Palette.grey,
-                        ),
-                      ),
-                    ],
+                  SlidableAction(
+                    onPressed: (BuildContext context) =>
+                        onMoreTapped(state.item, context.rect),
+                    backgroundColor: Palette.orange,
+                    foregroundColor: Palette.white,
+                    icon: Icons.more_horiz,
                   ),
-                ),
-                BlocBuilder<PreferenceCubit, PreferenceState>(
-                  buildWhen: (
-                    PreferenceState previous,
-                    PreferenceState current,
-                  ) =>
-                      previous.fontSize != current.fontSize,
-                  builder: (
-                    BuildContext context,
-                    PreferenceState prefState,
-                  ) {
-                    return Column(
+                ],
+              ),
+              child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: Dimens.pt6,
+                      right: Dimens.pt6,
+                    ),
+                    child: Row(
                       children: <Widget>[
-                        if (state.item is Story)
-                          InkWell(
-                            onTap: () => LinkUtil.launch(
-                              state.item.url,
-                              useReader: context
-                                  .read<PreferenceCubit>()
-                                  .state
-                                  .readerEnabled,
-                              offlineReading: context
-                                  .read<StoriesBloc>()
-                                  .state
-                                  .isOfflineReading,
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                left: Dimens.pt6,
-                                right: Dimens.pt6,
-                                bottom: Dimens.pt12,
-                                top: Dimens.pt12,
+                        Text(
+                          state.item.by,
+                          style: const TextStyle(
+                            color: Palette.orange,
+                          ),
+                        ),
+                        const Spacer(),
+                        Text(
+                          state.item.timeAgo,
+                          style: const TextStyle(
+                            color: Palette.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  BlocBuilder<PreferenceCubit, PreferenceState>(
+                    buildWhen: (
+                      PreferenceState previous,
+                      PreferenceState current,
+                    ) =>
+                        previous.fontSize != current.fontSize,
+                    builder: (
+                      BuildContext context,
+                      PreferenceState prefState,
+                    ) {
+                      return Column(
+                        children: <Widget>[
+                          if (state.item is Story)
+                            InkWell(
+                              onTap: () => LinkUtil.launch(
+                                state.item.url,
+                                useReader: context
+                                    .read<PreferenceCubit>()
+                                    .state
+                                    .readerEnabled,
+                                offlineReading: context
+                                    .read<StoriesBloc>()
+                                    .state
+                                    .isOfflineReading,
                               ),
-                              child: Text.rich(
-                                TextSpan(
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: prefState.fontSize.fontSize,
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge
-                                        ?.color,
-                                  ),
-                                  children: <TextSpan>[
-                                    TextSpan(
-                                      semanticsLabel: state.item.title,
-                                      text: state.item.title,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: prefState.fontSize.fontSize,
-                                        color: state.item.url.isNotEmpty
-                                            ? Palette.orange
-                                            : null,
-                                      ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  left: Dimens.pt6,
+                                  right: Dimens.pt6,
+                                  bottom: Dimens.pt12,
+                                  top: Dimens.pt12,
+                                ),
+                                child: Text.rich(
+                                  TextSpan(
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: prefState.fontSize.fontSize,
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge
+                                          ?.color,
                                     ),
-                                    if (state.item.url.isNotEmpty)
+                                    children: <TextSpan>[
                                       TextSpan(
-                                        text:
-                                            ''' (${(state.item as Story).readableUrl})''',
+                                        semanticsLabel: state.item.title,
+                                        text: state.item.title,
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize:
-                                              prefState.fontSize.fontSize - 4,
-                                          color: Palette.orange,
+                                          fontSize: prefState.fontSize.fontSize,
+                                          color: state.item.url.isNotEmpty
+                                              ? Palette.orange
+                                              : null,
                                         ),
                                       ),
-                                  ],
+                                      if (state.item.url.isNotEmpty)
+                                        TextSpan(
+                                          text:
+                                              ''' (${(state.item as Story).readableUrl})''',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize:
+                                                prefState.fontSize.fontSize - 4,
+                                            color: Palette.orange,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  textScaleFactor: MediaQuery.of(
+                                    context,
+                                  ).textScaleFactor,
                                 ),
-                                textAlign: TextAlign.center,
-                                textScaleFactor: MediaQuery.of(
-                                  context,
-                                ).textScaleFactor,
+                              ),
+                            )
+                          else
+                            const SizedBox(
+                              height: Dimens.pt6,
+                            ),
+                          if (state.item.text.isNotEmpty)
+                            FadeIn(
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: Dimens.pt10,
+                                  ),
+                                  child: ItemText(
+                                    item: state.item,
+                                  ),
+                                ),
                               ),
                             ),
-                          )
-                        else
-                          const SizedBox(
-                            height: Dimens.pt6,
-                          ),
-                        if (state.item.text.isNotEmpty)
-                          SizedBox(
-                            width: double.infinity,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: Dimens.pt10,
-                              ),
-                              child: ItemText(
-                                item: state.item,
-                              ),
-                            ),
-                          ),
-                      ],
-                    );
-                  },
-                ),
-                if (state.item.isPoll)
-                  BlocProvider<PollCubit>(
-                    create: (BuildContext context) =>
-                        PollCubit(story: state.item as Story)..init(),
-                    child: const PollView(),
+                        ],
+                      );
+                    },
                   ),
-              ],
+                  if (state.item.isPoll)
+                    BlocProvider<PollCubit>(
+                      create: (BuildContext context) =>
+                          PollCubit(story: state.item as Story)..init(),
+                      child: const PollView(),
+                    ),
+                ],
+              ),
             ),
           ),
           if (state.item.text.isNotEmpty)
