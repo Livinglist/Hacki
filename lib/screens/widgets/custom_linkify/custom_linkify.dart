@@ -400,7 +400,6 @@ TextSpan buildTextSpan(
           return TextSpan(
             text: element.text,
             style: style,
-            recognizer: HorizontalDragGestureRecognizer(),
           );
         }
       },
