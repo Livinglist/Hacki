@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/cubits/cubits.dart';
@@ -28,7 +29,37 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final RefreshController refreshController = RefreshController();
+  final ScrollController scrollController = ScrollController();
   final Debouncer debouncer = Debouncer(delay: const Duration(seconds: 1));
+  bool showChips = true;
+
+  static const Duration chipsAnimationDuration = Duration(milliseconds: 300);
+  static const double chipRowHeight = 40;
+
+  @override
+  void initState() {
+    super.initState();
+    scrollController.addListener(() {
+      if (scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        setState(() {
+          showChips = false;
+        });
+      } else if (scrollController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        setState(() {
+          showChips = true;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    refreshController.dispose();
+    scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,79 +103,87 @@ class _SearchScreenState extends State<SearchScreen> {
                   const SizedBox(
                     height: Dimens.pt6,
                   ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: <Widget>[
-                        const SizedBox(
-                          width: Dimens.pt8,
-                        ),
-                        DateTimeRangeFilterChip(
-                          filter: state.params.get<DateTimeRangeFilter>(),
-                          onDateTimeRangeUpdated: context
-                              .read<SearchCubit>()
-                              .onDateTimeRangeUpdated,
-                          onDateTimeRangeRemoved: context
-                              .read<SearchCubit>()
-                              .removeFilter<DateTimeRangeFilter>,
-                        ),
-                        const SizedBox(
-                          width: Dimens.pt8,
-                        ),
-                        PostedByFilterChip(
-                          filter: state.params.get<PostedByFilter>(),
-                          onChanged:
-                              context.read<SearchCubit>().onPostedByChanged,
-                        ),
-                        const SizedBox(
-                          width: Dimens.pt8,
-                        ),
-                        CustomChip(
-                          onSelected: (_) =>
-                              context.read<SearchCubit>().onSortToggled(),
-                          selected: state.params.sorted,
-                          label: '''newest first''',
-                        ),
-                        const SizedBox(
-                          width: Dimens.pt8,
-                        ),
-                        for (final CustomDateTimeRange range
-                            in CustomDateTimeRange.values) ...<Widget>[
-                          CustomRangeFilterChip(
-                            range: range,
-                            onTap: context
+                  AnimatedContainer(
+                    duration: chipsAnimationDuration,
+                    height: showChips ? chipRowHeight : 0,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: <Widget>[
+                          const SizedBox(
+                            width: Dimens.pt8,
+                          ),
+                          DateTimeRangeFilterChip(
+                            filter: state.params.get<DateTimeRangeFilter>(),
+                            onDateTimeRangeUpdated: context
                                 .read<SearchCubit>()
                                 .onDateTimeRangeUpdated,
+                            onDateTimeRangeRemoved: context
+                                .read<SearchCubit>()
+                                .removeFilter<DateTimeRangeFilter>,
                           ),
                           const SizedBox(
                             width: Dimens.pt8,
                           ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: <Widget>[
-                        for (final TypeTagFilter filter
-                            in TypeTagFilter.all) ...<Widget>[
+                          PostedByFilterChip(
+                            filter: state.params.get<PostedByFilter>(),
+                            onChanged:
+                                context.read<SearchCubit>().onPostedByChanged,
+                          ),
                           const SizedBox(
                             width: Dimens.pt8,
                           ),
                           CustomChip(
                             onSelected: (_) =>
-                                context.read<SearchCubit>().onToggled(filter),
-                            selected: context
-                                    .read<SearchCubit>()
-                                    .state
-                                    .params
-                                    .get<TypeTagFilter>() ==
-                                filter,
-                            label: filter.query,
+                                context.read<SearchCubit>().onSortToggled(),
+                            selected: state.params.sorted,
+                            label: '''newest first''',
                           ),
+                          const SizedBox(
+                            width: Dimens.pt8,
+                          ),
+                          for (final CustomDateTimeRange range
+                              in CustomDateTimeRange.values) ...<Widget>[
+                            CustomRangeFilterChip(
+                              range: range,
+                              onTap: context
+                                  .read<SearchCubit>()
+                                  .onDateTimeRangeUpdated,
+                            ),
+                            const SizedBox(
+                              width: Dimens.pt8,
+                            ),
+                          ],
                         ],
-                      ],
+                      ),
+                    ),
+                  ),
+                  AnimatedContainer(
+                    duration: chipsAnimationDuration,
+                    height: showChips ? chipRowHeight : 0,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: <Widget>[
+                          for (final TypeTagFilter filter
+                              in TypeTagFilter.all) ...<Widget>[
+                            const SizedBox(
+                              width: Dimens.pt8,
+                            ),
+                            CustomChip(
+                              onSelected: (_) =>
+                                  context.read<SearchCubit>().onToggled(filter),
+                              selected: context
+                                      .read<SearchCubit>()
+                                      .state
+                                      .params
+                                      .get<TypeTagFilter>() ==
+                                  filter,
+                              label: filter.query,
+                            ),
+                          ],
+                        ],
+                      ),
                     ),
                   ),
                   if (state.status == SearchStatus.loading &&
@@ -200,6 +239,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         },
                       ),
                       controller: refreshController,
+                      scrollController: scrollController,
                       onRefresh: () {},
                       onLoading: () {
                         context.read<SearchCubit>().loadMore();
