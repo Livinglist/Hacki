@@ -23,6 +23,12 @@ class SearchState extends Equatable {
   final SearchStatus status;
   final SearchParams params;
 
+  bool get hasDateFilter =>
+      params.filters.whereType<DateTimeRangeFilter>().isNotEmpty;
+
+  DateTimeRangeFilter? get dateFilter =>
+      params.filters.whereType<DateTimeRangeFilter>().singleOrNull;
+
   SearchState copyWith({
     List<Item>? results,
     SearchStatus? status,

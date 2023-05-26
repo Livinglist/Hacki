@@ -30,14 +30,27 @@ class DateTimeRangeFilter implements NumericFilter {
 
   @override
   String get query {
+    if (startTime == null || endTime == null) return '';
+
     final int? startTimestamp = startTime == null
         ? null
         : startTime!.toUtc().millisecondsSinceEpoch ~/ 1000;
-    final int? endTimestamp = endTime == null
+    int? endTimestamp = endTime == null
         ? null
         : endTime!.toUtc().millisecondsSinceEpoch ~/ 1000;
+
+    if (startTimestamp == endTimestamp) {
+      endTimestamp = startTime!
+              .add(const Duration(hours: 24))
+              .toUtc()
+              .millisecondsSinceEpoch ~/
+          1000;
+    }
+
+    if (startTimestamp == null || endTimestamp == null) return '';
+
     final String query =
-        '''${startTimestamp == null ? '' : 'created_at_i>$startTimestamp'},${endTimestamp == null ? '' : 'created_at_i<$endTimestamp'}''';
+        '''created_at_i>=$startTimestamp, created_at_i<=$endTimestamp''';
 
     if (query.endsWith(',')) {
       return query.replaceFirst(',', '');

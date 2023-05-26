@@ -34,9 +34,20 @@ class DateTimeRangeFilterChip extends StatelessWidget {
         });
       },
       selected: filter != null,
-      label:
-          '''from ${_formatDateTime(filter?.startTime) ?? 'X'} to ${_formatDateTime(filter?.endTime) ?? 'Y'}''',
+      label: _label,
     );
+  }
+
+  String get _label {
+    final DateTime? start = filter?.startTime;
+    final DateTime? end = filter?.endTime;
+    if (start == null && end == null) {
+      return '''from X to Y''';
+    } else if (start == end) {
+      return '''from ${_formatDateTime(start)}''';
+    } else {
+      return '''from ${_formatDateTime(start)} to ${_formatDateTime(end)}''';
+    }
   }
 
   static String? _formatDateTime(DateTime? dateTime) {
