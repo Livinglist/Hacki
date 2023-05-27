@@ -12,7 +12,8 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 abstract class InAppReviewPlatform extends PlatformInterface {
   InAppReviewPlatform() : super(token: _token);
 
-  static InAppReviewPlatform _instance = MethodChannelInAppReview();
+  static InAppReviewPlatform _instance =
+      MethodChannelInAppReview() as InAppReviewPlatform;
 
   static final Object _token = Object();
 
