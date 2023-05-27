@@ -192,7 +192,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                 width: Dimens.pt8,
                               ),
                               DateTimeRangeFilterChip(
-                                filter: state.params.get<DateTimeRangeFilter>(),
+                                filter: state.dateFilter,
+                                initialStartDate: state.dateFilter?.startTime,
+                                initialEndDate: state.dateFilter?.endTime,
                                 onDateTimeRangeUpdated: context
                                     .read<SearchCubit>()
                                     .onDateTimeRangeUpdated,

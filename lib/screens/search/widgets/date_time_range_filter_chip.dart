@@ -6,12 +6,16 @@ import 'package:intl/intl.dart';
 class DateTimeRangeFilterChip extends StatelessWidget {
   const DateTimeRangeFilterChip({
     required this.filter,
+    required this.initialStartDate,
+    required this.initialEndDate,
     required this.onDateTimeRangeUpdated,
     required this.onDateTimeRangeRemoved,
     super.key,
   });
 
   final DateTimeRangeFilter? filter;
+  final DateTime? initialStartDate;
+  final DateTime? initialEndDate;
   final void Function(DateTime, DateTime) onDateTimeRangeUpdated;
   final VoidCallback onDateTimeRangeRemoved;
 
@@ -25,6 +29,9 @@ class DateTimeRangeFilterChip extends StatelessWidget {
           context: context,
           firstDate: DateTime.now().subtract(const Duration(days: 20 * 365)),
           lastDate: DateTime.now(),
+          initialDateRange: initialStartDate != null && initialEndDate != null
+              ? DateTimeRange(start: initialStartDate!, end: initialEndDate!)
+              : null,
         ).then((DateTimeRange? range) {
           if (range != null) {
             onDateTimeRangeUpdated(range.start, range.end);
