@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
@@ -11,7 +12,7 @@ part 'edit_state.dart';
 class EditCubit extends HydratedCubit<EditState> {
   EditCubit({DraftCache? draftCache})
       : _draftCache = draftCache ?? locator.get<DraftCache>(),
-        _debouncer = Debouncer(delay: const Duration(seconds: 1)),
+        _debouncer = Debouncer(delay: Durations.oneSecond),
         super(const EditState.init());
 
   final DraftCache _draftCache;

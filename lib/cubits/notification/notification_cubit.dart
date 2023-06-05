@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hacki/blocs/blocs.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
@@ -31,7 +32,7 @@ class NotificationCubit extends Cubit<NotificationState> {
       if (authState.isLoggedIn && authState.username != _username) {
         // Get the user setting.
         if (_preferenceCubit.state.notificationEnabled) {
-          Future<void>.delayed(const Duration(seconds: 2), init);
+          Future<void>.delayed(Durations.twoSeconds, init);
         }
 
         // Listen for setting changes in the future.

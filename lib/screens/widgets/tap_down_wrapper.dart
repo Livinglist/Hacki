@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hacki/config/constants.dart';
 
 class TapDownWrapper extends StatefulWidget {
   const TapDownWrapper({
@@ -22,7 +23,7 @@ class _TapDownWrapperState extends State<TapDownWrapper>
   @override
   void initState() {
     controller = AnimationController(
-      duration: const Duration(milliseconds: 100),
+      duration: Durations.ms100,
       vsync: this,
     );
 

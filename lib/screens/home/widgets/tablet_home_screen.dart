@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' hide Badge;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
@@ -36,7 +37,7 @@ class TabletHomeScreen extends StatelessWidget {
                   top: Dimens.zero,
                   bottom: Dimens.zero,
                   width: homeScreenWidth,
-                  duration: const Duration(milliseconds: 300),
+                  duration: Durations.ms300,
                   curve: Curves.elasticOut,
                   child: homeScreen,
                 ),
@@ -52,7 +53,7 @@ class TabletHomeScreen extends StatelessWidget {
                   top: Dimens.zero,
                   bottom: Dimens.zero,
                   left: state.expanded ? Dimens.zero : homeScreenWidth,
-                  duration: const Duration(milliseconds: 300),
+                  duration: Durations.ms300,
                   curve: Curves.elasticOut,
                   child: const _TabletStoryView(),
                 ),

@@ -153,9 +153,9 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
   );
   final GlobalKey fontSizeIconButtonKey = GlobalKey();
 
-  static const Duration _storyLinkTapThrottleDelay = Duration(seconds: 2);
+  static const Duration _storyLinkTapThrottleDelay = Durations.twoSeconds;
   static const Duration _featureDiscoveryDismissThrottleDelay =
-      Duration(seconds: 1);
+      Durations.oneSecond;
 
   @override
   void didPop() {

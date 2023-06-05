@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
@@ -30,11 +31,11 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final RefreshController refreshController = RefreshController();
   final ScrollController scrollController = ScrollController();
-  final Debouncer debouncer = Debouncer(delay: const Duration(seconds: 1));
+  final Debouncer debouncer = Debouncer(delay: Durations.oneSecond);
   bool showChips = true;
   bool shouldOffStageChips = false;
 
-  static const Duration chipsAnimationDuration = Duration(milliseconds: 300);
+  static const Duration chipsAnimationDuration = Durations.ms300;
 
   @override
   void initState() {

@@ -139,6 +139,7 @@ class MainView extends StatelessWidget {
                           },
                           onMoreTapped: onMoreTapped,
                           onRightMoreTapped: onRightMoreTapped,
+                          itemScrollController: itemScrollController,
                         ),
                       );
                     },

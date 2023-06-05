@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/main.dart';
@@ -379,7 +380,7 @@ class CommentsCubit extends Cubit<CommentsState> {
         itemScrollController.scrollTo(
           index: i + 1,
           alignment: 0.15,
-          duration: const Duration(milliseconds: 400),
+          duration: Durations.ms400,
         );
         return;
       }
@@ -418,7 +419,7 @@ class CommentsCubit extends Cubit<CommentsState> {
         itemScrollController.scrollTo(
           index: i + 1,
           alignment: 0.15,
-          duration: const Duration(milliseconds: 400),
+          duration: Durations.ms400,
         );
         return;
       }

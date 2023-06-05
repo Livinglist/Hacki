@@ -15,7 +15,7 @@ class _OnboardingViewState extends State<OnboardingView> {
   final PageController pageController = PageController();
   final Throttle throttle = Throttle(delay: _throttleDelay);
 
-  static const Duration _throttleDelay = Duration(milliseconds: 100);
+  static const Duration _throttleDelay = Durations.ms100;
   static const double _screenshotHeight = 550;
 
   @override
@@ -80,7 +80,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                 } else {
                   throttle.run(() {
                     pageController.nextPage(
-                      duration: const Duration(milliseconds: 600),
+                      duration: Durations.ms600,
                       curve: SpringCurve.underDamped,
                     );
                   });
