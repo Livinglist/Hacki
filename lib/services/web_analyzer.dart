@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:fast_gbk/fast_gbk.dart';
 import 'package:flutter/foundation.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
@@ -321,7 +322,7 @@ class WebAnalyzer {
     final Uri uri = Uri.parse(url);
     final HttpClient ioClient = HttpClient()
       ..badCertificateCallback = _certificateCheck
-      ..connectionTimeout = const Duration(seconds: 2);
+      ..connectionTimeout = Durations.twoSeconds;
     final IOClient client = IOClient(ioClient);
     final BaseRequest request = Request('GET', uri)
       ..followRedirects = true
@@ -337,7 +338,7 @@ class WebAnalyzer {
 
     try {
       final IOStreamedResponse stream =
-          await client.send(request).timeout(const Duration(seconds: 10));
+          await client.send(request).timeout(Durations.tenSeconds);
 
       if (stream.statusCode == HttpStatus.movedTemporarily ||
           stream.statusCode == HttpStatus.movedPermanently) {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
@@ -9,6 +10,7 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class CommentTile extends StatelessWidget {
   const CommentTile({
@@ -23,6 +25,7 @@ class CommentTile extends StatelessWidget {
     this.actionable = true,
     this.level = 0,
     this.onTap,
+    this.itemScrollController,
   });
 
   final String? opUsername;
@@ -30,6 +33,7 @@ class CommentTile extends StatelessWidget {
   final int level;
   final bool actionable;
   final FetchMode fetchMode;
+  final ItemScrollController? itemScrollController;
 
   final void Function(Comment)? onReplyTapped;
   final void Function(Comment, Rect?)? onMoreTapped;
@@ -116,8 +120,7 @@ class CommentTile extends StatelessWidget {
                   child: InkWell(
                     onTap: () {
                       if (actionable) {
-                        HapticFeedbackUtil.selection();
-                        context.read<CollapseCubit>().collapse();
+                        _collapse(context);
                       } else {
                         onTap?.call();
                       }
@@ -159,7 +162,7 @@ class CommentTile extends StatelessWidget {
                           ),
                         ),
                         AnimatedSize(
-                          duration: const Duration(milliseconds: 200),
+                          duration: Durations.ms200,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
@@ -339,8 +342,26 @@ class CommentTile extends StatelessWidget {
 
   void _onTextTapped(BuildContext context) {
     if (context.read<PreferenceCubit>().state.tapAnywhereToCollapseEnabled) {
-      HapticFeedbackUtil.selection();
-      context.read<CollapseCubit>().collapse();
+      _collapse(context);
+    }
+  }
+
+  void _collapse(BuildContext context) {
+    HapticFeedbackUtil.selection();
+    context.read<CollapseCubit>().collapse();
+    if (context.read<CollapseCubit>().state.collapsed) {
+      Future<void>.delayed(
+        Durations.ms300,
+        () {
+          itemScrollController?.scrollTo(
+            index:
+                context.read<CommentsCubit>().state.comments.indexOf(comment) +
+                    1,
+            alignment: 0.1,
+            duration: Durations.ms300,
+          );
+        },
+      );
     }
   }
 }

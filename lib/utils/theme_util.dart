@@ -1,61 +1,92 @@
 import 'dart:io';
 
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:hacki/styles/styles.dart';
 
 abstract class ThemeUtil {
-  /// Temp fix for the issue:
-  /// https://github.com/flutter/flutter/issues/119465
-  static Future<void> updateAndroidStatusBarSetting(
+  static Future<void> updateStatusBarSetting(
     Brightness brightness,
     AdaptiveThemeMode? mode,
   ) async {
-    if (Platform.isAndroid == false) return;
-
-    final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
-    final AndroidDeviceInfo androidInfo = await deviceInfoPlugin.androidInfo;
-    final int sdk = androidInfo.version.sdkInt;
-
-    if (sdk > 28) return;
-    switch (mode) {
-      case AdaptiveThemeMode.light:
-        SystemChrome.setSystemUIOverlayStyle(
-          const SystemUiOverlayStyle(
-            statusBarBrightness: Brightness.dark,
-            statusBarIconBrightness: Brightness.dark,
-            statusBarColor: Palette.transparent,
-          ),
-        );
-      case AdaptiveThemeMode.dark:
-        SystemChrome.setSystemUIOverlayStyle(
-          const SystemUiOverlayStyle(
-            statusBarBrightness: Brightness.light,
-            statusBarIconBrightness: Brightness.light,
-            statusBarColor: Palette.transparent,
-          ),
-        );
-      case AdaptiveThemeMode.system:
-      case null:
-        switch (brightness) {
-          case Brightness.light:
-            SystemChrome.setSystemUIOverlayStyle(
-              const SystemUiOverlayStyle(
-                statusBarBrightness: Brightness.dark,
-                statusBarIconBrightness: Brightness.dark,
-                statusBarColor: Palette.transparent,
-              ),
-            );
-          case Brightness.dark:
-            SystemChrome.setSystemUIOverlayStyle(
-              const SystemUiOverlayStyle(
-                statusBarBrightness: Brightness.light,
-                statusBarIconBrightness: Brightness.light,
-                statusBarColor: Palette.transparent,
-              ),
-            );
-        }
+    if (Platform.isAndroid) {
+      switch (mode) {
+        case AdaptiveThemeMode.light:
+          SystemChrome.setSystemUIOverlayStyle(
+            const SystemUiOverlayStyle(
+              statusBarBrightness: Brightness.dark,
+              statusBarIconBrightness: Brightness.dark,
+              statusBarColor: Palette.transparent,
+            ),
+          );
+        case AdaptiveThemeMode.dark:
+          SystemChrome.setSystemUIOverlayStyle(
+            const SystemUiOverlayStyle(
+              statusBarBrightness: Brightness.light,
+              statusBarIconBrightness: Brightness.light,
+              statusBarColor: Palette.transparent,
+            ),
+          );
+        case AdaptiveThemeMode.system:
+        case null:
+          switch (brightness) {
+            case Brightness.light:
+              SystemChrome.setSystemUIOverlayStyle(
+                const SystemUiOverlayStyle(
+                  statusBarBrightness: Brightness.dark,
+                  statusBarIconBrightness: Brightness.dark,
+                  statusBarColor: Palette.transparent,
+                ),
+              );
+            case Brightness.dark:
+              SystemChrome.setSystemUIOverlayStyle(
+                const SystemUiOverlayStyle(
+                  statusBarBrightness: Brightness.light,
+                  statusBarIconBrightness: Brightness.light,
+                  statusBarColor: Palette.transparent,
+                ),
+              );
+          }
+      }
+    } else {
+      switch (mode) {
+        case AdaptiveThemeMode.light:
+          SystemChrome.setSystemUIOverlayStyle(
+            const SystemUiOverlayStyle(
+              statusBarBrightness: Brightness.light,
+              statusBarIconBrightness: Brightness.light,
+              statusBarColor: Palette.transparent,
+            ),
+          );
+        case AdaptiveThemeMode.dark:
+          SystemChrome.setSystemUIOverlayStyle(
+            const SystemUiOverlayStyle(
+              statusBarBrightness: Brightness.dark,
+              statusBarIconBrightness: Brightness.dark,
+              statusBarColor: Palette.transparent,
+            ),
+          );
+        case AdaptiveThemeMode.system:
+        case null:
+          switch (brightness) {
+            case Brightness.light:
+              SystemChrome.setSystemUIOverlayStyle(
+                const SystemUiOverlayStyle(
+                  statusBarBrightness: Brightness.light,
+                  statusBarIconBrightness: Brightness.light,
+                  statusBarColor: Palette.transparent,
+                ),
+              );
+            case Brightness.dark:
+              SystemChrome.setSystemUIOverlayStyle(
+                const SystemUiOverlayStyle(
+                  statusBarBrightness: Brightness.dark,
+                  statusBarIconBrightness: Brightness.dark,
+                  statusBarColor: Palette.transparent,
+                ),
+              );
+          }
+      }
     }
   }
 }

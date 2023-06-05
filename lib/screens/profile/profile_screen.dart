@@ -29,7 +29,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   final RefreshController refreshControllerFav = RefreshController();
   final RefreshController refreshControllerNotification = RefreshController();
   final ScrollController scrollController = ScrollController();
-  final Throttle throttle = Throttle(delay: const Duration(seconds: 2));
+  final Throttle throttle = Throttle(delay: Durations.twoSeconds);
 
   PageType pageType = PageType.notification;
 

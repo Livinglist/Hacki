@@ -7,6 +7,7 @@ import 'package:equatable/equatable.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -268,8 +269,8 @@ class HackiApp extends StatelessWidget {
               AsyncSnapshot<AdaptiveThemeMode?> snapshot,
             ) {
               final AdaptiveThemeMode? mode = snapshot.data;
-              ThemeUtil.updateAndroidStatusBarSetting(
-                Theme.of(context).brightness,
+              ThemeUtil.updateStatusBarSetting(
+                SchedulerBinding.instance.platformDispatcher.platformBrightness,
                 mode,
               );
               return BlocBuilder<PreferenceCubit, PreferenceState>(

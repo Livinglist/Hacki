@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen>
         DeviceScreenType.mobile) {
       locator.get<Logger>().i('resetting comments in CommentCache');
       Future<void>.delayed(
-        const Duration(milliseconds: 500),
+        Durations.ms500,
         locator.get<CommentCache>().resetComments,
       );
     }

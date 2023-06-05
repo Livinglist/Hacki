@@ -66,7 +66,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
                         currentIndex == i ? TextDimens.pt14 : TextDimens.pt10,
                     color: currentIndex == i ? Palette.orange : Palette.grey,
                   ),
-                  duration: const Duration(milliseconds: 200),
+                  duration: Durations.ms200,
                   child: Text(
                     state.tabs.elementAt(i).label,
                     key: ValueKey<String>(

@@ -2,6 +2,7 @@ import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/item/item.dart';
@@ -60,7 +61,7 @@ class _ReplyBoxState extends State<ReplyBox> {
               ),
               child: AnimatedContainer(
                 height: expanded ? expandedHeight : _collapsedHeight,
-                duration: const Duration(milliseconds: 200),
+                duration: Durations.ms200,
                 decoration: BoxDecoration(
                   boxShadow: <BoxShadow>[
                     if (!context.read<SplitViewCubit>().state.enabled)
@@ -79,7 +80,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                         ),
                       AnimatedContainer(
                         height: expanded ? Dimens.pt36 : Dimens.zero,
-                        duration: const Duration(milliseconds: 200),
+                        duration: Durations.ms200,
                       ),
                       Row(
                         children: <Widget>[
@@ -107,7 +108,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                                 AnimatedOpacity(
                                   opacity:
                                       expanded ? NumSwitch.on : NumSwitch.off,
-                                  duration: const Duration(milliseconds: 300),
+                                  duration: Durations.ms300,
                                   child: IconButton(
                                     key: const Key('quote'),
                                     icon: const Icon(
