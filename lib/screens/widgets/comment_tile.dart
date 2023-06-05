@@ -120,8 +120,7 @@ class CommentTile extends StatelessWidget {
                   child: InkWell(
                     onTap: () {
                       if (actionable) {
-                        HapticFeedbackUtil.selection();
-                        context.read<CollapseCubit>().collapse();
+                        _collapse(context);
                       } else {
                         onTap?.call();
                       }
@@ -343,25 +342,26 @@ class CommentTile extends StatelessWidget {
 
   void _onTextTapped(BuildContext context) {
     if (context.read<PreferenceCubit>().state.tapAnywhereToCollapseEnabled) {
-      HapticFeedbackUtil.selection();
-      context.read<CollapseCubit>().collapse();
-      if (context.read<CollapseCubit>().state.collapsed) {
-        Future<void>.delayed(
-          Durations.ms300,
-          () {
-            itemScrollController?.scrollTo(
-              index: context
-                      .read<CommentsCubit>()
-                      .state
-                      .comments
-                      .indexOf(comment) +
-                  2,
-              alignment: 0.1,
-              duration: Durations.ms200,
-            );
-          },
-        );
-      }
+      _collapse(context);
+    }
+  }
+
+  void _collapse(BuildContext context) {
+    HapticFeedbackUtil.selection();
+    context.read<CollapseCubit>().collapse();
+    if (context.read<CollapseCubit>().state.collapsed) {
+      Future<void>.delayed(
+        Durations.ms300,
+        () {
+          itemScrollController?.scrollTo(
+            index:
+                context.read<CommentsCubit>().state.comments.indexOf(comment) +
+                    1,
+            alignment: 0.1,
+            duration: Durations.ms300,
+          );
+        },
+      );
     }
   }
 }
