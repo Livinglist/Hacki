@@ -68,6 +68,8 @@ class PreferenceState extends Equatable {
 
   bool get swipeGestureEnabled => _isOn<SwipeGesturePreference>();
 
+  bool get autoScrollEnabled => _isOn<AutoScrollModePreference>();
+
   List<StoryType> get tabs {
     final String result =
         preferences.singleWhereType<TabOrderPreference>().val.toString();

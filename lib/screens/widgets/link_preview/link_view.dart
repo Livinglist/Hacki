@@ -237,7 +237,7 @@ class LinkView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     SizedBox(
-                      height: isUsingSerifFont! ? Dimens.pt2 : Dimens.pt4,
+                      height: isUsingSerifFont! ? Dimens.zero : Dimens.pt4,
                     ),
                     Text(
                       title,

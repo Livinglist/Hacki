@@ -48,3 +48,11 @@ class SearchState extends Equatable {
         params,
       ];
 }
+
+extension SearchStateExtension on SearchState {
+  bool get showDateRangeShortcutChips {
+    return hasDateFilter &&
+        dateFilter?.startTime != null &&
+        dateFilter?.endTime != null;
+  }
+}

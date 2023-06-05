@@ -68,8 +68,8 @@ class DateTimeShortcutChip extends StatelessWidget {
         _calculator = ((DateTime date) => date.add(const Duration(days: 30)));
 
   final void Function(DateTime, DateTime) onDateTimeRangeUpdated;
-  final DateTime startDate;
-  final DateTime endDate;
+  final DateTime? startDate;
+  final DateTime? endDate;
   final String label;
   final Calculator _calculator;
 
@@ -77,8 +77,9 @@ class DateTimeShortcutChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomChip(
       onSelected: (bool value) {
-        final DateTime updatedStartDate = _calculator(startDate);
-        final DateTime updatedEndDate = _calculator(endDate);
+        if (startDate == null || endDate == null) return;
+        final DateTime updatedStartDate = _calculator(startDate!);
+        final DateTime updatedEndDate = _calculator(endDate!);
         onDateTimeRangeUpdated(updatedStartDate, updatedEndDate);
       },
       selected: false,
