@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
@@ -404,8 +405,9 @@ class _SettingsState extends State<Settings> {
         AdaptiveTheme.of(context).setSystem();
     }
 
-    final Brightness brightness = Theme.of(context).brightness;
-    ThemeUtil.updateAndroidStatusBarSetting(brightness, val);
+    final Brightness brightness =
+        SchedulerBinding.instance.platformDispatcher.platformBrightness;
+    ThemeUtil.updateStatusBarSetting(brightness, val);
   }
 
   void showClearCacheDialog() {
