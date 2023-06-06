@@ -146,7 +146,7 @@ class AutoScrollModePreference extends BooleanPreference {
 
   @override
   String get subtitle =>
-      '''Automatically scroll to next comment when you collapse a comment.''';
+      '''automatically scroll to next comment when you collapse a comment.''';
 }
 
 /// The value deciding whether or not the story
