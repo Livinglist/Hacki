@@ -30,6 +30,7 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
       const StoryUrlModePreference(),
       const NotificationModePreference(),
       const SwipeGesturePreference(),
+      const AutoScrollModePreference(),
       const CollapseModePreference(),
       const ReaderModePreference(),
       const MarkReadStoriesModePreference(),
@@ -54,12 +55,13 @@ const bool _notificationModeDefaultValue = true;
 const bool _swipeGestureModeDefaultValue = false;
 const bool _displayModeDefaultValue = true;
 const bool _eyeCandyModeDefaultValue = false;
-const bool _trueDarkModeDefaultValue = false;
+const bool _trueDarkModeDefaultValue = true;
 const bool _readerModeDefaultValue = true;
 const bool _markReadStoriesModeDefaultValue = true;
 const bool _metadataModeDefaultValue = true;
 const bool _storyUrlModeDefaultValue = true;
 const bool _collapseModeDefaultValue = true;
+const bool _autoScrollModeDefaultValue = true;
 final int _fetchModeDefaultValue = FetchMode.eager.index;
 final int _commentsOrderDefaultValue = CommentsOrder.natural.index;
 final int _fontSizeDefaultValue = FontSize.regular.index;
@@ -125,6 +127,26 @@ class CollapseModePreference extends BooleanPreference {
   @override
   String get subtitle =>
       '''if disabled, tap on the top of comment tile to collapse.''';
+}
+
+class AutoScrollModePreference extends BooleanPreference {
+  const AutoScrollModePreference({bool? val})
+      : super(val: val ?? _autoScrollModeDefaultValue);
+
+  @override
+  AutoScrollModePreference copyWith({required bool? val}) {
+    return AutoScrollModePreference(val: val);
+  }
+
+  @override
+  String get key => 'autoScrollMode';
+
+  @override
+  String get title => 'Auto-scroll on collapsing';
+
+  @override
+  String get subtitle =>
+      '''Automatically scroll to next comment when you collapse a comment.''';
 }
 
 /// The value deciding whether or not the story

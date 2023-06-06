@@ -349,7 +349,8 @@ class CommentTile extends StatelessWidget {
   void _collapse(BuildContext context) {
     HapticFeedbackUtil.selection();
     context.read<CollapseCubit>().collapse();
-    if (context.read<CollapseCubit>().state.collapsed) {
+    if (context.read<CollapseCubit>().state.collapsed &&
+        context.read<PreferenceCubit>().state.autoScrollEnabled) {
       Future<void>.delayed(
         Durations.ms300,
         () {
