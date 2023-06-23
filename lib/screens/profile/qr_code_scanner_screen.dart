@@ -50,7 +50,6 @@ class _QrCodeScannerScreenState extends State<QrCodeScannerScreen> {
       body: Column(
         children: <Widget>[
           Expanded(
-            flex: 5,
             child: QRView(
               key: qrKey,
               onQRViewCreated: onQRViewCreated,
