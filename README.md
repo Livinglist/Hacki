@@ -29,6 +29,7 @@ Features:
 - Download stories and comments for offline reading.
 - Pick up where you left off.
 - Synced favorites and pins across devices. (iOS only)
+- Export or import your favorites. 
 - Launch from system share sheet.
 - And more...
 
