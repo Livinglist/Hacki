@@ -43,7 +43,6 @@ dependencies:
   html_unescape: ^2.0.0
   http: ^0.13.5
   hydrated_bloc: ^9.1.0
-  image_gallery_saver: ^2.0.2
   in_app_review:
     path: components/in_app_review
   intl: ^0.18.0

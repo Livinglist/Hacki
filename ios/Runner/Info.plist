@@ -78,8 +78,6 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
     <string>This app needs camera access to scan QR codes</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>This app needs photos access to get QR codes from or save QR code images to photo library</string>
     <key>io.flutter.embedded_views_preview</key>
     <true/>
 </dict>

@@ -539,14 +539,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "9.1.0"
-  image_gallery_saver:
-    dependency: "direct main"
-    description:
-      name: image_gallery_saver
-      sha256: "467de169167b5c4e1ddde65395e4653c336a82f760b6700ea295085b7f2dd248"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.2"
   in_app_review:
     dependency: "direct main"
     description:
