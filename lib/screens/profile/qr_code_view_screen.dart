@@ -33,17 +33,20 @@ class QrCodeViewScreen extends StatelessWidget {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          QrImageView(
-            data: data,
-            dataModuleStyle: QrDataModuleStyle(
-              dataModuleShape: QrDataModuleShape.square,
-              color: Theme.of(context).colorScheme.onSurface,
+          Center(
+            child: QrImageView(
+              data: data,
+              dataModuleStyle: QrDataModuleStyle(
+                dataModuleShape: QrDataModuleShape.square,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+              eyeStyle: QrEyeStyle(
+                eyeShape: QrEyeShape.square,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+              version: qrCodeVersion,
+              size: 300,
             ),
-            eyeStyle: QrEyeStyle(
-              eyeShape: QrEyeShape.square,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-            version: qrCodeVersion,
           ),
         ],
       ),
