@@ -1,11 +1,11 @@
 name: hacki
 description: A Hacker News reader.
-version: 1.7.4+115
+version: 1.8.0+116
 publish_to: none
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
-  flutter: "3.10.3"
+  flutter: "3.10.5"
 
 dependencies:
   adaptive_theme: ^3.2.0
@@ -58,6 +58,8 @@ dependencies:
     git:
       url: https://github.com/livinglist/flutter_pulltorefresh
       ref: master
+  qr_code_scanner: ^1.0.1
+  qr_flutter: ^4.1.0
   receive_sharing_intent: ^1.4.5
   responsive_builder: ^0.7.0
   rxdart: ^0.27.7
