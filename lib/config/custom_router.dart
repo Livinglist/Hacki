@@ -11,10 +11,14 @@ class CustomRouter {
     switch (settings.name) {
       case HomeScreen.routeName:
         return HomeScreen.route();
-      case ItemScreen.routeName:
-        return ItemScreen.route(settings.arguments! as ItemScreenArgs);
       case SubmitScreen.routeName:
         return SubmitScreen.route();
+      case QrCodeScannerScreen.routeName:
+        return QrCodeScannerScreen.route();
+      case ItemScreen.routeName:
+        return ItemScreen.route(settings.arguments! as ItemScreenArgs);
+      case QrCodeViewScreen.routeName:
+        return QrCodeViewScreen.route(data: settings.arguments! as String);
       default:
         return _errorRoute();
     }

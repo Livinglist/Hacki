@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:adaptive_theme/adaptive_theme.dart';
@@ -14,9 +15,12 @@ import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
+import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/profile/models/page_type.dart';
+import 'package:hacki/screens/profile/qr_code_scanner_screen.dart';
+import 'package:hacki/screens/profile/qr_code_view_screen.dart';
 import 'package:hacki/screens/profile/widgets/offline_list_tile.dart';
 import 'package:hacki/screens/profile/widgets/tab_bar_settings.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
@@ -243,6 +247,13 @@ class _SettingsState extends State<Settings> {
                       'Export Favorites',
                     ),
                     onTap: onExportFavoritesTapped,
+                  ),
+                  ListTile(
+                    title: const Text(
+                      'Import Favorites',
+                    ),
+                    onTap: () =>
+                        onImportFavoritesTapped(context.read<FavCubit>()),
                   ),
                   ListTile(
                     title: const Text(
@@ -754,20 +765,68 @@ class _SettingsState extends State<Settings> {
   }
 
   Future<void> onExportFavoritesTapped() async {
-    final List<int> allFavorites = context.read<FavCubit>().state.favIds;
+    return showModalBottomSheet<ExportDestination>(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ...ExportDestination.values.map(
+                (ExportDestination e) => ListTile(
+                  leading: Icon(e.icon),
+                  title: Text(e.label),
+                  onTap: () => Navigator.pop<ExportDestination>(context, e),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    ).then(
+      (ExportDestination? destination) => exportFavorites(to: destination),
+    );
+  }
 
+  Future<void> onImportFavoritesTapped(FavCubit favCubit) async {
+    final String? res = await HackiApp.navigatorKey.currentState
+        ?.pushNamed(QrCodeScannerScreen.routeName) as String?;
+    final List<int>? ids =
+        res?.split('\n').map(int.tryParse).whereType<int>().toList();
+    if (ids == null) return;
+    for (final int id in ids) {
+      await favCubit.addFav(id);
+    }
+    showSnackBar(content: 'Favorites imported successfully.');
+  }
+
+  Future<void> exportFavorites({required ExportDestination? to}) async {
+    final ExportDestination? destination = to;
+    if (destination == null) return;
+
+    final List<int> allFavorites = context.read<FavCubit>().state.favIds;
     if (allFavorites.isEmpty) {
       showSnackBar(content: "You don't have any favorite item.");
       return;
     }
+    final String allFavoritesStr = allFavorites.join('\n');
 
-    try {
-      await FlutterClipboard.copy(
-        allFavorites.join('\n'),
-      ).whenComplete(HapticFeedbackUtil.selection);
-      showSnackBar(content: 'Ids of favorites have been copied to clipboard.');
-    } catch (error, stackTrace) {
-      error.logError(stackTrace: stackTrace);
+    switch (destination) {
+      case ExportDestination.qrCode:
+        await HackiApp.navigatorKey.currentState?.pushNamed(
+          QrCodeViewScreen.routeName,
+          arguments: allFavoritesStr,
+        );
+      case ExportDestination.clipBoard:
+        try {
+          await FlutterClipboard.copy(allFavoritesStr)
+              .whenComplete(HapticFeedbackUtil.selection);
+          showSnackBar(
+            content: 'Ids of favorites have been copied to clipboard.',
+          );
+        } catch (error, stackTrace) {
+          error.logError(stackTrace: stackTrace);
+        }
     }
   }
 
