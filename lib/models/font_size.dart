@@ -4,7 +4,8 @@ enum FontSize {
   small('Small', TextDimens.pt15),
   regular('Regular', TextDimens.pt16),
   large('Large', TextDimens.pt17),
-  xlarge('XLarge', TextDimens.pt18);
+  xlarge('XLarge', TextDimens.pt18),
+  xxlarge('XXLarge', TextDimens.pt19);
 
   const FontSize(this.description, this.fontSize);
 
