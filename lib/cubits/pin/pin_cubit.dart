@@ -27,7 +27,7 @@ class PinCubit extends Cubit<PinState> {
       emit(state.copyWith(pinnedStoriesIds: ids));
 
       _storiesRepository.fetchStoriesStream(ids: ids).listen(_onStoryFetched);
-    });
+    }).whenComplete(() => emit(state.copyWith(status: Status.loaded)));
   }
 
   void pinStory(Story story) {
@@ -52,7 +52,10 @@ class PinCubit extends Cubit<PinState> {
     _preferenceRepository.updatePinnedStoriesIds(state.pinnedStoriesIds);
   }
 
-  void refresh() => init();
+  void refresh() {
+    if (state.status == Status.loading) return;
+    init();
+  }
 
   void _onStoryFetched(Story story) {
     emit(state.copyWith(pinnedStories: <Story>[...state.pinnedStories, story]));

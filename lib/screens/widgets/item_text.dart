@@ -10,12 +10,14 @@ import 'package:hacki/utils/utils.dart';
 class ItemText extends StatelessWidget {
   const ItemText({
     required this.item,
+    required this.textScaleFactor,
     super.key,
     this.onTap,
   });
 
   final Item item;
   final VoidCallback? onTap;
+  final double textScaleFactor;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +39,7 @@ class ItemText extends StatelessWidget {
           onOpen: (LinkableElement link) => LinkUtil.launch(link.url),
         ),
         onTap: onTap,
-        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+        textScaleFactor: textScaleFactor,
         contextMenuBuilder: (
           BuildContext context,
           EditableTextState editableTextState,
@@ -52,7 +54,7 @@ class ItemText extends StatelessWidget {
     } else {
       return SelectableLinkify(
         text: item.text,
-        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+        textScaleFactor: textScaleFactor,
         style: style,
         linkStyle: linkStyle,
         onOpen: (LinkableElement link) => LinkUtil.launch(link.url),

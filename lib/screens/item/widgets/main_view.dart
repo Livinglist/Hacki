@@ -255,6 +255,8 @@ class _ParentItemSection extends StatelessWidget {
                           style: const TextStyle(
                             color: Palette.orange,
                           ),
+                          textScaleFactor:
+                              MediaQuery.of(context).textScaleFactor,
                         ),
                         const Spacer(),
                         Text(
@@ -262,6 +264,8 @@ class _ParentItemSection extends StatelessWidget {
                           style: const TextStyle(
                             color: Palette.grey,
                           ),
+                          textScaleFactor:
+                              MediaQuery.of(context).textScaleFactor,
                         ),
                       ],
                     ),
@@ -334,9 +338,8 @@ class _ParentItemSection extends StatelessWidget {
                                     ],
                                   ),
                                   textAlign: TextAlign.center,
-                                  textScaleFactor: MediaQuery.of(
-                                    context,
-                                  ).textScaleFactor,
+                                  textScaleFactor:
+                                      MediaQuery.of(context).textScaleFactor,
                                 ),
                               ),
                             )
@@ -354,6 +357,8 @@ class _ParentItemSection extends StatelessWidget {
                                   ),
                                   child: ItemText(
                                     item: state.item,
+                                    textScaleFactor:
+                                        MediaQuery.of(context).textScaleFactor,
                                   ),
                                 ),
                               ),
@@ -402,6 +407,7 @@ class _ParentItemSection extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: TextDimens.pt13,
                     ),
+                    textScaleFactor: 1,
                   ),
                 ] else ...<Widget>[
                   const SizedBox(
@@ -444,6 +450,7 @@ class _ParentItemSection extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: TextDimens.pt13,
                               ),
+                              textScaleFactor: 1,
                             ),
                     ),
                   ),
@@ -462,6 +469,7 @@ class _ParentItemSection extends StatelessWidget {
                               style: const TextStyle(
                                 fontSize: TextDimens.pt13,
                               ),
+                              textScaleFactor: 1,
                             ),
                           ),
                         )
@@ -483,6 +491,7 @@ class _ParentItemSection extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: TextDimens.pt13,
                             ),
+                            textScaleFactor: 1,
                           ),
                         ),
                       )

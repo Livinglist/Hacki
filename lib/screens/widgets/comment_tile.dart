@@ -143,6 +143,8 @@ class CommentTile extends StatelessWidget {
                                       ? orange
                                       : color,
                                 ),
+                                textScaleFactor:
+                                    MediaQuery.of(context).textScaleFactor,
                               ),
                               if (comment.by == opUsername)
                                 const Text(
@@ -157,6 +159,8 @@ class CommentTile extends StatelessWidget {
                                 style: const TextStyle(
                                   color: Palette.grey,
                                 ),
+                                textScaleFactor:
+                                    MediaQuery.of(context).textScaleFactor,
                               ),
                             ],
                           ),
@@ -196,6 +200,8 @@ class CommentTile extends StatelessWidget {
                                       child: ItemText(
                                         key: ValueKey<int>(comment.id),
                                         item: comment,
+                                        textScaleFactor: MediaQuery.of(context)
+                                            .textScaleFactor,
                                         onTap: () {
                                           if (onTap == null) {
                                             _onTextTapped(context);

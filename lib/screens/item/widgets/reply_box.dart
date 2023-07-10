@@ -345,6 +345,8 @@ class _ReplyBoxState extends State<ReplyBox> {
                       child: SingleChildScrollView(
                         child: ItemText(
                           item: replyingTo,
+                          textScaleFactor:
+                              MediaQuery.of(context).textScaleFactor,
                         ),
                       ),
                     ),

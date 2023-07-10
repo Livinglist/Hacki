@@ -1,5 +1,5 @@
 import 'package:hacki/screens/widgets/custom_linkify/linkifiers/linkifiers.dart';
-import 'package:linkify/linkify.dart';
+import 'package:linkify/linkify.dart' hide UrlLinkifier;
 
 abstract class LinkifierUtil {
   static const LinkifyOptions linkifyOptions = LinkifyOptions(humanize: false);

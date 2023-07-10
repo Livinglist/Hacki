@@ -133,6 +133,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     StoriesRefresh event,
     Emitter<StoriesState> emit,
   ) async {
+    if (state.statusByType[event.type] == StoriesStatus.loading) return;
+
     emit(
       state.copyWithStatusUpdated(
         type: event.type,

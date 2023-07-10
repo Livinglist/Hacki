@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hacki/screens/widgets/custom_linkify/linkifiers/linkifiers.dart';
 import 'package:hacki/styles/palette.dart';
 import 'package:hacki/utils/utils.dart';
-import 'package:linkify/linkify.dart';
+import 'package:linkify/linkify.dart' hide UrlLinkifier;
 
 export 'package:hacki/screens/widgets/custom_linkify/linkifiers/linkifiers.dart';
 export 'package:linkify/linkify.dart'
@@ -14,9 +14,7 @@ export 'package:linkify/linkify.dart'
         Linkifier,
         LinkifyElement,
         LinkifyOptions,
-        TextElement,
-        UrlElement,
-        UrlLinkifier;
+        TextElement;
 
 /// Callback clicked link
 typedef LinkCallback = void Function(LinkableElement link);
