@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/main.dart';
@@ -54,17 +53,7 @@ abstract class LinkUtil {
       return;
     }
 
-    Uri rinseLink(String link) {
-      final RegExp regex = RegExp(RegExpConstants.linkSuffix);
-      if (!link.contains('en.wikipedia.org') && link.contains(regex)) {
-        final String match = regex.stringMatch(link) ?? '';
-        return Uri.parse(link.replaceAll(match, ''));
-      }
-
-      return Uri.parse(link);
-    }
-
-    final Uri uri = rinseLink(link);
+    final Uri uri = Uri.parse(link);
     canLaunchUrl(uri).then((bool val) {
       if (val) {
         if (link.contains('http')) {
