@@ -32,30 +32,32 @@ class CustomFloatingActionButton extends StatelessWidget {
                 Icons.keyboard_arrow_up,
                 color: Palette.white,
               ),
-              title: const Text('Jump to previous root level comment.'),
+              title: const Text('Shortcut'),
               description: const Text(
-                '''Tapping on this button will take you to the previous off-screen root level comment.''',
+                '''Tapping on this button will take you to the previous off-screen root level comment.\n\nLong press on it to jump to the very beginning of this thread.''',
               ),
-              child: FloatingActionButton.small(
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              child: InkWell(
+                onLongPress: () => itemScrollController.scrollTo(
+                  index: 0,
+                  duration: Durations.ms400,
+                ),
+                child: FloatingActionButton.small(
+                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
-                /// Randomly generated string as heroTag to prevent
-                /// default [FloatingActionButton] animation.
-                heroTag: UniqueKey().hashCode,
-                onPressed: () {
-                  if (state.status == CommentsStatus.loading) return;
-
-                  HapticFeedbackUtil.selection();
-                  context.read<CommentsCubit>().jumpUp(
-                        itemScrollController,
-                        itemPositionsListener,
-                      );
-                },
-                child: Icon(
-                  Icons.keyboard_arrow_up,
-                  color: state.status == CommentsStatus.loading
-                      ? Palette.grey
-                      : Theme.of(context).colorScheme.primary,
+                  /// Randomly generated string as heroTag to prevent
+                  /// default [FloatingActionButton] animation.
+                  heroTag: UniqueKey().hashCode,
+                  onPressed: () {
+                    HapticFeedbackUtil.selection();
+                    context.read<CommentsCubit>().scrollToPreviousRoot(
+                          itemScrollController,
+                          itemPositionsListener,
+                        );
+                  },
+                  child: Icon(
+                    Icons.keyboard_arrow_up,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                 ),
               ),
             ),
@@ -65,29 +67,31 @@ class CustomFloatingActionButton extends StatelessWidget {
                 Icons.keyboard_arrow_down,
                 color: Palette.white,
               ),
-              title: const Text('Jump to next root level comment.'),
+              title: const Text('Shortcut'),
               description: const Text(
-                '''Tapping on this button will take you to the next off-screen root level comment.''',
+                '''Tapping on this button will take you to the next off-screen root level comment.\n\nLong press on it to jump to the end of this thread.''',
               ),
-              child: FloatingActionButton.small(
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              child: InkWell(
+                onLongPress: () => itemScrollController.scrollTo(
+                  index: state.comments.length,
+                  duration: Durations.ms400,
+                ),
+                child: FloatingActionButton.small(
+                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
-                /// Same as above.
-                heroTag: UniqueKey().hashCode,
-                onPressed: () {
-                  if (state.status == CommentsStatus.loading) return;
-
-                  HapticFeedbackUtil.selection();
-                  context.read<CommentsCubit>().jump(
-                        itemScrollController,
-                        itemPositionsListener,
-                      );
-                },
-                child: Icon(
-                  Icons.keyboard_arrow_down,
-                  color: state.status == CommentsStatus.loading
-                      ? Palette.grey
-                      : Theme.of(context).colorScheme.primary,
+                  /// Same as above.
+                  heroTag: UniqueKey().hashCode,
+                  onPressed: () {
+                    HapticFeedbackUtil.selection();
+                    context.read<CommentsCubit>().scrollToNextRoot(
+                          itemScrollController,
+                          itemPositionsListener,
+                        );
+                  },
+                  child: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                 ),
               ),
             ),
