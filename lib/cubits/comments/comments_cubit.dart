@@ -349,8 +349,8 @@ class CommentsCubit extends Cubit<CommentsState> {
     init(useCommentCache: true);
   }
 
-  /// Jump to next root level comment.
-  void jump(
+  /// Scroll to next root level comment.
+  void scrollToNextRoot(
     ItemScrollController itemScrollController,
     ItemPositionsListener itemPositionsListener,
   ) {
@@ -387,8 +387,8 @@ class CommentsCubit extends Cubit<CommentsState> {
     }
   }
 
-  /// Jump to previous root level comment.
-  void jumpUp(
+  /// Scroll to previous root level comment.
+  void scrollToPreviousRoot(
     ItemScrollController itemScrollController,
     ItemPositionsListener itemPositionsListener,
   ) {

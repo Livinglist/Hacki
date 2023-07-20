@@ -39,8 +39,9 @@ abstract class Constants {
   static const String featureOpenStoryInWebView = 'open_story_in_web_view';
   static const String featureLogIn = 'log_in';
   static const String featurePinToTop = 'pin_to_top';
-  static const String featureJumpUpButton = 'jump_up_button';
-  static const String featureJumpDownButton = 'jump_down_button';
+  static const String featureJumpUpButton = 'jump_up_button_with_long_press';
+  static const String featureJumpDownButton =
+      'jump_down_button_with_long_press';
 
   static final String happyFace = <String>[
     '(๑•̀ㅂ•́)و✧',

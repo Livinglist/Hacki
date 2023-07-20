@@ -289,7 +289,9 @@ class HackiApp extends StatelessWidget {
                     child: MaterialApp(
                       title: 'Hacki',
                       debugShowCheckedModeBanner: false,
-                      theme: useTrueDark ? trueDarkTheme : theme,
+                      theme: (useTrueDark ? trueDarkTheme : theme).copyWith(
+                        useMaterial3: false,
+                      ),
                       navigatorKey: navigatorKey,
                       navigatorObservers: <NavigatorObserver>[
                         locator.get<RouteObserver<ModalRoute<dynamic>>>(),
