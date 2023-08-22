@@ -285,7 +285,7 @@ class MorePopupMenu extends StatelessWidget {
                     child: SearchScreen(
                       fromUserDialog: true,
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

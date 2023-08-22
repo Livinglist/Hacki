@@ -229,7 +229,7 @@ class _LinkPreviewPlaceholder extends StatelessWidget {
                     ],
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),

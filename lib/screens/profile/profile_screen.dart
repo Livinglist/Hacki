@@ -363,7 +363,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   ? <Comment>[comment]
                   : <Comment>[
                       ...children,
-                      comment.copyWith(level: children.length)
+                      comment.copyWith(level: children.length),
                     ],
               onlyShowTargetComment: true,
             ),

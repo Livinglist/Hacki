@@ -14,6 +14,10 @@ extension ObjectExtension on Object {
     String identifier = '',
     StackTrace? stackTrace,
   }) {
-    locator.get<Logger>().e(identifier, this, stackTrace ?? StackTrace.current);
+    locator.get<Logger>().e(
+          identifier,
+          error: this,
+          stackTrace: stackTrace ?? StackTrace.current,
+        );
   }
 }

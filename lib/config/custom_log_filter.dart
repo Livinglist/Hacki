@@ -2,7 +2,7 @@ import 'package:logger/logger.dart';
 
 class CustomLogFilter extends LogFilter {
   @override
-  Level? get level => Level.verbose;
+  Level? get level => Level.trace;
 
   /// The minimal level allowed in production.
   static const Level _minimalLevel = Level.info;
