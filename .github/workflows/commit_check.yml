@@ -17,6 +17,8 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
+      - run: cd submodules/flutter
+      - run: git remote set-url origin https://github.com/flutter/flutter.git
       - run: submodules/flutter/bin/flutter channel stable
       - run: submodules/flutter/bin/flutter upgrade 3.13.0
       - run: submodules/flutter/bin/flutter doctor
