@@ -26,8 +26,8 @@ abstract class HtmlUtil {
         .querySelectorAll("input[type='hidden']");
     return <String, String>{
       if (hiddenInputs != null)
-        for (dom.Element hiddenInput in hiddenInputs)
-          hiddenInput.attributes['name']!: hiddenInput.attributes['value']!
+        for (final dom.Element hiddenInput in hiddenInputs)
+          hiddenInput.attributes['name']!: hiddenInput.attributes['value']!,
     };
   }
 

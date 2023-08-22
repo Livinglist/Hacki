@@ -20,7 +20,7 @@ class CustomFileOutput extends LogOutput {
   IOSink? _sink;
 
   @override
-  void init() {
+  Future<void> init() async {
     _sink = file.openWrite(
       mode: overrideExisting ? FileMode.writeOnly : FileMode.writeOnlyAppend,
       encoding: encoding,

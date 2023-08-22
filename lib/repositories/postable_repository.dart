@@ -64,7 +64,7 @@ class PostableRepository {
           validateStatus: validateStatus,
         ),
       );
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       throw ServiceException(e.message);
     }
   }

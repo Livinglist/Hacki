@@ -370,7 +370,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
             ),
             SizedBox(
               height: MediaQuery.of(context).viewInsets.bottom,
-            )
+            ),
           ],
         );
       },

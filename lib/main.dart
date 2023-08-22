@@ -58,8 +58,8 @@ Future<void> main({bool testing = false}) async {
   FlutterError.onError = (FlutterErrorDetails details) {
     locator.get<Logger>().e(
           details.summary,
-          details.exceptionAsString(),
-          details.stack,
+          error: details.exceptionAsString(),
+          stackTrace: details.stack,
         );
   };
 
@@ -241,7 +241,7 @@ class HackiApp extends StatelessWidget {
           create: (BuildContext context) => TabCubit(
             preferenceCubit: context.read<PreferenceCubit>(),
           )..init(),
-        )
+        ),
       ],
       child: AdaptiveTheme(
         light: ThemeData(

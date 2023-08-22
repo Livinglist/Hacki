@@ -134,7 +134,7 @@ class _PollViewState extends State<PollView> {
                                   ),
                                 ],
                               ),
-                            )
+                            ),
                           ],
                         ),
                       );

@@ -273,7 +273,7 @@ class WebAnalyzer {
           info.title,
           info.description,
           info.icon,
-          info.image
+          info.image,
         ];
       } else if (info is WebVideoInfo) {
         return <dynamic>['1', info.image];
