@@ -16,6 +16,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
+      - run: submodules/flutter/bin/flutter clean
       - run: submodules/flutter/bin/flutter doctor
       - run: submodules/flutter/bin/flutter pub get
       - run: submodules/flutter/bin/dart format --set-exit-if-changed lib test integration_test
