@@ -35,7 +35,7 @@ class _ReplyBoxState extends State<ReplyBox> {
   bool expanded = false;
   double? expandedHeight;
 
-  static const double collapsedHeight = 100;
+  static const double collapsedHeight = 140;
 
   @override
   Widget build(BuildContext context) {
@@ -215,12 +215,19 @@ class _ReplyBoxState extends State<ReplyBox> {
                       ),
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: Dimens.pt16,
+                          padding: EdgeInsets.only(
+                            left: Dimens.pt16,
+                            right: Dimens.pt16,
+                            bottom: expanded
+                                // This padding here prevents keyboard
+                                // overlapping with TextField.
+                                ? MediaQuery.of(context).viewInsets.bottom +
+                                    Dimens.pt16
+                                : Dimens.zero,
                           ),
                           child: TextField(
-                            autofocus: true,
                             controller: widget.textEditingController,
+                            autofocus: true,
                             expands: true,
                             maxLines: null,
                             decoration: const InputDecoration(
