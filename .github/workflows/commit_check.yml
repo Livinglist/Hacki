@@ -17,8 +17,6 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
-      - run: cd submodules/flutter
-      - run: git remote set-url origin https://github.com/flutter/flutter.git
       - run: submodules/flutter/bin/flutter doctor
       - run: submodules/flutter/bin/flutter pub get
       - run: submodules/flutter/bin/dart format --set-exit-if-changed lib test integration_test

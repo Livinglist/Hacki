@@ -106,7 +106,7 @@ class CommentsCubit extends Cubit<CommentsState> {
 
     emit(
       state.copyWith(
-        status: CommentsStatus.loading,
+        status: CommentsStatus.inProgress,
         comments: <Comment>[],
         currentPage: 0,
       ),
@@ -150,7 +150,7 @@ class CommentsCubit extends Cubit<CommentsState> {
   Future<void> refresh() async {
     emit(
       state.copyWith(
-        status: CommentsStatus.loading,
+        status: CommentsStatus.inProgress,
       ),
     );
 
@@ -224,7 +224,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     void Function(Comment)? onCommentFetched,
     VoidCallback? onDone,
   }) {
-    if (comment == null && state.status == CommentsStatus.loading) return;
+    if (comment == null && state.status == CommentsStatus.inProgress) return;
 
     switch (state.fetchMode) {
       case FetchMode.lazy:
@@ -269,7 +269,7 @@ class CommentsCubit extends Cubit<CommentsState> {
         _streamSubscriptions[comment.id] = streamSubscription;
       case FetchMode.eager:
         if (_streamSubscription != null) {
-          emit(state.copyWith(status: CommentsStatus.loading));
+          emit(state.copyWith(status: CommentsStatus.inProgress));
           _streamSubscription
             ?..resume()
             ..onData(onCommentFetched);
@@ -279,7 +279,7 @@ class CommentsCubit extends Cubit<CommentsState> {
 
   Future<void> loadParentThread() async {
     HapticFeedbackUtil.light();
-    emit(state.copyWith(fetchParentStatus: CommentsStatus.loading));
+    emit(state.copyWith(fetchParentStatus: CommentsStatus.inProgress));
     final Item? parent =
         await _storiesRepository.fetchItem(id: state.item.parent);
 
@@ -301,7 +301,7 @@ class CommentsCubit extends Cubit<CommentsState> {
 
   Future<void> loadRootThread() async {
     HapticFeedbackUtil.light();
-    emit(state.copyWith(fetchRootStatus: CommentsStatus.loading));
+    emit(state.copyWith(fetchRootStatus: CommentsStatus.inProgress));
     final Story? parent = await _storiesRepository
         .fetchParentStory(id: state.item.id)
         .then(_toBuildableStory);

@@ -5,7 +5,7 @@ import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
-import 'package:hacki/models/item/item.dart';
+import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
@@ -35,11 +35,12 @@ class _ReplyBoxState extends State<ReplyBox> {
   bool expanded = false;
   double? expandedHeight;
 
-  static const double _collapsedHeight = 100;
+  static const double collapsedHeight = 140;
 
   @override
   Widget build(BuildContext context) {
-    expandedHeight ??= MediaQuery.of(context).size.height;
+    expandedHeight ??= MediaQuery.of(context).size.height -
+        MediaQuery.of(context).viewInsets.bottom;
     return BlocBuilder<EditCubit, EditState>(
       buildWhen: (EditState previous, EditState current) =>
           previous.showReplyBox != current.showReplyBox ||
@@ -49,7 +50,7 @@ class _ReplyBoxState extends State<ReplyBox> {
         return BlocBuilder<PostCubit, PostState>(
           builder: (BuildContext context, PostState postState) {
             final Item? replyingTo = editState.replyingTo;
-            final bool isLoading = postState.status == PostStatus.loading;
+            final bool isLoading = postState.status.isLoading;
 
             return Padding(
               padding: EdgeInsets.only(
@@ -60,7 +61,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                         : Dimens.zero,
               ),
               child: AnimatedContainer(
-                height: expanded ? expandedHeight : _collapsedHeight,
+                height: expanded ? expandedHeight : collapsedHeight,
                 duration: Durations.ms200,
                 decoration: BoxDecoration(
                   boxShadow: <BoxShadow>[
@@ -73,6 +74,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                 ),
                 child: Material(
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       if (context.read<SplitViewCubit>().state.enabled)
                         const Divider(
@@ -213,13 +215,21 @@ class _ReplyBoxState extends State<ReplyBox> {
                       ),
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: Dimens.pt16,
+                          padding: EdgeInsets.only(
+                            left: Dimens.pt16,
+                            right: Dimens.pt16,
+                            bottom: expanded
+                                // This padding here prevents keyboard
+                                // overlapping with TextField.
+                                ? MediaQuery.of(context).viewInsets.bottom +
+                                    Dimens.pt16
+                                : Dimens.zero,
                           ),
                           child: TextField(
-                            autofocus: true,
                             controller: widget.textEditingController,
-                            maxLines: 100,
+                            autofocus: true,
+                            expands: true,
+                            maxLines: null,
                             decoration: const InputDecoration(
                               alignLabelWithHint: true,
                               contentPadding: EdgeInsets.zero,

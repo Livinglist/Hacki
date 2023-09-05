@@ -25,7 +25,7 @@ class _PollViewState extends State<PollView> {
             const SizedBox(
               height: Dimens.pt24,
             ),
-            if (state.status == PollStatus.loading) ...<Widget>[
+            if (state.status == Status.inProgress) ...<Widget>[
               const LinearProgressIndicator(),
               const SizedBox(
                 height: Dimens.pt24,

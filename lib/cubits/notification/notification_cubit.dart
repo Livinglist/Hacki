@@ -100,7 +100,7 @@ class NotificationCubit extends Cubit<NotificationState> {
 
   void markAsRead(int id) {
     Future.doWhile(() {
-      if (state.status != NotificationStatus.loading) {
+      if (state.status != Status.inProgress) {
         if (state.unreadCommentsIds.contains(id)) {
           final List<int> updatedUnreadIds = <int>[...state.unreadCommentsIds]
             ..remove(id);
@@ -116,7 +116,7 @@ class NotificationCubit extends Cubit<NotificationState> {
 
   void markAllAsRead() {
     Future.doWhile(() {
-      if (state.status != NotificationStatus.loading) {
+      if (state.status != Status.inProgress) {
         emit(state.copyWith(unreadCommentsIds: <int>[]));
         _preferenceRepository.updateUnreadCommentsIds(<int>[]);
         return false;
@@ -131,7 +131,7 @@ class NotificationCubit extends Cubit<NotificationState> {
         _preferenceCubit.state.notificationEnabled) {
       emit(
         state.copyWith(
-          status: NotificationStatus.loading,
+          status: Status.inProgress,
         ),
       );
 
@@ -141,14 +141,14 @@ class NotificationCubit extends Cubit<NotificationState> {
     } else {
       emit(
         state.copyWith(
-          status: NotificationStatus.loaded,
+          status: Status.success,
         ),
       );
     }
   }
 
   Future<void> loadMore() async {
-    emit(state.copyWith(status: NotificationStatus.loading));
+    emit(state.copyWith(status: Status.inProgress));
 
     final int currentPage = state.currentPage + 1;
     final int lower = currentPage * _pageSize + state.offset;
@@ -169,7 +169,7 @@ class NotificationCubit extends Cubit<NotificationState> {
 
     emit(
       state.copyWith(
-        status: NotificationStatus.loaded,
+        status: Status.success,
         currentPage: currentPage,
       ),
     );
@@ -237,7 +237,7 @@ class NotificationCubit extends Cubit<NotificationState> {
       }
     }).whenComplete(
       () => emit(
-        state.copyWith(status: NotificationStatus.loaded),
+        state.copyWith(status: Status.success),
       ),
     );
   }

@@ -1,12 +1,5 @@
 part of 'fav_cubit.dart';
 
-enum FavStatus {
-  init,
-  loading,
-  loaded,
-  failure,
-}
-
 class FavState extends Equatable {
   const FavState({
     required this.favIds,
@@ -18,18 +11,18 @@ class FavState extends Equatable {
   FavState.init()
       : favIds = <int>[],
         favItems = <Item>[],
-        status = FavStatus.init,
+        status = Status.idle,
         currentPage = 0;
 
   final List<int> favIds;
   final List<Item> favItems;
-  final FavStatus status;
+  final Status status;
   final int currentPage;
 
   FavState copyWith({
     List<int>? favIds,
     List<Item>? favItems,
-    FavStatus? status,
+    Status? status,
     int? currentPage,
   }) {
     return FavState(

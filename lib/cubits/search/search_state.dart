@@ -1,7 +1,7 @@
 part of 'search_cubit.dart';
 
 enum SearchStatus {
-  initial,
+  idle,
   loading,
   loadingMore,
   loaded,
@@ -15,7 +15,7 @@ class SearchState extends Equatable {
   });
 
   SearchState.init()
-      : status = SearchStatus.initial,
+      : status = SearchStatus.idle,
         results = <Item>[],
         params = SearchParams.init();
 

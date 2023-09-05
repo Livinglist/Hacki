@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/post_repository.dart';
 
 part 'submit_state.dart';
@@ -25,7 +26,7 @@ class SubmitCubit extends Cubit<SubmitState> {
   }
 
   void onSubmitTapped() {
-    emit(state.copyWith(status: SubmitStatus.submitting));
+    emit(state.copyWith(status: Status.inProgress));
 
     if (state.title?.isNotEmpty ?? false) {
       _postRepository
@@ -35,9 +36,9 @@ class SubmitCubit extends Cubit<SubmitState> {
         text: state.text,
       )
           .then((bool successful) {
-        emit(state.copyWith(status: SubmitStatus.submitted));
+        emit(state.copyWith(status: Status.success));
       }).onError((Object? error, StackTrace stackTrace) {
-        emit(state.copyWith(status: SubmitStatus.failure));
+        emit(state.copyWith(status: Status.failure));
       });
     }
   }

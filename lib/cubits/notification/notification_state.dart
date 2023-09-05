@@ -1,12 +1,5 @@
 part of 'notification_cubit.dart';
 
-enum NotificationStatus {
-  initial,
-  loading,
-  loaded,
-  failure,
-}
-
 class NotificationState extends Equatable {
   const NotificationState({
     required this.comments,
@@ -23,14 +16,14 @@ class NotificationState extends Equatable {
         allCommentsIds = <int>[],
         currentPage = 0,
         offset = 0,
-        status = NotificationStatus.initial;
+        status = Status.idle;
 
   final List<Comment> comments;
   final List<int> allCommentsIds;
   final List<int> unreadCommentsIds;
   final int currentPage;
   final int offset;
-  final NotificationStatus status;
+  final Status status;
 
   NotificationState copyWith({
     List<Comment>? comments,
@@ -38,7 +31,7 @@ class NotificationState extends Equatable {
     List<int>? unreadCommentsIds,
     int? currentPage,
     int? offset,
-    NotificationStatus? status,
+    Status? status,
   }) {
     return NotificationState(
       comments: comments ?? this.comments,

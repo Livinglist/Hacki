@@ -1,12 +1,5 @@
 part of 'poll_cubit.dart';
 
-enum PollStatus {
-  initial,
-  loading,
-  loaded,
-  failure,
-}
-
 class PollState extends Equatable {
   const PollState({
     required this.totalVotes,
@@ -19,18 +12,18 @@ class PollState extends Equatable {
       : totalVotes = 0,
         selections = <int>{},
         pollOptions = <PollOption>[],
-        status = PollStatus.initial;
+        status = Status.idle;
 
   final int totalVotes;
   final Set<int> selections;
   final List<PollOption> pollOptions;
-  final PollStatus status;
+  final Status status;
 
   PollState copyWith({
     int? totalVotes,
     Set<int>? selections,
     List<PollOption>? pollOptions,
-    PollStatus? status,
+    Status? status,
   }) {
     return PollState(
       totalVotes: totalVotes ?? this.totalVotes,

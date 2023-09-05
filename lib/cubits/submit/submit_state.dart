@@ -1,12 +1,5 @@
 part of 'submit_cubit.dart';
 
-enum SubmitStatus {
-  initial,
-  submitting,
-  submitted,
-  failure,
-}
-
 class SubmitState extends Equatable {
   const SubmitState({
     required this.title,
@@ -19,18 +12,18 @@ class SubmitState extends Equatable {
       : title = null,
         url = null,
         text = null,
-        status = SubmitStatus.initial;
+        status = Status.idle;
 
   final String? title;
   final String? url;
   final String? text;
-  final SubmitStatus status;
+  final Status status;
 
   SubmitState copyWith({
     String? title,
     String? url,
     String? text,
-    SubmitStatus? status,
+    Status? status,
   }) {
     return SubmitState(
       title: title ?? this.title,

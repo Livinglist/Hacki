@@ -52,14 +52,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           state.copyWith(
             isLoggedIn: true,
             user: user,
-            status: AuthStatus.loaded,
+            status: Status.success,
           ),
         );
       } else {
         emit(
           state.copyWith(
             isLoggedIn: false,
-            status: AuthStatus.loaded,
+            status: Status.success,
           ),
         );
       }
@@ -81,7 +81,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> onLogin(AuthLogin event, Emitter<AuthState> emit) async {
-    emit(state.copyWith(status: AuthStatus.loading));
+    emit(state.copyWith(status: Status.inProgress));
 
     final bool successful = await _authRepository.login(
       username: event.username,
@@ -94,11 +94,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         state.copyWith(
           user: user ?? User.emptyWithId(event.username),
           isLoggedIn: true,
-          status: AuthStatus.loaded,
+          status: Status.success,
         ),
       );
     } else {
-      emit(state.copyWith(status: AuthStatus.failure));
+      emit(state.copyWith(status: Status.failure));
     }
   }
 

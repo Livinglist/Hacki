@@ -79,7 +79,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       const StoriesState.init().copyWith(
         isOfflineReading: hasCachedStories &&
             // Only go into offline mode in the next session.
-            state.downloadStatus == StoriesDownloadStatus.initial,
+            state.downloadStatus == StoriesDownloadStatus.idle,
         currentPageSize: pageSize,
         downloadStatus: state.downloadStatus,
         storiesDownloaded: state.storiesDownloaded,
@@ -133,12 +133,12 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     StoriesRefresh event,
     Emitter<StoriesState> emit,
   ) async {
-    if (state.statusByType[event.type] == StoriesStatus.loading) return;
+    if (state.statusByType[event.type] == Status.inProgress) return;
 
     emit(
       state.copyWithStatusUpdated(
         type: event.type,
-        to: StoriesStatus.loading,
+        to: Status.inProgress,
       ),
     );
 
@@ -146,7 +146,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       emit(
         state.copyWithStatusUpdated(
           type: event.type,
-          to: StoriesStatus.loaded,
+          to: Status.success,
         ),
       );
     } else {
@@ -159,7 +159,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     emit(
       state.copyWithStatusUpdated(
         type: event.type,
-        to: StoriesStatus.loading,
+        to: Status.inProgress,
       ),
     );
 
@@ -218,7 +218,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       emit(
         state.copyWithStatusUpdated(
           type: event.type,
-          to: StoriesStatus.loaded,
+          to: Status.success,
         ),
       );
     }
@@ -245,7 +245,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
 
   void onStoriesLoaded(StoriesLoaded event, Emitter<StoriesState> emit) {
     emit(
-      state.copyWithStatusUpdated(type: event.type, to: StoriesStatus.loaded),
+      state.copyWithStatusUpdated(type: event.type, to: Status.success),
     );
   }
 

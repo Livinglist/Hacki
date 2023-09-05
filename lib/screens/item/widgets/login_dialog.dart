@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/extensions/extensions.dart';
+import 'package:hacki/models/status.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
@@ -32,7 +33,7 @@ class _LoginDialogState extends State<LoginDialog> {
       builder: (BuildContext context, AuthState state) {
         return SimpleDialog(
           children: <Widget>[
-            if (state.status == AuthStatus.loading)
+            if (state.status.isLoading)
               const SizedBox(
                 height: Dimens.pt36,
                 width: Dimens.pt36,
@@ -82,7 +83,7 @@ class _LoginDialogState extends State<LoginDialog> {
               const SizedBox(
                 height: Dimens.pt16,
               ),
-              if (state.status == AuthStatus.failure)
+              if (state.status == Status.failure)
                 Padding(
                   padding: const EdgeInsets.only(
                     left: Dimens.pt18,

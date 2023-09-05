@@ -27,7 +27,7 @@ class PollCubit extends Cubit<PollState> {
       emit(PollState.init());
     }
 
-    emit(state.copyWith(status: PollStatus.loading));
+    emit(state.copyWith(status: Status.inProgress));
 
     List<int> pollOptionsIds = _story.parts;
 
@@ -42,7 +42,7 @@ class PollCubit extends Cubit<PollState> {
 
     // If pollOptionsIds is still empty, exit loading state.
     if (pollOptionsIds.isEmpty) {
-      emit(state.copyWith(status: PollStatus.loaded));
+      emit(state.copyWith(status: Status.success));
       return;
     }
 
@@ -72,7 +72,7 @@ class PollCubit extends Cubit<PollState> {
         );
       }
 
-      emit(state.copyWith(status: PollStatus.loaded));
+      emit(state.copyWith(status: Status.success));
     }
   }
 

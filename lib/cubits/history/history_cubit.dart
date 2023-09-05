@@ -54,7 +54,7 @@ class HistoryCubit extends Cubit<HistoryState> {
   }
 
   void loadMore() {
-    emit(state.copyWith(status: HistoryStatus.loading));
+    emit(state.copyWith(status: Status.inProgress));
     final int currentPage = state.currentPage;
     final int len = state.submittedIds.length;
     emit(state.copyWith(currentPage: currentPage + 1));
@@ -75,10 +75,10 @@ class HistoryCubit extends Cubit<HistoryState> {
           )
           .listen(_onItemLoaded)
           .onDone(() {
-        emit(state.copyWith(status: HistoryStatus.loaded));
+        emit(state.copyWith(status: Status.success));
       });
     } else {
-      emit(state.copyWith(status: HistoryStatus.loaded));
+      emit(state.copyWith(status: Status.success));
     }
   }
 
@@ -86,7 +86,7 @@ class HistoryCubit extends Cubit<HistoryState> {
     final String username = _authBloc.state.username;
     emit(
       state.copyWith(
-        status: HistoryStatus.loading,
+        status: Status.inProgress,
         currentPage: 0,
         submittedIds: <int>[],
         submittedItems: <Item>[],
@@ -107,7 +107,7 @@ class HistoryCubit extends Cubit<HistoryState> {
             )
             .listen(_onItemLoaded)
             .onDone(() {
-          emit(state.copyWith(status: HistoryStatus.loaded));
+          emit(state.copyWith(status: Status.success));
         });
       }
     });

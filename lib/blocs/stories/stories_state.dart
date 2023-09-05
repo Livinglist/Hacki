@@ -1,13 +1,7 @@
 part of 'stories_bloc.dart';
 
-enum StoriesStatus {
-  initial,
-  loading,
-  loaded,
-}
-
 enum StoriesDownloadStatus {
-  initial,
+  idle,
   downloading,
   finished,
   failure,
@@ -43,12 +37,12 @@ class StoriesState extends Equatable {
       StoryType.ask: <int>[],
       StoryType.show: <int>[],
     },
-    this.statusByType = const <StoryType, StoriesStatus>{
-      StoryType.top: StoriesStatus.initial,
-      StoryType.best: StoriesStatus.initial,
-      StoryType.latest: StoriesStatus.initial,
-      StoryType.ask: StoriesStatus.initial,
-      StoryType.show: StoriesStatus.initial,
+    this.statusByType = const <StoryType, Status>{
+      StoryType.top: Status.idle,
+      StoryType.best: Status.idle,
+      StoryType.latest: Status.idle,
+      StoryType.ask: Status.idle,
+      StoryType.show: Status.idle,
     },
     this.currentPageByType = const <StoryType, int>{
       StoryType.top: 0,
@@ -58,7 +52,7 @@ class StoriesState extends Equatable {
       StoryType.show: 0,
     },
   })  : isOfflineReading = false,
-        downloadStatus = StoriesDownloadStatus.initial,
+        downloadStatus = StoriesDownloadStatus.idle,
         currentPageSize = 0,
         readStoriesIds = const <int>{},
         storiesDownloaded = 0,
@@ -66,7 +60,7 @@ class StoriesState extends Equatable {
 
   final Map<StoryType, List<Story>> storiesByType;
   final Map<StoryType, List<int>> storyIdsByType;
-  final Map<StoryType, StoriesStatus> statusByType;
+  final Map<StoryType, Status> statusByType;
   final Map<StoryType, int> currentPageByType;
   final Set<int> readStoriesIds;
   final StoriesDownloadStatus downloadStatus;
@@ -78,7 +72,7 @@ class StoriesState extends Equatable {
   StoriesState copyWith({
     Map<StoryType, List<Story>>? storiesByType,
     Map<StoryType, List<int>>? storyIdsByType,
-    Map<StoryType, StoriesStatus>? statusByType,
+    Map<StoryType, Status>? statusByType,
     Map<StoryType, int>? currentPageByType,
     Set<int>? readStoriesIds,
     StoriesDownloadStatus? downloadStatus,
@@ -133,10 +127,10 @@ class StoriesState extends Equatable {
 
   StoriesState copyWithStatusUpdated({
     required StoryType type,
-    required StoriesStatus to,
+    required Status to,
   }) {
-    final Map<StoryType, StoriesStatus> newMap =
-        Map<StoryType, StoriesStatus>.from(statusByType);
+    final Map<StoryType, Status> newMap =
+        Map<StoryType, Status>.from(statusByType);
     newMap[type] = to;
     return copyWith(
       statusByType: newMap,
@@ -162,9 +156,9 @@ class StoriesState extends Equatable {
     final Map<StoryType, List<int>> newStoryIdsMap =
         Map<StoryType, List<int>>.from(storyIdsByType);
     newStoryIdsMap[type] = <int>[];
-    final Map<StoryType, StoriesStatus> newStatusMap =
-        Map<StoryType, StoriesStatus>.from(statusByType);
-    newStatusMap[type] = StoriesStatus.loading;
+    final Map<StoryType, Status> newStatusMap =
+        Map<StoryType, Status>.from(statusByType);
+    newStatusMap[type] = Status.inProgress;
     final Map<StoryType, int> newCurrentPageMap =
         Map<StoryType, int>.from(currentPageByType);
     newCurrentPageMap[type] = 0;

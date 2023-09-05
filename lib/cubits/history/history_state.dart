@@ -1,12 +1,5 @@
 part of 'history_cubit.dart';
 
-enum HistoryStatus {
-  init,
-  loading,
-  loaded,
-  failure,
-}
-
 class HistoryState extends Equatable {
   const HistoryState({
     required this.submittedIds,
@@ -18,18 +11,18 @@ class HistoryState extends Equatable {
   HistoryState.init()
       : submittedIds = <int>[],
         submittedItems = <Item>[],
-        status = HistoryStatus.init,
+        status = Status.idle,
         currentPage = 0;
 
   final List<int> submittedIds;
   final List<Item> submittedItems;
-  final HistoryStatus status;
+  final Status status;
   final int currentPage;
 
   HistoryState copyWith({
     List<int>? submittedIds,
     List<Item>? submittedItems,
-    HistoryStatus? status,
+    Status? status,
     int? currentPage,
   }) {
     return HistoryState(

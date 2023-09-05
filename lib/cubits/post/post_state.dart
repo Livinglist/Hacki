@@ -1,20 +1,13 @@
 part of 'post_cubit.dart';
 
-enum PostStatus {
-  init,
-  loading,
-  successful,
-  failure,
-}
-
 class PostState extends Equatable {
   const PostState({required this.status});
 
-  const PostState.init() : status = PostStatus.init;
+  const PostState.init() : status = Status.idle;
 
-  final PostStatus status;
+  final Status status;
 
-  PostState copyWith({PostStatus? status}) {
+  PostState copyWith({Status? status}) {
     return PostState(
       status: status ?? this.status,
     );

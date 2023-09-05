@@ -53,7 +53,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               previous.status != current.status,
           listener:
               (BuildContext context, NotificationState notificationState) {
-            if (notificationState.status == NotificationStatus.loaded) {
+            if (notificationState.status == Status.success) {
               refreshControllerNotification
                 ..refreshCompleted()
                 ..loadComplete();
@@ -71,7 +71,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                         BuildContext context,
                         HistoryState historyState,
                       ) {
-                        if (historyState.status == HistoryStatus.loaded) {
+                        if (historyState.status == Status.success) {
                           refreshControllerHistory
                             ..refreshCompleted()
                             ..loadComplete();
@@ -83,7 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       ) {
                         if ((!authState.isLoggedIn ||
                                 historyState.submittedItems.isEmpty) &&
-                            historyState.status != HistoryStatus.loading) {
+                            historyState.status != Status.inProgress) {
                           return const CenteredMessageView(
                             content: 'Your past comments and stories will '
                                 'show up here.',
@@ -126,7 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                     visible: pageType == PageType.fav,
                     child: BlocConsumer<FavCubit, FavState>(
                       listener: (BuildContext context, FavState favState) {
-                        if (favState.status == FavStatus.loaded) {
+                        if (favState.status == Status.success) {
                           refreshControllerFav
                             ..refreshCompleted()
                             ..loadComplete();
@@ -134,7 +134,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       },
                       builder: (BuildContext context, FavState favState) {
                         if (favState.favItems.isEmpty &&
-                            favState.status != FavStatus.loading) {
+                            favState.status != Status.inProgress) {
                           return const CenteredMessageView(
                             content: 'Your favorite stories will show up here.'
                                 '\nThey will be synced to your Hacker '
