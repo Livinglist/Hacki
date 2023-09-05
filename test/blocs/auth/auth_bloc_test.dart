@@ -85,7 +85,7 @@ void main() {
       },
       expect: () => <AuthState>[
         const AuthState.init().copyWith(
-          status: AuthStatus.loaded,
+          status: Status.success,
         ),
       ],
       verify: (_) {
@@ -125,25 +125,25 @@ void main() {
         const AuthState(
           user: User.empty(),
           isLoggedIn: false,
-          status: AuthStatus.loaded,
+          status: Status.success,
           agreedToEULA: false,
         ),
         const AuthState(
           user: User.empty(),
           isLoggedIn: false,
-          status: AuthStatus.loaded,
+          status: Status.success,
           agreedToEULA: true,
         ),
         const AuthState(
           user: User.empty(),
           isLoggedIn: false,
-          status: AuthStatus.loading,
+          status: Status.inProgress,
           agreedToEULA: true,
         ),
         const AuthState(
           user: tUser,
           isLoggedIn: true,
-          status: AuthStatus.loaded,
+          status: Status.success,
           agreedToEULA: true,
         ),
       ],

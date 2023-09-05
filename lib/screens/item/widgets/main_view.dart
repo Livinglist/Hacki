@@ -159,7 +159,7 @@ class MainView extends StatelessWidget {
                 prev.status != current.status,
             builder: (BuildContext context, CommentsState state) {
               return AnimatedOpacity(
-                opacity: state.status == CommentsStatus.loading
+                opacity: state.status == CommentsStatus.inProgress
                     ? NumSwitch.on
                     : NumSwitch.off,
                 duration: const Duration(
@@ -417,27 +417,28 @@ class _ParentItemSection extends StatelessWidget {
                     width: _viewParentButtonWidth,
                     child: TextButton(
                       onPressed: context.read<CommentsCubit>().loadParentThread,
-                      child: state.fetchParentStatus == CommentsStatus.loading
-                          ? const SizedBox(
-                              height: Dimens.pt12,
-                              width: Dimens.pt12,
-                              child: CustomCircularProgressIndicator(
-                                strokeWidth: Dimens.pt2,
-                              ),
-                            )
-                          : const Text(
-                              'View parent',
-                              style: TextStyle(
-                                fontSize: TextDimens.pt13,
-                              ),
-                            ),
+                      child:
+                          state.fetchParentStatus == CommentsStatus.inProgress
+                              ? const SizedBox(
+                                  height: Dimens.pt12,
+                                  width: Dimens.pt12,
+                                  child: CustomCircularProgressIndicator(
+                                    strokeWidth: Dimens.pt2,
+                                  ),
+                                )
+                              : const Text(
+                                  'View parent',
+                                  style: TextStyle(
+                                    fontSize: TextDimens.pt13,
+                                  ),
+                                ),
                     ),
                   ),
                   SizedBox(
                     width: _viewRootButtonWidth,
                     child: TextButton(
                       onPressed: context.read<CommentsCubit>().loadRootThread,
-                      child: state.fetchRootStatus == CommentsStatus.loading
+                      child: state.fetchRootStatus == CommentsStatus.inProgress
                           ? const SizedBox(
                               height: Dimens.pt12,
                               width: Dimens.pt12,

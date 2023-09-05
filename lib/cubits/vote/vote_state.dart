@@ -6,7 +6,7 @@ enum Vote {
 }
 
 enum VoteStatus {
-  initial,
+  idle,
   canceled,
   submitted,
   failureBeHumble,
@@ -24,7 +24,7 @@ class VoteState extends Equatable {
 
   const VoteState.init({required this.item})
       : vote = null,
-        status = VoteStatus.initial;
+        status = VoteStatus.idle;
 
   /// Null means user has not voted,
   /// True means user voted up,

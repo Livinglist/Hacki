@@ -213,7 +213,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
           listeners: <BlocListener<dynamic, dynamic>>[
             BlocListener<PostCubit, PostState>(
               listener: (BuildContext context, PostState postState) {
-                if (postState.status == PostStatus.successful) {
+                if (postState.status == Status.success) {
                   Navigator.popUntil(
                     context,
                     (Route<dynamic> route) =>
@@ -228,7 +228,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                   showSnackBar(content: msg);
                   context.read<EditCubit>().onReplySubmittedSuccessfully();
                   context.read<PostCubit>().reset();
-                } else if (postState.status == PostStatus.failure) {
+                } else if (postState.status == Status.failure) {
                   Navigator.popUntil(
                     context,
                     (Route<dynamic> route) =>
@@ -355,6 +355,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      enableDrag: false,
       builder: (BuildContext context) {
         return Column(
           mainAxisSize: MainAxisSize.min,

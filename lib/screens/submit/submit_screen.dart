@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
+import 'package:hacki/models/models.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 
@@ -43,13 +44,13 @@ class _SubmitScreenState extends State<SubmitScreen> {
       listenWhen: (SubmitState previous, SubmitState current) =>
           previous.status != current.status,
       listener: (BuildContext context, SubmitState state) {
-        if (state.status == SubmitStatus.submitted) {
+        if (state.status == Status.success) {
           Navigator.pop(context);
           HapticFeedbackUtil.light();
           showSnackBar(
             content: 'Post submitted successfully.',
           );
-        } else if (state.status == SubmitStatus.failure) {
+        } else if (state.status == Status.failure) {
           showErrorSnackBar();
         }
       },
@@ -95,7 +96,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
               'Submit',
             ),
             actions: <Widget>[
-              if (state.status == SubmitStatus.submitting)
+              if (state.status == Status.inProgress)
                 const Padding(
                   padding: EdgeInsets.symmetric(
                     vertical: Dimens.pt18,

@@ -15,16 +15,16 @@ class UserCubit extends Cubit<UserState> {
   final StoriesRepository _storiesRepository;
 
   void init({required String userId}) {
-    emit(state.copyWith(status: UserStatus.loading));
+    emit(state.copyWith(status: Status.inProgress));
     _storiesRepository.fetchUser(id: userId).then((User? user) {
       emit(
         state.copyWith(
           user: user ?? User.emptyWithId(userId),
-          status: UserStatus.loaded,
+          status: Status.success,
         ),
       );
     }).onError((_, __) {
-      emit(state.copyWith(status: UserStatus.failure));
+      emit(state.copyWith(status: Status.failure));
       return;
     });
   }

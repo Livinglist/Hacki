@@ -49,7 +49,7 @@ class _StoriesListViewState extends State<StoriesListView> {
               previous.statusByType[storyType] !=
               current.statusByType[storyType],
           listener: (BuildContext context, StoriesState state) {
-            if (state.statusByType[storyType] == StoriesStatus.loaded) {
+            if (state.statusByType[storyType] == Status.success) {
               refreshController
                 ..refreshCompleted(resetFooterState: true)
                 ..loadComplete();

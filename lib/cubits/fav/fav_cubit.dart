@@ -51,7 +51,7 @@ class FavCubit extends Cubit<FavState> {
               .onDone(() {
             emit(
               state.copyWith(
-                status: FavStatus.loaded,
+                status: Status.success,
               ),
             );
           });
@@ -107,7 +107,7 @@ class FavCubit extends Cubit<FavState> {
   }
 
   void loadMore() {
-    emit(state.copyWith(status: FavStatus.loading));
+    emit(state.copyWith(status: Status.inProgress));
     final int currentPage = state.currentPage;
     final int len = state.favIds.length;
     emit(state.copyWith(currentPage: currentPage + 1));
@@ -128,10 +128,10 @@ class FavCubit extends Cubit<FavState> {
           )
           .listen(_onItemLoaded)
           .onDone(() {
-        emit(state.copyWith(status: FavStatus.loaded));
+        emit(state.copyWith(status: Status.success));
       });
     } else {
-      emit(state.copyWith(status: FavStatus.loaded));
+      emit(state.copyWith(status: Status.success));
     }
   }
 
@@ -140,7 +140,7 @@ class FavCubit extends Cubit<FavState> {
 
     emit(
       state.copyWith(
-        status: FavStatus.loading,
+        status: Status.inProgress,
         currentPage: 0,
         favItems: <Item>[],
         favIds: <int>[],
@@ -155,7 +155,7 @@ class FavCubit extends Cubit<FavState> {
           )
           .listen(_onItemLoaded)
           .onDone(() {
-        emit(state.copyWith(status: FavStatus.loaded));
+        emit(state.copyWith(status: Status.success));
       });
     });
   }

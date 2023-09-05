@@ -1,12 +1,5 @@
 part of 'user_cubit.dart';
 
-enum UserStatus {
-  initial,
-  loading,
-  loaded,
-  failure,
-}
-
 class UserState extends Equatable {
   const UserState({
     required this.user,
@@ -15,14 +8,14 @@ class UserState extends Equatable {
 
   const UserState.init()
       : user = const User.empty(),
-        status = UserStatus.initial;
+        status = Status.idle;
 
   final User user;
-  final UserStatus status;
+  final Status status;
 
   UserState copyWith({
     User? user,
-    UserStatus? status,
+    Status? status,
   }) {
     return UserState(
       user: user ?? this.user,

@@ -1,11 +1,11 @@
 part of 'comments_cubit.dart';
 
 enum CommentsStatus {
-  init,
-  loading,
+  idle,
+  inProgress,
   loaded,
   allLoaded,
-  failure,
+  error,
 }
 
 class CommentsState extends Equatable {
@@ -28,9 +28,9 @@ class CommentsState extends Equatable {
     required this.fetchMode,
     required this.order,
   })  : comments = <Comment>[],
-        status = CommentsStatus.init,
-        fetchParentStatus = CommentsStatus.init,
-        fetchRootStatus = CommentsStatus.init,
+        status = CommentsStatus.idle,
+        fetchParentStatus = CommentsStatus.idle,
+        fetchRootStatus = CommentsStatus.idle,
         onlyShowTargetComment = false,
         currentPage = 0;
 

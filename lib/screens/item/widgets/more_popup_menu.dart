@@ -81,7 +81,7 @@ class MorePopupMenu extends StatelessWidget {
                     child: BlocBuilder<UserCubit, UserState>(
                       builder: (BuildContext context, UserState state) {
                         return Semantics(
-                          excludeSemantics: state.status == UserStatus.loading,
+                          excludeSemantics: state.status == Status.inProgress,
                           child: ListTile(
                             leading: const Icon(
                               Icons.account_circle,
