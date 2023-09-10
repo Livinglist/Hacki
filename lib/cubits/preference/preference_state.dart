@@ -87,6 +87,9 @@ class PreferenceState extends Equatable {
     return tabs;
   }
 
+  StoryMarkingMode get storyMarkingMode => StoryMarkingMode.values
+      .elementAt(preferences.singleWhereType<StoryMarkingModePreference>().val);
+
   FetchMode get fetchMode => FetchMode.values
       .elementAt(preferences.singleWhereType<FetchModePreference>().val);
 

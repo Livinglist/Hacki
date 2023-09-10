@@ -221,6 +221,51 @@ class _SettingsState extends State<Settings> {
                       },
                       activeColor: Palette.orange,
                     ),
+                    if (preference
+                        is MarkReadStoriesModePreference) ...<Widget>[
+                      ListTile(
+                        title: Text(
+                          StoryMarkingModePreference().title,
+                          style: TextStyle(
+                            color: !preferenceState.markReadStoriesEnabled
+                                ? Palette.grey
+                                : null,
+                          ),
+                        ),
+                        trailing: DropdownButton<StoryMarkingMode>(
+                          value: preferenceState.storyMarkingMode,
+                          underline: const SizedBox.shrink(),
+                          items: StoryMarkingMode.values
+                              .map(
+                                (StoryMarkingMode val) =>
+                                    DropdownMenuItem<StoryMarkingMode>(
+                                  value: val,
+                                  child: Text(
+                                    val.label,
+                                    style: TextStyle(
+                                      fontSize: TextDimens.pt16,
+                                      color: !preferenceState
+                                              .markReadStoriesEnabled
+                                          ? Palette.grey
+                                          : null,
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (StoryMarkingMode? storyMarkingMode) {
+                            if (storyMarkingMode != null) {
+                              HapticFeedbackUtil.selection();
+                              context.read<PreferenceCubit>().update(
+                                    StoryMarkingModePreference(),
+                                    to: storyMarkingMode.index,
+                                  );
+                            }
+                          },
+                        ),
+                      ),
+                      const Divider(),
+                    ],
                     if (preference is StoryUrlModePreference) const Divider(),
                   ],
                   ListTile(

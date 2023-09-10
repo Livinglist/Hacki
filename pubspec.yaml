@@ -74,6 +74,7 @@ dependencies:
     path: components/synced_shared_preferences
   universal_platform: ^1.0.0+1
   url_launcher: ^6.1.9
+  visibility_detector: ^0.4.0+2
   wakelock: ^0.6.2
   webview_flutter: ^4.0.2
   workmanager: ^0.5.1
