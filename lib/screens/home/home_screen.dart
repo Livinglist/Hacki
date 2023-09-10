@@ -209,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  void onStoryTapped(Story story, {bool isPin = false}) {
+  void onStoryTapped(Story story) {
     final bool useReader = context.read<PreferenceCubit>().state.readerEnabled;
     final bool offlineReading =
         context.read<StoriesBloc>().state.isOfflineReading;
