@@ -237,7 +237,7 @@ class _HomeScreenState extends State<HomeScreen>
       );
     }
 
-    if (storyMarkingMode == StoryMarkingMode.tap) {
+    if (storyMarkingMode.shouldDetectTapping) {
       context.read<StoriesBloc>().add(StoryRead(story: story));
     }
 

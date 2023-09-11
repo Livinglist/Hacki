@@ -15,4 +15,7 @@ enum StoryMarkingMode {
   bool get shouldDetectScrollingPast =>
       this == StoryMarkingMode.scrollPast ||
       this == StoryMarkingMode.scrollPastOrTap;
+
+  bool get shouldDetectTapping =>
+      this == StoryMarkingMode.tap || this == StoryMarkingMode.scrollPastOrTap;
 }
