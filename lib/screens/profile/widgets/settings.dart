@@ -41,7 +41,7 @@ class Settings extends StatefulWidget {
 
   final AuthState authState;
   final String magicWord;
-  final PageType pageType;
+  final PageType? pageType;
 
   @override
   State<Settings> createState() => _SettingsState();

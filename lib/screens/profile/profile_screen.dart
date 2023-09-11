@@ -33,7 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   final ScrollController scrollController = ScrollController();
   final Throttle throttle = Throttle(delay: Durations.twoSeconds);
 
-  PageType pageType = PageType.notification;
+  PageType? pageType;
 
   @override
   void dispose() {
@@ -47,6 +47,9 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   @override
   Widget build(BuildContext context) {
+    pageType ??= context.read<AuthBloc>().state.isLoggedIn
+        ? PageType.notification
+        : PageType.fav;
     super.build(context);
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (BuildContext context, AuthState authState) {
