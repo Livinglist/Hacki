@@ -1,8 +1,8 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/context_extension.dart';
@@ -16,8 +16,8 @@ import 'package:visibility_detector/visibility_detector.dart';
 
 class ItemsListView<T extends Item> extends StatelessWidget {
   const ItemsListView({
-    required this.showWebPreview,
-    required this.showMetadata,
+    required this.showWebPreviewOnStoryTile,
+    required this.showMetadataOnStoryTile,
     required this.showUrl,
     required this.items,
     required this.onTap,
@@ -36,6 +36,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.header,
     this.onMoreTapped,
     this.scrollController,
+    this.itemBuilder,
   })  : assert(
           !isHomeScreen || (isHomeScreen && onPinned != null),
           'onPinned cannot be null when isHomeScreen is true',
@@ -47,8 +48,8 @@ class ItemsListView<T extends Item> extends StatelessWidget {
 
   final bool useCommentTile;
   final bool showCommentBy;
-  final bool showWebPreview;
-  final bool showMetadata;
+  final bool showWebPreviewOnStoryTile;
+  final bool showMetadataOnStoryTile;
   final bool showUrl;
   final bool enablePullDown;
   final bool markReadStories;
@@ -69,6 +70,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   final VoidCallback? onLoadMore;
   final ValueChanged<Story>? onPinned;
   final void Function(T) onTap;
+  final Widget Function(Widget child, T item)? itemBuilder;
 
   /// Used for home screen.
   final void Function(Story, Rect?)? onMoreTapped;
@@ -96,72 +98,40 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                     ? () => onMoreTapped?.call(e, context.rect)
                     : null,
                 child: FadeIn(
-                  child: Slidable(
-                    enabled: !swipeGestureEnabled,
-                    startActionPane: isHomeScreen
-                        ? ActionPane(
-                            motion: const BehindMotion(),
-                            children: <Widget>[
-                              SlidableAction(
-                                onPressed: (_) {
-                                  HapticFeedbackUtil.light();
-                                  onPinned?.call(e);
-                                },
-                                backgroundColor: Palette.orange,
-                                foregroundColor: Palette.white,
-                                icon: showWebPreview
-                                    ? Icons.push_pin_outlined
-                                    : null,
-                                label: showWebPreview ? null : 'Pin to top',
-                              ),
-                              SlidableAction(
-                                onPressed: (_) =>
-                                    onMoreTapped?.call(e, context.rect),
-                                backgroundColor: Palette.orange,
-                                foregroundColor: Palette.white,
-                                icon: showWebPreview ? Icons.more_horiz : null,
-                                label: showWebPreview ? null : 'More',
-                              ),
-                            ],
-                          )
-                        : null,
-                    child: OptionalWrapper(
-                      enabled: context
-                              .read<PreferenceCubit>()
-                              .state
-                              .storyMarkingMode
-                              .shouldDetectScrollingPast &&
-                          isHomeScreen,
-                      wrapper: (Widget child) => VisibilityDetector(
-                        key: ValueKey<int>(e.id),
-                        onVisibilityChanged: (VisibilityInfo info) {
-                          if (scrollController?.position.userScrollDirection ==
-                                  ScrollDirection.reverse &&
-                              info.visibleFraction == 0) {
-                            context
-                                .read<StoriesBloc>()
-                                .add(StoryRead(story: e));
-                          }
-                        },
-                        child: child,
-                      ),
-                      child: StoryTile(
-                        key: ValueKey<int>(e.id),
-                        story: e,
-                        onTap: () => onTap(e),
-                        showWebPreview: showWebPreview,
-                        showMetadata: showMetadata,
-                        showUrl: showUrl,
-                        hasRead: markReadStories && hasRead,
-                        simpleTileFontSize: useConsistentFontSize
-                            ? TextDimens.pt14
-                            : TextDimens.pt16,
-                      ),
+                  child: OptionalWrapper(
+                    enabled: context
+                            .read<PreferenceCubit>()
+                            .state
+                            .storyMarkingMode
+                            .shouldDetectScrollingPast &&
+                        isHomeScreen,
+                    wrapper: (Widget child) => VisibilityDetector(
+                      key: ValueKey<int>(e.id),
+                      onVisibilityChanged: (VisibilityInfo info) {
+                        if (scrollController?.position.userScrollDirection ==
+                                ScrollDirection.reverse &&
+                            info.visibleFraction == 0) {
+                          context.read<StoriesBloc>().add(StoryRead(story: e));
+                        }
+                      },
+                      child: child,
+                    ),
+                    child: StoryTile(
+                      key: ValueKey<int>(e.id),
+                      story: e,
+                      onTap: () => onTap(e),
+                      showWebPreview: showWebPreviewOnStoryTile,
+                      showMetadata: showMetadataOnStoryTile,
+                      showUrl: showUrl,
+                      hasRead: markReadStories && hasRead,
+                      simpleTileFontSize: useConsistentFontSize
+                          ? TextDimens.pt14
+                          : TextDimens.pt16,
                     ),
                   ),
                 ),
               ),
-              if (!showWebPreview)
+              if (!showWebPreviewOnStoryTile)
                 const Divider(
                   height: Dimens.zero,
                 ),
@@ -169,14 +139,16 @@ class ItemsListView<T extends Item> extends StatelessWidget {
           } else if (e is Comment) {
             if (useCommentTile) {
               return <Widget>[
-                if (showWebPreview)
+                if (showWebPreviewOnStoryTile)
                   const Divider(
                     height: Dimens.zero,
                   ),
                 _CommentTile(
                   comment: e,
                   onTap: () => onTap(e),
-                  fontSize: showWebPreview ? TextDimens.pt14 : TextDimens.pt16,
+                  fontSize: showWebPreviewOnStoryTile
+                      ? TextDimens.pt14
+                      : TextDimens.pt16,
                 ),
                 const Divider(
                   height: Dimens.zero,
@@ -259,7 +231,11 @@ class ItemsListView<T extends Item> extends StatelessWidget {
           }
 
           return <Widget>[Container()];
-        }).expand((List<Widget> element) => element),
+        }).mapIndexed(
+          (int index, List<Widget> e) => itemBuilder == null
+              ? Column(children: e)
+              : itemBuilder!(Column(children: e), items.elementAt(index)),
+        ),
         const SizedBox(
           height: Dimens.pt40,
         ),

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
@@ -68,8 +70,9 @@ class _StoriesListViewState extends State<StoriesListView> {
               showOfflineBanner: true,
               markReadStories:
                   context.read<PreferenceCubit>().state.markReadStoriesEnabled,
-              showWebPreview: preferenceState.complexStoryTileEnabled,
-              showMetadata: preferenceState.metadataEnabled,
+              showWebPreviewOnStoryTile:
+                  preferenceState.complexStoryTileEnabled,
+              showMetadataOnStoryTile: preferenceState.metadataEnabled,
               showUrl: preferenceState.urlEnabled,
               refreshController: refreshController,
               scrollController: scrollController,
@@ -90,6 +93,42 @@ class _StoriesListViewState extends State<StoriesListView> {
               onPinned: context.read<PinCubit>().pinStory,
               header: state.isOfflineReading ? null : header,
               onMoreTapped: onMoreTapped,
+              itemBuilder: (Widget child, Story story) {
+                return Slidable(
+                  enabled: !preferenceState.swipeGestureEnabled,
+                  startActionPane: ActionPane(
+                    motion: const BehindMotion(),
+                    children: <Widget>[
+                      SlidableAction(
+                        onPressed: (_) {
+                          HapticFeedbackUtil.light();
+                          context.read<PinCubit>().pinStory(story);
+                        },
+                        backgroundColor: Palette.orange,
+                        foregroundColor: Palette.white,
+                        icon: preferenceState.complexStoryTileEnabled
+                            ? Icons.push_pin_outlined
+                            : null,
+                        label: preferenceState.complexStoryTileEnabled
+                            ? null
+                            : 'Pin to top',
+                      ),
+                      SlidableAction(
+                        onPressed: (_) => onMoreTapped(story, context.rect),
+                        backgroundColor: Palette.orange,
+                        foregroundColor: Palette.white,
+                        icon: preferenceState.complexStoryTileEnabled
+                            ? Icons.more_horiz
+                            : null,
+                        label: preferenceState.complexStoryTileEnabled
+                            ? null
+                            : 'More',
+                      ),
+                    ],
+                  ),
+                  child: child,
+                );
+              },
             );
           },
         );
