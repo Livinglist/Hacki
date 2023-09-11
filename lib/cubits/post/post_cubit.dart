@@ -16,13 +16,10 @@ class PostCubit extends Cubit<PostState> {
 
   Future<void> post({required String text, required int to}) async {
     emit(state.copyWith(status: Status.inProgress));
-    // final bool successful = await _postRepository.comment(
-    //   parentId: to,
-    //   text: text,
-    // );
-
-    final bool successful =
-        await Future.delayed(Duration(seconds: 1), () => true);
+    final bool successful = await _postRepository.comment(
+      parentId: to,
+      text: text,
+    );
 
     if (successful) {
       emit(state.copyWith(status: Status.success));
