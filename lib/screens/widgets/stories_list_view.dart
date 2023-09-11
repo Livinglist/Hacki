@@ -127,17 +127,25 @@ class _StoriesListViewState extends State<StoriesListView> {
                       ),
                     ],
                   ),
-                  child: VisibilityDetector(
-                    key: ValueKey<int>(story.id),
-                    onVisibilityChanged: (VisibilityInfo info) {
-                      if (scrollController.position.userScrollDirection ==
-                              ScrollDirection.reverse &&
-                          info.visibleFraction == 0) {
-                        context
-                            .read<StoriesBloc>()
-                            .add(StoryRead(story: story));
-                      }
-                    },
+                  child: OptionalWrapper(
+                    enabled: context
+                        .read<PreferenceCubit>()
+                        .state
+                        .storyMarkingMode
+                        .shouldDetectScrollingPast,
+                    wrapper: (Widget child) => VisibilityDetector(
+                      key: ValueKey<int>(story.id),
+                      onVisibilityChanged: (VisibilityInfo info) {
+                        if (scrollController.position.userScrollDirection ==
+                                ScrollDirection.reverse &&
+                            info.visibleFraction == 0) {
+                          context
+                              .read<StoriesBloc>()
+                              .add(StoryRead(story: story));
+                        }
+                      },
+                      child: child,
+                    ),
                     child: child,
                   ),
                 );
