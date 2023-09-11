@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
@@ -9,6 +10,7 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class StoriesListView extends StatefulWidget {
   const StoriesListView({
@@ -66,7 +68,6 @@ class _StoriesListViewState extends State<StoriesListView> {
               (previous.readStoriesIds.length != current.readStoriesIds.length),
           builder: (BuildContext context, StoriesState state) {
             return ItemsListView<Story>(
-              isHomeScreen: true,
               showOfflineBanner: true,
               markReadStories:
                   context.read<PreferenceCubit>().state.markReadStoriesEnabled,
@@ -126,7 +127,19 @@ class _StoriesListViewState extends State<StoriesListView> {
                       ),
                     ],
                   ),
-                  child: child,
+                  child: VisibilityDetector(
+                    key: ValueKey<int>(story.id),
+                    onVisibilityChanged: (VisibilityInfo info) {
+                      if (scrollController.position.userScrollDirection ==
+                              ScrollDirection.reverse &&
+                          info.visibleFraction == 0) {
+                        context
+                            .read<StoriesBloc>()
+                            .add(StoryRead(story: story));
+                      }
+                    },
+                    child: child,
+                  ),
                 );
               },
             );

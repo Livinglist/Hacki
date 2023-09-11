@@ -1,18 +1,15 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/context_extension.dart';
 import 'package:hacki/models/models.dart';
-import 'package:hacki/screens/home/home_screen.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:visibility_detector/visibility_detector.dart';
 
 class ItemsListView<T extends Item> extends StatelessWidget {
   const ItemsListView({
@@ -26,7 +23,6 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.useCommentTile = false,
     this.showCommentBy = false,
     this.enablePullDown = true,
-    this.isHomeScreen = false,
     this.markReadStories = false,
     this.useConsistentFontSize = false,
     this.showOfflineBanner = false,
@@ -37,14 +33,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.onMoreTapped,
     this.scrollController,
     this.itemBuilder,
-  })  : assert(
-          !isHomeScreen || (isHomeScreen && onPinned != null),
-          'onPinned cannot be null when isHomeScreen is true',
-        ),
-        assert(
-          !isHomeScreen || (isHomeScreen && scrollController != null),
-          'onPinned cannot be null when isHomeScreen is true',
-        );
+  });
 
   final bool useCommentTile;
   final bool showCommentBy;
@@ -54,10 +43,6 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   final bool enablePullDown;
   final bool markReadStories;
   final bool showOfflineBanner;
-
-  /// If used on [HomeScreen],
-  /// allow story tiles to be pinned to the top.
-  final bool isHomeScreen;
 
   /// Whether to use same font size for comment and story tiles.
   final bool useConsistentFontSize;
@@ -98,36 +83,17 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                     ? () => onMoreTapped?.call(e, context.rect)
                     : null,
                 child: FadeIn(
-                  child: OptionalWrapper(
-                    enabled: context
-                            .read<PreferenceCubit>()
-                            .state
-                            .storyMarkingMode
-                            .shouldDetectScrollingPast &&
-                        isHomeScreen,
-                    wrapper: (Widget child) => VisibilityDetector(
-                      key: ValueKey<int>(e.id),
-                      onVisibilityChanged: (VisibilityInfo info) {
-                        if (scrollController?.position.userScrollDirection ==
-                                ScrollDirection.reverse &&
-                            info.visibleFraction == 0) {
-                          context.read<StoriesBloc>().add(StoryRead(story: e));
-                        }
-                      },
-                      child: child,
-                    ),
-                    child: StoryTile(
-                      key: ValueKey<int>(e.id),
-                      story: e,
-                      onTap: () => onTap(e),
-                      showWebPreview: showWebPreviewOnStoryTile,
-                      showMetadata: showMetadataOnStoryTile,
-                      showUrl: showUrl,
-                      hasRead: markReadStories && hasRead,
-                      simpleTileFontSize: useConsistentFontSize
-                          ? TextDimens.pt14
-                          : TextDimens.pt16,
-                    ),
+                  child: StoryTile(
+                    key: ValueKey<int>(e.id),
+                    story: e,
+                    onTap: () => onTap(e),
+                    showWebPreview: showWebPreviewOnStoryTile,
+                    showMetadata: showMetadataOnStoryTile,
+                    showUrl: showUrl,
+                    hasRead: markReadStories && hasRead,
+                    simpleTileFontSize: useConsistentFontSize
+                        ? TextDimens.pt14
+                        : TextDimens.pt16,
                   ),
                 ),
               ),
