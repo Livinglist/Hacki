@@ -136,7 +136,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                         key: ValueKey<int>(e.id),
                         onVisibilityChanged: (VisibilityInfo info) {
                           if (scrollController?.position.userScrollDirection ==
-                                  ScrollDirection.forward &&
+                                  ScrollDirection.reverse &&
                               info.visibleFraction == 0) {
                             context
                                 .read<StoriesBloc>()
