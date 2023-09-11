@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/auth/auth_bloc.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
-import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/item/models/models.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
@@ -36,9 +36,9 @@ extension StateExtension on State {
     if (splitViewEnabled && !forceNewScreen) {
       context.read<SplitViewCubit>().updateItemScreenArgs(args);
     } else {
-      return HackiApp.navigatorKey.currentState?.pushNamed(
-        ItemScreen.routeName,
-        arguments: args,
+      context.push(
+        '/${ItemScreen.routeName}',
+        extra: args,
       );
     }
 

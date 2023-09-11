@@ -14,6 +14,7 @@ export 'items_list_view.dart';
 export 'link_preview/link_preview.dart';
 export 'offline_banner.dart';
 export 'onboarding_view.dart';
+export 'optional_wrapper.dart';
 export 'spring_curve.dart';
 export 'stories_list_view.dart';
 export 'story_tile.dart';

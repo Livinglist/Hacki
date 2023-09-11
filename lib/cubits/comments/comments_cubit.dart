@@ -6,9 +6,9 @@ import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
-import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart';
@@ -286,9 +286,9 @@ class CommentsCubit extends Cubit<CommentsState> {
     if (parent == null) {
       return;
     } else {
-      await HackiApp.navigatorKey.currentState?.pushNamed(
-        ItemScreen.routeName,
-        arguments: ItemScreenArgs(item: parent),
+      await router.push(
+        '/${ItemScreen.routeName}',
+        extra: ItemScreenArgs(item: parent),
       );
 
       emit(
@@ -309,9 +309,9 @@ class CommentsCubit extends Cubit<CommentsState> {
     if (parent == null) {
       return;
     } else {
-      await HackiApp.navigatorKey.currentState?.pushNamed(
-        ItemScreen.routeName,
-        arguments: ItemScreenArgs(item: parent),
+      await router.push(
+        '/${ItemScreen.routeName}',
+        extra: ItemScreenArgs(item: parent),
       );
 
       emit(

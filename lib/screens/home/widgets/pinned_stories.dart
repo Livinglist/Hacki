@@ -16,7 +16,7 @@ class PinnedStories extends StatelessWidget {
   });
 
   final PreferenceState preferenceState;
-  final void Function(Story story, {bool isPin}) onStoryTapped;
+  final void Function(Story story) onStoryTapped;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class PinnedStories extends StatelessWidget {
                     child: StoryTile(
                       key: ValueKey<String>('${story.id}-PinnedStoryTile'),
                       story: story,
-                      onTap: () => onStoryTapped(story, isPin: true),
+                      onTap: () => onStoryTapped(story),
                       showWebPreview: preferenceState.complexStoryTileEnabled,
                       showMetadata: preferenceState.metadataEnabled,
                       showUrl: preferenceState.urlEnabled,

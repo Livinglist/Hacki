@@ -1,10 +1,9 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/extensions/extensions.dart';
-import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart'
@@ -37,10 +36,9 @@ abstract class LinkUtil {
           .hasCachedWebPage(url: link)
           .then((bool cached) {
         if (cached) {
-          HackiApp.navigatorKey.currentState?.push<void>(
-            MaterialPageRoute<void>(
-              builder: (BuildContext context) => WebViewScreen(url: link),
-            ),
+          router.push(
+            '/${WebViewScreen.routeName}',
+            extra: link,
           );
         }
       });
@@ -87,9 +85,9 @@ abstract class LinkUtil {
           .fetchItem(id: id)
           .then((Item? item) {
         if (item != null) {
-          HackiApp.navigatorKey.currentState!.pushNamed(
-            ItemScreen.routeName,
-            arguments: ItemScreenArgs(item: item),
+          router.push(
+            '/${ItemScreen.routeName}',
+            extra: ItemScreenArgs(item: item),
           );
         }
       });

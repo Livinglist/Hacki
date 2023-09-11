@@ -3,6 +3,7 @@ import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
@@ -51,44 +52,39 @@ class ItemScreen extends StatefulWidget {
     this.splitViewEnabled = false,
   });
 
-  static const String routeName = '/item';
+  static const String routeName = 'item';
 
-  static Route<dynamic> route(ItemScreenArgs args) {
-    return MaterialPageRoute<ItemScreen>(
-      settings: const RouteSettings(name: routeName),
-      builder: (BuildContext context) => RepositoryProvider<CollapseCache>(
-        create: (_) => CollapseCache(),
-        lazy: false,
-        child: MultiBlocProvider(
-          providers: <BlocProvider<dynamic>>[
-            BlocProvider<CommentsCubit>(
-              create: (BuildContext context) => CommentsCubit(
-                filterCubit: context.read<FilterCubit>(),
-                isOfflineReading:
-                    context.read<StoriesBloc>().state.isOfflineReading,
-                item: args.item,
-                collapseCache: context.read<CollapseCache>(),
-                defaultFetchMode:
-                    context.read<PreferenceCubit>().state.fetchMode,
-                defaultCommentsOrder:
-                    context.read<PreferenceCubit>().state.order,
-              )..init(
-                  onlyShowTargetComment: args.onlyShowTargetComment,
-                  targetAncestors: args.targetComments,
-                  useCommentCache: args.useCommentCache,
-                ),
-            ),
-          ],
-          child: ItemScreen(
-            item: args.item,
-            parentComments: args.targetComments ?? <Comment>[],
+  static Widget phone(ItemScreenArgs args) {
+    return RepositoryProvider<CollapseCache>(
+      create: (_) => CollapseCache(),
+      lazy: false,
+      child: MultiBlocProvider(
+        providers: <BlocProvider<dynamic>>[
+          BlocProvider<CommentsCubit>(
+            create: (BuildContext context) => CommentsCubit(
+              filterCubit: context.read<FilterCubit>(),
+              isOfflineReading:
+                  context.read<StoriesBloc>().state.isOfflineReading,
+              item: args.item,
+              collapseCache: context.read<CollapseCache>(),
+              defaultFetchMode: context.read<PreferenceCubit>().state.fetchMode,
+              defaultCommentsOrder: context.read<PreferenceCubit>().state.order,
+            )..init(
+                onlyShowTargetComment: args.onlyShowTargetComment,
+                targetAncestors: args.targetComments,
+                useCommentCache: args.useCommentCache,
+              ),
           ),
+        ],
+        child: ItemScreen(
+          item: args.item,
+          parentComments: args.targetComments ?? <Comment>[],
         ),
       ),
     );
   }
 
-  static Widget build(BuildContext context, ItemScreenArgs args) {
+  static Widget tablet(BuildContext context, ItemScreenArgs args) {
     return WillPopScope(
       onWillPop: () async {
         if (context.read<SplitViewCubit>().state.expanded) {
@@ -168,7 +164,6 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
   @override
   void initState() {
     super.initState();
-
     SchedulerBinding.instance
       ..addPostFrameCallback((_) {
         FeatureDiscovery.discoverFeatures(
@@ -457,7 +452,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                     onTap: () {
                       locator.get<AppReviewService>().requestReview();
 
-                      Navigator.pop(context);
+                      context.pop(context);
                       goToItemScreen(
                         args: ItemScreenArgs(
                           item: comment,

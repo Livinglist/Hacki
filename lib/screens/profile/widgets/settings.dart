@@ -12,10 +12,10 @@ import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
-import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/profile/models/page_type.dart';
@@ -834,8 +834,8 @@ class _SettingsState extends State<Settings> {
   }
 
   Future<void> onImportFavoritesTapped(FavCubit favCubit) async {
-    final String? res = await HackiApp.navigatorKey.currentState
-        ?.pushNamed(QrCodeScannerScreen.routeName) as String?;
+    final String? res =
+        await router.push('/${QrCodeScannerScreen.routeName}') as String?;
     final List<int>? ids =
         res?.split('\n').map(int.tryParse).whereType<int>().toList();
     if (ids == null) return;
@@ -858,9 +858,9 @@ class _SettingsState extends State<Settings> {
 
     switch (destination) {
       case ExportDestination.qrCode:
-        await HackiApp.navigatorKey.currentState?.pushNamed(
-          QrCodeViewScreen.routeName,
-          arguments: allFavoritesStr,
+        await router.push(
+          '/${QrCodeViewScreen.routeName}',
+          extra: allFavoritesStr,
         );
       case ExportDestination.clipBoard:
         try {

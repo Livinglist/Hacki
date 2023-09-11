@@ -9,17 +9,7 @@ import 'package:hacki/utils/utils.dart';
 class SubmitScreen extends StatefulWidget {
   const SubmitScreen({super.key});
 
-  static const String routeName = '/submit';
-
-  static Route<dynamic> route() {
-    return MaterialPageRoute<SubmitScreen>(
-      settings: const RouteSettings(name: routeName),
-      builder: (BuildContext context) => BlocProvider<SubmitCubit>(
-        create: (BuildContext context) => SubmitCubit(),
-        child: const SubmitScreen(),
-      ),
-    );
-  }
+  static const String routeName = 'submit';
 
   @override
   _SubmitScreenState createState() => _SubmitScreenState();

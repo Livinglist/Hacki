@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -6,10 +7,12 @@ import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/context_extension.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/screens/home/home_screen.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class ItemsListView<T extends Item> extends StatelessWidget {
   const ItemsListView({
@@ -23,7 +26,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.useCommentTile = false,
     this.showCommentBy = false,
     this.enablePullDown = true,
-    this.pinnable = false,
+    this.isHomeScreen = false,
     this.markReadStories = false,
     this.useConsistentFontSize = false,
     this.showOfflineBanner = false,
@@ -32,9 +35,14 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.onPinned,
     this.header,
     this.onMoreTapped,
-  }) : assert(
-          !pinnable || (pinnable && onPinned != null),
-          'onPinned cannot be null when pinnable is true',
+    this.scrollController,
+  })  : assert(
+          !isHomeScreen || (isHomeScreen && onPinned != null),
+          'onPinned cannot be null when isHomeScreen is true',
+        ),
+        assert(
+          !isHomeScreen || (isHomeScreen && scrollController != null),
+          'onPinned cannot be null when isHomeScreen is true',
         );
 
   final bool useCommentTile;
@@ -46,8 +54,9 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   final bool markReadStories;
   final bool showOfflineBanner;
 
-  /// Whether story tiles can be pinned to the top.
-  final bool pinnable;
+  /// If used on [HomeScreen],
+  /// allow story tiles to be pinned to the top.
+  final bool isHomeScreen;
 
   /// Whether to use same font size for comment and story tiles.
   final bool useConsistentFontSize;
@@ -55,6 +64,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   final List<T> items;
   final Widget? header;
   final RefreshController refreshController;
+  final ScrollController? scrollController;
   final VoidCallback? onRefresh;
   final VoidCallback? onLoadMore;
   final ValueChanged<Story>? onPinned;
@@ -66,6 +76,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ListView child = ListView(
+      controller: scrollController,
       children: <Widget>[
         if (showOfflineBanner)
           const OfflineBanner(
@@ -87,7 +98,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                 child: FadeIn(
                   child: Slidable(
                     enabled: !swipeGestureEnabled,
-                    startActionPane: pinnable
+                    startActionPane: isHomeScreen
                         ? ActionPane(
                             motion: const BehindMotion(),
                             children: <Widget>[
@@ -114,17 +125,38 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                             ],
                           )
                         : null,
-                    child: StoryTile(
-                      key: ValueKey<int>(e.id),
-                      story: e,
-                      onTap: () => onTap(e),
-                      showWebPreview: showWebPreview,
-                      showMetadata: showMetadata,
-                      showUrl: showUrl,
-                      hasRead: markReadStories && hasRead,
-                      simpleTileFontSize: useConsistentFontSize
-                          ? TextDimens.pt14
-                          : TextDimens.pt16,
+                    child: OptionalWrapper(
+                      enabled: context
+                              .read<PreferenceCubit>()
+                              .state
+                              .storyMarkingMode
+                              .shouldDetectScrollingPast &&
+                          isHomeScreen,
+                      wrapper: (Widget child) => VisibilityDetector(
+                        key: ValueKey<int>(e.id),
+                        onVisibilityChanged: (VisibilityInfo info) {
+                          if (scrollController?.position.userScrollDirection ==
+                                  ScrollDirection.forward &&
+                              info.visibleFraction == 0) {
+                            context
+                                .read<StoriesBloc>()
+                                .add(StoryRead(story: e));
+                          }
+                        },
+                        child: child,
+                      ),
+                      child: StoryTile(
+                        key: ValueKey<int>(e.id),
+                        story: e,
+                        onTap: () => onTap(e),
+                        showWebPreview: showWebPreview,
+                        showMetadata: showMetadata,
+                        showUrl: showUrl,
+                        hasRead: markReadStories && hasRead,
+                        simpleTileFontSize: useConsistentFontSize
+                            ? TextDimens.pt14
+                            : TextDimens.pt16,
+                      ),
                     ),
                   ),
                 ),

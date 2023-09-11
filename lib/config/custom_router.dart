@@ -1,53 +1,75 @@
 import 'package:flutter/material.dart';
-import 'package:hacki/config/constants.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/screens/screens.dart';
 
-/// Custom router.
-///
-/// Handle named routing.
-class CustomRouter {
-  /// Top level routing.
-  static Route<dynamic> onGenerateRoute(RouteSettings settings) {
-    switch (settings.name) {
-      case HomeScreen.routeName:
-        return HomeScreen.route();
-      case SubmitScreen.routeName:
-        return SubmitScreen.route();
-      case QrCodeScannerScreen.routeName:
-        return QrCodeScannerScreen.route();
-      case ItemScreen.routeName:
-        return ItemScreen.route(settings.arguments! as ItemScreenArgs);
-      case QrCodeViewScreen.routeName:
-        return QrCodeViewScreen.route(data: settings.arguments! as String);
-      default:
-        return _errorRoute();
-    }
-  }
-
-  /// Nested routing for bottom navigation bar.
-  static Route<dynamic> onGenerateNestedRoute(RouteSettings settings) {
-    switch (settings.name) {
-      case ItemScreen.routeName:
-        return ItemScreen.route(settings.arguments! as ItemScreenArgs);
-      case SubmitScreen.routeName:
-        return SubmitScreen.route();
-      default:
-        return _errorRoute();
-    }
-  }
-
-  /// Error route.
-  static Route<dynamic> _errorRoute() {
-    return MaterialPageRoute<dynamic>(
-      settings: const RouteSettings(name: '/error'),
-      builder: (_) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Error'),
+final GoRouter router = GoRouter(
+  observers: <NavigatorObserver>[
+    RouteObserver<ModalRoute<dynamic>>(),
+  ],
+  initialLocation: HomeScreen.routeName,
+  routes: <RouteBase>[
+    GoRoute(
+      path: HomeScreen.routeName,
+      builder: (_, __) => const HomeScreen(),
+      routes: <RouteBase>[
+        GoRoute(
+          path: ItemScreen.routeName,
+          builder: (_, GoRouterState state) {
+            final ItemScreenArgs? args = state.extra as ItemScreenArgs?;
+            if (args == null) {
+              throw Error();
+            }
+            return ItemScreen.phone(args);
+          },
         ),
-        body: Center(
-          child: Text(Constants.errorMessage),
-        ),
+      ],
+    ),
+    GoRoute(
+      path: '/${ItemScreen.routeName}',
+      builder: (_, GoRouterState state) {
+        final ItemScreenArgs? args = state.extra as ItemScreenArgs?;
+        if (args == null) {
+          throw GoError("args can't be null");
+        }
+        return ItemScreen.phone(args);
+      },
+    ),
+    GoRoute(
+      path: '/${SubmitScreen.routeName}',
+      builder: (_, __) => BlocProvider<SubmitCubit>(
+        create: (_) => SubmitCubit(),
+        child: const SubmitScreen(),
       ),
-    );
-  }
-}
+    ),
+    GoRoute(
+      path: '/${QrCodeScannerScreen.routeName}',
+      builder: (_, __) => const QrCodeScannerScreen(),
+    ),
+    GoRoute(
+      path: '/${QrCodeViewScreen.routeName}',
+      builder: (_, GoRouterState state) {
+        final String? data = state.extra as String?;
+        if (data == null) {
+          throw GoError("data can't be null");
+        }
+        return QrCodeViewScreen(
+          data: data,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/${WebViewScreen.routeName}',
+      builder: (_, GoRouterState state) {
+        final String? link = state.extra as String?;
+        if (link == null) {
+          throw GoError("link can't be null");
+        }
+        return WebViewScreen(
+          url: link,
+        );
+      },
+    ),
+  ],
+);

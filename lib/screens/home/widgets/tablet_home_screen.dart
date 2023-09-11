@@ -76,7 +76,7 @@ class _TabletStoryView extends StatelessWidget {
           previous.itemScreenArgs != current.itemScreenArgs,
       builder: (BuildContext context, SplitViewState state) {
         if (state.itemScreenArgs != null) {
-          return ItemScreen.build(context, state.itemScreenArgs!);
+          return ItemScreen.tablet(context, state.itemScreenArgs!);
         }
 
         return Material(
