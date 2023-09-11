@@ -10,6 +10,8 @@ class WebViewScreen extends StatefulWidget {
     super.key,
   });
 
+  static const String routeName = 'web-view';
+
   final String url;
 
   @override

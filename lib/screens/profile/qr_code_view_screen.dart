@@ -10,16 +10,7 @@ class QrCodeViewScreen extends StatelessWidget {
 
   final String data;
 
-  static const String routeName = '/qr-code-view';
-
-  static Route<dynamic> route({required String data}) {
-    return MaterialPageRoute<QrCodeViewScreen>(
-      settings: const RouteSettings(name: routeName),
-      builder: (_) => QrCodeViewScreen(
-        data: data,
-      ),
-    );
-  }
+  static const String routeName = 'qr-code-view';
 
   static const int qrCodeVersion = 4;
 

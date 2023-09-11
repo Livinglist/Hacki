@@ -10,12 +10,13 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
-import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/profile/models/page_type.dart';
@@ -221,6 +222,51 @@ class _SettingsState extends State<Settings> {
                       },
                       activeColor: Palette.orange,
                     ),
+                    if (preference
+                        is MarkReadStoriesModePreference) ...<Widget>[
+                      ListTile(
+                        title: Text(
+                          StoryMarkingModePreference().title,
+                          style: TextStyle(
+                            color: !preferenceState.markReadStoriesEnabled
+                                ? Palette.grey
+                                : null,
+                          ),
+                        ),
+                        trailing: DropdownButton<StoryMarkingMode>(
+                          value: preferenceState.storyMarkingMode,
+                          underline: const SizedBox.shrink(),
+                          items: StoryMarkingMode.values
+                              .map(
+                                (StoryMarkingMode val) =>
+                                    DropdownMenuItem<StoryMarkingMode>(
+                                  value: val,
+                                  child: Text(
+                                    val.label,
+                                    style: TextStyle(
+                                      fontSize: TextDimens.pt16,
+                                      color: !preferenceState
+                                              .markReadStoriesEnabled
+                                          ? Palette.grey
+                                          : null,
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (StoryMarkingMode? storyMarkingMode) {
+                            if (storyMarkingMode != null) {
+                              HapticFeedbackUtil.selection();
+                              context.read<PreferenceCubit>().update(
+                                    StoryMarkingModePreference(),
+                                    to: storyMarkingMode.index,
+                                  );
+                            }
+                          },
+                        ),
+                      ),
+                      const Divider(),
+                    ],
                     if (preference is StoryUrlModePreference) const Divider(),
                   ],
                   ListTile(
@@ -300,14 +346,14 @@ class _SettingsState extends State<Settings> {
           ),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => context.pop(),
               child: const Text(
                 'Cancel',
               ),
             ),
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                context.pop();
                 context.read<AuthBloc>().add(AuthLogout());
                 context.read<HistoryCubit>().reset();
               },
@@ -432,7 +478,7 @@ class _SettingsState extends State<Settings> {
           ),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => context.pop(),
               child: const Text(
                 'Cancel',
                 style: TextStyle(
@@ -442,7 +488,7 @@ class _SettingsState extends State<Settings> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                context.pop();
                 locator
                     .get<SembastRepository>()
                     .deleteAllCachedComments()
@@ -719,7 +765,7 @@ class _SettingsState extends State<Settings> {
               ),
             ),
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => context.pop(),
               child: const Text(
                 'Okay',
               ),
@@ -742,7 +788,7 @@ class _SettingsState extends State<Settings> {
           ),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => context.pop(),
               child: const Text(
                 'Cancel',
               ),
@@ -752,7 +798,7 @@ class _SettingsState extends State<Settings> {
                 final String keyword = controller.text.trim();
                 if (keyword.isEmpty) return;
                 context.read<FilterCubit>().addKeyword(keyword.toLowerCase());
-                Navigator.pop(context);
+                context.pop();
               },
               child: const Text(
                 'Confirm',
@@ -776,7 +822,7 @@ class _SettingsState extends State<Settings> {
                 (ExportDestination e) => ListTile(
                   leading: Icon(e.icon),
                   title: Text(e.label),
-                  onTap: () => Navigator.pop<ExportDestination>(context, e),
+                  onTap: () => context.pop<ExportDestination>(e),
                 ),
               ),
             ],
@@ -789,8 +835,8 @@ class _SettingsState extends State<Settings> {
   }
 
   Future<void> onImportFavoritesTapped(FavCubit favCubit) async {
-    final String? res = await HackiApp.navigatorKey.currentState
-        ?.pushNamed(QrCodeScannerScreen.routeName) as String?;
+    final String? res =
+        await router.push('/${QrCodeScannerScreen.routeName}') as String?;
     final List<int>? ids =
         res?.split('\n').map(int.tryParse).whereType<int>().toList();
     if (ids == null) return;
@@ -813,9 +859,9 @@ class _SettingsState extends State<Settings> {
 
     switch (destination) {
       case ExportDestination.qrCode:
-        await HackiApp.navigatorKey.currentState?.pushNamed(
-          QrCodeViewScreen.routeName,
-          arguments: allFavoritesStr,
+        await router.push(
+          '/${QrCodeViewScreen.routeName}',
+          extra: allFavoritesStr,
         );
       case ExportDestination.clipBoard:
         try {
@@ -841,14 +887,14 @@ class _SettingsState extends State<Settings> {
           ),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => context.pop(),
               child: const Text(
                 'Cancel',
               ),
             ),
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                context.pop();
                 try {
                   context.read<FavCubit>().removeAll();
                   showSnackBar(content: 'All favorites have been removed.');

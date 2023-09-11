@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
@@ -9,17 +10,7 @@ import 'package:hacki/utils/utils.dart';
 class SubmitScreen extends StatefulWidget {
   const SubmitScreen({super.key});
 
-  static const String routeName = '/submit';
-
-  static Route<dynamic> route() {
-    return MaterialPageRoute<SubmitScreen>(
-      settings: const RouteSettings(name: routeName),
-      builder: (BuildContext context) => BlocProvider<SubmitCubit>(
-        create: (BuildContext context) => SubmitCubit(),
-        child: const SubmitScreen(),
-      ),
-    );
-  }
+  static const String routeName = 'submit';
 
   @override
   _SubmitScreenState createState() => _SubmitScreenState();
@@ -45,7 +36,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
           previous.status != current.status,
       listener: (BuildContext context, SubmitState state) {
         if (state.status == Status.success) {
-          Navigator.pop(context);
+          context.pop();
           HapticFeedbackUtil.light();
           showSnackBar(
             content: 'Post submitted successfully.',
@@ -70,11 +61,11 @@ class _SubmitScreenState extends State<SubmitScreen> {
                       title: const Text('Quit editing?'),
                       actions: <Widget>[
                         TextButton(
-                          onPressed: () => Navigator.of(context).pop(false),
+                          onPressed: () => context.pop(false),
                           child: const Text('Cancel'),
                         ),
                         TextButton(
-                          onPressed: () => Navigator.of(context).pop(true),
+                          onPressed: () => context.pop(true),
                           child: const Text(
                             'Yes',
                             style: TextStyle(
@@ -87,7 +78,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
                   },
                 ).then((bool? value) {
                   if (value ?? false) {
-                    Navigator.of(context).pop();
+                    context.pop();
                   }
                 });
               },

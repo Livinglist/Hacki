@@ -7,6 +7,7 @@ import 'package:flutter/material.dart' hide Badge;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_siri_suggestions/flutter_siri_suggestions.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
@@ -29,13 +30,6 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   static const String routeName = '/';
-
-  static Route<dynamic> route() {
-    return MaterialPageRoute<HomeScreen>(
-      settings: const RouteSettings(name: routeName),
-      builder: (BuildContext context) => const HomeScreen(),
-    );
-  }
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -209,11 +203,13 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  void onStoryTapped(Story story, {bool isPin = false}) {
+  void onStoryTapped(Story story) {
     final bool useReader = context.read<PreferenceCubit>().state.readerEnabled;
     final bool offlineReading =
         context.read<StoriesBloc>().state.isOfflineReading;
     final bool splitViewEnabled = context.read<SplitViewCubit>().state.enabled;
+    final StoryMarkingMode storyMarkingMode =
+        context.read<PreferenceCubit>().state.storyMarkingMode;
 
     // If a story is a job story and it has a link to the job posting,
     // it would be better to just navigate to the web page.
@@ -222,23 +218,14 @@ class _HomeScreenState extends State<HomeScreen>
     if (isJobWithLink) {
       context.read<ReminderCubit>().removeLastReadStoryId();
     } else {
-      final ItemScreenArgs args = ItemScreenArgs(
-        item: story,
-      );
+      final ItemScreenArgs args = ItemScreenArgs(item: story);
 
       context.read<ReminderCubit>().updateLastReadStoryId(story.id);
 
       if (splitViewEnabled) {
         context.read<SplitViewCubit>().updateItemScreenArgs(args);
       } else {
-        HackiApp.navigatorKey.currentState
-            ?.pushNamed(
-          ItemScreen.routeName,
-          arguments: args,
-        )
-            .whenComplete(() {
-          context.read<ReminderCubit>().removeLastReadStoryId();
-        });
+        context.push('/${ItemScreen.routeName}', extra: args);
       }
     }
 
@@ -250,11 +237,9 @@ class _HomeScreenState extends State<HomeScreen>
       );
     }
 
-    context.read<StoriesBloc>().add(
-          StoryRead(
-            story: story,
-          ),
-        );
+    if (storyMarkingMode.shouldDetectTapping) {
+      context.read<StoriesBloc>().add(StoryRead(story: story));
+    }
 
     if (Platform.isIOS) {
       FlutterSiriSuggestions.instance.registerActivity(

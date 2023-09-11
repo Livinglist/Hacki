@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
-import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/profile/models/models.dart';
@@ -246,8 +246,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             selected: false,
                             onSelected: (bool val) {
                               if (authState.isLoggedIn) {
-                                HackiApp.navigatorKey.currentState
-                                    ?.pushNamed(SubmitScreen.routeName);
+                                context.push('/${SubmitScreen.routeName}');
                               } else {
                                 showSnackBar(
                                   content: 'You need to log in first.',

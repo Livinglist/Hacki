@@ -26,6 +26,7 @@ class StoriesListView extends StatefulWidget {
 
 class _StoriesListViewState extends State<StoriesListView> {
   final RefreshController refreshController = RefreshController();
+  final ScrollController scrollController = ScrollController();
 
   @override
   void dispose() {
@@ -63,7 +64,7 @@ class _StoriesListViewState extends State<StoriesListView> {
               (previous.readStoriesIds.length != current.readStoriesIds.length),
           builder: (BuildContext context, StoriesState state) {
             return ItemsListView<Story>(
-              pinnable: true,
+              isHomeScreen: true,
               showOfflineBanner: true,
               markReadStories:
                   context.read<PreferenceCubit>().state.markReadStoriesEnabled,
@@ -71,6 +72,7 @@ class _StoriesListViewState extends State<StoriesListView> {
               showMetadata: preferenceState.metadataEnabled,
               showUrl: preferenceState.urlEnabled,
               refreshController: refreshController,
+              scrollController: scrollController,
               items: state.storiesByType[storyType]!,
               onRefresh: () {
                 HapticFeedbackUtil.light();

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
@@ -56,7 +57,7 @@ class TimeMachineDialog extends StatelessWidget {
                               Icons.close,
                               size: Dimens.pt16,
                             ),
-                            onPressed: () => Navigator.pop(context),
+                            onPressed: () => context.pop(),
                             padding: EdgeInsets.zero,
                           ),
                         ],

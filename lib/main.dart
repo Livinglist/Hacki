@@ -17,7 +17,6 @@ import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
-import 'package:hacki/screens/screens.dart';
 import 'package:hacki/services/fetcher.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/theme_util.dart';
@@ -165,9 +164,6 @@ class HackiApp extends StatelessWidget {
   final Font font;
   final bool trueDarkMode;
 
-  static final GlobalKey<NavigatorState> navigatorKey =
-      GlobalKey<NavigatorState>();
-
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -286,18 +282,13 @@ class HackiApp extends StatelessWidget {
                                       .platformBrightness ==
                                   Brightness.dark));
                   return FeatureDiscovery(
-                    child: MaterialApp(
+                    child: MaterialApp.router(
                       title: 'Hacki',
                       debugShowCheckedModeBanner: false,
                       theme: (useTrueDark ? trueDarkTheme : theme).copyWith(
                         useMaterial3: false,
                       ),
-                      navigatorKey: navigatorKey,
-                      navigatorObservers: <NavigatorObserver>[
-                        locator.get<RouteObserver<ModalRoute<dynamic>>>(),
-                      ],
-                      onGenerateRoute: CustomRouter.onGenerateRoute,
-                      initialRoute: HomeScreen.routeName,
+                      routerConfig: router,
                     ),
                   );
                 },

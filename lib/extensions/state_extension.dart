@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/auth/auth_bloc.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
-import 'package:hacki/main.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/item/models/models.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
@@ -36,9 +36,9 @@ extension StateExtension on State {
     if (splitViewEnabled && !forceNewScreen) {
       context.read<SplitViewCubit>().updateItemScreenArgs(args);
     } else {
-      return HackiApp.navigatorKey.currentState?.pushNamed(
-        ItemScreen.routeName,
-        arguments: args,
+      context.push(
+        '/${ItemScreen.routeName}',
+        extra: args,
       );
     }
 
@@ -112,12 +112,11 @@ extension StateExtension on State {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     ListTile(
-                      onTap: () => Navigator.pop(context, item.url),
+                      onTap: () => context.pop(item.url),
                       title: const Text('Link to article'),
                     ),
                     ListTile(
-                      onTap: () => Navigator.pop(
-                        context,
+                      onTap: () => context.pop(
                         'https://news.ycombinator.com/item?id=${item.id}',
                       ),
                       title: const Text('Link to HN'),
@@ -155,13 +154,13 @@ extension StateExtension on State {
           ),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.pop(context, false),
+              onPressed: () => context.pop(false),
               child: const Text(
                 'Cancel',
               ),
             ),
             TextButton(
-              onPressed: () => Navigator.pop(context, true),
+              onPressed: () => context.pop(true),
               child: const Text(
                 'Yes',
               ),
@@ -193,13 +192,13 @@ extension StateExtension on State {
           ),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.pop(context, false),
+              onPressed: () => context.pop(false),
               child: const Text(
                 'Cancel',
               ),
             ),
             TextButton(
-              onPressed: () => Navigator.pop(context, true),
+              onPressed: () => context.pop(true),
               child: const Text(
                 'Yes',
               ),

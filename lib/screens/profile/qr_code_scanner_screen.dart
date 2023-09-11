@@ -1,19 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:hacki/main.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class QrCodeScannerScreen extends StatefulWidget {
   const QrCodeScannerScreen({super.key});
 
-  static const String routeName = '/qr-code-scanner';
-
-  static Route<dynamic> route() {
-    return MaterialPageRoute<String?>(
-      settings: const RouteSettings(name: routeName),
-      builder: (_) => const QrCodeScannerScreen(),
-    );
-  }
+  static const String routeName = 'qr-code-scanner';
 
   @override
   State<QrCodeScannerScreen> createState() => _QrCodeScannerScreenState();
@@ -66,7 +59,7 @@ class _QrCodeScannerScreenState extends State<QrCodeScannerScreen> {
     });
     controller.scannedDataStream.listen((Barcode scanData) {
       controller.stopCamera();
-      HackiApp.navigatorKey.currentState?.pop(scanData.code);
+      context.pop(scanData.code);
     });
   }
 

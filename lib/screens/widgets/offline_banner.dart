@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/services/services.dart';
@@ -39,11 +40,11 @@ class OfflineBanner extends StatelessWidget {
                           title: const Text('Exit offline mode?'),
                           actions: <Widget>[
                             TextButton(
-                              onPressed: () => Navigator.of(context).pop(false),
+                              onPressed: () => context.pop(false),
                               child: const Text('Cancel'),
                             ),
                             TextButton(
-                              onPressed: () => Navigator.of(context).pop(true),
+                              onPressed: () => context.pop(true),
                               child: const Text(
                                 'Yes',
                                 style: TextStyle(

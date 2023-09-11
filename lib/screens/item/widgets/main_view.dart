@@ -431,6 +431,7 @@ class _ParentItemSection extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: TextDimens.pt13,
                                   ),
+                                  textScaleFactor: 1,
                                 ),
                     ),
                   ),

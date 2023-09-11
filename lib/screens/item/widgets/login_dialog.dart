@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/extensions/extensions.dart';
@@ -24,7 +25,7 @@ class _LoginDialogState extends State<LoginDialog> {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (BuildContext context, AuthState state) {
         if (state.isLoggedIn) {
-          Navigator.pop(context);
+          context.pop();
           showSnackBar(
             content: 'Logged in successfully! ${Constants.happyFace}',
           );
@@ -153,7 +154,7 @@ class _LoginDialogState extends State<LoginDialog> {
                   children: <Widget>[
                     TextButton(
                       onPressed: () {
-                        Navigator.pop(context);
+                        context.pop();
                         context.read<AuthBloc>().add(AuthInitialize());
                       },
                       child: const Text(

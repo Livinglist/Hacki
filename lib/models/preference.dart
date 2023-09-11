@@ -23,17 +23,18 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
       FontPreference(),
       FontSizePreference(),
       TabOrderPreference(),
+      StoryMarkingModePreference(),
       // Order of items below matters and
       // reflects the order on settings screen.
       const DisplayModePreference(),
       const MetadataModePreference(),
       const StoryUrlModePreference(),
+      const MarkReadStoriesModePreference(),
       const NotificationModePreference(),
       const SwipeGesturePreference(),
       const AutoScrollModePreference(),
       const CollapseModePreference(),
       const ReaderModePreference(),
-      const MarkReadStoriesModePreference(),
       const EyeCandyModePreference(),
       const TrueDarkModePreference(),
     ],
@@ -68,6 +69,8 @@ final int _fontSizeDefaultValue = FontSize.regular.index;
 final int _fontDefaultValue = Font.roboto.index;
 final int _tabOrderDefaultValue =
     StoryType.convertToSettingsValue(StoryType.values);
+final int _markStoriesAsReadWhenPreferenceDefaultValue =
+    StoryMarkingMode.tap.index;
 
 class SwipeGesturePreference extends BooleanPreference {
   const SwipeGesturePreference({bool? val})
@@ -363,4 +366,20 @@ class TabOrderPreference extends IntPreference {
 
   @override
   String get title => 'Tab order';
+}
+
+class StoryMarkingModePreference extends IntPreference {
+  StoryMarkingModePreference({int? val})
+      : super(val: val ?? _markStoriesAsReadWhenPreferenceDefaultValue);
+
+  @override
+  StoryMarkingModePreference copyWith({required int? val}) {
+    return StoryMarkingModePreference(val: val);
+  }
+
+  @override
+  String get key => 'storyMarkingMode';
+
+  @override
+  String get title => 'Mark a Story as Read on';
 }
