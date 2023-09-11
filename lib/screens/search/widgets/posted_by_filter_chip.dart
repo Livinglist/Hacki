@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hacki/models/search_params.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
@@ -67,13 +68,13 @@ class PostedByFilterChip extends StatelessWidget {
               child: ButtonBar(
                 children: <Widget>[
                   TextButton(
-                    onPressed: () => Navigator.pop(context, filter?.author),
+                    onPressed: () => context.pop(filter?.author),
                     child: const Text(
                       'Cancel',
                     ),
                   ),
                   TextButton(
-                    onPressed: () => Navigator.pop(context, null),
+                    onPressed: () => context.pop(null),
                     child: const Text(
                       'Clear',
                     ),
@@ -81,7 +82,7 @@ class PostedByFilterChip extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       final String text = usernameController.text.trim();
-                      Navigator.pop(context, text.isEmpty ? null : text);
+                      context.pop(text.isEmpty ? null : text);
                     },
                     style: ButtonStyle(
                       backgroundColor:

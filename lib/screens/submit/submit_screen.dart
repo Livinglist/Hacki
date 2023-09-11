@@ -36,7 +36,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
           previous.status != current.status,
       listener: (BuildContext context, SubmitState state) {
         if (state.status == Status.success) {
-          Navigator.pop(context);
+          context.pop();
           HapticFeedbackUtil.light();
           showSnackBar(
             content: 'Post submitted successfully.',
@@ -61,11 +61,11 @@ class _SubmitScreenState extends State<SubmitScreen> {
                       title: const Text('Quit editing?'),
                       actions: <Widget>[
                         TextButton(
-                          onPressed: () => Navigator.of(context).pop(false),
+                          onPressed: () => context.pop(false),
                           child: const Text('Cancel'),
                         ),
                         TextButton(
-                          onPressed: () => Navigator.of(context).pop(true),
+                          onPressed: () => context.pop(true),
                           child: const Text(
                             'Yes',
                             style: TextStyle(

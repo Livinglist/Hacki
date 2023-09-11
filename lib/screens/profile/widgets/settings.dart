@@ -10,6 +10,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/custom_router.dart';
@@ -345,14 +346,14 @@ class _SettingsState extends State<Settings> {
           ),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => context.pop(),
               child: const Text(
                 'Cancel',
               ),
             ),
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                context.pop();
                 context.read<AuthBloc>().add(AuthLogout());
                 context.read<HistoryCubit>().reset();
               },
@@ -477,7 +478,7 @@ class _SettingsState extends State<Settings> {
           ),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => context.pop(),
               child: const Text(
                 'Cancel',
                 style: TextStyle(
@@ -487,7 +488,7 @@ class _SettingsState extends State<Settings> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                context.pop();
                 locator
                     .get<SembastRepository>()
                     .deleteAllCachedComments()
@@ -764,7 +765,7 @@ class _SettingsState extends State<Settings> {
               ),
             ),
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => context.pop(),
               child: const Text(
                 'Okay',
               ),
@@ -787,7 +788,7 @@ class _SettingsState extends State<Settings> {
           ),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => context.pop(),
               child: const Text(
                 'Cancel',
               ),
@@ -797,7 +798,7 @@ class _SettingsState extends State<Settings> {
                 final String keyword = controller.text.trim();
                 if (keyword.isEmpty) return;
                 context.read<FilterCubit>().addKeyword(keyword.toLowerCase());
-                Navigator.pop(context);
+                context.pop();
               },
               child: const Text(
                 'Confirm',
@@ -821,7 +822,7 @@ class _SettingsState extends State<Settings> {
                 (ExportDestination e) => ListTile(
                   leading: Icon(e.icon),
                   title: Text(e.label),
-                  onTap: () => Navigator.pop<ExportDestination>(context, e),
+                  onTap: () => context.pop<ExportDestination>(e),
                 ),
               ),
             ],
@@ -886,14 +887,14 @@ class _SettingsState extends State<Settings> {
           ),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => context.pop(),
               child: const Text(
                 'Cancel',
               ),
             ),
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                context.pop();
                 try {
                   context.read<FavCubit>().removeAll();
                   showSnackBar(content: 'All favorites have been removed.');

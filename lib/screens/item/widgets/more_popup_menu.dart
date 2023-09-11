@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
@@ -60,10 +61,7 @@ class MorePopupMenu extends StatelessWidget {
             );
           }
 
-          Navigator.pop(
-            context,
-            MenuAction.upvote,
-          );
+          context.pop(MenuAction.upvote);
         },
         builder: (BuildContext context, VoteState voteState) {
           final bool upvoted = voteState.vote == Vote.up;
@@ -91,7 +89,7 @@ class MorePopupMenu extends StatelessWidget {
                               state.user.description,
                             ),
                             onTap: () {
-                              Navigator.pop(context);
+                              context.pop();
                               showDialog<void>(
                                 context: context,
                                 builder: (BuildContext context) => AlertDialog(
@@ -130,7 +128,7 @@ class MorePopupMenu extends StatelessWidget {
                                         locator
                                             .get<AppReviewService>()
                                             .requestReview();
-                                        Navigator.pop(context);
+                                        context.pop();
                                         onSearchUserTapped(context);
                                       },
                                       child: const Text(
@@ -142,7 +140,7 @@ class MorePopupMenu extends StatelessWidget {
                                         locator
                                             .get<AppReviewService>()
                                             .requestReview();
-                                        Navigator.pop(context);
+                                        context.pop();
                                       },
                                       child: const Text(
                                         'Okay',
@@ -196,10 +194,7 @@ class MorePopupMenu extends StatelessWidget {
                         title: Text(
                           isFav ? 'Unfavorite' : 'Favorite',
                         ),
-                        onTap: () => Navigator.pop(
-                          context,
-                          MenuAction.fav,
-                        ),
+                        onTap: () => context.pop(MenuAction.fav),
                       );
                     },
                   ),
@@ -208,20 +203,14 @@ class MorePopupMenu extends StatelessWidget {
                     title: const Text(
                       'Share',
                     ),
-                    onTap: () => Navigator.pop(
-                      context,
-                      MenuAction.share,
-                    ),
+                    onTap: () => context.pop(MenuAction.share),
                   ),
                   ListTile(
                     leading: const Icon(Icons.local_police),
                     title: const Text(
                       'Flag',
                     ),
-                    onTap: () => Navigator.pop(
-                      context,
-                      MenuAction.flag,
-                    ),
+                    onTap: () => context.pop(MenuAction.flag),
                   ),
                   ListTile(
                     leading: Icon(
@@ -230,20 +219,14 @@ class MorePopupMenu extends StatelessWidget {
                     title: Text(
                       isBlocked ? 'Unblock' : 'Block',
                     ),
-                    onTap: () => Navigator.pop(
-                      context,
-                      MenuAction.block,
-                    ),
+                    onTap: () => context.pop(MenuAction.block),
                   ),
                   ListTile(
                     leading: const Icon(Icons.close),
                     title: const Text(
                       'Cancel',
                     ),
-                    onTap: () => Navigator.pop(
-                      context,
-                      MenuAction.cancel,
-                    ),
+                    onTap: () => context.pop(MenuAction.cancel),
                   ),
                 ],
               ),

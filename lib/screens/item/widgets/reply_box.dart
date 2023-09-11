@@ -2,6 +2,7 @@ import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
@@ -144,7 +145,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                                 color: Palette.orange,
                               ),
                               onPressed: () {
-                                Navigator.pop(context);
+                                context.pop();
 
                                 final EditState state =
                                     context.read<EditCubit>().state;
@@ -161,7 +162,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                                             context
                                                 .read<EditCubit>()
                                                 .deleteDraft();
-                                            Navigator.pop(context);
+                                            context.pop();
                                           },
                                           child: const Text(
                                             'No',
@@ -171,8 +172,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                                           ),
                                         ),
                                         TextButton(
-                                          onPressed: () =>
-                                              Navigator.pop(context),
+                                          onPressed: () => context.pop(),
                                           child: const Text('Yes'),
                                         ),
                                       ],
@@ -306,12 +306,6 @@ class _ReplyBoxState extends State<ReplyBox> {
                           setState(() {
                             expanded = false;
                           });
-                          Navigator.popUntil(
-                            context,
-                            (Route<dynamic> route) =>
-                                route.settings.name == ItemScreen.routeName ||
-                                route.isFirst,
-                          );
                           goToItemScreen(
                             args: ItemScreenArgs(
                               item: replyingTo,
@@ -338,7 +332,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                           color: Palette.orange,
                           size: TextDimens.pt18,
                         ),
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () => context.pop(),
                       ),
                     ],
                   ),

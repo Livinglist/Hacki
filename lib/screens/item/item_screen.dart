@@ -209,11 +209,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
             BlocListener<PostCubit, PostState>(
               listener: (BuildContext context, PostState postState) {
                 if (postState.status == Status.success) {
-                  Navigator.popUntil(
-                    context,
-                    (Route<dynamic> route) =>
-                        route.settings.name == ItemScreen.routeName,
-                  );
+                  context.pop();
                   final String verb =
                       context.read<EditCubit>().state.replyingTo == null
                           ? 'updated'
@@ -224,11 +220,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                   context.read<EditCubit>().onReplySubmittedSuccessfully();
                   context.read<PostCubit>().reset();
                 } else if (postState.status == Status.failure) {
-                  Navigator.popUntil(
-                    context,
-                    (Route<dynamic> route) =>
-                        route.settings.name == ItemScreen.routeName,
-                  );
+                  context.pop();
                   showErrorSnackBar();
                   context.read<PostCubit>().reset();
                 }
@@ -440,7 +432,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                     leading: const Icon(Icons.av_timer),
                     title: const Text('View ancestors'),
                     onTap: () {
-                      Navigator.pop(context);
+                      context.pop();
                       onTimeMachineActivated(comment);
                     },
                     enabled:
@@ -451,8 +443,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                     title: const Text('View in separate thread'),
                     onTap: () {
                       locator.get<AppReviewService>().requestReview();
-
-                      context.pop(context);
+                      context.pop();
                       goToItemScreen(
                         args: ItemScreenArgs(
                           item: comment,

@@ -1,6 +1,7 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
@@ -64,15 +65,15 @@ class OfflineListTile extends StatelessWidget {
                   title: const Text('Abort downloading?'),
                   actions: <Widget>[
                     TextButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => context.pop(),
                       child: const Text('Cancel'),
                     ),
                     TextButton(
-                      onPressed: () => Navigator.pop(context, false),
+                      onPressed: () => context.pop(false),
                       child: const Text('No'),
                     ),
                     TextButton(
-                      onPressed: () => Navigator.pop(context, true),
+                      onPressed: () => context.pop(true),
                       child: const Text('Yes'),
                     ),
                   ],
@@ -93,15 +94,15 @@ class OfflineListTile extends StatelessWidget {
                       content: const Text('It will take longer time.'),
                       actions: <Widget>[
                         TextButton(
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () => context.pop(),
                           child: const Text('Cancel'),
                         ),
                         TextButton(
-                          onPressed: () => Navigator.pop(context, false),
+                          onPressed: () => context.pop(false),
                           child: const Text('No'),
                         ),
                         TextButton(
-                          onPressed: () => Navigator.pop(context, true),
+                          onPressed: () => context.pop(true),
                           child: const Text('Yes'),
                         ),
                       ],

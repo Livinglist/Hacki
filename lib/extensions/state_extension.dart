@@ -112,12 +112,11 @@ extension StateExtension on State {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     ListTile(
-                      onTap: () => Navigator.pop(context, item.url),
+                      onTap: () => context.pop(item.url),
                       title: const Text('Link to article'),
                     ),
                     ListTile(
-                      onTap: () => Navigator.pop(
-                        context,
+                      onTap: () => context.pop(
                         'https://news.ycombinator.com/item?id=${item.id}',
                       ),
                       title: const Text('Link to HN'),
@@ -155,13 +154,13 @@ extension StateExtension on State {
           ),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.pop(context, false),
+              onPressed: () => context.pop(false),
               child: const Text(
                 'Cancel',
               ),
             ),
             TextButton(
-              onPressed: () => Navigator.pop(context, true),
+              onPressed: () => context.pop(true),
               child: const Text(
                 'Yes',
               ),
@@ -193,13 +192,13 @@ extension StateExtension on State {
           ),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.pop(context, false),
+              onPressed: () => context.pop(false),
               child: const Text(
                 'Cancel',
               ),
             ),
             TextButton(
-              onPressed: () => Navigator.pop(context, true),
+              onPressed: () => context.pop(true),
               child: const Text(
                 'Yes',
               ),

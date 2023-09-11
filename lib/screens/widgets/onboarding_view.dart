@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
@@ -31,7 +32,7 @@ class _OnboardingViewState extends State<OnboardingView> {
             Icons.close,
             color: Palette.white,
           ),
-          onPressed: () => Navigator.pop(context),
+          onPressed: context.pop,
         ),
       ),
       backgroundColor: Theme.of(context).brightness == Brightness.light
@@ -76,7 +77,7 @@ class _OnboardingViewState extends State<OnboardingView> {
               onPressed: () {
                 HapticFeedbackUtil.light();
                 if (pageController.page! >= 2) {
-                  Navigator.pop(context);
+                  context.pop();
                 } else {
                   throttle.run(() {
                     pageController.nextPage(
