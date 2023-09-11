@@ -1,0 +1,1 @@
+- Ability to mark a story as read once scrolling past.
