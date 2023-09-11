@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
@@ -77,7 +78,7 @@ class _SubmitScreenState extends State<SubmitScreen> {
                   },
                 ).then((bool? value) {
                   if (value ?? false) {
-                    Navigator.of(context).pop();
+                    context.pop();
                   }
                 });
               },
