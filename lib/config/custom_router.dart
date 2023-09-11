@@ -19,7 +19,7 @@ final GoRouter router = GoRouter(
           builder: (_, GoRouterState state) {
             final ItemScreenArgs? args = state.extra as ItemScreenArgs?;
             if (args == null) {
-              throw Error();
+              throw GoError("args can't be null");
             }
             return ItemScreen.phone(args);
           },
