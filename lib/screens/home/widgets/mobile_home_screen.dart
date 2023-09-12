@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart' hide Badge;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/cubits/cubits.dart';
@@ -20,12 +18,12 @@ class MobileHomeScreen extends StatelessWidget {
       children: <Widget>[
         Positioned.fill(child: homeScreen),
         if (!context.read<ReminderCubit>().state.hasShown)
-          Positioned(
+          const Positioned(
             left: Dimens.pt24,
             right: Dimens.pt24,
-            bottom: Platform.isIOS ? Dimens.pt36 : Dimens.pt64,
+            bottom: Dimens.pt36,
             height: Dimens.pt40,
-            child: const CountdownReminder(),
+            child: CountdownReminder(),
           ),
       ],
     );
