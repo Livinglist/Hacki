@@ -36,6 +36,7 @@ class _StoriesListViewState extends State<StoriesListView> {
   void dispose() {
     super.dispose();
     refreshController.dispose();
+    scrollController.dispose();
   }
 
   @override
@@ -136,9 +137,11 @@ class _StoriesListViewState extends State<StoriesListView> {
                     wrapper: (Widget child) => VisibilityDetector(
                       key: ValueKey<int>(story.id),
                       onVisibilityChanged: (VisibilityInfo info) {
-                        if (scrollController.position.userScrollDirection ==
+                        if (info.visibleFraction == 0 &&
+                            mounted &&
+                            scrollController.position.userScrollDirection ==
                                 ScrollDirection.reverse &&
-                            info.visibleFraction == 0) {
+                            !state.readStoriesIds.contains(story.id)) {
                           context
                               .read<StoriesBloc>()
                               .add(StoryRead(story: story));
