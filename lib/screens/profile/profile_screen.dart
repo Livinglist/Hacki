@@ -188,6 +188,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                     children: <Widget>[
                                       SlidableAction(
                                         onPressed: (_) {
+                                          HapticFeedbackUtil.light();
                                           context
                                               .read<FavCubit>()
                                               .removeFav(item.id);
