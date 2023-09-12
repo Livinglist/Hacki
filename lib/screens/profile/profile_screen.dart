@@ -1,5 +1,7 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
@@ -31,7 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   final ScrollController scrollController = ScrollController();
   final Throttle throttle = Throttle(delay: Durations.twoSeconds);
 
-  PageType pageType = PageType.notification;
+  PageType? pageType;
 
   @override
   void dispose() {
@@ -45,6 +47,9 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   @override
   Widget build(BuildContext context) {
+    pageType ??= context.read<AuthBloc>().state.isLoggedIn
+        ? PageType.notification
+        : PageType.fav;
     super.build(context);
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (BuildContext context, AuthState authState) {
@@ -91,8 +96,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                         }
 
                         return ItemsListView<Item>(
-                          showWebPreview: false,
-                          showMetadata: false,
+                          showWebPreviewOnStoryTile: false,
+                          showMetadataOnStoryTile: false,
                           showUrl: false,
                           useConsistentFontSize: true,
                           refreshController: refreshControllerHistory,
@@ -157,8 +162,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                             PreferenceState prefState,
                           ) {
                             return ItemsListView<Item>(
-                              showWebPreview: prefState.complexStoryTileEnabled,
-                              showMetadata: prefState.metadataEnabled,
+                              showWebPreviewOnStoryTile:
+                                  prefState.complexStoryTileEnabled,
+                              showMetadataOnStoryTile:
+                                  prefState.metadataEnabled,
                               showUrl: prefState.urlEnabled,
                               useCommentTile: true,
                               refreshController: refreshControllerFav,
@@ -173,6 +180,27 @@ class _ProfileScreenState extends State<ProfileScreen>
                               onTap: (Item item) => goToItemScreen(
                                 args: ItemScreenArgs(item: item),
                               ),
+                              itemBuilder: (Widget child, Item item) {
+                                return Slidable(
+                                  dragStartBehavior: DragStartBehavior.start,
+                                  startActionPane: ActionPane(
+                                    motion: const BehindMotion(),
+                                    children: <Widget>[
+                                      SlidableAction(
+                                        onPressed: (_) {
+                                          context
+                                              .read<FavCubit>()
+                                              .removeFav(item.id);
+                                        },
+                                        backgroundColor: Palette.red,
+                                        foregroundColor: Palette.white,
+                                        icon: Icons.close,
+                                      ),
+                                    ],
+                                  ),
+                                  child: child,
+                                );
+                              },
                             );
                           },
                         );
