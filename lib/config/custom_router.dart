@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/screens/screens.dart';
 
 final GoRouter router = GoRouter(
   observers: <NavigatorObserver>[
-    RouteObserver<ModalRoute<dynamic>>(),
+    locator.get<RouteObserver<ModalRoute<dynamic>>>(),
   ],
   initialLocation: HomeScreen.routeName,
   routes: <RouteBase>[
