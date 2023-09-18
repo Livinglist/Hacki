@@ -67,8 +67,6 @@ class EditCubit extends HydratedCubit<EditState> {
 
   void deleteDraft() => clear();
 
-  bool called = false;
-
   @override
   EditState? fromJson(Map<String, dynamic> json) {
     final String text = json['text'] as String? ?? '';
