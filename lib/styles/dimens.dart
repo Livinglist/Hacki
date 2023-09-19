@@ -20,6 +20,8 @@ abstract class Dimens {
   static const double pt64 = 64;
   static const double pt100 = 100;
   static const double pt120 = 120;
+
+  static const double replyBoxCollapsedHeight = 140;
 }
 
 abstract class TextDimens {

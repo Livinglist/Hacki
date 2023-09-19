@@ -36,10 +36,7 @@ extension StateExtension on State {
     if (splitViewEnabled && !forceNewScreen) {
       context.read<SplitViewCubit>().updateItemScreenArgs(args);
     } else {
-      context.push(
-        '/${ItemScreen.routeName}',
-        extra: args,
-      );
+      context.push('/${ItemScreen.routeName}', extra: args);
     }
 
     return Future<void>.value();

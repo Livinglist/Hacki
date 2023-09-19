@@ -130,10 +130,11 @@ class _StoriesListViewState extends State<StoriesListView> {
                   ),
                   child: OptionalWrapper(
                     enabled: context
-                        .read<PreferenceCubit>()
-                        .state
-                        .storyMarkingMode
-                        .shouldDetectScrollingPast,
+                            .read<PreferenceCubit>()
+                            .state
+                            .storyMarkingMode
+                            .shouldDetectScrollingPast &&
+                        !context.read<StoriesBloc>().hasRead(story),
                     wrapper: (Widget child) => VisibilityDetector(
                       key: ValueKey<int>(story.id),
                       onVisibilityChanged: (VisibilityInfo info) {

@@ -13,6 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_siri_suggestions/flutter_siri_suggestions.dart';
 import 'package:hacki/blocs/blocs.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
@@ -26,6 +27,7 @@ import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart' show BehaviorSubject;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 import 'package:workmanager/workmanager.dart';
 
 // For receiving payload event from local notifications.
@@ -142,6 +144,8 @@ Future<void> main({bool testing = false}) async {
   // Bloc.observer = CustomBlocObserver();
 
   HydratedBloc.storage = storage;
+
+  VisibilityDetectorController.instance.updateInterval = Durations.ms200;
 
   runApp(
     HackiApp(

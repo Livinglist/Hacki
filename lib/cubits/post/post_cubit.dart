@@ -16,6 +16,7 @@ class PostCubit extends Cubit<PostState> {
 
   Future<void> post({required String text, required int to}) async {
     emit(state.copyWith(status: Status.inProgress));
+
     final bool successful = await _postRepository.comment(
       parentId: to,
       text: text,
@@ -41,5 +42,14 @@ class PostCubit extends Cubit<PostState> {
 
   void reset() {
     emit(state.copyWith(status: Status.idle));
+  }
+
+  @Deprecated('For debugging only')
+  Future<bool> getFakeResult() async {
+    final bool result = await Future<bool>.delayed(
+      const Duration(seconds: 2),
+      () => true,
+    );
+    return result;
   }
 }
