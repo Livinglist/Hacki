@@ -18,7 +18,9 @@ class EditCubit extends HydratedCubit<EditState> {
   final DraftCache _draftCache;
   final Debouncer _debouncer;
 
-  void reset() => emit(const EditState.init());
+  void reset() {
+    emit(const EditState.init());
+  }
 
   void onReplyTapped(Item item) {
     emit(

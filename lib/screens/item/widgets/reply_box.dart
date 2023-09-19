@@ -168,15 +168,10 @@ class _ReplyBoxState extends State<ReplyBox> {
                                     barrierDismissible: false,
                                     builder: (BuildContext context) =>
                                         AlertDialog(
-                                      title: const Text('Save draft?'),
+                                      title: const Text('Abort editing?'),
                                       actions: <Widget>[
                                         TextButton(
-                                          onPressed: () {
-                                            context
-                                                .read<EditCubit>()
-                                                .deleteDraft();
-                                            context.pop();
-                                          },
+                                          onPressed: context.pop,
                                           child: const Text(
                                             'No',
                                             style: TextStyle(
@@ -185,12 +180,15 @@ class _ReplyBoxState extends State<ReplyBox> {
                                           ),
                                         ),
                                         TextButton(
-                                          onPressed: () => context.pop(),
+                                          onPressed: () {
+                                            context.pop();
+                                            onCloseTapped();
+                                          },
                                           child: const Text('Yes'),
                                         ),
                                       ],
                                     ),
-                                  ).whenComplete(onCloseTapped);
+                                  );
                                 } else {
                                   onCloseTapped();
                                 }
