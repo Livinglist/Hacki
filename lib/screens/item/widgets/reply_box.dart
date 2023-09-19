@@ -263,7 +263,7 @@ class _ReplyBoxState extends State<ReplyBox> {
   }
 
   void onCloseTapped() {
-    context.read<EditCubit>().reset();
+    context.read<EditCubit>().deleteDraft();
     widget.textEditingController.clear();
   }
 
