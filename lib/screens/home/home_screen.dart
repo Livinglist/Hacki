@@ -61,14 +61,6 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
 
-    // This is for testing only.
-    // FeatureDiscovery.clearPreferences(context, <String>[
-    //   Constants.featureLogIn,
-    //   Constants.featureAddStoryToFavList,
-    //   Constants.featureOpenStoryInWebView,
-    //   Constants.featurePinToTop,
-    // ]);
-
     ReceiveSharingIntent.getInitialText().then(onShareExtensionTapped);
 
     intentDataStreamSubscription =
@@ -89,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen>
         FeatureDiscovery.discoverFeatures(
           context,
           <String>{
-            Constants.featureLogIn,
+            DiscoverableFeature.login.featureId,
           },
         );
       })
@@ -315,5 +307,15 @@ class _HomeScreenState extends State<HomeScreen>
         goToItemScreen(args: args);
       });
     }
+  }
+
+  @Deprecated('For debugging only')
+  void clearFeatureDiscoveryPreferences(BuildContext context) {
+    FeatureDiscovery.clearPreferences(context, <String>[
+      DiscoverableFeature.login.featureId,
+      DiscoverableFeature.addStoryToFavList.featureId,
+      DiscoverableFeature.openStoryInWebView.featureId,
+      DiscoverableFeature.pinToTop.featureId,
+    ]);
   }
 }

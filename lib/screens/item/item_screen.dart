@@ -181,11 +181,11 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
         FeatureDiscovery.discoverFeatures(
           context,
           <String>{
-            Constants.featurePinToTop,
-            Constants.featureAddStoryToFavList,
-            Constants.featureOpenStoryInWebView,
-            Constants.featureJumpUpButton,
-            Constants.featureJumpDownButton,
+            DiscoverableFeature.pinToTop.featureId,
+            DiscoverableFeature.addStoryToFavList.featureId,
+            DiscoverableFeature.openStoryInWebView.featureId,
+            DiscoverableFeature.jumpUpButton.featureId,
+            DiscoverableFeature.jumpDownButton.featureId,
           },
         );
       })

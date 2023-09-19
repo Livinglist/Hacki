@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/models/discoverable_feature.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
@@ -32,20 +33,16 @@ class CustomFloatingActionButton extends StatelessWidget {
                       bottom: Dimens.replyBoxCollapsedHeight,
                     )
                   : EdgeInsets.zero,
-              duration: Durations.ms300,
+              duration: Durations.ms200,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   CustomDescribedFeatureOverlay(
-                    featureId: Constants.featureJumpUpButton,
+                    feature: DiscoverableFeature.jumpUpButton,
                     contentLocation: ContentLocation.above,
                     tapTarget: const Icon(
                       Icons.keyboard_arrow_up,
                       color: Palette.white,
-                    ),
-                    title: const Text('Shortcut'),
-                    description: const Text(
-                      '''Tapping on this button will take you to the previous off-screen root level comment.\n\nLong press on it to jump to the very beginning of this thread.''',
                     ),
                     child: InkWell(
                       onLongPress: () => itemScrollController.scrollTo(
@@ -74,14 +71,10 @@ class CustomFloatingActionButton extends StatelessWidget {
                     ),
                   ),
                   CustomDescribedFeatureOverlay(
-                    featureId: Constants.featureJumpDownButton,
+                    feature: DiscoverableFeature.jumpDownButton,
                     tapTarget: const Icon(
                       Icons.keyboard_arrow_down,
                       color: Palette.white,
-                    ),
-                    title: const Text('Shortcut'),
-                    description: const Text(
-                      '''Tapping on this button will take you to the next off-screen root level comment.\n\nLong press on it to jump to the end of this thread.''',
                     ),
                     child: InkWell(
                       onLongPress: () => itemScrollController.scrollTo(
