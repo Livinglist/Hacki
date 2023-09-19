@@ -32,7 +32,7 @@ class ItemScreenArgs extends Equatable {
   final bool onlyShowTargetComment;
   final List<Comment>? targetComments;
 
-  /// when a user is trying to view a sub-thread from a main thread, we don't
+  /// when the user is trying to view a sub-thread from a main thread, we don't
   /// need to fetch comments from [StoriesRepository] since we have some, if not
   /// all, comments cached in [CommentCache].
   final bool useCommentCache;
@@ -165,6 +165,12 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
     if (context.read<EditCubit>().state.text.isNullOrEmpty) {
       context.read<EditCubit>().reset();
     }
+  }
+
+  @override
+  void didPushNext() {
+    super.didPushNext();
+    focusNode.unfocus();
   }
 
   @override

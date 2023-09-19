@@ -272,7 +272,14 @@ class _ReplyBoxState extends State<ReplyBox> {
   void showTextPopup() {
     final Item? replyingTo = context.read<EditCubit>().state.replyingTo;
 
-    if (replyingTo == null) return;
+    if (replyingTo == null) {
+      return;
+    } else if (replyingTo is Story) {
+      final ItemScreenArgs args = ItemScreenArgs(item: replyingTo);
+      context.push('/${ItemScreen.routeName}', extra: args);
+      expanded = false;
+      return;
+    }
 
     showDialog<void>(
       context: context,

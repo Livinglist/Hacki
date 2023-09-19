@@ -83,7 +83,7 @@ class _TabletStoryView extends StatelessWidget {
           child: ColoredBox(
             color: Theme.of(context).canvasColor,
             child: const Center(
-              child: Text('Tap on story tile to view comments.'),
+              child: Text('Tap on story tile to view its comments.'),
             ),
           ),
         );
