@@ -226,7 +226,6 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
             BlocListener<PostCubit, PostState>(
               listener: (BuildContext context, PostState postState) {
                 if (postState.status == Status.success) {
-                  context.pop();
                   final String verb =
                       context.read<EditCubit>().state.replyingTo == null
                           ? 'updated'
@@ -237,7 +236,6 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                   context.read<EditCubit>().onReplySubmittedSuccessfully();
                   context.read<PostCubit>().reset();
                 } else if (postState.status == Status.failure) {
-                  context.pop();
                   showErrorSnackBar();
                   context.read<PostCubit>().reset();
                 }
