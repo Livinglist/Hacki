@@ -73,7 +73,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                 height: editState.showReplyBox
                     ? (expanded ? expandedHeight : collapsedHeight)
                     : Dimens.zero,
-                duration: Durations.ms300,
+                duration: Durations.ms200,
                 decoration: BoxDecoration(
                   boxShadow: <BoxShadow>[
                     if (!context.read<SplitViewCubit>().state.enabled)
@@ -93,7 +93,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                         ),
                       AnimatedContainer(
                         height: expanded ? Dimens.pt40 : Dimens.zero,
-                        duration: Durations.ms400,
+                        duration: Durations.ms300,
                       ),
                       Row(
                         children: <Widget>[

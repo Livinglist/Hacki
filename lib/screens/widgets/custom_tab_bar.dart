@@ -83,16 +83,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
                   size: TextDimens.pt16,
                   color: Palette.white,
                 ),
-                featureId: Constants.featureLogIn,
-                title: const Text('Log in for more'),
-                description: const Text(
-                  'Log in using your Hacker News account '
-                  'to check out stories and comments you have '
-                  'posted in the past, and get in-app '
-                  'notification when there is new reply to '
-                  'your comments or stories.',
-                  style: TextStyle(fontSize: TextDimens.pt16),
-                ),
+                feature: DiscoverableFeature.login,
                 child: BlocBuilder<NotificationCubit, NotificationState>(
                   buildWhen: (
                     NotificationState previous,

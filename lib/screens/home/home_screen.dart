@@ -89,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen>
         FeatureDiscovery.discoverFeatures(
           context,
           <String>{
-            Constants.featureLogIn,
+            DiscoverableFeature.login.featureId,
           },
         );
       })

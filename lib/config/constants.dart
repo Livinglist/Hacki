@@ -34,15 +34,6 @@ abstract class Constants {
   static const String logFilename = 'hacki_log.txt';
   static const String previousLogFileName = 'old_hacki_log.txt';
 
-  /// Feature ids for feature discovery.
-  static const String featureAddStoryToFavList = 'add_story_to_fav_list';
-  static const String featureOpenStoryInWebView = 'open_story_in_web_view';
-  static const String featureLogIn = 'log_in';
-  static const String featurePinToTop = 'pin_to_top';
-  static const String featureJumpUpButton = 'jump_up_button_with_long_press';
-  static const String featureJumpDownButton =
-      'jump_down_button_with_long_press';
-
   static final String happyFace = <String>[
     '(๑•̀ㅂ•́)و✧',
     '( ͡• ͜ʖ ͡•)',

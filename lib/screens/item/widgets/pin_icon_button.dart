@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
@@ -33,14 +32,7 @@ class PinIconButton extends StatelessWidget {
                   pinned ? Icons.push_pin : Icons.push_pin_outlined,
                   color: Palette.white,
                 ),
-                featureId: Constants.featurePinToTop,
-                title: const Text('Pin a Story'),
-                description: const Text(
-                  'Pin this story to the top of your '
-                  'home screen so that you can come'
-                  ' back later.',
-                  style: TextStyle(fontSize: TextDimens.pt16),
-                ),
+                feature: DiscoverableFeature.pinToTop,
                 child: Icon(
                   pinned ? Icons.push_pin : Icons.push_pin_outlined,
                   color: pinned

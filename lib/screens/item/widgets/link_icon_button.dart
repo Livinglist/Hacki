@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hacki/config/constants.dart';
+import 'package:hacki/models/discoverable_feature.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
@@ -21,12 +21,7 @@ class LinkIconButton extends StatelessWidget {
           Icons.stream,
           color: Palette.white,
         ),
-        featureId: Constants.featureOpenStoryInWebView,
-        title: Text('Open in Browser'),
-        description: Text(
-          '''You can tap here to open this story in browser.''',
-          style: TextStyle(fontSize: TextDimens.pt16),
-        ),
+        feature: DiscoverableFeature.openStoryInWebView,
         child: Icon(
           Icons.stream,
         ),
