@@ -14,18 +14,18 @@ import 'package:hacki/utils/utils.dart';
 
 class ReplyBox extends StatefulWidget {
   const ReplyBox({
+    required this.focusNode,
     required this.textEditingController,
     required this.onSendTapped,
-    required this.onCloseTapped,
     required this.onChanged,
     super.key,
     this.splitViewEnabled = false,
   });
 
   final bool splitViewEnabled;
+  final FocusNode focusNode;
   final TextEditingController textEditingController;
   final VoidCallback onSendTapped;
-  final VoidCallback onCloseTapped;
   final ValueChanged<String> onChanged;
 
   @override
@@ -40,9 +40,17 @@ class _ReplyBoxState extends State<ReplyBox> {
 
   @override
   Widget build(BuildContext context) {
-    expandedHeight ??= MediaQuery.of(context).size.height -
-        MediaQuery.of(context).viewInsets.bottom;
-    return BlocBuilder<EditCubit, EditState>(
+    expandedHeight ??= MediaQuery.of(context).size.height;
+    return BlocConsumer<EditCubit, EditState>(
+      listenWhen: (EditState previous, EditState current) =>
+          previous.showReplyBox != current.showReplyBox,
+      listener: (BuildContext context, EditState editState) {
+        if (editState.showReplyBox) {
+          widget.focusNode.requestFocus();
+        } else {
+          widget.focusNode.unfocus();
+        }
+      },
       buildWhen: (EditState previous, EditState current) =>
           previous.showReplyBox != current.showReplyBox ||
           previous.itemBeingEdited != current.itemBeingEdited ||
@@ -62,8 +70,10 @@ class _ReplyBoxState extends State<ReplyBox> {
                         : Dimens.zero,
               ),
               child: AnimatedContainer(
-                height: expanded ? expandedHeight : collapsedHeight,
-                duration: Durations.ms200,
+                height: editState.showReplyBox
+                    ? (expanded ? expandedHeight : collapsedHeight)
+                    : Dimens.zero,
+                duration: Durations.ms300,
                 decoration: BoxDecoration(
                   boxShadow: <BoxShadow>[
                     if (!context.read<SplitViewCubit>().state.enabled)
@@ -82,8 +92,8 @@ class _ReplyBoxState extends State<ReplyBox> {
                           height: Dimens.zero,
                         ),
                       AnimatedContainer(
-                        height: expanded ? Dimens.pt36 : Dimens.zero,
-                        duration: Durations.ms200,
+                        height: expanded ? Dimens.pt40 : Dimens.zero,
+                        duration: Durations.ms400,
                       ),
                       Row(
                         children: <Widget>[
@@ -145,7 +155,9 @@ class _ReplyBoxState extends State<ReplyBox> {
                                 color: Palette.orange,
                               ),
                               onPressed: () {
-                                context.pop();
+                                setState(() {
+                                  expanded = false;
+                                });
 
                                 final EditState state =
                                     context.read<EditCubit>().state;
@@ -153,6 +165,7 @@ class _ReplyBoxState extends State<ReplyBox> {
                                     state.text.isNotNullOrEmpty) {
                                   showDialog<void>(
                                     context: context,
+                                    barrierDismissible: false,
                                     builder: (BuildContext context) =>
                                         AlertDialog(
                                       title: const Text('Save draft?'),
@@ -177,10 +190,10 @@ class _ReplyBoxState extends State<ReplyBox> {
                                         ),
                                       ],
                                     ),
-                                  );
+                                  ).whenComplete(onCloseTapped);
+                                } else {
+                                  onCloseTapped();
                                 }
-                                widget.onCloseTapped();
-                                expanded = false;
                               },
                             ),
                           ],
@@ -214,38 +227,31 @@ class _ReplyBoxState extends State<ReplyBox> {
                         ],
                       ),
                       Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            left: Dimens.pt16,
-                            right: Dimens.pt16,
-                            bottom: expanded
-                                // This padding here prevents keyboard
-                                // overlapping with TextField.
-                                ? MediaQuery.of(context).viewInsets.bottom +
-                                    Dimens.pt16
-                                : Dimens.zero,
-                          ),
-                          child: TextField(
-                            controller: widget.textEditingController,
-                            autofocus: true,
-                            expands: true,
-                            maxLines: null,
-                            decoration: const InputDecoration(
-                              alignLabelWithHint: true,
-                              contentPadding: EdgeInsets.zero,
-                              hintText: '...',
-                              hintStyle: TextStyle(
-                                color: Palette.grey,
-                              ),
-                              focusedBorder: InputBorder.none,
-                              border: InputBorder.none,
+                        child: TextField(
+                          focusNode: widget.focusNode,
+                          controller: widget.textEditingController,
+                          expands: true,
+                          maxLines: null,
+                          decoration: const InputDecoration(
+                            alignLabelWithHint: true,
+                            contentPadding: EdgeInsets.only(
+                              left: Dimens.pt10,
                             ),
-                            keyboardType: TextInputType.multiline,
-                            textCapitalization: TextCapitalization.sentences,
-                            textInputAction: TextInputAction.newline,
-                            onChanged: widget.onChanged,
+                            hintText: '...',
+                            hintStyle: TextStyle(
+                              color: Palette.grey,
+                            ),
+                            focusedBorder: InputBorder.none,
+                            border: InputBorder.none,
                           ),
+                          keyboardType: TextInputType.multiline,
+                          textCapitalization: TextCapitalization.sentences,
+                          textInputAction: TextInputAction.newline,
+                          onChanged: widget.onChanged,
                         ),
+                      ),
+                      const SizedBox(
+                        height: Dimens.pt8,
                       ),
                     ],
                   ),
@@ -256,6 +262,11 @@ class _ReplyBoxState extends State<ReplyBox> {
         );
       },
     );
+  }
+
+  void onCloseTapped() {
+    context.read<EditCubit>().reset();
+    widget.textEditingController.clear();
   }
 
   void showTextPopup() {

@@ -289,6 +289,7 @@ class HackiApp extends StatelessWidget {
                     child: MaterialApp.router(
                       title: 'Hacki',
                       debugShowCheckedModeBanner: false,
+                      debugShowMaterialGrid: true,
                       theme: (useTrueDark ? trueDarkTheme : theme).copyWith(
                         useMaterial3: false,
                       ),

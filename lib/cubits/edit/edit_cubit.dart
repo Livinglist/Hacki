@@ -18,6 +18,8 @@ class EditCubit extends HydratedCubit<EditState> {
   final DraftCache _draftCache;
   final Debouncer _debouncer;
 
+  void reset() => emit(const EditState.init());
+
   void onReplyTapped(Item item) {
     emit(
       EditState(
@@ -34,14 +36,6 @@ class EditCubit extends HydratedCubit<EditState> {
         text: itemToBeEdited.text,
       ),
     );
-  }
-
-  void onReplyBoxClosed() {
-    emit(const EditState.init());
-  }
-
-  void onScrolled() {
-    emit(const EditState.init());
   }
 
   void onReplySubmittedSuccessfully() {
@@ -65,7 +59,14 @@ class EditCubit extends HydratedCubit<EditState> {
     }
   }
 
-  void deleteDraft() => clear();
+  void deleteDraft() {
+    // Remove draft in storage.
+    clear();
+    // Reset cached state.
+    _cachedState = const EditState.init();
+    // Reset to init state;
+    reset();
+  }
 
   @override
   EditState? fromJson(Map<String, dynamic> json) {
@@ -94,6 +95,7 @@ class EditCubit extends HydratedCubit<EditState> {
   Map<String, dynamic>? toJson(EditState state) {
     EditState selected = state;
 
+    // Override previous draft only when current draft is not empty.
     if (state.replyingTo == null ||
         (state.replyingTo?.id != _cachedState.replyingTo?.id &&
             state.text.isNullOrEmpty)) {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
@@ -138,9 +140,12 @@ class ItemScreen extends StatefulWidget {
 class _ItemScreenState extends State<ItemScreen> with RouteAware {
   final TextEditingController commentEditingController =
       TextEditingController();
+  final FocusNode focusNode = FocusNode();
   final ItemScrollController itemScrollController = ItemScrollController();
   final ItemPositionsListener itemPositionsListener =
       ItemPositionsListener.create();
+  final ScrollOffsetListener scrollOffsetListener =
+      ScrollOffsetListener.create();
   final Throttle storyLinkTapThrottle = Throttle(
     delay: _storyLinkTapThrottleDelay,
   );
@@ -148,6 +153,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
     delay: _featureDiscoveryDismissThrottleDelay,
   );
   final GlobalKey fontSizeIconButtonKey = GlobalKey();
+  StreamSubscription<double>? scrollOffsetSubscription;
 
   static const Duration _storyLinkTapThrottleDelay = Durations.twoSeconds;
   static const Duration _featureDiscoveryDismissThrottleDelay =
@@ -157,7 +163,7 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
   void didPop() {
     super.didPop();
     if (context.read<EditCubit>().state.text.isNullOrEmpty) {
-      context.read<EditCubit>().onReplyBoxClosed();
+      context.read<EditCubit>().reset();
     }
   }
 
@@ -187,6 +193,9 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
             .subscribe(this, route);
       });
 
+    scrollOffsetSubscription =
+        scrollOffsetListener.changes.listen(removeReplyBoxFocusOnScroll);
+
     commentEditingController.text = context.read<EditCubit>().state.text ?? '';
   }
 
@@ -195,6 +204,8 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
     commentEditingController.dispose();
     storyLinkTapThrottle.dispose();
     featureDiscoveryDismissThrottle.dispose();
+    focusNode.dispose();
+    scrollOffsetSubscription?.cancel();
     super.dispose();
   }
 
@@ -258,13 +269,13 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                           child: MainView(
                             itemScrollController: itemScrollController,
                             itemPositionsListener: itemPositionsListener,
+                            scrollOffsetListener: scrollOffsetListener,
                             commentEditingController: commentEditingController,
                             authState: authState,
                             topPadding: topPadding,
                             splitViewEnabled: widget.splitViewEnabled,
                             onMoreTapped: onMoreTapped,
                             onRightMoreTapped: onRightMoreTapped,
-                            onReplyTapped: showReplyBox,
                           ),
                         ),
                         BlocBuilder<SplitViewCubit, SplitViewState>(
@@ -303,6 +314,18 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                             itemPositionsListener: itemPositionsListener,
                           ),
                         ),
+                        Positioned(
+                          bottom: Dimens.zero,
+                          left: Dimens.zero,
+                          right: Dimens.zero,
+                          child: ReplyBox(
+                            splitViewEnabled: true,
+                            focusNode: focusNode,
+                            textEditingController: commentEditingController,
+                            onSendTapped: onSendTapped,
+                            onChanged: context.read<EditCubit>().onTextChanged,
+                          ),
+                        ),
                       ],
                     ),
                   )
@@ -319,17 +342,23 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
                     body: MainView(
                       itemScrollController: itemScrollController,
                       itemPositionsListener: itemPositionsListener,
+                      scrollOffsetListener: scrollOffsetListener,
                       commentEditingController: commentEditingController,
                       authState: authState,
                       topPadding: topPadding,
                       splitViewEnabled: widget.splitViewEnabled,
                       onMoreTapped: onMoreTapped,
                       onRightMoreTapped: onRightMoreTapped,
-                      onReplyTapped: showReplyBox,
                     ),
                     floatingActionButton: CustomFloatingActionButton(
                       itemScrollController: itemScrollController,
                       itemPositionsListener: itemPositionsListener,
+                    ),
+                    bottomSheet: ReplyBox(
+                      textEditingController: commentEditingController,
+                      focusNode: focusNode,
+                      onSendTapped: onSendTapped,
+                      onChanged: context.read<EditCubit>().onTextChanged,
                     ),
                   ),
           ),
@@ -338,31 +367,11 @@ class _ItemScreenState extends State<ItemScreen> with RouteAware {
     );
   }
 
-  void showReplyBox() {
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      enableDrag: false,
-      builder: (BuildContext context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ReplyBox(
-              textEditingController: commentEditingController,
-              onSendTapped: onSendTapped,
-              onCloseTapped: () {
-                context.read<EditCubit>().onReplyBoxClosed();
-                commentEditingController.clear();
-              },
-              onChanged: context.read<EditCubit>().onTextChanged,
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).viewInsets.bottom,
-            ),
-          ],
-        );
-      },
-    );
+  void removeReplyBoxFocusOnScroll(double _) {
+    focusNode.unfocus();
+    if (commentEditingController.text.isEmpty) {
+      context.read<EditCubit>().reset();
+    }
   }
 
   void onFontSizeTapped() {
