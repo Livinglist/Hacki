@@ -137,7 +137,8 @@ class ItemScreen extends StatefulWidget {
   _ItemScreenState createState() => _ItemScreenState();
 }
 
-class _ItemScreenState extends State<ItemScreen> with RouteAware {
+class _ItemScreenState extends State<ItemScreen>
+    with RouteAware, ItemActionMixin {
   final TextEditingController commentEditingController =
       TextEditingController();
   final FocusNode focusNode = FocusNode();

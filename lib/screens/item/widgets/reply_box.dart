@@ -32,7 +32,7 @@ class ReplyBox extends StatefulWidget {
   _ReplyBoxState createState() => _ReplyBoxState();
 }
 
-class _ReplyBoxState extends State<ReplyBox> {
+class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
   bool expanded = false;
   double? expandedHeight;
 

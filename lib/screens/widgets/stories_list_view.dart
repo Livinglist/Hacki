@@ -28,7 +28,8 @@ class StoriesListView extends StatefulWidget {
   State<StoriesListView> createState() => _StoriesListViewState();
 }
 
-class _StoriesListViewState extends State<StoriesListView> {
+class _StoriesListViewState extends State<StoriesListView>
+    with ItemActionMixin {
   final RefreshController refreshController = RefreshController();
   final ScrollController scrollController = ScrollController();
 
