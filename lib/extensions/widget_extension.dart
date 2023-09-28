@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/custom_linkify/custom_linkify.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 
 extension ContextMenuBuilder on Widget {
@@ -65,7 +66,9 @@ extension ContextMenuBuilder on Widget {
 }
 
 extension WidgetModifier on Widget {
-  Widget padded([EdgeInsetsGeometry value = const EdgeInsets.all(12)]) {
+  Widget padded([
+    EdgeInsetsGeometry value = const EdgeInsets.all(Dimens.pt12),
+  ]) {
     return Padding(
       padding: value,
       child: this,
