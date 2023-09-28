@@ -188,9 +188,10 @@ class _ParentItemSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Item item = state.item;
     return Semantics(
       label:
-          '''Posted by ${state.item.by} ${state.item.timeAgo}, ${state.item.title}. ${state.item.text}''',
+          '''Posted by ${item.by} ${item.timeAgo}, ${item.title}. ${item.text}''',
       child: Column(
         children: <Widget>[
           if (!splitViewEnabled)
@@ -207,11 +208,11 @@ class _ParentItemSection extends StatelessWidget {
                     onPressed: (_) {
                       HapticFeedbackUtil.light();
 
-                      if (state.item.id !=
+                      if (item.id !=
                           context.read<EditCubit>().state.replyingTo?.id) {
                         commentEditingController.clear();
                       }
-                      context.read<EditCubit>().onReplyTapped(state.item);
+                      context.read<EditCubit>().onReplyTapped(item);
                     },
                     backgroundColor: Palette.orange,
                     foregroundColor: Palette.white,
@@ -219,7 +220,7 @@ class _ParentItemSection extends StatelessWidget {
                   ),
                   SlidableAction(
                     onPressed: (BuildContext context) =>
-                        onMoreTapped(state.item, context.rect),
+                        onMoreTapped(item, context.rect),
                     backgroundColor: Palette.orange,
                     foregroundColor: Palette.white,
                     icon: Icons.more_horiz,
@@ -236,7 +237,7 @@ class _ParentItemSection extends StatelessWidget {
                     child: Row(
                       children: <Widget>[
                         Text(
-                          state.item.by,
+                          item.by,
                           style: const TextStyle(
                             color: Palette.orange,
                           ),
@@ -245,7 +246,7 @@ class _ParentItemSection extends StatelessWidget {
                         ),
                         const Spacer(),
                         Text(
-                          state.item.timeAgo,
+                          item.timeAgo,
                           style: const TextStyle(
                             color: Palette.grey,
                           ),
@@ -265,12 +266,13 @@ class _ParentItemSection extends StatelessWidget {
                       BuildContext context,
                       PreferenceState prefState,
                     ) {
+                      final double fontSize = prefState.fontSize.fontSize;
                       return Column(
                         children: <Widget>[
-                          if (state.item is Story)
+                          if (item is Story)
                             InkWell(
                               onTap: () => LinkUtil.launch(
-                                state.item.url,
+                                item.url,
                                 useReader: context
                                     .read<PreferenceCubit>()
                                     .state
@@ -291,7 +293,7 @@ class _ParentItemSection extends StatelessWidget {
                                   TextSpan(
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      fontSize: prefState.fontSize.fontSize,
+                                      fontSize: fontSize,
                                       color: Theme.of(context)
                                           .textTheme
                                           .bodyLarge
@@ -299,24 +301,22 @@ class _ParentItemSection extends StatelessWidget {
                                     ),
                                     children: <TextSpan>[
                                       TextSpan(
-                                        semanticsLabel: state.item.title,
-                                        text: state.item.title,
+                                        semanticsLabel: item.title,
+                                        text: item.title,
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: prefState.fontSize.fontSize,
-                                          color: state.item.url.isNotEmpty
+                                          fontSize: fontSize,
+                                          color: item.url.isNotEmpty
                                               ? Palette.orange
                                               : null,
                                         ),
                                       ),
-                                      if (state.item.url.isNotEmpty)
+                                      if (item.url.isNotEmpty)
                                         TextSpan(
-                                          text:
-                                              ''' (${(state.item as Story).readableUrl})''',
+                                          text: ''' (${item.readableUrl})''',
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            fontSize:
-                                                prefState.fontSize.fontSize - 4,
+                                            fontSize: fontSize - 4,
                                             color: Palette.orange,
                                           ),
                                         ),
@@ -332,7 +332,7 @@ class _ParentItemSection extends StatelessWidget {
                             const SizedBox(
                               height: Dimens.pt6,
                             ),
-                          if (state.item.text.isNotEmpty)
+                          if (item.text.isNotEmpty)
                             FadeIn(
                               child: SizedBox(
                                 width: double.infinity,
@@ -341,7 +341,7 @@ class _ParentItemSection extends StatelessWidget {
                                     left: Dimens.pt8,
                                   ),
                                   child: ItemText(
-                                    item: state.item,
+                                    item: item,
                                     textScaleFactor:
                                         MediaQuery.of(context).textScaleFactor,
                                   ),
@@ -352,28 +352,27 @@ class _ParentItemSection extends StatelessWidget {
                       );
                     },
                   ),
-                  if (state.item.isPoll)
+                  if (item is Story && item.isPoll)
                     BlocProvider<PollCubit>(
                       create: (BuildContext context) =>
-                          PollCubit(story: state.item as Story)..init(),
+                          PollCubit(story: item)..init(),
                       child: const PollView(),
                     ),
                 ],
               ),
             ),
           ),
-          if (state.item.text.isNotEmpty)
+          if (item.text.isNotEmpty)
             const SizedBox(
               height: Dimens.pt8,
             ),
           const Divider(
             height: Dimens.zero,
           ),
-          if (state.onlyShowTargetComment) ...<Widget>[
+          if (state.onlyShowTargetComment && item is Story) ...<Widget>[
             Center(
               child: TextButton(
-                onPressed: () =>
-                    context.read<CommentsCubit>().loadAll(state.item as Story),
+                onPressed: () => context.read<CommentsCubit>().loadAll(item),
                 child: const Text('View all comments'),
               ),
             ),
@@ -383,12 +382,12 @@ class _ParentItemSection extends StatelessWidget {
           ] else ...<Widget>[
             Row(
               children: <Widget>[
-                if (state.item is Story) ...<Widget>[
+                if (item is Story) ...<Widget>[
                   const SizedBox(
                     width: Dimens.pt12,
                   ),
                   Text(
-                    '''${state.item.score} karma, ${state.item.descendants} comment${state.item.descendants > 1 ? 's' : ''}''',
+                    '''${item.score} karma, ${item.descendants} comment${item.descendants > 1 ? 's' : ''}''',
                     style: const TextStyle(
                       fontSize: TextDimens.pt13,
                     ),
