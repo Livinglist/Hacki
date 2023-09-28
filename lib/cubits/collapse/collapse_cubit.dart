@@ -96,9 +96,9 @@ class CollapseCubit extends Cubit<CollapseState> {
     }
   }
 
-  /// Prevent the item with [id] to be able to collapse, used when the comment
+  /// Prevent the item to be able to collapse, used when the comment
   /// text is selected.
-  void lock(int id) {
+  void lock() {
     _collapseCache.locked = _commentId;
     emit(state.copyWith(locked: true));
   }
