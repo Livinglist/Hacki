@@ -2,17 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/custom_linkify/custom_linkify.dart';
-import 'package:hacki/screens/widgets/item_text.dart';
 import 'package:hacki/utils/utils.dart';
 
-extension WidgetModifier on ItemText {
-  Widget padded([EdgeInsetsGeometry value = const EdgeInsets.all(12)]) {
-    return Padding(
-      padding: value,
-      child: this,
-    );
-  }
-
+extension ContextMenuBuilder on Widget {
   Widget contextMenuBuilder(
     BuildContext context,
     EditableTextState editableTextState, {
@@ -68,6 +60,15 @@ extension WidgetModifier on ItemText {
     return AdaptiveTextSelectionToolbar.buttonItems(
       anchors: editableTextState.contextMenuAnchors,
       buttonItems: items,
+    );
+  }
+}
+
+extension WidgetModifier on Widget {
+  Widget padded([EdgeInsetsGeometry value = const EdgeInsets.all(12)]) {
+    return Padding(
+      padding: value,
+      child: this,
     );
   }
 }
