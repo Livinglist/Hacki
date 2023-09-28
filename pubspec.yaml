@@ -13,7 +13,7 @@ dependencies:
   bloc: ^8.1.1
   cached_network_image: ^3.2.3
   clipboard: ^0.1.3
-  collection: ^1.17.1
+  collection: ^1.17.0
   connectivity_plus: ^4.0.0
   device_info_plus: ^9.0.0
   dio: ^5.0.3
@@ -32,13 +32,13 @@ dependencies:
   flutter_feather_icons: 2.0.0+1
   flutter_inappwebview: ^5.7.2+3
   flutter_local_notifications: ^15.1.0+1
-  flutter_secure_storage: ^8.0.0
+  flutter_secure_storage: ^9.0.0
   flutter_siri_suggestions: ^2.1.0
   flutter_slidable: ^3.0.0
   font_awesome_flutter: ^10.3.0
   gbk_codec: ^0.4.0
   get_it: ^7.2.0
-  go_router: ^10.1.2
+  go_router: ^11.1.2
   hive: ^2.2.3
   html: ^0.15.1
   html_unescape: ^2.0.0
