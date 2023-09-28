@@ -17,7 +17,7 @@ class CountdownReminder extends StatefulWidget {
 }
 
 class _CountDownReminderState extends State<CountdownReminder>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, ItemActionMixin {
   late final AnimationController animationController;
   late final Animation<double> progressAnimation;
   late final Animation<double> opacityAnimation;

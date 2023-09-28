@@ -36,7 +36,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin, RouteAware {
+    with SingleTickerProviderStateMixin, RouteAware, ItemActionMixin {
   late final TabController tabController;
   late final StreamSubscription<String> intentDataStreamSubscription;
   late final StreamSubscription<String?> notificationStreamSubscription;

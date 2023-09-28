@@ -12,7 +12,8 @@ import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:share_plus/share_plus.dart';
 
-extension StateExtension on State {
+@optionalTypeArgs
+mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
   void showSnackBar({
     required String content,
     VoidCallback? action,

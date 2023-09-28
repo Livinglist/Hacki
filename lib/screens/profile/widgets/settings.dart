@@ -47,7 +47,7 @@ class Settings extends StatefulWidget {
   State<Settings> createState() => _SettingsState();
 }
 
-class _SettingsState extends State<Settings> {
+class _SettingsState extends State<Settings> with ItemActionMixin {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PreferenceCubit, PreferenceState>(

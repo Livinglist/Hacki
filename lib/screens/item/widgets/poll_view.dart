@@ -15,7 +15,7 @@ class PollView extends StatefulWidget {
   State<PollView> createState() => _PollViewState();
 }
 
-class _PollViewState extends State<PollView> {
+class _PollViewState extends State<PollView> with ItemActionMixin {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PollCubit, PollState>(

@@ -16,7 +16,7 @@ class SubmitScreen extends StatefulWidget {
   _SubmitScreenState createState() => _SubmitScreenState();
 }
 
-class _SubmitScreenState extends State<SubmitScreen> {
+class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
   final TextEditingController titleEditingController = TextEditingController();
   final TextEditingController urlEditingController = TextEditingController();
   final TextEditingController textEditingController = TextEditingController();

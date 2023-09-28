@@ -16,7 +16,7 @@ class LoginDialog extends StatefulWidget {
   State<LoginDialog> createState() => _LoginDialogState();
 }
 
-class _LoginDialogState extends State<LoginDialog> {
+class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 

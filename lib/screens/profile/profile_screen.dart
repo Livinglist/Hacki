@@ -26,7 +26,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin, ItemActionMixin {
   final RefreshController refreshControllerHistory = RefreshController();
   final RefreshController refreshControllerFav = RefreshController();
   final RefreshController refreshControllerNotification = RefreshController();
