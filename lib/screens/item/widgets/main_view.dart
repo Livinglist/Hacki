@@ -352,10 +352,10 @@ class _ParentItemSection extends StatelessWidget {
                       );
                     },
                   ),
-                  if (item.isPoll)
+                  if (item is Story && item.isPoll)
                     BlocProvider<PollCubit>(
                       create: (BuildContext context) =>
-                          PollCubit(story: item as Story)..init(),
+                          PollCubit(story: item)..init(),
                       child: const PollView(),
                     ),
                 ],
@@ -369,11 +369,10 @@ class _ParentItemSection extends StatelessWidget {
           const Divider(
             height: Dimens.zero,
           ),
-          if (state.onlyShowTargetComment) ...<Widget>[
+          if (state.onlyShowTargetComment && item is Story) ...<Widget>[
             Center(
               child: TextButton(
-                onPressed: () =>
-                    context.read<CommentsCubit>().loadAll(item as Story),
+                onPressed: () => context.read<CommentsCubit>().loadAll(item),
                 child: const Text('View all comments'),
               ),
             ),
