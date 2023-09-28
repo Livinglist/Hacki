@@ -6,7 +6,7 @@ class CollapseCache {
   final Map<int, Set<int>> _hidden = <int, Set<int>>{};
   final PublishSubject<Map<int, Set<int>>> _hiddenCommentsSubject =
       PublishSubject<Map<int, Set<int>>>();
-  int? locked;
+  int? lockedId;
 
   Stream<Map<int, Set<int>>> get hiddenComments =>
       _hiddenCommentsSubject.stream;

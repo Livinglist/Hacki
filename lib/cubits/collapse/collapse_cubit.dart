@@ -29,7 +29,7 @@ class CollapseCubit extends Cubit<CollapseState> {
         collapsedCount: _collapseCache.totalHidden(_commentId),
         collapsed: _collapseCache.isCollapsed(_commentId),
         hidden: _collapseCache.isHidden(_commentId),
-        locked: _collapseCache.locked == _commentId,
+        locked: _collapseCache.lockedId == _commentId,
       ),
     );
   }
@@ -99,7 +99,7 @@ class CollapseCubit extends Cubit<CollapseState> {
   /// Prevent the item to be able to collapse, used when the comment
   /// text is selected.
   void lock() {
-    _collapseCache.locked = _commentId;
+    _collapseCache.lockedId = _commentId;
     emit(state.copyWith(locked: true));
   }
 
