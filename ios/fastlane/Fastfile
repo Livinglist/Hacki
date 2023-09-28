@@ -35,7 +35,7 @@ platform :ios do
     sync_code_signing(
       type: "appstore",
       app_identifier: [APP_IDENTIFIER, "#{APP_IDENTIFIER}.Share-Extension", "#{APP_IDENTIFIER}.Action-Extension"],
-      readonly: true
+      readonly: false
     )
 
     # We expose the key data using `APP_STORE_CONNECT_API_KEY_KEY` secret on GH
