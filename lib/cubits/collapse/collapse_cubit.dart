@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/services/services.dart';
 
@@ -28,11 +29,12 @@ class CollapseCubit extends Cubit<CollapseState> {
         collapsedCount: _collapseCache.totalHidden(_commentId),
         collapsed: _collapseCache.isCollapsed(_commentId),
         hidden: _collapseCache.isHidden(_commentId),
+        locked: _collapseCache.locked == _commentId,
       ),
     );
   }
 
-  void collapse() {
+  void collapse({required VoidCallback onDone}) {
     if (state.collapsed) {
       _collapseCache.uncollapse(_commentId);
 
@@ -42,7 +44,14 @@ class CollapseCubit extends Cubit<CollapseState> {
           collapsedCount: 0,
         ),
       );
+
+      onDone();
     } else {
+      if (state.locked) {
+        emit(state.copyWith(locked: false));
+        return;
+      }
+
       final Set<int> collapsedCommentIds = _collapseCache.collapse(_commentId);
 
       emit(
@@ -51,6 +60,8 @@ class CollapseCubit extends Cubit<CollapseState> {
           collapsedCount: state.collapsed ? 0 : collapsedCommentIds.length,
         ),
       );
+
+      onDone();
     }
   }
 
@@ -83,6 +94,13 @@ class CollapseCubit extends Cubit<CollapseState> {
         ),
       );
     }
+  }
+
+  /// Prevent the item with [id] to be able to collapse, used when the comment
+  /// text is selected.
+  void lock(int id) {
+    _collapseCache.locked = _commentId;
+    emit(state.copyWith(locked: true));
   }
 
   @override

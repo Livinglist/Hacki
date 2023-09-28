@@ -30,6 +30,17 @@ class ItemText extends StatelessWidget {
       decoration: TextDecoration.underline,
       color: Palette.orange,
     );
+
+    void onSelectionChanged(
+      TextSelection selection,
+      SelectionChangedCause? cause,
+    ) {
+      if (cause == SelectionChangedCause.longPress &&
+          selection.baseOffset != selection.extentOffset) {
+        context.read<CollapseCubit>().lock(item.id);
+      }
+    }
+
     if (item is Buildable) {
       return SelectableText.rich(
         buildTextSpan(
@@ -40,6 +51,7 @@ class ItemText extends StatelessWidget {
         ),
         onTap: onTap,
         textScaleFactor: textScaleFactor,
+        onSelectionChanged: onSelectionChanged,
         contextMenuBuilder: (
           BuildContext context,
           EditableTextState editableTextState,
@@ -59,6 +71,7 @@ class ItemText extends StatelessWidget {
         linkStyle: linkStyle,
         onOpen: (LinkableElement link) => LinkUtil.launch(link.url),
         onTap: onTap,
+        onSelectionChanged: onSelectionChanged,
         contextMenuBuilder: (
           BuildContext context,
           EditableTextState editableTextState,
