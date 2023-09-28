@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
@@ -283,11 +282,6 @@ class _ParentItemSection extends StatelessWidget {
                                     .state
                                     .isOfflineReading,
                               ),
-                              onLongPress: () {
-                                FlutterClipboard.copy(
-                                  item.url,
-                                ).then((_) => HapticFeedbackUtil.selection());
-                              },
                               child: Padding(
                                 padding: const EdgeInsets.only(
                                   left: Dimens.pt6,
