@@ -76,14 +76,15 @@ class UrlLinkifier extends Linkifier {
               }
 
               if (openCount != closeCount) {
-                url = url.substring(0, max(0, url.length - 1));
-                end = ')';
+                final int index = max(0, url.lastIndexOf(')'));
+                url = url.substring(0, index);
+                end = originalUrl.substring(index);
               }
             }
 
             if (url.endsWith(',')) {
               url = url.substring(0, max(0, url.length - 1));
-              end = ',';
+              end = '$end,';
             }
 
             if ((options.humanize) || (options.removeWww)) {
