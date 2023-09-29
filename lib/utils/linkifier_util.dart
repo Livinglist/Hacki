@@ -6,6 +6,7 @@ abstract class LinkifierUtil {
 
   static List<LinkifyElement> linkify(String text) {
     const List<Linkifier> linkifiers = <Linkifier>[
+      CodeLinkifier(),
       UrlLinkifier(),
       EmailLinkifier(),
       QuoteLinkifier(),

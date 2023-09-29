@@ -1,7 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/custom_linkify/linkifiers/linkifiers.dart';
-import 'package:hacki/styles/palette.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:linkify/linkify.dart' hide UrlLinkifier;
 
@@ -139,11 +140,13 @@ const UrlLinkifier _urlLinkifier = UrlLinkifier();
 const EmailLinkifier _emailLinkifier = EmailLinkifier();
 const QuoteLinkifier _quoteLinkifier = QuoteLinkifier();
 const EmphasisLinkifier _emphasisLinkifier = EmphasisLinkifier();
+const CodeLinkifier _codeLinkifier = CodeLinkifier();
 const List<Linkifier> defaultLinkifiers = <Linkifier>[
   _urlLinkifier,
   _emailLinkifier,
   _quoteLinkifier,
   _emphasisLinkifier,
+  _codeLinkifier,
 ];
 
 /// Turns URLs into links
@@ -391,6 +394,24 @@ TextSpan buildTextSpan(
               text: element.text,
               style: style?.copyWith(
                 fontStyle: FontStyle.italic,
+              ),
+            );
+          } else if (element is CodeElement) {
+            return WidgetSpan(
+              child: Container(
+                padding: const EdgeInsets.all(Dimens.pt6),
+                margin: const EdgeInsets.only(right: Dimens.pt8),
+                color: Palette.orange.shade100,
+                child: SelectableText(
+                  element.text,
+                  style: TextStyle(
+                    fontFamily: Font.ubuntu.name,
+                  ),
+                ),
+              ),
+              style: style?.copyWith(
+                fontStyle: FontStyle.italic,
+                fontFamily: Font.ubuntu.name,
               ),
             );
           }

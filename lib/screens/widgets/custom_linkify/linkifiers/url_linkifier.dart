@@ -1,8 +1,10 @@
-import 'package:flutter/foundation.dart';
+import 'dart:math';
+
+import 'package:flutter/widgets.dart' show StringCharacters, immutable;
 import 'package:linkify/linkify.dart';
 
 final RegExp _urlRegex = RegExp(
-  r'^(.*?)((?:https?:\/\/|www\.)[^\s/$.?#].[\/\\\%:\?=&#@;A-Za-z0-9+_.~-]*)',
+  r'^(.*?)((?:https?:\/\/|www\.)[^\s/$.?#].[\/\\\%:\?=&#@;A-Za-z0-9()+_.,~-]*)',
   caseSensitive: false,
   dotAll: true,
 );
@@ -62,6 +64,28 @@ class UrlLinkifier extends Linkifier {
                   originalUrl;
             }
 
+            if (url.contains(')')) {
+              int openCount = 0;
+              int closeCount = 0;
+              for (final String c in url.characters) {
+                if (c == '(') {
+                  openCount++;
+                } else if (c == ')') {
+                  closeCount++;
+                }
+              }
+
+              if (openCount != closeCount) {
+                url = url.substring(0, max(0, url.length - 1));
+                end = ')';
+              }
+            }
+
+            if (url.endsWith(',')) {
+              url = url.substring(0, max(0, url.length - 1));
+              end = ',';
+            }
+
             if ((options.humanize) || (options.removeWww)) {
               if (options.humanize) {
                 url = url.replaceFirst(RegExp('https?://'), '');
@@ -78,7 +102,7 @@ class UrlLinkifier extends Linkifier {
                 ),
               );
             } else {
-              list.add(UrlElement(originalUrl, null, originText));
+              list.add(UrlElement(url, url, originText));
             }
 
             if (end != null) {

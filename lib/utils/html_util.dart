@@ -40,10 +40,6 @@ abstract class HtmlUtil {
           (Match match) => '*${match[1]}*',
         )
         .replaceAllMapped(
-          RegExp(r'\<pre\>\<code\>(.*?)\<\/code\>\<\/pre\>', dotAll: true),
-          (Match match) => match[1]?.trimRight() ?? '',
-        )
-        .replaceAllMapped(
           RegExp(r'\<a href=\"(.*?)\".*?\>.*?\<\/a\>'),
           (Match match) => match[1] ?? '',
         )
