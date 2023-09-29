@@ -102,7 +102,7 @@ class UrlLinkifier extends Linkifier {
                 ),
               );
             } else {
-              list.add(UrlElement(url, url, originText));
+              list.add(UrlElement(url, url, url));
             }
 
             if (end != null) {
