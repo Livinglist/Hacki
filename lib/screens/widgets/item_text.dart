@@ -37,7 +37,7 @@ class ItemText extends StatelessWidget {
     ) {
       if (cause == SelectionChangedCause.longPress &&
           selection.baseOffset != selection.extentOffset) {
-        context.read<CollapseCubit>().lock();
+        context.tryRead<CollapseCubit>()?.lock();
       }
     }
 
