@@ -23,6 +23,8 @@ class CommentTile extends StatelessWidget {
     this.onRightMoreTapped,
     this.opUsername,
     this.actionable = true,
+    this.collapsable = true,
+    this.selectable = true,
     this.level = 0,
     this.onTap,
     this.itemScrollController,
@@ -32,6 +34,8 @@ class CommentTile extends StatelessWidget {
   final Comment comment;
   final int level;
   final bool actionable;
+  final bool collapsable;
+  final bool selectable;
   final FetchMode fetchMode;
   final ItemScrollController? itemScrollController;
 
@@ -119,7 +123,7 @@ class CommentTile extends StatelessWidget {
                       : null,
                   child: InkWell(
                     onTap: () {
-                      if (actionable) {
+                      if (collapsable) {
                         _collapse(context);
                       } else {
                         onTap?.call();
@@ -200,6 +204,7 @@ class CommentTile extends StatelessWidget {
                                       child: ItemText(
                                         key: ValueKey<int>(comment.id),
                                         item: comment,
+                                        selectable: selectable,
                                         textScaleFactor: MediaQuery.of(context)
                                             .textScaleFactor,
                                         onTap: () {
@@ -353,23 +358,26 @@ class CommentTile extends StatelessWidget {
   }
 
   void _collapse(BuildContext context) {
-    context
-        .read<CollapseCubit>()
-        .collapse(onDone: HapticFeedbackUtil.selection);
-    if (context.read<CollapseCubit>().state.collapsed &&
-        context.read<PreferenceCubit>().state.autoScrollEnabled) {
-      Future<void>.delayed(
-        Durations.ms300,
-        () {
-          itemScrollController?.scrollTo(
-            index:
-                context.read<CommentsCubit>().state.comments.indexOf(comment) +
-                    1,
-            alignment: 0.1,
-            duration: Durations.ms300,
-          );
-        },
-      );
+    final PreferenceCubit preferenceCubit = context.read<PreferenceCubit>();
+    final CollapseCubit collapseCubit = context.read<CollapseCubit>()
+      ..collapse(onStateChanged: HapticFeedbackUtil.selection);
+    if (collapseCubit.state.collapsed &&
+        preferenceCubit.state.autoScrollEnabled) {
+      final List<Comment> comments =
+          context.read<CommentsCubit>().state.comments;
+      final int indexOfNextComment = comments.indexOf(comment) + 1;
+      if (indexOfNextComment < comments.length) {
+        Future<void>.delayed(
+          Durations.ms300,
+          () {
+            itemScrollController?.scrollTo(
+              index: indexOfNextComment,
+              alignment: 0.1,
+              duration: Durations.ms300,
+            );
+          },
+        );
+      }
     }
   }
 }

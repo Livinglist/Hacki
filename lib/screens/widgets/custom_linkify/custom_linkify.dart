@@ -1,7 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/custom_linkify/linkifiers/linkifiers.dart';
-import 'package:hacki/styles/palette.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:linkify/linkify.dart' hide UrlLinkifier;
 
@@ -139,7 +140,9 @@ const UrlLinkifier _urlLinkifier = UrlLinkifier();
 const EmailLinkifier _emailLinkifier = EmailLinkifier();
 const QuoteLinkifier _quoteLinkifier = QuoteLinkifier();
 const EmphasisLinkifier _emphasisLinkifier = EmphasisLinkifier();
+const CodeLinkifier _codeLinkifier = CodeLinkifier();
 const List<Linkifier> defaultLinkifiers = <Linkifier>[
+  _codeLinkifier,
   _urlLinkifier,
   _emailLinkifier,
   _quoteLinkifier,
@@ -391,6 +394,14 @@ TextSpan buildTextSpan(
               text: element.text,
               style: style?.copyWith(
                 fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.bold,
+              ),
+            );
+          } else if (element is CodeElement) {
+            return TextSpan(
+              text: element.text,
+              style: style?.copyWith(
+                fontFamily: Font.ubuntuMono.name,
               ),
             );
           }

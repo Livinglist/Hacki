@@ -322,7 +322,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     }
   }
 
-  void onOrderChanged(CommentsOrder? order) {
+  void updateOrder(CommentsOrder? order) {
     if (order == null) return;
     if (state.order == order) return;
     HapticFeedbackUtil.selection();
@@ -335,7 +335,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     init(useCommentCache: true);
   }
 
-  void onFetchModeChanged(FetchMode? fetchMode) {
+  void updateFetchMode(FetchMode? fetchMode) {
     if (fetchMode == null) return;
     if (state.fetchMode == fetchMode) return;
     _collapseCache.resetCollapsedComments();

@@ -365,6 +365,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                       child: SingleChildScrollView(
                         child: ItemText(
                           item: replyingTo,
+                          selectable: true,
                           textScaleFactor:
                               MediaQuery.of(context).textScaleFactor,
                         ),

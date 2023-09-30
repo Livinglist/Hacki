@@ -11,6 +11,10 @@ extension ContextMenuBuilder on Widget {
     EditableTextState editableTextState, {
     required Item item,
   }) {
+    if (item is! Buildable) {
+      return const SizedBox.shrink();
+    }
+
     final int start = editableTextState.textEditingValue.selection.base.offset;
     final int end = editableTextState.textEditingValue.selection.end;
 
@@ -19,28 +23,11 @@ extension ContextMenuBuilder on Widget {
     ];
 
     if (start != -1 && end != -1) {
-      String selectedText = item.text.substring(start, end);
-
-      if (item is Buildable) {
-        final Iterable<EmphasisElement> emphasisElements =
-            (item as Buildable).elements.whereType<EmphasisElement>();
-
-        int count = 1;
-        while (selectedText.contains(' ') && count <= emphasisElements.length) {
-          final int s = (start + count * 2).clamp(0, item.text.length);
-          final int e = (end + count * 2).clamp(0, item.text.length);
-          selectedText = item.text.substring(s, e);
-          count++;
-        }
-
-        count = 1;
-        while (selectedText.contains(' ') && count <= emphasisElements.length) {
-          final int s = (start - count * 2).clamp(0, item.text.length);
-          final int e = (end - count * 2).clamp(0, item.text.length);
-          selectedText = item.text.substring(s, e);
-          count++;
-        }
-      }
+      final String text = (item as Buildable)
+          .elements
+          .map((LinkifyElement e) => e.text)
+          .reduce((String value, String e) => '$value$e');
+      final String selectedText = text.substring(start, end);
 
       items.addAll(<ContextMenuButtonItem>[
         ContextMenuButtonItem(

@@ -34,7 +34,7 @@ class CollapseCubit extends Cubit<CollapseState> {
     );
   }
 
-  void collapse({required VoidCallback onDone}) {
+  void collapse({required VoidCallback onStateChanged}) {
     if (state.collapsed) {
       _collapseCache.uncollapse(_commentId);
 
@@ -45,7 +45,7 @@ class CollapseCubit extends Cubit<CollapseState> {
         ),
       );
 
-      onDone();
+      onStateChanged();
     } else {
       if (state.locked) {
         emit(state.copyWith(locked: false));
@@ -61,7 +61,7 @@ class CollapseCubit extends Cubit<CollapseState> {
         ),
       );
 
-      onDone();
+      onStateChanged();
     }
   }
 

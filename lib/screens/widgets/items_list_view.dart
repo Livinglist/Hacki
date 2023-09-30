@@ -272,7 +272,7 @@ class _CommentTile extends StatelessWidget {
               children: <Widget>[
                 Expanded(
                   child: Text(
-                    comment.text,
+                    comment.text.trimLeft(),
                     style: TextStyle(
                       fontSize: fontSize,
                     ),
