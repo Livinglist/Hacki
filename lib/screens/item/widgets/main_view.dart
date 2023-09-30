@@ -469,7 +469,7 @@ class _ParentItemSection extends StatelessWidget {
                           ),
                         )
                         .toList(),
-                    onChanged: context.read<CommentsCubit>().onFetchModeChanged,
+                    onChanged: context.read<CommentsCubit>().updateFetchMode,
                   ),
                 const SizedBox(
                   width: Dimens.pt6,
@@ -491,7 +491,7 @@ class _ParentItemSection extends StatelessWidget {
                         ),
                       )
                       .toList(),
-                  onChanged: context.read<CommentsCubit>().onOrderChanged,
+                  onChanged: context.read<CommentsCubit>().updateOrder,
                 ),
                 const SizedBox(
                   width: Dimens.pt4,
