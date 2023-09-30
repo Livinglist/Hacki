@@ -7,6 +7,9 @@ final RegExp _codeRegex =
 class CodeLinkifier extends Linkifier {
   const CodeLinkifier();
 
+  static const String _openTag = '<pre><code>';
+  static const String _closeTag = '</code></pre>';
+
   @override
   List<LinkifyElement> parse(
     List<LinkifyElement> elements,
@@ -16,39 +19,31 @@ class CodeLinkifier extends Linkifier {
 
     for (final LinkifyElement element in elements) {
       if (element is TextElement) {
-        const String openTag = '<pre><code>';
-        const String closeTag = '</code></pre>';
+        final RegExpMatch? match = _codeRegex.firstMatch(
+          element.text.trimLeft(),
+        );
 
-        final String? match = _codeRegex
-            .stringMatch(element.text)
-            ?.replaceFirst(openTag, '')
-            .replaceFirst(closeTag, '');
-
-        if (match == null) {
+        if (match == null || match.group(0) == null || match.group(1) == null) {
           list.add(element);
         } else {
-          final String matchedText = match;
-          final int pos = element.text.indexOf(matchedText);
+          final String matchedText = match.group(0)!;
+          final num pos = element.text.indexOf(matchedText);
           final List<String> splitTexts = element.text.split(matchedText);
 
           int curPos = 0;
           bool added = false;
 
-          for (String text in splitTexts) {
-            if (text.contains(openTag)) {
-              text = text.replaceFirst(openTag, '');
-              curPos += text.length + openTag.length;
-            } else if (text.contains(closeTag)) {
-              text = text.replaceFirst(closeTag, '');
-              curPos += text.length + closeTag.length;
-            } else {
-              curPos += text.length;
-            }
-            list.addAll(parse(<TextElement>[TextElement(text)], options));
+          for (final String text in splitTexts) {
+            list.addAll(parse(<LinkifyElement>[TextElement(text)], options));
+
+            curPos += text.length;
 
             if (!added && curPos >= pos) {
               added = true;
-              list.add(CodeElement(matchedText));
+              final String trimmedText = matchedText
+                  .replaceFirst(_openTag, '')
+                  .replaceFirst(_closeTag, '');
+              list.add(CodeElement(trimmedText));
             }
           }
         }
