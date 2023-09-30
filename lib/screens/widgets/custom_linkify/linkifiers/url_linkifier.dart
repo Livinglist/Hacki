@@ -95,13 +95,7 @@ class UrlLinkifier extends Linkifier {
                 url = url.replaceFirst(RegExp(r'www\.'), '');
               }
 
-              list.add(
-                UrlElement(
-                  originalUrl,
-                  url,
-                  originText,
-                ),
-              );
+              list.add(UrlElement(originalUrl, url, originText));
             } else {
               list.add(UrlElement(url, url, originText));
             }
