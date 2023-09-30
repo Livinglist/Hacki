@@ -352,6 +352,7 @@ class _ParentItemSection extends StatelessWidget {
                                     item: item,
                                     textScaleFactor:
                                         MediaQuery.of(context).textScaleFactor,
+                                    selectable: true,
                                   ),
                                 ),
                               ),

@@ -394,24 +394,14 @@ TextSpan buildTextSpan(
               text: element.text,
               style: style?.copyWith(
                 fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.bold,
               ),
             );
           } else if (element is CodeElement) {
-            return WidgetSpan(
-              child: Container(
-                padding: const EdgeInsets.all(Dimens.pt6),
-                margin: const EdgeInsets.only(right: Dimens.pt8),
-                color: Palette.orange.shade100,
-                child: SelectableText(
-                  element.text,
-                  style: TextStyle(
-                    fontFamily: Font.ubuntu.name,
-                  ),
-                ),
-              ),
+            return TextSpan(
+              text: element.text,
               style: style?.copyWith(
-                fontStyle: FontStyle.italic,
-                fontFamily: Font.ubuntu.name,
+                fontFamily: Font.ubuntuMono.name,
               ),
             );
           }

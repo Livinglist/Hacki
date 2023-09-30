@@ -11,13 +11,18 @@ class ItemText extends StatelessWidget {
   const ItemText({
     required this.item,
     required this.textScaleFactor,
+    required this.selectable,
     super.key,
     this.onTap,
   });
 
   final Item item;
-  final VoidCallback? onTap;
   final double textScaleFactor;
+  final bool selectable;
+
+  /// Reserved for collapsing a comment tile when
+  /// [CollapseModePreference] is enabled;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +46,7 @@ class ItemText extends StatelessWidget {
       }
     }
 
-    if (item is Buildable) {
+    if (selectable && item is Buildable) {
       return SelectableText.rich(
         buildTextSpan(
           (item as Buildable).elements,
@@ -64,25 +69,30 @@ class ItemText extends StatelessWidget {
         semanticsLabel: item.text,
       );
     } else {
-      return SelectableLinkify(
-        text: item.text,
-        textScaleFactor: textScaleFactor,
-        style: style,
-        linkStyle: linkStyle,
-        onOpen: (LinkableElement link) => LinkUtil.launch(link.url),
-        onTap: onTap,
-        onSelectionChanged: onSelectionChanged,
-        contextMenuBuilder: (
-          BuildContext context,
-          EditableTextState editableTextState,
-        ) =>
-            contextMenuBuilder(
-          context,
-          editableTextState,
-          item: item,
-        ),
-        semanticsLabel: item.text,
-      );
+      if (item is Buildable) {
+        return InkWell(
+          child: Text.rich(
+            buildTextSpan(
+              (item as Buildable).elements,
+              style: style,
+              linkStyle: linkStyle,
+              onOpen: (LinkableElement link) => LinkUtil.launch(link.url),
+            ),
+            textScaleFactor: textScaleFactor,
+            semanticsLabel: item.text,
+          ),
+        );
+      } else {
+        return InkWell(
+          child: Linkify(
+            text: item.text,
+            textScaleFactor: textScaleFactor,
+            style: style,
+            linkStyle: linkStyle,
+            onOpen: (LinkableElement link) => LinkUtil.launch(link.url),
+          ),
+        );
+      }
     }
   }
 }

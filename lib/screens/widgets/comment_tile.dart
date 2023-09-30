@@ -23,6 +23,8 @@ class CommentTile extends StatelessWidget {
     this.onRightMoreTapped,
     this.opUsername,
     this.actionable = true,
+    this.collapsable = true,
+    this.selectable = true,
     this.level = 0,
     this.onTap,
     this.itemScrollController,
@@ -32,6 +34,8 @@ class CommentTile extends StatelessWidget {
   final Comment comment;
   final int level;
   final bool actionable;
+  final bool collapsable;
+  final bool selectable;
   final FetchMode fetchMode;
   final ItemScrollController? itemScrollController;
 
@@ -119,7 +123,7 @@ class CommentTile extends StatelessWidget {
                       : null,
                   child: InkWell(
                     onTap: () {
-                      if (actionable) {
+                      if (collapsable) {
                         _collapse(context);
                       } else {
                         onTap?.call();
@@ -200,6 +204,7 @@ class CommentTile extends StatelessWidget {
                                       child: ItemText(
                                         key: ValueKey<int>(comment.id),
                                         item: comment,
+                                        selectable: selectable,
                                         textScaleFactor: MediaQuery.of(context)
                                             .textScaleFactor,
                                         onTap: () {
