@@ -142,11 +142,11 @@ const QuoteLinkifier _quoteLinkifier = QuoteLinkifier();
 const EmphasisLinkifier _emphasisLinkifier = EmphasisLinkifier();
 const CodeLinkifier _codeLinkifier = CodeLinkifier();
 const List<Linkifier> defaultLinkifiers = <Linkifier>[
+  _codeLinkifier,
   _urlLinkifier,
   _emailLinkifier,
   _quoteLinkifier,
   _emphasisLinkifier,
-  _codeLinkifier,
 ];
 
 /// Turns URLs into links
