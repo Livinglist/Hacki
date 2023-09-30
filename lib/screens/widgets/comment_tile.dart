@@ -358,11 +358,11 @@ class CommentTile extends StatelessWidget {
   }
 
   void _collapse(BuildContext context) {
-    context
-        .read<CollapseCubit>()
-        .collapse(onStateChanged: HapticFeedbackUtil.selection);
-    if (context.read<CollapseCubit>().state.collapsed &&
-        context.read<PreferenceCubit>().state.autoScrollEnabled) {
+    final PreferenceCubit preferenceCubit = context.read<PreferenceCubit>();
+    final CollapseCubit collapseCubit = context.read<CollapseCubit>()
+      ..collapse(onStateChanged: HapticFeedbackUtil.selection);
+    if (collapseCubit.state.collapsed &&
+        preferenceCubit.state.autoScrollEnabled) {
       final List<Comment> comments =
           context.read<CommentsCubit>().state.comments;
       final int indexOfNextComment = comments.indexOf(comment) + 1;
