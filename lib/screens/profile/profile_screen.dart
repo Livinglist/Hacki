@@ -99,7 +99,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                           showWebPreviewOnStoryTile: false,
                           showMetadataOnStoryTile: false,
                           showUrl: false,
-                          useConsistentFontSize: true,
+                          useSimpleTileForStory: true,
                           refreshController: refreshControllerHistory,
                           items: historyState.submittedItems
                               .where((Item e) => !e.dead && !e.deleted)

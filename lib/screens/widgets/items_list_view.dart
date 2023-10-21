@@ -21,10 +21,8 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     required this.refreshController,
     super.key,
     this.useSimpleTileForStory = false,
-    this.showCommentBy = false,
     this.enablePullDown = true,
     this.markReadStories = false,
-    this.useConsistentFontSize = false,
     this.showOfflineBanner = false,
     this.onRefresh,
     this.onLoadMore,
@@ -36,16 +34,12 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   });
 
   final bool useSimpleTileForStory;
-  final bool showCommentBy;
   final bool showWebPreviewOnStoryTile;
   final bool showMetadataOnStoryTile;
   final bool showUrl;
   final bool enablePullDown;
   final bool markReadStories;
   final bool showOfflineBanner;
-
-  /// Whether to use same font size for comment and story tiles.
-  final bool useConsistentFontSize;
 
   final List<T> items;
   final Widget? header;
@@ -76,7 +70,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
             final bool swipeGestureEnabled =
                 context.read<PreferenceCubit>().state.swipeGestureEnabled;
             return <Widget>[
-              if (useConsistentFontSize || useSimpleTileForStory)
+              if (useSimpleTileForStory)
                 FadeIn(
                   child: InkWell(
                     onTap: () => onTap(e),
