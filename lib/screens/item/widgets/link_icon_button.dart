@@ -28,6 +28,7 @@ class LinkIconButton extends StatelessWidget {
       ),
       onPressed: () => LinkUtil.launch(
         'https://news.ycombinator.com/item?id=$storyId',
+        context,
         useHackiForHnLink: false,
       ),
     );

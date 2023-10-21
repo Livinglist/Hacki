@@ -33,12 +33,14 @@ extension ContextMenuBuilder on Widget {
         ContextMenuButtonItem(
           onPressed: () => LinkUtil.launch(
             '''${Constants.wikipediaLink}$selectedText''',
+            context,
           ),
           label: 'Wikipedia',
         ),
         ContextMenuButtonItem(
           onPressed: () => LinkUtil.launch(
             '''${Constants.wiktionaryLink}$selectedText''',
+            context,
           ),
           label: 'Wiktionary',
         ),

@@ -2,8 +2,10 @@ import 'dart:collection';
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:hacki/models/displayable.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/styles/palette.dart';
 
 abstract class Preference<T> extends Equatable with SettingsDisplayable {
   const Preference({required this.val});
@@ -24,6 +26,7 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
       FontSizePreference(),
       TabOrderPreference(),
       StoryMarkingModePreference(),
+      AppColorPreference(),
       // Order of items below matters and
       // reflects the order on settings screen.
       const DisplayModePreference(),
@@ -66,6 +69,7 @@ const bool _autoScrollModeDefaultValue = true;
 final int _fetchModeDefaultValue = FetchMode.eager.index;
 final int _commentsOrderDefaultValue = CommentsOrder.natural.index;
 final int _fontSizeDefaultValue = FontSize.regular.index;
+final int _appColorDefaultValue = materialColors.indexOf(Palette.deepOrange);
 final int _fontDefaultValue = Font.roboto.index;
 final int _tabOrderDefaultValue =
     StoryType.convertToSettingsValue(StoryType.values);
@@ -382,4 +386,19 @@ class StoryMarkingModePreference extends IntPreference {
 
   @override
   String get title => 'Mark a Story as Read on';
+}
+
+class AppColorPreference extends IntPreference {
+  AppColorPreference({int? val}) : super(val: val ?? _appColorDefaultValue);
+
+  @override
+  AppColorPreference copyWith({required int? val}) {
+    return AppColorPreference(val: val);
+  }
+
+  @override
+  String get key => 'appColor';
+
+  @override
+  String get title => 'Color';
 }

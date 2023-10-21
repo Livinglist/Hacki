@@ -41,8 +41,8 @@ class InboxView extends StatelessWidget {
         Expanded(
           child: SmartRefresher(
             enablePullUp: true,
-            header: const WaterDropMaterialHeader(
-              backgroundColor: Palette.orange,
+            header: WaterDropMaterialHeader(
+              backgroundColor: Theme.of(context).primaryColor,
             ),
             footer: CustomFooter(
               loadStyle: LoadStyle.ShowWhenLoading,
@@ -80,58 +80,48 @@ class InboxView extends StatelessWidget {
                         child: InkWell(
                           onTap: () => onCommentTapped(e),
                           child: Padding(
-                            padding: EdgeInsets.zero,
+                            padding: const EdgeInsets.symmetric(
+                              vertical: Dimens.pt8,
+                              horizontal: Dimens.pt6,
+                            ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                Flex(
-                                  direction: Axis.horizontal,
-                                  mainAxisSize: MainAxisSize.min,
+                                Row(
                                   children: <Widget>[
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: Dimens.pt8,
-                                          horizontal: Dimens.pt6,
-                                        ),
-                                        child: Linkify(
-                                          text: '${e.by} : ${e.text}',
-                                          style: TextStyle(
-                                            color:
-                                                unreadCommentsIds.contains(e.id)
-                                                    ? textColor
-                                                    : Palette.grey,
-                                          ),
-                                          linkStyle: TextStyle(
-                                            color:
-                                                unreadCommentsIds.contains(e.id)
-                                                    ? Palette.orange
-                                                    : Palette.orange
-                                                        .withOpacity(0.6),
-                                          ),
-                                          maxLines: 4,
-                                          onOpen: (LinkableElement link) =>
-                                              LinkUtil.launch(link.url),
-                                        ),
+                                    Text(
+                                      '''${e.timeAgo} from ${e.by}:''',
+                                      style: const TextStyle(
+                                        color: Palette.grey,
                                       ),
                                     ),
-                                    Row(
-                                      children: <Widget>[
-                                        Text(
-                                          e.timeAgo,
-                                          style: const TextStyle(
-                                            color: Palette.grey,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          width: Dimens.pt12,
-                                        ),
-                                      ],
+                                    const SizedBox(
+                                      width: Dimens.pt12,
                                     ),
                                   ],
                                 ),
-                                const Divider(
-                                  height: Dimens.zero,
+                                Linkify(
+                                  text: e.text,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.copyWith(
+                                        color: unreadCommentsIds.contains(e.id)
+                                            ? textColor
+                                            : Palette.grey,
+                                      ),
+                                  linkStyle: TextStyle(
+                                    color: Theme.of(context)
+                                        .primaryColor
+                                        .withOpacity(
+                                          unreadCommentsIds.contains(e.id)
+                                              ? 1
+                                              : 0.6,
+                                        ),
+                                  ),
+                                  maxLines: 4,
+                                  onOpen: (LinkableElement link) =>
+                                      LinkUtil.launch(link.url, context),
                                 ),
                               ],
                             ),

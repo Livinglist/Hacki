@@ -224,6 +224,7 @@ class _HomeScreenState extends State<HomeScreen>
     if (story.url.isNotEmpty && isJobWithLink) {
       LinkUtil.launch(
         story.url,
+        context,
         useReader: useReader,
         offlineReading: offlineReading,
       );

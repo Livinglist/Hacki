@@ -45,7 +45,7 @@ class PinnedStories extends StatelessWidget {
                     ],
                   ),
                   child: ColoredBox(
-                    color: Palette.orangeAccent.withOpacity(0.2),
+                    color: Theme.of(context).primaryColor.withOpacity(0.2),
                     child: StoryTile(
                       key: ValueKey<String>('${story.id}-PinnedStoryTile'),
                       story: story,
@@ -58,10 +58,10 @@ class PinnedStories extends StatelessWidget {
                 ),
               ),
             if (state.pinnedStories.isNotEmpty)
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: Dimens.pt12),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: Dimens.pt12),
                 child: Divider(
-                  color: Palette.orangeAccent,
+                  color: Theme.of(context).primaryColor.withOpacity(0.8),
                 ),
               ),
           ],

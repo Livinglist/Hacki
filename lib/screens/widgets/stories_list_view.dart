@@ -7,7 +7,6 @@ import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
-import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -107,8 +106,9 @@ class _StoriesListViewState extends State<StoriesListView>
                           HapticFeedbackUtil.light();
                           context.read<PinCubit>().pinStory(story);
                         },
-                        backgroundColor: Palette.orange,
-                        foregroundColor: Palette.white,
+                        backgroundColor: Theme.of(context).primaryColor,
+                        foregroundColor:
+                            Theme.of(context).colorScheme.onPrimary,
                         icon: preferenceState.complexStoryTileEnabled
                             ? Icons.push_pin_outlined
                             : null,
@@ -118,8 +118,9 @@ class _StoriesListViewState extends State<StoriesListView>
                       ),
                       SlidableAction(
                         onPressed: (_) => onMoreTapped(story, context.rect),
-                        backgroundColor: Palette.orange,
-                        foregroundColor: Palette.white,
+                        backgroundColor: Theme.of(context).primaryColor,
+                        foregroundColor:
+                            Theme.of(context).colorScheme.onPrimary,
                         icon: preferenceState.complexStoryTileEnabled
                             ? Icons.more_horiz
                             : null,

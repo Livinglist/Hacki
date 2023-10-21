@@ -36,7 +36,7 @@ class Linkify extends StatelessWidget {
     this.textDirection,
     this.maxLines,
     this.overflow = TextOverflow.clip,
-    this.textScaleFactor = 1.0,
+    this.textScaleFactor,
     this.softWrap = true,
     this.strutStyle,
     this.locale,
@@ -79,7 +79,7 @@ class Linkify extends StatelessWidget {
   final TextOverflow overflow;
 
   /// The number of font pixels for each logical pixel
-  final double textScaleFactor;
+  final double? textScaleFactor;
 
   /// Whether the text should break at soft line breaks.
   final bool softWrap;
@@ -168,7 +168,7 @@ class SelectableLinkify extends StatelessWidget {
     this.maxLines,
     // SelectableText
     this.focusNode,
-    this.textScaleFactor = 1.0,
+    this.textScaleFactor,
     this.strutStyle,
     this.showCursor = false,
     this.autofocus = false,
@@ -193,7 +193,7 @@ class SelectableLinkify extends StatelessWidget {
   final String? semanticsLabel;
 
   /// The number of font pixels for each logical pixel
-  final double textScaleFactor;
+  final double? textScaleFactor;
 
   /// Linkifiers to be used for linkify
   final List<Linkifier> linkifiers;

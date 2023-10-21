@@ -24,7 +24,7 @@ class _OnboardingViewState extends State<OnboardingView> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).brightness == Brightness.light
-            ? Palette.orange
+            ? Theme.of(context).primaryColor
             : Theme.of(context).canvasColor,
         elevation: Dimens.zero,
         leading: IconButton(
@@ -36,7 +36,7 @@ class _OnboardingViewState extends State<OnboardingView> {
         ),
       ),
       backgroundColor: Theme.of(context).brightness == Brightness.light
-          ? Palette.orange
+          ? Theme.of(context).primaryColor
           : null,
       body: Stack(
         children: <Widget>[
@@ -89,7 +89,7 @@ class _OnboardingViewState extends State<OnboardingView> {
               },
               style: ElevatedButton.styleFrom(
                 shape: const CircleBorder(),
-                backgroundColor: Palette.orange,
+                backgroundColor: Theme.of(context).primaryColor,
                 padding: const EdgeInsets.all(
                   Dimens.pt18,
                 ),

@@ -124,9 +124,9 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                                   duration: Durations.ms300,
                                   child: IconButton(
                                     key: const Key('quote'),
-                                    icon: const Icon(
+                                    icon: Icon(
                                       FeatherIcons.code,
-                                      color: Palette.orange,
+                                      color: Theme.of(context).primaryColor,
                                       size: TextDimens.pt18,
                                     ),
                                     onPressed: expanded ? showTextPopup : null,
@@ -138,7 +138,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                                   expanded
                                       ? FeatherIcons.minimize2
                                       : FeatherIcons.maximize2,
-                                  color: Palette.orange,
+                                  color: Theme.of(context).primaryColor,
                                   size: TextDimens.pt18,
                                 ),
                                 onPressed: () {
@@ -150,9 +150,9 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                             ],
                             IconButton(
                               key: const Key('close'),
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.close,
-                                color: Palette.orange,
+                                color: Theme.of(context).primaryColor,
                               ),
                               onPressed: () {
                                 setState(() {
@@ -196,8 +196,8 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                             ),
                           ],
                           if (isLoading)
-                            const Padding(
-                              padding: EdgeInsets.symmetric(
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
                                 vertical: Dimens.pt12,
                                 horizontal: Dimens.pt16,
                               ),
@@ -205,7 +205,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                                 height: Dimens.pt24,
                                 width: Dimens.pt24,
                                 child: CircularProgressIndicator(
-                                  color: Palette.orange,
+                                  color: Theme.of(context).primaryColor,
                                   strokeWidth: Dimens.pt2,
                                 ),
                               ),
@@ -213,9 +213,9 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                           else
                             IconButton(
                               key: const Key('send'),
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.send,
-                                color: Palette.orange,
+                                color: Theme.of(context).primaryColor,
                               ),
                               onPressed: () {
                                 widget.onSendTapped();
@@ -343,9 +343,9 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                         ).then((_) => HapticFeedbackUtil.selection()),
                       ),
                       IconButton(
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.close,
-                          color: Palette.orange,
+                          color: Theme.of(context).primaryColor,
                           size: TextDimens.pt18,
                         ),
                         onPressed: () => context.pop(),

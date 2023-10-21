@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
@@ -136,8 +137,9 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                                 if (fetchMode != null) {
                                   HapticFeedbackUtil.selection();
                                   context.read<PreferenceCubit>().update(
-                                        FetchModePreference(),
-                                        to: fetchMode.index,
+                                        FetchModePreference(
+                                          val: fetchMode.index,
+                                        ),
                                       );
                                 }
                               },
@@ -170,8 +172,9 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                                 if (order != null) {
                                   HapticFeedbackUtil.selection();
                                   context.read<PreferenceCubit>().update(
-                                        CommentsOrderPreference(),
-                                        to: order.index,
+                                        CommentsOrderPreference(
+                                          val: order.index,
+                                        ),
                                       );
                                 }
                               },
@@ -189,7 +192,10 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                     showMetadata: preferenceState.metadataEnabled,
                     showUrl: preferenceState.urlEnabled,
                     story: Story.placeholder(),
-                    onTap: () => LinkUtil.launch(Constants.guidelineLink),
+                    onTap: () => LinkUtil.launch(
+                      Constants.guidelineLink,
+                      context,
+                    ),
                   ),
                   const Divider(),
                   for (final Preference<dynamic> preference in preferenceState
@@ -211,7 +217,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
 
                         context
                             .read<PreferenceCubit>()
-                            .update(preference, to: val);
+                            .update(preference.copyWith(val: val));
 
                         if (preference is MarkReadStoriesModePreference &&
                             val == false) {
@@ -220,7 +226,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                               .add(ClearAllReadStories());
                         }
                       },
-                      activeColor: Palette.orange,
+                      activeColor: Theme.of(context).primaryColor,
                     ),
                     if (preference
                         is MarkReadStoriesModePreference) ...<Widget>[
@@ -258,8 +264,9 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                             if (storyMarkingMode != null) {
                               HapticFeedbackUtil.selection();
                               context.read<PreferenceCubit>().update(
-                                    StoryMarkingModePreference(),
-                                    to: storyMarkingMode.index,
+                                    StoryMarkingModePreference(
+                                      val: storyMarkingMode.index,
+                                    ),
                                   );
                             }
                           },
@@ -280,6 +287,12 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                       'Theme',
                     ),
                     onTap: showThemeSettingDialog,
+                  ),
+                  ListTile(
+                    title: const Text(
+                      'Primary Color',
+                    ),
+                    onTap: showColorPicker,
                   ),
                   const Divider(),
                   ListTile(
@@ -385,10 +398,9 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                       groupValue: state.font,
                       onChanged: (Font? val) {
                         if (val != null) {
-                          context.read<PreferenceCubit>().update(
-                                FontPreference(),
-                                to: val.index,
-                              );
+                          context
+                              .read<PreferenceCubit>()
+                              .update(FontPreference(val: val.index));
                         }
                       },
                       title: Text(
@@ -396,18 +408,6 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                         style: TextStyle(fontFamily: font.name),
                       ),
                     ),
-                  const Row(
-                    children: <Widget>[
-                      Text(
-                        '*Restart required',
-                        style: TextStyle(
-                          fontSize: TextDimens.pt12,
-                          color: Palette.grey,
-                        ),
-                      ),
-                      Spacer(),
-                    ],
-                  ),
                 ],
               ),
             );
@@ -467,6 +467,31 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
     ThemeUtil.updateStatusBarSetting(brightness, val);
   }
 
+  void showColorPicker() {
+    showDialog<void>(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          contentPadding: const EdgeInsets.all(Dimens.pt18),
+          title: const Text('Primary Color'),
+          content: MaterialColorPicker(
+            colors: materialColors,
+            selectedColor: context.read<PreferenceCubit>().state.appColor,
+            onMainColorChange: (ColorSwatch<dynamic>? color) {
+              context.read<PreferenceCubit>().update(
+                    AppColorPreference(
+                      val: materialColors.indexOf(color ?? Palette.deepOrange),
+                    ),
+                  );
+              context.pop();
+            },
+            onBack: context.pop,
+          ),
+        );
+      },
+    );
+  }
+
   void showClearCacheDialog() {
     showDialog<void>(
       context: context,
@@ -479,10 +504,10 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
           actions: <Widget>[
             TextButton(
               onPressed: () => context.pop(),
-              child: const Text(
+              child: Text(
                 'Cancel',
                 style: TextStyle(
-                  color: Palette.orange,
+                  color: Theme.of(context).primaryColor,
                 ),
               ),
             ),
@@ -540,6 +565,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
           ElevatedButton(
             onPressed: () => LinkUtil.launch(
               Constants.portfolioLink,
+              context,
             ),
             child: const Row(
               children: <Widget>[
@@ -556,6 +582,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
           ElevatedButton(
             onPressed: () => LinkUtil.launch(
               Constants.privacyPolicyLink,
+              context,
             ),
             child: const Row(
               children: <Widget>[
@@ -586,6 +613,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
           ElevatedButton(
             onPressed: () => LinkUtil.launch(
               Constants.githubLink,
+              context,
             ),
             child: const Row(
               children: <Widget>[
@@ -604,6 +632,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
               Platform.isIOS
                   ? Constants.appStoreLink
                   : Constants.googlePlayLink,
+              context,
             ),
             child: const Row(
               children: <Widget>[
@@ -620,6 +649,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
           ElevatedButton(
             onPressed: () => LinkUtil.launch(
               Constants.sponsorLink,
+              context,
             ),
             child: const Row(
               children: <Widget>[

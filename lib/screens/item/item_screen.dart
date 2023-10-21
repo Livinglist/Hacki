@@ -301,6 +301,8 @@ class _ItemScreenState extends State<ItemScreen>
                                 backgroundColor: Theme.of(context)
                                     .canvasColor
                                     .withOpacity(0.6),
+                                foregroundColor:
+                                    Theme.of(context).iconTheme.color,
                                 item: widget.item,
                                 splitViewEnabled: state.enabled,
                                 expanded: state.expanded,
@@ -340,6 +342,7 @@ class _ItemScreenState extends State<ItemScreen>
                     appBar: CustomAppBar(
                       backgroundColor:
                           Theme.of(context).canvasColor.withOpacity(0.6),
+                      foregroundColor: Theme.of(context).iconTheme.color,
                       item: widget.item,
                       onFontSizeTap: onFontSizeTapped,
                       fontSizeIconButtonKey: fontSizeIconButtonKey,
@@ -412,17 +415,16 @@ class _ItemScreenState extends State<ItemScreen>
                 fontSize: fontSize.fontSize,
                 color:
                     context.read<PreferenceCubit>().state.fontSize == fontSize
-                        ? Palette.deepOrange
+                        ? Theme.of(context).primaryColor
                         : null,
               ),
             ),
             onTap: () {
               HapticFeedbackUtil.light();
               locator.get<AppReviewService>().requestReview();
-              context.read<PreferenceCubit>().update(
-                    FontSizePreference(),
-                    to: fontSize.index,
-                  );
+              context
+                  .read<PreferenceCubit>()
+                  .update(FontSizePreference(val: fontSize.index));
             },
           ),
       ],

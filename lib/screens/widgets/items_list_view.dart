@@ -20,11 +20,9 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     required this.onTap,
     required this.refreshController,
     super.key,
-    this.useCommentTile = false,
-    this.showCommentBy = false,
+    this.useSimpleTileForStory = false,
     this.enablePullDown = true,
     this.markReadStories = false,
-    this.useConsistentFontSize = false,
     this.showOfflineBanner = false,
     this.onRefresh,
     this.onLoadMore,
@@ -35,17 +33,13 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.itemBuilder,
   });
 
-  final bool useCommentTile;
-  final bool showCommentBy;
+  final bool useSimpleTileForStory;
   final bool showWebPreviewOnStoryTile;
   final bool showMetadataOnStoryTile;
   final bool showUrl;
   final bool enablePullDown;
   final bool markReadStories;
   final bool showOfflineBanner;
-
-  /// Whether to use same font size for comment and story tiles.
-  final bool useConsistentFontSize;
 
   final List<T> items;
   final Widget? header;
@@ -76,116 +70,134 @@ class ItemsListView<T extends Item> extends StatelessWidget {
             final bool swipeGestureEnabled =
                 context.read<PreferenceCubit>().state.swipeGestureEnabled;
             return <Widget>[
-              GestureDetector(
-                /// If swipe gesture is enabled on home screen, use long press
-                /// instead of slide action to trigger the action menu.
-                onLongPress: swipeGestureEnabled
-                    ? () => onMoreTapped?.call(e, context.rect)
-                    : null,
-                child: FadeIn(
-                  child: StoryTile(
-                    key: ValueKey<int>(e.id),
-                    story: e,
+              if (useSimpleTileForStory)
+                FadeIn(
+                  child: InkWell(
                     onTap: () => onTap(e),
-                    showWebPreview: showWebPreviewOnStoryTile,
-                    showMetadata: showMetadataOnStoryTile,
-                    showUrl: showUrl,
-                    hasRead: markReadStories && hasRead,
-                    simpleTileFontSize: useConsistentFontSize
-                        ? TextDimens.pt14
-                        : TextDimens.pt16,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: Dimens.pt8,
+                        bottom: Dimens.pt8,
+                        left: Dimens.pt12,
+                        right: Dimens.pt6,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              Text(
+                                '''${e.timeAgo} by ${e.by}''',
+                                style: const TextStyle(
+                                  color: Palette.grey,
+                                ),
+                              ),
+                              const SizedBox(
+                                width: Dimens.pt12,
+                              ),
+                            ],
+                          ),
+                          Linkify(
+                            text: e.title,
+                            maxLines: 4,
+                            style: Theme.of(context).textTheme.bodyLarge,
+                            linkStyle: TextStyle(
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            onOpen: (LinkableElement link) => LinkUtil.launch(
+                              link.url,
+                              context,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              else
+                GestureDetector(
+                  /// If swipe gesture is enabled on home screen, use long press
+                  /// instead of slide action to trigger the action menu.
+                  onLongPress: swipeGestureEnabled
+                      ? () => onMoreTapped?.call(e, context.rect)
+                      : null,
+                  child: FadeIn(
+                    child: StoryTile(
+                      key: ValueKey<int>(e.id),
+                      story: e,
+                      onTap: () => onTap(e),
+                      showWebPreview: showWebPreviewOnStoryTile,
+                      showMetadata: showMetadataOnStoryTile,
+                      showUrl: showUrl,
+                      hasRead: markReadStories && hasRead,
+                    ),
                   ),
                 ),
-              ),
               if (!showWebPreviewOnStoryTile)
                 const Divider(
                   height: Dimens.zero,
                 ),
             ];
           } else if (e is Comment) {
-            if (useCommentTile) {
-              return <Widget>[
-                if (showWebPreviewOnStoryTile)
-                  const Divider(
-                    height: Dimens.zero,
-                  ),
-                _CommentTile(
-                  comment: e,
-                  onTap: () => onTap(e),
-                  fontSize: showWebPreviewOnStoryTile
-                      ? TextDimens.pt14
-                      : TextDimens.pt16,
-                ),
-                const Divider(
-                  height: Dimens.zero,
-                ),
-              ];
-            }
             return <Widget>[
               FadeIn(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: Dimens.pt6),
-                  child: InkWell(
-                    onTap: () => onTap(e),
-                    child: Padding(
-                      padding: EdgeInsets.zero,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          if (e.deleted)
-                            const Center(
-                              child: Padding(
-                                padding: EdgeInsets.only(
-                                  top: Dimens.pt6,
-                                ),
-                                child: Text(
-                                  'deleted',
-                                  style: TextStyle(color: Palette.grey),
-                                ),
+                child: InkWell(
+                  onTap: () => onTap(e),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: Dimens.pt8,
+                      bottom: Dimens.pt8,
+                      left: Dimens.pt12,
+                      right: Dimens.pt6,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        if (e.deleted)
+                          const Center(
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                top: Dimens.pt6,
+                              ),
+                              child: Text(
+                                'deleted',
+                                style: TextStyle(color: Palette.grey),
                               ),
                             ),
-                          Flex(
-                            direction: Axis.horizontal,
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: Dimens.pt8,
-                                    horizontal: Dimens.pt6,
-                                  ),
-                                  child: Linkify(
-                                    text:
-                                        '''${showCommentBy ? '${e.by}: ' : ''}${e.text}''',
-                                    maxLines: 4,
-                                    linkStyle: const TextStyle(
-                                      color: Palette.orange,
-                                    ),
-                                    onOpen: (LinkableElement link) =>
-                                        LinkUtil.launch(link.url),
+                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Text(
+                                  '''${e.timeAgo} by ${e.by}''',
+                                  style: const TextStyle(
+                                    color: Palette.grey,
                                   ),
                                 ),
+                                const SizedBox(
+                                  width: Dimens.pt12,
+                                ),
+                              ],
+                            ),
+                            Linkify(
+                              text: e.text,
+                              maxLines: 4,
+                              style: Theme.of(context).textTheme.bodyLarge,
+                              linkStyle: TextStyle(
+                                color: Theme.of(context).primaryColor,
                               ),
-                              Row(
-                                children: <Widget>[
-                                  Text(
-                                    e.timeAgo,
-                                    style: const TextStyle(
-                                      color: Palette.grey,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: Dimens.pt12,
-                                  ),
-                                ],
+                              onOpen: (LinkableElement link) => LinkUtil.launch(
+                                link.url,
+                                context,
                               ),
-                            ],
-                          ),
-                          const Divider(
-                            height: Dimens.zero,
-                          ),
-                        ],
-                      ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -211,8 +223,8 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     return SmartRefresher(
       enablePullUp: true,
       enablePullDown: enablePullDown,
-      header: const WaterDropMaterialHeader(
-        backgroundColor: Palette.orange,
+      header: WaterDropMaterialHeader(
+        backgroundColor: Theme.of(context).primaryColor,
       ),
       footer: CustomFooter(
         loadStyle: LoadStyle.ShowWhenLoading,
@@ -239,69 +251,6 @@ class ItemsListView<T extends Item> extends StatelessWidget {
       onRefresh: onRefresh,
       onLoading: onLoadMore,
       child: child,
-    );
-  }
-}
-
-class _CommentTile extends StatelessWidget {
-  const _CommentTile({
-    required this.comment,
-    required this.onTap,
-    this.fontSize = 16,
-  });
-
-  final Comment comment;
-  final VoidCallback onTap;
-  final double fontSize;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.only(
-          left: Dimens.pt12,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            const SizedBox(
-              height: Dimens.pt8,
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: Text(
-                    comment.text.trimLeft(),
-                    style: TextStyle(
-                      fontSize: fontSize,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: Text(
-                    comment.metadata,
-                    style: TextStyle(
-                      color: Palette.grey,
-                      fontSize: fontSize - 2,
-                    ),
-                    maxLines: 1,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: Dimens.pt8,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

@@ -96,7 +96,7 @@ class _CountDownReminderState extends State<CountdownReminder>
             animation: animationController,
             child: FadeIn(
               child: Material(
-                color: Palette.deepOrange,
+                color: Theme.of(context).primaryColor,
                 clipBehavior: Clip.hardEdge,
                 borderRadius: const BorderRadius.all(
                   Radius.circular(
@@ -125,8 +125,8 @@ class _CountDownReminderState extends State<CountdownReminder>
                   },
                   child: Column(
                     children: <Widget>[
-                      const Padding(
-                        padding: EdgeInsets.only(
+                      Padding(
+                        padding: const EdgeInsets.only(
                           left: Dimens.pt12,
                           top: Dimens.pt10,
                           right: Dimens.pt10,
@@ -136,15 +136,15 @@ class _CountDownReminderState extends State<CountdownReminder>
                             Text(
                               'Pick up where you left off',
                               style: TextStyle(
-                                color: Palette.white,
+                                color: Theme.of(context).colorScheme.onPrimary,
                                 fontSize: TextDimens.pt12,
                               ),
                             ),
-                            Spacer(),
+                            const Spacer(),
                             Icon(
                               Icons.arrow_forward_ios,
                               size: TextDimens.pt12,
-                              color: Palette.white,
+                              color: Theme.of(context).colorScheme.onPrimary,
                             ),
                           ],
                         ),

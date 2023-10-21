@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -68,8 +70,8 @@ class CommentTile extends StatelessWidget {
         ) {
           if (actionable && state.hidden) return const SizedBox.shrink();
 
-          const Color orange = Color.fromRGBO(255, 152, 0, 1);
-          final Color color = _getColor(level);
+          final Color primaryColor = Theme.of(context).primaryColor;
+          final Color color = _getColor(level, context);
 
           final Widget child = DeviceGestureWrapper(
             child: Column(
@@ -82,7 +84,7 @@ class CommentTile extends StatelessWidget {
                           children: <Widget>[
                             SlidableAction(
                               onPressed: (_) => onReplyTapped?.call(comment),
-                              backgroundColor: Palette.orange,
+                              backgroundColor: Theme.of(context).primaryColor,
                               foregroundColor: Palette.white,
                               icon: Icons.message,
                             ),
@@ -90,8 +92,9 @@ class CommentTile extends StatelessWidget {
                                 comment.by)
                               SlidableAction(
                                 onPressed: (_) => onEditTapped?.call(comment),
-                                backgroundColor: Palette.orange,
-                                foregroundColor: Palette.white,
+                                backgroundColor: Theme.of(context).primaryColor,
+                                foregroundColor:
+                                    Theme.of(context).colorScheme.onPrimary,
                                 icon: Icons.edit,
                               ),
                             SlidableAction(
@@ -100,8 +103,9 @@ class CommentTile extends StatelessWidget {
                                 comment,
                                 context.rect,
                               ),
-                              backgroundColor: Palette.orange,
-                              foregroundColor: Palette.white,
+                              backgroundColor: Theme.of(context).primaryColor,
+                              foregroundColor:
+                                  Theme.of(context).colorScheme.onPrimary,
                               icon: Icons.more_horiz,
                             ),
                           ],
@@ -114,8 +118,9 @@ class CommentTile extends StatelessWidget {
                             SlidableAction(
                               onPressed: (_) =>
                                   onRightMoreTapped?.call(comment),
-                              backgroundColor: Palette.orange,
-                              foregroundColor: Palette.white,
+                              backgroundColor: Theme.of(context).primaryColor,
+                              foregroundColor:
+                                  Theme.of(context).colorScheme.onPrimary,
                               icon: Icons.av_timer,
                             ),
                           ],
@@ -144,17 +149,17 @@ class CommentTile extends StatelessWidget {
                                 comment.by,
                                 style: TextStyle(
                                   color: prefState.eyeCandyEnabled
-                                      ? orange
+                                      ? primaryColor
                                       : color,
                                 ),
                                 textScaleFactor:
                                     MediaQuery.of(context).textScaleFactor,
                               ),
                               if (comment.by == opUsername)
-                                const Text(
+                                Text(
                                   ' - OP',
                                   style: TextStyle(
-                                    color: orange,
+                                    color: primaryColor,
                                   ),
                                 ),
                               const Spacer(),
@@ -178,7 +183,9 @@ class CommentTile extends StatelessWidget {
                                 CenteredText(
                                   text:
                                       '''collapsed (${state.collapsedCount + 1})''',
-                                  color: Palette.orangeAccent,
+                                  color: Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.8),
                                 )
                               else if (comment.hidden)
                                 const CenteredText.hidden()
@@ -276,14 +283,14 @@ class CommentTile extends StatelessWidget {
             return Container(
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
-                color: Palette.orange.withOpacity(0.2),
+                color: Theme.of(context).primaryColor.withOpacity(0.2),
               ),
               child: wrapper,
             );
           }
 
           for (final int i in level.to(0, inclusive: false)) {
-            final Color wrapperBorderColor = _getColor(i);
+            final Color wrapperBorderColor = _getColor(i, context);
             final bool shouldHighlight = isMyComment && i == level;
             wrapper = Container(
               clipBehavior: Clip.hardEdge,
@@ -299,7 +306,7 @@ class CommentTile extends StatelessWidget {
                       )
                     : null,
                 color: shouldHighlight
-                    ? Palette.orange.withOpacity(0.2)
+                    ? Theme.of(context).primaryColor.withOpacity(0.2)
                     : commentColor,
               ),
               child: wrapper,
@@ -312,7 +319,7 @@ class CommentTile extends StatelessWidget {
     );
   }
 
-  Color _getColor(int level) {
+  Color _getColor(int level, BuildContext context) {
     final int initialLevel = level;
     if (_colors[initialLevel] != null) return _colors[initialLevel]!;
 
@@ -320,21 +327,21 @@ class CommentTile extends StatelessWidget {
       level = level - 10;
     }
 
-    const int r = 255;
-    int g = level * 40 < 255 ? 152 : (level * 20).clamp(0, 255);
-    int b = (level * 40).clamp(0, 255);
+    late Color color;
+    if (Platform.isIOS) {
+      const int r = 255;
+      int g = level * 40 < 255 ? 152 : (level * 20).clamp(0, 255);
+      int b = (level * 40).clamp(0, 255);
 
-    if (g == 255 && b == 255) {
-      g = (level * 30 - 255).clamp(0, 255);
-      b = (level * 40 - 255).clamp(0, 255);
+      if (g == 255 && b == 255) {
+        g = (level * 30 - 255).clamp(0, 255);
+        b = (level * 40 - 255).clamp(0, 255);
+      }
+
+      color = Color.fromRGBO(r, g, b, 1);
+    } else {
+      color = Theme.of(context).primaryColor.withOpacity((10 - level) / 10);
     }
-
-    final Color color = Color.fromRGBO(
-      r,
-      g,
-      b,
-      1,
-    );
 
     _colors[initialLevel] = color;
     return color;

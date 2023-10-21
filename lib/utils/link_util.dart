@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
@@ -8,7 +9,6 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart'
     show ItemScreen, ItemScreenArgs, WebViewScreen;
-import 'package:hacki/styles/styles.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 abstract class LinkUtil {
@@ -25,7 +25,8 @@ abstract class LinkUtil {
   }
 
   static void launch(
-    String link, {
+    String link,
+    BuildContext context, {
     bool useReader = false,
     bool offlineReading = false,
     bool useHackiForHnLink = true,
@@ -47,8 +48,18 @@ abstract class LinkUtil {
     }
 
     if (useHackiForHnLink && link.isStoryLink) {
-      _onStoryLinkTapped(link);
-      return;
+      final int? id = link.itemId;
+      if (id != null) {
+        locator.get<StoriesRepository>().fetchItem(id: id).then((Item? item) {
+          if (item != null) {
+            router.push(
+              '/${ItemScreen.routeName}',
+              extra: ItemScreenArgs(item: item),
+            );
+          }
+        });
+        return;
+      }
     }
 
     final Uri uri = Uri.parse(link);
@@ -64,7 +75,7 @@ abstract class LinkUtil {
                   options: ChromeSafariBrowserClassOptions(
                     ios: IOSSafariOptions(
                       entersReaderIfAvailable: useReader,
-                      preferredControlTintColor: Palette.orange,
+                      preferredControlTintColor: Theme.of(context).primaryColor,
                     ),
                   ),
                 )
@@ -75,24 +86,5 @@ abstract class LinkUtil {
         }
       }
     });
-  }
-
-  static Future<void> _onStoryLinkTapped(String link) async {
-    final int? id = link.itemId;
-    if (id != null) {
-      await locator
-          .get<StoriesRepository>()
-          .fetchItem(id: id)
-          .then((Item? item) {
-        if (item != null) {
-          router.push(
-            '/${ItemScreen.routeName}',
-            extra: ItemScreenArgs(item: item),
-          );
-        }
-      });
-    } else {
-      launch(link, useHackiForHnLink: false);
-    }
   }
 }

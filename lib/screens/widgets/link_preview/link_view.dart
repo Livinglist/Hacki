@@ -196,6 +196,7 @@ class LinkView extends StatelessWidget {
                     if (url.isNotEmpty) {
                       LinkUtil.launch(
                         url,
+                        context,
                         useHackiForHnLink: false,
                         offlineReading:
                             context.read<StoriesBloc>().state.isOfflineReading,

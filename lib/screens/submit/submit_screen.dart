@@ -88,8 +88,8 @@ class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
             ),
             actions: <Widget>[
               if (state.status == Status.inProgress)
-                const Padding(
-                  padding: EdgeInsets.symmetric(
+                Padding(
+                  padding: const EdgeInsets.symmetric(
                     vertical: Dimens.pt18,
                     horizontal: Dimens.pt16,
                   ),
@@ -97,16 +97,16 @@ class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
                     height: Dimens.pt20,
                     width: Dimens.pt20,
                     child: CircularProgressIndicator(
-                      color: Palette.orange,
+                      color: Theme.of(context).primaryColor,
                       strokeWidth: 2,
                     ),
                   ),
                 )
               else if (canSubmit())
                 IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.send,
-                    color: Palette.orange,
+                    color: Theme.of(context).primaryColor,
                   ),
                   onPressed: context.read<SubmitCubit>().onSubmitTapped,
                 )
@@ -128,13 +128,14 @@ class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
                 ),
                 child: TextField(
                   controller: titleEditingController,
-                  cursorColor: Palette.orange,
+                  cursorColor: Theme.of(context).primaryColor,
                   autocorrect: false,
                   maxLength: 80,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Title',
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Palette.orange),
+                      borderSide:
+                          BorderSide(color: Theme.of(context).primaryColor),
                     ),
                   ),
                   onChanged: context.read<SubmitCubit>().onTitleChanged,
@@ -147,12 +148,13 @@ class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
                 child: TextField(
                   enabled: textEditingController.text.isEmpty,
                   controller: urlEditingController,
-                  cursorColor: Palette.orange,
+                  cursorColor: Theme.of(context).primaryColor,
                   autocorrect: false,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Url',
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Palette.orange),
+                      borderSide:
+                          BorderSide(color: Theme.of(context).primaryColor),
                     ),
                   ),
                   onChanged: context.read<SubmitCubit>().onUrlChanged,
@@ -174,7 +176,7 @@ class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
                   child: TextField(
                     enabled: urlEditingController.text.isEmpty,
                     controller: textEditingController,
-                    cursorColor: Palette.orange,
+                    cursorColor: Theme.of(context).primaryColor,
                     maxLines: 200,
                     decoration: const InputDecoration(
                       hintText: 'Text',

@@ -67,12 +67,14 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                             horizontal: Dimens.pt12,
                           ),
                           child: TextField(
-                            cursorColor: Palette.orange,
+                            cursorColor: Theme.of(context).primaryColor,
                             autocorrect: false,
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               hintText: 'Search Hacker News',
                               focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Palette.orange),
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).primaryColor,
+                                ),
                               ),
                             ),
                             onChanged: (String val) {
@@ -275,8 +277,8 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                     child: SmartRefresher(
                       enablePullDown: false,
                       enablePullUp: true,
-                      header: const WaterDropMaterialHeader(
-                        backgroundColor: Palette.orange,
+                      header: WaterDropMaterialHeader(
+                        backgroundColor: Theme.of(context).primaryColor,
                       ),
                       footer: CustomFooter(
                         loadStyle: LoadStyle.ShowWhenLoading,

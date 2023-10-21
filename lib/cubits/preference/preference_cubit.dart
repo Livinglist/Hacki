@@ -1,5 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
@@ -56,19 +58,16 @@ class PreferenceCubit extends Cubit<PreferenceState> {
     }
   }
 
-  void update<T>(Preference<T> preference, {required T to}) {
-    final T value = to;
-    final Preference<T> updatedPreference = preference.copyWith(val: value);
+  void update<T>(Preference<T> preference) {
+    _logger.i('updating $preference to ${preference.val}');
 
-    _logger.i('updating $preference to $value');
-
-    emit(state.copyWithPreference(updatedPreference));
+    emit(state.copyWithPreference(preference));
 
     switch (T) {
       case int:
-        _preferenceRepository.setInt(preference.key, value as int);
+        _preferenceRepository.setInt(preference.key, preference.val as int);
       case bool:
-        _preferenceRepository.setBool(preference.key, value as bool);
+        _preferenceRepository.setBool(preference.key, preference.val as bool);
       default:
         throw UnimplementedError();
     }
