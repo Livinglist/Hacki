@@ -167,7 +167,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               showMetadataOnStoryTile:
                                   prefState.metadataEnabled,
                               showUrl: prefState.urlEnabled,
-                              useCommentTile: true,
+                              useSimpleTileForStory: true,
                               refreshController: refreshControllerFav,
                               items: favState.favItems,
                               onRefresh: () {
@@ -289,9 +289,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                             width: Dimens.pt12,
                           ),
                           CustomChip(
-                            label: 'Inbox : '
-                                // ignore: lines_longer_than_80_chars
-                                '${notificationState.unreadCommentsIds.length}',
+                            label:
+                                '''Inbox : ${notificationState.unreadCommentsIds.length}''',
                             selected: pageType == PageType.notification,
                             onSelected: (bool val) {
                               if (val) {
