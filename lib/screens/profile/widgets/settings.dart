@@ -290,7 +290,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                   ),
                   ListTile(
                     title: const Text(
-                      'Primary Color',
+                      'Accent Color',
                     ),
                     onTap: showColorPicker,
                   ),
@@ -473,11 +473,12 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
       builder: (_) {
         return AlertDialog(
           contentPadding: const EdgeInsets.all(Dimens.pt18),
-          title: const Text('Primary Color'),
+          title: Text(AppColorPreference().title),
           content: MaterialColorPicker(
             colors: materialColors,
             selectedColor: context.read<PreferenceCubit>().state.appColor,
             onMainColorChange: (ColorSwatch<dynamic>? color) {
+              CommentTile.levelToBorderColors.clear();
               context.read<PreferenceCubit>().update(
                     AppColorPreference(
                       val: materialColors.indexOf(color ?? Palette.deepOrange),

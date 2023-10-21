@@ -267,31 +267,23 @@ class HackiApp extends StatelessWidget {
                         .instance.platformDispatcher.platformBrightness,
                     mode,
                   );
-                  return BlocBuilder<PreferenceCubit, PreferenceState>(
-                    buildWhen:
-                        (PreferenceState previous, PreferenceState current) =>
-                            previous.trueDarkEnabled != current.trueDarkEnabled,
-                    builder: (BuildContext context, PreferenceState prefState) {
-                      final bool isDarkModeEnabled =
-                          mode == AdaptiveThemeMode.dark ||
-                              (mode == AdaptiveThemeMode.system &&
-                                  View.of(context)
-                                          .platformDispatcher
-                                          .platformBrightness ==
-                                      Brightness.dark);
-                      return FeatureDiscovery(
-                        child: MaterialApp.router(
-                          key: Key(state.appColor.hashCode.toString()),
-                          title: 'Hacki',
-                          debugShowCheckedModeBanner: false,
-                          theme:
-                              (isDarkModeEnabled ? darkTheme : theme).copyWith(
-                            useMaterial3: false,
-                          ),
-                          routerConfig: router,
-                        ),
-                      );
-                    },
+                  final bool isDarkModeEnabled =
+                      mode == AdaptiveThemeMode.dark ||
+                          (mode == AdaptiveThemeMode.system &&
+                              View.of(context)
+                                      .platformDispatcher
+                                      .platformBrightness ==
+                                  Brightness.dark);
+                  return FeatureDiscovery(
+                    child: MaterialApp.router(
+                      key: Key(state.appColor.hashCode.toString()),
+                      title: 'Hacki',
+                      debugShowCheckedModeBanner: false,
+                      theme: (isDarkModeEnabled ? darkTheme : theme).copyWith(
+                        useMaterial3: false,
+                      ),
+                      routerConfig: router,
+                    ),
                   );
                 },
               );

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -49,7 +47,7 @@ class CommentTile extends StatelessWidget {
   /// Override for search screen.
   final VoidCallback? onTap;
 
-  static final Map<int, Color> _colors = <int, Color>{};
+  static final Map<int, Color> levelToBorderColors = <int, Color>{};
 
   @override
   Widget build(BuildContext context) {
@@ -70,8 +68,12 @@ class CommentTile extends StatelessWidget {
         ) {
           if (actionable && state.hidden) return const SizedBox.shrink();
 
-          final Color primaryColor = Theme.of(context).primaryColor;
-          final Color color = _getColor(level, context);
+          final MaterialColor primaryColor =
+              context.read<PreferenceCubit>().state.appColor;
+          final Color color = _getColor(
+            level,
+            primaryColor: primaryColor,
+          );
 
           final Widget child = DeviceGestureWrapper(
             child: Column(
@@ -85,7 +87,8 @@ class CommentTile extends StatelessWidget {
                             SlidableAction(
                               onPressed: (_) => onReplyTapped?.call(comment),
                               backgroundColor: Theme.of(context).primaryColor,
-                              foregroundColor: Palette.white,
+                              foregroundColor:
+                                  Theme.of(context).colorScheme.onPrimary,
                               icon: Icons.message,
                             ),
                             if (context.read<AuthBloc>().state.user.id ==
@@ -290,7 +293,10 @@ class CommentTile extends StatelessWidget {
           }
 
           for (final int i in level.to(0, inclusive: false)) {
-            final Color wrapperBorderColor = _getColor(i, context);
+            final Color wrapperBorderColor = _getColor(
+              i,
+              primaryColor: primaryColor,
+            );
             final bool shouldHighlight = isMyComment && i == level;
             wrapper = Container(
               clipBehavior: Clip.hardEdge,
@@ -319,31 +325,52 @@ class CommentTile extends StatelessWidget {
     );
   }
 
-  Color _getColor(int level, BuildContext context) {
+  Color _getColor(
+    int level, {
+    required MaterialColor primaryColor,
+  }) {
     final int initialLevel = level;
-    if (_colors[initialLevel] != null) return _colors[initialLevel]!;
+
+    if (levelToBorderColors[initialLevel] != null) {
+      return levelToBorderColors[initialLevel]!;
+    } else if (level == 0) {
+      levelToBorderColors[initialLevel] = primaryColor;
+      return primaryColor;
+    }
 
     while (level >= 10) {
       level = level - 10;
     }
 
-    late Color color;
-    if (Platform.isIOS) {
-      const int r = 255;
-      int g = level * 40 < 255 ? 152 : (level * 20).clamp(0, 255);
-      int b = (level * 40).clamp(0, 255);
-
-      if (g == 255 && b == 255) {
-        g = (level * 30 - 255).clamp(0, 255);
-        b = (level * 40 - 255).clamp(0, 255);
-      }
-
-      color = Color.fromRGBO(r, g, b, 1);
+    Color color = primaryColor;
+    final int r = color.red;
+    final int g = color.green;
+    final int b = color.blue;
+    const double opacity = 1;
+    if (r > g && r > b) {
+      color = Color.fromRGBO(
+        (r - 30 * level).abs(),
+        (g + 30 * level).clamp(0, 255),
+        (b + 30 * level).clamp(0, 255),
+        opacity,
+      );
+    } else if (g > r && g > b) {
+      color = Color.fromRGBO(
+        (r + 30 * level).clamp(0, 255),
+        (g - 30 * level).abs(),
+        (b + 30 * level).clamp(0, 255),
+        opacity,
+      );
     } else {
-      color = Theme.of(context).primaryColor.withOpacity((10 - level) / 10);
+      color = Color.fromRGBO(
+        (r + 30 * level).clamp(0, 255),
+        (g + 30 * level).clamp(0, 255),
+        (b - 30 * level).abs(),
+        opacity,
+      );
     }
 
-    _colors[initialLevel] = color;
+    levelToBorderColors[initialLevel] = color;
     return color;
   }
 
