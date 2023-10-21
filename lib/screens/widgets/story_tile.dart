@@ -154,8 +154,8 @@ class _LinkPreviewPlaceholder extends StatelessWidget {
       child: SizedBox(
         height: height,
         child: Shimmer.fromColors(
-          baseColor: Palette.orange,
-          highlightColor: Palette.orangeAccent,
+          baseColor: Theme.of(context).primaryColor,
+          highlightColor: Theme.of(context).primaryColor.withOpacity(0.8),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[

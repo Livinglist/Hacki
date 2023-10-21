@@ -215,15 +215,15 @@ class _ParentItemSection extends StatelessWidget {
                       }
                       context.read<EditCubit>().onReplyTapped(item);
                     },
-                    backgroundColor: Palette.orange,
-                    foregroundColor: Palette.white,
+                    backgroundColor: Theme.of(context).primaryColor,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     icon: Icons.message,
                   ),
                   SlidableAction(
                     onPressed: (BuildContext context) =>
                         onMoreTapped(item, context.rect),
-                    backgroundColor: Palette.orange,
-                    foregroundColor: Palette.white,
+                    backgroundColor: Theme.of(context).primaryColor,
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     icon: Icons.more_horiz,
                   ),
                 ],
@@ -239,8 +239,8 @@ class _ParentItemSection extends StatelessWidget {
                       children: <Widget>[
                         Text(
                           item.by,
-                          style: const TextStyle(
-                            color: Palette.orange,
+                          style: TextStyle(
+                            color: Theme.of(context).primaryColor,
                           ),
                           textScaleFactor:
                               MediaQuery.of(context).textScaleFactor,
@@ -274,6 +274,7 @@ class _ParentItemSection extends StatelessWidget {
                             InkWell(
                               onTap: () => LinkUtil.launch(
                                 item.url,
+                                context,
                                 useReader: context
                                     .read<PreferenceCubit>()
                                     .state
@@ -315,7 +316,7 @@ class _ParentItemSection extends StatelessWidget {
                                           fontWeight: FontWeight.bold,
                                           fontSize: fontSize,
                                           color: item.url.isNotEmpty
-                                              ? Palette.orange
+                                              ? Theme.of(context).primaryColor
                                               : null,
                                         ),
                                       ),
@@ -325,7 +326,8 @@ class _ParentItemSection extends StatelessWidget {
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: fontSize - 4,
-                                            color: Palette.orange,
+                                            color:
+                                                Theme.of(context).primaryColor,
                                           ),
                                         ),
                                     ],

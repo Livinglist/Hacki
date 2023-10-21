@@ -41,8 +41,8 @@ class InboxView extends StatelessWidget {
         Expanded(
           child: SmartRefresher(
             enablePullUp: true,
-            header: const WaterDropMaterialHeader(
-              backgroundColor: Palette.orange,
+            header: WaterDropMaterialHeader(
+              backgroundColor: Theme.of(context).primaryColor,
             ),
             footer: CustomFooter(
               loadStyle: LoadStyle.ShowWhenLoading,
@@ -111,13 +111,17 @@ class InboxView extends StatelessWidget {
                                             : Palette.grey,
                                       ),
                                   linkStyle: TextStyle(
-                                    color: unreadCommentsIds.contains(e.id)
-                                        ? Palette.orange
-                                        : Palette.orange.withOpacity(0.6),
+                                    color: Theme.of(context)
+                                        .primaryColor
+                                        .withOpacity(
+                                          unreadCommentsIds.contains(e.id)
+                                              ? 1
+                                              : 0.6,
+                                        ),
                                   ),
                                   maxLines: 4,
                                   onOpen: (LinkableElement link) =>
-                                      LinkUtil.launch(link.url),
+                                      LinkUtil.launch(link.url, context),
                                 ),
                               ],
                             ),

@@ -48,12 +48,13 @@ class PostedByFilterChip extends StatelessWidget {
               ),
               child: TextField(
                 controller: usernameController,
-                cursorColor: Palette.orange,
+                cursorColor: Theme.of(context).primaryColor,
                 autocorrect: false,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: 'Username',
                   focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Palette.orange),
+                    borderSide:
+                        BorderSide(color: Theme.of(context).primaryColor),
                   ),
                 ),
               ),
@@ -85,8 +86,9 @@ class PostedByFilterChip extends StatelessWidget {
                       context.pop(text.isEmpty ? null : text);
                     },
                     style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(Palette.deepOrange),
+                      backgroundColor: MaterialStateProperty.all(
+                        Theme.of(context).primaryColor,
+                      ),
                     ),
                     child: const Text(
                       'Confirm',

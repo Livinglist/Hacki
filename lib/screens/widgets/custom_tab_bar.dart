@@ -43,9 +43,9 @@ class _CustomTabBarState extends State<CustomTabBar> {
         return TabBar(
           isScrollable: true,
           controller: widget.tabController,
-          indicatorColor: Palette.orange,
+          indicatorColor: Theme.of(context).primaryColor,
           indicator: CircleTabIndicator(
-            color: Palette.orange,
+            color: Theme.of(context).primaryColor,
             radius: Dimens.pt2,
           ),
           indicatorPadding: const EdgeInsets.only(
@@ -64,7 +64,9 @@ class _CustomTabBarState extends State<CustomTabBar> {
                   style: TextStyle(
                     fontSize:
                         currentIndex == i ? TextDimens.pt14 : TextDimens.pt10,
-                    color: currentIndex == i ? Palette.orange : Palette.grey,
+                    color: currentIndex == i
+                        ? Theme.of(context).primaryColor
+                        : Palette.grey,
                   ),
                   duration: Durations.ms200,
                   child: Text(
@@ -110,8 +112,9 @@ class _CustomTabBarState extends State<CustomTabBar> {
                         size: currentIndex == 5
                             ? TextDimens.pt16
                             : TextDimens.pt12,
-                        color:
-                            currentIndex == 5 ? Palette.orange : Palette.grey,
+                        color: currentIndex == 5
+                            ? Theme.of(context).primaryColor
+                            : Palette.grey,
                       ),
                     );
                   },

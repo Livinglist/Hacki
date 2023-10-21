@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
-import 'package:hacki/styles/styles.dart';
 
 extension ContextExtension on BuildContext {
   T? tryRead<T>() {
@@ -21,13 +20,13 @@ extension ContextExtension on BuildContext {
   }) {
     ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
-        backgroundColor: Palette.deepOrange,
+        backgroundColor: Theme.of(this).primaryColor,
         content: Text(content),
         action: action != null && label != null
             ? SnackBarAction(
                 label: label,
                 onPressed: action,
-                textColor: Theme.of(this).textTheme.bodyLarge?.color,
+                textColor: Theme.of(this).colorScheme.onPrimary,
               )
             : null,
       ),

@@ -4,7 +4,6 @@ import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
-import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 
 class ItemText extends StatelessWidget {
@@ -33,7 +32,7 @@ class ItemText extends StatelessWidget {
     final TextStyle linkStyle = TextStyle(
       fontSize: prefState.fontSize.fontSize,
       decoration: TextDecoration.underline,
-      color: Palette.orange,
+      color: Theme.of(context).primaryColor,
     );
 
     void onSelectionChanged(
@@ -52,7 +51,10 @@ class ItemText extends StatelessWidget {
           (item as Buildable).elements,
           style: style,
           linkStyle: linkStyle,
-          onOpen: (LinkableElement link) => LinkUtil.launch(link.url),
+          onOpen: (LinkableElement link) => LinkUtil.launch(
+            link.url,
+            context,
+          ),
         ),
         onTap: onTap,
         textScaleFactor: textScaleFactor,
@@ -76,7 +78,10 @@ class ItemText extends StatelessWidget {
               (item as Buildable).elements,
               style: style,
               linkStyle: linkStyle,
-              onOpen: (LinkableElement link) => LinkUtil.launch(link.url),
+              onOpen: (LinkableElement link) => LinkUtil.launch(
+                link.url,
+                context,
+              ),
             ),
             textScaleFactor: textScaleFactor,
             semanticsLabel: item.text,
@@ -89,7 +94,10 @@ class ItemText extends StatelessWidget {
             textScaleFactor: textScaleFactor,
             style: style,
             linkStyle: linkStyle,
-            onOpen: (LinkableElement link) => LinkUtil.launch(link.url),
+            onOpen: (LinkableElement link) => LinkUtil.launch(
+              link.url,
+              context,
+            ),
           ),
         );
       }

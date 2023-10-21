@@ -102,11 +102,13 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                             text: e.title,
                             maxLines: 4,
                             style: Theme.of(context).textTheme.bodyLarge,
-                            linkStyle: const TextStyle(
-                              color: Palette.orange,
+                            linkStyle: TextStyle(
+                              color: Theme.of(context).primaryColor,
                             ),
-                            onOpen: (LinkableElement link) =>
-                                LinkUtil.launch(link.url),
+                            onOpen: (LinkableElement link) => LinkUtil.launch(
+                              link.url,
+                              context,
+                            ),
                           ),
                         ],
                       ),
@@ -185,11 +187,13 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                               text: e.text,
                               maxLines: 4,
                               style: Theme.of(context).textTheme.bodyLarge,
-                              linkStyle: const TextStyle(
-                                color: Palette.orange,
+                              linkStyle: TextStyle(
+                                color: Theme.of(context).primaryColor,
                               ),
-                              onOpen: (LinkableElement link) =>
-                                  LinkUtil.launch(link.url),
+                              onOpen: (LinkableElement link) => LinkUtil.launch(
+                                link.url,
+                                context,
+                              ),
                             ),
                           ],
                         ),
@@ -219,8 +223,8 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     return SmartRefresher(
       enablePullUp: true,
       enablePullDown: enablePullDown,
-      header: const WaterDropMaterialHeader(
-        backgroundColor: Palette.orange,
+      header: WaterDropMaterialHeader(
+        backgroundColor: Theme.of(context).primaryColor,
       ),
       footer: CustomFooter(
         loadStyle: LoadStyle.ShowWhenLoading,

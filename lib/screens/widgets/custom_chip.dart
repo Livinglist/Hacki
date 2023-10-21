@@ -19,13 +19,17 @@ class CustomChip extends StatelessWidget {
       shadowColor: Palette.transparent,
       selectedShadowColor: Palette.transparent,
       backgroundColor: Palette.transparent,
-      shape: const StadiumBorder(
-        side: BorderSide(color: Palette.orange),
+      shape: StadiumBorder(
+        side: BorderSide(color: Theme.of(context).primaryColor),
       ),
       label: Text(label),
+      labelStyle: TextStyle(
+        color: selected ? Theme.of(context).colorScheme.onPrimary : null,
+      ),
+      checkmarkColor: selected ? Theme.of(context).colorScheme.onPrimary : null,
       selected: selected,
       onSelected: onSelected,
-      selectedColor: Palette.orange,
+      selectedColor: Theme.of(context).primaryColor,
     );
   }
 }

@@ -17,7 +17,6 @@ import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
-import 'package:hacki/models/models.dart';
 import 'package:hacki/services/fetcher.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/theme_util.dart';
@@ -26,7 +25,6 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart' show BehaviorSubject;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:workmanager/workmanager.dart';
 
@@ -133,12 +131,6 @@ Future<void> main({bool testing = false}) async {
   }
 
   final AdaptiveThemeMode? savedThemeMode = await AdaptiveTheme.getThemeMode();
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
-  final bool trueDarkMode =
-      prefs.getBool(const TrueDarkModePreference().key) ?? false;
-  final Font font = Font.values.elementAt(
-    prefs.getInt(FontPreference().key) ?? Font.roboto.index,
-  );
 
   // Uncomment this line to log events from bloc/cubit.
   // Bloc.observer = CustomBlocObserver();
@@ -150,23 +142,17 @@ Future<void> main({bool testing = false}) async {
   runApp(
     HackiApp(
       savedThemeMode: savedThemeMode,
-      trueDarkMode: trueDarkMode,
-      font: font,
     ),
   );
 }
 
 class HackiApp extends StatelessWidget {
   const HackiApp({
-    required this.trueDarkMode,
-    required this.font,
     super.key,
     this.savedThemeMode,
   });
 
   final AdaptiveThemeMode? savedThemeMode;
-  final Font font;
-  final bool trueDarkMode;
 
   @override
   Widget build(BuildContext context) {
@@ -243,57 +229,69 @@ class HackiApp extends StatelessWidget {
           )..init(),
         ),
       ],
-      child: AdaptiveTheme(
-        light: ThemeData(
-          primarySwatch: Palette.orange,
-          fontFamily: font.name,
-        ),
-        dark: ThemeData(
-          brightness: Brightness.dark,
-          primarySwatch: Palette.orange,
-          canvasColor: trueDarkMode ? Palette.black : null,
-          fontFamily: font.name,
-        ),
-        initial: savedThemeMode ?? AdaptiveThemeMode.system,
-        builder: (ThemeData theme, ThemeData darkTheme) {
-          final ThemeData trueDarkTheme = ThemeData(
-            brightness: Brightness.dark,
-            primarySwatch: Palette.orange,
-            canvasColor: Palette.black,
-            fontFamily: font.name,
-          );
-          return FutureBuilder<AdaptiveThemeMode?>(
-            future: AdaptiveTheme.getThemeMode(),
-            builder: (
-              BuildContext context,
-              AsyncSnapshot<AdaptiveThemeMode?> snapshot,
-            ) {
-              final AdaptiveThemeMode? mode = snapshot.data;
-              ThemeUtil.updateStatusBarSetting(
-                SchedulerBinding.instance.platformDispatcher.platformBrightness,
-                mode,
-              );
-              return BlocBuilder<PreferenceCubit, PreferenceState>(
-                buildWhen:
-                    (PreferenceState previous, PreferenceState current) =>
-                        previous.trueDarkEnabled != current.trueDarkEnabled,
-                builder: (BuildContext context, PreferenceState prefState) {
-                  final bool useTrueDark = prefState.trueDarkEnabled &&
-                      (mode == AdaptiveThemeMode.dark ||
-                          (mode == AdaptiveThemeMode.system &&
-                              View.of(context)
-                                      .platformDispatcher
-                                      .platformBrightness ==
-                                  Brightness.dark));
-                  return FeatureDiscovery(
-                    child: MaterialApp.router(
-                      title: 'Hacki',
-                      debugShowCheckedModeBanner: false,
-                      theme: (useTrueDark ? trueDarkTheme : theme).copyWith(
-                        useMaterial3: false,
-                      ),
-                      routerConfig: router,
-                    ),
+      child: BlocBuilder<PreferenceCubit, PreferenceState>(
+        buildWhen: (PreferenceState previous, PreferenceState current) =>
+            previous.appColor != current.appColor ||
+            previous.font != current.font,
+        builder: (BuildContext context, PreferenceState state) {
+          return AdaptiveTheme(
+            key: ValueKey<String>('${state.appColor}${state.font}'),
+            light: ThemeData(
+              primaryColor: state.appColor,
+              colorScheme: ColorScheme.fromSwatch(
+                primarySwatch: state.appColor,
+              ),
+              fontFamily: state.font.name,
+            ),
+            dark: ThemeData(
+              brightness: Brightness.dark,
+              primaryColor: state.appColor,
+              colorScheme: ColorScheme.fromSwatch(
+                primarySwatch: state.appColor,
+                brightness: Brightness.dark,
+              ),
+              canvasColor: Palette.black,
+              fontFamily: state.font.name,
+            ),
+            initial: savedThemeMode ?? AdaptiveThemeMode.system,
+            builder: (ThemeData theme, ThemeData darkTheme) {
+              return FutureBuilder<AdaptiveThemeMode?>(
+                future: AdaptiveTheme.getThemeMode(),
+                builder: (
+                  BuildContext context,
+                  AsyncSnapshot<AdaptiveThemeMode?> snapshot,
+                ) {
+                  final AdaptiveThemeMode? mode = snapshot.data;
+                  ThemeUtil.updateStatusBarSetting(
+                    SchedulerBinding
+                        .instance.platformDispatcher.platformBrightness,
+                    mode,
+                  );
+                  return BlocBuilder<PreferenceCubit, PreferenceState>(
+                    buildWhen:
+                        (PreferenceState previous, PreferenceState current) =>
+                            previous.trueDarkEnabled != current.trueDarkEnabled,
+                    builder: (BuildContext context, PreferenceState prefState) {
+                      final bool isDarkModeEnabled =
+                          mode == AdaptiveThemeMode.dark ||
+                              (mode == AdaptiveThemeMode.system &&
+                                  View.of(context)
+                                          .platformDispatcher
+                                          .platformBrightness ==
+                                      Brightness.dark);
+                      return FeatureDiscovery(
+                        child: MaterialApp.router(
+                          key: Key(state.appColor.hashCode.toString()),
+                          title: 'Hacki',
+                          debugShowCheckedModeBanner: false,
+                          theme:
+                              (isDarkModeEnabled ? darkTheme : theme).copyWith(
+                            useMaterial3: false,
+                          ),
+                          routerConfig: router,
+                        ),
+                      );
+                    },
                   );
                 },
               );

@@ -115,11 +115,15 @@ class MorePopupMenu extends StatelessWidget {
                                           text: HtmlUtil.parseHtml(
                                             state.user.about,
                                           ),
-                                          linkStyle: const TextStyle(
-                                            color: Palette.orange,
+                                          linkStyle: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
                                           ),
                                           onOpen: (LinkableElement link) =>
-                                              LinkUtil.launch(link.url),
+                                              LinkUtil.launch(
+                                            link.url,
+                                            context,
+                                          ),
                                           semanticsLabel: state.user.about,
                                         ),
                                   actions: <Widget>[
@@ -158,12 +162,12 @@ class MorePopupMenu extends StatelessWidget {
                   ListTile(
                     leading: Icon(
                       FeatherIcons.chevronUp,
-                      color: upvoted ? Palette.orange : null,
+                      color: upvoted ? Theme.of(context).primaryColor : null,
                     ),
                     title: Text(
                       upvoted ? 'Upvoted' : 'Upvote',
                       style: upvoted
-                          ? const TextStyle(color: Palette.orange)
+                          ? TextStyle(color: Theme.of(context).primaryColor)
                           : null,
                     ),
                     subtitle:
@@ -173,12 +177,12 @@ class MorePopupMenu extends StatelessWidget {
                   ListTile(
                     leading: Icon(
                       FeatherIcons.chevronDown,
-                      color: downvoted ? Palette.orange : null,
+                      color: downvoted ? Theme.of(context).primaryColor : null,
                     ),
                     title: Text(
                       downvoted ? 'Downvoted' : 'Downvote',
                       style: downvoted
-                          ? const TextStyle(color: Palette.orange)
+                          ? TextStyle(color: Theme.of(context).primaryColor)
                           : null,
                     ),
                     onTap: context.read<VoteCubit>().downvote,
@@ -189,7 +193,7 @@ class MorePopupMenu extends StatelessWidget {
                       return ListTile(
                         leading: Icon(
                           isFav ? Icons.favorite : Icons.favorite_border,
-                          color: isFav ? Palette.orange : null,
+                          color: isFav ? Theme.of(context).primaryColor : null,
                         ),
                         title: Text(
                           isFav ? 'Unfavorite' : 'Favorite',

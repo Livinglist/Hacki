@@ -70,6 +70,12 @@ class PreferenceState extends Equatable {
 
   bool get autoScrollEnabled => _isOn<AutoScrollModePreference>();
 
+  MaterialColor get appColor {
+    return materialColors.elementAt(
+      preferences.singleWhereType<AppColorPreference>().val,
+    ) as MaterialColor;
+  }
+
   List<StoryType> get tabs {
     final String result =
         preferences.singleWhereType<TabOrderPreference>().val.toString();

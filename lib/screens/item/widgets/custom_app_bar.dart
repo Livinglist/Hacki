@@ -9,6 +9,7 @@ class CustomAppBar extends AppBar {
   CustomAppBar({
     required Item item,
     required super.backgroundColor,
+    required super.foregroundColor,
     required VoidCallback onFontSizeTap,
     required GlobalKey fontSizeIconButtonKey,
     super.key,

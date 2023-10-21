@@ -35,12 +35,12 @@ class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
         return SimpleDialog(
           children: <Widget>[
             if (state.status.isLoading)
-              const SizedBox(
+              SizedBox(
                 height: Dimens.pt36,
                 width: Dimens.pt36,
                 child: Center(
                   child: CircularProgressIndicator(
-                    color: Palette.orange,
+                    color: Theme.of(context).primaryColor,
                   ),
                 ),
               )
@@ -51,12 +51,13 @@ class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
                 ),
                 child: TextField(
                   controller: usernameController,
-                  cursorColor: Palette.orange,
+                  cursorColor: Theme.of(context).primaryColor,
                   autocorrect: false,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Username',
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Palette.orange),
+                      borderSide:
+                          BorderSide(color: Theme.of(context).primaryColor),
                     ),
                   ),
                 ),
@@ -70,13 +71,14 @@ class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
                 ),
                 child: TextField(
                   controller: passwordController,
-                  cursorColor: Palette.orange,
+                  cursorColor: Theme.of(context).primaryColor,
                   obscureText: true,
                   autocorrect: false,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Password',
                     focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Palette.orange),
+                      borderSide:
+                          BorderSide(color: Theme.of(context).primaryColor),
                     ),
                   ),
                 ),
@@ -108,7 +110,7 @@ class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
                           ? Icons.check_box
                           : Icons.check_box_outline_blank,
                       color: state.agreedToEULA
-                          ? Palette.deepOrange
+                          ? Theme.of(context).primaryColor
                           : Palette.grey,
                     ),
                     onPressed: () =>
@@ -129,11 +131,12 @@ class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
                             child: TapDownWrapper(
                               onTap: () => LinkUtil.launch(
                                 Constants.endUserAgreementLink,
+                                context,
                               ),
-                              child: const Text(
+                              child: Text(
                                 'End User Agreement',
                                 style: TextStyle(
-                                  color: Palette.deepOrange,
+                                  color: Theme.of(context).primaryColor,
                                   decoration: TextDecoration.underline,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -179,7 +182,7 @@ class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all(
                           state.agreedToEULA
-                              ? Palette.deepOrange
+                              ? Theme.of(context).primaryColor
                               : Palette.grey,
                         ),
                       ),

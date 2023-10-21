@@ -38,8 +38,7 @@ class TabCubit extends Cubit<TabState> {
     // Check to make sure there's no duplicate.
     if (updatedTabs.toSet().length == StoryType.values.length) {
       _preferenceCubit.update<int>(
-        TabOrderPreference(),
-        to: StoryType.convertToSettingsValue(updatedTabs),
+        TabOrderPreference(val: StoryType.convertToSettingsValue(updatedTabs)),
       );
     }
   }

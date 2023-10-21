@@ -29,7 +29,9 @@ class FavIconButton extends StatelessWidget {
             feature: DiscoverableFeature.addStoryToFavList,
             child: Icon(
               isFav ? Icons.favorite : Icons.favorite_border,
-              color: isFav ? Palette.orange : Theme.of(context).iconTheme.color,
+              color: isFav
+                  ? Theme.of(context).primaryColor
+                  : Theme.of(context).iconTheme.color,
             ),
           ),
           onPressed: () {
