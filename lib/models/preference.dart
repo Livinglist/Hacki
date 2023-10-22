@@ -33,12 +33,15 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
       const DisplayModePreference(),
       const MetadataModePreference(),
       const StoryUrlModePreference(),
+      // Divider.
       const MarkReadStoriesModePreference(),
+      // Divider.
       const NotificationModePreference(),
       const SwipeGesturePreference(),
       const AutoScrollModePreference(),
       const CollapseModePreference(),
       const ReaderModePreference(),
+      const CustomTabPreference(),
       const EyeCandyModePreference(),
     ],
   );
@@ -69,6 +72,7 @@ const bool _metadataModeDefaultValue = true;
 const bool _storyUrlModeDefaultValue = true;
 const bool _collapseModeDefaultValue = true;
 const bool _autoScrollModeDefaultValue = false;
+const bool _customTabModeDefaultValue = false;
 const double _textScaleFactorDefaultValue = 1;
 final int _fetchModeDefaultValue = FetchMode.eager.index;
 final int _commentsOrderDefaultValue = CommentsOrder.natural.index;
@@ -279,6 +283,33 @@ class EyeCandyModePreference extends BooleanPreference {
 
   @override
   String get subtitle => 'some sort of magic.';
+}
+
+/// Whether or not to use Custom Tabs for launching URLs.
+/// If false, default browser will be used.
+///
+/// https://developer.chrome.com/docs/android/custom-tabs/
+class CustomTabPreference extends BooleanPreference {
+  const CustomTabPreference({bool? val})
+      : super(val: val ?? _customTabModeDefaultValue);
+
+  @override
+  CustomTabPreference copyWith({required bool? val}) {
+    return CustomTabPreference(val: val);
+  }
+
+  @override
+  String get key => 'customTabPreference';
+
+  @override
+  String get title => 'Use Custom Tabs';
+
+  @override
+  String get subtitle =>
+      '''use Custom tabs for URLs. If disabled, default browser is used instead.''';
+
+  @override
+  bool get isDisplayable => Platform.isAndroid;
 }
 
 class FetchModePreference extends IntPreference {
