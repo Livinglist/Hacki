@@ -228,16 +228,18 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     StoryLoaded event,
     Emitter<StoriesState> emit,
   ) async {
-    final bool hasRead = await _preferenceRepository.hasRead(event.story.id);
-    final bool hidden = _filterCubit.state.keywords.any(
-      (String keyword) =>
-          event.story.title.toLowerCase().contains(keyword) ||
-          event.story.text.toLowerCase().contains(keyword),
-    );
+    final Story story = event.story;
+    final bool hasRead = await _preferenceRepository.hasRead(story.id);
+    final bool hidden = _filterCubit.state.keywords.any((String keyword) {
+      // Match word only.
+      final RegExp regExp = RegExp('\\b($keyword)\\b');
+      return regExp.hasMatch(story.title.toLowerCase()) ||
+          regExp.hasMatch(story.text.toLowerCase());
+    });
     emit(
       state.copyWithStoryAdded(
         type: event.type,
-        story: event.story.copyWith(hidden: hidden),
+        story: story.copyWith(hidden: hidden),
         hasRead: hasRead,
       ),
     );
