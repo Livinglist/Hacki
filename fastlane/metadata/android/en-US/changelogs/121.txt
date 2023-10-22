@@ -1,1 +1,2 @@
-- Ability to mark a story as read once scrolling past.
+- Ability to customize text scale factor.
+- Ability to customize app's accent color.

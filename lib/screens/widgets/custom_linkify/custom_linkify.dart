@@ -1,8 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/custom_linkify/linkifiers/linkifiers.dart';
-import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:linkify/linkify.dart' hide UrlLinkifier;
 
@@ -109,6 +110,7 @@ class Linkify extends StatelessWidget {
     return Text.rich(
       buildTextSpan(
         elements,
+        primaryColor: context.read<PreferenceCubit>().state.appColor,
         style: Theme.of(context).textTheme.bodyMedium?.merge(style),
         onOpen: onOpen,
         useMouseRegion: true,
@@ -287,6 +289,7 @@ class SelectableLinkify extends StatelessWidget {
     return SelectableText.rich(
       buildTextSpan(
         elements,
+        primaryColor: context.read<PreferenceCubit>().state.appColor,
         style: Theme.of(context).textTheme.bodyMedium?.merge(style),
         onOpen: onOpen,
         linkStyle: Theme.of(context)
@@ -352,6 +355,7 @@ class LinkableSpan extends WidgetSpan {
 /// Raw TextSpan builder for more control on the RichText
 TextSpan buildTextSpan(
   List<LinkifyElement> elements, {
+  required MaterialColor primaryColor,
   TextStyle? style,
   TextStyle? linkStyle,
   LinkCallback? onOpen,
@@ -386,7 +390,7 @@ TextSpan buildTextSpan(
             return TextSpan(
               text: element.text,
               style: style?.copyWith(
-                backgroundColor: Palette.orangeAccent.withOpacity(0.3),
+                backgroundColor: primaryColor.withOpacity(0.3),
               ),
             );
           } else if (element is EmphasisElement) {
