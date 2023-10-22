@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
@@ -63,19 +65,25 @@ abstract class LinkUtil {
     }
 
     final Uri uri = Uri.parse(link);
+
     canLaunchUrl(uri).then((bool val) {
       if (val) {
         if (link.contains('http')) {
-          if (Platform.isAndroid) {
+          if (Platform.isAndroid &&
+              context.read<PreferenceCubit>().state.customTabEnabled == false) {
             launchUrl(uri, mode: LaunchMode.externalApplication);
           } else {
+            final Color primaryColor = Theme.of(context).primaryColor;
             _browser
                 .open(
                   url: uri,
                   options: ChromeSafariBrowserClassOptions(
                     ios: IOSSafariOptions(
                       entersReaderIfAvailable: useReader,
-                      preferredControlTintColor: Theme.of(context).primaryColor,
+                      preferredControlTintColor: primaryColor,
+                    ),
+                    android: AndroidChromeCustomTabsOptions(
+                      toolbarBackgroundColor: primaryColor,
                     ),
                   ),
                 )

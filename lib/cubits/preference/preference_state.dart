@@ -68,6 +68,8 @@ class PreferenceState extends Equatable {
 
   bool get autoScrollEnabled => _isOn<AutoScrollModePreference>();
 
+  bool get customTabEnabled => _isOn<CustomTabPreference>();
+
   double get textScaleFactor =>
       preferences.singleWhereType<TextScaleFactorPreference>().val;
 
