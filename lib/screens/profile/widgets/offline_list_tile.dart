@@ -39,9 +39,15 @@ class OfflineListTile extends StatelessWidget {
               child: CustomCircularProgressIndicator(),
             );
           } else if (downloaded) {
-            return const Icon(Icons.check_circle);
+            return Icon(
+              Icons.check_circle,
+              color: Theme.of(context).primaryColor,
+            );
           }
-          return const Icon(Icons.download);
+          return Icon(
+            Icons.download,
+            color: Theme.of(context).primaryColor,
+          );
         }();
 
         return ListTile(

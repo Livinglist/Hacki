@@ -20,6 +20,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     required this.onTap,
     required this.refreshController,
     super.key,
+    this.showAuthor = true,
     this.useSimpleTileForStory = false,
     this.enablePullDown = true,
     this.markReadStories = false,
@@ -33,6 +34,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.itemBuilder,
   });
 
+  final bool showAuthor;
   final bool useSimpleTileForStory;
   final bool showWebPreviewOnStoryTile;
   final bool showMetadataOnStoryTile;
@@ -88,7 +90,9 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                           Row(
                             children: <Widget>[
                               Text(
-                                '''${e.timeAgo} by ${e.by}''',
+                                showAuthor
+                                    ? '''${e.timeAgo} by ${e.by}'''
+                                    : e.timeAgo,
                                 style: const TextStyle(
                                   color: Palette.grey,
                                 ),
@@ -101,7 +105,10 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                           Linkify(
                             text: e.title,
                             maxLines: 4,
-                            style: Theme.of(context).textTheme.bodyLarge,
+                            style:
+                                Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      fontSize: TextDimens.pt16,
+                                    ),
                             linkStyle: TextStyle(
                               color: Theme.of(context).primaryColor,
                             ),
@@ -173,7 +180,9 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                             Row(
                               children: <Widget>[
                                 Text(
-                                  '''${e.timeAgo} by ${e.by}''',
+                                  showAuthor
+                                      ? '''${e.timeAgo} by ${e.by}'''
+                                      : e.timeAgo,
                                   style: const TextStyle(
                                     color: Palette.grey,
                                   ),
@@ -186,7 +195,12 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                             Linkify(
                               text: e.text,
                               maxLines: 4,
-                              style: Theme.of(context).textTheme.bodyLarge,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
+                                    fontSize: TextDimens.pt16,
+                                  ),
                               linkStyle: TextStyle(
                                 color: Theme.of(context).primaryColor,
                               ),

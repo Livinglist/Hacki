@@ -109,6 +109,7 @@ class InboxView extends StatelessWidget {
                                         color: unreadCommentsIds.contains(e.id)
                                             ? textColor
                                             : Palette.grey,
+                                        fontSize: TextDimens.pt16,
                                       ),
                                   linkStyle: TextStyle(
                                     color: Theme.of(context)
