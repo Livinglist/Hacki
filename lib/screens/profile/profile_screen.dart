@@ -99,6 +99,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                           showWebPreviewOnStoryTile: false,
                           showMetadataOnStoryTile: false,
                           showUrl: false,
+                          showAuthor: false,
                           useSimpleTileForStory: true,
                           refreshController: refreshControllerHistory,
                           items: historyState.submittedItems
