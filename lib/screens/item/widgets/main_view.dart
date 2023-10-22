@@ -284,13 +284,17 @@ class _ParentItemSection extends StatelessWidget {
                                     .state
                                     .isOfflineReading,
                               ),
-                              onLongPress: () => FlutterClipboard.copy(item.url)
-                                  .whenComplete(() {
-                                HapticFeedbackUtil.selection();
-                                context.showSnackBar(
-                                  content: 'Link copied.',
-                                );
-                              }),
+                              onLongPress: () {
+                                if (item.url.isNotEmpty) {
+                                  FlutterClipboard.copy(item.url)
+                                      .whenComplete(() {
+                                    HapticFeedbackUtil.selection();
+                                    context.showSnackBar(
+                                      content: 'Link copied.',
+                                    );
+                                  });
+                                }
+                              },
                               child: Padding(
                                 padding: const EdgeInsets.only(
                                   left: Dimens.pt6,

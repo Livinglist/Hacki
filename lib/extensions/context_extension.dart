@@ -21,7 +21,12 @@ extension ContextExtension on BuildContext {
     ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
         backgroundColor: Theme.of(this).primaryColor,
-        content: Text(content),
+        content: Text(
+          content,
+          style: TextStyle(
+            color: Theme.of(this).colorScheme.onPrimary,
+          ),
+        ),
         action: action != null && label != null
             ? SnackBarAction(
                 label: label,
