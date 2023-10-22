@@ -51,7 +51,10 @@ class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
             backgroundColor: Theme.of(context).canvasColor,
             elevation: Dimens.zero,
             leading: IconButton(
-              icon: const Icon(Icons.close),
+              icon: Icon(
+                Icons.close,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
               onPressed: () {
                 showDialog<bool>(
                   context: context,
@@ -83,8 +86,11 @@ class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
                 });
               },
             ),
-            title: const Text(
+            title: Text(
               'Submit',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
             actions: <Widget>[
               if (state.status == Status.inProgress)

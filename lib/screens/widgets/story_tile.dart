@@ -96,6 +96,7 @@ class StoryTile extends StatelessWidget {
                                         .textTheme
                                         .bodyLarge
                                         ?.color,
+                                fontWeight: hasRead ? null : FontWeight.w500,
                                 fontSize: simpleTileFontSize,
                               ),
                             ),

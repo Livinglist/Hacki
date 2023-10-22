@@ -102,15 +102,12 @@ class InboxView extends StatelessWidget {
                                 ),
                                 Linkify(
                                   text: e.text,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge
-                                      ?.copyWith(
-                                        color: unreadCommentsIds.contains(e.id)
-                                            ? textColor
-                                            : Palette.grey,
-                                        fontSize: TextDimens.pt16,
-                                      ),
+                                  style: TextStyle(
+                                    color: unreadCommentsIds.contains(e.id)
+                                        ? textColor
+                                        : Palette.grey,
+                                    fontSize: TextDimens.pt16,
+                                  ),
                                   linkStyle: TextStyle(
                                     color: Theme.of(context)
                                         .primaryColor
