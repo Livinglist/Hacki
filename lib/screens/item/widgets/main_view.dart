@@ -300,14 +300,6 @@ class _ParentItemSection extends StatelessWidget {
                                 ),
                                 child: Text.rich(
                                   TextSpan(
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: fontSize,
-                                      color: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge
-                                          ?.color,
-                                    ),
                                     children: <TextSpan>[
                                       TextSpan(
                                         semanticsLabel: item.title,

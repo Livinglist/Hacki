@@ -46,6 +46,10 @@ class PreferenceRepository {
         (SharedPreferences prefs) => prefs.getInt(key),
       );
 
+  Future<double?> getDouble(String key) => _prefs.then(
+        (SharedPreferences prefs) => prefs.getDouble(key),
+      );
+
   //ignore: avoid_positional_boolean_parameters
   void setBool(String key, bool val) => _prefs.then(
         (SharedPreferences prefs) => prefs.setBool(key, val),
@@ -53,6 +57,10 @@ class PreferenceRepository {
 
   void setInt(String key, int val) => _prefs.then(
         (SharedPreferences prefs) => prefs.setInt(key, val),
+      );
+
+  void setDouble(String key, double val) => _prefs.then(
+        (SharedPreferences prefs) => prefs.setDouble(key, val),
       );
 
   Future<bool> hasPushed(int commentId) async =>

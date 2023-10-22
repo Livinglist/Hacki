@@ -43,12 +43,26 @@ class PreferenceCubit extends Cubit<PreferenceState> {
         return null;
       });
     }
+
+    for (final DoublePreference p
+        in Preference.allPreferences.whereType<DoublePreference>()) {
+      initPreference<double>(p).then<double?>((double? value) {
+        final Preference<dynamic> updatedPreference = p.copyWith(val: value);
+        emit(state.copyWithPreference(updatedPreference));
+
+        return null;
+      });
+    }
   }
 
   Future<T?> initPreference<T>(Preference<T> preference) async {
     switch (T) {
       case int:
         final int? value = await _preferenceRepository.getInt(preference.key);
+        return value as T?;
+      case double:
+        final double? value =
+            await _preferenceRepository.getDouble(preference.key);
         return value as T?;
       case bool:
         final bool? value = await _preferenceRepository.getBool(preference.key);
@@ -65,9 +79,20 @@ class PreferenceCubit extends Cubit<PreferenceState> {
 
     switch (T) {
       case int:
-        _preferenceRepository.setInt(preference.key, preference.val as int);
+        _preferenceRepository.setInt(
+          preference.key,
+          preference.val as int,
+        );
+      case double:
+        _preferenceRepository.setDouble(
+          preference.key,
+          preference.val as double,
+        );
       case bool:
-        _preferenceRepository.setBool(preference.key, preference.val as bool);
+        _preferenceRepository.setBool(
+          preference.key,
+          preference.val as bool,
+        );
       default:
         throw UnimplementedError();
     }

@@ -25,6 +25,7 @@ import 'package:hacki/screens/profile/qr_code_scanner_screen.dart';
 import 'package:hacki/screens/profile/qr_code_view_screen.dart';
 import 'package:hacki/screens/profile/widgets/offline_list_tile.dart';
 import 'package:hacki/screens/profile/widgets/tab_bar_settings.dart';
+import 'package:hacki/screens/profile/widgets/text_scale_factor_settings.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
@@ -186,6 +187,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                     ],
                   ),
                   const TabBarSettings(),
+                  const TextScaleFactorSettings(),
                   const Divider(),
                   StoryTile(
                     showWebPreview: preferenceState.complexStoryTileEnabled,

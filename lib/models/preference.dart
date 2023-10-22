@@ -27,6 +27,7 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
       TabOrderPreference(),
       StoryMarkingModePreference(),
       AppColorPreference(),
+      const TextScaleFactorPreference(),
       // Order of items below matters and
       // reflects the order on settings screen.
       const DisplayModePreference(),
@@ -54,6 +55,10 @@ abstract class IntPreference extends Preference<int> {
   const IntPreference({required super.val});
 }
 
+abstract class DoublePreference extends Preference<double> {
+  const DoublePreference({required super.val});
+}
+
 const bool _notificationModeDefaultValue = true;
 const bool _swipeGestureModeDefaultValue = false;
 const bool _displayModeDefaultValue = true;
@@ -64,6 +69,7 @@ const bool _metadataModeDefaultValue = true;
 const bool _storyUrlModeDefaultValue = true;
 const bool _collapseModeDefaultValue = true;
 const bool _autoScrollModeDefaultValue = true;
+const double _textScaleFactorDefaultValue = 1;
 final int _fetchModeDefaultValue = FetchMode.eager.index;
 final int _commentsOrderDefaultValue = CommentsOrder.natural.index;
 final int _fontSizeDefaultValue = FontSize.regular.index;
@@ -380,4 +386,20 @@ class AppColorPreference extends IntPreference {
 
   @override
   String get title => 'Accent Color';
+}
+
+class TextScaleFactorPreference extends DoublePreference {
+  const TextScaleFactorPreference({double? val})
+      : super(val: val ?? _textScaleFactorDefaultValue);
+
+  @override
+  TextScaleFactorPreference copyWith({required double? val}) {
+    return TextScaleFactorPreference(val: val);
+  }
+
+  @override
+  String get key => 'appTextScaleFactor';
+
+  @override
+  String get title => 'Default text scale factor';
 }

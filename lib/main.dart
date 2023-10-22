@@ -232,7 +232,8 @@ class HackiApp extends StatelessWidget {
       child: BlocBuilder<PreferenceCubit, PreferenceState>(
         buildWhen: (PreferenceState previous, PreferenceState current) =>
             previous.appColor != current.appColor ||
-            previous.font != current.font,
+            previous.font != current.font ||
+            previous.textScaleFactor != current.textScaleFactor,
         builder: (BuildContext context, PreferenceState state) {
           return AdaptiveTheme(
             key: ValueKey<String>('${state.appColor}${state.font}'),
@@ -275,14 +276,21 @@ class HackiApp extends StatelessWidget {
                                       .platformBrightness ==
                                   Brightness.dark);
                   return FeatureDiscovery(
-                    child: MaterialApp.router(
-                      key: Key(state.appColor.hashCode.toString()),
-                      title: 'Hacki',
-                      debugShowCheckedModeBanner: false,
-                      theme: (isDarkModeEnabled ? darkTheme : theme).copyWith(
-                        useMaterial3: false,
+                    child: MediaQuery(
+                      data: MediaQuery.of(context).copyWith(
+                        textScaleFactor: state.textScaleFactor == 1
+                            ? null
+                            : state.textScaleFactor,
                       ),
-                      routerConfig: router,
+                      child: MaterialApp.router(
+                        key: Key(state.appColor.hashCode.toString()),
+                        title: 'Hacki',
+                        debugShowCheckedModeBanner: false,
+                        theme: (isDarkModeEnabled ? darkTheme : theme).copyWith(
+                          useMaterial3: false,
+                        ),
+                        routerConfig: router,
+                      ),
                     ),
                   );
                 },

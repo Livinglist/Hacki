@@ -68,6 +68,9 @@ class PreferenceState extends Equatable {
 
   bool get autoScrollEnabled => _isOn<AutoScrollModePreference>();
 
+  double get textScaleFactor =>
+      preferences.singleWhereType<TextScaleFactorPreference>().val;
+
   MaterialColor get appColor {
     return materialColors.elementAt(
       preferences.singleWhereType<AppColorPreference>().val,
