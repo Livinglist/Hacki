@@ -105,7 +105,10 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                           Linkify(
                             text: e.title,
                             maxLines: 4,
-                            style: Theme.of(context).textTheme.bodyLarge,
+                            style:
+                                Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      fontSize: TextDimens.pt16,
+                                    ),
                             linkStyle: TextStyle(
                               color: Theme.of(context).primaryColor,
                             ),
@@ -192,7 +195,12 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                             Linkify(
                               text: e.text,
                               maxLines: 4,
-                              style: Theme.of(context).textTheme.bodyLarge,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(
+                                    fontSize: TextDimens.pt16,
+                                  ),
                               linkStyle: TextStyle(
                                 color: Theme.of(context).primaryColor,
                               ),
