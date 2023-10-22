@@ -133,10 +133,10 @@ packages:
     dependency: "direct main"
     description:
       name: connectivity_plus
-      sha256: "77a180d6938f78ca7d2382d2240eb626c0f6a735d0bfdce227d8ffb80f95c48b"
+      sha256: b502a681ba415272ecc41400bd04fe543ed1a62632137dc84d25a91e7746f55f
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.2"
+    version: "5.0.1"
   connectivity_plus_platform_interface:
     dependency: transitive
     description:
@@ -197,10 +197,10 @@ packages:
     dependency: "direct main"
     description:
       name: device_info_plus
-      sha256: "86add5ef97215562d2e090535b0a16f197902b10c369c558a100e74ea06e8659"
+      sha256: "7035152271ff67b072a211152846e9f1259cf1be41e34cd3e0b5463d2d6b8419"
       url: "https://pub.dev"
     source: hosted
-    version: "9.0.3"
+    version: "9.1.0"
   device_info_plus_platform_interface:
     dependency: transitive
     description:
@@ -328,18 +328,18 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_inappwebview
-      sha256: f73505c792cf083d5566e1a94002311be497d984b5607f25be36d685cf6361cf
+      sha256: d198297060d116b94048301ee6749cd2e7d03c1f2689783f52d210a6b7aba350
       url: "https://pub.dev"
     source: hosted
-    version: "5.7.2+3"
+    version: "5.8.0"
   flutter_local_notifications:
     dependency: "direct main"
     description:
       name: flutter_local_notifications
-      sha256: "3002092e5b8ce2f86c3361422e52e6db6776c23ee21e0b2f71b892bf4259ef04"
+      sha256: "6d11ea777496061e583623aaf31923f93a9409ef8fcaeeefdd6cd78bf4fe5bb3"
       url: "https://pub.dev"
     source: hosted
-    version: "15.1.1"
+    version: "16.1.0"
   flutter_local_notifications_linux:
     dependency: transitive
     description:
@@ -487,10 +487,10 @@ packages:
     dependency: "direct main"
     description:
       name: go_router
-      sha256: a07c781bf55bf11ae85133338e4850f0b4e33e261c44a66c750fc707d65d8393
+      sha256: a206cc4621a644531a2e05e7774616ab4d9d85eab1f3b0e255f3102937fccab1
       url: "https://pub.dev"
     source: hosted
-    version: "11.1.2"
+    version: "12.0.0"
   hive:
     dependency: "direct main"
     description:
@@ -908,26 +908,26 @@ packages:
     dependency: "direct main"
     description:
       name: share_plus
-      sha256: "6cec740fa0943a826951223e76218df002804adb588235a8910dc3d6b0654e11"
+      sha256: f74fc3f1cbd99f39760182e176802f693fa0ec9625c045561cfad54681ea93dd
       url: "https://pub.dev"
     source: hosted
-    version: "7.1.0"
+    version: "7.2.1"
   share_plus_platform_interface:
     dependency: transitive
     description:
       name: share_plus_platform_interface
-      sha256: "357412af4178d8e11d14f41723f80f12caea54cf0d5cd29af9dcdab85d58aea7"
+      sha256: df08bc3a07d01f5ea47b45d03ffcba1fa9cd5370fb44b3f38c70e42cced0f956
       url: "https://pub.dev"
     source: hosted
-    version: "3.3.0"
+    version: "3.3.1"
   shared_preferences:
     dependency: "direct main"
     description:
       name: shared_preferences
-      sha256: b7f41bad7e521d205998772545de63ff4e6c97714775902c199353f8bf1511ac
+      sha256: "81429e4481e1ccfb51ede496e916348668fd0921627779233bd24cc3ff6abd02"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.1"
+    version: "2.2.2"
   shared_preferences_android:
     dependency: "direct main"
     description:
@@ -1352,18 +1352,18 @@ packages:
     dependency: "direct main"
     description:
       name: webview_flutter
-      sha256: "82f6787d5df55907aa01e49bd9644f4ed1cc82af7a8257dd9947815959d2e755"
+      sha256: c1ab9b81090705c6069197d9fdc1625e587b52b8d70cdde2339d177ad0dbb98e
       url: "https://pub.dev"
     source: hosted
-    version: "4.2.4"
+    version: "4.4.1"
   webview_flutter_android:
     dependency: transitive
     description:
       name: webview_flutter_android
-      sha256: ddc167c6676f57c8b367d19fcbee267d6dc6adf81bd6c3cb87981d30746e0a6d
+      sha256: b0cd33dd7d3dd8e5f664e11a19e17ba12c352647269921a3b568406b001f1dff
       url: "https://pub.dev"
     source: hosted
-    version: "3.10.1"
+    version: "3.12.0"
   webview_flutter_platform_interface:
     dependency: transitive
     description:
@@ -1376,10 +1376,10 @@ packages:
     dependency: transitive
     description:
       name: webview_flutter_wkwebview
-      sha256: "485af05f2c5f83c7f78c20e236b170ad02df7153b299ae9917345be43871d29f"
+      sha256: "30b9af6bdd457b44c08748b9190d23208b5165357cc2eb57914fee1366c42974"
       url: "https://pub.dev"
     source: hosted
-    version: "3.8.0"
+    version: "3.9.1"
   win32:
     dependency: "direct overridden"
     description:
