@@ -105,10 +105,9 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                           Linkify(
                             text: e.title,
                             maxLines: 4,
-                            style:
-                                Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                      fontSize: TextDimens.pt16,
-                                    ),
+                            style: const TextStyle(
+                              fontSize: TextDimens.pt16,
+                            ),
                             linkStyle: TextStyle(
                               color: Theme.of(context).primaryColor,
                             ),
@@ -141,7 +140,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                     ),
                   ),
                 ),
-              if (!showWebPreviewOnStoryTile)
+              if (useSimpleTileForStory || !showWebPreviewOnStoryTile)
                 const Divider(
                   height: Dimens.zero,
                 ),
@@ -195,12 +194,9 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                             Linkify(
                               text: e.text,
                               maxLines: 4,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(
-                                    fontSize: TextDimens.pt16,
-                                  ),
+                              style: const TextStyle(
+                                fontSize: TextDimens.pt16,
+                              ),
                               linkStyle: TextStyle(
                                 color: Theme.of(context).primaryColor,
                               ),
