@@ -151,9 +151,7 @@ class CommentTile extends StatelessWidget {
                               Text(
                                 comment.by,
                                 style: TextStyle(
-                                  color: prefState.eyeCandyEnabled
-                                      ? primaryColor
-                                      : color,
+                                  color: primaryColor,
                                 ),
                                 textScaleFactor:
                                     MediaQuery.of(context).textScaleFactor,
@@ -312,7 +310,7 @@ class CommentTile extends StatelessWidget {
                       )
                     : null,
                 color: shouldHighlight
-                    ? Theme.of(context).primaryColor.withOpacity(0.2)
+                    ? primaryColor.withOpacity(0.2)
                     : commentColor,
               ),
               child: wrapper,
@@ -342,33 +340,8 @@ class CommentTile extends StatelessWidget {
       level = level - 10;
     }
 
-    Color color = primaryColor;
-    final int r = color.red;
-    final int g = color.green;
-    final int b = color.blue;
-    const double opacity = 1;
-    if (r > g && r > b) {
-      color = Color.fromRGBO(
-        (r - 30 * level).abs(),
-        (g + 30 * level).clamp(0, 255),
-        (b + 30 * level).clamp(0, 255),
-        opacity,
-      );
-    } else if (g > r && g > b) {
-      color = Color.fromRGBO(
-        (r + 30 * level).clamp(0, 255),
-        (g - 30 * level).abs(),
-        (b + 30 * level).clamp(0, 255),
-        opacity,
-      );
-    } else {
-      color = Color.fromRGBO(
-        (r + 30 * level).clamp(0, 255),
-        (g + 30 * level).clamp(0, 255),
-        (b - 30 * level).abs(),
-        opacity,
-      );
-    }
+    final double opacity = ((10 - level) / 10).clamp(0.3, 1);
+    final Color color = primaryColor.withOpacity(opacity);
 
     levelToBorderColors[initialLevel] = color;
     return color;
