@@ -3,3 +3,4 @@ export 'inbox_view.dart';
 export 'offline_list_tile.dart';
 export 'settings.dart';
 export 'tab_bar_settings.dart';
+export 'text_scale_factor_settings.dart';

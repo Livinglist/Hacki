@@ -27,6 +27,7 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
       TabOrderPreference(),
       StoryMarkingModePreference(),
       AppColorPreference(),
+      const TextScaleFactorPreference(),
       // Order of items below matters and
       // reflects the order on settings screen.
       const DisplayModePreference(),
@@ -39,7 +40,6 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
       const CollapseModePreference(),
       const ReaderModePreference(),
       const EyeCandyModePreference(),
-      const TrueDarkModePreference(),
     ],
   );
 
@@ -55,17 +55,21 @@ abstract class IntPreference extends Preference<int> {
   const IntPreference({required super.val});
 }
 
+abstract class DoublePreference extends Preference<double> {
+  const DoublePreference({required super.val});
+}
+
 const bool _notificationModeDefaultValue = true;
 const bool _swipeGestureModeDefaultValue = false;
 const bool _displayModeDefaultValue = true;
 const bool _eyeCandyModeDefaultValue = false;
-const bool _trueDarkModeDefaultValue = true;
 const bool _readerModeDefaultValue = true;
 const bool _markReadStoriesModeDefaultValue = true;
 const bool _metadataModeDefaultValue = true;
 const bool _storyUrlModeDefaultValue = true;
 const bool _collapseModeDefaultValue = true;
-const bool _autoScrollModeDefaultValue = true;
+const bool _autoScrollModeDefaultValue = false;
+const double _textScaleFactorDefaultValue = 1;
 final int _fetchModeDefaultValue = FetchMode.eager.index;
 final int _commentsOrderDefaultValue = CommentsOrder.natural.index;
 final int _fontSizeDefaultValue = FontSize.regular.index;
@@ -277,25 +281,6 @@ class EyeCandyModePreference extends BooleanPreference {
   String get subtitle => 'some sort of magic.';
 }
 
-class TrueDarkModePreference extends BooleanPreference {
-  const TrueDarkModePreference({bool? val})
-      : super(val: val ?? _trueDarkModeDefaultValue);
-
-  @override
-  TrueDarkModePreference copyWith({required bool? val}) {
-    return TrueDarkModePreference(val: val);
-  }
-
-  @override
-  String get key => 'trueDarkMode';
-
-  @override
-  String get title => 'True Dark Mode';
-
-  @override
-  String get subtitle => 'you might need to restart the app.';
-}
-
 class FetchModePreference extends IntPreference {
   FetchModePreference({int? val}) : super(val: val ?? _fetchModeDefaultValue);
 
@@ -400,5 +385,21 @@ class AppColorPreference extends IntPreference {
   String get key => 'appColor';
 
   @override
-  String get title => 'Color';
+  String get title => 'Accent Color';
+}
+
+class TextScaleFactorPreference extends DoublePreference {
+  const TextScaleFactorPreference({double? val})
+      : super(val: val ?? _textScaleFactorDefaultValue);
+
+  @override
+  TextScaleFactorPreference copyWith({required double? val}) {
+    return TextScaleFactorPreference(val: val);
+  }
+
+  @override
+  String get key => 'appTextScaleFactor';
+
+  @override
+  String get title => 'Default text scale factor';
 }

@@ -232,7 +232,8 @@ class HackiApp extends StatelessWidget {
       child: BlocBuilder<PreferenceCubit, PreferenceState>(
         buildWhen: (PreferenceState previous, PreferenceState current) =>
             previous.appColor != current.appColor ||
-            previous.font != current.font,
+            previous.font != current.font ||
+            previous.textScaleFactor != current.textScaleFactor,
         builder: (BuildContext context, PreferenceState state) {
           return AdaptiveTheme(
             key: ValueKey<String>('${state.appColor}${state.font}'),
@@ -267,31 +268,30 @@ class HackiApp extends StatelessWidget {
                         .instance.platformDispatcher.platformBrightness,
                     mode,
                   );
-                  return BlocBuilder<PreferenceCubit, PreferenceState>(
-                    buildWhen:
-                        (PreferenceState previous, PreferenceState current) =>
-                            previous.trueDarkEnabled != current.trueDarkEnabled,
-                    builder: (BuildContext context, PreferenceState prefState) {
-                      final bool isDarkModeEnabled =
-                          mode == AdaptiveThemeMode.dark ||
-                              (mode == AdaptiveThemeMode.system &&
-                                  View.of(context)
-                                          .platformDispatcher
-                                          .platformBrightness ==
-                                      Brightness.dark);
-                      return FeatureDiscovery(
-                        child: MaterialApp.router(
-                          key: Key(state.appColor.hashCode.toString()),
-                          title: 'Hacki',
-                          debugShowCheckedModeBanner: false,
-                          theme:
-                              (isDarkModeEnabled ? darkTheme : theme).copyWith(
-                            useMaterial3: false,
-                          ),
-                          routerConfig: router,
+                  final bool isDarkModeEnabled =
+                      mode == AdaptiveThemeMode.dark ||
+                          (mode == AdaptiveThemeMode.system &&
+                              View.of(context)
+                                      .platformDispatcher
+                                      .platformBrightness ==
+                                  Brightness.dark);
+                  return FeatureDiscovery(
+                    child: MediaQuery(
+                      data: MediaQuery.of(context).copyWith(
+                        textScaleFactor: state.textScaleFactor == 1
+                            ? null
+                            : state.textScaleFactor,
+                      ),
+                      child: MaterialApp.router(
+                        key: Key(state.appColor.hashCode.toString()),
+                        title: 'Hacki',
+                        debugShowCheckedModeBanner: false,
+                        theme: (isDarkModeEnabled ? darkTheme : theme).copyWith(
+                          useMaterial3: false,
                         ),
-                      );
-                    },
+                        routerConfig: router,
+                      ),
+                    ),
                   );
                 },
               );

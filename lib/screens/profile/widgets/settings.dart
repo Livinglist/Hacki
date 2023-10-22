@@ -25,6 +25,7 @@ import 'package:hacki/screens/profile/qr_code_scanner_screen.dart';
 import 'package:hacki/screens/profile/qr_code_view_screen.dart';
 import 'package:hacki/screens/profile/widgets/offline_list_tile.dart';
 import 'package:hacki/screens/profile/widgets/tab_bar_settings.dart';
+import 'package:hacki/screens/profile/widgets/text_scale_factor_settings.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
@@ -186,6 +187,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                     ],
                   ),
                   const TabBarSettings(),
+                  const TextScaleFactorSettings(),
                   const Divider(),
                   StoryTile(
                     showWebPreview: preferenceState.complexStoryTileEnabled,
@@ -290,7 +292,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                   ),
                   ListTile(
                     title: const Text(
-                      'Primary Color',
+                      'Accent Color',
                     ),
                     onTap: showColorPicker,
                   ),
@@ -473,11 +475,12 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
       builder: (_) {
         return AlertDialog(
           contentPadding: const EdgeInsets.all(Dimens.pt18),
-          title: const Text('Primary Color'),
+          title: Text(AppColorPreference().title),
           content: MaterialColorPicker(
             colors: materialColors,
             selectedColor: context.read<PreferenceCubit>().state.appColor,
             onMainColorChange: (ColorSwatch<dynamic>? color) {
+              CommentTile.levelToBorderColors.clear();
               context.read<PreferenceCubit>().update(
                     AppColorPreference(
                       val: materialColors.indexOf(color ?? Palette.deepOrange),

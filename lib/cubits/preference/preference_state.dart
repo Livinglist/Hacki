@@ -54,8 +54,6 @@ class PreferenceState extends Equatable {
 
   bool get eyeCandyEnabled => _isOn<EyeCandyModePreference>();
 
-  bool get trueDarkEnabled => _isOn<TrueDarkModePreference>();
-
   bool get readerEnabled => _isOn<ReaderModePreference>();
 
   bool get markReadStoriesEnabled => _isOn<MarkReadStoriesModePreference>();
@@ -69,6 +67,9 @@ class PreferenceState extends Equatable {
   bool get swipeGestureEnabled => _isOn<SwipeGesturePreference>();
 
   bool get autoScrollEnabled => _isOn<AutoScrollModePreference>();
+
+  double get textScaleFactor =>
+      preferences.singleWhereType<TextScaleFactorPreference>().val;
 
   MaterialColor get appColor {
     return materialColors.elementAt(
