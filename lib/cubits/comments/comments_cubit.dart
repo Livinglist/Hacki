@@ -359,7 +359,7 @@ class CommentsCubit extends Cubit<CommentsState> {
         .itemPositions.value
         // The header is also a part of the list view,
         // thus ignoring it here.
-        .where((ItemPosition e) => e.index >= 1 && e.itemLeadingEdge < 0.7)
+        .where((ItemPosition e) => e.index >= 1 && e.itemLeadingEdge > 0.1)
         .sorted((ItemPosition a, ItemPosition b) => a.index.compareTo(b.index))
         .map(
           (ItemPosition e) => e.index <= state.comments.length
@@ -369,9 +369,19 @@ class CommentsCubit extends Cubit<CommentsState> {
         .whereNotNull()
         .toList();
 
-    /// The index of last comment visible on screen.
-    final int lastVisibleIndex = state.comments.indexOf(onScreenComments.last);
-    final int startIndex = min(lastVisibleIndex + 1, totalComments);
+    if (onScreenComments.isEmpty && state.comments.isNotEmpty) {
+      itemScrollController.scrollTo(
+        index: 1,
+        alignment: 0.15,
+        duration: Durations.ms400,
+      );
+      return;
+    }
+
+    /// The index of first root level comment visible on screen.
+    final int firstVisibleRootIndex = state.comments
+        .indexOf(onScreenComments.firstWhere((Comment e) => e.isRoot));
+    final int startIndex = min(firstVisibleRootIndex + 1, totalComments);
 
     for (int i = startIndex; i < totalComments; i++) {
       final Comment cmt = state.comments.elementAt(i);
