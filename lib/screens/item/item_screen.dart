@@ -425,42 +425,36 @@ class _ItemScreenState extends State<ItemScreen>
       context: context,
       builder: (BuildContext context) {
         return SafeArea(
-          child: ColoredBox(
-            color: Theme.of(context).canvasColor,
-            child: Material(
-              color: Palette.transparent,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  ListTile(
-                    leading: const Icon(Icons.av_timer),
-                    title: const Text('View ancestors'),
-                    onTap: () {
-                      context.pop();
-                      onTimeMachineActivated(comment);
-                    },
-                    enabled:
-                        comment.level > 0 && !(comment.dead || comment.deleted),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.list),
-                    title: const Text('View in separate thread'),
-                    onTap: () {
-                      locator.get<AppReviewService>().requestReview();
-                      context.pop();
-                      goToItemScreen(
-                        args: ItemScreenArgs(
-                          item: comment,
-                          useCommentCache: true,
-                        ),
-                        forceNewScreen: true,
-                      );
-                    },
-                    enabled: !(comment.dead || comment.deleted),
-                  ),
-                ],
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.av_timer),
+                title: const Text('View ancestors'),
+                onTap: () {
+                  context.pop();
+                  onTimeMachineActivated(comment);
+                },
+                enabled:
+                    comment.level > 0 && !(comment.dead || comment.deleted),
               ),
-            ),
+              ListTile(
+                leading: const Icon(Icons.list),
+                title: const Text('View in separate thread'),
+                onTap: () {
+                  locator.get<AppReviewService>().requestReview();
+                  context.pop();
+                  goToItemScreen(
+                    args: ItemScreenArgs(
+                      item: comment,
+                      useCommentCache: true,
+                    ),
+                    forceNewScreen: true,
+                  );
+                },
+                enabled: !(comment.dead || comment.deleted),
+              ),
+            ],
           ),
         );
       },

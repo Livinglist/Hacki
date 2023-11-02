@@ -43,48 +43,46 @@ class InThreadSearchIconButton extends StatelessWidget {
                     return Container(
                       height: MediaQuery.of(context).size.height - Dimens.pt120,
                       color: Theme.of(context).canvasColor,
-                      child: Material(
-                        child: Column(
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: Dimens.pt8,
-                              ),
-                              child: TextField(
-                                cursorColor: Theme.of(context).primaryColor,
-                                autocorrect: false,
-                                decoration: InputDecoration(
-                                  hintText: 'Search in this thread',
-                                  focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Theme.of(context).primaryColor,
-                                    ),
+                      child: Column(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: Dimens.pt8,
+                            ),
+                            child: TextField(
+                              cursorColor: Theme.of(context).primaryColor,
+                              autocorrect: false,
+                              decoration: InputDecoration(
+                                hintText: 'Search in this thread',
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Theme.of(context).primaryColor,
                                   ),
                                 ),
-                                onChanged: context.read<CommentsCubit>().search,
                               ),
+                              onChanged: context.read<CommentsCubit>().search,
                             ),
-                            Expanded(
-                              child: ListView(
-                                children: <Widget>[
-                                  for (final int i in state.matchedComments)
-                                    CommentTile(
-                                      comment: state.comments.elementAt(i),
-                                      fetchMode: FetchMode.lazy,
-                                      actionable: false,
-                                      onTap: () {
-                                        context.pop();
-                                        context.read<CommentsCubit>().scrollTo(
-                                              index: i + 1,
-                                              alignment: 0.1,
-                                            );
-                                      },
-                                    ),
-                                ],
-                              ),
+                          ),
+                          Expanded(
+                            child: ListView(
+                              children: <Widget>[
+                                for (final int i in state.matchedComments)
+                                  CommentTile(
+                                    comment: state.comments.elementAt(i),
+                                    fetchMode: FetchMode.lazy,
+                                    actionable: false,
+                                    onTap: () {
+                                      context.pop();
+                                      context.read<CommentsCubit>().scrollTo(
+                                            index: i + 1,
+                                            alignment: 0.1,
+                                          );
+                                    },
+                                  ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     );
                   },

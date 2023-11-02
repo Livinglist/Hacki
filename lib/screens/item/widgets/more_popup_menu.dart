@@ -66,170 +66,167 @@ class MorePopupMenu extends StatelessWidget {
         builder: (BuildContext context, VoteState voteState) {
           final bool upvoted = voteState.vote == Vote.up;
           final bool downvoted = voteState.vote == Vote.down;
-          return Material(
-            color: Palette.transparent,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                BlocProvider<UserCubit>(
-                  create: (BuildContext context) =>
-                      UserCubit()..init(userId: item.by),
-                  child: BlocBuilder<UserCubit, UserState>(
-                    builder: (BuildContext context, UserState state) {
-                      return Semantics(
-                        excludeSemantics: state.status == Status.inProgress,
-                        child: ListTile(
-                          leading: const Icon(
-                            Icons.account_circle,
-                          ),
-                          title: Text(item.by),
-                          subtitle: Text(
-                            state.user.description,
-                          ),
-                          onTap: () {
-                            context.pop();
-                            showDialog<void>(
-                              context: context,
-                              builder: (BuildContext context) => AlertDialog(
-                                semanticLabel:
-                                    '''About ${state.user.id}. ${state.user.about}''',
-                                title: Text(
-                                  'About ${state.user.id}',
-                                ),
-                                content: state.user.about.isEmpty
-                                    ? const Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          Text(
-                                            'empty',
-                                            style: TextStyle(
-                                              color: Palette.grey,
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                    : SelectableLinkify(
-                                        text: HtmlUtil.parseHtml(
-                                          state.user.about,
-                                        ),
-                                        linkStyle: TextStyle(
-                                          color: Theme.of(context).primaryColor,
-                                        ),
-                                        onOpen: (LinkableElement link) =>
-                                            LinkUtil.launch(
-                                          link.url,
-                                          context,
-                                        ),
-                                        semanticsLabel: state.user.about,
-                                      ),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed: () {
-                                      locator
-                                          .get<AppReviewService>()
-                                          .requestReview();
-                                      context.pop();
-                                      onSearchUserTapped(context);
-                                    },
-                                    child: const Text(
-                                      'Search',
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      locator
-                                          .get<AppReviewService>()
-                                          .requestReview();
-                                      context.pop();
-                                    },
-                                    child: const Text(
-                                      'Okay',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              BlocProvider<UserCubit>(
+                create: (BuildContext context) =>
+                    UserCubit()..init(userId: item.by),
+                child: BlocBuilder<UserCubit, UserState>(
+                  builder: (BuildContext context, UserState state) {
+                    return Semantics(
+                      excludeSemantics: state.status == Status.inProgress,
+                      child: ListTile(
+                        leading: const Icon(
+                          Icons.account_circle,
                         ),
-                      );
-                    },
-                  ),
-                ),
-                ListTile(
-                  leading: Icon(
-                    FeatherIcons.chevronUp,
-                    color: upvoted ? Theme.of(context).primaryColor : null,
-                  ),
-                  title: Text(
-                    upvoted ? 'Upvoted' : 'Upvote',
-                    style: upvoted
-                        ? TextStyle(color: Theme.of(context).primaryColor)
-                        : null,
-                  ),
-                  subtitle: item is Story ? Text(item.score.toString()) : null,
-                  onTap: context.read<VoteCubit>().upvote,
-                ),
-                ListTile(
-                  leading: Icon(
-                    FeatherIcons.chevronDown,
-                    color: downvoted ? Theme.of(context).primaryColor : null,
-                  ),
-                  title: Text(
-                    downvoted ? 'Downvoted' : 'Downvote',
-                    style: downvoted
-                        ? TextStyle(color: Theme.of(context).primaryColor)
-                        : null,
-                  ),
-                  onTap: context.read<VoteCubit>().downvote,
-                ),
-                BlocBuilder<FavCubit, FavState>(
-                  builder: (BuildContext context, FavState state) {
-                    final bool isFav = state.favIds.contains(item.id);
-                    return ListTile(
-                      leading: Icon(
-                        isFav ? Icons.favorite : Icons.favorite_border,
-                        color: isFav ? Theme.of(context).primaryColor : null,
+                        title: Text(item.by),
+                        subtitle: Text(
+                          state.user.description,
+                        ),
+                        onTap: () {
+                          context.pop();
+                          showDialog<void>(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              semanticLabel:
+                                  '''About ${state.user.id}. ${state.user.about}''',
+                              title: Text(
+                                'About ${state.user.id}',
+                              ),
+                              content: state.user.about.isEmpty
+                                  ? const Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        Text(
+                                          'empty',
+                                          style: TextStyle(
+                                            color: Palette.grey,
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  : SelectableLinkify(
+                                      text: HtmlUtil.parseHtml(
+                                        state.user.about,
+                                      ),
+                                      linkStyle: TextStyle(
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                      onOpen: (LinkableElement link) =>
+                                          LinkUtil.launch(
+                                        link.url,
+                                        context,
+                                      ),
+                                      semanticsLabel: state.user.about,
+                                    ),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    locator
+                                        .get<AppReviewService>()
+                                        .requestReview();
+                                    context.pop();
+                                    onSearchUserTapped(context);
+                                  },
+                                  child: const Text(
+                                    'Search',
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    locator
+                                        .get<AppReviewService>()
+                                        .requestReview();
+                                    context.pop();
+                                  },
+                                  child: const Text(
+                                    'Okay',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
-                      title: Text(
-                        isFav ? 'Unfavorite' : 'Favorite',
-                      ),
-                      onTap: () => context.pop(MenuAction.fav),
                     );
                   },
                 ),
-                ListTile(
-                  leading: const Icon(FeatherIcons.share),
-                  title: const Text(
-                    'Share',
-                  ),
-                  onTap: () => context.pop(MenuAction.share),
+              ),
+              ListTile(
+                leading: Icon(
+                  FeatherIcons.chevronUp,
+                  color: upvoted ? Theme.of(context).primaryColor : null,
                 ),
-                ListTile(
-                  leading: const Icon(Icons.local_police),
-                  title: const Text(
-                    'Flag',
-                  ),
-                  onTap: () => context.pop(MenuAction.flag),
+                title: Text(
+                  upvoted ? 'Upvoted' : 'Upvote',
+                  style: upvoted
+                      ? TextStyle(color: Theme.of(context).primaryColor)
+                      : null,
                 ),
-                ListTile(
-                  leading: Icon(
-                    isBlocked ? Icons.visibility : Icons.visibility_off,
-                  ),
-                  title: Text(
-                    isBlocked ? 'Unblock' : 'Block',
-                  ),
-                  onTap: () => context.pop(MenuAction.block),
+                subtitle: item is Story ? Text(item.score.toString()) : null,
+                onTap: context.read<VoteCubit>().upvote,
+              ),
+              ListTile(
+                leading: Icon(
+                  FeatherIcons.chevronDown,
+                  color: downvoted ? Theme.of(context).primaryColor : null,
                 ),
-                ListTile(
-                  leading: const Icon(Icons.close),
-                  title: const Text(
-                    'Cancel',
-                  ),
-                  onTap: () => context.pop(MenuAction.cancel),
+                title: Text(
+                  downvoted ? 'Downvoted' : 'Downvote',
+                  style: downvoted
+                      ? TextStyle(color: Theme.of(context).primaryColor)
+                      : null,
                 ),
-              ],
-            ),
+                onTap: context.read<VoteCubit>().downvote,
+              ),
+              BlocBuilder<FavCubit, FavState>(
+                builder: (BuildContext context, FavState state) {
+                  final bool isFav = state.favIds.contains(item.id);
+                  return ListTile(
+                    leading: Icon(
+                      isFav ? Icons.favorite : Icons.favorite_border,
+                      color: isFav ? Theme.of(context).primaryColor : null,
+                    ),
+                    title: Text(
+                      isFav ? 'Unfavorite' : 'Favorite',
+                    ),
+                    onTap: () => context.pop(MenuAction.fav),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(FeatherIcons.share),
+                title: const Text(
+                  'Share',
+                ),
+                onTap: () => context.pop(MenuAction.share),
+              ),
+              ListTile(
+                leading: const Icon(Icons.local_police),
+                title: const Text(
+                  'Flag',
+                ),
+                onTap: () => context.pop(MenuAction.flag),
+              ),
+              ListTile(
+                leading: Icon(
+                  isBlocked ? Icons.visibility : Icons.visibility_off,
+                ),
+                title: Text(
+                  isBlocked ? 'Unblock' : 'Block',
+                ),
+                onTap: () => context.pop(MenuAction.block),
+              ),
+              ListTile(
+                leading: const Icon(Icons.close),
+                title: const Text(
+                  'Cancel',
+                ),
+                onTap: () => context.pop(MenuAction.cancel),
+              ),
+            ],
           );
         },
       ),

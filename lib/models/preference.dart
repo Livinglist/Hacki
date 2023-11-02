@@ -74,7 +74,7 @@ const bool _storyUrlModeDefaultValue = true;
 const bool _collapseModeDefaultValue = true;
 const bool _autoScrollModeDefaultValue = false;
 const bool _customTabModeDefaultValue = false;
-const bool _material3ModeDefaultValue = true;
+const bool _material3ModeDefaultValue = false;
 const double _textScaleFactorDefaultValue = 1;
 final int _fetchModeDefaultValue = FetchMode.eager.index;
 final int _commentsOrderDefaultValue = CommentsOrder.natural.index;
@@ -304,7 +304,7 @@ class Material3Preference extends BooleanPreference {
 
   @override
   String get subtitle =>
-      '''experiment feature. Open an issue on GitHub if you notice anything weird''';
+      '''experiment feature. Please open an issue on GitHub if you notice anything weird.''';
 }
 
 /// Whether or not to use Custom Tabs for launching URLs.
