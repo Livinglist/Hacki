@@ -470,13 +470,15 @@ class CommentsCubit extends Cubit<CommentsState> {
         emit(
           state.copyWith(
             matchedComments: <int>[...state.matchedComments, i],
+            inThreadSearchQuery: query,
           ),
         );
       }
     }
   }
 
-  void resetSearch() => emit(state.copyWith(matchedComments: <int>[]));
+  void resetSearch() =>
+      emit(state.copyWith(matchedComments: <int>[], inThreadSearchQuery: ''));
 
   List<int> _sortKids(List<int> kids) {
     switch (state.order) {
