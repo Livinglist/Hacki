@@ -45,6 +45,9 @@ class MainView extends StatelessWidget {
       children: <Widget>[
         Positioned.fill(
           child: BlocBuilder<CommentsCubit, CommentsState>(
+            buildWhen: (CommentsState previous, CommentsState current) =>
+                previous.comments.length != current.comments.length ||
+                previous.status != current.status,
             builder: (BuildContext context, CommentsState state) {
               return RefreshIndicator(
                 displacement: 100,

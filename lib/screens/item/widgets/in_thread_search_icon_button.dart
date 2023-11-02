@@ -7,9 +7,7 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 
 class InThreadSearchIconButton extends StatelessWidget {
-  const InThreadSearchIconButton({
-    super.key,
-  });
+  const InThreadSearchIconButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -36,76 +34,124 @@ class InThreadSearchIconButton extends StatelessWidget {
             ),
           );
         },
-        openBuilder: (_, void Function({Object? returnValue}) action) {
-          return BlocProvider<CommentsCubit>.value(
-            value: context.read<CommentsCubit>(),
-            child: BlocBuilder<CommentsCubit, CommentsState>(
-              buildWhen: (CommentsState previous, CommentsState current) =>
-                  previous.matchedComments != current.matchedComments,
-              builder: (BuildContext context, CommentsState state) {
-                return Scaffold(
-                  resizeToAvoidBottomInset: true,
-                  appBar: AppBar(
-                    backgroundColor: Theme.of(context).canvasColor,
-                    elevation: 0,
-                    leadingWidth: 0,
-                    leading: const SizedBox.shrink(),
-                    title: Padding(
-                      padding: const EdgeInsets.only(bottom: Dimens.pt8),
-                      child: Flex(
-                        direction: Axis.horizontal,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Expanded(
-                            child: TextField(
-                              cursorColor: Theme.of(context).primaryColor,
-                              autocorrect: false,
-                              decoration: InputDecoration(
-                                hintText: 'Search in this thread',
-                                suffixText:
-                                    '${state.matchedComments.length} results',
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                ),
-                              ),
-                              onChanged: context.read<CommentsCubit>().search,
+        openBuilder: (_, void Function({Object? returnValue}) action) =>
+            _InThreadSearchView(
+          commentsCubit: context.read<CommentsCubit>(),
+          action: action,
+        ),
+      ),
+    );
+  }
+}
+
+class _InThreadSearchView extends StatefulWidget {
+  const _InThreadSearchView({
+    required this.commentsCubit,
+    required this.action,
+  });
+
+  final CommentsCubit commentsCubit;
+  final void Function({Object? returnValue}) action;
+
+  @override
+  State<_InThreadSearchView> createState() => _InThreadSearchViewState();
+}
+
+class _InThreadSearchViewState extends State<_InThreadSearchView> {
+  final ScrollController scrollController = ScrollController();
+  final FocusNode focusNode = FocusNode();
+  final TextEditingController textEditingController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    scrollController.addListener(onScroll);
+    focusNode.requestFocus();
+    textEditingController.text = widget.commentsCubit.state.inThreadSearchQuery;
+  }
+
+  @override
+  void dispose() {
+    scrollController
+      ..removeListener(onScroll)
+      ..dispose();
+    focusNode.dispose();
+    textEditingController.dispose();
+    super.dispose();
+  }
+
+  void onScroll() => focusNode.unfocus();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider<CommentsCubit>.value(
+      value: widget.commentsCubit,
+      child: BlocBuilder<CommentsCubit, CommentsState>(
+        buildWhen: (CommentsState previous, CommentsState current) =>
+            previous.matchedComments != current.matchedComments,
+        builder: (BuildContext context, CommentsState state) {
+          return Scaffold(
+            resizeToAvoidBottomInset: true,
+            appBar: AppBar(
+              backgroundColor: Theme.of(context).canvasColor,
+              elevation: 0,
+              leadingWidth: 0,
+              leading: const SizedBox.shrink(),
+              title: Padding(
+                padding: const EdgeInsets.only(bottom: Dimens.pt8),
+                child: Flex(
+                  direction: Axis.horizontal,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Expanded(
+                      child: TextField(
+                        controller: textEditingController,
+                        focusNode: focusNode,
+                        cursorColor: Theme.of(context).primaryColor,
+                        autocorrect: false,
+                        decoration: InputDecoration(
+                          hintText: 'Search in this thread',
+                          suffixText: '${state.matchedComments.length} results',
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
                             ),
                           ),
-                          IconButton(
-                            icon: Icon(
-                              Icons.close,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                            onPressed: action,
-                          ),
-                        ],
+                        ),
+                        onChanged: context.read<CommentsCubit>().search,
                       ),
                     ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.close,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                      onPressed: widget.action,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            body: ListView(
+              controller: scrollController,
+              shrinkWrap: true,
+              children: <Widget>[
+                for (final int i in state.matchedComments)
+                  CommentTile(
+                    comment: state.comments.elementAt(i),
+                    fetchMode: FetchMode.lazy,
+                    actionable: false,
+                    collapsable: false,
+                    onTap: () {
+                      widget.action();
+                      widget.commentsCubit.scrollTo(
+                        index: i + 1,
+                        alignment: 0.1,
+                      );
+                    },
                   ),
-                  body: ListView(
-                    shrinkWrap: true,
-                    children: <Widget>[
-                      for (final int i in state.matchedComments)
-                        CommentTile(
-                          comment: state.comments.elementAt(i),
-                          fetchMode: FetchMode.lazy,
-                          actionable: false,
-                          collapsable: false,
-                          onTap: () {
-                            action();
-                            context.read<CommentsCubit>().scrollTo(
-                                  index: i + 1,
-                                  alignment: 0.1,
-                                );
-                          },
-                        ),
-                    ],
-                  ),
-                );
-              },
+              ],
             ),
           );
         },

@@ -21,6 +21,7 @@ class CommentsState extends Equatable {
     required this.onlyShowTargetComment,
     required this.isOfflineReading,
     required this.currentPage,
+    required this.inThreadSearchQuery,
   });
 
   CommentsState.init({
@@ -34,7 +35,8 @@ class CommentsState extends Equatable {
         fetchParentStatus = CommentsStatus.idle,
         fetchRootStatus = CommentsStatus.idle,
         onlyShowTargetComment = false,
-        currentPage = 0;
+        currentPage = 0,
+        inThreadSearchQuery = '';
 
   final Item item;
   final List<Comment> comments;
@@ -46,6 +48,7 @@ class CommentsState extends Equatable {
   final bool onlyShowTargetComment;
   final bool isOfflineReading;
   final int currentPage;
+  final String inThreadSearchQuery;
 
   /// Indexes of comments that matches the query for in-thread search.
   final List<int> matchedComments;
@@ -62,6 +65,7 @@ class CommentsState extends Equatable {
     bool? onlyShowTargetComment,
     bool? isOfflineReading,
     int? currentPage,
+    String? inThreadSearchQuery,
   }) {
     return CommentsState(
       item: item ?? this.item,
@@ -76,6 +80,7 @@ class CommentsState extends Equatable {
           onlyShowTargetComment ?? this.onlyShowTargetComment,
       isOfflineReading: isOfflineReading ?? this.isOfflineReading,
       currentPage: currentPage ?? this.currentPage,
+      inThreadSearchQuery: inThreadSearchQuery ?? this.inThreadSearchQuery,
     );
   }
 
@@ -94,5 +99,6 @@ class CommentsState extends Equatable {
         currentPage,
         comments,
         matchedComments,
+        inThreadSearchQuery,
       ];
 }
