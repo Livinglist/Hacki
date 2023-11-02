@@ -318,12 +318,15 @@ class _ItemScreenState extends State<ItemScreen>
                           bottom: Dimens.zero,
                           left: Dimens.zero,
                           right: Dimens.zero,
-                          child: ReplyBox(
-                            splitViewEnabled: true,
-                            focusNode: focusNode,
-                            textEditingController: commentEditingController,
-                            onSendTapped: onSendTapped,
-                            onChanged: context.read<EditCubit>().onTextChanged,
+                          child: Material(
+                            child: ReplyBox(
+                              splitViewEnabled: true,
+                              focusNode: focusNode,
+                              textEditingController: commentEditingController,
+                              onSendTapped: onSendTapped,
+                              onChanged:
+                                  context.read<EditCubit>().onTextChanged,
+                            ),
                           ),
                         ),
                       ],
