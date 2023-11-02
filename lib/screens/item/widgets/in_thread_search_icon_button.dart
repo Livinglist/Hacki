@@ -66,8 +66,10 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
   void initState() {
     super.initState();
     scrollController.addListener(onScroll);
-    focusNode.requestFocus();
     textEditingController.text = widget.commentsCubit.state.inThreadSearchQuery;
+    if (textEditingController.text.isEmpty) {
+      focusNode.requestFocus();
+    }
   }
 
   @override
@@ -147,7 +149,7 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                       widget.action();
                       widget.commentsCubit.scrollTo(
                         index: i + 1,
-                        alignment: 0.1,
+                        alignment: 0.2,
                       );
                     },
                   ),
