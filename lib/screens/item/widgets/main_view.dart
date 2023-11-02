@@ -102,6 +102,7 @@ class MainView extends StatelessWidget {
                       key: ValueKey<String>('${comment.id}-FadeIn'),
                       child: CommentTile(
                         comment: comment,
+                        index: index,
                         level: comment.level,
                         opUsername: state.item.by,
                         fetchMode: state.fetchMode,

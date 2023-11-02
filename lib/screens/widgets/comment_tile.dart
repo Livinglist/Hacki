@@ -25,12 +25,14 @@ class CommentTile extends StatelessWidget {
     this.collapsable = true,
     this.selectable = true,
     this.level = 0,
+    this.index,
     this.onTap,
   });
 
   final String? opUsername;
   final Comment comment;
   final int level;
+  final int? index;
   final bool actionable;
   final bool collapsable;
   final bool selectable;
@@ -159,6 +161,15 @@ class CommentTile extends StatelessWidget {
                                   style: TextStyle(
                                     color: primaryColor,
                                   ),
+                                ),
+                              if (index != null)
+                                Text(
+                                  ' #${index! + 1}',
+                                  style: const TextStyle(
+                                    color: Palette.grey,
+                                  ),
+                                  textScaleFactor:
+                                      MediaQuery.of(context).textScaleFactor,
                                 ),
                               const Spacer(),
                               Text(
