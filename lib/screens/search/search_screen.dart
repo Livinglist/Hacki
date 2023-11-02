@@ -53,7 +53,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
           },
           builder: (BuildContext context, SearchState state) {
             return Scaffold(
-              backgroundColor: Colors.transparent,
+              backgroundColor: Palette.transparent,
               resizeToAvoidBottomInset: false,
               body: Column(
                 mainAxisSize: MainAxisSize.min,
