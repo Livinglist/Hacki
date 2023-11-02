@@ -42,9 +42,8 @@ class CustomFloatingActionButton extends StatelessWidget {
                       onLongPress: () =>
                           context.read<CommentsCubit>().scrollTo(index: 0),
                       child: FloatingActionButton.small(
-                        backgroundColor: Theme.of(context)
-                            .scaffoldBackgroundColor
-                            .withOpacity(0.6),
+                        backgroundColor:
+                            Theme.of(context).scaffoldBackgroundColor,
 
                         /// Randomly generated string as heroTag to prevent
                         /// default [FloatingActionButton] animation.
@@ -71,9 +70,8 @@ class CustomFloatingActionButton extends StatelessWidget {
                           .read<CommentsCubit>()
                           .scrollTo(index: state.comments.length),
                       child: FloatingActionButton.small(
-                        backgroundColor: Theme.of(context)
-                            .scaffoldBackgroundColor
-                            .withOpacity(0.6),
+                        backgroundColor:
+                            Theme.of(context).scaffoldBackgroundColor,
 
                         /// Same as above.
                         heroTag: UniqueKey().hashCode,
