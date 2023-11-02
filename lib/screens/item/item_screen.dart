@@ -179,12 +179,12 @@ class _ItemScreenState extends State<ItemScreen>
         FeatureDiscovery.discoverFeatures(
           context,
           <String>{
+            DiscoverableFeature.searchInThread.featureId,
             DiscoverableFeature.pinToTop.featureId,
             DiscoverableFeature.addStoryToFavList.featureId,
             DiscoverableFeature.openStoryInWebView.featureId,
             DiscoverableFeature.jumpUpButton.featureId,
             DiscoverableFeature.jumpDownButton.featureId,
-            DiscoverableFeature.searchInThread.featureId,
           },
         );
       })
