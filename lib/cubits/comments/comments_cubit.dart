@@ -113,6 +113,8 @@ class CommentsCubit extends Cubit<CommentsState> {
       state.copyWith(
         status: CommentsStatus.inProgress,
         comments: <Comment>[],
+        matchedComments: <int>[],
+        inThreadSearchQuery: '',
         currentPage: 0,
       ),
     );

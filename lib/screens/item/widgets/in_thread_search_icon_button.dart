@@ -141,6 +141,7 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
               children: <Widget>[
                 for (final int i in state.matchedComments)
                   CommentTile(
+                    index: i,
                     comment: state.comments.elementAt(i),
                     fetchMode: FetchMode.lazy,
                     actionable: false,
