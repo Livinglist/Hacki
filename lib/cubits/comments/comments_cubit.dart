@@ -450,6 +450,9 @@ class CommentsCubit extends Cubit<CommentsState> {
 
   void search(String query) {
     resetSearch();
+
+    if (query.isEmpty) return;
+
     final String lowercaseQuery = query.toLowerCase();
     for (final int i in 0.to(state.comments.length, inclusive: false)) {
       final Comment cmt = state.comments.elementAt(i);
