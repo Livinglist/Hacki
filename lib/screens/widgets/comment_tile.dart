@@ -359,7 +359,8 @@ class CommentTile extends StatelessWidget {
     final CollapseState collapseState = context.read<CollapseCubit>().state;
     final CommentsState? commentsState =
         context.tryRead<CommentsCubit>()?.state;
-    return fetchMode == FetchMode.lazy &&
+    return actionable &&
+        fetchMode == FetchMode.lazy &&
         comment.kids.isNotEmpty &&
         collapseState.collapsed == false &&
         commentsState?.commentIds.contains(comment.kids.first) == false &&
