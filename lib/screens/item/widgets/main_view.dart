@@ -18,8 +18,6 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class MainView extends StatelessWidget {
   const MainView({
-    required this.itemScrollController,
-    required this.itemPositionsListener,
     required this.scrollOffsetListener,
     required this.commentEditingController,
     required this.authState,
@@ -30,8 +28,6 @@ class MainView extends StatelessWidget {
     super.key,
   });
 
-  final ItemScrollController itemScrollController;
-  final ItemPositionsListener itemPositionsListener;
   final ScrollOffsetListener scrollOffsetListener;
   final TextEditingController commentEditingController;
   final AuthState authState;
@@ -67,8 +63,10 @@ class MainView extends StatelessWidget {
                 },
                 child: ScrollablePositionedList.builder(
                   physics: const AlwaysScrollableScrollPhysics(),
-                  itemScrollController: itemScrollController,
-                  itemPositionsListener: itemPositionsListener,
+                  itemScrollController:
+                      context.read<CommentsCubit>().itemScrollController,
+                  itemPositionsListener:
+                      context.read<CommentsCubit>().itemPositionsListener,
                   itemCount: state.comments.length + 2,
                   padding: EdgeInsets.only(top: topPadding),
                   scrollOffsetListener: scrollOffsetListener,
@@ -130,7 +128,6 @@ class MainView extends StatelessWidget {
                         },
                         onMoreTapped: onMoreTapped,
                         onRightMoreTapped: onRightMoreTapped,
-                        itemScrollController: itemScrollController,
                       ),
                     );
                   },

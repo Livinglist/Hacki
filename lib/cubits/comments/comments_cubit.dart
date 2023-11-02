@@ -9,6 +9,7 @@ import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart';
@@ -60,6 +61,10 @@ class CommentsCubit extends Cubit<CommentsState> {
   final StoriesRepository _storiesRepository;
   final SembastRepository _sembastRepository;
   final Logger _logger;
+
+  final ItemScrollController itemScrollController = ItemScrollController();
+  final ItemPositionsListener itemPositionsListener =
+      ItemPositionsListener.create();
 
   /// The [StreamSubscription] for stream (both lazy or eager)
   /// fetching comments posted directly to the story.
@@ -349,11 +354,20 @@ class CommentsCubit extends Cubit<CommentsState> {
     init(useCommentCache: true);
   }
 
+  void scrollTo({
+    required int index,
+    double alignment = 0.0,
+  }) {
+    debugPrint('Scrolling to: $index, alignment: $alignment');
+    itemScrollController.scrollTo(
+      index: index,
+      alignment: alignment,
+      duration: Durations.ms400,
+    );
+  }
+
   /// Scroll to next root level comment.
-  void scrollToNextRoot(
-    ItemScrollController itemScrollController,
-    ItemPositionsListener itemPositionsListener,
-  ) {
+  void scrollToNextRoot() {
     final int totalComments = state.comments.length;
     final List<Comment> onScreenComments = itemPositionsListener
         .itemPositions.value
@@ -398,10 +412,7 @@ class CommentsCubit extends Cubit<CommentsState> {
   }
 
   /// Scroll to previous root level comment.
-  void scrollToPreviousRoot(
-    ItemScrollController itemScrollController,
-    ItemPositionsListener itemPositionsListener,
-  ) {
+  void scrollToPreviousRoot() {
     final List<Comment> onScreenComments = itemPositionsListener
         .itemPositions.value
         // The header is also a part of the list view,
@@ -435,6 +446,23 @@ class CommentsCubit extends Cubit<CommentsState> {
       }
     }
   }
+
+  void search(String query) {
+    resetSearch();
+    final String lowercaseQuery = query.toLowerCase();
+    for (final int i in 0.to(state.comments.length, inclusive: false)) {
+      final Comment cmt = state.comments.elementAt(i);
+      if (cmt.text.toLowerCase().contains(lowercaseQuery)) {
+        emit(
+          state.copyWith(
+            matchedComments: <int>[...state.matchedComments, i],
+          ),
+        );
+      }
+    }
+  }
+
+  void resetSearch() => emit(state.copyWith(matchedComments: <int>[]));
 
   List<int> _sortKids(List<int> kids) {
     switch (state.order) {

@@ -25,13 +25,18 @@ enum DiscoverableFeature {
     featureId: 'jump_up_button_with_long_press',
     title: 'Shortcut',
     description:
-        '''Tapping on this button will take you to the previous off-screen root level comment.\n\nLong press on it to jump to the very beginning of this thread.''',
+        '''Tapping on this button will take you to the previous root level comment.\n\nLong press on it to jump to the very beginning of this thread.''',
   ),
   jumpDownButton(
     featureId: 'jump_down_button_with_long_press',
     title: 'Shortcut',
     description:
-        '''Tapping on this button will take you to the next off-screen root level comment.\n\nLong press on it to jump to the end of this thread.''',
+        '''Tapping on this button will take you to the next root level comment.\n\nLong press on it to jump to the end of this thread.''',
+  ),
+  searchInThread(
+    featureId: 'search_in_thread',
+    title: 'Search in Thread',
+    description: '''Search for comments in this thread.''',
   );
 
   const DiscoverableFeature({

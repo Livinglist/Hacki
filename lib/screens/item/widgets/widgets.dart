@@ -1,6 +1,7 @@
 export 'custom_app_bar.dart';
 export 'custom_floating_action_button.dart';
 export 'fav_icon_button.dart';
+export 'in_thread_search_icon_button.dart';
 export 'link_icon_button.dart';
 export 'login_dialog.dart';
 export 'main_view.dart';

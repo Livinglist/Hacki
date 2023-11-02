@@ -142,9 +142,6 @@ class _ItemScreenState extends State<ItemScreen>
   final TextEditingController commentEditingController =
       TextEditingController();
   final FocusNode focusNode = FocusNode();
-  final ItemScrollController itemScrollController = ItemScrollController();
-  final ItemPositionsListener itemPositionsListener =
-      ItemPositionsListener.create();
   final ScrollOffsetListener scrollOffsetListener =
       ScrollOffsetListener.create();
   final Throttle storyLinkTapThrottle = Throttle(
@@ -187,6 +184,7 @@ class _ItemScreenState extends State<ItemScreen>
             DiscoverableFeature.openStoryInWebView.featureId,
             DiscoverableFeature.jumpUpButton.featureId,
             DiscoverableFeature.jumpDownButton.featureId,
+            DiscoverableFeature.searchInThread.featureId,
           },
         );
       })
@@ -272,8 +270,6 @@ class _ItemScreenState extends State<ItemScreen>
                       children: <Widget>[
                         Positioned.fill(
                           child: MainView(
-                            itemScrollController: itemScrollController,
-                            itemPositionsListener: itemPositionsListener,
                             scrollOffsetListener: scrollOffsetListener,
                             commentEditingController: commentEditingController,
                             authState: authState,
@@ -313,13 +309,10 @@ class _ItemScreenState extends State<ItemScreen>
                             );
                           },
                         ),
-                        Positioned(
+                        const Positioned(
                           right: Dimens.pt12,
                           bottom: Dimens.pt36,
-                          child: CustomFloatingActionButton(
-                            itemScrollController: itemScrollController,
-                            itemPositionsListener: itemPositionsListener,
-                          ),
+                          child: CustomFloatingActionButton(),
                         ),
                         Positioned(
                           bottom: Dimens.zero,
@@ -348,8 +341,6 @@ class _ItemScreenState extends State<ItemScreen>
                       fontSizeIconButtonKey: fontSizeIconButtonKey,
                     ),
                     body: MainView(
-                      itemScrollController: itemScrollController,
-                      itemPositionsListener: itemPositionsListener,
                       scrollOffsetListener: scrollOffsetListener,
                       commentEditingController: commentEditingController,
                       authState: authState,
@@ -358,10 +349,7 @@ class _ItemScreenState extends State<ItemScreen>
                       onMoreTapped: onMoreTapped,
                       onRightMoreTapped: onRightMoreTapped,
                     ),
-                    floatingActionButton: CustomFloatingActionButton(
-                      itemScrollController: itemScrollController,
-                      itemPositionsListener: itemPositionsListener,
-                    ),
+                    floatingActionButton: const CustomFloatingActionButton(),
                     bottomSheet: ReplyBox(
                       textEditingController: commentEditingController,
                       focusNode: focusNode,

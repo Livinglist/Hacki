@@ -10,7 +10,6 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class CommentTile extends StatelessWidget {
   const CommentTile({
@@ -27,7 +26,6 @@ class CommentTile extends StatelessWidget {
     this.selectable = true,
     this.level = 0,
     this.onTap,
-    this.itemScrollController,
   });
 
   final String? opUsername;
@@ -37,7 +35,6 @@ class CommentTile extends StatelessWidget {
   final bool collapsable;
   final bool selectable;
   final FetchMode fetchMode;
-  final ItemScrollController? itemScrollController;
 
   final void Function(Comment)? onReplyTapped;
   final void Function(Comment, Rect?)? onMoreTapped;
@@ -370,14 +367,14 @@ class CommentTile extends StatelessWidget {
       ..collapse(onStateChanged: HapticFeedbackUtil.selection);
     if (collapseCubit.state.collapsed &&
         preferenceCubit.state.autoScrollEnabled) {
-      final List<Comment> comments =
-          context.read<CommentsCubit>().state.comments;
+      final CommentsCubit commentsCubit = context.read<CommentsCubit>();
+      final List<Comment> comments = commentsCubit.state.comments;
       final int indexOfNextComment = comments.indexOf(comment) + 1;
       if (indexOfNextComment < comments.length) {
         Future<void>.delayed(
           Durations.ms300,
           () {
-            itemScrollController?.scrollTo(
+            commentsCubit.itemScrollController.scrollTo(
               index: indexOfNextComment,
               alignment: 0.1,
               duration: Durations.ms300,
