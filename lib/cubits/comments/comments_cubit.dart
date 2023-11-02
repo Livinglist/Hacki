@@ -461,10 +461,7 @@ class CommentsCubit extends Cubit<CommentsState> {
   void search(String query) {
     resetSearch();
 
-    if (query.isEmpty) {
-      emit(state.copyWith(inThreadSearchQuery: ''));
-      return;
-    }
+    if (query.isEmpty) return;
 
     final String lowercaseQuery = query.toLowerCase();
     for (final int i in 0.to(state.comments.length, inclusive: false)) {
@@ -480,7 +477,8 @@ class CommentsCubit extends Cubit<CommentsState> {
     }
   }
 
-  void resetSearch() => emit(state.copyWith(matchedComments: <int>[]));
+  void resetSearch() =>
+      emit(state.copyWith(matchedComments: <int>[], inThreadSearchQuery: ''));
 
   List<int> _sortKids(List<int> kids) {
     switch (state.order) {
