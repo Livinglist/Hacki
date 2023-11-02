@@ -311,12 +311,9 @@ class HackiApp extends StatelessWidget {
                                 )
                               : null,
                           bottomSheetTheme: state.material3Enabled
-                              ? BottomSheetThemeData(
-                                  modalElevation: 0,
-                                  backgroundColor: isDarkModeEnabled
-                                      ? Palette.black
-                                      : Palette.white,
-                                  shape: const RoundedRectangleBorder(),
+                              ? const BottomSheetThemeData(
+                                  modalElevation: 8,
+                                  clipBehavior: Clip.hardEdge,
                                 )
                               : null,
                           inputDecorationTheme: state.material3Enabled
@@ -328,6 +325,12 @@ class HackiApp extends StatelessWidget {
                                           : Palette.black,
                                     ),
                                   ),
+                                )
+                              : null,
+                          sliderTheme: state.material3Enabled
+                              ? SliderThemeData(
+                                  inactiveTrackColor:
+                                      state.appColor.shade200.withOpacity(0.5),
                                 )
                               : null,
                         ),

@@ -53,202 +53,199 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
           },
           builder: (BuildContext context, SearchState state) {
             return Scaffold(
+              backgroundColor: Palette.transparent,
               resizeToAvoidBottomInset: false,
               body: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  ColoredBox(
-                    color: Theme.of(context).canvasColor,
-                    child: Column(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: Dimens.pt12,
-                          ),
-                          child: TextField(
-                            cursorColor: Theme.of(context).primaryColor,
-                            autocorrect: false,
-                            decoration: InputDecoration(
-                              hintText: 'Search Hacker News',
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Theme.of(context).primaryColor,
-                                ),
+                  Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: Dimens.pt12,
+                        ),
+                        child: TextField(
+                          cursorColor: Theme.of(context).primaryColor,
+                          autocorrect: false,
+                          decoration: InputDecoration(
+                            hintText: 'Search Hacker News',
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Theme.of(context).primaryColor,
                               ),
                             ),
-                            onChanged: (String val) {
-                              if (val.isNotEmpty) {
-                                debouncer.run(() {
-                                  context.read<SearchCubit>().search(val);
-                                });
-                              }
-                            },
                           ),
+                          onChanged: (String val) {
+                            if (val.isNotEmpty) {
+                              debouncer.run(() {
+                                context.read<SearchCubit>().search(val);
+                              });
+                            }
+                          },
                         ),
-                        const SizedBox(
-                          height: Dimens.pt6,
-                        ),
-                        AnimatedCrossFade(
-                          duration: chipsAnimationDuration,
-                          crossFadeState: state.showDateRangeShortcutChips
-                              ? CrossFadeState.showSecond
-                              : CrossFadeState.showFirst,
-                          firstChild: SizedBox.fromSize(),
-                          secondChild: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: <Widget>[
-                                    const SizedBox(
-                                      width: Dimens.pt8,
-                                    ),
-                                    DateTimeShortcutChip.dayBefore(
-                                      onDateTimeRangeUpdated: context
-                                          .read<SearchCubit>()
-                                          .onDateTimeRangeUpdated,
-                                      startDate: state.dateFilter?.startTime,
-                                      endDate: state.dateFilter?.endTime,
-                                    ),
-                                    const SizedBox(
-                                      width: Dimens.pt8,
-                                    ),
-                                    DateTimeShortcutChip.dayAfter(
-                                      onDateTimeRangeUpdated: context
-                                          .read<SearchCubit>()
-                                          .onDateTimeRangeUpdated,
-                                      startDate: state.dateFilter?.startTime,
-                                      endDate: state.dateFilter?.endTime,
-                                    ),
-                                    const SizedBox(
-                                      width: Dimens.pt8,
-                                    ),
-                                    DateTimeShortcutChip.weekBefore(
-                                      onDateTimeRangeUpdated: context
-                                          .read<SearchCubit>()
-                                          .onDateTimeRangeUpdated,
-                                      startDate: state.dateFilter?.startTime,
-                                      endDate: state.dateFilter?.endTime,
-                                    ),
-                                    const SizedBox(
-                                      width: Dimens.pt8,
-                                    ),
-                                    DateTimeShortcutChip.weekAfter(
-                                      onDateTimeRangeUpdated: context
-                                          .read<SearchCubit>()
-                                          .onDateTimeRangeUpdated,
-                                      startDate: state.dateFilter?.startTime,
-                                      endDate: state.dateFilter?.endTime,
-                                    ),
-                                    const SizedBox(
-                                      width: Dimens.pt8,
-                                    ),
-                                    DateTimeShortcutChip.monthBefore(
-                                      onDateTimeRangeUpdated: context
-                                          .read<SearchCubit>()
-                                          .onDateTimeRangeUpdated,
-                                      startDate: state.dateFilter?.startTime,
-                                      endDate: state.dateFilter?.endTime,
-                                    ),
-                                    const SizedBox(
-                                      width: Dimens.pt8,
-                                    ),
-                                    DateTimeShortcutChip.monthAfter(
-                                      onDateTimeRangeUpdated: context
-                                          .read<SearchCubit>()
-                                          .onDateTimeRangeUpdated,
-                                      startDate: state.dateFilter?.startTime,
-                                      endDate: state.dateFilter?.endTime,
-                                    ),
-                                  ],
-                                ),
+                      ),
+                      const SizedBox(
+                        height: Dimens.pt6,
+                      ),
+                      AnimatedCrossFade(
+                        duration: chipsAnimationDuration,
+                        crossFadeState: state.showDateRangeShortcutChips
+                            ? CrossFadeState.showSecond
+                            : CrossFadeState.showFirst,
+                        firstChild: SizedBox.fromSize(),
+                        secondChild: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: <Widget>[
+                                  const SizedBox(
+                                    width: Dimens.pt8,
+                                  ),
+                                  DateTimeShortcutChip.dayBefore(
+                                    onDateTimeRangeUpdated: context
+                                        .read<SearchCubit>()
+                                        .onDateTimeRangeUpdated,
+                                    startDate: state.dateFilter?.startTime,
+                                    endDate: state.dateFilter?.endTime,
+                                  ),
+                                  const SizedBox(
+                                    width: Dimens.pt8,
+                                  ),
+                                  DateTimeShortcutChip.dayAfter(
+                                    onDateTimeRangeUpdated: context
+                                        .read<SearchCubit>()
+                                        .onDateTimeRangeUpdated,
+                                    startDate: state.dateFilter?.startTime,
+                                    endDate: state.dateFilter?.endTime,
+                                  ),
+                                  const SizedBox(
+                                    width: Dimens.pt8,
+                                  ),
+                                  DateTimeShortcutChip.weekBefore(
+                                    onDateTimeRangeUpdated: context
+                                        .read<SearchCubit>()
+                                        .onDateTimeRangeUpdated,
+                                    startDate: state.dateFilter?.startTime,
+                                    endDate: state.dateFilter?.endTime,
+                                  ),
+                                  const SizedBox(
+                                    width: Dimens.pt8,
+                                  ),
+                                  DateTimeShortcutChip.weekAfter(
+                                    onDateTimeRangeUpdated: context
+                                        .read<SearchCubit>()
+                                        .onDateTimeRangeUpdated,
+                                    startDate: state.dateFilter?.startTime,
+                                    endDate: state.dateFilter?.endTime,
+                                  ),
+                                  const SizedBox(
+                                    width: Dimens.pt8,
+                                  ),
+                                  DateTimeShortcutChip.monthBefore(
+                                    onDateTimeRangeUpdated: context
+                                        .read<SearchCubit>()
+                                        .onDateTimeRangeUpdated,
+                                    startDate: state.dateFilter?.startTime,
+                                    endDate: state.dateFilter?.endTime,
+                                  ),
+                                  const SizedBox(
+                                    width: Dimens.pt8,
+                                  ),
+                                  DateTimeShortcutChip.monthAfter(
+                                    onDateTimeRangeUpdated: context
+                                        .read<SearchCubit>()
+                                        .onDateTimeRangeUpdated,
+                                    startDate: state.dateFilter?.startTime,
+                                    endDate: state.dateFilter?.endTime,
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: <Widget>[
-                              const SizedBox(
-                                width: Dimens.pt8,
-                              ),
-                              DateTimeRangeFilterChip(
-                                filter: state.dateFilter,
-                                initialStartDate: state.dateFilter?.startTime,
-                                initialEndDate: state.dateFilter?.endTime,
-                                onDateTimeRangeUpdated: context
+                      ),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: <Widget>[
+                            const SizedBox(
+                              width: Dimens.pt8,
+                            ),
+                            DateTimeRangeFilterChip(
+                              filter: state.dateFilter,
+                              initialStartDate: state.dateFilter?.startTime,
+                              initialEndDate: state.dateFilter?.endTime,
+                              onDateTimeRangeUpdated: context
+                                  .read<SearchCubit>()
+                                  .onDateTimeRangeUpdated,
+                              onDateTimeRangeRemoved: context
+                                  .read<SearchCubit>()
+                                  .removeFilter<DateTimeRangeFilter>,
+                            ),
+                            const SizedBox(
+                              width: Dimens.pt8,
+                            ),
+                            PostedByFilterChip(
+                              filter: state.params.get<PostedByFilter>(),
+                              onChanged:
+                                  context.read<SearchCubit>().onPostedByChanged,
+                            ),
+                            const SizedBox(
+                              width: Dimens.pt8,
+                            ),
+                            CustomChip(
+                              onSelected: (_) =>
+                                  context.read<SearchCubit>().onSortToggled(),
+                              selected: state.params.sorted,
+                              label: '''newest first''',
+                            ),
+                            const SizedBox(
+                              width: Dimens.pt8,
+                            ),
+                            for (final CustomDateTimeRange range
+                                in CustomDateTimeRange.values) ...<Widget>[
+                              CustomRangeFilterChip(
+                                range: range,
+                                onTap: context
                                     .read<SearchCubit>()
                                     .onDateTimeRangeUpdated,
-                                onDateTimeRangeRemoved: context
-                                    .read<SearchCubit>()
-                                    .removeFilter<DateTimeRangeFilter>,
                               ),
                               const SizedBox(
                                 width: Dimens.pt8,
                               ),
-                              PostedByFilterChip(
-                                filter: state.params.get<PostedByFilter>(),
-                                onChanged: context
-                                    .read<SearchCubit>()
-                                    .onPostedByChanged,
-                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: <Widget>[
+                            for (final TypeTagFilter filter
+                                in TypeTagFilter.all) ...<Widget>[
                               const SizedBox(
                                 width: Dimens.pt8,
                               ),
                               CustomChip(
-                                onSelected: (_) =>
-                                    context.read<SearchCubit>().onSortToggled(),
-                                selected: state.params.sorted,
-                                label: '''newest first''',
+                                onSelected: (_) => context
+                                    .read<SearchCubit>()
+                                    .onToggled(filter),
+                                selected: context
+                                        .read<SearchCubit>()
+                                        .state
+                                        .params
+                                        .get<TypeTagFilter>() ==
+                                    filter,
+                                label: filter.query,
                               ),
-                              const SizedBox(
-                                width: Dimens.pt8,
-                              ),
-                              for (final CustomDateTimeRange range
-                                  in CustomDateTimeRange.values) ...<Widget>[
-                                CustomRangeFilterChip(
-                                  range: range,
-                                  onTap: context
-                                      .read<SearchCubit>()
-                                      .onDateTimeRangeUpdated,
-                                ),
-                                const SizedBox(
-                                  width: Dimens.pt8,
-                                ),
-                              ],
                             ],
-                          ),
+                          ],
                         ),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: <Widget>[
-                              for (final TypeTagFilter filter
-                                  in TypeTagFilter.all) ...<Widget>[
-                                const SizedBox(
-                                  width: Dimens.pt8,
-                                ),
-                                CustomChip(
-                                  onSelected: (_) => context
-                                      .read<SearchCubit>()
-                                      .onToggled(filter),
-                                  selected: context
-                                          .read<SearchCubit>()
-                                          .state
-                                          .params
-                                          .get<TypeTagFilter>() ==
-                                      filter,
-                                  label: filter.query,
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                   if (state.status == SearchStatus.loading &&
                       state.results.isEmpty) ...<Widget>[

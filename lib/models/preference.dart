@@ -304,7 +304,7 @@ class Material3Preference extends BooleanPreference {
 
   @override
   String get subtitle =>
-      '''experiment feature. Please open an issue on GitHub if you notice anything weird.''';
+      '''experimental feature. Please open an issue on GitHub if you notice anything weird.''';
 }
 
 /// Whether or not to use Custom Tabs for launching URLs.

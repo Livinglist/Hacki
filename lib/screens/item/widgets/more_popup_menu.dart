@@ -237,7 +237,6 @@ class MorePopupMenu extends StatelessWidget {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).canvasColor,
       showDragHandle: true,
       builder: (BuildContext context) {
         return BlocProvider<SearchCubit>(
@@ -247,19 +246,16 @@ class MorePopupMenu extends StatelessWidget {
                 author: item.by,
               ),
             ),
-          child: Container(
+          child: SizedBox(
             height: MediaQuery.of(context).size.height - Dimens.pt120,
-            color: Theme.of(context).canvasColor,
-            child: const Material(
-              child: Column(
-                children: <Widget>[
-                  Expanded(
-                    child: SearchScreen(
-                      fromUserDialog: true,
-                    ),
+            child: const Column(
+              children: <Widget>[
+                Expanded(
+                  child: SearchScreen(
+                    fromUserDialog: true,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         );
