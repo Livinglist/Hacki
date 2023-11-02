@@ -314,6 +314,7 @@ class HackiApp extends StatelessWidget {
                               ? const BottomSheetThemeData(
                                   modalElevation: 8,
                                   clipBehavior: Clip.hardEdge,
+                                  shadowColor: Palette.black,
                                 )
                               : null,
                           inputDecorationTheme: state.material3Enabled
