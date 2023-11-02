@@ -37,6 +37,7 @@ class _TapDownWrapperState extends State<TapDownWrapper>
       onTapDown: onTapDown,
       onTapUp: onTapUp,
       onTapCancel: onTapCancel,
+      behavior: HitTestBehavior.opaque,
       child: AnimatedBuilder(
         animation:
             CurvedAnimation(parent: controller, curve: Curves.decelerate),
