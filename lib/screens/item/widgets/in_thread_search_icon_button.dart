@@ -1,6 +1,6 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hacki/cubits/comments/comments_cubit.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
@@ -15,39 +15,49 @@ class InThreadSearchIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<CommentsCubit>.value(
       value: context.read<CommentsCubit>(),
-      child: IconButton(
-        tooltip: 'Search in thread',
-        icon: const CustomDescribedFeatureOverlay(
-          tapTarget: Icon(
-            Icons.search,
-            color: Palette.white,
-          ),
-          feature: DiscoverableFeature.searchInThread,
-          child: Icon(
-            Icons.search,
-          ),
-        ),
-        onPressed: () {
-          showModalBottomSheet<void>(
-            context: context,
-            isScrollControlled: true,
-            showDragHandle: true,
-            backgroundColor: Theme.of(context).canvasColor,
-            builder: (BuildContext _) {
-              return BlocProvider<CommentsCubit>.value(
-                value: context.read<CommentsCubit>(),
-                child: BlocBuilder<CommentsCubit, CommentsState>(
-                  buildWhen: (CommentsState previous, CommentsState current) =>
-                      previous.matchedComments != current.matchedComments,
-                  builder: (BuildContext context, CommentsState state) {
-                    return SizedBox(
-                      height: MediaQuery.of(context).size.height - Dimens.pt120,
-                      child: Column(
+      child: OpenContainer(
+        closedColor: Palette.transparent,
+        openColor: Theme.of(context).canvasColor,
+        closedShape: const CircleBorder(),
+        closedElevation: 0,
+        openElevation: 0,
+        transitionType: ContainerTransitionType.fadeThrough,
+        closedBuilder: (BuildContext context, void Function() action) {
+          return CustomDescribedFeatureOverlay(
+            tapTarget: const Icon(
+              Icons.search,
+              color: Palette.white,
+            ),
+            feature: DiscoverableFeature.searchInThread,
+            child: IconButton(
+              tooltip: 'Search in thread',
+              icon: const Icon(Icons.search),
+              onPressed: action,
+            ),
+          );
+        },
+        openBuilder: (_, void Function({Object? returnValue}) action) {
+          return BlocProvider<CommentsCubit>.value(
+            value: context.read<CommentsCubit>(),
+            child: BlocBuilder<CommentsCubit, CommentsState>(
+              buildWhen: (CommentsState previous, CommentsState current) =>
+                  previous.matchedComments != current.matchedComments,
+              builder: (BuildContext context, CommentsState state) {
+                return Scaffold(
+                  resizeToAvoidBottomInset: true,
+                  appBar: AppBar(
+                    backgroundColor: Theme.of(context).canvasColor,
+                    elevation: 0,
+                    leadingWidth: 0,
+                    leading: const SizedBox.shrink(),
+                    title: Padding(
+                      padding: const EdgeInsets.only(bottom: Dimens.pt8),
+                      child: Flex(
+                        direction: Axis.horizontal,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: Dimens.pt8,
-                            ),
+                          Expanded(
                             child: TextField(
                               cursorColor: Theme.of(context).primaryColor,
                               autocorrect: false,
@@ -64,32 +74,39 @@ class InThreadSearchIconButton extends StatelessWidget {
                               onChanged: context.read<CommentsCubit>().search,
                             ),
                           ),
-                          Expanded(
-                            child: ListView(
-                              children: <Widget>[
-                                for (final int i in state.matchedComments)
-                                  CommentTile(
-                                    comment: state.comments.elementAt(i),
-                                    fetchMode: FetchMode.lazy,
-                                    actionable: false,
-                                    onTap: () {
-                                      context.pop();
-                                      context.read<CommentsCubit>().scrollTo(
-                                            index: i + 1,
-                                            alignment: 0.1,
-                                          );
-                                    },
-                                  ),
-                              ],
+                          IconButton(
+                            icon: Icon(
+                              Icons.close,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
+                            onPressed: action,
                           ),
                         ],
                       ),
-                    );
-                  },
-                ),
-              );
-            },
+                    ),
+                  ),
+                  body: ListView(
+                    shrinkWrap: true,
+                    children: <Widget>[
+                      for (final int i in state.matchedComments)
+                        CommentTile(
+                          comment: state.comments.elementAt(i),
+                          fetchMode: FetchMode.lazy,
+                          actionable: false,
+                          collapsable: false,
+                          onTap: () {
+                            action();
+                            context.read<CommentsCubit>().scrollTo(
+                                  index: i + 1,
+                                  alignment: 0.1,
+                                );
+                          },
+                        ),
+                    ],
+                  ),
+                );
+              },
+            ),
           );
         },
       ),

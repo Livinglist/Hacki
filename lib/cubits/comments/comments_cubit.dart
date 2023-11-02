@@ -218,6 +218,7 @@ class CommentsCubit extends Cubit<CommentsState> {
       state.copyWith(
         onlyShowTargetComment: false,
         item: story,
+        matchedComments: <int>[],
       ),
     );
     init();
