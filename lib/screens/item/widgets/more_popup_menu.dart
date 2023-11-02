@@ -86,6 +86,11 @@ class MorePopupMenu extends StatelessWidget {
                         ),
                         onTap: () {
                           context.pop();
+                          final double fontSize = context
+                              .read<PreferenceCubit>()
+                              .state
+                              .fontSize
+                              .fontSize;
                           showDialog<void>(
                             context: context,
                             builder: (BuildContext context) => AlertDialog(
@@ -112,18 +117,10 @@ class MorePopupMenu extends StatelessWidget {
                                         state.user.about,
                                       ),
                                       style: TextStyle(
-                                        fontSize: context
-                                            .read<PreferenceCubit>()
-                                            .state
-                                            .fontSize
-                                            .fontSize,
+                                        fontSize: fontSize,
                                       ),
                                       linkStyle: TextStyle(
-                                        fontSize: context
-                                            .read<PreferenceCubit>()
-                                            .state
-                                            .fontSize
-                                            .fontSize,
+                                        fontSize: fontSize,
                                         color: Theme.of(context).primaryColor,
                                       ),
                                       onOpen: (LinkableElement link) =>
