@@ -76,7 +76,8 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                 duration: Durations.ms200,
                 decoration: BoxDecoration(
                   boxShadow: <BoxShadow>[
-                    if (!context.read<SplitViewCubit>().state.enabled)
+                    if (!context.read<SplitViewCubit>().state.enabled &&
+                        !Theme.of(context).useMaterial3)
                       BoxShadow(
                         color: expanded ? Palette.transparent : Palette.black26,
                         blurRadius: Dimens.pt40,
@@ -84,6 +85,9 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                   ],
                 ),
                 child: Material(
+                  color: Theme.of(context).useMaterial3
+                      ? Palette.transparent
+                      : null,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
