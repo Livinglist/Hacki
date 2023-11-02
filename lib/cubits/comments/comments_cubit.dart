@@ -393,10 +393,20 @@ class CommentsCubit extends Cubit<CommentsState> {
       return;
     }
 
-    /// The index of first root level comment visible on screen.
-    final int firstVisibleRootIndex = state.comments
-        .indexOf(onScreenComments.firstWhere((Comment e) => e.isRoot));
-    final int startIndex = min(firstVisibleRootIndex + 1, totalComments);
+    final Comment? firstVisibleRootComment =
+        onScreenComments.firstWhereOrNull((Comment e) => e.isRoot);
+    late int startIndex;
+
+    if (firstVisibleRootComment != null) {
+      /// The index of first root level comment visible on screen.
+      final int firstVisibleRootCommentIndex =
+          state.comments.indexOf(firstVisibleRootComment);
+      startIndex = min(firstVisibleRootCommentIndex + 1, totalComments);
+    } else {
+      final int lastVisibleCommentIndex =
+          state.comments.indexOf(onScreenComments.last);
+      startIndex = min(lastVisibleCommentIndex + 1, totalComments);
+    }
 
     for (int i = startIndex; i < totalComments; i++) {
       final Comment cmt = state.comments.elementAt(i);
@@ -450,6 +460,9 @@ class CommentsCubit extends Cubit<CommentsState> {
 
   void search(String query) {
     resetSearch();
+
+    if (query.isEmpty) return;
+
     final String lowercaseQuery = query.toLowerCase();
     for (final int i in 0.to(state.comments.length, inclusive: false)) {
       final Comment cmt = state.comments.elementAt(i);

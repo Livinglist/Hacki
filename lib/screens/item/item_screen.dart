@@ -179,12 +179,12 @@ class _ItemScreenState extends State<ItemScreen>
         FeatureDiscovery.discoverFeatures(
           context,
           <String>{
+            DiscoverableFeature.searchInThread.featureId,
             DiscoverableFeature.pinToTop.featureId,
             DiscoverableFeature.addStoryToFavList.featureId,
             DiscoverableFeature.openStoryInWebView.featureId,
             DiscoverableFeature.jumpUpButton.featureId,
             DiscoverableFeature.jumpDownButton.featureId,
-            DiscoverableFeature.searchInThread.featureId,
           },
         );
       })
@@ -318,12 +318,15 @@ class _ItemScreenState extends State<ItemScreen>
                           bottom: Dimens.zero,
                           left: Dimens.zero,
                           right: Dimens.zero,
-                          child: ReplyBox(
-                            splitViewEnabled: true,
-                            focusNode: focusNode,
-                            textEditingController: commentEditingController,
-                            onSendTapped: onSendTapped,
-                            onChanged: context.read<EditCubit>().onTextChanged,
+                          child: Material(
+                            child: ReplyBox(
+                              splitViewEnabled: true,
+                              focusNode: focusNode,
+                              textEditingController: commentEditingController,
+                              onSendTapped: onSendTapped,
+                              onChanged:
+                                  context.read<EditCubit>().onTextChanged,
+                            ),
                           ),
                         ),
                       ],
