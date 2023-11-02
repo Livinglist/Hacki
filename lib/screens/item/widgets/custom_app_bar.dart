@@ -34,6 +34,7 @@ class CustomAppBar extends AppBar {
               ),
               const Spacer(),
             ],
+            const InThreadSearchIconButton(),
             IconButton(
               key: fontSizeIconButtonKey,
               icon: Text(

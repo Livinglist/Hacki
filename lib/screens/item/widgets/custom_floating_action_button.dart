@@ -7,17 +7,11 @@ import 'package:hacki/models/discoverable_feature.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class CustomFloatingActionButton extends StatelessWidget {
   const CustomFloatingActionButton({
-    required this.itemScrollController,
-    required this.itemPositionsListener,
     super.key,
   });
-
-  final ItemScrollController itemScrollController;
-  final ItemPositionsListener itemPositionsListener;
 
   @override
   Widget build(BuildContext context) {
@@ -45,10 +39,8 @@ class CustomFloatingActionButton extends StatelessWidget {
                       color: Palette.white,
                     ),
                     child: InkWell(
-                      onLongPress: () => itemScrollController.scrollTo(
-                        index: 0,
-                        duration: Durations.ms400,
-                      ),
+                      onLongPress: () =>
+                          context.read<CommentsCubit>().scrollTo(index: 0),
                       child: FloatingActionButton.small(
                         backgroundColor:
                             Theme.of(context).scaffoldBackgroundColor,
@@ -58,10 +50,7 @@ class CustomFloatingActionButton extends StatelessWidget {
                         heroTag: UniqueKey().hashCode,
                         onPressed: () {
                           HapticFeedbackUtil.selection();
-                          context.read<CommentsCubit>().scrollToPreviousRoot(
-                                itemScrollController,
-                                itemPositionsListener,
-                              );
+                          context.read<CommentsCubit>().scrollToPreviousRoot();
                         },
                         child: Icon(
                           Icons.keyboard_arrow_up,
@@ -77,10 +66,9 @@ class CustomFloatingActionButton extends StatelessWidget {
                       color: Palette.white,
                     ),
                     child: InkWell(
-                      onLongPress: () => itemScrollController.scrollTo(
-                        index: state.comments.length,
-                        duration: Durations.ms400,
-                      ),
+                      onLongPress: () => context
+                          .read<CommentsCubit>()
+                          .scrollTo(index: state.comments.length),
                       child: FloatingActionButton.small(
                         backgroundColor:
                             Theme.of(context).scaffoldBackgroundColor,
@@ -89,10 +77,7 @@ class CustomFloatingActionButton extends StatelessWidget {
                         heroTag: UniqueKey().hashCode,
                         onPressed: () {
                           HapticFeedbackUtil.selection();
-                          context.read<CommentsCubit>().scrollToNextRoot(
-                                itemScrollController,
-                                itemPositionsListener,
-                              );
+                          context.read<CommentsCubit>().scrollToNextRoot();
                         },
                         child: Icon(
                           Icons.keyboard_arrow_down,

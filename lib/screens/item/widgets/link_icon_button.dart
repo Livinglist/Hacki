@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/discoverable_feature.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
@@ -27,7 +28,7 @@ class LinkIconButton extends StatelessWidget {
         ),
       ),
       onPressed: () => LinkUtil.launch(
-        'https://news.ycombinator.com/item?id=$storyId',
+        '${Constants.hackerNewsItemLinkPrefix}$storyId',
         context,
         useHackiForHnLink: false,
       ),

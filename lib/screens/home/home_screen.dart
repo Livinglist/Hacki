@@ -49,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen>
     super.didPopNext();
     if (context.read<StoriesBloc>().deviceScreenType ==
         DeviceScreenType.mobile) {
-      locator.get<Logger>().i('resetting comments in CommentCache');
+      locator.get<Logger>().i('Resetting comments in CommentCache');
       Future<void>.delayed(
         Durations.ms500,
         locator.get<CommentCache>().resetComments,

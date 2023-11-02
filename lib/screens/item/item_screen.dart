@@ -142,9 +142,6 @@ class _ItemScreenState extends State<ItemScreen>
   final TextEditingController commentEditingController =
       TextEditingController();
   final FocusNode focusNode = FocusNode();
-  final ItemScrollController itemScrollController = ItemScrollController();
-  final ItemPositionsListener itemPositionsListener =
-      ItemPositionsListener.create();
   final ScrollOffsetListener scrollOffsetListener =
       ScrollOffsetListener.create();
   final Throttle storyLinkTapThrottle = Throttle(
@@ -187,6 +184,7 @@ class _ItemScreenState extends State<ItemScreen>
             DiscoverableFeature.openStoryInWebView.featureId,
             DiscoverableFeature.jumpUpButton.featureId,
             DiscoverableFeature.jumpDownButton.featureId,
+            DiscoverableFeature.searchInThread.featureId,
           },
         );
       })
@@ -272,8 +270,6 @@ class _ItemScreenState extends State<ItemScreen>
                       children: <Widget>[
                         Positioned.fill(
                           child: MainView(
-                            itemScrollController: itemScrollController,
-                            itemPositionsListener: itemPositionsListener,
                             scrollOffsetListener: scrollOffsetListener,
                             commentEditingController: commentEditingController,
                             authState: authState,
@@ -313,13 +309,10 @@ class _ItemScreenState extends State<ItemScreen>
                             );
                           },
                         ),
-                        Positioned(
+                        const Positioned(
                           right: Dimens.pt12,
                           bottom: Dimens.pt36,
-                          child: CustomFloatingActionButton(
-                            itemScrollController: itemScrollController,
-                            itemPositionsListener: itemPositionsListener,
-                          ),
+                          child: CustomFloatingActionButton(),
                         ),
                         Positioned(
                           bottom: Dimens.zero,
@@ -348,8 +341,6 @@ class _ItemScreenState extends State<ItemScreen>
                       fontSizeIconButtonKey: fontSizeIconButtonKey,
                     ),
                     body: MainView(
-                      itemScrollController: itemScrollController,
-                      itemPositionsListener: itemPositionsListener,
                       scrollOffsetListener: scrollOffsetListener,
                       commentEditingController: commentEditingController,
                       authState: authState,
@@ -358,10 +349,7 @@ class _ItemScreenState extends State<ItemScreen>
                       onMoreTapped: onMoreTapped,
                       onRightMoreTapped: onRightMoreTapped,
                     ),
-                    floatingActionButton: CustomFloatingActionButton(
-                      itemScrollController: itemScrollController,
-                      itemPositionsListener: itemPositionsListener,
-                    ),
+                    floatingActionButton: const CustomFloatingActionButton(),
                     bottomSheet: ReplyBox(
                       textEditingController: commentEditingController,
                       focusNode: focusNode,
@@ -437,42 +425,36 @@ class _ItemScreenState extends State<ItemScreen>
       context: context,
       builder: (BuildContext context) {
         return SafeArea(
-          child: ColoredBox(
-            color: Theme.of(context).canvasColor,
-            child: Material(
-              color: Palette.transparent,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  ListTile(
-                    leading: const Icon(Icons.av_timer),
-                    title: const Text('View ancestors'),
-                    onTap: () {
-                      context.pop();
-                      onTimeMachineActivated(comment);
-                    },
-                    enabled:
-                        comment.level > 0 && !(comment.dead || comment.deleted),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.list),
-                    title: const Text('View in separate thread'),
-                    onTap: () {
-                      locator.get<AppReviewService>().requestReview();
-                      context.pop();
-                      goToItemScreen(
-                        args: ItemScreenArgs(
-                          item: comment,
-                          useCommentCache: true,
-                        ),
-                        forceNewScreen: true,
-                      );
-                    },
-                    enabled: !(comment.dead || comment.deleted),
-                  ),
-                ],
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.av_timer),
+                title: const Text('View ancestors'),
+                onTap: () {
+                  context.pop();
+                  onTimeMachineActivated(comment);
+                },
+                enabled:
+                    comment.level > 0 && !(comment.dead || comment.deleted),
               ),
-            ),
+              ListTile(
+                leading: const Icon(Icons.list),
+                title: const Text('View in separate thread'),
+                onTap: () {
+                  locator.get<AppReviewService>().requestReview();
+                  context.pop();
+                  goToItemScreen(
+                    args: ItemScreenArgs(
+                      item: comment,
+                      useCommentCache: true,
+                    ),
+                    forceNewScreen: true,
+                  );
+                },
+                enabled: !(comment.dead || comment.deleted),
+              ),
+            ],
           ),
         );
       },

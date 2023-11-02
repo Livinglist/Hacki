@@ -12,6 +12,7 @@ class CommentsState extends Equatable {
   const CommentsState({
     required this.item,
     required this.comments,
+    required this.matchedComments,
     required this.status,
     required this.fetchParentStatus,
     required this.fetchRootStatus,
@@ -28,6 +29,7 @@ class CommentsState extends Equatable {
     required this.fetchMode,
     required this.order,
   })  : comments = <Comment>[],
+        matchedComments = <int>[],
         status = CommentsStatus.idle,
         fetchParentStatus = CommentsStatus.idle,
         fetchRootStatus = CommentsStatus.idle,
@@ -45,9 +47,13 @@ class CommentsState extends Equatable {
   final bool isOfflineReading;
   final int currentPage;
 
+  /// Indexes of comments that matches the query for in-thread search.
+  final List<int> matchedComments;
+
   CommentsState copyWith({
     Item? item,
     List<Comment>? comments,
+    List<int>? matchedComments,
     CommentsStatus? status,
     CommentsStatus? fetchParentStatus,
     CommentsStatus? fetchRootStatus,
@@ -60,6 +66,7 @@ class CommentsState extends Equatable {
     return CommentsState(
       item: item ?? this.item,
       comments: comments ?? this.comments,
+      matchedComments: matchedComments ?? this.matchedComments,
       fetchParentStatus: fetchParentStatus ?? this.fetchParentStatus,
       fetchRootStatus: fetchRootStatus ?? this.fetchRootStatus,
       status: status ?? this.status,
@@ -86,5 +93,6 @@ class CommentsState extends Equatable {
         isOfflineReading,
         currentPage,
         comments,
+        matchedComments,
       ];
 }

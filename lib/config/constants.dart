@@ -20,6 +20,8 @@ abstract class Constants {
       '$githubLink/issues/new?title=Found+a+bug+in+Hacki&body=Please+describe+the+problem.';
   static const String wikipediaLink = 'https://en.wikipedia.org/wiki/';
   static const String wiktionaryLink = 'https://en.wiktionary.org/wiki/';
+  static const String hackerNewsItemLinkPrefix =
+      'https://news.ycombinator.com/item?id=';
   static const String supportEmail = 'georgefung98@gmail.com';
 
   static const String _imagePath = 'assets/images';

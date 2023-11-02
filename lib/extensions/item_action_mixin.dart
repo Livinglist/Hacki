@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/auth/auth_bloc.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
@@ -103,31 +104,26 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
         context: context,
         builder: (BuildContext context) {
           return SafeArea(
-            child: ColoredBox(
-              color: Theme.of(context).canvasColor,
-              child: Material(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    ListTile(
-                      onTap: () => context.pop(item.url),
-                      title: const Text('Link to article'),
-                    ),
-                    ListTile(
-                      onTap: () => context.pop(
-                        'https://news.ycombinator.com/item?id=${item.id}',
-                      ),
-                      title: const Text('Link to HN'),
-                    ),
-                  ],
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                ListTile(
+                  onTap: () => context.pop(item.url),
+                  title: const Text('Link to article'),
                 ),
-              ),
+                ListTile(
+                  onTap: () => context.pop(
+                    '${Constants.hackerNewsItemLinkPrefix}${item.id}',
+                  ),
+                  title: const Text('Link to HN'),
+                ),
+              ],
             ),
           );
         },
       );
     } else {
-      linkToShare = 'https://news.ycombinator.com/item?id=${item.id}';
+      linkToShare = '${Constants.hackerNewsItemLinkPrefix}${item.id}';
     }
 
     if (linkToShare != null) {
