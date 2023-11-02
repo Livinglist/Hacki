@@ -32,6 +32,12 @@ class CenteredText extends StatelessWidget {
           text: 'blocked',
         );
 
+  const CenteredText.empty({Key? key})
+      : this(
+          key: key,
+          text: 'empty',
+        );
+
   final String text;
   final Color color;
 
