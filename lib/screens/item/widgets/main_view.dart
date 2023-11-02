@@ -182,7 +182,7 @@ class _ParentItemSection extends StatelessWidget {
   final ValueChanged<Comment> onRightMoreTapped;
 
   static const double _viewParentButtonWidth = 100;
-  static const double _viewRootButtonWidth = 80;
+  static const double _viewRootButtonWidth = 85;
 
   @override
   Widget build(BuildContext context) {

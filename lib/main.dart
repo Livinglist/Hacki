@@ -233,10 +233,13 @@ class HackiApp extends StatelessWidget {
         buildWhen: (PreferenceState previous, PreferenceState current) =>
             previous.appColor != current.appColor ||
             previous.font != current.font ||
-            previous.textScaleFactor != current.textScaleFactor,
+            previous.textScaleFactor != current.textScaleFactor ||
+            previous.material3Enabled != current.material3Enabled,
         builder: (BuildContext context, PreferenceState state) {
           return AdaptiveTheme(
-            key: ValueKey<String>('${state.appColor}${state.font}'),
+            key: ValueKey<String>(
+              '''${state.appColor}${state.font}${state.material3Enabled}''',
+            ),
             light: ThemeData(
               primaryColor: state.appColor,
               colorScheme: ColorScheme.fromSwatch(
@@ -287,7 +290,46 @@ class HackiApp extends StatelessWidget {
                         title: 'Hacki',
                         debugShowCheckedModeBanner: false,
                         theme: (isDarkModeEnabled ? darkTheme : theme).copyWith(
-                          useMaterial3: false,
+                          useMaterial3: state.material3Enabled,
+                          dividerTheme: state.material3Enabled
+                              ? DividerThemeData(
+                                  color: Palette.grey.withOpacity(0.2),
+                                )
+                              : null,
+                          switchTheme: state.material3Enabled
+                              ? SwitchThemeData(
+                                  trackColor: MaterialStateProperty.resolveWith(
+                                    (Set<MaterialState> states) {
+                                      if (states
+                                          .contains(MaterialState.selected)) {
+                                        return null;
+                                      } else {
+                                        return Palette.grey.withOpacity(0.2);
+                                      }
+                                    },
+                                  ),
+                                )
+                              : null,
+                          bottomSheetTheme: state.material3Enabled
+                              ? BottomSheetThemeData(
+                                  modalElevation: 0,
+                                  backgroundColor: isDarkModeEnabled
+                                      ? Palette.black
+                                      : Palette.white,
+                                  shape: const RoundedRectangleBorder(),
+                                )
+                              : null,
+                          inputDecorationTheme: state.material3Enabled
+                              ? InputDecorationTheme(
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: isDarkModeEnabled
+                                          ? Palette.white
+                                          : Palette.black,
+                                    ),
+                                  ),
+                                )
+                              : null,
                         ),
                         routerConfig: router,
                       ),

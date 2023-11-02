@@ -31,6 +31,8 @@ class InThreadSearchIconButton extends StatelessWidget {
           showModalBottomSheet<void>(
             context: context,
             isScrollControlled: true,
+            showDragHandle: true,
+            backgroundColor: Theme.of(context).canvasColor,
             builder: (BuildContext _) {
               return BlocProvider<CommentsCubit>.value(
                 value: context.read<CommentsCubit>(),
@@ -41,19 +43,9 @@ class InThreadSearchIconButton extends StatelessWidget {
                     return Container(
                       height: MediaQuery.of(context).size.height - Dimens.pt120,
                       color: Theme.of(context).canvasColor,
-                      margin: const EdgeInsets.only(top: Dimens.pt12),
                       child: Material(
                         child: Column(
                           children: <Widget>[
-                            Container(
-                              height: Dimens.pt4,
-                              width: Dimens.pt24,
-                              decoration: BoxDecoration(
-                                color: Palette.grey,
-                                borderRadius:
-                                    BorderRadius.circular(Dimens.pt16),
-                              ),
-                            ),
                             Padding(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: Dimens.pt8,

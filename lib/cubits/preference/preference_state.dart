@@ -70,6 +70,8 @@ class PreferenceState extends Equatable {
 
   bool get customTabEnabled => _isOn<CustomTabPreference>();
 
+  bool get material3Enabled => _isOn<Material3Preference>();
+
   double get textScaleFactor =>
       preferences.singleWhereType<TextScaleFactorPreference>().val;
 
