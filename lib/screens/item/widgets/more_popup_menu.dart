@@ -111,7 +111,19 @@ class MorePopupMenu extends StatelessWidget {
                                       text: HtmlUtil.parseHtml(
                                         state.user.about,
                                       ),
+                                      style: TextStyle(
+                                        fontSize: context
+                                            .read<PreferenceCubit>()
+                                            .state
+                                            .fontSize
+                                            .fontSize,
+                                      ),
                                       linkStyle: TextStyle(
+                                        fontSize: context
+                                            .read<PreferenceCubit>()
+                                            .state
+                                            .fontSize
+                                            .fontSize,
                                         color: Theme.of(context).primaryColor,
                                       ),
                                       onOpen: (LinkableElement link) =>
