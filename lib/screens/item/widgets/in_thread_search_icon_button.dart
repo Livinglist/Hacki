@@ -40,9 +40,8 @@ class InThreadSearchIconButton extends StatelessWidget {
                   buildWhen: (CommentsState previous, CommentsState current) =>
                       previous.matchedComments != current.matchedComments,
                   builder: (BuildContext context, CommentsState state) {
-                    return Container(
+                    return SizedBox(
                       height: MediaQuery.of(context).size.height - Dimens.pt120,
-                      color: Theme.of(context).canvasColor,
                       child: Column(
                         children: <Widget>[
                           Padding(
@@ -54,9 +53,8 @@ class InThreadSearchIconButton extends StatelessWidget {
                               autocorrect: false,
                               decoration: InputDecoration(
                                 hintText: 'Search in this thread',
-                                suffixText: state.matchedComments.isEmpty
-                                    ? ''
-                                    : '${state.matchedComments.length} results',
+                                suffixText:
+                                    '${state.matchedComments.length} results',
                                 focusedBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
                                     color: Theme.of(context).primaryColor,
@@ -69,25 +67,19 @@ class InThreadSearchIconButton extends StatelessWidget {
                           Expanded(
                             child: ListView(
                               children: <Widget>[
-                                if (state.matchedComments.isEmpty)
-                                  const Padding(
-                                    padding: EdgeInsets.only(top: Dimens.pt120),
-                                    child: CenteredText.empty(),
-                                  )
-                                else
-                                  for (final int i in state.matchedComments)
-                                    CommentTile(
-                                      comment: state.comments.elementAt(i),
-                                      fetchMode: FetchMode.lazy,
-                                      actionable: false,
-                                      onTap: () {
-                                        context.pop();
-                                        context.read<CommentsCubit>().scrollTo(
-                                              index: i + 1,
-                                              alignment: 0.1,
-                                            );
-                                      },
-                                    ),
+                                for (final int i in state.matchedComments)
+                                  CommentTile(
+                                    comment: state.comments.elementAt(i),
+                                    fetchMode: FetchMode.lazy,
+                                    actionable: false,
+                                    onTap: () {
+                                      context.pop();
+                                      context.read<CommentsCubit>().scrollTo(
+                                            index: i + 1,
+                                            alignment: 0.1,
+                                          );
+                                    },
+                                  ),
                               ],
                             ),
                           ),
