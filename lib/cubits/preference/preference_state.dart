@@ -72,6 +72,8 @@ class PreferenceState extends Equatable {
 
   bool get material3Enabled => _isOn<Material3Preference>();
 
+  bool get paginationEnabled => _isOn<PaginationPreference>();
+
   double get textScaleFactor =>
       preferences.singleWhereType<TextScaleFactorPreference>().val;
 

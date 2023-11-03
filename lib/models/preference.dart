@@ -37,13 +37,14 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
       const MarkReadStoriesModePreference(),
       // Divider.
       const NotificationModePreference(),
-      const SwipeGesturePreference(),
       const AutoScrollModePreference(),
       const CollapseModePreference(),
       const ReaderModePreference(),
       const CustomTabPreference(),
       const EyeCandyModePreference(),
       const Material3Preference(),
+      const PaginationPreference(),
+      const SwipeGesturePreference(),
     ],
   );
 
@@ -75,6 +76,7 @@ const bool _collapseModeDefaultValue = true;
 const bool _autoScrollModeDefaultValue = false;
 const bool _customTabModeDefaultValue = false;
 const bool _material3ModeDefaultValue = false;
+const bool _paginationModeDefaultValue = false;
 const double _textScaleFactorDefaultValue = 1;
 final int _fetchModeDefaultValue = FetchMode.eager.index;
 final int _commentsOrderDefaultValue = CommentsOrder.natural.index;
@@ -285,6 +287,25 @@ class EyeCandyModePreference extends BooleanPreference {
 
   @override
   String get subtitle => 'some sort of magic.';
+}
+
+class PaginationPreference extends BooleanPreference {
+  const PaginationPreference({bool? val})
+      : super(val: val ?? _paginationModeDefaultValue);
+
+  @override
+  PaginationPreference copyWith({required bool? val}) {
+    return PaginationPreference(val: val);
+  }
+
+  @override
+  String get key => 'paginationMode';
+
+  @override
+  String get title => 'Enable Pagination';
+
+  @override
+  String get subtitle => '''so you can get stuff done.''';
 }
 
 class Material3Preference extends BooleanPreference {
