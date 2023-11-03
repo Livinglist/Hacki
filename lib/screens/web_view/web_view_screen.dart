@@ -20,6 +20,7 @@ class WebViewScreen extends StatefulWidget {
 
 class _WebViewScreenState extends State<WebViewScreen> {
   final WebViewController controller = WebViewController();
+  bool showFullUrl = false;
 
   @override
   void initState() {
@@ -43,15 +44,26 @@ class _WebViewScreenState extends State<WebViewScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).canvasColor,
-        title: Text(
-          humanize(widget.url),
-          style: const TextStyle(
-            fontSize: TextDimens.pt12,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        title: GestureDetector(
+          onTap: () {
+            setState(() {
+              showFullUrl = !showFullUrl;
+            });
+          },
+          child: Text(
+            showFullUrl
+                ? humanize(widget.url)
+                : Uri.parse(widget.url).authority,
+            style: const TextStyle(
+              fontSize: TextDimens.pt14,
+            ),
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
           ),
-          overflow: TextOverflow.ellipsis,
-          textAlign: TextAlign.center,
         ),
         centerTitle: true,
+        elevation: 0,
       ),
       body: WebViewWidget(
         controller: controller,

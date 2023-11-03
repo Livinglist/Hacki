@@ -216,8 +216,6 @@ class _ItemScreenState extends State<ItemScreen>
 
   @override
   Widget build(BuildContext context) {
-    final double topPadding =
-        MediaQuery.of(context).padding.top + kToolbarHeight;
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (BuildContext context, AuthState authState) {
         return MultiBlocListener(
@@ -273,7 +271,7 @@ class _ItemScreenState extends State<ItemScreen>
                             scrollOffsetListener: scrollOffsetListener,
                             commentEditingController: commentEditingController,
                             authState: authState,
-                            topPadding: topPadding,
+                            topPadding: context.topPadding,
                             splitViewEnabled: widget.splitViewEnabled,
                             onMoreTapped: onMoreTapped,
                             onRightMoreTapped: onRightMoreTapped,
@@ -347,7 +345,7 @@ class _ItemScreenState extends State<ItemScreen>
                       scrollOffsetListener: scrollOffsetListener,
                       commentEditingController: commentEditingController,
                       authState: authState,
-                      topPadding: topPadding,
+                      topPadding: context.topPadding,
                       splitViewEnabled: widget.splitViewEnabled,
                       onMoreTapped: onMoreTapped,
                       onRightMoreTapped: onRightMoreTapped,
