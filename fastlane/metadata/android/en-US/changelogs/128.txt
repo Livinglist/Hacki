@@ -1,0 +1,5 @@
+- Ability to use pagination on home screen.
+- Ability to use Material 3 (experimental).
+- Ability to search in thread.
+- Ability to customize text scale factor.
+- Ability to customize app's accent color.
