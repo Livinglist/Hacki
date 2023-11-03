@@ -22,6 +22,7 @@ class OfflineBanner extends StatelessWidget {
       builder: (BuildContext context, StoriesState state) {
         if (state.isOfflineReading) {
           return MaterialBanner(
+            dividerColor: Palette.transparent,
             content: Text(
               'You are currently in offline mode. '
               '${showExitButton ? 'Exit to fetch latest stories.' : ''}',

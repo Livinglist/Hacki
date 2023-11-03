@@ -85,4 +85,8 @@ extension ContextExtension on BuildContext {
   int get storyTileMaxLines {
     return _storyTileMaxLines;
   }
+
+  double get topPadding {
+    return MediaQuery.of(this).padding.top + kToolbarHeight;
+  }
 }
