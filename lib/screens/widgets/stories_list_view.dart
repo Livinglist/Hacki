@@ -101,13 +101,23 @@ class _StoriesListViewState extends State<StoriesListView>
               header: state.isOfflineReading ? null : header,
               loadStyle: LoadStyle.HideAlways,
               footer: preferenceState.paginationEnabled &&
-                      state.statusByType[widget.storyType] == Status.success
+                      state.statusByType[widget.storyType] == Status.success &&
+                      (state.storiesByType[widget.storyType]?.length ?? 0) <
+                          (state.storyIdsByType[widget.storyType]?.length ?? 0)
                   ? Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: Dimens.pt48,
+                      padding: const EdgeInsets.only(
+                        left: Dimens.pt48,
+                        right: Dimens.pt48,
+                        top: Dimens.pt36,
+                        bottom: Dimens.pt12,
                       ),
                       child: OutlinedButton(
                         onPressed: loadMoreStories,
+                        style: ButtonStyle(
+                          foregroundColor: MaterialStateColor.resolveWith(
+                            (_) => Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
                         child: Text(
                           '''Load Page ${(state.currentPageByType[widget.storyType] ?? 0) + 2}''',
                         ),

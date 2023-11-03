@@ -334,6 +334,17 @@ class HackiApp extends StatelessWidget {
                                       state.appColor.shade200.withOpacity(0.5),
                                 )
                               : null,
+                          outlinedButtonTheme: state.material3Enabled
+                              ? OutlinedButtonThemeData(
+                                  style: ButtonStyle(
+                                    side: MaterialStateBorderSide.resolveWith(
+                                      (_) => const BorderSide(
+                                        color: Palette.grey,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : null,
                         ),
                         routerConfig: router,
                       ),
