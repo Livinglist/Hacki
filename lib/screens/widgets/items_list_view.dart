@@ -25,10 +25,12 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.enablePullDown = true,
     this.markReadStories = false,
     this.showOfflineBanner = false,
+    this.loadStyle = LoadStyle.ShowWhenLoading,
     this.onRefresh,
     this.onLoadMore,
     this.onPinned,
     this.header,
+    this.footer,
     this.onMoreTapped,
     this.scrollController,
     this.itemBuilder,
@@ -43,8 +45,10 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   final bool markReadStories;
   final bool showOfflineBanner;
 
+  final LoadStyle loadStyle;
   final List<T> items;
   final Widget? header;
+  final Widget? footer;
   final RefreshController refreshController;
   final ScrollController? scrollController;
   final VoidCallback? onRefresh;
@@ -224,6 +228,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
               ? Column(children: e)
               : itemBuilder!(Column(children: e), items.elementAt(index)),
         ),
+        if (footer != null) footer!,
         const SizedBox(
           height: Dimens.pt40,
         ),
@@ -237,7 +242,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
         backgroundColor: Theme.of(context).primaryColor,
       ),
       footer: CustomFooter(
-        loadStyle: LoadStyle.ShowWhenLoading,
+        loadStyle: loadStyle,
         builder: (BuildContext context, LoadStatus? mode) {
           const double height = 55;
           late final Widget body;

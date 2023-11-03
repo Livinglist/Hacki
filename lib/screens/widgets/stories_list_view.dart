@@ -7,6 +7,7 @@ import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -48,7 +49,8 @@ class _StoriesListViewState extends State<StoriesListView>
     return BlocBuilder<PreferenceCubit, PreferenceState>(
       buildWhen: (PreferenceState previous, PreferenceState current) =>
           previous.complexStoryTileEnabled != current.complexStoryTileEnabled ||
-          previous.metadataEnabled != current.metadataEnabled,
+          previous.metadataEnabled != current.metadataEnabled ||
+          previous.paginationEnabled != current.paginationEnabled,
       builder: (BuildContext context, PreferenceState preferenceState) {
         return BlocConsumer<StoriesBloc, StoriesState>(
           listenWhen: (StoriesState previous, StoriesState current) =>
@@ -70,8 +72,7 @@ class _StoriesListViewState extends State<StoriesListView>
           builder: (BuildContext context, StoriesState state) {
             return ItemsListView<Story>(
               showOfflineBanner: true,
-              markReadStories:
-                  context.read<PreferenceCubit>().state.markReadStoriesEnabled,
+              markReadStories: preferenceState.markReadStoriesEnabled,
               showWebPreviewOnStoryTile:
                   preferenceState.complexStoryTileEnabled,
               showMetadataOnStoryTile: preferenceState.metadataEnabled,
@@ -87,13 +88,32 @@ class _StoriesListViewState extends State<StoriesListView>
                 context.read<PinCubit>().refresh();
               },
               onLoadMore: () {
-                context
-                    .read<StoriesBloc>()
-                    .add(StoriesLoadMore(type: storyType));
+                if (preferenceState.paginationEnabled) {
+                  refreshController
+                    ..refreshCompleted(resetFooterState: true)
+                    ..loadComplete();
+                } else {
+                  loadMoreStories();
+                }
               },
               onTap: onStoryTapped,
               onPinned: context.read<PinCubit>().pinStory,
               header: state.isOfflineReading ? null : header,
+              loadStyle: LoadStyle.HideAlways,
+              footer: preferenceState.paginationEnabled &&
+                      state.statusByType[widget.storyType] == Status.success
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Dimens.pt48,
+                      ),
+                      child: OutlinedButton(
+                        onPressed: loadMoreStories,
+                        child: Text(
+                          '''Load Page ${(state.currentPageByType[widget.storyType] ?? 0) + 2}''',
+                        ),
+                      ),
+                    )
+                  : null,
               onMoreTapped: onMoreTapped,
               itemBuilder: (Widget child, Story story) {
                 return Slidable(
@@ -162,4 +182,7 @@ class _StoriesListViewState extends State<StoriesListView>
       },
     );
   }
+
+  void loadMoreStories() =>
+      context.read<StoriesBloc>().add(StoriesLoadMore(type: widget.storyType));
 }

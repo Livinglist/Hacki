@@ -11,34 +11,31 @@ class InThreadSearchIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<CommentsCubit>.value(
-      value: context.read<CommentsCubit>(),
-      child: OpenContainer(
-        closedColor: Palette.transparent,
-        openColor: Theme.of(context).canvasColor,
-        closedShape: const CircleBorder(),
-        closedElevation: 0,
-        openElevation: 0,
-        transitionType: ContainerTransitionType.fadeThrough,
-        closedBuilder: (BuildContext context, void Function() action) {
-          return CustomDescribedFeatureOverlay(
-            tapTarget: const Icon(
-              Icons.search,
-              color: Palette.white,
-            ),
-            feature: DiscoverableFeature.searchInThread,
-            child: IconButton(
-              tooltip: 'Search in thread',
-              icon: const Icon(Icons.search),
-              onPressed: action,
-            ),
-          );
-        },
-        openBuilder: (_, void Function({Object? returnValue}) action) =>
-            _InThreadSearchView(
-          commentsCubit: context.read<CommentsCubit>(),
-          action: action,
-        ),
+    return OpenContainer(
+      closedColor: Palette.transparent,
+      openColor: Theme.of(context).canvasColor,
+      closedShape: const CircleBorder(),
+      closedElevation: 0,
+      openElevation: 0,
+      transitionType: ContainerTransitionType.fadeThrough,
+      closedBuilder: (BuildContext context, void Function() action) {
+        return CustomDescribedFeatureOverlay(
+          tapTarget: const Icon(
+            Icons.search,
+            color: Palette.white,
+          ),
+          feature: DiscoverableFeature.searchInThread,
+          child: IconButton(
+            tooltip: 'Search in thread',
+            icon: const Icon(Icons.search),
+            onPressed: action,
+          ),
+        );
+      },
+      openBuilder: (_, void Function({Object? returnValue}) action) =>
+          _InThreadSearchView(
+        commentsCubit: context.read<CommentsCubit>(),
+        action: action,
       ),
     );
   }
