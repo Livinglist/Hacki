@@ -30,6 +30,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
   final RefreshController refreshController = RefreshController();
   final ScrollController scrollController = ScrollController();
+  final TextEditingController textEditingController = TextEditingController();
   final FocusNode focusNode = FocusNode();
   final Debouncer debouncer = Debouncer(delay: Durations.oneSecond);
 
@@ -46,6 +47,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
     refreshController.dispose();
     scrollController.dispose();
     focusNode.dispose();
+    textEditingController.dispose();
     super.dispose();
   }
 
@@ -116,6 +118,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                   horizontal: Dimens.pt12,
                                 ),
                                 child: TextField(
+                                  controller: textEditingController,
                                   focusNode: focusNode,
                                   cursorColor: Theme.of(context).primaryColor,
                                   autocorrect: false,
@@ -262,6 +265,16 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                           .onSortToggled(),
                                       selected: state.params.sorted,
                                       label: '''newest first''',
+                                    ),
+                                    const SizedBox(
+                                      width: Dimens.pt8,
+                                    ),
+                                    CustomChip(
+                                      onSelected: (_) => context
+                                          .read<SearchCubit>()
+                                          .onExactMatchToggled(),
+                                      selected: state.params.exactMatch,
+                                      label: '''exact match''',
                                     ),
                                     const SizedBox(
                                       width: Dimens.pt8,

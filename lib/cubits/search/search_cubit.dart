@@ -102,6 +102,18 @@ class SearchCubit extends Cubit<SearchState> {
     search(state.params.query);
   }
 
+  void onExactMatchToggled() {
+    emit(
+      state.copyWith(
+        params: state.params.copyWith(
+          exactMatch: !state.params.exactMatch,
+        ),
+      ),
+    );
+
+    search(state.params.query);
+  }
+
   void onDateTimeRangeUpdated(DateTime start, DateTime end) {
     final DateTime updatedStart = start.copyWith(
       second: 0,
