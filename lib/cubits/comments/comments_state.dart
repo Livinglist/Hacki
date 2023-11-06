@@ -96,7 +96,6 @@ class CommentsState extends Equatable {
 
   Set<int> get commentIds => comments.map((Comment e) => e.id).toSet();
 
-  static int count = 0;
   static final Map<int, bool> _isResponseCache = <int, bool>{};
 
   bool isResponse(Comment comment) {
