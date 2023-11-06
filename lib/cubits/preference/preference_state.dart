@@ -72,7 +72,9 @@ class PreferenceState extends Equatable {
 
   bool get material3Enabled => _isOn<Material3Preference>();
 
-  bool get paginationEnabled => _isOn<PaginationPreference>();
+  bool get manualPaginationEnabled => _isOn<ManualPaginationPreference>();
+
+  bool get trueDarkModeEnabled => _isOn<TrueDarkModePreference>();
 
   double get textScaleFactor =>
       preferences.singleWhereType<TextScaleFactorPreference>().val;

@@ -50,7 +50,7 @@ class _StoriesListViewState extends State<StoriesListView>
       buildWhen: (PreferenceState previous, PreferenceState current) =>
           previous.complexStoryTileEnabled != current.complexStoryTileEnabled ||
           previous.metadataEnabled != current.metadataEnabled ||
-          previous.paginationEnabled != current.paginationEnabled,
+          previous.manualPaginationEnabled != current.manualPaginationEnabled,
       builder: (BuildContext context, PreferenceState preferenceState) {
         return BlocConsumer<StoriesBloc, StoriesState>(
           listenWhen: (StoriesState previous, StoriesState current) =>
@@ -88,7 +88,7 @@ class _StoriesListViewState extends State<StoriesListView>
                 context.read<PinCubit>().refresh();
               },
               onLoadMore: () {
-                if (preferenceState.paginationEnabled) {
+                if (preferenceState.manualPaginationEnabled) {
                   refreshController
                     ..refreshCompleted(resetFooterState: true)
                     ..loadComplete();
@@ -100,7 +100,7 @@ class _StoriesListViewState extends State<StoriesListView>
               onPinned: context.read<PinCubit>().pinStory,
               header: state.isOfflineReading ? null : header,
               loadStyle: LoadStyle.HideAlways,
-              footer: preferenceState.paginationEnabled &&
+              footer: preferenceState.manualPaginationEnabled &&
                       state.statusByType[widget.storyType] == Status.success &&
                       (state.storiesByType[widget.storyType]?.length ?? 0) <
                           (state.storyIdsByType[widget.storyType]?.length ?? 0)
