@@ -370,7 +370,7 @@ class CommentsCubit extends Cubit<CommentsState> {
   }
 
   /// Scroll to next root level comment.
-  void scrollToNextRoot() {
+  void scrollToNextRoot({VoidCallback? onError}) {
     final int totalComments = state.comments.length;
     final List<Comment> onScreenComments = itemPositionsListener
         .itemPositions.value
@@ -421,6 +421,10 @@ class CommentsCubit extends Cubit<CommentsState> {
         );
         return;
       }
+    }
+
+    if (state.status == CommentsStatus.allLoaded) {
+      onError?.call();
     }
   }
 
