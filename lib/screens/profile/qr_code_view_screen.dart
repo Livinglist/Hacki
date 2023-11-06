@@ -12,14 +12,13 @@ class QrCodeViewScreen extends StatelessWidget {
 
   static const String routeName = 'qr-code-view';
 
-  static const int qrCodeVersion = 4;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Palette.transparent,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -35,7 +34,6 @@ class QrCodeViewScreen extends StatelessWidget {
                 eyeShape: QrEyeShape.square,
                 color: Theme.of(context).colorScheme.onSurface,
               ),
-              version: qrCodeVersion,
               size: 300,
             ),
           ),
