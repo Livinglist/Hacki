@@ -101,6 +101,15 @@ class MainView extends StatelessWidget {
 
                     index = index - 1;
                     final Comment comment = state.comments.elementAt(index);
+
+                    bool isResponse() {
+                      if (comment.isRoot || index < 2) return false;
+                      final Comment commentBefore =
+                          state.comments.elementAt(index - 2);
+                      return commentBefore.by == comment.by &&
+                          commentBefore.isRoot == false;
+                    }
+
                     return FadeIn(
                       key: ValueKey<String>('${comment.id}-FadeIn'),
                       child: CommentTile(
@@ -109,6 +118,7 @@ class MainView extends StatelessWidget {
                         level: comment.level,
                         opUsername: state.item.by,
                         fetchMode: state.fetchMode,
+                        isResponse: isResponse(),
                         onReplyTapped: (Comment cmt) {
                           HapticFeedbackUtil.light();
                           if (cmt.deleted || cmt.dead) {

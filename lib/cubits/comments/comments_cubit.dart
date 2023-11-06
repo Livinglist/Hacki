@@ -370,7 +370,7 @@ class CommentsCubit extends Cubit<CommentsState> {
   }
 
   /// Scroll to next root level comment.
-  void scrollToNextRoot() {
+  void scrollToNextRoot({VoidCallback? onError}) {
     final int totalComments = state.comments.length;
     final List<Comment> onScreenComments = itemPositionsListener
         .itemPositions.value
@@ -422,6 +422,10 @@ class CommentsCubit extends Cubit<CommentsState> {
         return;
       }
     }
+
+    if (state.status == CommentsStatus.allLoaded) {
+      onError?.call();
+    }
   }
 
   /// Scroll to previous root level comment.
@@ -460,27 +464,49 @@ class CommentsCubit extends Cubit<CommentsState> {
     }
   }
 
-  void search(String query) {
+  void search(String query, {String author = ''}) {
     resetSearch();
 
-    if (query.isEmpty) return;
-
+    late final bool Function(Comment cmt) conditionSatisfied;
     final String lowercaseQuery = query.toLowerCase();
+    if (query.isEmpty && author.isEmpty) {
+      return;
+    } else if (author.isEmpty) {
+      conditionSatisfied =
+          (Comment cmt) => cmt.text.toLowerCase().contains(lowercaseQuery);
+    } else if (query.isEmpty) {
+      conditionSatisfied = (Comment cmt) => cmt.by == author;
+    } else {
+      conditionSatisfied = (Comment cmt) =>
+          cmt.text.toLowerCase().contains(lowercaseQuery) && cmt.by == author;
+    }
+
+    emit(
+      state.copyWith(
+        inThreadSearchQuery: query,
+        inThreadSearchAuthor: author,
+      ),
+    );
+
     for (final int i in 0.to(state.comments.length, inclusive: false)) {
       final Comment cmt = state.comments.elementAt(i);
-      if (cmt.text.toLowerCase().contains(lowercaseQuery)) {
+      if (conditionSatisfied(cmt)) {
         emit(
           state.copyWith(
             matchedComments: <int>[...state.matchedComments, i],
-            inThreadSearchQuery: query,
           ),
         );
       }
     }
   }
 
-  void resetSearch() =>
-      emit(state.copyWith(matchedComments: <int>[], inThreadSearchQuery: ''));
+  void resetSearch() => emit(
+        state.copyWith(
+          matchedComments: <int>[],
+          inThreadSearchQuery: '',
+          inThreadSearchAuthor: '',
+        ),
+      );
 
   List<int> _sortKids(List<int> kids) {
     switch (state.order) {

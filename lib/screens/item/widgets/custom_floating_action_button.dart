@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/context_extension.dart';
 import 'package:hacki/models/discoverable_feature.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
@@ -74,7 +75,11 @@ class CustomFloatingActionButton extends StatelessWidget {
                     heroTag: UniqueKey().hashCode,
                     onPressed: () {
                       HapticFeedbackUtil.selection();
-                      context.read<CommentsCubit>().scrollToNextRoot();
+                      context.read<CommentsCubit>().scrollToNextRoot(
+                            onError: () => context.showSnackBar(
+                              content: '''No more root level comment below.''',
+                            ),
+                          );
                     },
                     child: Icon(
                       Icons.keyboard_arrow_down,

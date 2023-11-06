@@ -234,11 +234,12 @@ class HackiApp extends StatelessWidget {
             previous.appColor != current.appColor ||
             previous.font != current.font ||
             previous.textScaleFactor != current.textScaleFactor ||
-            previous.material3Enabled != current.material3Enabled,
+            previous.material3Enabled != current.material3Enabled ||
+            previous.trueDarkModeEnabled != current.trueDarkModeEnabled,
         builder: (BuildContext context, PreferenceState state) {
           return AdaptiveTheme(
             key: ValueKey<String>(
-              '''${state.appColor}${state.font}${state.material3Enabled}''',
+              '''${state.appColor}${state.font}${state.material3Enabled}${state.trueDarkModeEnabled}''',
             ),
             light: ThemeData(
               primaryColor: state.appColor,
@@ -254,7 +255,7 @@ class HackiApp extends StatelessWidget {
                 primarySwatch: state.appColor,
                 brightness: Brightness.dark,
               ),
-              canvasColor: Palette.black,
+              canvasColor: state.trueDarkModeEnabled ? Palette.black : null,
               fontFamily: state.font.name,
             ),
             initial: savedThemeMode ?? AdaptiveThemeMode.system,

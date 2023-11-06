@@ -49,7 +49,7 @@ class DateTimeRangeFilterChip extends StatelessWidget {
     final DateTime? start = filter?.startTime;
     final DateTime? end = filter?.endTime;
     if (start == null && end == null) {
-      return '''from X to Y''';
+      return '''date range''';
     } else if (start == end) {
       return '''from ${_formatDateTime(start)}''';
     } else {

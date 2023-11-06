@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hacki/blocs/auth/auth_bloc.dart';
 import 'package:hacki/cubits/comments/comments_cubit.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
@@ -87,8 +88,10 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
       value: widget.commentsCubit,
       child: BlocBuilder<CommentsCubit, CommentsState>(
         buildWhen: (CommentsState previous, CommentsState current) =>
-            previous.matchedComments != current.matchedComments,
+            previous.matchedComments != current.matchedComments ||
+            previous.inThreadSearchAuthor != current.inThreadSearchAuthor,
         builder: (BuildContext context, CommentsState state) {
+          final AuthState authState = context.read<AuthBloc>().state;
           return Scaffold(
             resizeToAvoidBottomInset: true,
             appBar: AppBar(
@@ -118,7 +121,10 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                             ),
                           ),
                         ),
-                        onChanged: context.read<CommentsCubit>().search,
+                        onChanged: (String text) => widget.commentsCubit.search(
+                          text,
+                          author: state.inThreadSearchAuthor,
+                        ),
                       ),
                     ),
                     IconButton(
@@ -136,6 +142,50 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
               controller: scrollController,
               shrinkWrap: true,
               children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    const SizedBox(
+                      width: Dimens.pt12,
+                    ),
+                    CustomChip(
+                      selected: state.inThreadSearchAuthor == state.item.by,
+                      label: 'by OP',
+                      onSelected: (bool value) {
+                        if (value) {
+                          widget.commentsCubit.search(
+                            state.inThreadSearchQuery,
+                            author: state.item.by,
+                          );
+                        } else {
+                          widget.commentsCubit.search(
+                            state.inThreadSearchQuery,
+                          );
+                        }
+                      },
+                    ),
+                    const SizedBox(
+                      width: Dimens.pt12,
+                    ),
+                    if (authState.isLoggedIn)
+                      CustomChip(
+                        selected:
+                            state.inThreadSearchAuthor == authState.username,
+                        label: 'by me',
+                        onSelected: (bool value) {
+                          if (value) {
+                            widget.commentsCubit.search(
+                              state.inThreadSearchQuery,
+                              author: authState.username,
+                            );
+                          } else {
+                            widget.commentsCubit.search(
+                              state.inThreadSearchQuery,
+                            );
+                          }
+                        },
+                      ),
+                  ],
+                ),
                 for (final int i in state.matchedComments)
                   CommentTile(
                     index: i,

@@ -41,10 +41,11 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
       const CollapseModePreference(),
       const ReaderModePreference(),
       const CustomTabPreference(),
-      const EyeCandyModePreference(),
-      const Material3Preference(),
-      const PaginationPreference(),
+      const ManualPaginationPreference(),
       const SwipeGesturePreference(),
+      const EyeCandyModePreference(),
+      const TrueDarkModePreference(),
+      const Material3Preference(),
     ],
   );
 
@@ -68,6 +69,7 @@ const bool _notificationModeDefaultValue = true;
 const bool _swipeGestureModeDefaultValue = false;
 const bool _displayModeDefaultValue = true;
 const bool _eyeCandyModeDefaultValue = false;
+const bool _trueDarkModeDefaultValue = false;
 const bool _readerModeDefaultValue = true;
 const bool _markReadStoriesModeDefaultValue = true;
 const bool _metadataModeDefaultValue = true;
@@ -101,7 +103,7 @@ class SwipeGesturePreference extends BooleanPreference {
   String get key => 'swipeGestureMode';
 
   @override
-  String get title => 'Enable Swipe Gesture';
+  String get title => 'Swipe Gesture';
 
   @override
   String get subtitle =>
@@ -289,20 +291,20 @@ class EyeCandyModePreference extends BooleanPreference {
   String get subtitle => 'some sort of magic.';
 }
 
-class PaginationPreference extends BooleanPreference {
-  const PaginationPreference({bool? val})
+class ManualPaginationPreference extends BooleanPreference {
+  const ManualPaginationPreference({bool? val})
       : super(val: val ?? _paginationModeDefaultValue);
 
   @override
-  PaginationPreference copyWith({required bool? val}) {
-    return PaginationPreference(val: val);
+  ManualPaginationPreference copyWith({required bool? val}) {
+    return ManualPaginationPreference(val: val);
   }
 
   @override
   String get key => 'paginationMode';
 
   @override
-  String get title => 'Enable Pagination';
+  String get title => 'Manual Pagination';
 
   @override
   String get subtitle => '''so you can get stuff done.''';
@@ -321,7 +323,7 @@ class Material3Preference extends BooleanPreference {
   String get key => 'material3Mode';
 
   @override
-  String get title => 'Enable Material 3';
+  String get title => 'Material 3';
 
   @override
   String get subtitle =>
@@ -353,6 +355,25 @@ class CustomTabPreference extends BooleanPreference {
 
   @override
   bool get isDisplayable => Platform.isAndroid;
+}
+
+class TrueDarkModePreference extends BooleanPreference {
+  const TrueDarkModePreference({bool? val})
+      : super(val: val ?? _trueDarkModeDefaultValue);
+
+  @override
+  TrueDarkModePreference copyWith({required bool? val}) {
+    return TrueDarkModePreference(val: val);
+  }
+
+  @override
+  String get key => 'trueDarkMode';
+
+  @override
+  String get title => 'True Dark Mode';
+
+  @override
+  String get subtitle => 'real dark.';
 }
 
 class FetchModePreference extends IntPreference {
@@ -444,7 +465,7 @@ class StoryMarkingModePreference extends IntPreference {
   String get key => 'storyMarkingMode';
 
   @override
-  String get title => 'Mark a Story as Read on';
+  String get title => 'Mark as Read on';
 }
 
 class AppColorPreference extends IntPreference {

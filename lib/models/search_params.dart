@@ -8,31 +8,36 @@ class SearchParams extends Equatable {
     required this.filters,
     required this.query,
     required this.page,
-    this.sorted = false,
+    required this.sorted,
+    required this.exactMatch,
   });
 
   SearchParams.init()
       : filters = <SearchFilter>{},
         query = '',
         page = 0,
-        sorted = false;
+        sorted = false,
+        exactMatch = false;
 
   final Set<SearchFilter> filters;
   final String query;
   final int page;
   final bool sorted;
+  final bool exactMatch;
 
   SearchParams copyWith({
     Set<SearchFilter>? filters,
     String? query,
     int? page,
     bool? sorted,
+    bool? exactMatch,
   }) {
     return SearchParams(
       filters: filters ?? this.filters,
       query: query ?? this.query,
       page: page ?? this.page,
       sorted: sorted ?? this.sorted,
+      exactMatch: exactMatch ?? this.exactMatch,
     );
   }
 
@@ -43,6 +48,7 @@ class SearchParams extends Equatable {
       query: query,
       page: page,
       sorted: sorted,
+      exactMatch: exactMatch,
     );
   }
 
@@ -54,16 +60,19 @@ class SearchParams extends Equatable {
       query: query,
       page: page,
       sorted: sorted,
+      exactMatch: exactMatch,
     );
   }
 
   String get filteredQuery {
     final StringBuffer buffer = StringBuffer();
+    final String encodedQuery =
+        Uri.encodeComponent(exactMatch ? '"$query"' : query);
 
     if (sorted) {
-      buffer.write('search_by_date?query=${Uri.encodeComponent(query)}');
+      buffer.write('search_by_date?query=$encodedQuery');
     } else {
-      buffer.write('search?query=${Uri.encodeComponent(query)}');
+      buffer.write('search?query=$encodedQuery');
     }
 
     final Iterable<NumericFilter> numericFilters =
@@ -111,5 +120,6 @@ class SearchParams extends Equatable {
         query,
         page,
         sorted,
+        exactMatch,
       ];
 }

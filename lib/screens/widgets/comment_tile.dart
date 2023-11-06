@@ -24,6 +24,7 @@ class CommentTile extends StatelessWidget {
     this.actionable = true,
     this.collapsable = true,
     this.selectable = true,
+    this.isResponse = false,
     this.level = 0,
     this.index,
     this.onTap,
@@ -36,6 +37,7 @@ class CommentTile extends StatelessWidget {
   final bool actionable;
   final bool collapsable;
   final bool selectable;
+  final bool isResponse;
   final FetchMode fetchMode;
 
   final void Function(Comment)? onReplyTapped;
@@ -170,6 +172,15 @@ class CommentTile extends StatelessWidget {
                                   ),
                                   textScaleFactor:
                                       MediaQuery.of(context).textScaleFactor,
+                                ),
+                              if (isResponse)
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 4),
+                                  child: Icon(
+                                    Icons.reply,
+                                    size: 16,
+                                    color: Palette.grey,
+                                  ),
                                 ),
                               const Spacer(),
                               Text(
