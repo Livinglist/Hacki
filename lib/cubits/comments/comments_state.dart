@@ -13,6 +13,7 @@ class CommentsState extends Equatable {
     required this.item,
     required this.comments,
     required this.matchedComments,
+    required this.idToCommentMap,
     required this.status,
     required this.fetchParentStatus,
     required this.fetchRootStatus,
@@ -32,6 +33,7 @@ class CommentsState extends Equatable {
     required this.order,
   })  : comments = <Comment>[],
         matchedComments = <int>[],
+        idToCommentMap = <int, Comment>{},
         status = CommentsStatus.idle,
         fetchParentStatus = CommentsStatus.idle,
         fetchRootStatus = CommentsStatus.idle,
@@ -42,6 +44,7 @@ class CommentsState extends Equatable {
 
   final Item item;
   final List<Comment> comments;
+  final Map<int, Comment> idToCommentMap;
   final CommentsStatus status;
   final CommentsStatus fetchParentStatus;
   final CommentsStatus fetchRootStatus;
@@ -60,6 +63,7 @@ class CommentsState extends Equatable {
     Item? item,
     List<Comment>? comments,
     List<int>? matchedComments,
+    Map<int, Comment>? idToCommentMap,
     CommentsStatus? status,
     CommentsStatus? fetchParentStatus,
     CommentsStatus? fetchRootStatus,
@@ -86,10 +90,22 @@ class CommentsState extends Equatable {
       currentPage: currentPage ?? this.currentPage,
       inThreadSearchQuery: inThreadSearchQuery ?? this.inThreadSearchQuery,
       inThreadSearchAuthor: inThreadSearchAuthor ?? this.inThreadSearchAuthor,
+      idToCommentMap: idToCommentMap ?? this.idToCommentMap,
     );
   }
 
   Set<int> get commentIds => comments.map((Comment e) => e.id).toSet();
+
+  bool isResponse(Comment comment) {
+    if (comment.isRoot) return false;
+    final Comment? precedingComment = idToCommentMap[comment.parent];
+    if (precedingComment == null) {
+      return false;
+    } else if (item.id == precedingComment.parent && item.by == comment.by) {
+      return true;
+    }
+    return idToCommentMap[precedingComment.parent]?.by == comment.by;
+  }
 
   @override
   List<Object?> get props => <Object?>[
@@ -106,5 +122,6 @@ class CommentsState extends Equatable {
         matchedComments,
         inThreadSearchQuery,
         inThreadSearchAuthor,
+        idToCommentMap,
       ];
 }
