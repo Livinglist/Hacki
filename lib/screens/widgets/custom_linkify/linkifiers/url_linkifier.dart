@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart' show StringCharacters, immutable;
 import 'package:linkify/linkify.dart';
 
 final RegExp _urlRegex = RegExp(
-  r"^(.*?)((?:https?:\/\/|www\.)[^\s/$.?#].[\/\\\%:\?=&#@;A-Za-z0-9()+_.,~-']*)",
+  r'''^(.*?)((?:https?:\/\/|www\.)[^\s/$.?#].[\/\\\%:\?=&#@;A-Za-z0-9()+_.,'~-]*)''',
   caseSensitive: false,
   dotAll: true,
 );
