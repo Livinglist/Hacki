@@ -535,6 +535,7 @@ class CommentsCubit extends Cubit<CommentsState> {
       _commentCache.cacheComment(comment);
       _sembastRepository.cacheComment(comment);
 
+      // Hide comment that matches any of the filter keywords.
       final bool hidden = _filterCubit.state.keywords.any(
         (String keyword) => comment.text.toLowerCase().contains(keyword),
       );
@@ -543,7 +544,16 @@ class CommentsCubit extends Cubit<CommentsState> {
         comment.copyWith(hidden: hidden),
       ];
 
-      emit(state.copyWith(comments: updatedComments));
+      final Map<int, Comment> updatedIdToCommentMap =
+          Map<int, Comment>.from(state.idToCommentMap);
+      updatedIdToCommentMap[comment.id] = comment;
+
+      emit(
+        state.copyWith(
+          comments: updatedComments,
+          idToCommentMap: updatedIdToCommentMap,
+        ),
+      );
     }
   }
 
