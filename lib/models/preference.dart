@@ -373,7 +373,7 @@ class TrueDarkModePreference extends BooleanPreference {
   String get title => 'True Dark Mode';
 
   @override
-  String get subtitle => 'you might need to restart the app.';
+  String get subtitle => 'real dark.';
 }
 
 class FetchModePreference extends IntPreference {
