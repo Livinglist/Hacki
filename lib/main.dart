@@ -19,6 +19,7 @@ import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/services/fetcher.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/utils/haptic_feedback_util.dart';
 import 'package:hacki/utils/theme_util.dart';
 import 'package:hive/hive.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -229,7 +230,12 @@ class HackiApp extends StatelessWidget {
           )..init(),
         ),
       ],
-      child: BlocBuilder<PreferenceCubit, PreferenceState>(
+      child: BlocConsumer<PreferenceCubit, PreferenceState>(
+        listenWhen: (PreferenceState previous, PreferenceState current) =>
+            previous.hapticFeedbackEnabled != current.hapticFeedbackEnabled,
+        listener: (_, PreferenceState state) {
+          HapticFeedbackUtil.enabled = state.hapticFeedbackEnabled;
+        },
         buildWhen: (PreferenceState previous, PreferenceState current) =>
             previous.appColor != current.appColor ||
             previous.font != current.font ||

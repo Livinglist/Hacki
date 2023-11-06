@@ -1,7 +1,17 @@
 import 'package:flutter/services.dart';
 
 abstract class HapticFeedbackUtil {
-  static void selection() => HapticFeedback.selectionClick();
+  static bool enabled = true;
 
-  static void light() => HapticFeedback.lightImpact();
+  static void selection() {
+    if (enabled) {
+      HapticFeedback.selectionClick();
+    }
+  }
+
+  static void light() {
+    if (enabled) {
+      HapticFeedback.lightImpact();
+    }
+  }
 }

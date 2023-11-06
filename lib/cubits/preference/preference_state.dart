@@ -76,6 +76,8 @@ class PreferenceState extends Equatable {
 
   bool get trueDarkModeEnabled => _isOn<TrueDarkModePreference>();
 
+  bool get hapticFeedbackEnabled => _isOn<HapticFeedbackPreference>();
+
   double get textScaleFactor =>
       preferences.singleWhereType<TextScaleFactorPreference>().val;
 

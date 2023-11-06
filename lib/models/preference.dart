@@ -43,6 +43,7 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
       const CustomTabPreference(),
       const ManualPaginationPreference(),
       const SwipeGesturePreference(),
+      const HapticFeedbackPreference(),
       const EyeCandyModePreference(),
       const TrueDarkModePreference(),
       const Material3Preference(),
@@ -70,6 +71,7 @@ const bool _swipeGestureModeDefaultValue = false;
 const bool _displayModeDefaultValue = true;
 const bool _eyeCandyModeDefaultValue = false;
 const bool _trueDarkModeDefaultValue = false;
+const bool _hapticFeedbackModeDefaultValue = true;
 const bool _readerModeDefaultValue = true;
 const bool _markReadStoriesModeDefaultValue = true;
 const bool _metadataModeDefaultValue = true;
@@ -374,6 +376,28 @@ class TrueDarkModePreference extends BooleanPreference {
 
   @override
   String get subtitle => 'real dark.';
+}
+
+class HapticFeedbackPreference extends BooleanPreference {
+  const HapticFeedbackPreference({bool? val})
+      : super(val: val ?? _hapticFeedbackModeDefaultValue);
+
+  @override
+  HapticFeedbackPreference copyWith({required bool? val}) {
+    return HapticFeedbackPreference(val: val);
+  }
+
+  @override
+  String get key => 'hapticFeedbackMode';
+
+  @override
+  String get title => 'Haptic Feedback';
+
+  @override
+  String get subtitle => '';
+
+  @override
+  bool get isDisplayable => Platform.isIOS;
 }
 
 class FetchModePreference extends IntPreference {

@@ -96,15 +96,31 @@ class CommentsState extends Equatable {
 
   Set<int> get commentIds => comments.map((Comment e) => e.id).toSet();
 
+  static final Map<int, bool> _isResponseCache = <int, bool>{};
+
   bool isResponse(Comment comment) {
-    if (comment.isRoot) return false;
+    if (_isResponseCache.containsKey(comment.id)) {
+      return _isResponseCache[comment.id]!;
+    }
+
+    if (comment.isRoot) {
+      _isResponseCache[comment.id] = false;
+      return false;
+    }
     final Comment? precedingComment = idToCommentMap[comment.parent];
     if (precedingComment == null) {
+      _isResponseCache[comment.id] = false;
       return false;
     } else if (item.id == precedingComment.parent && item.by == comment.by) {
+      _isResponseCache[comment.id] = true;
       return true;
+    } else if (idToCommentMap[precedingComment.parent]?.by == comment.by) {
+      _isResponseCache[comment.id] = true;
+      return true;
+    } else {
+      _isResponseCache[comment.id] = false;
+      return false;
     }
-    return idToCommentMap[precedingComment.parent]?.by == comment.by;
   }
 
   @override
