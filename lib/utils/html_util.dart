@@ -34,7 +34,6 @@ abstract class HtmlUtil {
   static String parseHtml(String text) {
     return HtmlUnescape()
         .convert(text)
-        .replaceAll('<p>', '\n')
         .replaceAllMapped(
           RegExp(r'\<i\>(.*?)\<\/i\>'),
           (Match match) => '*${match[1]}*',
@@ -43,6 +42,7 @@ abstract class HtmlUtil {
           RegExp(r'\<a href=\"(.*?)\".*?\>.*?\<\/a\>'),
           (Match match) => match[1] ?? '',
         )
-        .replaceAll('\n', '\n\n');
+        .replaceAll('\n', '\n\n')
+        .replaceAll('<p>\n\n', '');
   }
 }
