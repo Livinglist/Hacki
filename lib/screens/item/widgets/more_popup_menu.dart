@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
@@ -77,8 +78,23 @@ class MorePopupMenu extends StatelessWidget {
                     return Semantics(
                       excludeSemantics: state.status == Status.inProgress,
                       child: ListTile(
-                        leading: const Icon(
-                          Icons.account_circle,
+                        leading: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            AnimatedCrossFade(
+                              alignment: Alignment.center,
+                              duration: Durations.ms300,
+                              crossFadeState: state.status.isLoading
+                                  ? CrossFadeState.showFirst
+                                  : CrossFadeState.showSecond,
+                              firstChild: const Icon(
+                                Icons.account_circle_outlined,
+                              ),
+                              secondChild: const Icon(
+                                Icons.account_circle,
+                              ),
+                            ),
+                          ],
                         ),
                         title: Text(item.by),
                         subtitle: Text(

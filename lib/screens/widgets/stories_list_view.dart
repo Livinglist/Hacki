@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
@@ -68,8 +69,18 @@ class _StoriesListViewState extends State<StoriesListView>
                   previous.currentPageByType[storyType] == 0) ||
               (previous.storiesByType[storyType]!.length !=
                   current.storiesByType[storyType]!.length) ||
-              (previous.readStoriesIds.length != current.readStoriesIds.length),
+              (previous.readStoriesIds.length !=
+                  current.readStoriesIds.length) ||
+              (previous.statusByType[widget.storyType] !=
+                  current.statusByType[widget.storyType]),
           builder: (BuildContext context, StoriesState state) {
+            bool shouldShowLoadButton() {
+              return preferenceState.manualPaginationEnabled &&
+                  state.statusByType[widget.storyType] == Status.success &&
+                  (state.storiesByType[widget.storyType]?.length ?? 0) <
+                      (state.storyIdsByType[widget.storyType]?.length ?? 0);
+            }
+
             return ItemsListView<Story>(
               showOfflineBanner: true,
               markReadStories: preferenceState.markReadStoriesEnabled,
@@ -100,30 +111,38 @@ class _StoriesListViewState extends State<StoriesListView>
               onPinned: context.read<PinCubit>().pinStory,
               header: state.isOfflineReading ? null : header,
               loadStyle: LoadStyle.HideAlways,
-              footer: preferenceState.manualPaginationEnabled &&
-                      state.statusByType[widget.storyType] == Status.success &&
-                      (state.storiesByType[widget.storyType]?.length ?? 0) <
-                          (state.storyIdsByType[widget.storyType]?.length ?? 0)
-                  ? Padding(
-                      padding: const EdgeInsets.only(
-                        left: Dimens.pt48,
-                        right: Dimens.pt48,
-                        top: Dimens.pt36,
-                        bottom: Dimens.pt12,
-                      ),
-                      child: OutlinedButton(
-                        onPressed: loadMoreStories,
-                        style: ButtonStyle(
-                          foregroundColor: MaterialStateColor.resolveWith(
-                            (_) => Theme.of(context).colorScheme.onSurface,
-                          ),
+              footer: Center(
+                child: AnimatedCrossFade(
+                  alignment: Alignment.center,
+                  crossFadeState: shouldShowLoadButton()
+                      ? CrossFadeState.showFirst
+                      : CrossFadeState.showSecond,
+                  duration: Durations.ms300,
+                  firstChild: Padding(
+                    padding: const EdgeInsets.only(
+                      left: Dimens.pt48,
+                      right: Dimens.pt48,
+                      top: Dimens.pt36,
+                      bottom: Dimens.pt12,
+                    ),
+                    child: OutlinedButton(
+                      onPressed: loadMoreStories,
+                      style: ButtonStyle(
+                        minimumSize: MaterialStateProperty.all(
+                          const Size(double.infinity, Dimens.pt48),
                         ),
-                        child: Text(
-                          '''Load Page ${(state.currentPageByType[widget.storyType] ?? 0) + 2}''',
+                        foregroundColor: MaterialStateColor.resolveWith(
+                          (_) => Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
-                    )
-                  : null,
+                      child: Text(
+                        '''Load Page ${(state.currentPageByType[widget.storyType] ?? 0) + 2}''',
+                      ),
+                    ),
+                  ),
+                  secondChild: const SizedBox.shrink(),
+                ),
+              ),
               onMoreTapped: onMoreTapped,
               itemBuilder: (Widget child, Story story) {
                 return Slidable(
