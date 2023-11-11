@@ -459,23 +459,6 @@ class CommentsCubit extends Cubit<CommentsState> {
     }
   }
 
-  void onCollapse({
-    required int index,
-    required VoidCallback collapse,
-  }) {
-    final ItemPosition? position = itemPositionsListener.itemPositions.value
-        .singleWhereOrNull((ItemPosition e) => e.index - 1 == index);
-    final bool shouldScroll =
-        position != null && position.itemLeadingEdge < 0.1;
-    collapse();
-    if (shouldScroll) {
-      scrollTo(
-        index: index,
-        alignment: 0.15,
-      );
-    }
-  }
-
   void search(String query, {String author = ''}) {
     resetSearch();
 
