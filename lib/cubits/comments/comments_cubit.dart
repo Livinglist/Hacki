@@ -30,20 +30,15 @@ class CommentsCubit extends Cubit<CommentsState> {
     required Item item,
     required FetchMode defaultFetchMode,
     required CommentsOrder defaultCommentsOrder,
-    CommentCache? commentCache,
     OfflineRepository? offlineRepository,
     StoriesRepository? storiesRepository,
-    SembastRepository? sembastRepository,
     Logger? logger,
   })  : _filterCubit = filterCubit,
         _collapseCache = collapseCache,
-        _commentCache = commentCache ?? locator.get<CommentCache>(),
         _offlineRepository =
             offlineRepository ?? locator.get<OfflineRepository>(),
         _storiesRepository =
             storiesRepository ?? locator.get<StoriesRepository>(),
-        _sembastRepository =
-            sembastRepository ?? locator.get<SembastRepository>(),
         _logger = logger ?? locator.get<Logger>(),
         super(
           CommentsState.init(
@@ -56,10 +51,8 @@ class CommentsCubit extends Cubit<CommentsState> {
 
   final FilterCubit _filterCubit;
   final CollapseCache _collapseCache;
-  final CommentCache _commentCache;
   final OfflineRepository _offlineRepository;
   final StoriesRepository _storiesRepository;
-  final SembastRepository _sembastRepository;
   final Logger _logger;
 
   final ItemScrollController itemScrollController = ItemScrollController();
@@ -84,7 +77,6 @@ class CommentsCubit extends Cubit<CommentsState> {
 
   Future<void> init({
     bool onlyShowTargetComment = false,
-    bool useCommentCache = false,
     List<Comment>? targetAncestors,
   }) async {
     if (onlyShowTargetComment && (targetAncestors?.isNotEmpty ?? false)) {
@@ -137,12 +129,10 @@ class CommentsCubit extends Cubit<CommentsState> {
         case FetchMode.lazy:
           commentStream = _storiesRepository.fetchCommentsStream(
             ids: kids,
-            getFromCache: useCommentCache ? _commentCache.getComment : null,
           );
         case FetchMode.eager:
           commentStream = _storiesRepository.fetchAllCommentsRecursivelyStream(
             ids: kids,
-            getFromCache: useCommentCache ? _commentCache.getComment : null,
           );
       }
     }
@@ -246,13 +236,17 @@ class CommentsCubit extends Cubit<CommentsState> {
         // ignore: cancel_subscriptions
         final StreamSubscription<Comment> streamSubscription =
             _storiesRepository
-                .fetchCommentsStream(ids: comment.kids)
+                .fetchCommentsStream(
+                  ids: comment.kids,
+                )
                 .asyncMap(_toBuildableComment)
                 .whereNotNull()
                 .listen((Comment cmt) {
           _collapseCache.addKid(cmt.id, to: cmt.parent);
-          _commentCache.cacheComment(cmt);
-          _sembastRepository.cacheComment(cmt);
+
+          final Map<int, Comment> updatedIdToCommentMap =
+              Map<int, Comment>.from(state.idToCommentMap);
+          updatedIdToCommentMap[comment.id] = comment;
 
           emit(
             state.copyWith(
@@ -260,6 +254,7 @@ class CommentsCubit extends Cubit<CommentsState> {
                   state.comments.indexOf(comment) + offset + 1,
                   cmt.copyWith(level: level),
                 ),
+              idToCommentMap: updatedIdToCommentMap,
             ),
           );
           offset++;
@@ -340,7 +335,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     }
     _streamSubscriptions.clear();
     emit(state.copyWith(order: order));
-    init(useCommentCache: true);
+    init();
   }
 
   void updateFetchMode(FetchMode? fetchMode) {
@@ -354,7 +349,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     }
     _streamSubscriptions.clear();
     emit(state.copyWith(fetchMode: fetchMode));
-    init(useCommentCache: true);
+    init();
   }
 
   void scrollTo({
@@ -532,8 +527,6 @@ class CommentsCubit extends Cubit<CommentsState> {
   void _onCommentFetched(BuildableComment? comment) {
     if (comment != null) {
       _collapseCache.addKid(comment.id, to: comment.parent);
-      _commentCache.cacheComment(comment);
-      _sembastRepository.cacheComment(comment);
 
       // Hide comment that matches any of the filter keywords.
       final bool hidden = _filterCubit.state.keywords.any(

@@ -1,26 +1,13 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:hacki/config/locator.dart';
 import 'package:hacki/screens/screens.dart';
-import 'package:hacki/services/services.dart';
-import 'package:logger/logger.dart';
 
 part 'split_view_state.dart';
 
 class SplitViewCubit extends Cubit<SplitViewState> {
-  SplitViewCubit({
-    CommentCache? commentCache,
-    Logger? logger,
-  })  : _commentCache = commentCache ?? locator.get<CommentCache>(),
-        _logger = logger ?? locator.get<Logger>(),
-        super(const SplitViewState.init());
-
-  final Logger _logger;
-  final CommentCache _commentCache;
+  SplitViewCubit() : super(const SplitViewState.init());
 
   void updateItemScreenArgs(ItemScreenArgs args) {
-    _logger.i('resetting comments in CommentCache');
-    _commentCache.resetComments();
     emit(state.copyWith(itemScreenArgs: args));
   }
 

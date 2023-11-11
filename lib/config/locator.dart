@@ -23,15 +23,14 @@ Future<void> setUpLocator() async {
         output: LogUtil.logOutput(logOutputFile),
       ),
     )
+    ..registerSingleton<SembastRepository>(SembastRepository())
     ..registerSingleton<StoriesRepository>(StoriesRepository())
     ..registerSingleton<PreferenceRepository>(PreferenceRepository())
     ..registerSingleton<SearchRepository>(SearchRepository())
     ..registerSingleton<AuthRepository>(AuthRepository())
     ..registerSingleton<PostRepository>(PostRepository())
-    ..registerSingleton<SembastRepository>(SembastRepository())
     ..registerSingleton<OfflineRepository>(OfflineRepository())
     ..registerSingleton<DraftCache>(DraftCache())
-    ..registerSingleton<CommentCache>(CommentCache())
     ..registerSingleton<LocalNotificationService>(LocalNotificationService())
     ..registerSingleton(AppReviewService())
     ..registerSingleton<RouteObserver<ModalRoute<dynamic>>>(
