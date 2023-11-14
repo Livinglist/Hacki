@@ -1,7 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/models.dart';
-import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
 
@@ -13,13 +11,9 @@ import 'package:hacki/utils/utils.dart';
 class StoriesRepository {
   StoriesRepository({
     FirebaseClient? firebaseClient,
-    SembastRepository? sembastRepository,
-  })  : _sembastRepository =
-            sembastRepository ?? locator.get<SembastRepository>(),
-        _firebaseClient = firebaseClient ?? FirebaseClient.anonymous();
+  }) : _firebaseClient = firebaseClient ?? FirebaseClient.anonymous();
 
   final FirebaseClient _firebaseClient;
-  final SembastRepository _sembastRepository;
   static const String _baseUrl = 'https://hacker-news.firebaseio.com/v0/';
 
   Future<Map<String, dynamic>?> _fetchItemJson(int id) async {
@@ -222,21 +216,16 @@ class StoriesRepository {
   Stream<Comment> fetchCommentsStream({
     required List<int> ids,
     int level = 0,
+    Comment? Function(int)? getFromCache,
   }) async* {
     for (final int id in ids) {
-      Comment? comment = await _sembastRepository.getCachedComment(id: id);
-      comment = comment?.copyWith(level: level);
+      Comment? comment = getFromCache?.call(id)?.copyWith(level: level);
 
       comment ??=
           await _fetchItemJson(id).then((Map<String, dynamic>? json) async {
         if (json == null) return null;
 
         final Comment comment = Comment.fromJson(json, level: level);
-
-        if (comment.shouldBeCached) {
-          await _sembastRepository.cacheComment(comment);
-        }
-
         return comment;
       });
 
@@ -252,21 +241,16 @@ class StoriesRepository {
   Stream<Comment> fetchAllCommentsRecursivelyStream({
     required List<int> ids,
     int level = 0,
+    Comment? Function(int)? getFromCache,
   }) async* {
     for (final int id in ids) {
-      Comment? comment = await _sembastRepository.getCachedComment(id: id);
-      comment = comment?.copyWith(level: level);
+      Comment? comment = getFromCache?.call(id)?.copyWith(level: level);
 
       comment ??=
           await _fetchItemJson(id).then((Map<String, dynamic>? json) async {
         if (json == null) return null;
 
         final Comment comment = Comment.fromJson(json, level: level);
-
-        if (comment.shouldBeCached) {
-          await _sembastRepository.cacheComment(comment);
-        }
-
         return comment;
       });
 
@@ -276,6 +260,7 @@ class StoriesRepository {
         yield* fetchAllCommentsRecursivelyStream(
           ids: comment.kids,
           level: level + 1,
+          getFromCache: getFromCache,
         );
       }
     }
@@ -366,8 +351,4 @@ class StoriesRepository {
     json['text'] = parsedText;
     return json;
   }
-}
-
-extension on Comment {
-  bool get shouldBeCached => text != '[Delayed]';
 }
