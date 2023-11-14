@@ -122,7 +122,10 @@ class CommentsCubit extends Cubit<CommentsState> {
     final Item item = state.item;
     final Item updatedItem = state.isOfflineReading
         ? item
-        : await _storiesRepository.fetchItem(id: item.id).then(_toBuildable) ??
+        : await _storiesRepository
+                .fetchItem(id: item.id)
+                .then(_toBuildable)
+                .onError((_, __) => item) ??
             item;
     final List<int> kids = _sortKids(updatedItem.kids);
 
