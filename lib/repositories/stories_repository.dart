@@ -239,7 +239,9 @@ class StoriesRepository {
         return comment;
       }).onError((Object? error, StackTrace stackTrace) {
         _logger.e(error, stackTrace: stackTrace);
-        return _sembastRepository.getCachedComment(id: id);
+        return _sembastRepository
+            .getCachedComment(id: id)
+            .then((Comment? value) => value?.copyWith(level: level));
       });
 
       if (comment != null) {
@@ -267,7 +269,9 @@ class StoriesRepository {
         return comment;
       }).onError((Object? error, StackTrace stackTrace) {
         _logger.e(error, stackTrace: stackTrace);
-        return _sembastRepository.getCachedComment(id: id);
+        return _sembastRepository
+            .getCachedComment(id: id)
+            .then((Comment? value) => value?.copyWith(level: level));
       });
 
       if (comment != null) {

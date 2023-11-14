@@ -27,26 +27,34 @@ class CodeLinkifier extends Linkifier {
           list.add(element);
         } else {
           final String matchedText = match.group(0)!;
-          final num pos = element.text.indexOf(matchedText);
           final List<String> splitTexts = element.text.split(matchedText);
 
-          int curPos = 0;
-          bool added = false;
+          final String preceding = splitTexts[0];
 
-          for (final String text in splitTexts) {
-            list.addAll(parse(<LinkifyElement>[TextElement(text)], options));
+          list.addAll(
+            parse(
+              <LinkifyElement>[
+                TextElement(preceding == '\n\n' ? '' : preceding),
+              ],
+              options,
+            ),
+          );
 
-            curPos += text.length;
+          final String trimmedText = matchedText
+              .replaceFirst(_openTag, '')
+              .replaceFirst(_closeTag, '')
+              .replaceAll('\n\n', '\n');
 
-            if (!added && curPos >= pos) {
-              added = true;
-              final String trimmedText = matchedText
-                  .replaceFirst(_openTag, '')
-                  .replaceFirst(_closeTag, '')
-                  .replaceAll('\n\n', '\n');
-              list.add(CodeElement(trimmedText));
-            }
-          }
+          list
+            ..add(CodeElement(trimmedText))
+            ..addAll(
+              parse(
+                <LinkifyElement>[
+                  TextElement(splitTexts[1].replaceFirst('\n\n', '\n')),
+                ],
+                options,
+              ),
+            );
         }
       } else {
         list.add(element);
