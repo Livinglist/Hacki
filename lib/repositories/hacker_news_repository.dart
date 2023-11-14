@@ -6,13 +6,13 @@ import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:logger/logger.dart';
 
-/// [StoriesRepository] is for fetching
+/// [HackerNewsRepository] is for fetching
 /// [Item] such as [Story], [PollOption], [Comment] or [User].
 ///
 /// You can learn more about the Hacker News API at
 /// https://github.com/HackerNews/API.
-class StoriesRepository {
-  StoriesRepository({
+class HackerNewsRepository {
+  HackerNewsRepository({
     FirebaseClient? firebaseClient,
     SembastRepository? sembastRepository,
     Logger? logger,
@@ -239,7 +239,9 @@ class StoriesRepository {
         return comment;
       }).onError((Object? error, StackTrace stackTrace) {
         _logger.e(error, stackTrace: stackTrace);
-        return _sembastRepository.getCachedComment(id: id);
+        return _sembastRepository
+            .getCachedComment(id: id)
+            .then((Comment? value) => value?.copyWith(level: level));
       });
 
       if (comment != null) {
@@ -267,7 +269,9 @@ class StoriesRepository {
         return comment;
       }).onError((Object? error, StackTrace stackTrace) {
         _logger.e(error, stackTrace: stackTrace);
-        return _sembastRepository.getCachedComment(id: id);
+        return _sembastRepository
+            .getCachedComment(id: id)
+            .then((Comment? value) => value?.copyWith(level: level));
       });
 
       if (comment != null) {

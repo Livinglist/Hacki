@@ -9,7 +9,7 @@ class MockAuthRepository extends Mock implements AuthRepository {}
 
 class MockPreferenceRepository extends Mock implements PreferenceRepository {}
 
-class MockStoriesRepository extends Mock implements StoriesRepository {}
+class MockHackerNewsRepository extends Mock implements HackerNewsRepository {}
 
 class MockSembastRepository extends Mock implements SembastRepository {}
 
@@ -17,7 +17,8 @@ void main() {
   final MockAuthRepository mockAuthRepository = MockAuthRepository();
   final MockPreferenceRepository mockPreferenceRepository =
       MockPreferenceRepository();
-  final MockStoriesRepository mockStoriesRepository = MockStoriesRepository();
+  final MockHackerNewsRepository mockHackerNewsRepository =
+      MockHackerNewsRepository();
   final MockSembastRepository mockSembastRepository = MockSembastRepository();
 
   const int created = 0;
@@ -49,7 +50,7 @@ void main() {
             AuthBloc(
               authRepository: mockAuthRepository,
               preferenceRepository: mockPreferenceRepository,
-              storiesRepository: mockStoriesRepository,
+              hackerNewsRepository: mockHackerNewsRepository,
               sembastRepository: mockSembastRepository,
             ).state,
             equals(const AuthState.init()),
@@ -67,7 +68,7 @@ void main() {
           .thenAnswer((_) => Future<String?>.value(username));
       when(() => mockAuthRepository.password)
           .thenAnswer((_) => Future<String>.value(password));
-      when(() => mockStoriesRepository.fetchUser(id: username))
+      when(() => mockHackerNewsRepository.fetchUser(id: username))
           .thenAnswer((_) => Future<User>.value(tUser));
       when(() => mockAuthRepository.loggedIn)
           .thenAnswer((_) => Future<bool>.value(false));
@@ -79,7 +80,7 @@ void main() {
         return AuthBloc(
           authRepository: mockAuthRepository,
           preferenceRepository: mockPreferenceRepository,
-          storiesRepository: mockStoriesRepository,
+          hackerNewsRepository: mockHackerNewsRepository,
           sembastRepository: mockSembastRepository,
         );
       },
@@ -91,7 +92,7 @@ void main() {
       verify: (_) {
         verify(() => mockAuthRepository.loggedIn).called(2);
         verifyNever(() => mockAuthRepository.username);
-        verifyNever(() => mockStoriesRepository.fetchUser(id: username));
+        verifyNever(() => mockHackerNewsRepository.fetchUser(id: username));
       },
     );
 
@@ -107,7 +108,7 @@ void main() {
         return AuthBloc(
           authRepository: mockAuthRepository,
           preferenceRepository: mockPreferenceRepository,
-          storiesRepository: mockStoriesRepository,
+          hackerNewsRepository: mockHackerNewsRepository,
           sembastRepository: mockSembastRepository,
         );
       },
@@ -154,7 +155,8 @@ void main() {
             password: password,
           ),
         ).called(1);
-        verify(() => mockStoriesRepository.fetchUser(id: username)).called(1);
+        verify(() => mockHackerNewsRepository.fetchUser(id: username))
+            .called(1);
       },
     );
   });

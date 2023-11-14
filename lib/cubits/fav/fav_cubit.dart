@@ -12,13 +12,13 @@ class FavCubit extends Cubit<FavState> {
     required AuthBloc authBloc,
     AuthRepository? authRepository,
     PreferenceRepository? preferenceRepository,
-    StoriesRepository? storiesRepository,
+    HackerNewsRepository? hackerNewsRepository,
   })  : _authBloc = authBloc,
         _authRepository = authRepository ?? locator.get<AuthRepository>(),
         _preferenceRepository =
             preferenceRepository ?? locator.get<PreferenceRepository>(),
-        _storiesRepository =
-            storiesRepository ?? locator.get<StoriesRepository>(),
+        _hackerNewsRepository =
+            hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
         super(FavState.init()) {
     init();
   }
@@ -26,7 +26,7 @@ class FavCubit extends Cubit<FavState> {
   final AuthBloc _authBloc;
   final AuthRepository _authRepository;
   final PreferenceRepository _preferenceRepository;
-  final StoriesRepository _storiesRepository;
+  final HackerNewsRepository _hackerNewsRepository;
   static const int _pageSize = 20;
   String? _username;
 
@@ -43,7 +43,7 @@ class FavCubit extends Cubit<FavState> {
               currentPage: 0,
             ),
           );
-          _storiesRepository
+          _hackerNewsRepository
               .fetchItemsStream(
                 ids: favIds.sublist(0, _pageSize.clamp(0, favIds.length)),
               )
@@ -73,7 +73,7 @@ class FavCubit extends Cubit<FavState> {
       ),
     );
 
-    final Item? item = await _storiesRepository.fetchItem(id: id);
+    final Item? item = await _hackerNewsRepository.fetchItem(id: id);
 
     if (item == null) return;
 
@@ -119,7 +119,7 @@ class FavCubit extends Cubit<FavState> {
         upper = len;
       }
 
-      _storiesRepository
+      _hackerNewsRepository
           .fetchItemsStream(
             ids: state.favIds.sublist(
               lower,
@@ -149,7 +149,7 @@ class FavCubit extends Cubit<FavState> {
 
     _preferenceRepository.favList(of: username).then((List<int> favIds) {
       emit(state.copyWith(favIds: favIds));
-      _storiesRepository
+      _hackerNewsRepository
           .fetchItemsStream(
             ids: favIds.sublist(0, _pageSize.clamp(0, favIds.length)),
           )

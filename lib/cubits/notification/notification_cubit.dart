@@ -16,13 +16,13 @@ class NotificationCubit extends Cubit<NotificationState> {
   NotificationCubit({
     required AuthBloc authBloc,
     required PreferenceCubit preferenceCubit,
-    StoriesRepository? storiesRepository,
+    HackerNewsRepository? hackerNewsRepository,
     PreferenceRepository? preferenceRepository,
     SembastRepository? sembastRepository,
   })  : _authBloc = authBloc,
         _preferenceCubit = preferenceCubit,
-        _storiesRepository =
-            storiesRepository ?? locator.get<StoriesRepository>(),
+        _hackerNewsRepository =
+            hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
         _preferenceRepository =
             preferenceRepository ?? locator.get<PreferenceRepository>(),
         _sembastRepository =
@@ -54,7 +54,7 @@ class NotificationCubit extends Cubit<NotificationState> {
 
   final AuthBloc _authBloc;
   final PreferenceCubit _preferenceCubit;
-  final StoriesRepository _storiesRepository;
+  final HackerNewsRepository _hackerNewsRepository;
   final PreferenceRepository _preferenceRepository;
   final SembastRepository _sembastRepository;
   String? _username;
@@ -82,7 +82,7 @@ class NotificationCubit extends Cubit<NotificationState> {
 
     for (final int id in commentsToBeLoaded) {
       Comment? comment = await _sembastRepository.getComment(id: id);
-      comment ??= await _storiesRepository.fetchComment(id: id);
+      comment ??= await _hackerNewsRepository.fetchComment(id: id);
       if (comment != null) {
         emit(
           state.copyWith(
@@ -160,7 +160,7 @@ class NotificationCubit extends Cubit<NotificationState> {
 
       for (final int id in commentsToBeLoaded) {
         Comment? comment = await _sembastRepository.getComment(id: id);
-        comment ??= await _storiesRepository.fetchComment(id: id);
+        comment ??= await _hackerNewsRepository.fetchComment(id: id);
         if (comment != null) {
           emit(state.copyWith(comments: <Comment>[...state.comments, comment]));
         }
@@ -184,7 +184,7 @@ class NotificationCubit extends Cubit<NotificationState> {
   }
 
   Future<void> _fetchReplies() {
-    return _storiesRepository
+    return _hackerNewsRepository
         .fetchSubmitted(userId: _authBloc.state.username)
         .then((List<int>? submittedItems) async {
       if (submittedItems != null) {
@@ -194,7 +194,9 @@ class NotificationCubit extends Cubit<NotificationState> {
         );
 
         for (final int id in subscribedItems) {
-          await _storiesRepository.fetchItem(id: id).then((Item? item) async {
+          await _hackerNewsRepository
+              .fetchItem(id: id)
+              .then((Item? item) async {
             final List<int> kids = item?.kids ?? <int>[];
             final List<int> previousKids =
                 (await _sembastRepository.kids(of: id)) ?? <int>[];
@@ -216,7 +218,7 @@ class NotificationCubit extends Cubit<NotificationState> {
                       ...state.unreadCommentsIds,
                     ]..sort((int lhs, int rhs) => rhs.compareTo(lhs)),
                   );
-                  await _storiesRepository
+                  await _hackerNewsRepository
                       .fetchComment(id: newCommentId)
                       .then((Comment? comment) {
                     if (comment != null && !comment.dead && !comment.deleted) {

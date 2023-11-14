@@ -7,16 +7,16 @@ import 'package:hacki/repositories/repositories.dart';
 part 'user_state.dart';
 
 class UserCubit extends Cubit<UserState> {
-  UserCubit({StoriesRepository? storiesRepository})
-      : _storiesRepository =
-            storiesRepository ?? locator.get<StoriesRepository>(),
+  UserCubit({HackerNewsRepository? hackerNewsRepository})
+      : _hackerNewsRepository =
+            hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
         super(const UserState.init());
 
-  final StoriesRepository _storiesRepository;
+  final HackerNewsRepository _hackerNewsRepository;
 
   void init({required String userId}) {
     emit(state.copyWith(status: Status.inProgress));
-    _storiesRepository.fetchUser(id: userId).then((User? user) {
+    _hackerNewsRepository.fetchUser(id: userId).then((User? user) {
       emit(
         state.copyWith(
           user: user ?? User.emptyWithId(userId),

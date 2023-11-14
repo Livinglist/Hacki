@@ -33,8 +33,8 @@ class ItemScreenArgs extends Equatable {
   final List<Comment>? targetComments;
 
   /// when the user is trying to view a sub-thread from a main thread, we don't
-  /// need to fetch comments from [StoriesRepository] since we have some, if not
-  /// all, comments cached in [CommentCache].
+  /// need to fetch comments from [HackerNewsRepository] since we have some,
+  /// if not all, comments cached in [CommentCache].
   final bool useCommentCache;
 
   @override

@@ -15,6 +15,14 @@ class SyncedSharedPreferences {
     const MethodChannel(channel),
   );
 
+  Future<bool?> remove({
+    required String key,
+  }) async {
+    return _channel.invokeMethod('remove', <String, dynamic>{
+      'key': key,
+    });
+  }
+
   Future<bool?> setBool({
     required String key,
     required bool val,

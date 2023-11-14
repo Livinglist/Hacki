@@ -107,7 +107,7 @@ class _CountDownReminderState extends State<CountdownReminder>
                   onTap: () {
                     if (state.storyId != null) {
                       locator
-                          .get<StoriesRepository>()
+                          .get<HackerNewsRepository>()
                           .fetchStory(id: state.storyId!)
                           .then((Story? story) {
                         if (story == null) {

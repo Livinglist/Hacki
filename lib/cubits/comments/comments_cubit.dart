@@ -32,7 +32,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     required CommentsOrder defaultCommentsOrder,
     CommentCache? commentCache,
     OfflineRepository? offlineRepository,
-    StoriesRepository? storiesRepository,
+    HackerNewsRepository? hackerNewsRepository,
     SembastRepository? sembastRepository,
     Logger? logger,
   })  : _filterCubit = filterCubit,
@@ -40,8 +40,8 @@ class CommentsCubit extends Cubit<CommentsState> {
         _commentCache = commentCache ?? locator.get<CommentCache>(),
         _offlineRepository =
             offlineRepository ?? locator.get<OfflineRepository>(),
-        _storiesRepository =
-            storiesRepository ?? locator.get<StoriesRepository>(),
+        _hackerNewsRepository =
+            hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
         _sembastRepository =
             sembastRepository ?? locator.get<SembastRepository>(),
         _logger = logger ?? locator.get<Logger>(),
@@ -58,7 +58,7 @@ class CommentsCubit extends Cubit<CommentsState> {
   final CollapseCache _collapseCache;
   final CommentCache _commentCache;
   final OfflineRepository _offlineRepository;
-  final StoriesRepository _storiesRepository;
+  final HackerNewsRepository _hackerNewsRepository;
   final SembastRepository _sembastRepository;
   final Logger _logger;
 
@@ -96,7 +96,7 @@ class CommentsCubit extends Cubit<CommentsState> {
         ),
       );
 
-      _streamSubscription = _storiesRepository
+      _streamSubscription = _hackerNewsRepository
           .fetchAllCommentsRecursivelyStream(
             ids: targetAncestors!.last.kids,
             level: targetAncestors.last.level + 1,
@@ -122,7 +122,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     final Item item = state.item;
     final Item updatedItem = state.isOfflineReading
         ? item
-        : await _storiesRepository
+        : await _hackerNewsRepository
                 .fetchItem(id: item.id)
                 .then(_toBuildable)
                 .onError((_, __) => item) ??
@@ -138,12 +138,13 @@ class CommentsCubit extends Cubit<CommentsState> {
     } else {
       switch (state.fetchMode) {
         case FetchMode.lazy:
-          commentStream = _storiesRepository.fetchCommentsStream(
+          commentStream = _hackerNewsRepository.fetchCommentsStream(
             ids: kids,
             getFromCache: useCommentCache ? _commentCache.getComment : null,
           );
         case FetchMode.eager:
-          commentStream = _storiesRepository.fetchAllCommentsRecursivelyStream(
+          commentStream =
+              _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
             ids: kids,
             getFromCache: useCommentCache ? _commentCache.getComment : null,
           );
@@ -190,16 +191,16 @@ class CommentsCubit extends Cubit<CommentsState> {
 
     final Item item = state.item;
     final Item updatedItem =
-        await _storiesRepository.fetchItem(id: item.id) ?? item;
+        await _hackerNewsRepository.fetchItem(id: item.id) ?? item;
     final List<int> kids = _sortKids(updatedItem.kids);
 
     late final Stream<Comment> commentStream;
     if (state.fetchMode == FetchMode.lazy) {
-      commentStream = _storiesRepository.fetchCommentsStream(
+      commentStream = _hackerNewsRepository.fetchCommentsStream(
         ids: kids,
       );
     } else {
-      commentStream = _storiesRepository.fetchAllCommentsRecursivelyStream(
+      commentStream = _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
         ids: kids,
       );
     }
@@ -248,7 +249,7 @@ class CommentsCubit extends Cubit<CommentsState> {
         /// Ignoring because the subscription will be cancelled in close()
         // ignore: cancel_subscriptions
         final StreamSubscription<Comment> streamSubscription =
-            _storiesRepository
+            _hackerNewsRepository
                 .fetchCommentsStream(ids: comment.kids)
                 .asyncMap(_toBuildableComment)
                 .whereNotNull()
@@ -297,7 +298,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     HapticFeedbackUtil.light();
     emit(state.copyWith(fetchParentStatus: CommentsStatus.inProgress));
     final Item? parent =
-        await _storiesRepository.fetchItem(id: state.item.parent);
+        await _hackerNewsRepository.fetchItem(id: state.item.parent);
 
     if (parent == null) {
       return;
@@ -318,7 +319,7 @@ class CommentsCubit extends Cubit<CommentsState> {
   Future<void> loadRootThread() async {
     HapticFeedbackUtil.light();
     emit(state.copyWith(fetchRootStatus: CommentsStatus.inProgress));
-    final Story? parent = await _storiesRepository
+    final Story? parent = await _hackerNewsRepository
         .fetchParentStory(id: state.item.id)
         .then(_toBuildableStory);
 

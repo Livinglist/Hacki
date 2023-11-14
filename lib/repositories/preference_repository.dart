@@ -384,7 +384,7 @@ class PreferenceRepository {
     );
   }
 
-  Future<void> updateHasRead(int storyId) async {
+  Future<void> addHasRead(int storyId) async {
     final String key = _getHasReadKey(storyId);
     if (Platform.isIOS) {
       await _syncedPrefs.setBool(key: key, val: true);
@@ -395,6 +395,17 @@ class PreferenceRepository {
         _getHasReadKey(storyId),
         true,
       );
+    }
+  }
+
+  Future<void> removeHasRead(int storyId) async {
+    final String key = _getHasReadKey(storyId);
+    if (Platform.isIOS) {
+      await _syncedPrefs.remove(key: key);
+    } else {
+      final SharedPreferences prefs = await _prefs;
+
+      await prefs.remove(_getHasReadKey(storyId));
     }
   }
 

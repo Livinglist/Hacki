@@ -253,7 +253,7 @@ class _HomeScreenState extends State<HomeScreen>
     final int? id = event.itemId;
 
     if (id != null) {
-      locator.get<StoriesRepository>().fetchItem(id: id).then((Item? item) {
+      locator.get<HackerNewsRepository>().fetchItem(id: id).then((Item? item) {
         if (mounted) {
           if (item != null) {
             goToItemScreen(
@@ -272,7 +272,7 @@ class _HomeScreenState extends State<HomeScreen>
     if (storyId == null) return;
 
     await locator
-        .get<StoriesRepository>()
+        .get<HackerNewsRepository>()
         .fetchStory(id: storyId)
         .then((Story? story) {
       if (story == null) {
@@ -297,7 +297,7 @@ class _HomeScreenState extends State<HomeScreen>
       context.read<NotificationCubit>().markAsRead(commentId);
 
       await locator
-          .get<StoriesRepository>()
+          .get<HackerNewsRepository>()
           .fetchStory(id: storyId)
           .then((Story? story) {
         if (story == null) {

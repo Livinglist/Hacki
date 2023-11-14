@@ -19,15 +19,15 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     required PreferenceCubit preferenceCubit,
     required FilterCubit filterCubit,
     OfflineRepository? offlineRepository,
-    StoriesRepository? storiesRepository,
+    HackerNewsRepository? hackerNewsRepository,
     PreferenceRepository? preferenceRepository,
     Logger? logger,
   })  : _preferenceCubit = preferenceCubit,
         _filterCubit = filterCubit,
         _offlineRepository =
             offlineRepository ?? locator.get<OfflineRepository>(),
-        _storiesRepository =
-            storiesRepository ?? locator.get<StoriesRepository>(),
+        _hackerNewsRepository =
+            hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
         _preferenceRepository =
             preferenceRepository ?? locator.get<PreferenceRepository>(),
         _logger = logger ?? locator.get<Logger>(),
@@ -37,6 +37,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     on<StoriesLoadMore>(onLoadMore);
     on<StoryLoaded>(onStoryLoaded);
     on<StoryRead>(onStoryRead);
+    on<StoryUnread>(onStoryUnread);
     on<StoriesLoaded>(onStoriesLoaded);
     on<StoriesDownload>(onDownload);
     on<StoriesCancelDownload>(onCancelDownload);
@@ -49,7 +50,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   final PreferenceCubit _preferenceCubit;
   final FilterCubit _filterCubit;
   final OfflineRepository _offlineRepository;
-  final StoriesRepository _storiesRepository;
+  final HackerNewsRepository _hackerNewsRepository;
   final PreferenceRepository _preferenceRepository;
   final Logger _logger;
   DeviceScreenType? deviceScreenType;
@@ -113,13 +114,14 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         add(StoriesLoaded(type: type));
       });
     } else {
-      final List<int> ids = await _storiesRepository.fetchStoryIds(type: type);
+      final List<int> ids =
+          await _hackerNewsRepository.fetchStoryIds(type: type);
       emit(
         state
             .copyWithStoryIdsUpdated(type: type, to: ids)
             .copyWithCurrentPageUpdated(type: type, to: 0),
       );
-      _storiesRepository
+      _hackerNewsRepository
           .fetchStoriesStream(ids: ids.sublist(0, state.currentPageSize))
           .listen((Story story) {
         add(StoryLoaded(story: story, type: type));
@@ -196,7 +198,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
           add(StoriesLoaded(type: event.type));
         });
       } else {
-        _storiesRepository
+        _hackerNewsRepository
             .fetchStoriesStream(
           ids: state.storyIdsByType[event.type]!.sublist(
             lower,
@@ -273,7 +275,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       ..remove(StoryType.latest);
 
     for (final StoryType type in prioritizedTypes) {
-      final List<int> ids = await _storiesRepository.fetchStoryIds(type: type);
+      final List<int> ids =
+          await _hackerNewsRepository.fetchStoryIds(type: type);
       await _offlineRepository.cacheStoryIds(type: type, ids: ids);
       prioritizedIds.addAll(ids);
     }
@@ -293,7 +296,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       );
 
       final Set<int> latestIds = <int>{};
-      final List<int> ids = await _storiesRepository.fetchStoryIds(
+      final List<int> ids = await _hackerNewsRepository.fetchStoryIds(
         type: StoryType.latest,
       );
       await _offlineRepository.cacheStoryIds(type: StoryType.latest, ids: ids);
@@ -347,7 +350,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       }
 
       _logger.d('fetching story $id');
-      final Story? story = await _storiesRepository.fetchStory(id: id);
+      final Story? story = await _hackerNewsRepository.fetchStory(id: id);
 
       if (story == null) {
         if (isPrioritized) {
@@ -377,7 +380,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       /// In other words, we are prioritizing the story itself instead of
       /// the comments in the story.
       late final StreamSubscription<Comment>? downloadStream;
-      downloadStream = _storiesRepository
+      downloadStream = _hackerNewsRepository
           .fetchAllChildrenComments(ids: story.kids)
           .whereType<Comment>()
           .listen(
@@ -460,11 +463,24 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     StoryRead event,
     Emitter<StoriesState> emit,
   ) async {
-    unawaited(_preferenceRepository.updateHasRead(event.story.id));
+    unawaited(_preferenceRepository.addHasRead(event.story.id));
 
     emit(
       state.copyWith(
         readStoriesIds: <int>{...state.readStoriesIds, event.story.id},
+      ),
+    );
+  }
+
+  Future<void> onStoryUnread(
+    StoryUnread event,
+    Emitter<StoriesState> emit,
+  ) async {
+    unawaited(_preferenceRepository.removeHasRead(event.story.id));
+
+    emit(
+      state.copyWith(
+        readStoriesIds: <int>{...state.readStoriesIds}..remove(event.story.id),
       ),
     );
   }

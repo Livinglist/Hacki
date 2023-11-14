@@ -11,13 +11,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({
     AuthRepository? authRepository,
     PreferenceRepository? preferenceRepository,
-    StoriesRepository? storiesRepository,
+    HackerNewsRepository? hackerNewsRepository,
     SembastRepository? sembastRepository,
   })  : _authRepository = authRepository ?? locator.get<AuthRepository>(),
         _preferenceRepository =
             preferenceRepository ?? locator.get<PreferenceRepository>(),
-        _storiesRepository =
-            storiesRepository ?? locator.get<StoriesRepository>(),
+        _hackerNewsRepository =
+            hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
         _sembastRepository =
             sembastRepository ?? locator.get<SembastRepository>(),
         super(const AuthState.init()) {
@@ -31,7 +31,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   final AuthRepository _authRepository;
   final PreferenceRepository _preferenceRepository;
-  final StoriesRepository _storiesRepository;
+  final HackerNewsRepository _hackerNewsRepository;
   final SembastRepository _sembastRepository;
 
   Future<void> onInitialize(
@@ -41,7 +41,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     await _authRepository.loggedIn.then((bool loggedIn) async {
       if (loggedIn) {
         final String? username = await _authRepository.username;
-        User? user = await _storiesRepository.fetchUser(id: username!);
+        User? user = await _hackerNewsRepository.fetchUser(id: username!);
 
         /// According to Hacker News' API documentation,
         /// if user has no public activity (posting a comment or story),
@@ -89,7 +89,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
 
     if (successful) {
-      final User? user = await _storiesRepository.fetchUser(id: event.username);
+      final User? user =
+          await _hackerNewsRepository.fetchUser(id: event.username);
       emit(
         state.copyWith(
           user: user ?? User.emptyWithId(event.username),

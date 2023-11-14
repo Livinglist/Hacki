@@ -378,7 +378,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   void onCommentTapped(Comment comment, {VoidCallback? then}) {
     throttle.run(() {
       locator
-          .get<StoriesRepository>()
+          .get<HackerNewsRepository>()
           .fetchParentStoryWithComments(id: comment.parent)
           .then(((Story, List<Comment>)? res) {
         if (res != null && mounted) {

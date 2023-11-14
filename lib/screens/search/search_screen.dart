@@ -317,6 +317,9 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                         label: filter.query,
                                       ),
                                     ],
+                                    const SizedBox(
+                                      width: Dimens.pt8,
+                                    ),
                                   ],
                                 ),
                               ),

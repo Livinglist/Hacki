@@ -52,7 +52,10 @@ abstract class LinkUtil {
     if (useHackiForHnLink && link.isStoryLink) {
       final int? id = link.itemId;
       if (id != null) {
-        locator.get<StoriesRepository>().fetchItem(id: id).then((Item? item) {
+        locator
+            .get<HackerNewsRepository>()
+            .fetchItem(id: id)
+            .then((Item? item) {
           if (item != null) {
             router.push(
               '/${ItemScreen.routeName}',

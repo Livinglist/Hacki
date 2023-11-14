@@ -146,6 +146,7 @@ class _StoriesListViewState extends State<StoriesListView>
               onMoreTapped: onMoreTapped,
               itemBuilder: (Widget child, Story story) {
                 return Slidable(
+                  key: ValueKey<Story>(story),
                   enabled: !preferenceState.swipeGestureEnabled,
                   startActionPane: ActionPane(
                     motion: const BehindMotion(),
@@ -176,6 +177,31 @@ class _StoriesListViewState extends State<StoriesListView>
                         label: preferenceState.complexStoryTileEnabled
                             ? null
                             : 'More',
+                      ),
+                    ],
+                  ),
+                  endActionPane: ActionPane(
+                    motion: const BehindMotion(),
+                    dismissible: DismissiblePane(
+                      closeOnCancel: true,
+                      confirmDismiss: () async {
+                        mark(story);
+                        return false;
+                      },
+                      onDismissed: () {},
+                    ),
+                    children: <Widget>[
+                      SlidableAction(
+                        onPressed: (_) {
+                          HapticFeedbackUtil.light();
+                          mark(story);
+                        },
+                        backgroundColor: Theme.of(context).primaryColor,
+                        foregroundColor:
+                            Theme.of(context).colorScheme.onPrimary,
+                        icon: state.readStoriesIds.contains(story.id)
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
                     ],
                   ),
@@ -210,6 +236,15 @@ class _StoriesListViewState extends State<StoriesListView>
         );
       },
     );
+  }
+
+  void mark(Story story) {
+    final StoriesBloc storiesBloc = context.read<StoriesBloc>();
+    if (storiesBloc.state.readStoriesIds.contains(story.id)) {
+      context.read<StoriesBloc>().add(StoryUnread(story: story));
+    } else {
+      context.read<StoriesBloc>().add(StoryRead(story: story));
+    }
   }
 
   void loadMoreStories() =>

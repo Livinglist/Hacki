@@ -24,7 +24,7 @@ Future<void> setUpLocator() async {
       ),
     )
     ..registerSingleton<SembastRepository>(SembastRepository())
-    ..registerSingleton<StoriesRepository>(StoriesRepository())
+    ..registerSingleton<HackerNewsRepository>(HackerNewsRepository())
     ..registerSingleton<PreferenceRepository>(PreferenceRepository())
     ..registerSingleton<SearchRepository>(SearchRepository())
     ..registerSingleton<AuthRepository>(AuthRepository())
