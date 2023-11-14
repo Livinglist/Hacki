@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
@@ -30,7 +31,10 @@ class PinCubit extends Cubit<PinState> {
     }).whenComplete(() => emit(state.copyWith(status: Status.success)));
   }
 
-  void pinStory(Story story) {
+  void pinStory(
+    Story story, {
+    VoidCallback? onDone,
+  }) {
     if (!state.pinnedStoriesIds.contains(story.id)) {
       emit(
         state.copyWith(
@@ -39,10 +43,14 @@ class PinCubit extends Cubit<PinState> {
         ),
       );
       _preferenceRepository.updatePinnedStoriesIds(state.pinnedStoriesIds);
+      onDone?.call();
     }
   }
 
-  void unpinStory(Story story) {
+  void unpinStory(
+    Story story, {
+    VoidCallback? onDone,
+  }) {
     emit(
       state.copyWith(
         pinnedStoriesIds: <int>[...state.pinnedStoriesIds]..remove(story.id),
@@ -50,6 +58,7 @@ class PinCubit extends Cubit<PinState> {
       ),
     );
     _preferenceRepository.updatePinnedStoriesIds(state.pinnedStoriesIds);
+    onDone?.call();
   }
 
   void refresh() {
