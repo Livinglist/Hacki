@@ -1,7 +1,10 @@
 import 'package:flutter/foundation.dart';
+import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
+import 'package:logger/logger.dart';
 
 /// [StoriesRepository] is for fetching
 /// [Item] such as [Story], [PollOption], [Comment] or [User].
@@ -11,9 +14,16 @@ import 'package:hacki/utils/utils.dart';
 class StoriesRepository {
   StoriesRepository({
     FirebaseClient? firebaseClient,
-  }) : _firebaseClient = firebaseClient ?? FirebaseClient.anonymous();
+    SembastRepository? sembastRepository,
+    Logger? logger,
+  })  : _firebaseClient = firebaseClient ?? FirebaseClient.anonymous(),
+        _sembastRepository =
+            sembastRepository ?? locator.get<SembastRepository>(),
+        _logger = logger ?? locator.get<Logger>();
 
   final FirebaseClient _firebaseClient;
+  final SembastRepository _sembastRepository;
+  final Logger _logger;
   static const String _baseUrl = 'https://hacker-news.firebaseio.com/v0/';
 
   Future<Map<String, dynamic>?> _fetchItemJson(int id) async {
@@ -227,6 +237,9 @@ class StoriesRepository {
 
         final Comment comment = Comment.fromJson(json, level: level);
         return comment;
+      }).onError((Object? error, StackTrace stackTrace) {
+        _logger.e(error, stackTrace: stackTrace);
+        return _sembastRepository.getCachedComment(id: id);
       });
 
       if (comment != null) {
@@ -252,6 +265,9 @@ class StoriesRepository {
 
         final Comment comment = Comment.fromJson(json, level: level);
         return comment;
+      }).onError((Object? error, StackTrace stackTrace) {
+        _logger.e(error, stackTrace: stackTrace);
+        return _sembastRepository.getCachedComment(id: id);
       });
 
       if (comment != null) {

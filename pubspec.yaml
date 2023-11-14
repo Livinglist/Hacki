@@ -1,6 +1,6 @@
 name: hacki
 description: A Hacker News reader.
-version: 2.3.1+130
+version: 2.3.2+131
 publish_to: none
 
 environment:
@@ -67,7 +67,7 @@ dependencies:
   responsive_builder: ^0.7.0
   rxdart: ^0.27.7
   scrollable_positioned_list: ^0.3.5
-  sembast: ^3.4.0+6
+  sembast: ^3.5.0+1
   share_plus: ^7.2.1
   shared_preferences: ^2.2.2
   shared_preferences_android: ^2.2.1

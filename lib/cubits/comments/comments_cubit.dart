@@ -122,7 +122,10 @@ class CommentsCubit extends Cubit<CommentsState> {
     final Item item = state.item;
     final Item updatedItem = state.isOfflineReading
         ? item
-        : await _storiesRepository.fetchItem(id: item.id).then(_toBuildable) ??
+        : await _storiesRepository
+                .fetchItem(id: item.id)
+                .then(_toBuildable)
+                .onError((_, __) => item) ??
             item;
     final List<int> kids = _sortKids(updatedItem.kids);
 
@@ -254,12 +257,17 @@ class CommentsCubit extends Cubit<CommentsState> {
           _commentCache.cacheComment(cmt);
           _sembastRepository.cacheComment(cmt);
 
+          final Map<int, Comment> updatedIdToCommentMap =
+              Map<int, Comment>.from(state.idToCommentMap);
+          updatedIdToCommentMap[comment.id] = comment;
+
           emit(
             state.copyWith(
               comments: <Comment>[...state.comments]..insert(
                   state.comments.indexOf(comment) + offset + 1,
                   cmt.copyWith(level: level),
                 ),
+              idToCommentMap: updatedIdToCommentMap,
             ),
           );
           offset++;

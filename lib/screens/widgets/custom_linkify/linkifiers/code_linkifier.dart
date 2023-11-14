@@ -42,7 +42,8 @@ class CodeLinkifier extends Linkifier {
               added = true;
               final String trimmedText = matchedText
                   .replaceFirst(_openTag, '')
-                  .replaceFirst(_closeTag, '');
+                  .replaceFirst(_closeTag, '')
+                  .replaceAll('\n\n', '\n');
               list.add(CodeElement(trimmedText));
             }
           }
