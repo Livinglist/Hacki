@@ -6,13 +6,13 @@ import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:logger/logger.dart';
 
-/// [StoriesRepository] is for fetching
+/// [HackerNewsRepository] is for fetching
 /// [Item] such as [Story], [PollOption], [Comment] or [User].
 ///
 /// You can learn more about the Hacker News API at
 /// https://github.com/HackerNews/API.
-class StoriesRepository {
-  StoriesRepository({
+class HackerNewsRepository {
+  HackerNewsRepository({
     FirebaseClient? firebaseClient,
     SembastRepository? sembastRepository,
     Logger? logger,

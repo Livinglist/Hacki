@@ -288,14 +288,14 @@ class WebAnalyzer {
   }
 
   static Future<String?> _fetchInfoFromStory(List<int> meta) async {
-    final StoriesRepository storiesRepository = StoriesRepository();
+    final HackerNewsRepository hackerNewsRepository = HackerNewsRepository();
     final int storyId = meta.first;
     List<int> kids = meta.sublist(1, meta.length);
 
     // Kids of stories from search results are always empty, so here we try
     // to fetch the story itself first and see if the kids are still empty.
     if (kids.isEmpty) {
-      final Story? story = await storiesRepository.fetchStory(id: storyId);
+      final Story? story = await hackerNewsRepository.fetchStory(id: storyId);
 
       if (story == null) return null;
 
@@ -305,7 +305,7 @@ class WebAnalyzer {
     }
 
     final Comment? comment =
-        await storiesRepository.fetchComment(id: kids.first);
+        await hackerNewsRepository.fetchComment(id: kids.first);
 
     return comment != null ? '${comment.by}: ${comment.text}' : null;
   }

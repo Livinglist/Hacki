@@ -10,16 +10,16 @@ part 'history_state.dart';
 class HistoryCubit extends Cubit<HistoryState> {
   HistoryCubit({
     required AuthBloc authBloc,
-    StoriesRepository? storiesRepository,
+    HackerNewsRepository? hackerNewsRepository,
   })  : _authBloc = authBloc,
-        _storiesRepository =
-            storiesRepository ?? locator.get<StoriesRepository>(),
+        _hackerNewsRepository =
+            hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
         super(HistoryState.init()) {
     init();
   }
 
   final AuthBloc _authBloc;
-  final StoriesRepository _storiesRepository;
+  final HackerNewsRepository _hackerNewsRepository;
   static const int _pageSize = 20;
 
   void init() {
@@ -27,7 +27,7 @@ class HistoryCubit extends Cubit<HistoryState> {
       if (authState.isLoggedIn) {
         final String username = authState.username;
 
-        _storiesRepository
+        _hackerNewsRepository
             .fetchSubmitted(userId: username)
             .then((List<int>? submittedIds) {
           emit(
@@ -38,7 +38,7 @@ class HistoryCubit extends Cubit<HistoryState> {
             ),
           );
           if (submittedIds != null) {
-            _storiesRepository
+            _hackerNewsRepository
                 .fetchItemsStream(
                   ids: submittedIds.sublist(
                     0,
@@ -66,7 +66,7 @@ class HistoryCubit extends Cubit<HistoryState> {
         upper = len;
       }
 
-      _storiesRepository
+      _hackerNewsRepository
           .fetchItemsStream(
             ids: state.submittedIds.sublist(
               lower,
@@ -93,12 +93,12 @@ class HistoryCubit extends Cubit<HistoryState> {
       ),
     );
 
-    _storiesRepository
+    _hackerNewsRepository
         .fetchSubmitted(userId: username)
         .then((List<int>? submittedIds) {
       emit(state.copyWith(submittedIds: submittedIds));
       if (submittedIds != null) {
-        _storiesRepository
+        _hackerNewsRepository
             .fetchItemsStream(
               ids: submittedIds.sublist(
                 0,

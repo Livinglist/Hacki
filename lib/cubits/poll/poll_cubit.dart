@@ -11,13 +11,13 @@ part 'poll_state.dart';
 class PollCubit extends Cubit<PollState> {
   PollCubit({
     required Story story,
-    StoriesRepository? storiesRepository,
+    HackerNewsRepository? hackerNewsRepository,
   })  : _story = story,
-        _storiesRepository =
-            storiesRepository ?? locator.get<StoriesRepository>(),
+        _hackerNewsRepository =
+            hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
         super(PollState.init());
 
-  final StoriesRepository _storiesRepository;
+  final HackerNewsRepository _hackerNewsRepository;
   final Story _story;
 
   Future<void> init({
@@ -33,7 +33,7 @@ class PollCubit extends Cubit<PollState> {
 
     if (pollOptionsIds.isEmpty || refresh) {
       final Story? updatedStory =
-          await _storiesRepository.fetchStory(id: _story.id);
+          await _hackerNewsRepository.fetchStory(id: _story.id);
 
       if (updatedStory != null) {
         pollOptionsIds = updatedStory.parts;
@@ -47,7 +47,7 @@ class PollCubit extends Cubit<PollState> {
     }
 
     if (pollOptionsIds.isNotEmpty) {
-      final List<PollOption> pollOptions = (await _storiesRepository
+      final List<PollOption> pollOptions = (await _hackerNewsRepository
               .fetchPollOptionsStream(ids: pollOptionsIds)
               .toSet())
           .toList();

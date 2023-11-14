@@ -10,24 +10,26 @@ part 'pin_state.dart';
 class PinCubit extends Cubit<PinState> {
   PinCubit({
     PreferenceRepository? preferenceRepository,
-    StoriesRepository? storiesRepository,
+    HackerNewsRepository? hackerNewsRepository,
   })  : _preferenceRepository =
             preferenceRepository ?? locator.get<PreferenceRepository>(),
-        _storiesRepository =
-            storiesRepository ?? locator.get<StoriesRepository>(),
+        _hackerNewsRepository =
+            hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
         super(PinState.init()) {
     init();
   }
 
   final PreferenceRepository _preferenceRepository;
-  final StoriesRepository _storiesRepository;
+  final HackerNewsRepository _hackerNewsRepository;
 
   void init() {
     emit(PinState.init());
     _preferenceRepository.pinnedStoriesIds.then((List<int> ids) {
       emit(state.copyWith(pinnedStoriesIds: ids));
 
-      _storiesRepository.fetchStoriesStream(ids: ids).listen(_onStoryFetched);
+      _hackerNewsRepository
+          .fetchStoriesStream(ids: ids)
+          .listen(_onStoryFetched);
     }).whenComplete(() => emit(state.copyWith(status: Status.success)));
   }
 

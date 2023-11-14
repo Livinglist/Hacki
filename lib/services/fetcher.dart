@@ -44,7 +44,7 @@ abstract class Fetcher {
       logger: logger,
     );
 
-    final StoriesRepository storiesRepository = StoriesRepository();
+    final HackerNewsRepository hackerNewsRepository = HackerNewsRepository();
     final SembastRepository sembastRepository = SembastRepository();
 
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -57,7 +57,7 @@ abstract class Fetcher {
 
     Comment? newReply;
 
-    await storiesRepository
+    await hackerNewsRepository
         .fetchSubmitted(userId: username)
         .then((List<int>? submittedItems) async {
       if (submittedItems != null) {
@@ -67,7 +67,9 @@ abstract class Fetcher {
         );
 
         for (final int id in subscribedItems) {
-          await storiesRepository.fetchRawItem(id: id).then((Item? item) async {
+          await hackerNewsRepository
+              .fetchRawItem(id: id)
+              .then((Item? item) async {
             final List<int> kids = item?.kids ?? <int>[];
             final List<int> previousKids =
                 (await sembastRepository.kids(of: id)) ?? <int>[];
@@ -81,7 +83,7 @@ abstract class Fetcher {
               for (final int newCommentId in diff) {
                 if (unreadIds.contains(newCommentId)) continue;
 
-                await storiesRepository
+                await hackerNewsRepository
                     .fetchRawComment(id: newCommentId)
                     .then((Comment? comment) async {
                   final bool hasPushedBefore =
@@ -113,7 +115,7 @@ abstract class Fetcher {
     // pushed before.
     if (newReply != null) {
       final Story? story =
-          await storiesRepository.fetchRawParentStory(id: newReply!.id);
+          await hackerNewsRepository.fetchRawParentStory(id: newReply!.id);
       final String text = HtmlUtil.parseHtml(newReply!.text);
 
       if (story != null) {
