@@ -12,6 +12,7 @@ import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
@@ -23,6 +24,7 @@ class ItemScreenArgs extends Equatable {
   const ItemScreenArgs({
     required this.item,
     this.onlyShowTargetComment = false,
+    this.useCommentCache = false,
     this.targetComments,
   });
 
@@ -30,11 +32,17 @@ class ItemScreenArgs extends Equatable {
   final bool onlyShowTargetComment;
   final List<Comment>? targetComments;
 
+  /// when the user is trying to view a sub-thread from a main thread, we don't
+  /// need to fetch comments from [StoriesRepository] since we have some, if not
+  /// all, comments cached in [CommentCache].
+  final bool useCommentCache;
+
   @override
   List<Object?> get props => <Object?>[
         item,
         onlyShowTargetComment,
         targetComments,
+        useCommentCache,
       ];
 }
 
@@ -66,6 +74,7 @@ class ItemScreen extends StatefulWidget {
             )..init(
                 onlyShowTargetComment: args.onlyShowTargetComment,
                 targetAncestors: args.targetComments,
+                useCommentCache: args.useCommentCache,
               ),
           ),
         ],
@@ -439,6 +448,7 @@ class _ItemScreenState extends State<ItemScreen>
                   goToItemScreen(
                     args: ItemScreenArgs(
                       item: comment,
+                      useCommentCache: true,
                     ),
                     forceNewScreen: true,
                   );

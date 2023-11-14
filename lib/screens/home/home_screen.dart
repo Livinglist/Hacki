@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_siri_suggestions/flutter_siri_suggestions.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
@@ -18,8 +19,10 @@ import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/home/widgets/widgets.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
+import 'package:logger/logger.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
@@ -40,6 +43,19 @@ class _HomeScreenState extends State<HomeScreen>
   late final StreamSubscription<String?> siriSuggestionStreamSubscription;
 
   static final int tabLength = StoryType.values.length + 1;
+
+  @override
+  void didPopNext() {
+    super.didPopNext();
+    if (context.read<StoriesBloc>().deviceScreenType ==
+        DeviceScreenType.mobile) {
+      locator.get<Logger>().i('Resetting comments in CommentCache');
+      Future<void>.delayed(
+        Durations.ms500,
+        locator.get<CommentCache>().resetComments,
+      );
+    }
+  }
 
   @override
   void initState() {
