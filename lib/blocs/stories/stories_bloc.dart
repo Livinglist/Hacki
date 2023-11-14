@@ -37,6 +37,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     on<StoriesLoadMore>(onLoadMore);
     on<StoryLoaded>(onStoryLoaded);
     on<StoryRead>(onStoryRead);
+    on<StoryUnread>(onStoryUnread);
     on<StoriesLoaded>(onStoriesLoaded);
     on<StoriesDownload>(onDownload);
     on<StoriesCancelDownload>(onCancelDownload);
@@ -460,11 +461,24 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     StoryRead event,
     Emitter<StoriesState> emit,
   ) async {
-    unawaited(_preferenceRepository.updateHasRead(event.story.id));
+    unawaited(_preferenceRepository.addHasRead(event.story.id));
 
     emit(
       state.copyWith(
         readStoriesIds: <int>{...state.readStoriesIds, event.story.id},
+      ),
+    );
+  }
+
+  Future<void> onStoryUnread(
+    StoryUnread event,
+    Emitter<StoriesState> emit,
+  ) async {
+    unawaited(_preferenceRepository.removeHasRead(event.story.id));
+
+    emit(
+      state.copyWith(
+        readStoriesIds: <int>{...state.readStoriesIds}..remove(event.story.id),
       ),
     );
   }

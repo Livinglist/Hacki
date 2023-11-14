@@ -76,6 +76,15 @@ final class SharedPrefsCore {
 
         return true
     }
+
+    fileprivate func remove(key: String?) -> Bool{
+        if let key = key {
+            let keyStore = NSUbiquitousKeyValueStore()
+            keyStore.removeObject(forKey: key)
+        }
+
+        return true
+    }
 }
 
 public class SwiftSyncedSharedPreferencesPlugin: NSObject, FlutterPlugin {
@@ -87,6 +96,14 @@ public class SwiftSyncedSharedPreferencesPlugin: NSObject, FlutterPlugin {
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
+        case "remove":
+            if let params  = call.arguments as? [String: Any] {
+                let key = params[keyKey] as? String
+
+                let res = SharedPrefsCore.shared.remove(key: key)
+                result(res)
+            }
+
         case "setBool":
             if let params  = call.arguments as? [String: Any] {
                 let val = params[valKey] as? Bool
