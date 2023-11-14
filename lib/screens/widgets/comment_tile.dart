@@ -289,7 +289,7 @@ class CommentTile extends StatelessWidget {
           );
 
           final double commentBackgroundColorOpacity =
-              Theme.of(context).brightness == Brightness.dark ? 0.03 : 0.15;
+              Theme.of(context).canvasColor != Palette.white ? 0.03 : 0.15;
 
           final Color commentColor = prefState.eyeCandyEnabled
               ? color.withOpacity(commentBackgroundColorOpacity)
