@@ -363,12 +363,28 @@ class HackerNewsRepository {
     Map<String, dynamic>? json,
   ) async {
     if (json == null) return null;
-    final String text = json['text'] as String? ?? '';
-    final String parsedText = await compute<String, String>(
-      HtmlUtil.parseHtml,
-      text,
-    );
-    json['text'] = parsedText;
+    final int? itemId = json['id'] as int?;
+    final String? type = json['type'] as String?;
+
+    String? cachedText;
+    if (itemId != null && type == 'comment') {
+      cachedText =
+          (await locator.get<SembastRepository>().getCachedComment(id: itemId))
+              ?.text;
+    }
+
+    if (cachedText == null || cachedText == '[delayed]') {
+      final String? text = json['text'] as String?;
+      if (text == null || text.isEmpty) return json;
+      final String parsedText = await compute<String, String>(
+        HtmlUtil.parseHtml,
+        text,
+      );
+      json['text'] = parsedText;
+    } else {
+      json['text'] = cachedText;
+    }
+
     return json;
   }
 }
