@@ -192,11 +192,10 @@ class _StoriesListViewState extends State<StoriesListView>
                     ),
                     children: <Widget>[
                       SlidableAction(
-                        onPressed: (_) {
-                          HapticFeedbackUtil.light();
-                          mark(story);
-                        },
-                        backgroundColor: Theme.of(context).primaryColor,
+                        onPressed: (_) => mark(story),
+                        backgroundColor: preferenceState.markReadStoriesEnabled
+                            ? Theme.of(context).primaryColor
+                            : Palette.grey,
                         foregroundColor:
                             Theme.of(context).colorScheme.onPrimary,
                         icon: state.readStoriesIds.contains(story.id)
@@ -239,6 +238,7 @@ class _StoriesListViewState extends State<StoriesListView>
   }
 
   void mark(Story story) {
+    HapticFeedbackUtil.light();
     final StoriesBloc storiesBloc = context.read<StoriesBloc>();
     final bool markReadStoriesEnabled =
         context.read<PreferenceCubit>().state.markReadStoriesEnabled;
@@ -248,6 +248,8 @@ class _StoriesListViewState extends State<StoriesListView>
       } else {
         storiesBloc.add(StoryRead(story: story));
       }
+    } else {
+      context.showSnackBar(content: 'Read story marking is disabled.');
     }
   }
 
