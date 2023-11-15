@@ -7,7 +7,7 @@ enum StoryMarkingMode {
   // Mark a story as read after user scrolls past or taps on it, whichever
   // happens the first.
   scrollPastOrTap('scrolling past or tapping'),
-  none('swipe gesture only');
+  swipeGestureOnly('swipe gesture only');
 
   const StoryMarkingMode(this.label);
 
