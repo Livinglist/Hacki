@@ -1,0 +1,4 @@
+- New comment indicator.
+- Ability to mark stories as read from home page.
+- Text rendering improvements.
+- Performance improvements.
