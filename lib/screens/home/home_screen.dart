@@ -196,12 +196,13 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void onStoryTapped(Story story) {
-    final bool useReader = context.read<PreferenceCubit>().state.readerEnabled;
+    final PreferenceState prefState = context.read<PreferenceCubit>().state;
+    final bool useReader = prefState.readerEnabled;
+    final StoryMarkingMode storyMarkingMode = prefState.storyMarkingMode;
     final bool offlineReading =
         context.read<StoriesBloc>().state.isOfflineReading;
     final bool splitViewEnabled = context.read<SplitViewCubit>().state.enabled;
-    final StoryMarkingMode storyMarkingMode =
-        context.read<PreferenceCubit>().state.storyMarkingMode;
+    final bool markReadStoriesEnabled = prefState.markReadStoriesEnabled;
 
     // If a story is a job story and it has a link to the job posting,
     // it would be better to just navigate to the web page.
@@ -210,10 +211,7 @@ class _HomeScreenState extends State<HomeScreen>
     if (isJobWithLink) {
       context.read<ReminderCubit>().removeLastReadStoryId();
     } else {
-      final bool shouldMarkNewComment = context
-              .read<PreferenceCubit>()
-              .state
-              .markReadStoriesEnabled &&
+      final bool shouldMarkNewComment = markReadStoriesEnabled &&
           context.read<StoriesBloc>().state.readStoriesIds.contains(story.id);
       final ItemScreenArgs args = ItemScreenArgs(
         item: story,
@@ -238,7 +236,7 @@ class _HomeScreenState extends State<HomeScreen>
       );
     }
 
-    if (storyMarkingMode.shouldDetectTapping) {
+    if (markReadStoriesEnabled && storyMarkingMode.shouldDetectTapping) {
       context.read<StoriesBloc>().add(StoryRead(story: story));
     }
 
