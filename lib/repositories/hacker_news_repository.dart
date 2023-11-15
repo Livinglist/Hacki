@@ -381,7 +381,17 @@ class HackerNewsRepository {
               ?.text;
     }
 
-    if (cachedText == null || cachedText == '[delayed]') {
+    bool isValid(String? text) {
+      return cachedText != null &&
+          cachedText != '[delayed]' &&
+          cachedText != '[flagged]';
+    }
+
+    if (isValid(cachedText)) {
+      json
+        ..text = cachedText
+        ..isFromCache = true;
+    } else {
       final String? text = json.text;
       if (text == null || text.isEmpty) return json;
       final String parsedText = await compute<String, String>(
@@ -389,10 +399,6 @@ class HackerNewsRepository {
         text,
       );
       json.text = parsedText;
-    } else {
-      json
-        ..text = cachedText
-        ..isFromCache = true;
     }
 
     return json;
