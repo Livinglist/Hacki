@@ -60,6 +60,7 @@ class SearchRepository {
           deleted: false,
           hidden: false,
           level: 0,
+          isFromCache: false,
         );
         yield comment;
       } else {

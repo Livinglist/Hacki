@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/models.dart';
@@ -44,11 +46,10 @@ class HackerNewsRepository {
         await _fetchItemJson(id).then((Map<String, dynamic>? json) {
       if (json == null) return null;
 
-      final String type = json['type'] as String;
-      if (type == 'story' || type == 'job' || type == 'poll') {
+      if (json.isStory) {
         final Story story = Story.fromJson(json);
         return story;
-      } else if (type == 'comment') {
+      } else if (json.isComment) {
         final Comment comment = Comment.fromJson(json);
         return comment;
       }
@@ -67,11 +68,10 @@ class HackerNewsRepository {
 
       final Map<String, dynamic> json = val as Map<String, dynamic>;
 
-      final String type = json['type'] as String;
-      if (type == 'story' || type == 'job' || type == 'poll') {
+      if (json.isStory) {
         final Story story = Story.fromJson(json);
         return story;
-      } else if (type == 'comment') {
+      } else if (json.isComment) {
         final Comment comment = Comment.fromJson(json);
         return comment;
       }
@@ -236,6 +236,11 @@ class HackerNewsRepository {
         if (json == null) return null;
 
         final Comment comment = Comment.fromJson(json, level: level);
+
+        if (!json.isFromCache) {
+          unawaited(_sembastRepository.cacheComment(comment));
+        }
+
         return comment;
       }).onError((Object? error, StackTrace stackTrace) {
         _logger.e(error, stackTrace: stackTrace);
@@ -266,6 +271,11 @@ class HackerNewsRepository {
         if (json == null) return null;
 
         final Comment comment = Comment.fromJson(json, level: level);
+
+        if (!json.isFromCache) {
+          unawaited(_sembastRepository.cacheComment(comment));
+        }
+
         return comment;
       }).onError((Object? error, StackTrace stackTrace) {
         _logger.e(error, stackTrace: stackTrace);
@@ -295,11 +305,10 @@ class HackerNewsRepository {
           await _fetchItemJson(id).then((Map<String, dynamic>? json) async {
         if (json == null) return null;
 
-        final String type = json['type'] as String;
-        if (type == 'story' || type == 'job') {
+        if (json.isStory) {
           final Story story = Story.fromJson(json);
           return story;
-        } else if (type == 'comment') {
+        } else if (json.isComment) {
           final Comment comment = Comment.fromJson(json);
           return comment;
         }
@@ -363,28 +372,51 @@ class HackerNewsRepository {
     Map<String, dynamic>? json,
   ) async {
     if (json == null) return null;
-    final int? itemId = json['id'] as int?;
-    final String? type = json['type'] as String?;
+    final int? itemId = json.itemId;
 
     String? cachedText;
-    if (itemId != null && type == 'comment') {
+    if (json.isComment && itemId != null) {
       cachedText =
           (await locator.get<SembastRepository>().getCachedComment(id: itemId))
               ?.text;
     }
 
     if (cachedText == null || cachedText == '[delayed]') {
-      final String? text = json['text'] as String?;
+      final String? text = json.text;
       if (text == null || text.isEmpty) return json;
       final String parsedText = await compute<String, String>(
         HtmlUtil.parseHtml,
         text,
       );
-      json['text'] = parsedText;
+      json.text = parsedText;
     } else {
-      json['text'] = cachedText;
+      json
+        ..text = cachedText
+        ..isFromCache = true;
     }
 
     return json;
   }
+}
+
+extension on Map<String, dynamic> {
+  bool get isFromCache => this['fromCache'] == true;
+
+  set isFromCache(bool value) {
+    this['fromCache'] = value;
+  }
+
+  String? get text => this['text'] as String?;
+
+  set text(String? value) {
+    this['text'] = value;
+  }
+
+  int? get itemId => this['id'] as int?;
+
+  String? get type => this['type'] as String?;
+
+  bool get isStory => type == 'story' || type == 'job' || type == 'poll';
+
+  bool get isComment => type == 'comment';
 }

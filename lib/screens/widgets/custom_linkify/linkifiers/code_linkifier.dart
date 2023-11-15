@@ -42,8 +42,7 @@ class CodeLinkifier extends Linkifier {
 
           String trimmedText = matchedText
               .replaceFirst(_openTag, '')
-              .replaceFirst(_closeTag, '')
-              .replaceAll('\n\n', '\n');
+              .replaceFirst(_closeTag, '');
           trimmedText = '$trimmedText\n\n';
 
           list

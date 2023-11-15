@@ -33,7 +33,6 @@ class CommentsCubit extends Cubit<CommentsState> {
     CommentCache? commentCache,
     OfflineRepository? offlineRepository,
     HackerNewsRepository? hackerNewsRepository,
-    SembastRepository? sembastRepository,
     Logger? logger,
   })  : _filterCubit = filterCubit,
         _collapseCache = collapseCache,
@@ -42,8 +41,6 @@ class CommentsCubit extends Cubit<CommentsState> {
             offlineRepository ?? locator.get<OfflineRepository>(),
         _hackerNewsRepository =
             hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
-        _sembastRepository =
-            sembastRepository ?? locator.get<SembastRepository>(),
         _logger = logger ?? locator.get<Logger>(),
         super(
           CommentsState.init(
@@ -59,7 +56,6 @@ class CommentsCubit extends Cubit<CommentsState> {
   final CommentCache _commentCache;
   final OfflineRepository _offlineRepository;
   final HackerNewsRepository _hackerNewsRepository;
-  final SembastRepository _sembastRepository;
   final Logger _logger;
 
   final ItemScrollController itemScrollController = ItemScrollController();
@@ -256,7 +252,6 @@ class CommentsCubit extends Cubit<CommentsState> {
                 .listen((Comment cmt) {
           _collapseCache.addKid(cmt.id, to: cmt.parent);
           _commentCache.cacheComment(cmt);
-          _sembastRepository.cacheComment(cmt);
 
           final Map<int, Comment> updatedIdToCommentMap =
               Map<int, Comment>.from(state.idToCommentMap);
@@ -542,7 +537,6 @@ class CommentsCubit extends Cubit<CommentsState> {
     if (comment != null) {
       _collapseCache.addKid(comment.id, to: comment.parent);
       _commentCache.cacheComment(comment);
-      _sembastRepository.cacheComment(comment);
 
       // Hide comment that matches any of the filter keywords.
       final bool hidden = _filterCubit.state.keywords.any(

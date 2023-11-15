@@ -24,12 +24,14 @@ class ItemScreenArgs extends Equatable {
   const ItemScreenArgs({
     required this.item,
     this.onlyShowTargetComment = false,
+    this.shouldMarkNewComment = false,
     this.useCommentCache = false,
     this.targetComments,
   });
 
   final Item item;
   final bool onlyShowTargetComment;
+  final bool shouldMarkNewComment;
   final List<Comment>? targetComments;
 
   /// when the user is trying to view a sub-thread from a main thread, we don't
@@ -41,6 +43,7 @@ class ItemScreenArgs extends Equatable {
   List<Object?> get props => <Object?>[
         item,
         onlyShowTargetComment,
+        shouldMarkNewComment,
         targetComments,
         useCommentCache,
       ];
@@ -52,6 +55,7 @@ class ItemScreen extends StatefulWidget {
     required this.parentComments,
     super.key,
     this.splitViewEnabled = false,
+    this.shouldMarkNewComment = false,
   });
 
   static const String routeName = 'item';
@@ -81,6 +85,7 @@ class ItemScreen extends StatefulWidget {
         child: ItemScreen(
           item: args.item,
           parentComments: args.targetComments ?? <Comment>[],
+          shouldMarkNewComment: args.shouldMarkNewComment,
         ),
       ),
     );
@@ -123,6 +128,7 @@ class ItemScreen extends StatefulWidget {
             item: args.item,
             parentComments: args.targetComments ?? <Comment>[],
             splitViewEnabled: true,
+            shouldMarkNewComment: args.shouldMarkNewComment,
           ),
         ),
       ),
@@ -130,6 +136,7 @@ class ItemScreen extends StatefulWidget {
   }
 
   final bool splitViewEnabled;
+  final bool shouldMarkNewComment;
   final Item item;
   final List<Comment> parentComments;
 
@@ -275,6 +282,7 @@ class _ItemScreenState extends State<ItemScreen>
                             splitViewEnabled: widget.splitViewEnabled,
                             onMoreTapped: onMoreTapped,
                             onRightMoreTapped: onRightMoreTapped,
+                            shouldMarkNewComment: widget.shouldMarkNewComment,
                           ),
                         ),
                         BlocBuilder<SplitViewCubit, SplitViewState>(
@@ -349,6 +357,7 @@ class _ItemScreenState extends State<ItemScreen>
                       splitViewEnabled: widget.splitViewEnabled,
                       onMoreTapped: onMoreTapped,
                       onRightMoreTapped: onRightMoreTapped,
+                      shouldMarkNewComment: widget.shouldMarkNewComment,
                     ),
                     floatingActionButton: const CustomFloatingActionButton(),
                     bottomSheet: ReplyBox(

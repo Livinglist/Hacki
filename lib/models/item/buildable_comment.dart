@@ -17,6 +17,7 @@ class BuildableComment extends Comment with Buildable {
     required super.deleted,
     required super.hidden,
     required super.level,
+    required super.isFromCache,
     required this.elements,
   });
 
@@ -33,6 +34,7 @@ class BuildableComment extends Comment with Buildable {
           deleted: comment.deleted,
           level: comment.level,
           hidden: comment.hidden,
+          isFromCache: comment.isFromCache,
         );
 
   @override
@@ -53,6 +55,7 @@ class BuildableComment extends Comment with Buildable {
       hidden: hidden ?? this.hidden,
       level: level ?? this.level,
       elements: elements,
+      isFromCache: isFromCache,
     );
   }
 
