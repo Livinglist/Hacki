@@ -240,10 +240,14 @@ class _StoriesListViewState extends State<StoriesListView>
 
   void mark(Story story) {
     final StoriesBloc storiesBloc = context.read<StoriesBloc>();
-    if (storiesBloc.state.readStoriesIds.contains(story.id)) {
-      context.read<StoriesBloc>().add(StoryUnread(story: story));
-    } else {
-      context.read<StoriesBloc>().add(StoryRead(story: story));
+    final bool markReadStoriesEnabled =
+        context.read<PreferenceCubit>().state.markReadStoriesEnabled;
+    if (markReadStoriesEnabled) {
+      if (storiesBloc.state.readStoriesIds.contains(story.id)) {
+        storiesBloc.add(StoryUnread(story: story));
+      } else {
+        storiesBloc.add(StoryRead(story: story));
+      }
     }
   }
 
