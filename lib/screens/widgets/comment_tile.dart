@@ -25,6 +25,7 @@ class CommentTile extends StatelessWidget {
     this.collapsable = true,
     this.selectable = true,
     this.isResponse = false,
+    this.isNew = false,
     this.level = 0,
     this.index,
     this.onTap,
@@ -38,6 +39,7 @@ class CommentTile extends StatelessWidget {
   final bool collapsable;
   final bool selectable;
   final bool isResponse;
+  final bool isNew;
   final FetchMode fetchMode;
 
   final void Function(Comment)? onReplyTapped;
@@ -178,6 +180,15 @@ class CommentTile extends StatelessWidget {
                                   padding: EdgeInsets.only(left: 4),
                                   child: Icon(
                                     Icons.reply,
+                                    size: 16,
+                                    color: Palette.grey,
+                                  ),
+                                ),
+                              if (isNew)
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 4),
+                                  child: Icon(
+                                    Icons.sunny_snowing,
                                     size: 16,
                                     color: Palette.grey,
                                   ),

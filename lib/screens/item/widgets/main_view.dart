@@ -25,6 +25,7 @@ class MainView extends StatelessWidget {
     required this.splitViewEnabled,
     required this.onMoreTapped,
     required this.onRightMoreTapped,
+    required this.shouldMarkNewComment,
     super.key,
   });
 
@@ -33,6 +34,7 @@ class MainView extends StatelessWidget {
   final AuthState authState;
   final double topPadding;
   final bool splitViewEnabled;
+  final bool shouldMarkNewComment;
   final void Function(Item item, Rect? rect) onMoreTapped;
   final ValueChanged<Comment> onRightMoreTapped;
 
@@ -111,6 +113,7 @@ class MainView extends StatelessWidget {
                         opUsername: state.item.by,
                         fetchMode: state.fetchMode,
                         isResponse: state.isResponse(comment),
+                        isNew: shouldMarkNewComment && !comment.isFromCache,
                         onReplyTapped: (Comment cmt) {
                           HapticFeedbackUtil.light();
                           if (cmt.deleted || cmt.dead) {

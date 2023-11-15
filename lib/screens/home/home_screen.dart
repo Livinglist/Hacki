@@ -210,7 +210,15 @@ class _HomeScreenState extends State<HomeScreen>
     if (isJobWithLink) {
       context.read<ReminderCubit>().removeLastReadStoryId();
     } else {
-      final ItemScreenArgs args = ItemScreenArgs(item: story);
+      final bool shouldMarkNewComment = context
+              .read<PreferenceCubit>()
+              .state
+              .markReadStoriesEnabled &&
+          context.read<StoriesBloc>().state.readStoriesIds.contains(story.id);
+      final ItemScreenArgs args = ItemScreenArgs(
+        item: story,
+        shouldMarkNewComment: shouldMarkNewComment,
+      );
 
       context.read<ReminderCubit>().updateLastReadStoryId(story.id);
 

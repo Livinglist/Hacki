@@ -34,6 +34,11 @@ abstract class HtmlUtil {
   static String parseHtml(String text) {
     return HtmlUnescape()
         .convert(text)
+        .replaceAllMapped(
+          RegExp(r'\<pre\>\<code\>(.*?)\<\/code\>\<\/pre\>', dotAll: true),
+          (Match match) =>
+              '<pre><code>${match[1]?.replaceAll('\n', '[break]')}</code></pre>',
+        )
         .replaceAll('\n', '')
         .replaceAllMapped(
           RegExp(r'\<p\>(.*?)\<p\>', dotAll: true),
@@ -48,6 +53,7 @@ abstract class HtmlUtil {
           (Match match) => match[1] ?? '',
         )
         .replaceAll('\n', '\n\n')
-        .replaceAll('<p>', '\n\n');
+        .replaceAll('<p>', '\n\n')
+        .replaceAll('[break]', '\n');
   }
 }

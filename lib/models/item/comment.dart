@@ -13,6 +13,7 @@ class Comment extends Item {
     required super.deleted,
     required super.hidden,
     required this.level,
+    required this.isFromCache,
   }) : super(
           descendants: 0,
           parts: <int>[],
@@ -21,9 +22,12 @@ class Comment extends Item {
           type: '',
         );
 
-  Comment.fromJson(super.json, {this.level = 0}) : super.fromJson();
+  Comment.fromJson(super.json, {this.level = 0})
+      : isFromCache = json['fromCache'] == true,
+        super.fromJson();
 
   final int level;
+  final bool isFromCache;
 
   String get metadata => '''by $by $timeAgo''';
 
@@ -45,6 +49,7 @@ class Comment extends Item {
       deleted: deleted,
       hidden: hidden ?? this.hidden,
       level: level ?? this.level,
+      isFromCache: isFromCache,
     );
   }
 
