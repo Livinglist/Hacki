@@ -184,7 +184,7 @@ class CommentTile extends StatelessWidget {
                                     color: Palette.grey,
                                   ),
                                 ),
-                              if (isNew)
+                              if (!comment.dead && isNew)
                                 const Padding(
                                   padding: EdgeInsets.only(left: 4),
                                   child: Icon(
