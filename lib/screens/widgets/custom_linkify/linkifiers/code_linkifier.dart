@@ -43,7 +43,7 @@ class CodeLinkifier extends Linkifier {
           String trimmedText = matchedText
               .replaceFirst(_openTag, '')
               .replaceFirst(_closeTag, '');
-          trimmedText = '$trimmedText\n\n';
+          trimmedText = '$trimmedText\n';
 
           list
             ..add(CodeElement(trimmedText))
