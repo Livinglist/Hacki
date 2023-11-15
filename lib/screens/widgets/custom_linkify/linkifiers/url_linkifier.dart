@@ -84,7 +84,7 @@ class UrlLinkifier extends Linkifier {
 
             if (url.endsWith(',')) {
               url = url.substring(0, max(0, url.length - 1));
-              end = '$end,';
+              end = '${end ?? ''},';
             }
 
             if ((options.humanize) || (options.removeWww)) {
