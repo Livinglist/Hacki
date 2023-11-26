@@ -219,10 +219,8 @@ class WebAnalyzer {
     String? fallbackDescription;
 
     if (res == null || isEmpty(res[2] as String?)) {
-      final String? commentText = await compute(
-        _fetchInfoFromStory,
-        <int>[story.id, ...story.kids],
-      );
+      final List<int> ids = <int>[story.id, ...story.kids];
+      final String? commentText = await _fetchInfoFromStory(ids);
 
       shouldRetry = commentText == null;
       fallbackDescription = commentText ?? 'no comment yet';
