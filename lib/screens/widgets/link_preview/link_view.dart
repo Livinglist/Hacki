@@ -116,6 +116,9 @@ class LinkView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    const SizedBox(
+                      height: Dimens.pt2,
+                    ),
                     Text(
                       title,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -167,9 +170,6 @@ class LinkView extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         maxLines: 5,
                       ),
-                    ),
-                    const SizedBox(
-                      height: _bottomPadding,
                     ),
                   ],
                 ),
