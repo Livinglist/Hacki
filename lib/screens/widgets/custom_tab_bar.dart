@@ -41,19 +41,22 @@ class _CustomTabBarState extends State<CustomTabBar> {
     return BlocBuilder<TabCubit, TabState>(
       builder: (BuildContext context, TabState state) {
         return TabBar(
-          isScrollable: true,
           controller: widget.tabController,
-          indicatorColor: Theme.of(context).primaryColor,
+          dividerHeight: 0,
+          isScrollable: true,
+          indicatorColor: Theme.of(context).colorScheme.primary,
           indicator: CircleTabIndicator(
-            color: Theme.of(context).primaryColor,
+            color: Theme.of(context).colorScheme.primary,
             radius: Dimens.pt2,
           ),
+          splashFactory: NoSplash.splashFactory,
           indicatorPadding: const EdgeInsets.only(
             bottom: Dimens.pt8,
           ),
           onTap: (_) {
             HapticFeedbackUtil.selection();
           },
+          tabAlignment: TabAlignment.center,
           tabs: <Widget>[
             for (int i = 0; i < state.tabs.length; i++)
               Tab(
@@ -62,13 +65,14 @@ class _CustomTabBarState extends State<CustomTabBar> {
                 ),
                 child: AnimatedDefaultTextStyle(
                   style: TextStyle(
+                    fontFamily: context.read<PreferenceCubit>().state.font.name,
                     fontSize:
-                        currentIndex == i ? TextDimens.pt14 : TextDimens.pt10,
+                        currentIndex == i ? TextDimens.pt12 : TextDimens.pt10,
                     color: currentIndex == i
-                        ? Theme.of(context).primaryColor
+                        ? Theme.of(context).colorScheme.primary
                         : Palette.grey,
                   ),
-                  duration: Durations.ms200,
+                  duration: AppDurations.ms200,
                   child: Text(
                     state.tabs.elementAt(i).label,
                     key: ValueKey<String>(
@@ -113,7 +117,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
                             ? TextDimens.pt16
                             : TextDimens.pt12,
                         color: currentIndex == 5
-                            ? Theme.of(context).primaryColor
+                            ? Theme.of(context).colorScheme.primary
                             : Palette.grey,
                       ),
                     );

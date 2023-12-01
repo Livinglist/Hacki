@@ -45,8 +45,6 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
       const SwipeGesturePreference(),
       const HapticFeedbackPreference(),
       const EyeCandyModePreference(),
-      const TrueDarkModePreference(),
-      const Material3Preference(),
     ],
   );
 
@@ -70,7 +68,6 @@ const bool _notificationModeDefaultValue = true;
 const bool _swipeGestureModeDefaultValue = false;
 const bool _displayModeDefaultValue = true;
 const bool _eyeCandyModeDefaultValue = false;
-const bool _trueDarkModeDefaultValue = false;
 const bool _hapticFeedbackModeDefaultValue = true;
 const bool _readerModeDefaultValue = true;
 const bool _markReadStoriesModeDefaultValue = true;
@@ -79,7 +76,6 @@ const bool _storyUrlModeDefaultValue = true;
 const bool _collapseModeDefaultValue = true;
 const bool _autoScrollModeDefaultValue = false;
 const bool _customTabModeDefaultValue = false;
-const bool _material3ModeDefaultValue = false;
 const bool _paginationModeDefaultValue = false;
 const double _textScaleFactorDefaultValue = 1;
 final int _fetchModeDefaultValue = FetchMode.eager.index;
@@ -312,26 +308,6 @@ class ManualPaginationPreference extends BooleanPreference {
   String get subtitle => '''so you can get stuff done.''';
 }
 
-class Material3Preference extends BooleanPreference {
-  const Material3Preference({bool? val})
-      : super(val: val ?? _material3ModeDefaultValue);
-
-  @override
-  Material3Preference copyWith({required bool? val}) {
-    return Material3Preference(val: val);
-  }
-
-  @override
-  String get key => 'material3Mode';
-
-  @override
-  String get title => 'Material 3';
-
-  @override
-  String get subtitle =>
-      '''experimental feature. Please open an issue on GitHub if you notice anything weird.''';
-}
-
 /// Whether or not to use Custom Tabs for launching URLs.
 /// If false, default browser will be used.
 ///
@@ -357,25 +333,6 @@ class CustomTabPreference extends BooleanPreference {
 
   @override
   bool get isDisplayable => Platform.isAndroid;
-}
-
-class TrueDarkModePreference extends BooleanPreference {
-  const TrueDarkModePreference({bool? val})
-      : super(val: val ?? _trueDarkModeDefaultValue);
-
-  @override
-  TrueDarkModePreference copyWith({required bool? val}) {
-    return TrueDarkModePreference(val: val);
-  }
-
-  @override
-  String get key => 'trueDarkMode';
-
-  @override
-  String get title => 'True Dark Mode';
-
-  @override
-  String get subtitle => 'real dark.';
 }
 
 class HapticFeedbackPreference extends BooleanPreference {

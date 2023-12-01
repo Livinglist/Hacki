@@ -83,7 +83,7 @@ class MorePopupMenu extends StatelessWidget {
                           children: <Widget>[
                             AnimatedCrossFade(
                               alignment: Alignment.center,
-                              duration: Durations.ms300,
+                              duration: AppDurations.ms300,
                               crossFadeState: state.status.isLoading
                                   ? CrossFadeState.showFirst
                                   : CrossFadeState.showSecond,
@@ -137,7 +137,9 @@ class MorePopupMenu extends StatelessWidget {
                                       ),
                                       linkStyle: TextStyle(
                                         fontSize: fontSize,
-                                        color: Theme.of(context).primaryColor,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
                                       ),
                                       onOpen: (LinkableElement link) =>
                                           LinkUtil.launch(
@@ -182,12 +184,12 @@ class MorePopupMenu extends StatelessWidget {
               ListTile(
                 leading: Icon(
                   FeatherIcons.chevronUp,
-                  color: upvoted ? Theme.of(context).primaryColor : null,
+                  color: upvoted ? Theme.of(context).colorScheme.primary : null,
                 ),
                 title: Text(
                   upvoted ? 'Upvoted' : 'Upvote',
                   style: upvoted
-                      ? TextStyle(color: Theme.of(context).primaryColor)
+                      ? TextStyle(color: Theme.of(context).colorScheme.primary)
                       : null,
                 ),
                 subtitle: item is Story ? Text(item.score.toString()) : null,
@@ -196,12 +198,13 @@ class MorePopupMenu extends StatelessWidget {
               ListTile(
                 leading: Icon(
                   FeatherIcons.chevronDown,
-                  color: downvoted ? Theme.of(context).primaryColor : null,
+                  color:
+                      downvoted ? Theme.of(context).colorScheme.primary : null,
                 ),
                 title: Text(
                   downvoted ? 'Downvoted' : 'Downvote',
                   style: downvoted
-                      ? TextStyle(color: Theme.of(context).primaryColor)
+                      ? TextStyle(color: Theme.of(context).colorScheme.primary)
                       : null,
                 ),
                 onTap: context.read<VoteCubit>().downvote,
@@ -212,7 +215,8 @@ class MorePopupMenu extends StatelessWidget {
                   return ListTile(
                     leading: Icon(
                       isFav ? Icons.favorite : Icons.favorite_border,
-                      color: isFav ? Theme.of(context).primaryColor : null,
+                      color:
+                          isFav ? Theme.of(context).colorScheme.primary : null,
                     ),
                     title: Text(
                       isFav ? 'Unfavorite' : 'Favorite',

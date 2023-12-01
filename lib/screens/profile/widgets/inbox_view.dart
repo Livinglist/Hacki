@@ -42,7 +42,7 @@ class InboxView extends StatelessWidget {
           child: SmartRefresher(
             enablePullUp: true,
             header: WaterDropMaterialHeader(
-              backgroundColor: Theme.of(context).primaryColor,
+              backgroundColor: Theme.of(context).colorScheme.primary,
             ),
             footer: CustomFooter(
               loadStyle: LoadStyle.ShowWhenLoading,
@@ -110,7 +110,8 @@ class InboxView extends StatelessWidget {
                                   ),
                                   linkStyle: TextStyle(
                                     color: Theme.of(context)
-                                        .primaryColor
+                                        .colorScheme
+                                        .primary
                                         .withOpacity(
                                           unreadCommentsIds.contains(e.id)
                                               ? 1

@@ -92,15 +92,15 @@ class ItemScreen extends StatefulWidget {
   }
 
   static Widget tablet(BuildContext context, ItemScreenArgs args) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: () {
         if (context.read<SplitViewCubit>().state.expanded) {
           context.read<SplitViewCubit>().zoom();
           return false;
         } else {
           return true;
         }
-      },
+      }(),
       child: RepositoryProvider<CollapseCache>(
         create: (_) => CollapseCache(),
         lazy: false,
@@ -160,9 +160,9 @@ class _ItemScreenState extends State<ItemScreen>
   final GlobalKey fontSizeIconButtonKey = GlobalKey();
   StreamSubscription<double>? scrollOffsetSubscription;
 
-  static const Duration _storyLinkTapThrottleDelay = Durations.twoSeconds;
+  static const Duration _storyLinkTapThrottleDelay = AppDurations.twoSeconds;
   static const Duration _featureDiscoveryDismissThrottleDelay =
-      Durations.oneSecond;
+      AppDurations.oneSecond;
 
   @override
   void didPop() {
@@ -413,7 +413,7 @@ class _ItemScreenState extends State<ItemScreen>
                 fontSize: fontSize.fontSize,
                 color:
                     context.read<PreferenceCubit>().state.fontSize == fontSize
-                        ? Theme.of(context).primaryColor
+                        ? Theme.of(context).colorScheme.primary
                         : null,
               ),
             ),

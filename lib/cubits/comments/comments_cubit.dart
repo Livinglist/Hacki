@@ -32,6 +32,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     required CommentsOrder defaultCommentsOrder,
     CommentCache? commentCache,
     OfflineRepository? offlineRepository,
+    SembastRepository? sembastRepository,
     HackerNewsRepository? hackerNewsRepository,
     Logger? logger,
   })  : _filterCubit = filterCubit,
@@ -39,6 +40,8 @@ class CommentsCubit extends Cubit<CommentsState> {
         _commentCache = commentCache ?? locator.get<CommentCache>(),
         _offlineRepository =
             offlineRepository ?? locator.get<OfflineRepository>(),
+        _sembastRepository =
+            sembastRepository ?? locator.get<SembastRepository>(),
         _hackerNewsRepository =
             hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
         _logger = logger ?? locator.get<Logger>(),
@@ -55,6 +58,7 @@ class CommentsCubit extends Cubit<CommentsState> {
   final CollapseCache _collapseCache;
   final CommentCache _commentCache;
   final OfflineRepository _offlineRepository;
+  final SembastRepository _sembastRepository;
   final HackerNewsRepository _hackerNewsRepository;
   final Logger _logger;
 
@@ -369,7 +373,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     itemScrollController.scrollTo(
       index: index,
       alignment: alignment,
-      duration: Durations.ms400,
+      duration: AppDurations.ms400,
     );
   }
 
@@ -394,7 +398,7 @@ class CommentsCubit extends Cubit<CommentsState> {
       itemScrollController.scrollTo(
         index: 1,
         alignment: 0.15,
-        duration: Durations.ms400,
+        duration: AppDurations.ms400,
       );
       return;
     }
@@ -421,7 +425,7 @@ class CommentsCubit extends Cubit<CommentsState> {
         itemScrollController.scrollTo(
           index: i + 1,
           alignment: 0.15,
-          duration: Durations.ms400,
+          duration: AppDurations.ms400,
         );
         return;
       }
@@ -461,7 +465,7 @@ class CommentsCubit extends Cubit<CommentsState> {
         itemScrollController.scrollTo(
           index: i + 1,
           alignment: 0.15,
-          duration: Durations.ms400,
+          duration: AppDurations.ms400,
         );
         return;
       }
@@ -537,6 +541,10 @@ class CommentsCubit extends Cubit<CommentsState> {
     if (comment != null) {
       _collapseCache.addKid(comment.id, to: comment.parent);
       _commentCache.cacheComment(comment);
+
+      if (state.isOfflineReading) {
+        _sembastRepository.cacheComment(comment);
+      }
 
       // Hide comment that matches any of the filter keywords.
       final bool hidden = _filterCubit.state.keywords.any(

@@ -110,14 +110,14 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                       child: TextField(
                         controller: textEditingController,
                         focusNode: focusNode,
-                        cursorColor: Theme.of(context).primaryColor,
+                        cursorColor: Theme.of(context).colorScheme.primary,
                         autocorrect: false,
                         decoration: InputDecoration(
                           hintText: 'Search in this thread',
                           suffixText: '${state.matchedComments.length} results',
                           focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                              color: Theme.of(context).primaryColor,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ),

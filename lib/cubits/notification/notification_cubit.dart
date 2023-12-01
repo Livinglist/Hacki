@@ -32,7 +32,7 @@ class NotificationCubit extends Cubit<NotificationState> {
       if (authState.isLoggedIn && authState.username != _username) {
         // Get the user setting.
         if (_preferenceCubit.state.notificationEnabled) {
-          Future<void>.delayed(Durations.twoSeconds, init);
+          Future<void>.delayed(AppDurations.twoSeconds, init);
         }
 
         // Listen for setting changes in the future.

@@ -96,7 +96,7 @@ class _CountDownReminderState extends State<CountdownReminder>
             animation: animationController,
             child: FadeIn(
               child: Material(
-                color: Theme.of(context).primaryColor,
+                color: Theme.of(context).colorScheme.primary,
                 clipBehavior: Clip.hardEdge,
                 borderRadius: const BorderRadius.all(
                   Radius.circular(

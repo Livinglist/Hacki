@@ -13,6 +13,7 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/styles/theme.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -190,8 +191,7 @@ class _ParentItemSection extends StatelessWidget {
   final void Function(Item item, Rect? rect) onMoreTapped;
   final ValueChanged<Comment> onRightMoreTapped;
 
-  static const double _viewParentButtonWidth = 100;
-  static const double _viewRootButtonWidth = 85;
+  static const double _buttonWidth = 80;
 
   @override
   Widget build(BuildContext context) {
@@ -221,14 +221,14 @@ class _ParentItemSection extends StatelessWidget {
                       }
                       context.read<EditCubit>().onReplyTapped(item);
                     },
-                    backgroundColor: Theme.of(context).primaryColor,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     icon: Icons.message,
                   ),
                   SlidableAction(
                     onPressed: (BuildContext context) =>
                         onMoreTapped(item, context.rect),
-                    backgroundColor: Theme.of(context).primaryColor,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     icon: Icons.more_horiz,
                   ),
@@ -246,10 +246,9 @@ class _ParentItemSection extends StatelessWidget {
                         Text(
                           item.by,
                           style: TextStyle(
-                            color: Theme.of(context).primaryColor,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
-                          textScaleFactor:
-                              MediaQuery.of(context).textScaleFactor,
+                          textScaler: MediaQuery.of(context).textScaler,
                         ),
                         const Spacer(),
                         Text(
@@ -257,8 +256,7 @@ class _ParentItemSection extends StatelessWidget {
                           style: const TextStyle(
                             color: Palette.grey,
                           ),
-                          textScaleFactor:
-                              MediaQuery.of(context).textScaleFactor,
+                          textScaler: MediaQuery.of(context).textScaler,
                         ),
                       ],
                     ),
@@ -318,7 +316,8 @@ class _ParentItemSection extends StatelessWidget {
                                           fontWeight: FontWeight.bold,
                                           fontSize: fontSize,
                                           color: item.url.isNotEmpty
-                                              ? Theme.of(context).primaryColor
+                                              ? Theme.of(context)
+                                                  .responsivePrimaryColor
                                               : null,
                                         ),
                                       ),
@@ -328,15 +327,14 @@ class _ParentItemSection extends StatelessWidget {
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: fontSize - 4,
-                                            color:
-                                                Theme.of(context).primaryColor,
+                                            color: Theme.of(context)
+                                                .responsivePrimaryColor,
                                           ),
                                         ),
                                     ],
                                   ),
                                   textAlign: TextAlign.center,
-                                  textScaleFactor:
-                                      MediaQuery.of(context).textScaleFactor,
+                                  textScaler: MediaQuery.of(context).textScaler,
                                 ),
                               ),
                             )
@@ -354,8 +352,8 @@ class _ParentItemSection extends StatelessWidget {
                                   ),
                                   child: ItemText(
                                     item: item,
-                                    textScaleFactor:
-                                        MediaQuery.of(context).textScaleFactor,
+                                    textScaler:
+                                        MediaQuery.of(context).textScaler,
                                     selectable: true,
                                   ),
                                 ),
@@ -404,14 +402,14 @@ class _ParentItemSection extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: TextDimens.pt13,
                     ),
-                    textScaleFactor: 1,
+                    textScaler: TextScaler.noScaling,
                   ),
                 ] else ...<Widget>[
                   const SizedBox(
                     width: Dimens.pt4,
                   ),
                   SizedBox(
-                    width: _viewParentButtonWidth,
+                    width: _buttonWidth,
                     child: TextButton(
                       onPressed: context.read<CommentsCubit>().loadParentThread,
                       child:
@@ -424,16 +422,16 @@ class _ParentItemSection extends StatelessWidget {
                                   ),
                                 )
                               : const Text(
-                                  'View parent',
+                                  'Parent',
                                   style: TextStyle(
                                     fontSize: TextDimens.pt13,
                                   ),
-                                  textScaleFactor: 1,
+                                  textScaler: TextScaler.noScaling,
                                 ),
                     ),
                   ),
                   SizedBox(
-                    width: _viewRootButtonWidth,
+                    width: _buttonWidth,
                     child: TextButton(
                       onPressed: context.read<CommentsCubit>().loadRootThread,
                       child: state.fetchRootStatus == CommentsStatus.inProgress
@@ -445,11 +443,11 @@ class _ParentItemSection extends StatelessWidget {
                               ),
                             )
                           : const Text(
-                              'View root',
+                              'Root',
                               style: TextStyle(
                                 fontSize: TextDimens.pt13,
                               ),
-                              textScaleFactor: 1,
+                              textScaler: TextScaler.noScaling,
                             ),
                     ),
                   ),
@@ -468,7 +466,7 @@ class _ParentItemSection extends StatelessWidget {
                               style: const TextStyle(
                                 fontSize: TextDimens.pt13,
                               ),
-                              textScaleFactor: 1,
+                              textScaler: TextScaler.noScaling,
                             ),
                           ),
                         )
@@ -490,7 +488,7 @@ class _ParentItemSection extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: TextDimens.pt13,
                             ),
-                            textScaleFactor: 1,
+                            textScaler: TextScaler.noScaling,
                           ),
                         ),
                       )

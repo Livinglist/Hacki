@@ -12,7 +12,7 @@ part 'edit_state.dart';
 class EditCubit extends HydratedCubit<EditState> {
   EditCubit({DraftCache? draftCache})
       : _draftCache = draftCache ?? locator.get<DraftCache>(),
-        _debouncer = Debouncer(delay: Durations.oneSecond),
+        _debouncer = Debouncer(delay: AppDurations.oneSecond),
         super(const EditState.init());
 
   final DraftCache _draftCache;

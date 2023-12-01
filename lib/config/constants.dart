@@ -73,7 +73,7 @@ abstract class RegExpConstants {
   static const String number = '[0-9]+';
 }
 
-abstract class Durations {
+abstract class AppDurations {
   static const Duration ms100 = Duration(milliseconds: 100);
   static const Duration ms200 = Duration(milliseconds: 200);
   static const Duration ms300 = Duration(milliseconds: 300);

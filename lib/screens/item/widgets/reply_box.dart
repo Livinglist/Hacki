@@ -73,7 +73,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                 height: editState.showReplyBox
                     ? (expanded ? expandedHeight : collapsedHeight)
                     : Dimens.zero,
-                duration: Durations.ms200,
+                duration: AppDurations.ms200,
                 decoration: BoxDecoration(
                   boxShadow: <BoxShadow>[
                     if (!context.read<SplitViewCubit>().state.enabled &&
@@ -97,7 +97,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                         ),
                       AnimatedContainer(
                         height: expanded ? Dimens.pt40 : Dimens.zero,
-                        duration: Durations.ms300,
+                        duration: AppDurations.ms300,
                       ),
                       Row(
                         children: <Widget>[
@@ -125,12 +125,13 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                                 AnimatedOpacity(
                                   opacity:
                                       expanded ? NumSwitch.on : NumSwitch.off,
-                                  duration: Durations.ms300,
+                                  duration: AppDurations.ms300,
                                   child: IconButton(
                                     key: const Key('quote'),
                                     icon: Icon(
                                       FeatherIcons.code,
-                                      color: Theme.of(context).primaryColor,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
                                       size: TextDimens.pt18,
                                     ),
                                     onPressed: expanded ? showTextPopup : null,
@@ -142,7 +143,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                                   expanded
                                       ? FeatherIcons.minimize2
                                       : FeatherIcons.maximize2,
-                                  color: Theme.of(context).primaryColor,
+                                  color: Theme.of(context).colorScheme.primary,
                                   size: TextDimens.pt18,
                                 ),
                                 onPressed: () {
@@ -156,7 +157,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                               key: const Key('close'),
                               icon: Icon(
                                 Icons.close,
-                                color: Theme.of(context).primaryColor,
+                                color: Theme.of(context).colorScheme.primary,
                               ),
                               onPressed: () {
                                 setState(() {
@@ -209,7 +210,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                                 height: Dimens.pt24,
                                 width: Dimens.pt24,
                                 child: CircularProgressIndicator(
-                                  color: Theme.of(context).primaryColor,
+                                  color: Theme.of(context).colorScheme.primary,
                                   strokeWidth: Dimens.pt2,
                                 ),
                               ),
@@ -219,7 +220,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                               key: const Key('send'),
                               icon: Icon(
                                 Icons.send,
-                                color: Theme.of(context).primaryColor,
+                                color: Theme.of(context).colorScheme.primary,
                               ),
                               onPressed: () {
                                 widget.onSendTapped();
@@ -349,7 +350,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                       IconButton(
                         icon: Icon(
                           Icons.close,
-                          color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).colorScheme.primary,
                           size: TextDimens.pt18,
                         ),
                         onPressed: () => context.pop(),
@@ -370,8 +371,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                         child: ItemText(
                           item: replyingTo,
                           selectable: true,
-                          textScaleFactor:
-                              MediaQuery.of(context).textScaleFactor,
+                          textScaler: MediaQuery.of(context).textScaler,
                         ),
                       ),
                     ),

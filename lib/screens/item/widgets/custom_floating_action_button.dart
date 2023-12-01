@@ -26,7 +26,7 @@ class CustomFloatingActionButton extends StatelessWidget {
                   bottom: Dimens.replyBoxCollapsedHeight,
                 )
               : EdgeInsets.zero,
-          duration: Durations.ms200,
+          duration: AppDurations.ms200,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[

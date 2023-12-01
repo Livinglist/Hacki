@@ -70,11 +70,7 @@ class PreferenceState extends Equatable {
 
   bool get customTabEnabled => _isOn<CustomTabPreference>();
 
-  bool get material3Enabled => _isOn<Material3Preference>();
-
   bool get manualPaginationEnabled => _isOn<ManualPaginationPreference>();
-
-  bool get trueDarkModeEnabled => _isOn<TrueDarkModePreference>();
 
   bool get hapticFeedbackEnabled => _isOn<HapticFeedbackPreference>();
 

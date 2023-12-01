@@ -16,7 +16,7 @@ class _OnboardingViewState extends State<OnboardingView> {
   final PageController pageController = PageController();
   final Throttle throttle = Throttle(delay: _throttleDelay);
 
-  static const Duration _throttleDelay = Durations.ms100;
+  static const Duration _throttleDelay = AppDurations.ms100;
   static const double _screenshotHeight = 550;
 
   @override
@@ -24,7 +24,7 @@ class _OnboardingViewState extends State<OnboardingView> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).brightness == Brightness.light
-            ? Theme.of(context).primaryColor
+            ? Theme.of(context).colorScheme.primary
             : Theme.of(context).canvasColor,
         elevation: Dimens.zero,
         leading: IconButton(
@@ -36,7 +36,7 @@ class _OnboardingViewState extends State<OnboardingView> {
         ),
       ),
       backgroundColor: Theme.of(context).brightness == Brightness.light
-          ? Theme.of(context).primaryColor
+          ? Theme.of(context).colorScheme.primary
           : null,
       body: Stack(
         children: <Widget>[
@@ -81,7 +81,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                 } else {
                   throttle.run(() {
                     pageController.nextPage(
-                      duration: Durations.ms600,
+                      duration: AppDurations.ms600,
                       curve: SpringCurve.underDamped,
                     );
                   });
@@ -89,7 +89,7 @@ class _OnboardingViewState extends State<OnboardingView> {
               },
               style: ElevatedButton.styleFrom(
                 shape: const CircleBorder(),
-                backgroundColor: Theme.of(context).primaryColor,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 padding: const EdgeInsets.all(
                   Dimens.pt18,
                 ),

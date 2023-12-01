@@ -320,7 +320,7 @@ class WebAnalyzer {
     final Uri uri = Uri.parse(url);
     final HttpClient ioClient = HttpClient()
       ..badCertificateCallback = _certificateCheck
-      ..connectionTimeout = Durations.twoSeconds;
+      ..connectionTimeout = AppDurations.twoSeconds;
     final IOClient client = IOClient(ioClient);
     final BaseRequest request = Request('GET', uri)
       ..followRedirects = true
@@ -336,7 +336,7 @@ class WebAnalyzer {
 
     try {
       final IOStreamedResponse stream =
-          await client.send(request).timeout(Durations.tenSeconds);
+          await client.send(request).timeout(AppDurations.tenSeconds);
 
       if (stream.statusCode == HttpStatus.movedTemporarily ||
           stream.statusCode == HttpStatus.movedPermanently) {

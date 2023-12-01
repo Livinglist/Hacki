@@ -30,7 +30,7 @@ class FavIconButton extends StatelessWidget {
             child: Icon(
               isFav ? Icons.favorite : Icons.favorite_border,
               color: isFav
-                  ? Theme.of(context).primaryColor
+                  ? Theme.of(context).colorScheme.primary
                   : Theme.of(context).iconTheme.color,
             ),
           ),

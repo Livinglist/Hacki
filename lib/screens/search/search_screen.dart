@@ -32,9 +32,9 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
   final ScrollController scrollController = ScrollController();
   final TextEditingController textEditingController = TextEditingController();
   final FocusNode focusNode = FocusNode();
-  final Debouncer debouncer = Debouncer(delay: Durations.oneSecond);
+  final Debouncer debouncer = Debouncer(delay: AppDurations.oneSecond);
 
-  static const Duration chipsAnimationDuration = Durations.ms300;
+  static const Duration chipsAnimationDuration = AppDurations.ms300;
 
   @override
   void initState() {
@@ -76,7 +76,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                       enablePullDown: false,
                       enablePullUp: true,
                       header: WaterDropMaterialHeader(
-                        backgroundColor: Theme.of(context).primaryColor,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                       ),
                       footer: CustomFooter(
                         loadStyle: LoadStyle.ShowWhenLoading,
@@ -120,13 +120,16 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                 child: TextField(
                                   controller: textEditingController,
                                   focusNode: focusNode,
-                                  cursorColor: Theme.of(context).primaryColor,
+                                  cursorColor:
+                                      Theme.of(context).colorScheme.primary,
                                   autocorrect: false,
                                   decoration: InputDecoration(
                                     hintText: 'Search Hacker News',
                                     focusedBorder: UnderlineInputBorder(
                                       borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
                                       ),
                                     ),
                                   ),

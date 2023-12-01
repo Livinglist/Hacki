@@ -28,7 +28,8 @@ class OfflineBanner extends StatelessWidget {
               '${showExitButton ? 'Exit to fetch latest stories.' : ''}',
               textAlign: showExitButton ? TextAlign.left : TextAlign.center,
             ),
-            backgroundColor: Theme.of(context).primaryColor.withOpacity(0.3),
+            backgroundColor:
+                Theme.of(context).colorScheme.primary.withOpacity(0.3),
             actions: <Widget>[
               if (showExitButton)
                 TextButton(

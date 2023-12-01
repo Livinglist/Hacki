@@ -55,12 +55,7 @@ class StoryTile extends StatelessWidget {
             removeElevation: true,
             bodyMaxLines: context.storyTileMaxLines,
             errorTitle: story.title,
-            titleStyle: TextStyle(
-              color: hasRead
-                  ? Palette.grey[500]
-                  : Theme.of(context).textTheme.bodyLarge?.color,
-              fontWeight: FontWeight.bold,
-            ),
+            hasRead: hasRead,
             showMetadata: showMetadata,
             showUrl: showUrl,
             onTap: onTap,
@@ -110,7 +105,7 @@ class StoryTile extends StatelessWidget {
                               ),
                           ],
                         ),
-                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                        textScaler: MediaQuery.of(context).textScaler,
                       ),
                     ),
                   ],
@@ -155,8 +150,9 @@ class _LinkPreviewPlaceholder extends StatelessWidget {
       child: SizedBox(
         height: height,
         child: Shimmer.fromColors(
-          baseColor: Theme.of(context).primaryColor,
-          highlightColor: Theme.of(context).primaryColor.withOpacity(0.8),
+          baseColor: Theme.of(context).colorScheme.primary,
+          highlightColor:
+              Theme.of(context).colorScheme.primary.withOpacity(0.8),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[

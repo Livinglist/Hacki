@@ -48,13 +48,14 @@ class PostedByFilterChip extends StatelessWidget {
               ),
               child: TextField(
                 controller: usernameController,
-                cursorColor: Theme.of(context).primaryColor,
+                cursorColor: Theme.of(context).colorScheme.primary,
                 autocorrect: false,
                 decoration: InputDecoration(
                   hintText: 'Username',
                   focusedBorder: UnderlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Theme.of(context).primaryColor),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                 ),
               ),
@@ -87,7 +88,7 @@ class PostedByFilterChip extends StatelessWidget {
                     },
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all(
-                        Theme.of(context).primaryColor,
+                        Theme.of(context).colorScheme.primary,
                       ),
                     ),
                     child: const Text(

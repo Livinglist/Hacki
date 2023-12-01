@@ -185,7 +185,9 @@ class OfflineRepository {
       if (json == null) {
         return null;
       }
-      final Comment comment = Comment.fromJson(json.cast<String, dynamic>());
+      final Map<String, dynamic> typedJson = json.cast<String, dynamic>();
+      typedJson['fromCache'] = true;
+      final Comment comment = Comment.fromJson(typedJson);
       return comment;
     } catch (_) {
       _logger.e(_);
@@ -204,8 +206,9 @@ class OfflineRepository {
       final Map<dynamic, dynamic>? json = await box.get(id.toString());
 
       if (json != null) {
-        final Comment comment =
-            Comment.fromJson(json.cast<String, dynamic>(), level: level);
+        final Map<String, dynamic> typedJson = json.cast<String, dynamic>();
+        typedJson['fromCache'] = true;
+        final Comment comment = Comment.fromJson(typedJson, level: level);
 
         yield comment;
         yield* getCachedCommentsStream(ids: comment.kids, level: level + 1);
