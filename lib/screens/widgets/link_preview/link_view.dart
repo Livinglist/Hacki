@@ -94,10 +94,12 @@ class LinkView extends StatelessWidget {
                             imageUrl: imageUri!,
                             fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
                             memCacheHeight: layoutHeight.toInt() * 4,
+                            cacheKey: imageUri,
                             errorWidget: (BuildContext context, _, __) {
                               return Image.asset(
                                 Constants.hackerNewsLogoPath,
                                 fit: BoxFit.cover,
+                                gaplessPlayback: true,
                               );
                             },
                           ),
@@ -117,49 +119,16 @@ class LinkView extends StatelessWidget {
                     const SizedBox(
                       height: Dimens.pt2,
                     ),
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            height: 1.2,
-                            color: hasRead ? Theme.of(context).readGrey : null,
-                            fontWeight: FontWeight.bold,
-                          ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                    ),
-                    if (showUrl)
-                      Text(
-                        '($readableUrl)',
-                        textAlign: TextAlign.left,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: hasRead
-                                  ? Theme.of(context).readGrey
-                                  : Theme.of(context)
-                                      .unreadGrey
-                                      .withOpacity(0.5),
-                            ),
-                        overflow: bodyTextOverflow ?? TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    if (showMetadata)
-                      Text(
-                        metadata,
-                        textAlign: TextAlign.left,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: hasRead
-                                  ? Theme.of(context).readGrey
-                                  : Theme.of(context).unreadGrey,
-                            ),
-                        overflow: bodyTextOverflow ?? TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
                     Flexible(
                       child: Text(
                         description,
                         textAlign: TextAlign.left,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: hasRead
-                                  ? Theme.of(context).readGrey
+                                  ? Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(0.4)
                                   : Theme.of(context)
                                       .colorScheme
                                       .onSurface
@@ -178,10 +147,4 @@ class LinkView extends StatelessWidget {
       },
     );
   }
-}
-
-extension on ThemeData {
-  Color get readGrey => colorScheme.onSurface.withOpacity(0.4);
-
-  Color get unreadGrey => colorScheme.onSurface.withOpacity(0.8);
 }
