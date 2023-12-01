@@ -191,8 +191,7 @@ class _ParentItemSection extends StatelessWidget {
   final void Function(Item item, Rect? rect) onMoreTapped;
   final ValueChanged<Comment> onRightMoreTapped;
 
-  static const double _viewParentButtonWidth = 100;
-  static const double _viewRootButtonWidth = 85;
+  static const double _buttonWidth = 80;
 
   @override
   Widget build(BuildContext context) {
@@ -410,7 +409,7 @@ class _ParentItemSection extends StatelessWidget {
                     width: Dimens.pt4,
                   ),
                   SizedBox(
-                    width: _viewParentButtonWidth,
+                    width: _buttonWidth,
                     child: TextButton(
                       onPressed: context.read<CommentsCubit>().loadParentThread,
                       child:
@@ -432,7 +431,7 @@ class _ParentItemSection extends StatelessWidget {
                     ),
                   ),
                   SizedBox(
-                    width: _viewRootButtonWidth,
+                    width: _buttonWidth,
                     child: TextButton(
                       onPressed: context.read<CommentsCubit>().loadRootThread,
                       child: state.fetchRootStatus == CommentsStatus.inProgress
