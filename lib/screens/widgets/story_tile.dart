@@ -7,6 +7,7 @@ import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/styles/theme.dart';
 import 'package:shimmer/shimmer.dart';
 
 class StoryTile extends StatelessWidget {
@@ -41,24 +42,62 @@ class StoryTile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(
             horizontal: Dimens.pt12,
           ),
-          child: LinkPreview(
-            story: story,
-            link: story.url,
-            isOfflineReading:
-                context.read<StoriesBloc>().state.isOfflineReading,
-            placeholderWidget: _LinkPreviewPlaceholder(
-              height: height,
-            ),
-            errorImage: Constants.hackerNewsLogoLink,
-            backgroundColor: Palette.transparent,
-            borderRadius: Dimens.zero,
-            removeElevation: true,
-            bodyMaxLines: context.storyTileMaxLines,
-            errorTitle: story.title,
-            hasRead: hasRead,
-            showMetadata: showMetadata,
-            showUrl: showUrl,
-            onTap: onTap,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              TapDownWrapper(
+                onTap: onTap,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      story.title,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            color: hasRead ? Theme.of(context).readGrey : null,
+                          ),
+                      textAlign: TextAlign.left,
+                    ),
+                    Text(
+                      story.readableUrl,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: hasRead ? Theme.of(context).readGrey : null,
+                          ),
+                      textAlign: TextAlign.left,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                    Text(
+                      story.metadata,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: hasRead ? Theme.of(context).readGrey : null,
+                          ),
+                      textAlign: TextAlign.left,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ],
+                ),
+              ),
+              LinkPreview(
+                story: story,
+                link: story.url,
+                isOfflineReading:
+                    context.read<StoriesBloc>().state.isOfflineReading,
+                placeholderWidget: _LinkPreviewPlaceholder(
+                  height: height,
+                ),
+                errorImage: Constants.hackerNewsLogoLink,
+                backgroundColor: Palette.transparent,
+                borderRadius: Dimens.zero,
+                removeElevation: true,
+                bodyMaxLines: context.storyTileMaxLines,
+                errorTitle: story.title,
+                hasRead: hasRead,
+                showMetadata: showMetadata,
+                showUrl: showUrl,
+                onTap: onTap,
+              ),
+            ],
           ),
         ),
       );

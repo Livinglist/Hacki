@@ -117,24 +117,18 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                             const SizedBox(
                               width: Dimens.pt16,
                             ),
-                            DropdownButton<FetchMode>(
-                              value: preferenceState.fetchMode,
-                              underline: const SizedBox.shrink(),
-                              items: FetchMode.values
+                            DropdownMenu<FetchMode>(
+                              initialSelection: preferenceState.fetchMode,
+                              dropdownMenuEntries: FetchMode.values
                                   .map(
                                     (FetchMode val) =>
-                                        DropdownMenuItem<FetchMode>(
+                                        DropdownMenuEntry<FetchMode>(
                                       value: val,
-                                      child: Text(
-                                        val.description,
-                                        style: const TextStyle(
-                                          fontSize: TextDimens.pt16,
-                                        ),
-                                      ),
+                                      label: val.description,
                                     ),
                                   )
                                   .toList(),
-                              onChanged: (FetchMode? fetchMode) {
+                              onSelected: (FetchMode? fetchMode) {
                                 if (fetchMode != null) {
                                   HapticFeedbackUtil.selection();
                                   context.read<PreferenceCubit>().update(
@@ -152,24 +146,18 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                       Flexible(
                         child: Row(
                           children: <Widget>[
-                            DropdownButton<CommentsOrder>(
-                              value: preferenceState.order,
-                              underline: const SizedBox.shrink(),
-                              items: CommentsOrder.values
+                            DropdownMenu<CommentsOrder>(
+                              initialSelection: preferenceState.order,
+                              dropdownMenuEntries: CommentsOrder.values
                                   .map(
                                     (CommentsOrder val) =>
-                                        DropdownMenuItem<CommentsOrder>(
+                                        DropdownMenuEntry<CommentsOrder>(
                                       value: val,
-                                      child: Text(
-                                        val.description,
-                                        style: const TextStyle(
-                                          fontSize: TextDimens.pt16,
-                                        ),
-                                      ),
+                                      label: val.description,
                                     ),
                                   )
                                   .toList(),
-                              onChanged: (CommentsOrder? order) {
+                              onSelected: (CommentsOrder? order) {
                                 if (order != null) {
                                   HapticFeedbackUtil.selection();
                                   context.read<PreferenceCubit>().update(
@@ -185,6 +173,9 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(
+                    height: Dimens.pt12,
                   ),
                   const TabBarSettings(),
                   const TextScaleFactorSettings(),
@@ -232,37 +223,14 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                     ),
                     if (preference
                         is MarkReadStoriesModePreference) ...<Widget>[
-                      ListTile(
-                        title: Text(
-                          StoryMarkingModePreference().title,
-                          style: TextStyle(
-                            color: !preferenceState.markReadStoriesEnabled
-                                ? Palette.grey
-                                : null,
-                          ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: Dimens.pt16,
                         ),
-                        trailing: DropdownButton<StoryMarkingMode>(
-                          value: preferenceState.storyMarkingMode,
-                          underline: const SizedBox.shrink(),
-                          items: StoryMarkingMode.values
-                              .map(
-                                (StoryMarkingMode val) =>
-                                    DropdownMenuItem<StoryMarkingMode>(
-                                  value: val,
-                                  child: Text(
-                                    val.label,
-                                    style: TextStyle(
-                                      fontSize: TextDimens.pt16,
-                                      color: !preferenceState
-                                              .markReadStoriesEnabled
-                                          ? Palette.grey
-                                          : null,
-                                    ),
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: (StoryMarkingMode? storyMarkingMode) {
+                        child: DropdownMenu<StoryMarkingMode>(
+                          label: Text(StoryMarkingModePreference().title),
+                          initialSelection: preferenceState.storyMarkingMode,
+                          onSelected: (StoryMarkingMode? storyMarkingMode) {
                             if (storyMarkingMode != null) {
                               HapticFeedbackUtil.selection();
                               context.read<PreferenceCubit>().update(
@@ -272,6 +240,16 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                                   );
                             }
                           },
+                          dropdownMenuEntries: StoryMarkingMode.values
+                              .map(
+                                (StoryMarkingMode val) =>
+                                    DropdownMenuEntry<StoryMarkingMode>(
+                                  value: val,
+                                  label: val.label,
+                                ),
+                              )
+                              .toList(),
+                          expandedInsets: EdgeInsets.zero,
                         ),
                       ),
                       const Divider(),

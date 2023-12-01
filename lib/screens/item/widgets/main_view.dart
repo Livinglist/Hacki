@@ -13,7 +13,6 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/styles/theme.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -317,7 +316,8 @@ class _ParentItemSection extends StatelessWidget {
                                           fontSize: fontSize,
                                           color: item.url.isNotEmpty
                                               ? Theme.of(context)
-                                                  .responsivePrimaryColor
+                                                  .colorScheme
+                                                  .primary
                                               : null,
                                         ),
                                       ),
@@ -328,7 +328,8 @@ class _ParentItemSection extends StatelessWidget {
                                             fontWeight: FontWeight.bold,
                                             fontSize: fontSize - 4,
                                             color: Theme.of(context)
-                                                .responsivePrimaryColor,
+                                                .colorScheme
+                                                .primary,
                                           ),
                                         ),
                                     ],
@@ -454,13 +455,10 @@ class _ParentItemSection extends StatelessWidget {
                 ],
                 const Spacer(),
                 if (!state.isOfflineReading)
-                  DropdownButton<FetchMode>(
-                    value: state.fetchMode,
-                    underline: const SizedBox.shrink(),
-                    items: FetchMode.values
+                  MenuAnchor(
+                    menuChildren: FetchMode.values
                         .map(
-                          (FetchMode val) => DropdownMenuItem<FetchMode>(
-                            value: val,
+                          (FetchMode val) => MenuItemButton(
                             child: Text(
                               val.description,
                               style: const TextStyle(
@@ -468,10 +466,39 @@ class _ParentItemSection extends StatelessWidget {
                               ),
                               textScaler: TextScaler.noScaling,
                             ),
+                            onPressed: () {
+                              context
+                                  .read<CommentsCubit>()
+                                  .updateFetchMode(val);
+                            },
                           ),
                         )
                         .toList(),
-                    onChanged: context.read<CommentsCubit>().updateFetchMode,
+                    builder:
+                        (BuildContext context, MenuController controller, _) {
+                      return InkWell(
+                        child: Row(
+                          children: <Widget>[
+                            Text(
+                              state.fetchMode.description,
+                              style: Theme.of(context).textTheme.labelLarge,
+                            ),
+                            Icon(
+                              controller.isOpen
+                                  ? Icons.arrow_drop_up
+                                  : Icons.arrow_drop_down,
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          if (controller.isOpen) {
+                            controller.close();
+                          } else {
+                            controller.open();
+                          }
+                        },
+                      );
+                    },
                   ),
                 const SizedBox(
                   width: Dimens.pt6,

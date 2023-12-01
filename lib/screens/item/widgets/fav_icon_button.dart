@@ -31,7 +31,7 @@ class FavIconButton extends StatelessWidget {
               isFav ? Icons.favorite : Icons.favorite_border,
               color: isFav
                   ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).iconTheme.color,
+                  : Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           onPressed: () {
