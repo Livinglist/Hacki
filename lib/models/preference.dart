@@ -82,7 +82,7 @@ final int _fetchModeDefaultValue = FetchMode.eager.index;
 final int _commentsOrderDefaultValue = CommentsOrder.natural.index;
 final int _fontSizeDefaultValue = FontSize.regular.index;
 final int _appColorDefaultValue = materialColors.indexOf(Palette.deepOrange);
-final int _fontDefaultValue = Font.roboto.index;
+final int _fontDefaultValue = Font.robotoSlab.index;
 final int _tabOrderDefaultValue =
     StoryType.convertToSettingsValue(StoryType.values);
 final int _markStoriesAsReadWhenPreferenceDefaultValue =
