@@ -52,8 +52,6 @@ class LinkView extends StatelessWidget {
   final bool showMetadata;
   final bool showUrl;
 
-  static const double _bottomPadding = 6;
-
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
