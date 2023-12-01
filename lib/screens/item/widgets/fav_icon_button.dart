@@ -4,6 +4,7 @@ import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/discoverable_feature.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/styles/theme.dart';
 import 'package:hacki/utils/utils.dart';
 
 class FavIconButton extends StatelessWidget {
@@ -30,7 +31,7 @@ class FavIconButton extends StatelessWidget {
             child: Icon(
               isFav ? Icons.favorite : Icons.favorite_border,
               color: isFav
-                  ? Theme.of(context).primaryColor
+                  ? Theme.of(context).responsivePrimaryColor
                   : Theme.of(context).iconTheme.color,
             ),
           ),

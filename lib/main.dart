@@ -239,12 +239,11 @@ class HackiApp extends StatelessWidget {
         buildWhen: (PreferenceState previous, PreferenceState current) =>
             previous.appColor != current.appColor ||
             previous.font != current.font ||
-            previous.textScaleFactor != current.textScaleFactor ||
-            previous.material3Enabled != current.material3Enabled,
+            previous.textScaleFactor != current.textScaleFactor,
         builder: (BuildContext context, PreferenceState state) {
           return AdaptiveTheme(
             key: ValueKey<String>(
-              '''${state.appColor}${state.font}${state.material3Enabled}''',
+              '''${state.appColor}${state.font}''',
             ),
             light: ThemeData(
               primaryColor: state.appColor,
@@ -283,6 +282,11 @@ class HackiApp extends StatelessWidget {
                                       .platformDispatcher
                                       .platformBrightness ==
                                   Brightness.dark);
+                  final ColorScheme colorScheme = ColorScheme.fromSeed(
+                    brightness:
+                        isDarkModeEnabled ? Brightness.dark : Brightness.light,
+                    seedColor: state.appColor,
+                  );
                   return FeatureDiscovery(
                     child: MediaQuery(
                       data: MediaQuery.of(context).copyWith(
@@ -311,7 +315,7 @@ class HackiApp extends StatelessWidget {
                             trackColor: MaterialStateProperty.resolveWith(
                               (Set<MaterialState> states) {
                                 if (states.contains(MaterialState.selected)) {
-                                  return null;
+                                  return colorScheme.primary.withOpacity(0.6);
                                 } else {
                                   return Palette.grey.withOpacity(0.2);
                                 }
@@ -335,6 +339,8 @@ class HackiApp extends StatelessWidget {
                           sliderTheme: SliderThemeData(
                             inactiveTrackColor:
                                 state.appColor.shade200.withOpacity(0.5),
+                            activeTrackColor: state.appColor,
+                            thumbColor: state.appColor,
                           ),
                           outlinedButtonTheme: OutlinedButtonThemeData(
                             style: ButtonStyle(

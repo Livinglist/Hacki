@@ -15,19 +15,13 @@ class CustomChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool useMaterial3 = Theme.of(context).useMaterial3;
     return FilterChip(
       shadowColor: Palette.transparent,
       selectedShadowColor: Palette.transparent,
       backgroundColor: Palette.transparent,
-      side: useMaterial3 && !selected
-          ? BorderSide(color: Theme.of(context).colorScheme.onSurface)
-          : null,
-      shape: Theme.of(context).useMaterial3
-          ? null
-          : StadiumBorder(
-              side: BorderSide(color: Theme.of(context).primaryColor),
-            ),
+      side: selected
+          ? BorderSide(color: Theme.of(context).colorScheme.primary)
+          : BorderSide(color: Theme.of(context).colorScheme.onSurface),
       label: Text(label),
       labelStyle: TextStyle(
         color: selected ? Theme.of(context).colorScheme.onPrimary : null,
@@ -35,7 +29,7 @@ class CustomChip extends StatelessWidget {
       checkmarkColor: selected ? Theme.of(context).colorScheme.onPrimary : null,
       selected: selected,
       onSelected: onSelected,
-      selectedColor: Theme.of(context).primaryColor,
+      selectedColor: Theme.of(context).colorScheme.primary,
     );
   }
 }
