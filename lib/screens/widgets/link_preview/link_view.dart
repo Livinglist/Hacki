@@ -1,12 +1,8 @@
-import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
-import 'package:hacki/models/models.dart';
-import 'package:hacki/screens/widgets/link_preview/models/models.dart';
 import 'package:hacki/screens/widgets/tap_down_wrapper.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/link_util.dart';
@@ -22,13 +18,13 @@ class LinkView extends StatelessWidget {
     required this.showMetadata,
     required bool showUrl,
     required this.bodyMaxLines,
-    required this.titleTextStyle,
     super.key,
     this.imageUri,
     this.imagePath,
     this.showMultiMedia = true,
     this.bodyTextOverflow,
     this.isIcon = false,
+    this.hasRead = false,
     this.bgColor,
     this.radius = 0,
   })  : showUrl = showUrl && url.isNotEmpty,
@@ -46,8 +42,8 @@ class LinkView extends StatelessWidget {
   final String? imageUri;
   final String? imagePath;
   final VoidCallback onTap;
-  final TextStyle titleTextStyle;
   final bool showMultiMedia;
+  final bool hasRead;
   final TextOverflow? bodyTextOverflow;
   final int bodyMaxLines;
   final bool isIcon;
@@ -57,93 +53,6 @@ class LinkView extends StatelessWidget {
   final bool showUrl;
 
   static const double _bottomPadding = 6;
-  static late TextStyle _urlStyle;
-  static late TextStyle _metadataStyle;
-  static late TextStyle _descriptionStyle;
-
-  static final Map<MaxLineComputationParams, int> _computationCache =
-      <MaxLineComputationParams, int>{};
-
-  static int getDescriptionMaxLines(
-    MaxLineComputationParams params,
-    TextStyle titleStyle,
-  ) {
-    if (_computationCache.containsKey(params)) {
-      return _computationCache[params]!;
-    }
-
-    _urlStyle = titleStyle.copyWith(
-      color: Palette.grey,
-      fontSize: TextDimens.pt12,
-      fontWeight: FontWeight.w400,
-      fontFamily: params.fontFamily,
-    );
-    _descriptionStyle = TextStyle(
-      color: Palette.grey,
-      fontFamily: params.fontFamily,
-      fontSize: TextDimens.pt14,
-    );
-    _metadataStyle = _descriptionStyle.copyWith(
-      fontSize: TextDimens.pt12,
-      fontFamily: params.fontFamily,
-    );
-
-    final double urlHeight = (TextPainter(
-      text: TextSpan(
-        text: '(url)',
-        style: _urlStyle,
-      ),
-      maxLines: 1,
-      textScaler: params.textScaler,
-      textDirection: TextDirection.ltr,
-    )..layout())
-        .size
-        .height;
-    final double metadataHeight = (TextPainter(
-      text: TextSpan(
-        text: '123metadata',
-        style: _metadataStyle,
-      ),
-      maxLines: 1,
-      textScaler: params.textScaler,
-      textDirection: TextDirection.ltr,
-    )..layout())
-        .size
-        .height;
-    final double descriptionHeight = (TextPainter(
-      text: TextSpan(
-        text: 'DESCRIPTION',
-        style: _descriptionStyle,
-      ),
-      maxLines: 1,
-      textScaler: params.textScaler,
-      textDirection: TextDirection.ltr,
-    )..layout())
-        .size
-        .height;
-
-    final double allPaddings =
-        params.fontFamily == Font.robotoSlab.name ? Dimens.pt2 : Dimens.pt4;
-
-    final double height = <double>[
-      params.titleHeight,
-      if (params.showUrl) urlHeight,
-      if (params.showMetadata) metadataHeight,
-      allPaddings,
-      _bottomPadding,
-    ].reduce((double a, double b) => a + b);
-
-    final double descriptionAllowedHeight = params.layoutHeight - height;
-
-    final int maxLines =
-        max(1, (descriptionAllowedHeight / descriptionHeight).floor());
-
-    _computationCache[params] = maxLines;
-
-    return maxLines;
-  }
-
-  static bool? isUsingSerifFont;
 
   @override
   Widget build(BuildContext context) {
@@ -209,10 +118,10 @@ class LinkView extends StatelessWidget {
                   children: <Widget>[
                     Text(
                       title,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleSmall
-                          ?.copyWith(height: 1.2),
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            height: 1.2,
+                            color: hasRead ? Palette.grey : null,
+                          ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
                     ),
@@ -241,7 +150,9 @@ class LinkView extends StatelessWidget {
                         description,
                         textAlign: TextAlign.left,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Palette.grey.shade800,
+                              color: hasRead
+                                  ? Palette.grey
+                                  : Palette.grey.shade800,
                             ),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 5,

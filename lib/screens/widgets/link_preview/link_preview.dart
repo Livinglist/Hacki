@@ -16,7 +16,7 @@ class LinkPreview extends StatefulWidget {
     required this.showMetadata,
     required this.showUrl,
     required this.isOfflineReading,
-    required this.titleStyle,
+    required this.hasRead,
     super.key,
     this.cache = const Duration(days: 30),
     this.showMultimedia = true,
@@ -35,6 +35,7 @@ class LinkPreview extends StatefulWidget {
 
   final Story story;
   final VoidCallback onTap;
+  final bool hasRead;
 
   /// Web address (Url that need to be parsed)
   /// For IOS & Web, only HTTP and HTTPS are support
@@ -82,9 +83,6 @@ class LinkPreview extends StatefulWidget {
   /// Cache result time, default cache `30 days`
   /// Works only for IOS & not for android
   final Duration cache;
-
-  /// Customize body `TextStyle`
-  final TextStyle titleStyle;
 
   /// Show or Hide image if available defaults to `true`
   final bool showMultimedia;
@@ -173,7 +171,7 @@ class _LinkPreviewState extends State<LinkPreview> {
         imageUri: imageUri,
         imagePath: Constants.hackerNewsLogoPath,
         onTap: widget.onTap,
-        titleTextStyle: widget.titleStyle,
+        hasRead: widget.hasRead,
         bodyTextOverflow: widget.bodyTextOverflow,
         bodyMaxLines: widget.bodyMaxLines,
         showMultiMedia: widget.showMultimedia,

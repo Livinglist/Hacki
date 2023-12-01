@@ -55,12 +55,7 @@ class StoryTile extends StatelessWidget {
             removeElevation: true,
             bodyMaxLines: context.storyTileMaxLines,
             errorTitle: story.title,
-            titleStyle: TextStyle(
-              color: hasRead
-                  ? Palette.grey[500]
-                  : Theme.of(context).textTheme.bodyLarge?.color,
-              fontWeight: FontWeight.bold,
-            ),
+            hasRead: hasRead,
             showMetadata: showMetadata,
             showUrl: showUrl,
             onTap: onTap,
