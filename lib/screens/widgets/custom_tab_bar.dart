@@ -44,7 +44,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
           controller: widget.tabController,
           dividerHeight: 0,
           isScrollable: true,
-          indicatorColor: Theme.of(context).primaryColor,
+          indicatorColor: Theme.of(context).colorScheme.primary,
           indicator: CircleTabIndicator(
             color: Theme.of(context).colorScheme.primary,
             radius: Dimens.pt2,

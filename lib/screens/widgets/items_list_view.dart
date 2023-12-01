@@ -113,7 +113,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                               fontSize: TextDimens.pt16,
                             ),
                             linkStyle: TextStyle(
-                              color: Theme.of(context).primaryColor,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                             onOpen: (LinkableElement link) => LinkUtil.launch(
                               link.url,
@@ -202,7 +202,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                                 fontSize: TextDimens.pt16,
                               ),
                               linkStyle: TextStyle(
-                                color: Theme.of(context).primaryColor,
+                                color: Theme.of(context).colorScheme.primary,
                               ),
                               onOpen: (LinkableElement link) => LinkUtil.launch(
                                 link.url,
@@ -239,7 +239,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
       enablePullUp: true,
       enablePullDown: enablePullDown,
       header: WaterDropMaterialHeader(
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       footer: CustomFooter(
         loadStyle: loadStyle,

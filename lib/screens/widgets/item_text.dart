@@ -32,7 +32,7 @@ class ItemText extends StatelessWidget {
     final TextStyle linkStyle = TextStyle(
       fontSize: prefState.fontSize.fontSize,
       decoration: TextDecoration.underline,
-      color: Theme.of(context).primaryColor,
+      color: Theme.of(context).colorScheme.primary,
     );
 
     void onSelectionChanged(

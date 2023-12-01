@@ -76,7 +76,7 @@ abstract class LinkUtil {
               context.read<PreferenceCubit>().state.customTabEnabled == false) {
             launchUrl(uri, mode: LaunchMode.externalApplication);
           } else {
-            final Color primaryColor = Theme.of(context).primaryColor;
+            final Color primaryColor = Theme.of(context).colorScheme.primary;
             _browser
                 .open(
                   url: uri,

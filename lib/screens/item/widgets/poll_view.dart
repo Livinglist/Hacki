@@ -106,7 +106,7 @@ class _PollViewState extends State<PollView> with ItemActionMixin {
                               icon: Icon(
                                 Icons.arrow_drop_up,
                                 color: voteState.vote == Vote.up
-                                    ? Theme.of(context).primaryColor
+                                    ? Theme.of(context).colorScheme.primary
                                     : Palette.grey,
                                 size: TextDimens.pt36,
                               ),
@@ -130,7 +130,8 @@ class _PollViewState extends State<PollView> with ItemActionMixin {
                                   ),
                                   LinearProgressIndicator(
                                     value: option.ratio,
-                                    color: Theme.of(context).primaryColor,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                   ),
                                 ],
                               ),

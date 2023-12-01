@@ -222,14 +222,14 @@ class _ParentItemSection extends StatelessWidget {
                       }
                       context.read<EditCubit>().onReplyTapped(item);
                     },
-                    backgroundColor: Theme.of(context).primaryColor,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     icon: Icons.message,
                   ),
                   SlidableAction(
                     onPressed: (BuildContext context) =>
                         onMoreTapped(item, context.rect),
-                    backgroundColor: Theme.of(context).primaryColor,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     icon: Icons.more_horiz,
                   ),

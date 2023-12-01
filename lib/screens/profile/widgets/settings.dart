@@ -228,7 +228,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                               .add(ClearAllReadStories());
                         }
                       },
-                      activeColor: Theme.of(context).primaryColor,
+                      activeColor: Theme.of(context).colorScheme.primary,
                     ),
                     if (preference
                         is MarkReadStoriesModePreference) ...<Widget>[
@@ -510,7 +510,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
               child: Text(
                 'Cancel',
                 style: TextStyle(
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),

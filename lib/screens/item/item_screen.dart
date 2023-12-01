@@ -413,7 +413,7 @@ class _ItemScreenState extends State<ItemScreen>
                 fontSize: fontSize.fontSize,
                 color:
                     context.read<PreferenceCubit>().state.fontSize == fontSize
-                        ? Theme.of(context).primaryColor
+                        ? Theme.of(context).colorScheme.primary
                         : null,
               ),
             ),
