@@ -151,36 +151,6 @@ class LinkView extends StatelessWidget {
       builder: (BuildContext context, BoxConstraints constraints) {
         final double layoutWidth = constraints.biggest.width;
         final double layoutHeight = constraints.biggest.height;
-        final double bodyWidth = layoutWidth - layoutHeight - 8;
-        final String? fontFamily =
-            Theme.of(context).primaryTextTheme.bodyMedium?.fontFamily;
-        final TextScaler textScaler = MediaQuery.of(context).textScaler;
-        final TextStyle titleStyle = titleTextStyle;
-        final double titleHeight = (TextPainter(
-          text: TextSpan(
-            text: title,
-            style: titleStyle,
-          ),
-          maxLines: 2,
-          textScaler: textScaler,
-          textDirection: TextDirection.ltr,
-        )..layout(maxWidth: bodyWidth))
-            .size
-            .height;
-        final int descriptionMaxLines = getDescriptionMaxLines(
-          MaxLineComputationParams(
-            fontFamily ?? Font.roboto.name,
-            bodyWidth,
-            layoutHeight,
-            titleHeight,
-            textScaler,
-            showUrl,
-            showMetadata,
-          ),
-          titleStyle,
-        );
-
-        isUsingSerifFont ??= Font.fromString(fontFamily).isSerif;
 
         return Row(
           children: <Widget>[
@@ -237,12 +207,12 @@ class LinkView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    SizedBox(
-                      height: isUsingSerifFont! ? Dimens.zero : Dimens.pt4,
-                    ),
                     Text(
                       title,
-                      style: titleStyle,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleSmall
+                          ?.copyWith(height: 1.2),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
                     ),
@@ -250,7 +220,9 @@ class LinkView extends StatelessWidget {
                       Text(
                         '($readableUrl)',
                         textAlign: TextAlign.left,
-                        style: _urlStyle,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: Palette.grey,
+                            ),
                         overflow: bodyTextOverflow ?? TextOverflow.ellipsis,
                         maxLines: 1,
                       ),
@@ -258,16 +230,22 @@ class LinkView extends StatelessWidget {
                       Text(
                         metadata,
                         textAlign: TextAlign.left,
-                        style: _metadataStyle,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: Palette.grey,
+                            ),
                         overflow: bodyTextOverflow ?? TextOverflow.ellipsis,
                         maxLines: 1,
                       ),
-                    Text(
-                      description,
-                      textAlign: TextAlign.left,
-                      style: _descriptionStyle,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: descriptionMaxLines,
+                    Flexible(
+                      child: Text(
+                        description,
+                        textAlign: TextAlign.left,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Palette.grey.shade800,
+                            ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 5,
+                      ),
                     ),
                     const SizedBox(
                       height: _bottomPadding,

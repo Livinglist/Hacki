@@ -74,8 +74,6 @@ class PreferenceState extends Equatable {
 
   bool get manualPaginationEnabled => _isOn<ManualPaginationPreference>();
 
-  bool get trueDarkModeEnabled => _isOn<TrueDarkModePreference>();
-
   bool get hapticFeedbackEnabled => _isOn<HapticFeedbackPreference>();
 
   double get textScaleFactor =>

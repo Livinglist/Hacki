@@ -45,7 +45,6 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
       const SwipeGesturePreference(),
       const HapticFeedbackPreference(),
       const EyeCandyModePreference(),
-      const TrueDarkModePreference(),
       const Material3Preference(),
     ],
   );
@@ -70,7 +69,6 @@ const bool _notificationModeDefaultValue = true;
 const bool _swipeGestureModeDefaultValue = false;
 const bool _displayModeDefaultValue = true;
 const bool _eyeCandyModeDefaultValue = false;
-const bool _trueDarkModeDefaultValue = false;
 const bool _hapticFeedbackModeDefaultValue = true;
 const bool _readerModeDefaultValue = true;
 const bool _markReadStoriesModeDefaultValue = true;
@@ -357,25 +355,6 @@ class CustomTabPreference extends BooleanPreference {
 
   @override
   bool get isDisplayable => Platform.isAndroid;
-}
-
-class TrueDarkModePreference extends BooleanPreference {
-  const TrueDarkModePreference({bool? val})
-      : super(val: val ?? _trueDarkModeDefaultValue);
-
-  @override
-  TrueDarkModePreference copyWith({required bool? val}) {
-    return TrueDarkModePreference(val: val);
-  }
-
-  @override
-  String get key => 'trueDarkMode';
-
-  @override
-  String get title => 'True Dark Mode';
-
-  @override
-  String get subtitle => 'real dark.';
 }
 
 class HapticFeedbackPreference extends BooleanPreference {

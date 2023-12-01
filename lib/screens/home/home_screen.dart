@@ -141,15 +141,8 @@ class _HomeScreenState extends State<HomeScreen>
                   SizedBox(
                     height: MediaQuery.of(context).padding.top - Dimens.pt8,
                   ),
-                  Theme(
-                    data: ThemeData(
-                      highlightColor: Palette.transparent,
-                      splashColor: Palette.transparent,
-                      primaryColor: Theme.of(context).primaryColor,
-                    ),
-                    child: CustomTabBar(
-                      tabController: tabController,
-                    ),
+                  CustomTabBar(
+                    tabController: tabController,
                   ),
                 ],
               ),

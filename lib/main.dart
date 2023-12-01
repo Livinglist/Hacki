@@ -240,12 +240,11 @@ class HackiApp extends StatelessWidget {
             previous.appColor != current.appColor ||
             previous.font != current.font ||
             previous.textScaleFactor != current.textScaleFactor ||
-            previous.material3Enabled != current.material3Enabled ||
-            previous.trueDarkModeEnabled != current.trueDarkModeEnabled,
+            previous.material3Enabled != current.material3Enabled,
         builder: (BuildContext context, PreferenceState state) {
           return AdaptiveTheme(
             key: ValueKey<String>(
-              '''${state.appColor}${state.font}${state.material3Enabled}${state.trueDarkModeEnabled}''',
+              '''${state.appColor}${state.font}${state.material3Enabled}''',
             ),
             light: ThemeData(
               primaryColor: state.appColor,
@@ -261,7 +260,6 @@ class HackiApp extends StatelessWidget {
                 primarySwatch: state.appColor,
                 brightness: Brightness.dark,
               ),
-              canvasColor: state.trueDarkModeEnabled ? Palette.black : null,
               fontFamily: state.font.name,
             ),
             initial: savedThemeMode ?? AdaptiveThemeMode.system,
@@ -298,61 +296,55 @@ class HackiApp extends StatelessWidget {
                         key: Key(state.appColor.hashCode.toString()),
                         title: 'Hacki',
                         debugShowCheckedModeBanner: false,
-                        theme: (isDarkModeEnabled ? darkTheme : theme).copyWith(
-                          dividerTheme: state.material3Enabled
-                              ? DividerThemeData(
-                                  color: Palette.grey.withOpacity(0.2),
-                                )
-                              : null,
-                          switchTheme: state.material3Enabled
-                              ? SwitchThemeData(
-                                  trackColor: MaterialStateProperty.resolveWith(
-                                    (Set<MaterialState> states) {
-                                      if (states
-                                          .contains(MaterialState.selected)) {
-                                        return null;
-                                      } else {
-                                        return Palette.grey.withOpacity(0.2);
-                                      }
-                                    },
-                                  ),
-                                )
-                              : null,
-                          bottomSheetTheme: state.material3Enabled
-                              ? const BottomSheetThemeData(
-                                  modalElevation: 8,
-                                  clipBehavior: Clip.hardEdge,
-                                  shadowColor: Palette.black,
-                                )
-                              : null,
-                          inputDecorationTheme: state.material3Enabled
-                              ? InputDecorationTheme(
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: isDarkModeEnabled
-                                          ? Palette.white
-                                          : Palette.black,
-                                    ),
-                                  ),
-                                )
-                              : null,
-                          sliderTheme: state.material3Enabled
-                              ? SliderThemeData(
-                                  inactiveTrackColor:
-                                      state.appColor.shade200.withOpacity(0.5),
-                                )
-                              : null,
-                          outlinedButtonTheme: state.material3Enabled
-                              ? OutlinedButtonThemeData(
-                                  style: ButtonStyle(
-                                    side: MaterialStateBorderSide.resolveWith(
-                                      (_) => const BorderSide(
-                                        color: Palette.grey,
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : null,
+                        theme: ThemeData(
+                          colorScheme: ColorScheme.fromSeed(
+                            brightness: isDarkModeEnabled
+                                ? Brightness.dark
+                                : Brightness.light,
+                            seedColor: state.appColor,
+                          ),
+                          fontFamily: state.font.name,
+                          dividerTheme: DividerThemeData(
+                            color: Palette.grey.withOpacity(0.2),
+                          ),
+                          switchTheme: SwitchThemeData(
+                            trackColor: MaterialStateProperty.resolveWith(
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.selected)) {
+                                  return null;
+                                } else {
+                                  return Palette.grey.withOpacity(0.2);
+                                }
+                              },
+                            ),
+                          ),
+                          bottomSheetTheme: const BottomSheetThemeData(
+                            modalElevation: 8,
+                            clipBehavior: Clip.hardEdge,
+                            shadowColor: Palette.black,
+                          ),
+                          inputDecorationTheme: InputDecorationTheme(
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: isDarkModeEnabled
+                                    ? Palette.white
+                                    : Palette.black,
+                              ),
+                            ),
+                          ),
+                          sliderTheme: SliderThemeData(
+                            inactiveTrackColor:
+                                state.appColor.shade200.withOpacity(0.5),
+                          ),
+                          outlinedButtonTheme: OutlinedButtonThemeData(
+                            style: ButtonStyle(
+                              side: MaterialStateBorderSide.resolveWith(
+                                (_) => const BorderSide(
+                                  color: Palette.grey,
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
                         routerConfig: router,
                       ),

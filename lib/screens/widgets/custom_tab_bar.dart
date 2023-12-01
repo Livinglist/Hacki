@@ -41,19 +41,22 @@ class _CustomTabBarState extends State<CustomTabBar> {
     return BlocBuilder<TabCubit, TabState>(
       builder: (BuildContext context, TabState state) {
         return TabBar(
-          isScrollable: true,
           controller: widget.tabController,
+          dividerHeight: 0,
+          isScrollable: true,
           indicatorColor: Theme.of(context).primaryColor,
           indicator: CircleTabIndicator(
-            color: Theme.of(context).primaryColor,
+            color: Theme.of(context).colorScheme.onSurface,
             radius: Dimens.pt2,
           ),
+          splashFactory: NoSplash.splashFactory,
           indicatorPadding: const EdgeInsets.only(
             bottom: Dimens.pt8,
           ),
           onTap: (_) {
             HapticFeedbackUtil.selection();
           },
+          tabAlignment: TabAlignment.center,
           tabs: <Widget>[
             for (int i = 0; i < state.tabs.length; i++)
               Tab(
@@ -65,7 +68,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
                     fontSize:
                         currentIndex == i ? TextDimens.pt14 : TextDimens.pt10,
                     color: currentIndex == i
-                        ? Theme.of(context).primaryColor
+                        ? Theme.of(context).colorScheme.onSurface
                         : Palette.grey,
                   ),
                   duration: AppDurations.ms200,
