@@ -454,13 +454,10 @@ class _ParentItemSection extends StatelessWidget {
                 ],
                 const Spacer(),
                 if (!state.isOfflineReading)
-                  DropdownButton<FetchMode>(
-                    value: state.fetchMode,
-                    underline: const SizedBox.shrink(),
-                    items: FetchMode.values
+                  MenuAnchor(
+                    menuChildren: FetchMode.values
                         .map(
-                          (FetchMode val) => DropdownMenuItem<FetchMode>(
-                            value: val,
+                          (FetchMode val) => MenuItemButton(
                             child: Text(
                               val.description,
                               style: const TextStyle(
@@ -468,10 +465,39 @@ class _ParentItemSection extends StatelessWidget {
                               ),
                               textScaler: TextScaler.noScaling,
                             ),
+                            onPressed: () {
+                              context
+                                  .read<CommentsCubit>()
+                                  .updateFetchMode(val);
+                            },
                           ),
                         )
                         .toList(),
-                    onChanged: context.read<CommentsCubit>().updateFetchMode,
+                    builder:
+                        (BuildContext context, MenuController controller, _) {
+                      return InkWell(
+                        child: Row(
+                          children: <Widget>[
+                            Text(
+                              state.fetchMode.description,
+                              style: Theme.of(context).textTheme.labelLarge,
+                            ),
+                            Icon(
+                              controller.isOpen
+                                  ? Icons.arrow_drop_up
+                                  : Icons.arrow_drop_down,
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          if (controller.isOpen) {
+                            controller.close();
+                          } else {
+                            controller.open();
+                          }
+                        },
+                      );
+                    },
                   ),
                 const SizedBox(
                   width: Dimens.pt6,
