@@ -138,7 +138,7 @@ Future<void> main({bool testing = false}) async {
 
   HydratedBloc.storage = storage;
 
-  VisibilityDetectorController.instance.updateInterval = Durations.ms200;
+  VisibilityDetectorController.instance.updateInterval = AppDurations.ms200;
 
   runApp(
     HackiApp(
@@ -288,16 +288,17 @@ class HackiApp extends StatelessWidget {
                   return FeatureDiscovery(
                     child: MediaQuery(
                       data: MediaQuery.of(context).copyWith(
-                        textScaleFactor: state.textScaleFactor == 1
-                            ? null
-                            : state.textScaleFactor,
+                        textScaler: TextScaler.linear(
+                          state.textScaleFactor == 1
+                              ? 1
+                              : state.textScaleFactor,
+                        ),
                       ),
                       child: MaterialApp.router(
                         key: Key(state.appColor.hashCode.toString()),
                         title: 'Hacki',
                         debugShowCheckedModeBanner: false,
                         theme: (isDarkModeEnabled ? darkTheme : theme).copyWith(
-                          useMaterial3: state.material3Enabled,
                           dividerTheme: state.material3Enabled
                               ? DividerThemeData(
                                   color: Palette.grey.withOpacity(0.2),

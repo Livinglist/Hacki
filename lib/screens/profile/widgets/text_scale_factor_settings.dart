@@ -14,7 +14,7 @@ class TextScaleFactorSettings extends StatelessWidget {
           previous.textScaleFactor != current.textScaleFactor,
       builder: (BuildContext context, PreferenceState state) {
         final String label = state.textScaleFactor == 1
-            ? '''system default ${MediaQuery.of(context).textScaleFactor.toStringAsPrecision(2)}'''
+            ? '''system default'''
             : state.textScaleFactor.toString();
         return Column(
           children: <Widget>[

@@ -369,7 +369,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     itemScrollController.scrollTo(
       index: index,
       alignment: alignment,
-      duration: Durations.ms400,
+      duration: AppDurations.ms400,
     );
   }
 
@@ -394,7 +394,7 @@ class CommentsCubit extends Cubit<CommentsState> {
       itemScrollController.scrollTo(
         index: 1,
         alignment: 0.15,
-        duration: Durations.ms400,
+        duration: AppDurations.ms400,
       );
       return;
     }
@@ -421,7 +421,7 @@ class CommentsCubit extends Cubit<CommentsState> {
         itemScrollController.scrollTo(
           index: i + 1,
           alignment: 0.15,
-          duration: Durations.ms400,
+          duration: AppDurations.ms400,
         );
         return;
       }
@@ -461,7 +461,7 @@ class CommentsCubit extends Cubit<CommentsState> {
         itemScrollController.scrollTo(
           index: i + 1,
           alignment: 0.15,
-          duration: Durations.ms400,
+          duration: AppDurations.ms400,
         );
         return;
       }

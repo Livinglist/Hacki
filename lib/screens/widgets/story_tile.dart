@@ -110,7 +110,7 @@ class StoryTile extends StatelessWidget {
                               ),
                           ],
                         ),
-                        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+                        textScaler: MediaQuery.of(context).textScaler,
                       ),
                     ),
                   ],

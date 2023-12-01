@@ -248,8 +248,7 @@ class _ParentItemSection extends StatelessWidget {
                           style: TextStyle(
                             color: Theme.of(context).primaryColor,
                           ),
-                          textScaleFactor:
-                              MediaQuery.of(context).textScaleFactor,
+                          textScaler: MediaQuery.of(context).textScaler,
                         ),
                         const Spacer(),
                         Text(
@@ -257,8 +256,7 @@ class _ParentItemSection extends StatelessWidget {
                           style: const TextStyle(
                             color: Palette.grey,
                           ),
-                          textScaleFactor:
-                              MediaQuery.of(context).textScaleFactor,
+                          textScaler: MediaQuery.of(context).textScaler,
                         ),
                       ],
                     ),
@@ -335,8 +333,7 @@ class _ParentItemSection extends StatelessWidget {
                                     ],
                                   ),
                                   textAlign: TextAlign.center,
-                                  textScaleFactor:
-                                      MediaQuery.of(context).textScaleFactor,
+                                  textScaler: MediaQuery.of(context).textScaler,
                                 ),
                               ),
                             )
@@ -354,8 +351,8 @@ class _ParentItemSection extends StatelessWidget {
                                   ),
                                   child: ItemText(
                                     item: item,
-                                    textScaleFactor:
-                                        MediaQuery.of(context).textScaleFactor,
+                                    textScaler:
+                                        MediaQuery.of(context).textScaler,
                                     selectable: true,
                                   ),
                                 ),
@@ -404,7 +401,7 @@ class _ParentItemSection extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: TextDimens.pt13,
                     ),
-                    textScaleFactor: 1,
+                    textScaler: TextScaler.noScaling,
                   ),
                 ] else ...<Widget>[
                   const SizedBox(
@@ -428,7 +425,7 @@ class _ParentItemSection extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: TextDimens.pt13,
                                   ),
-                                  textScaleFactor: 1,
+                                  textScaler: TextScaler.noScaling,
                                 ),
                     ),
                   ),
@@ -449,7 +446,7 @@ class _ParentItemSection extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: TextDimens.pt13,
                               ),
-                              textScaleFactor: 1,
+                              textScaler: TextScaler.noScaling,
                             ),
                     ),
                   ),
@@ -468,7 +465,7 @@ class _ParentItemSection extends StatelessWidget {
                               style: const TextStyle(
                                 fontSize: TextDimens.pt13,
                               ),
-                              textScaleFactor: 1,
+                              textScaler: TextScaler.noScaling,
                             ),
                           ),
                         )
@@ -490,7 +487,7 @@ class _ParentItemSection extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: TextDimens.pt13,
                             ),
-                            textScaleFactor: 1,
+                            textScaler: TextScaler.noScaling,
                           ),
                         ),
                       )

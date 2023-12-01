@@ -73,7 +73,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                 height: editState.showReplyBox
                     ? (expanded ? expandedHeight : collapsedHeight)
                     : Dimens.zero,
-                duration: Durations.ms200,
+                duration: AppDurations.ms200,
                 decoration: BoxDecoration(
                   boxShadow: <BoxShadow>[
                     if (!context.read<SplitViewCubit>().state.enabled &&
@@ -97,7 +97,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                         ),
                       AnimatedContainer(
                         height: expanded ? Dimens.pt40 : Dimens.zero,
-                        duration: Durations.ms300,
+                        duration: AppDurations.ms300,
                       ),
                       Row(
                         children: <Widget>[
@@ -125,7 +125,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                                 AnimatedOpacity(
                                   opacity:
                                       expanded ? NumSwitch.on : NumSwitch.off,
-                                  duration: Durations.ms300,
+                                  duration: AppDurations.ms300,
                                   child: IconButton(
                                     key: const Key('quote'),
                                     icon: Icon(
@@ -370,8 +370,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                         child: ItemText(
                           item: replyingTo,
                           selectable: true,
-                          textScaleFactor:
-                              MediaQuery.of(context).textScaleFactor,
+                          textScaler: MediaQuery.of(context).textScaler,
                         ),
                       ),
                     ),

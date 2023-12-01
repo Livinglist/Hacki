@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 
 class MaxLineComputationParams extends Equatable {
   const MaxLineComputationParams(
@@ -6,7 +7,7 @@ class MaxLineComputationParams extends Equatable {
     this.layoutWidth,
     this.layoutHeight,
     this.titleHeight,
-    this.textScaleFactor,
+    this.textScaler,
     // ignore: avoid_positional_boolean_parameters
     this.showUrl,
     this.showMetadata,
@@ -16,7 +17,7 @@ class MaxLineComputationParams extends Equatable {
   final double layoutWidth;
   final double layoutHeight;
   final double titleHeight;
-  final double textScaleFactor;
+  final TextScaler textScaler;
   final bool showUrl;
   final bool showMetadata;
 
@@ -26,7 +27,7 @@ class MaxLineComputationParams extends Equatable {
         layoutWidth,
         layoutHeight,
         titleHeight,
-        textScaleFactor,
+        textScaler,
         showUrl,
         showMetadata,
       ];

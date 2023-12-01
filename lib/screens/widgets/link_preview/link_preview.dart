@@ -233,7 +233,7 @@ class _LinkPreviewState extends State<LinkPreview> {
       secondChild: loadedWidget,
       crossFadeState:
           _loading ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-      duration: Durations.ms500,
+      duration: AppDurations.ms500,
     );
   }
 }

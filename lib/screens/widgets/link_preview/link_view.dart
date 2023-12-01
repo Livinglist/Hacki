@@ -94,7 +94,7 @@ class LinkView extends StatelessWidget {
         style: _urlStyle,
       ),
       maxLines: 1,
-      textScaleFactor: params.textScaleFactor,
+      textScaler: params.textScaler,
       textDirection: TextDirection.ltr,
     )..layout())
         .size
@@ -105,7 +105,7 @@ class LinkView extends StatelessWidget {
         style: _metadataStyle,
       ),
       maxLines: 1,
-      textScaleFactor: params.textScaleFactor,
+      textScaler: params.textScaler,
       textDirection: TextDirection.ltr,
     )..layout())
         .size
@@ -116,7 +116,7 @@ class LinkView extends StatelessWidget {
         style: _descriptionStyle,
       ),
       maxLines: 1,
-      textScaleFactor: params.textScaleFactor,
+      textScaler: params.textScaler,
       textDirection: TextDirection.ltr,
     )..layout())
         .size
@@ -154,7 +154,7 @@ class LinkView extends StatelessWidget {
         final double bodyWidth = layoutWidth - layoutHeight - 8;
         final String? fontFamily =
             Theme.of(context).primaryTextTheme.bodyMedium?.fontFamily;
-        final double textScaleFactor = MediaQuery.of(context).textScaleFactor;
+        final TextScaler textScaler = MediaQuery.of(context).textScaler;
         final TextStyle titleStyle = titleTextStyle;
         final double titleHeight = (TextPainter(
           text: TextSpan(
@@ -162,7 +162,7 @@ class LinkView extends StatelessWidget {
             style: titleStyle,
           ),
           maxLines: 2,
-          textScaleFactor: textScaleFactor,
+          textScaler: textScaler,
           textDirection: TextDirection.ltr,
         )..layout(maxWidth: bodyWidth))
             .size
@@ -173,7 +173,7 @@ class LinkView extends StatelessWidget {
             bodyWidth,
             layoutHeight,
             titleHeight,
-            textScaleFactor,
+            textScaler,
             showUrl,
             showMetadata,
           ),

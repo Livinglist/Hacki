@@ -117,7 +117,7 @@ class _StoriesListViewState extends State<StoriesListView>
                   crossFadeState: shouldShowLoadButton()
                       ? CrossFadeState.showFirst
                       : CrossFadeState.showSecond,
-                  duration: Durations.ms300,
+                  duration: AppDurations.ms300,
                   firstChild: Padding(
                     padding: const EdgeInsets.only(
                       left: Dimens.pt48,

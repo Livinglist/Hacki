@@ -45,7 +45,7 @@ class CustomAppBar extends AppBar {
                   fontFamily: FeatherIcons.type.fontFamily,
                   package: FeatherIcons.type.fontPackage,
                 ),
-                textScaleFactor: 1,
+                textScaler: TextScaler.noScaling,
               ),
               onPressed: onFontSizeTap,
             ),

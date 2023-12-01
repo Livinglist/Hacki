@@ -156,8 +156,7 @@ class CommentTile extends StatelessWidget {
                                 style: TextStyle(
                                   color: primaryColor,
                                 ),
-                                textScaleFactor:
-                                    MediaQuery.of(context).textScaleFactor,
+                                textScaler: MediaQuery.of(context).textScaler,
                               ),
                               if (comment.by == opUsername)
                                 Text(
@@ -172,8 +171,7 @@ class CommentTile extends StatelessWidget {
                                   style: const TextStyle(
                                     color: Palette.grey,
                                   ),
-                                  textScaleFactor:
-                                      MediaQuery.of(context).textScaleFactor,
+                                  textScaler: MediaQuery.of(context).textScaler,
                                 ),
                               if (isResponse)
                                 const Padding(
@@ -199,14 +197,13 @@ class CommentTile extends StatelessWidget {
                                 style: const TextStyle(
                                   color: Palette.grey,
                                 ),
-                                textScaleFactor:
-                                    MediaQuery.of(context).textScaleFactor,
+                                textScaler: MediaQuery.of(context).textScaler,
                               ),
                             ],
                           ),
                         ),
                         AnimatedSize(
-                          duration: Durations.ms200,
+                          duration: AppDurations.ms200,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
@@ -243,8 +240,8 @@ class CommentTile extends StatelessWidget {
                                         key: ValueKey<int>(comment.id),
                                         item: comment,
                                         selectable: selectable,
-                                        textScaleFactor: MediaQuery.of(context)
-                                            .textScaleFactor,
+                                        textScaler:
+                                            MediaQuery.of(context).textScaler,
                                         onTap: () {
                                           if (onTap == null) {
                                             _onTextTapped(context);
@@ -406,12 +403,12 @@ class CommentTile extends StatelessWidget {
       final int indexOfNextComment = comments.indexOf(comment) + 1;
       if (indexOfNextComment < comments.length) {
         Future<void>.delayed(
-          Durations.ms300,
+          AppDurations.ms300,
           () {
             commentsCubit.itemScrollController.scrollTo(
               index: indexOfNextComment,
               alignment: 0.1,
-              duration: Durations.ms300,
+              duration: AppDurations.ms300,
             );
           },
         );

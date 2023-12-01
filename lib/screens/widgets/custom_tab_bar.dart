@@ -68,7 +68,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
                         ? Theme.of(context).primaryColor
                         : Palette.grey,
                   ),
-                  duration: Durations.ms200,
+                  duration: AppDurations.ms200,
                   child: Text(
                     state.tabs.elementAt(i).label,
                     key: ValueKey<String>(

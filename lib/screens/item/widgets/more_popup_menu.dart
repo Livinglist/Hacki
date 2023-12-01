@@ -83,7 +83,7 @@ class MorePopupMenu extends StatelessWidget {
                           children: <Widget>[
                             AnimatedCrossFade(
                               alignment: Alignment.center,
-                              duration: Durations.ms300,
+                              duration: AppDurations.ms300,
                               crossFadeState: state.status.isLoading
                                   ? CrossFadeState.showFirst
                                   : CrossFadeState.showSecond,

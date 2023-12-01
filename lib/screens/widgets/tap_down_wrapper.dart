@@ -23,7 +23,7 @@ class _TapDownWrapperState extends State<TapDownWrapper>
   @override
   void initState() {
     controller = AnimationController(
-      duration: Durations.ms100,
+      duration: AppDurations.ms100,
       vsync: this,
     );
 

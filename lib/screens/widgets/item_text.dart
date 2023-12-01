@@ -9,14 +9,14 @@ import 'package:hacki/utils/utils.dart';
 class ItemText extends StatelessWidget {
   const ItemText({
     required this.item,
-    required this.textScaleFactor,
+    required this.textScaler,
     required this.selectable,
     super.key,
     this.onTap,
   });
 
   final Item item;
-  final double textScaleFactor;
+  final TextScaler textScaler;
   final bool selectable;
 
   /// Reserved for collapsing a comment tile when
@@ -58,7 +58,7 @@ class ItemText extends StatelessWidget {
           ),
         ),
         onTap: onTap,
-        textScaleFactor: textScaleFactor,
+        textScaler: textScaler,
         onSelectionChanged: onSelectionChanged,
         contextMenuBuilder: (
           BuildContext context,
@@ -85,7 +85,7 @@ class ItemText extends StatelessWidget {
                 context,
               ),
             ),
-            textScaleFactor: textScaleFactor,
+            textScaler: textScaler,
             semanticsLabel: item.text,
           ),
         );
@@ -93,7 +93,7 @@ class ItemText extends StatelessWidget {
         return InkWell(
           child: Linkify(
             text: item.text,
-            textScaleFactor: textScaleFactor,
+            textScaler: textScaler,
             style: style,
             linkStyle: linkStyle,
             onOpen: (LinkableElement link) => LinkUtil.launch(

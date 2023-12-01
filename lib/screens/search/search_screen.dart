@@ -32,9 +32,9 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
   final ScrollController scrollController = ScrollController();
   final TextEditingController textEditingController = TextEditingController();
   final FocusNode focusNode = FocusNode();
-  final Debouncer debouncer = Debouncer(delay: Durations.oneSecond);
+  final Debouncer debouncer = Debouncer(delay: AppDurations.oneSecond);
 
-  static const Duration chipsAnimationDuration = Durations.ms300;
+  static const Duration chipsAnimationDuration = AppDurations.ms300;
 
   @override
   void initState() {
