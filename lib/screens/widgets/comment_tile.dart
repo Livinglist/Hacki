@@ -71,8 +71,7 @@ class CommentTile extends StatelessWidget {
         ) {
           if (actionable && state.hidden) return const SizedBox.shrink();
 
-          final MaterialColor primaryColor =
-              context.read<PreferenceCubit>().state.appColor;
+          final Color primaryColor = Theme.of(context).colorScheme.primary;
           final Color color = _getColor(
             level,
             primaryColor: primaryColor,
@@ -352,7 +351,7 @@ class CommentTile extends StatelessWidget {
 
   Color _getColor(
     int level, {
-    required MaterialColor primaryColor,
+    required Color primaryColor,
   }) {
     final int initialLevel = level;
 

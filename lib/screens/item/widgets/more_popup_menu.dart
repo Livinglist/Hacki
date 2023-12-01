@@ -212,7 +212,8 @@ class MorePopupMenu extends StatelessWidget {
                   return ListTile(
                     leading: Icon(
                       isFav ? Icons.favorite : Icons.favorite_border,
-                      color: isFav ? Theme.of(context).primaryColor : null,
+                      color:
+                          isFav ? Theme.of(context).colorScheme.primary : null,
                     ),
                     title: Text(
                       isFav ? 'Unfavorite' : 'Favorite',

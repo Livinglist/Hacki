@@ -7,7 +7,6 @@ import 'package:hacki/extensions/context_extension.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/styles/theme.dart';
 import 'package:hacki/utils/utils.dart';
 
 class PinIconButton extends StatelessWidget {
@@ -38,7 +37,7 @@ class PinIconButton extends StatelessWidget {
                 child: Icon(
                   pinned ? Icons.push_pin : Icons.push_pin_outlined,
                   color: pinned
-                      ? Theme.of(context).responsivePrimaryColor
+                      ? Theme.of(context).colorScheme.primary
                       : Theme.of(context).iconTheme.color,
                 ),
               ),

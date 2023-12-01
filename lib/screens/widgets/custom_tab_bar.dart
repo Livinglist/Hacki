@@ -46,7 +46,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
           isScrollable: true,
           indicatorColor: Theme.of(context).primaryColor,
           indicator: CircleTabIndicator(
-            color: Theme.of(context).colorScheme.onSurface,
+            color: Theme.of(context).colorScheme.primary,
             radius: Dimens.pt2,
           ),
           splashFactory: NoSplash.splashFactory,
@@ -65,10 +65,11 @@ class _CustomTabBarState extends State<CustomTabBar> {
                 ),
                 child: AnimatedDefaultTextStyle(
                   style: TextStyle(
+                    fontFamily: context.read<PreferenceCubit>().state.font.name,
                     fontSize:
-                        currentIndex == i ? TextDimens.pt14 : TextDimens.pt10,
+                        currentIndex == i ? TextDimens.pt12 : TextDimens.pt10,
                     color: currentIndex == i
-                        ? Theme.of(context).colorScheme.onSurface
+                        ? Theme.of(context).colorScheme.primary
                         : Palette.grey,
                   ),
                   duration: AppDurations.ms200,
@@ -116,7 +117,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
                             ? TextDimens.pt16
                             : TextDimens.pt12,
                         color: currentIndex == 5
-                            ? Theme.of(context).primaryColor
+                            ? Theme.of(context).colorScheme.primary
                             : Palette.grey,
                       ),
                     );

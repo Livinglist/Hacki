@@ -61,7 +61,7 @@ class PinnedStories extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: Dimens.pt12),
                 child: Divider(
-                  color: Theme.of(context).primaryColor.withOpacity(0.8),
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
                 ),
               ),
           ],

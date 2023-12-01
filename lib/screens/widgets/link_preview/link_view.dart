@@ -120,7 +120,7 @@ class LinkView extends StatelessWidget {
                       title,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                             height: 1.2,
-                            color: hasRead ? Palette.grey : null,
+                            color: hasRead ? Theme.of(context).readGrey : null,
                             fontWeight: FontWeight.bold,
                           ),
                       overflow: TextOverflow.ellipsis,
@@ -131,7 +131,11 @@ class LinkView extends StatelessWidget {
                         '($readableUrl)',
                         textAlign: TextAlign.left,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: Palette.grey,
+                              color: hasRead
+                                  ? Theme.of(context).readGrey
+                                  : Theme.of(context)
+                                      .unreadGrey
+                                      .withOpacity(0.5),
                             ),
                         overflow: bodyTextOverflow ?? TextOverflow.ellipsis,
                         maxLines: 1,
@@ -141,7 +145,9 @@ class LinkView extends StatelessWidget {
                         metadata,
                         textAlign: TextAlign.left,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: Palette.grey,
+                              color: hasRead
+                                  ? Theme.of(context).readGrey
+                                  : Theme.of(context).unreadGrey,
                             ),
                         overflow: bodyTextOverflow ?? TextOverflow.ellipsis,
                         maxLines: 1,
@@ -152,8 +158,11 @@ class LinkView extends StatelessWidget {
                         textAlign: TextAlign.left,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: hasRead
-                                  ? Palette.grey
-                                  : Palette.grey.shade800,
+                                  ? Theme.of(context).readGrey
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(0.9),
                             ),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 5,
@@ -171,4 +180,10 @@ class LinkView extends StatelessWidget {
       },
     );
   }
+}
+
+extension on ThemeData {
+  Color get readGrey => colorScheme.onSurface.withOpacity(0.4);
+
+  Color get unreadGrey => colorScheme.onSurface.withOpacity(0.8);
 }

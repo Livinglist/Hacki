@@ -247,7 +247,7 @@ class _ParentItemSection extends StatelessWidget {
                         Text(
                           item.by,
                           style: TextStyle(
-                            color: Theme.of(context).primaryColor,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                           textScaler: MediaQuery.of(context).textScaler,
                         ),
@@ -423,7 +423,7 @@ class _ParentItemSection extends StatelessWidget {
                                   ),
                                 )
                               : const Text(
-                                  'View parent',
+                                  'Parent',
                                   style: TextStyle(
                                     fontSize: TextDimens.pt13,
                                   ),
@@ -444,7 +444,7 @@ class _ParentItemSection extends StatelessWidget {
                               ),
                             )
                           : const Text(
-                              'View root',
+                              'Root',
                               style: TextStyle(
                                 fontSize: TextDimens.pt13,
                               ),

@@ -156,7 +156,7 @@ class _StoriesListViewState extends State<StoriesListView>
                           HapticFeedbackUtil.light();
                           context.read<PinCubit>().pinStory(story);
                         },
-                        backgroundColor: Theme.of(context).primaryColor,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor:
                             Theme.of(context).colorScheme.onPrimary,
                         icon: preferenceState.complexStoryTileEnabled
@@ -168,7 +168,7 @@ class _StoriesListViewState extends State<StoriesListView>
                       ),
                       SlidableAction(
                         onPressed: (_) => onMoreTapped(story, context.rect),
-                        backgroundColor: Theme.of(context).primaryColor,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor:
                             Theme.of(context).colorScheme.onPrimary,
                         icon: preferenceState.complexStoryTileEnabled
@@ -194,7 +194,7 @@ class _StoriesListViewState extends State<StoriesListView>
                       SlidableAction(
                         onPressed: (_) => mark(story),
                         backgroundColor: preferenceState.markReadStoriesEnabled
-                            ? Theme.of(context).primaryColor
+                            ? Theme.of(context).colorScheme.primary
                             : Palette.grey,
                         foregroundColor:
                             Theme.of(context).colorScheme.onPrimary,
