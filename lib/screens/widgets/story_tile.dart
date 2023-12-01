@@ -7,7 +7,6 @@ import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/styles/theme.dart';
 import 'package:shimmer/shimmer.dart';
 
 class StoryTile extends StatelessWidget {

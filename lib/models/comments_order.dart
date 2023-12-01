@@ -6,4 +6,7 @@ enum CommentsOrder {
   const CommentsOrder(this.description);
 
   final String description;
+
+  @override
+  String toString() => description;
 }

@@ -5,4 +5,7 @@ enum FetchMode {
   const FetchMode(this.description);
 
   final String description;
+
+  @override
+  String toString() => description;
 }
