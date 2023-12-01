@@ -121,6 +121,7 @@ class LinkView extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                             height: 1.2,
                             color: hasRead ? Palette.grey : null,
+                            fontWeight: FontWeight.bold,
                           ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
