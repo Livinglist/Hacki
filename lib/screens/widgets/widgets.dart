@@ -6,6 +6,7 @@ export 'countdown_reminder.dart';
 export 'custom_chip.dart';
 export 'custom_circular_progress_indicator.dart';
 export 'custom_described_feature_overlay.dart';
+export 'custom_dropdown_menu.dart';
 export 'custom_linkify/custom_linkify.dart';
 export 'custom_tab_bar.dart';
 export 'device_gesture_wrapper.dart';

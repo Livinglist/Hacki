@@ -400,9 +400,7 @@ class _ParentItemSection extends StatelessWidget {
                   ),
                   Text(
                     '''${item.score} karma, ${item.descendants} comment${item.descendants > 1 ? 's' : ''}''',
-                    style: const TextStyle(
-                      fontSize: TextDimens.pt13,
-                    ),
+                    style: Theme.of(context).textTheme.labelMedium,
                     textScaler: TextScaler.noScaling,
                   ),
                 ] else ...<Widget>[
@@ -455,72 +453,18 @@ class _ParentItemSection extends StatelessWidget {
                 ],
                 const Spacer(),
                 if (!state.isOfflineReading)
-                  MenuAnchor(
-                    menuChildren: FetchMode.values
-                        .map(
-                          (FetchMode val) => MenuItemButton(
-                            child: Text(
-                              val.description,
-                              style: const TextStyle(
-                                fontSize: TextDimens.pt13,
-                              ),
-                              textScaler: TextScaler.noScaling,
-                            ),
-                            onPressed: () {
-                              context
-                                  .read<CommentsCubit>()
-                                  .updateFetchMode(val);
-                            },
-                          ),
-                        )
-                        .toList(),
-                    builder:
-                        (BuildContext context, MenuController controller, _) {
-                      return InkWell(
-                        child: Row(
-                          children: <Widget>[
-                            Text(
-                              state.fetchMode.description,
-                              style: Theme.of(context).textTheme.labelLarge,
-                            ),
-                            Icon(
-                              controller.isOpen
-                                  ? Icons.arrow_drop_up
-                                  : Icons.arrow_drop_down,
-                            ),
-                          ],
-                        ),
-                        onTap: () {
-                          if (controller.isOpen) {
-                            controller.close();
-                          } else {
-                            controller.open();
-                          }
-                        },
-                      );
-                    },
+                  CustomDropdownMenu<FetchMode>(
+                    menuChildren: FetchMode.values,
+                    onSelected: context.read<CommentsCubit>().updateFetchMode,
+                    selected: state.fetchMode,
                   ),
                 const SizedBox(
                   width: Dimens.pt6,
                 ),
-                DropdownButton<CommentsOrder>(
-                  value: state.order,
-                  underline: const SizedBox.shrink(),
-                  items: CommentsOrder.values
-                      .map(
-                        (CommentsOrder val) => DropdownMenuItem<CommentsOrder>(
-                          value: val,
-                          child: Text(
-                            val.description,
-                            style: const TextStyle(
-                              fontSize: TextDimens.pt13,
-                            ),
-                            textScaler: TextScaler.noScaling,
-                          ),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: context.read<CommentsCubit>().updateOrder,
+                CustomDropdownMenu<CommentsOrder>(
+                  menuChildren: CommentsOrder.values,
+                  onSelected: context.read<CommentsCubit>().updateOrder,
+                  selected: state.order,
                 ),
                 const SizedBox(
                   width: Dimens.pt4,
