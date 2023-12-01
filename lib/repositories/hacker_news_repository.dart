@@ -223,6 +223,9 @@ class HackerNewsRepository {
 
   /// Fetch a list of [Comment] based on ids and return results
   /// using a stream.
+  ///
+  /// this function caches every comment fetched to [SembastRepository] so that
+  /// we don't need to parse the text again later.
   Stream<Comment> fetchCommentsStream({
     required List<int> ids,
     int level = 0,
@@ -258,6 +261,9 @@ class HackerNewsRepository {
 
   /// Fetch a list of [Comment] based on ids recursively and
   /// return results using a stream.
+  ///
+  /// this function caches every comment fetched to [SembastRepository] so that
+  /// we don't need to parse the text again later.
   Stream<Comment> fetchAllCommentsRecursivelyStream({
     required List<int> ids,
     int level = 0,
