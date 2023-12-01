@@ -300,6 +300,7 @@ class _ItemScreenState extends State<ItemScreen>
                               left: Dimens.zero,
                               right: Dimens.zero,
                               child: CustomAppBar(
+                                context: context,
                                 backgroundColor: Theme.of(context)
                                     .canvasColor
                                     .withOpacity(0.6),
@@ -342,6 +343,7 @@ class _ItemScreenState extends State<ItemScreen>
                     extendBodyBehindAppBar: true,
                     resizeToAvoidBottomInset: true,
                     appBar: CustomAppBar(
+                      context: context,
                       backgroundColor:
                           Theme.of(context).canvasColor.withOpacity(0.6),
                       foregroundColor: Theme.of(context).iconTheme.color,

@@ -138,6 +138,7 @@ class CommentTile extends StatelessWidget {
                         )
                       : null,
                   child: InkWell(
+                    splashFactory: NoSplash.splashFactory,
                     onTap: () {
                       if (collapsable) {
                         _collapse(context);

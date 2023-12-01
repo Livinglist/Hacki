@@ -38,7 +38,7 @@ class PinIconButton extends StatelessWidget {
                   pinned ? Icons.push_pin : Icons.push_pin_outlined,
                   color: pinned
                       ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).iconTheme.color,
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               onPressed: () {

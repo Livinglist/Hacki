@@ -7,6 +7,7 @@ import 'package:hacki/utils/utils.dart';
 
 class CustomAppBar extends AppBar {
   CustomAppBar({
+    required BuildContext context,
     required Item item,
     required super.backgroundColor,
     required super.foregroundColor,
@@ -44,6 +45,7 @@ class CustomAppBar extends AppBar {
                   fontSize: TextDimens.pt18,
                   fontFamily: FeatherIcons.type.fontFamily,
                   package: FeatherIcons.type.fontPackage,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 textScaler: TextScaler.noScaling,
               ),
