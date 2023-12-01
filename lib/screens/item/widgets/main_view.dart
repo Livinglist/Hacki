@@ -13,7 +13,6 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/styles/theme.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -317,7 +316,8 @@ class _ParentItemSection extends StatelessWidget {
                                           fontSize: fontSize,
                                           color: item.url.isNotEmpty
                                               ? Theme.of(context)
-                                                  .responsivePrimaryColor
+                                                  .colorScheme
+                                                  .primary
                                               : null,
                                         ),
                                       ),
@@ -328,7 +328,8 @@ class _ParentItemSection extends StatelessWidget {
                                             fontWeight: FontWeight.bold,
                                             fontSize: fontSize - 4,
                                             color: Theme.of(context)
-                                                .responsivePrimaryColor,
+                                                .colorScheme
+                                                .primary,
                                           ),
                                         ),
                                     ],
