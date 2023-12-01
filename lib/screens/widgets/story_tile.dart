@@ -56,15 +56,17 @@ class StoryTile extends StatelessWidget {
                           ),
                       textAlign: TextAlign.left,
                     ),
-                    Text(
-                      story.readableUrl,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: hasRead ? Theme.of(context).readGrey : null,
-                          ),
-                      textAlign: TextAlign.left,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
+                    if (story.readableUrl.isNotEmpty)
+                      Text(
+                        story.readableUrl,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color:
+                                  hasRead ? Theme.of(context).readGrey : null,
+                            ),
+                        textAlign: TextAlign.left,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
                     Text(
                       story.metadata,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
