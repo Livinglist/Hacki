@@ -190,8 +190,6 @@ class _ParentItemSection extends StatelessWidget {
   final void Function(Item item, Rect? rect) onMoreTapped;
   final ValueChanged<Comment> onRightMoreTapped;
 
-  static const double _buttonWidth = 80;
-
   @override
   Widget build(BuildContext context) {
     final Item item = state.item;
@@ -407,48 +405,47 @@ class _ParentItemSection extends StatelessWidget {
                   const SizedBox(
                     width: Dimens.pt4,
                   ),
-                  SizedBox(
-                    width: _buttonWidth,
-                    child: TextButton(
-                      onPressed: context.read<CommentsCubit>().loadParentThread,
-                      child:
-                          state.fetchParentStatus == CommentsStatus.inProgress
-                              ? const SizedBox(
-                                  height: Dimens.pt12,
-                                  width: Dimens.pt12,
-                                  child: CustomCircularProgressIndicator(
-                                    strokeWidth: Dimens.pt2,
-                                  ),
-                                )
-                              : const Text(
-                                  'Parent',
-                                  style: TextStyle(
-                                    fontSize: TextDimens.pt13,
-                                  ),
-                                  textScaler: TextScaler.noScaling,
-                                ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: _buttonWidth,
-                    child: TextButton(
-                      onPressed: context.read<CommentsCubit>().loadRootThread,
-                      child: state.fetchRootStatus == CommentsStatus.inProgress
-                          ? const SizedBox(
-                              height: Dimens.pt12,
-                              width: Dimens.pt12,
-                              child: CustomCircularProgressIndicator(
-                                strokeWidth: Dimens.pt2,
-                              ),
-                            )
-                          : const Text(
-                              'Root',
-                              style: TextStyle(
-                                fontSize: TextDimens.pt13,
-                              ),
-                              textScaler: TextScaler.noScaling,
+                  TextButton(
+                    onPressed: context.read<CommentsCubit>().loadParentThread,
+                    child: state.fetchParentStatus == CommentsStatus.inProgress
+                        ? const SizedBox(
+                            height: Dimens.pt12,
+                            width: Dimens.pt12,
+                            child: CustomCircularProgressIndicator(
+                              strokeWidth: Dimens.pt2,
                             ),
-                    ),
+                          )
+                        : Text(
+                            'View Parent',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelMedium
+                                ?.copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                            textScaler: TextScaler.noScaling,
+                          ),
+                  ),
+                  TextButton(
+                    onPressed: context.read<CommentsCubit>().loadRootThread,
+                    child: state.fetchRootStatus == CommentsStatus.inProgress
+                        ? const SizedBox(
+                            height: Dimens.pt12,
+                            width: Dimens.pt12,
+                            child: CustomCircularProgressIndicator(
+                              strokeWidth: Dimens.pt2,
+                            ),
+                          )
+                        : Text(
+                            'View Root',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelMedium
+                                ?.copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                            textScaler: TextScaler.noScaling,
+                          ),
                   ),
                 ],
                 const Spacer(),
