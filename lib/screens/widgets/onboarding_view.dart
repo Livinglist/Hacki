@@ -17,15 +17,14 @@ class _OnboardingViewState extends State<OnboardingView> {
   final Throttle throttle = Throttle(delay: _throttleDelay);
 
   static const Duration _throttleDelay = AppDurations.ms100;
-  static const double _screenshotHeight = 550;
+  static const double _screenshotHeight = 800;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).brightness == Brightness.light
-            ? Theme.of(context).colorScheme.primary
-            : Theme.of(context).canvasColor,
+        backgroundColor: Palette.transparent,
+        surfaceTintColor: Palette.transparent,
         elevation: Dimens.zero,
         leading: IconButton(
           icon: const Icon(
@@ -94,10 +93,10 @@ class _OnboardingViewState extends State<OnboardingView> {
                   Dimens.pt18,
                 ),
               ),
-              child: const Icon(
-                Icons.arrow_drop_down_circle_outlined,
-                size: TextDimens.pt24,
-                color: Palette.white,
+              child: Icon(
+                Icons.arrow_drop_down_outlined,
+                size: TextDimens.pt36,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
           ),
