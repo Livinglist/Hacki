@@ -301,7 +301,7 @@ class _ParentItemSection extends StatelessWidget {
                                   left: Dimens.pt6,
                                   right: Dimens.pt6,
                                   bottom: Dimens.pt12,
-                                  top: Dimens.pt12,
+                                  top: Dimens.pt6,
                                 ),
                                 child: Text.rich(
                                   TextSpan(
