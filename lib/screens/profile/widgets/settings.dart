@@ -152,6 +152,9 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                           ),
                         ],
                       ),
+                      const SizedBox(
+                        width: Dimens.pt16,
+                      ),
                     ],
                   ),
                   const SizedBox(
