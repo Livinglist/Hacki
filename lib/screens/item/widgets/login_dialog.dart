@@ -188,11 +188,11 @@ class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
                               : Palette.grey,
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Log in',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Palette.white,
+                          color: Theme.of(context).colorScheme.onPrimary,
                         ),
                       ),
                     ),
