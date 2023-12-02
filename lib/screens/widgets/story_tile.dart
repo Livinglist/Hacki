@@ -142,20 +142,28 @@ class StoryTile extends StatelessWidget {
                           children: <TextSpan>[
                             TextSpan(
                               text: story.title,
-                              style: TextStyle(
-                                color:
-                                    hasRead ? Theme.of(context).readGrey : null,
-                                fontWeight: hasRead ? null : FontWeight.bold,
-                                fontSize: simpleTileFontSize,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                    color: hasRead
+                                        ? Theme.of(context).readGrey
+                                        : null,
+                                    fontWeight:
+                                        hasRead ? null : FontWeight.bold,
+                                  ),
                             ),
                             if (showUrl && story.url.isNotEmpty)
                               TextSpan(
                                 text: ' (${story.readableUrl})',
-                                style: TextStyle(
-                                  color: Palette.grey[500],
-                                  fontSize: simpleTileFontSize - 4,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(
+                                      color: hasRead
+                                          ? Theme.of(context).readGrey
+                                          : null,
+                                    ),
                               ),
                           ],
                         ),
@@ -170,10 +178,15 @@ class StoryTile extends StatelessWidget {
                       Expanded(
                         child: Text(
                           story.metadata,
-                          style: TextStyle(
-                            color: Palette.grey,
-                            fontSize: simpleTileFontSize - 2,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: hasRead
+                                        ? Theme.of(context).readGrey
+                                        : Theme.of(context)
+                                            .colorScheme
+                                            .onSurface
+                                            .withOpacity(0.6),
+                                  ),
                           maxLines: 1,
                         ),
                       ),

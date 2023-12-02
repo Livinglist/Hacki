@@ -141,15 +141,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                       buildWhen: (FavState previous, FavState current) =>
                           previous.favItems.length != current.favItems.length,
                       builder: (BuildContext context, FavState favState) {
-                        if (favState.favItems.isEmpty &&
-                            favState.status != Status.inProgress) {
-                          return const CenteredMessageView(
-                            content: 'Your favorite stories will show up here.'
-                                '\nThey will be synced to your Hacker '
-                                'News account if you are logged in.',
-                          );
-                        }
-
                         Widget? header() => authState.isLoggedIn
                             ? BlocSelector<FavCubit, FavState, Status>(
                                 selector: (FavState state) => state.mergeStatus,
@@ -174,6 +165,21 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 ),
                               )
                             : null;
+
+                        if (favState.favItems.isEmpty &&
+                            favState.status != Status.inProgress) {
+                          return Column(
+                            children: <Widget>[
+                              header() ?? const SizedBox.shrink(),
+                              const CenteredMessageView(
+                                content:
+                                    'Your favorite stories will show up here.'
+                                    '\nThey will be synced to your Hacker '
+                                    'News account if you are logged in.',
+                              ),
+                            ],
+                          );
+                        }
 
                         return BlocBuilder<PreferenceCubit, PreferenceState>(
                           buildWhen: (
