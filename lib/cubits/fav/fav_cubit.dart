@@ -169,6 +169,7 @@ class FavCubit extends Cubit<FavState> {
 
   Future<void> merge() async {
     if (_authBloc.state.isLoggedIn) {
+      emit(state.copyWith(mergeStatus: Status.inProgress));
       final Iterable<int> ids = await _hackerNewsWebRepository.fetchFavorites(
         of: _authBloc.state.username,
       );
@@ -178,6 +179,7 @@ class FavCubit extends Cubit<FavState> {
         username: username,
         ids: mergedIds,
       );
+      emit(state.copyWith(mergeStatus: Status.success));
       refresh();
     }
   }

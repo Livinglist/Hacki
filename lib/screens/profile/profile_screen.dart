@@ -138,6 +138,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                             ..loadComplete();
                         }
                       },
+                      buildWhen: (FavState previous, FavState current) =>
+                          previous.favItems.length != current.favItems.length,
                       builder: (BuildContext context, FavState favState) {
                         if (favState.favItems.isEmpty &&
                             favState.status != Status.inProgress) {
@@ -162,6 +164,32 @@ class _ProfileScreenState extends State<ProfileScreen>
                             BuildContext context,
                             PreferenceState prefState,
                           ) {
+                            Widget? header() => authState.isLoggedIn
+                                ? BlocSelector<FavCubit, FavState, Status>(
+                                    selector: (FavState state) =>
+                                        state.mergeStatus,
+                                    builder: (
+                                      BuildContext context,
+                                      Status status,
+                                    ) =>
+                                        TextButton(
+                                      onPressed: () {
+                                        context.read<FavCubit>().merge();
+                                      },
+                                      child: status == Status.inProgress
+                                          ? const SizedBox(
+                                              height: Dimens.pt12,
+                                              width: Dimens.pt12,
+                                              child:
+                                                  CustomCircularProgressIndicator(
+                                                strokeWidth: Dimens.pt2,
+                                              ),
+                                            )
+                                          : const Text('Sync from Hacker News'),
+                                    ),
+                                  )
+                                : null;
+
                             return ItemsListView<Item>(
                               showWebPreviewOnStoryTile:
                                   prefState.complexStoryTileEnabled,
@@ -181,14 +209,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               onTap: (Item item) => goToItemScreen(
                                 args: ItemScreenArgs(item: item),
                               ),
-                              header: authState.isLoggedIn
-                                  ? TextButton(
-                                      onPressed: () {
-                                        context.read<FavCubit>().merge();
-                                      },
-                                      child: const Text('Merge favorites'),
-                                    )
-                                  : null,
+                              header: header(),
                               itemBuilder: (Widget child, Item item) {
                                 return Slidable(
                                   dragStartBehavior: DragStartBehavior.start,
