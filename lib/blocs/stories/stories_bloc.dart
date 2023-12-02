@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:bloc/bloc.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
@@ -32,10 +33,17 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
             preferenceRepository ?? locator.get<PreferenceRepository>(),
         _logger = logger ?? locator.get<Logger>(),
         super(const StoriesState.init()) {
+    on<LoadStories>(
+      onLoadStories,
+      transformer: sequential(),
+    );
     on<StoriesInitialize>(onInitialize);
     on<StoriesRefresh>(onRefresh);
     on<StoriesLoadMore>(onLoadMore);
-    on<StoryLoaded>(onStoryLoaded);
+    on<StoryLoaded>(
+      onStoryLoaded,
+      transformer: sequential(),
+    );
     on<StoryRead>(onStoryRead);
     on<StoryUnread>(onStoryUnread);
     on<StoriesLoaded>(onStoriesLoaded);
@@ -88,14 +96,15 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       ),
     );
     for (final StoryType type in StoryType.values) {
-      await loadStories(type: type, emit: emit);
+      add(LoadStories(type: type));
     }
   }
 
-  Future<void> loadStories({
-    required StoryType type,
-    required Emitter<StoriesState> emit,
-  }) async {
+  Future<void> onLoadStories(
+    LoadStories event,
+    Emitter<StoriesState> emit,
+  ) async {
+    final StoryType type = event.type;
     if (state.isOfflineReading) {
       final List<int> ids =
           await _offlineRepository.getCachedStoryIds(type: type);
@@ -121,13 +130,12 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
             .copyWithStoryIdsUpdated(type: type, to: ids)
             .copyWithCurrentPageUpdated(type: type, to: 0),
       );
-      _hackerNewsRepository
+      await _hackerNewsRepository
           .fetchStoriesStream(ids: ids.sublist(0, state.currentPageSize))
           .listen((Story story) {
         add(StoryLoaded(story: story, type: type));
-      }).onDone(() {
-        add(StoriesLoaded(type: type));
-      });
+      }).asFuture();
+      add(StoriesLoaded(type: type));
     }
   }
 
@@ -153,7 +161,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       );
     } else {
       emit(state.copyWithRefreshed(type: event.type));
-      await loadStories(type: event.type, emit: emit);
+      add(LoadStories(type: event.type));
     }
   }
 

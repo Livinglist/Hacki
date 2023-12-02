@@ -181,6 +181,14 @@ class _ProfileScreenState extends State<ProfileScreen>
                               onTap: (Item item) => goToItemScreen(
                                 args: ItemScreenArgs(item: item),
                               ),
+                              header: authState.isLoggedIn
+                                  ? TextButton(
+                                      onPressed: () {
+                                        context.read<FavCubit>().merge();
+                                      },
+                                      child: const Text('Merge favorites'),
+                                    )
+                                  : null,
                               itemBuilder: (Widget child, Item item) {
                                 return Slidable(
                                   dragStartBehavior: DragStartBehavior.start,
