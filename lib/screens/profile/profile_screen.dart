@@ -150,6 +150,31 @@ class _ProfileScreenState extends State<ProfileScreen>
                           );
                         }
 
+                        Widget? header() => authState.isLoggedIn
+                            ? BlocSelector<FavCubit, FavState, Status>(
+                                selector: (FavState state) => state.mergeStatus,
+                                builder: (
+                                  BuildContext context,
+                                  Status status,
+                                ) =>
+                                    TextButton(
+                                  onPressed: () {
+                                    context.read<FavCubit>().merge();
+                                  },
+                                  child: status == Status.inProgress
+                                      ? const SizedBox(
+                                          height: Dimens.pt12,
+                                          width: Dimens.pt12,
+                                          child:
+                                              CustomCircularProgressIndicator(
+                                            strokeWidth: Dimens.pt2,
+                                          ),
+                                        )
+                                      : const Text('Sync from Hacker News'),
+                                ),
+                              )
+                            : null;
+
                         return BlocBuilder<PreferenceCubit, PreferenceState>(
                           buildWhen: (
                             PreferenceState previous,
@@ -164,32 +189,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                             BuildContext context,
                             PreferenceState prefState,
                           ) {
-                            Widget? header() => authState.isLoggedIn
-                                ? BlocSelector<FavCubit, FavState, Status>(
-                                    selector: (FavState state) =>
-                                        state.mergeStatus,
-                                    builder: (
-                                      BuildContext context,
-                                      Status status,
-                                    ) =>
-                                        TextButton(
-                                      onPressed: () {
-                                        context.read<FavCubit>().merge();
-                                      },
-                                      child: status == Status.inProgress
-                                          ? const SizedBox(
-                                              height: Dimens.pt12,
-                                              width: Dimens.pt12,
-                                              child:
-                                                  CustomCircularProgressIndicator(
-                                                strokeWidth: Dimens.pt2,
-                                              ),
-                                            )
-                                          : const Text('Sync from Hacker News'),
-                                    ),
-                                  )
-                                : null;
-
                             return ItemsListView<Item>(
                               showWebPreviewOnStoryTile:
                                   prefState.complexStoryTileEnabled,

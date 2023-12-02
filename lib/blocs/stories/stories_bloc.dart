@@ -134,7 +134,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
           .fetchStoriesStream(ids: ids.sublist(0, state.currentPageSize))
           .listen((Story story) {
         add(StoryLoaded(story: story, type: type));
-      }).asFuture();
+      }).asFuture<void>();
       add(StoriesLoaded(type: type));
     }
   }
