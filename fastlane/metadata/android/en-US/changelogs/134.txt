@@ -1,0 +1,3 @@
+- Use RobotoSlab as default font.
+- Material 3 design.
+- Ability to sync favorites from your Hacker News account.
