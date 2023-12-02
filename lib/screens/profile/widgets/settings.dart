@@ -228,6 +228,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                           horizontal: Dimens.pt16,
                         ),
                         child: DropdownMenu<StoryMarkingMode>(
+                          enabled: preferenceState.markReadStoriesEnabled,
                           label: Text(StoryMarkingModePreference().title),
                           initialSelection: preferenceState.storyMarkingMode,
                           onSelected: (StoryMarkingMode? storyMarkingMode) {
@@ -249,6 +250,13 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                                 ),
                               )
                               .toList(),
+                          inputDecorationTheme: const InputDecorationTheme(
+                            disabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Palette.grey,
+                              ),
+                            ),
+                          ),
                           expandedInsets: EdgeInsets.zero,
                         ),
                       ),

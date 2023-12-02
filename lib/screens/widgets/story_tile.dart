@@ -53,6 +53,7 @@ class StoryTile extends StatelessWidget {
                       story.title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             color: hasRead ? Theme.of(context).readGrey : null,
+                            fontWeight: FontWeight.bold,
                           ),
                       textAlign: TextAlign.left,
                     ),
