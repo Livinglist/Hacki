@@ -401,7 +401,7 @@ class _ParentItemSection extends StatelessWidget {
                     Text(
                       '''${item.score} karma, ${item.descendants} cmt${item.descendants > 1 ? 's' : ''}''',
                       style: Theme.of(context).textTheme.labelLarge,
-                      textScaler: TextScaler.noScaling,
+                      textScaler: MediaQuery.of(context).clampedTextScaler,
                     ),
                   ] else ...<Widget>[
                     const SizedBox(
@@ -432,7 +432,8 @@ class _ParentItemSection extends StatelessWidget {
                                             .colorScheme
                                             .primary,
                                       ),
-                                  textScaler: TextScaler.noScaling,
+                                  textScaler:
+                                      MediaQuery.of(context).clampedTextScaler,
                                 ),
                         );
                       },
@@ -461,7 +462,8 @@ class _ParentItemSection extends StatelessWidget {
                                             .colorScheme
                                             .primary,
                                       ),
-                                  textScaler: TextScaler.noScaling,
+                                  textScaler:
+                                      MediaQuery.of(context).clampedTextScaler,
                                 ),
                         );
                       },

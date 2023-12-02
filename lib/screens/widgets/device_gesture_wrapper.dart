@@ -16,8 +16,9 @@ class DeviceGestureWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MediaQuery(
-      data: const MediaQueryData(
-        gestureSettings: DeviceGestureSettings(touchSlop: 12),
+      data: MediaQueryData(
+        gestureSettings: const DeviceGestureSettings(touchSlop: 12),
+        textScaler: MediaQuery.of(context).textScaler,
       ),
       child: child,
     );

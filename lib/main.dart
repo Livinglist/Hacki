@@ -289,13 +289,13 @@ class HackiApp extends StatelessWidget {
                   );
                   return FeatureDiscovery(
                     child: MediaQuery(
-                      data: MediaQuery.of(context).copyWith(
-                        textScaler: TextScaler.linear(
-                          state.textScaleFactor == 1
-                              ? 1
-                              : state.textScaleFactor,
-                        ),
-                      ),
+                      data: state.textScaleFactor == 1
+                          ? MediaQuery.of(context)
+                          : MediaQuery.of(context).copyWith(
+                              textScaler: TextScaler.linear(
+                                state.textScaleFactor,
+                              ),
+                            ),
                       child: MaterialApp.router(
                         key: Key(state.appColor.hashCode.toString()),
                         title: 'Hacki',
