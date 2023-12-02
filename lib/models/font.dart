@@ -3,26 +3,11 @@ enum Font {
   robotoSlab('Roboto Slab', isSerif: true),
   ubuntu('Ubuntu'),
   ubuntuMono('Ubuntu Mono'),
-  notoSerif('Noto Serif', isSerif: true);
+  notoSerif('Noto Serif', isSerif: true),
+  exo2('Exo 2');
 
   const Font(this.uiLabel, {this.isSerif = false});
 
   final String uiLabel;
   final bool isSerif;
-
-  static Font fromString(String? val) {
-    switch (val) {
-      case 'robotoSlab':
-        return Font.robotoSlab;
-      case 'ubuntu':
-        return Font.ubuntu;
-      case 'ubuntuMono':
-        return Font.ubuntuMono;
-      case 'notoSerif':
-        return Font.notoSerif;
-      case 'roboto':
-      default:
-        return Font.roboto;
-    }
-  }
 }

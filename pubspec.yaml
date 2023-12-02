@@ -124,5 +124,10 @@ flutter:
         - asset: assets/fonts/noto_serif/NotoSerif-Regular.ttf
         - asset: assets/fonts/noto_serif/NotoSerif-Bold.ttf
           weight: 700
+    - family: Exo2
+      fonts:
+        - asset: assets/fonts/exo_2/Exo2-Regular.ttf
+        - asset: assets/fonts/exo_2/Exo2-Bold.ttf
+          weight: 700
 
 

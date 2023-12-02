@@ -2,7 +2,7 @@ enum DiscoverableFeature {
   addStoryToFavList(
     featureId: 'add_story_to_fav_list',
     title: 'Fav a Story',
-    description: '''Add it to your favorites''',
+    description: '''Add it to your favorites.''',
   ),
   openStoryInWebView(
     featureId: 'open_story_in_web_view',
