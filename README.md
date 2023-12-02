@@ -46,9 +46,9 @@ Features:
     <img width="400" alt="05" src="assets/screenshots/light-5.png">
     <img width="400" alt="10" src="assets/screenshots/dark-5.png"> 
    
-   <img width="400" alt="ipad-01" src="assets/screenshots/ipad-01.png"> 
-   <img width="400" alt="ipad-02" src="assets/screenshots/ipad-02.png"> 
-   <img width="400" alt="ipad-03" src="assets/screenshots/ipad-03.png"> 
-   <img width="400" alt="ipad-04" src="assets/screenshots/ipad-04.png"> 
+   <img width="400" alt="ipad-01" src="assets/screenshots/tablet-light-1.png"> 
+   <img width="400" alt="ipad-02" src="assets/screenshots/tablet-dark-1.png"> 
+   <img width="400" alt="ipad-03" src="assets/screenshots/tablet-light-2.png"> 
+   <img width="400" alt="ipad-04" src="assets/screenshots/tablet-dark-2.png"> 
 </p>
 
