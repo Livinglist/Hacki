@@ -1,5 +1,6 @@
 export 'auth_repository.dart';
 export 'hacker_news_repository.dart';
+export 'hacker_news_web_repository.dart';
 export 'offline_repository.dart';
 export 'post_repository.dart';
 export 'preference_repository.dart';

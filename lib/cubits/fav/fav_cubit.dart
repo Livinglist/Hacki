@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:collection';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
@@ -13,12 +16,15 @@ class FavCubit extends Cubit<FavState> {
     AuthRepository? authRepository,
     PreferenceRepository? preferenceRepository,
     HackerNewsRepository? hackerNewsRepository,
+    HackerNewsWebRepository? hackerNewsWebRepository,
   })  : _authBloc = authBloc,
         _authRepository = authRepository ?? locator.get<AuthRepository>(),
         _preferenceRepository =
             preferenceRepository ?? locator.get<PreferenceRepository>(),
         _hackerNewsRepository =
             hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
+        _hackerNewsWebRepository =
+            hackerNewsWebRepository ?? locator.get<HackerNewsWebRepository>(),
         super(FavState.init()) {
     init();
   }
@@ -27,43 +33,41 @@ class FavCubit extends Cubit<FavState> {
   final AuthRepository _authRepository;
   final PreferenceRepository _preferenceRepository;
   final HackerNewsRepository _hackerNewsRepository;
+  final HackerNewsWebRepository _hackerNewsWebRepository;
+  late final StreamSubscription<String>? _usernameSubscription;
   static const int _pageSize = 20;
-  String? _username;
 
   Future<void> init() async {
-    _authBloc.stream.listen((AuthState authState) {
-      if (authState.username != _username) {
-        _preferenceRepository
-            .favList(of: authState.username)
-            .then((List<int> favIds) {
+    _usernameSubscription = _authBloc.stream
+        .map((AuthState event) => event.username)
+        .distinct()
+        .listen((String username) {
+      _preferenceRepository.favList(of: username).then((List<int> favIds) {
+        emit(
+          state.copyWith(
+            favIds: favIds,
+            favItems: <Item>[],
+            currentPage: 0,
+          ),
+        );
+        _hackerNewsRepository
+            .fetchItemsStream(
+              ids: favIds.sublist(0, _pageSize.clamp(0, favIds.length)),
+            )
+            .listen(_onItemLoaded)
+            .onDone(() {
           emit(
             state.copyWith(
-              favIds: favIds,
-              favItems: <Item>[],
-              currentPage: 0,
+              status: Status.success,
             ),
           );
-          _hackerNewsRepository
-              .fetchItemsStream(
-                ids: favIds.sublist(0, _pageSize.clamp(0, favIds.length)),
-              )
-              .listen(_onItemLoaded)
-              .onDone(() {
-            emit(
-              state.copyWith(
-                status: Status.success,
-              ),
-            );
-          });
         });
-
-        _username = authState.username;
-      }
+      });
     });
   }
 
   Future<void> addFav(int id) async {
-    final String username = _authBloc.state.username;
+    if (state.favIds.contains(id)) return;
 
     await _preferenceRepository.addFav(username: username, id: id);
 
@@ -89,8 +93,6 @@ class FavCubit extends Cubit<FavState> {
   }
 
   void removeFav(int id) {
-    final String username = _authBloc.state.username;
-
     _preferenceRepository.removeFav(username: username, id: id);
 
     emit(
@@ -136,8 +138,6 @@ class FavCubit extends Cubit<FavState> {
   }
 
   void refresh() {
-    final String username = _authBloc.state.username;
-
     emit(
       state.copyWith(
         status: Status.inProgress,
@@ -167,6 +167,23 @@ class FavCubit extends Cubit<FavState> {
     emit(FavState.init());
   }
 
+  Future<void> merge() async {
+    if (_authBloc.state.isLoggedIn) {
+      emit(state.copyWith(mergeStatus: Status.inProgress));
+      final Iterable<int> ids = await _hackerNewsWebRepository.fetchFavorites(
+        of: _authBloc.state.username,
+      );
+      final List<int> combinedIds = <int>[...ids, ...state.favIds];
+      final LinkedHashSet<int> mergedIds = LinkedHashSet<int>.from(combinedIds);
+      await _preferenceRepository.overwriteFav(
+        username: username,
+        ids: mergedIds,
+      );
+      emit(state.copyWith(mergeStatus: Status.success));
+      refresh();
+    }
+  }
+
   void _onItemLoaded(Item item) {
     emit(
       state.copyWith(
@@ -174,4 +191,14 @@ class FavCubit extends Cubit<FavState> {
       ),
     );
   }
+
+  @override
+  Future<void> close() {
+    _usernameSubscription?.cancel();
+    return super.close();
+  }
+}
+
+extension on FavCubit {
+  String get username => _authBloc.state.username;
 }

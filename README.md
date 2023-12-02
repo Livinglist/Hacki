@@ -35,22 +35,20 @@ Features:
 
 
 <p align="center">
-   <img width="200" alt="01" src="assets/screenshots/01.png"> 
-   <img width="200" alt="02" src="assets/screenshots/02.png"> 
-   <img width="200" alt="03" src="assets/screenshots/03.png"> 
-   <img width="200" alt="04" src="assets/screenshots/04.png"> 
-   <img width="200" alt="05" src="assets/screenshots/05.png"> 
-   <img width="200" alt="06" src="assets/screenshots/06.png"> 
-   <img width="200" alt="07" src="assets/screenshots/07.png"> 
-   <img width="200" alt="08" src="assets/screenshots/08.png"> 
-   <img width="200" alt="09" src="assets/screenshots/09.png"> 
-   <img width="200" alt="10" src="assets/screenshots/10.png"> 
-   <img width="200" alt="11" src="assets/screenshots/11.png"> 
-   <img width="200" alt="12" src="assets/screenshots/12.png"> 
+    <img width="400" alt="01" src="assets/screenshots/light-1.png"> 
+    <img width="400" alt="06" src="assets/screenshots/dark-1.png"> 
+    <img width="400" alt="02" src="assets/screenshots/light-2.png">
+    <img width="400" alt="07" src="assets/screenshots/dark-2.png">
+    <img width="400" alt="03" src="assets/screenshots/light-3.png"> 
+    <img width="400" alt="08" src="assets/screenshots/dark-3.png">
+    <img width="400" alt="04" src="assets/screenshots/light-4.png"> 
+    <img width="400" alt="09" src="assets/screenshots/dark-4.png"> 
+    <img width="400" alt="05" src="assets/screenshots/light-5.png">
+    <img width="400" alt="10" src="assets/screenshots/dark-5.png"> 
    
-   <img width="400" alt="ipad-01" src="assets/screenshots/ipad-01.png"> 
-   <img width="400" alt="ipad-02" src="assets/screenshots/ipad-02.png"> 
-   <img width="400" alt="ipad-03" src="assets/screenshots/ipad-03.png"> 
-   <img width="400" alt="ipad-04" src="assets/screenshots/ipad-04.png"> 
+   <img width="400" alt="ipad-01" src="assets/screenshots/tablet-light-1.png"> 
+   <img width="400" alt="ipad-02" src="assets/screenshots/tablet-dark-1.png"> 
+   <img width="400" alt="ipad-03" src="assets/screenshots/tablet-light-2.png"> 
+   <img width="400" alt="ipad-04" src="assets/screenshots/tablet-dark-2.png"> 
 </p>
 

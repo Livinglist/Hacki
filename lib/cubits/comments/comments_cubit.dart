@@ -325,15 +325,15 @@ class CommentsCubit extends Cubit<CommentsState> {
     if (parent == null) {
       return;
     } else {
+      await router.push(
+        '/${ItemScreen.routeName}',
+        extra: ItemScreenArgs(item: parent),
+      );
+
       emit(
         state.copyWith(
           fetchRootStatus: CommentsStatus.loaded,
         ),
-      );
-
-      await router.push(
-        '/${ItemScreen.routeName}',
-        extra: ItemScreenArgs(item: parent),
       );
     }
   }

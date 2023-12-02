@@ -5,6 +5,15 @@ abstract class StoriesEvent extends Equatable {
   List<Object?> get props => <Object?>[];
 }
 
+class LoadStories extends StoriesEvent {
+  LoadStories({required this.type});
+
+  final StoryType type;
+
+  @override
+  List<Object?> get props => <Object?>[type];
+}
+
 class StoriesInitialize extends StoriesEvent {
   @override
   List<Object?> get props => <Object?>[];

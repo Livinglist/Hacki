@@ -164,7 +164,7 @@ class _StoriesListViewState extends State<StoriesListView>
                             : null,
                         label: preferenceState.complexStoryTileEnabled
                             ? null
-                            : 'Pin to top',
+                            : 'Pin',
                       ),
                       SlidableAction(
                         onPressed: (_) => onMoreTapped(story, context.rect),

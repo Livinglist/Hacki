@@ -157,7 +157,6 @@ class PreferenceRepository {
           ((prefs.getStringList(_getFavKey('')) ?? <String>[])
                 ..addAll(prefs.getStringList(_getFavKey(of)) ?? <String>[]))
               .map(int.parse)
-              .toSet()
               .toList();
 
       return favList;
@@ -175,7 +174,7 @@ class PreferenceRepository {
 
       await _syncedPrefs.setStringList(
         key: key,
-        val: favList.map((int e) => e.toString()).toSet().toList(),
+        val: favList.map((int e) => e.toString()).toList(),
       );
     } else {
       final SharedPreferences prefs = await _prefs;
@@ -186,7 +185,30 @@ class PreferenceRepository {
 
       await prefs.setStringList(
         key,
-        favList.map((int e) => e.toString()).toSet().toList(),
+        favList.map((int e) => e.toString()).toList(),
+      );
+    }
+  }
+
+  Future<void> overwriteFav({
+    required String username,
+    required Iterable<int> ids,
+  }) async {
+    final String key = _getFavKey(username);
+    final List<String> favList =
+        ids.map((int e) => e.toString()).toList(growable: false);
+
+    if (Platform.isIOS) {
+      await _syncedPrefs.setStringList(
+        key: key,
+        val: favList,
+      );
+    } else {
+      final SharedPreferences prefs = await _prefs;
+
+      await prefs.setStringList(
+        key,
+        favList,
       );
     }
   }

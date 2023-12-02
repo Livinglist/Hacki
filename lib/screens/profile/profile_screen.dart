@@ -138,6 +138,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                             ..loadComplete();
                         }
                       },
+                      buildWhen: (FavState previous, FavState current) =>
+                          previous.favItems.length != current.favItems.length,
                       builder: (BuildContext context, FavState favState) {
                         if (favState.favItems.isEmpty &&
                             favState.status != Status.inProgress) {
@@ -147,6 +149,31 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 'News account if you are logged in.',
                           );
                         }
+
+                        Widget? header() => authState.isLoggedIn
+                            ? BlocSelector<FavCubit, FavState, Status>(
+                                selector: (FavState state) => state.mergeStatus,
+                                builder: (
+                                  BuildContext context,
+                                  Status status,
+                                ) =>
+                                    TextButton(
+                                  onPressed: () {
+                                    context.read<FavCubit>().merge();
+                                  },
+                                  child: status == Status.inProgress
+                                      ? const SizedBox(
+                                          height: Dimens.pt12,
+                                          width: Dimens.pt12,
+                                          child:
+                                              CustomCircularProgressIndicator(
+                                            strokeWidth: Dimens.pt2,
+                                          ),
+                                        )
+                                      : const Text('Sync from Hacker News'),
+                                ),
+                              )
+                            : null;
 
                         return BlocBuilder<PreferenceCubit, PreferenceState>(
                           buildWhen: (
@@ -181,6 +208,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               onTap: (Item item) => goToItemScreen(
                                 args: ItemScreenArgs(item: item),
                               ),
+                              header: header(),
                               itemBuilder: (Widget child, Item item) {
                                 return Slidable(
                                   dragStartBehavior: DragStartBehavior.start,

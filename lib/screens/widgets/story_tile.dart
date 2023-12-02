@@ -53,6 +53,7 @@ class StoryTile extends StatelessWidget {
                       story.title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             color: hasRead ? Theme.of(context).readGrey : null,
+                            fontWeight: FontWeight.bold,
                           ),
                       textAlign: TextAlign.left,
                     ),
@@ -125,13 +126,9 @@ class StoryTile extends StatelessWidget {
                             TextSpan(
                               text: story.title,
                               style: TextStyle(
-                                color: hasRead
-                                    ? Palette.grey[500]
-                                    : Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge
-                                        ?.color,
-                                fontWeight: hasRead ? null : FontWeight.w500,
+                                color:
+                                    hasRead ? Theme.of(context).readGrey : null,
+                                fontWeight: hasRead ? null : FontWeight.bold,
                                 fontSize: simpleTileFontSize,
                               ),
                             ),

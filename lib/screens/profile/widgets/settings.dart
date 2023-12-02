@@ -82,34 +82,10 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                   const SizedBox(
                     height: Dimens.pt8,
                   ),
-                  const Flex(
-                    direction: Axis.horizontal,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Flexible(
-                        child: Row(
-                          children: <Widget>[
-                            SizedBox(
-                              width: Dimens.pt16,
-                            ),
-                            Text('Default fetch mode'),
-                            Spacer(),
-                          ],
-                        ),
-                      ),
-                      Flexible(
-                        child: Row(
-                          children: <Widget>[
-                            Text('Default comments order'),
-                            Spacer(),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
                   Flex(
                     direction: Axis.horizontal,
                     mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       Flexible(
                         child: Row(
@@ -117,60 +93,67 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                             const SizedBox(
                               width: Dimens.pt16,
                             ),
-                            DropdownMenu<FetchMode>(
-                              initialSelection: preferenceState.fetchMode,
-                              dropdownMenuEntries: FetchMode.values
-                                  .map(
-                                    (FetchMode val) =>
-                                        DropdownMenuEntry<FetchMode>(
-                                      value: val,
-                                      label: val.description,
-                                    ),
-                                  )
-                                  .toList(),
-                              onSelected: (FetchMode? fetchMode) {
-                                if (fetchMode != null) {
-                                  HapticFeedbackUtil.selection();
-                                  context.read<PreferenceCubit>().update(
-                                        FetchModePreference(
-                                          val: fetchMode.index,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                const Text('Default fetch mode'),
+                                DropdownMenu<FetchMode>(
+                                  initialSelection: preferenceState.fetchMode,
+                                  dropdownMenuEntries: FetchMode.values
+                                      .map(
+                                        (FetchMode val) =>
+                                            DropdownMenuEntry<FetchMode>(
+                                          value: val,
+                                          label: val.description,
                                         ),
-                                      );
-                                }
-                              },
+                                      )
+                                      .toList(),
+                                  onSelected: (FetchMode? fetchMode) {
+                                    if (fetchMode != null) {
+                                      HapticFeedbackUtil.selection();
+                                      context.read<PreferenceCubit>().update(
+                                            FetchModePreference(
+                                              val: fetchMode.index,
+                                            ),
+                                          );
+                                    }
+                                  },
+                                ),
+                              ],
                             ),
-                            const Spacer(),
                           ],
                         ),
                       ),
-                      Flexible(
-                        child: Row(
-                          children: <Widget>[
-                            DropdownMenu<CommentsOrder>(
-                              initialSelection: preferenceState.order,
-                              dropdownMenuEntries: CommentsOrder.values
-                                  .map(
-                                    (CommentsOrder val) =>
-                                        DropdownMenuEntry<CommentsOrder>(
-                                      value: val,
-                                      label: val.description,
-                                    ),
-                                  )
-                                  .toList(),
-                              onSelected: (CommentsOrder? order) {
-                                if (order != null) {
-                                  HapticFeedbackUtil.selection();
-                                  context.read<PreferenceCubit>().update(
-                                        CommentsOrderPreference(
-                                          val: order.index,
-                                        ),
-                                      );
-                                }
-                              },
-                            ),
-                            const Spacer(),
-                          ],
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          const Text('Default comments order'),
+                          DropdownMenu<CommentsOrder>(
+                            initialSelection: preferenceState.order,
+                            dropdownMenuEntries: CommentsOrder.values
+                                .map(
+                                  (CommentsOrder val) =>
+                                      DropdownMenuEntry<CommentsOrder>(
+                                    value: val,
+                                    label: val.description,
+                                  ),
+                                )
+                                .toList(),
+                            onSelected: (CommentsOrder? order) {
+                              if (order != null) {
+                                HapticFeedbackUtil.selection();
+                                context.read<PreferenceCubit>().update(
+                                      CommentsOrderPreference(
+                                        val: order.index,
+                                      ),
+                                    );
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        width: Dimens.pt16,
                       ),
                     ],
                   ),
@@ -228,6 +211,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                           horizontal: Dimens.pt16,
                         ),
                         child: DropdownMenu<StoryMarkingMode>(
+                          enabled: preferenceState.markReadStoriesEnabled,
                           label: Text(StoryMarkingModePreference().title),
                           initialSelection: preferenceState.storyMarkingMode,
                           onSelected: (StoryMarkingMode? storyMarkingMode) {
@@ -249,6 +233,13 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                                 ),
                               )
                               .toList(),
+                          inputDecorationTheme: const InputDecorationTheme(
+                            disabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Palette.grey,
+                              ),
+                            ),
+                          ),
                           expandedInsets: EdgeInsets.zero,
                         ),
                       ),
