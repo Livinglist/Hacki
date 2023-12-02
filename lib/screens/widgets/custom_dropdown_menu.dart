@@ -22,9 +22,7 @@ class CustomDropdownMenu<T> extends StatelessWidget {
               onPressed: () => onSelected(val),
               child: Text(
                 val.toString(),
-                style: const TextStyle(
-                  fontSize: TextDimens.pt13,
-                ),
+                style: Theme.of(context).textTheme.labelLarge,
                 textScaler: TextScaler.noScaling,
               ),
             ),
@@ -42,7 +40,7 @@ class CustomDropdownMenu<T> extends StatelessWidget {
               children: <Widget>[
                 Text(
                   selected.toString(),
-                  style: Theme.of(context).textTheme.labelMedium,
+                  style: Theme.of(context).textTheme.labelLarge,
                 ),
                 Icon(
                   controller.isOpen

@@ -390,83 +390,103 @@ class _ParentItemSection extends StatelessWidget {
               height: Dimens.zero,
             ),
           ] else ...<Widget>[
-            Row(
-              children: <Widget>[
-                if (item is Story) ...<Widget>[
+            SizedBox(
+              height: 48,
+              child: Row(
+                children: <Widget>[
+                  if (item is Story) ...<Widget>[
+                    const SizedBox(
+                      width: Dimens.pt12,
+                    ),
+                    Text(
+                      '''${item.score} karma, ${item.descendants} cmt${item.descendants > 1 ? 's' : ''}''',
+                      style: Theme.of(context).textTheme.labelLarge,
+                      textScaler: TextScaler.noScaling,
+                    ),
+                  ] else ...<Widget>[
+                    const SizedBox(
+                      width: Dimens.pt4,
+                    ),
+                    BlocSelector<CommentsCubit, CommentsState, CommentsStatus>(
+                      selector: (CommentsState state) =>
+                          state.fetchParentStatus,
+                      builder: (BuildContext context, CommentsStatus status) {
+                        return TextButton(
+                          onPressed:
+                              context.read<CommentsCubit>().loadParentThread,
+                          child: status == CommentsStatus.inProgress
+                              ? const SizedBox(
+                                  height: Dimens.pt12,
+                                  width: Dimens.pt12,
+                                  child: CustomCircularProgressIndicator(
+                                    strokeWidth: Dimens.pt2,
+                                  ),
+                                )
+                              : Text(
+                                  'View Parent',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelLarge
+                                      ?.copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                      ),
+                                  textScaler: TextScaler.noScaling,
+                                ),
+                        );
+                      },
+                    ),
+                    BlocSelector<CommentsCubit, CommentsState, CommentsStatus>(
+                      selector: (CommentsState state) => state.fetchRootStatus,
+                      builder: (BuildContext context, CommentsStatus status) {
+                        return TextButton(
+                          onPressed:
+                              context.read<CommentsCubit>().loadRootThread,
+                          child: status == CommentsStatus.inProgress
+                              ? const SizedBox(
+                                  height: Dimens.pt12,
+                                  width: Dimens.pt12,
+                                  child: CustomCircularProgressIndicator(
+                                    strokeWidth: Dimens.pt2,
+                                  ),
+                                )
+                              : Text(
+                                  'View Root',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelLarge
+                                      ?.copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                      ),
+                                  textScaler: TextScaler.noScaling,
+                                ),
+                        );
+                      },
+                    ),
+                  ],
+                  const Spacer(),
+                  if (!state.isOfflineReading)
+                    CustomDropdownMenu<FetchMode>(
+                      menuChildren: FetchMode.values,
+                      onSelected: context.read<CommentsCubit>().updateFetchMode,
+                      selected: state.fetchMode,
+                    ),
                   const SizedBox(
-                    width: Dimens.pt12,
+                    width: Dimens.pt6,
                   ),
-                  Text(
-                    '''${item.score} karma, ${item.descendants} comment${item.descendants > 1 ? 's' : ''}''',
-                    style: Theme.of(context).textTheme.labelMedium,
-                    textScaler: TextScaler.noScaling,
+                  CustomDropdownMenu<CommentsOrder>(
+                    menuChildren: CommentsOrder.values,
+                    onSelected: context.read<CommentsCubit>().updateOrder,
+                    selected: state.order,
                   ),
-                ] else ...<Widget>[
                   const SizedBox(
                     width: Dimens.pt4,
                   ),
-                  TextButton(
-                    onPressed: context.read<CommentsCubit>().loadParentThread,
-                    child: state.fetchParentStatus == CommentsStatus.inProgress
-                        ? const SizedBox(
-                            height: Dimens.pt12,
-                            width: Dimens.pt12,
-                            child: CustomCircularProgressIndicator(
-                              strokeWidth: Dimens.pt2,
-                            ),
-                          )
-                        : Text(
-                            'View Parent',
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelMedium
-                                ?.copyWith(
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                            textScaler: TextScaler.noScaling,
-                          ),
-                  ),
-                  TextButton(
-                    onPressed: context.read<CommentsCubit>().loadRootThread,
-                    child: state.fetchRootStatus == CommentsStatus.inProgress
-                        ? const SizedBox(
-                            height: Dimens.pt12,
-                            width: Dimens.pt12,
-                            child: CustomCircularProgressIndicator(
-                              strokeWidth: Dimens.pt2,
-                            ),
-                          )
-                        : Text(
-                            'View Root',
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelMedium
-                                ?.copyWith(
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                            textScaler: TextScaler.noScaling,
-                          ),
-                  ),
                 ],
-                const Spacer(),
-                if (!state.isOfflineReading)
-                  CustomDropdownMenu<FetchMode>(
-                    menuChildren: FetchMode.values,
-                    onSelected: context.read<CommentsCubit>().updateFetchMode,
-                    selected: state.fetchMode,
-                  ),
-                const SizedBox(
-                  width: Dimens.pt6,
-                ),
-                CustomDropdownMenu<CommentsOrder>(
-                  menuChildren: CommentsOrder.values,
-                  onSelected: context.read<CommentsCubit>().updateOrder,
-                  selected: state.order,
-                ),
-                const SizedBox(
-                  width: Dimens.pt4,
-                ),
-              ],
+              ),
             ),
             const Divider(
               height: Dimens.zero,
