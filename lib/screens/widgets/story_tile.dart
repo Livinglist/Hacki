@@ -49,34 +49,51 @@ class StoryTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      story.title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: hasRead ? Theme.of(context).readGrey : null,
-                            fontWeight: FontWeight.bold,
+                    Text.rich(
+                      TextSpan(
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: story.title,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  color: hasRead
+                                      ? Theme.of(context).readGrey
+                                      : null,
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
-                      textAlign: TextAlign.left,
+                          if (showUrl && story.readableUrl.isNotEmpty)
+                            TextSpan(
+                              text: ' (${story.readableUrl})',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: hasRead
+                                        ? Theme.of(context).readGrey
+                                        : null,
+                                  ),
+                            ),
+                        ],
+                      ),
                     ),
-                    if (story.readableUrl.isNotEmpty)
+                    if (showMetadata)
                       Text(
-                        story.readableUrl,
+                        story.metadata,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color:
-                                  hasRead ? Theme.of(context).readGrey : null,
+                              color: hasRead
+                                  ? Theme.of(context).readGrey
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(0.6),
                             ),
                         textAlign: TextAlign.left,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                       ),
-                    Text(
-                      story.metadata,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: hasRead ? Theme.of(context).readGrey : null,
-                          ),
-                      textAlign: TextAlign.left,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
                   ],
                 ),
               ),
@@ -217,7 +234,7 @@ class _LinkPreviewPlaceholder extends StatelessWidget {
                     children: <Widget>[
                       Container(
                         width: double.infinity,
-                        height: Dimens.pt14,
+                        height: Dimens.pt12,
                         color: Palette.white,
                       ),
                       const Padding(
@@ -227,37 +244,37 @@ class _LinkPreviewPlaceholder extends StatelessWidget {
                       ),
                       Container(
                         width: double.infinity,
-                        height: Dimens.pt10,
+                        height: Dimens.pt12,
                         color: Palette.white,
                       ),
                       const Padding(
                         padding: EdgeInsets.symmetric(
-                          vertical: Dimens.pt3,
+                          vertical: Dimens.pt4,
                         ),
                       ),
                       Container(
                         width: double.infinity,
-                        height: Dimens.pt10,
+                        height: Dimens.pt12,
                         color: Palette.white,
                       ),
                       const Padding(
                         padding: EdgeInsets.symmetric(
-                          vertical: Dimens.pt3,
+                          vertical: Dimens.pt4,
                         ),
                       ),
                       Container(
                         width: double.infinity,
-                        height: Dimens.pt10,
+                        height: Dimens.pt12,
                         color: Palette.white,
                       ),
                       const Padding(
                         padding: EdgeInsets.symmetric(
-                          vertical: Dimens.pt3,
+                          vertical: Dimens.pt4,
                         ),
                       ),
                       Container(
                         width: Dimens.pt40,
-                        height: Dimens.pt10,
+                        height: Dimens.pt12,
                         color: Palette.white,
                       ),
                     ],

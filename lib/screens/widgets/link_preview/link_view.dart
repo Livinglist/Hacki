@@ -1,10 +1,15 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/screens/widgets/tap_down_wrapper.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/link_util.dart';
+import 'package:memoize/function_defs.dart';
+import 'package:memoize/memoize.dart';
 
 class LinkView extends StatelessWidget {
   LinkView({
@@ -51,12 +56,35 @@ class LinkView extends StatelessWidget {
   final bool showMetadata;
   final bool showUrl;
 
+  static final Func3<TextScaler, TextStyle?, double, int> _computeMaxLines =
+      memo3((TextScaler textScaler, TextStyle? style, double layoutHeight) {
+    final Size size = (TextPainter(
+      text: TextSpan(text: 'ABCDEFG', style: style),
+      maxLines: 1,
+      textScaler: textScaler,
+      textDirection: TextDirection.ltr,
+    )..layout())
+        .size;
+
+    final int maxLines = max(1, (layoutHeight / size.height).floor());
+
+    return maxLines;
+  });
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         final double layoutWidth = constraints.biggest.width;
         final double layoutHeight = constraints.biggest.height;
+
+        final TextStyle? style = Theme.of(context).textTheme.bodyMedium;
+
+        final int maxLines = _computeMaxLines(
+          MediaQuery.of(context).textScaler,
+          style,
+          layoutHeight,
+        );
 
         return Row(
           children: <Widget>[
@@ -95,7 +123,13 @@ class LinkView extends StatelessWidget {
                             memCacheHeight: layoutHeight.toInt() * 4,
                             cacheKey: imageUri,
                             errorWidget: (BuildContext context, _, __) {
-                              return const SizedBox.shrink();
+                              return Image.asset(
+                                Constants.hackerNewsLogoPath,
+                                width: layoutHeight,
+                                height: layoutHeight,
+                                fit: BoxFit.fill,
+                                gaplessPlayback: true,
+                              );
                             },
                           ),
                   ),
@@ -108,32 +142,14 @@ class LinkView extends StatelessWidget {
               child: SizedBox(
                 height: layoutHeight,
                 width: layoutWidth - layoutHeight - 8,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const SizedBox(
-                      height: Dimens.pt2,
-                    ),
-                    Flexible(
-                      child: Text(
-                        description,
-                        textAlign: TextAlign.left,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: hasRead
-                                  ? Theme.of(context)
-                                      .colorScheme
-                                      .onSurface
-                                      .withOpacity(0.4)
-                                  : Theme.of(context)
-                                      .colorScheme
-                                      .onSurface
-                                      .withOpacity(0.9),
-                            ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 5,
+                child: Text(
+                  description,
+                  textAlign: TextAlign.left,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: hasRead ? Theme.of(context).readGrey : null,
                       ),
-                    ),
-                  ],
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: maxLines,
                 ),
               ),
             ),
