@@ -85,10 +85,7 @@ class StoryTile extends StatelessWidget {
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: hasRead
                                   ? Theme.of(context).readGrey
-                                  : Theme.of(context)
-                                      .colorScheme
-                                      .onSurface
-                                      .withOpacity(0.6),
+                                  : Theme.of(context).metadataColor,
                             ),
                         textAlign: TextAlign.left,
                         overflow: TextOverflow.ellipsis,
@@ -182,10 +179,7 @@ class StoryTile extends StatelessWidget {
                               Theme.of(context).textTheme.bodySmall?.copyWith(
                                     color: hasRead
                                         ? Theme.of(context).readGrey
-                                        : Theme.of(context)
-                                            .colorScheme
-                                            .onSurface
-                                            .withOpacity(0.6),
+                                        : Theme.of(context).metadataColor,
                                   ),
                           maxLines: 1,
                         ),

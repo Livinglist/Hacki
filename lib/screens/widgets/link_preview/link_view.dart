@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
-import 'package:hacki/config/constants.dart';
 import 'package:hacki/screens/widgets/tap_down_wrapper.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/link_util.dart';
@@ -122,15 +121,8 @@ class LinkView extends StatelessWidget {
                             fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
                             memCacheHeight: layoutHeight.toInt() * 4,
                             cacheKey: imageUri,
-                            errorWidget: (BuildContext context, _, __) {
-                              return Image.asset(
-                                Constants.hackerNewsLogoPath,
-                                width: layoutHeight,
-                                height: layoutHeight,
-                                fit: BoxFit.fill,
-                                gaplessPlayback: true,
-                              );
-                            },
+                            errorWidget: (_, __, ___) =>
+                                const SizedBox.shrink(),
                           ),
                   ),
                 ),

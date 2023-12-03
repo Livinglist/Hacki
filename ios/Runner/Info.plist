@@ -80,7 +80,5 @@
 	<string>This app needs camera access to scan QR codes</string>
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
-	<key>FLTEnableWideGamut</key>
-	<false/>
 </dict>
 </plist>
