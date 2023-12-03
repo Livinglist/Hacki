@@ -438,6 +438,19 @@ class WebAnalyzer {
     return head.toString();
   }
 
+  static String? _getMetaContent(
+    Document document,
+    String property,
+    String propertyValue,
+  ) {
+    final List<Element> meta = document.head!.getElementsByTagName('meta');
+    final Element? ele = meta.firstWhereOrNull(
+      (Element e) => e.attributes[property] == propertyValue,
+    );
+    if (ele != null) return ele.attributes['content']?.trim();
+    return null;
+  }
+
   static InfoBase? _analyzeGif(Document document, Uri uri) {
     if (_getMetaContent(document, 'property', 'og:image:type') == 'image/gif') {
       final String? gif = _getMetaContent(document, 'property', 'og:image');
@@ -449,19 +462,6 @@ class WebAnalyzer {
   static InfoBase? _analyzeVideo(Document document, Uri uri) {
     final String? video = _getMetaContent(document, 'property', 'og:video');
     if (video != null) return WebVideoInfo(image: _handleUrl(uri, video));
-    return null;
-  }
-
-  static String? _getMetaContent(
-    Document document,
-    String property,
-    String propertyValue,
-  ) {
-    final List<Element> meta = document.head!.getElementsByTagName('meta');
-    final Element? ele = meta.firstWhereOrNull(
-      (Element e) => e.attributes[property] == propertyValue,
-    );
-    if (ele != null) return ele.attributes['content']?.trim();
     return null;
   }
 
