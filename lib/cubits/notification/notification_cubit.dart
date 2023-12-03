@@ -28,8 +28,11 @@ class NotificationCubit extends Cubit<NotificationState> {
         _sembastRepository =
             sembastRepository ?? locator.get<SembastRepository>(),
         super(NotificationState.init()) {
-    _authBloc.stream.listen((AuthState authState) {
-      if (authState.isLoggedIn && authState.username != _username) {
+    _authBloc.stream
+        .map((AuthState event) => event.username)
+        .distinct()
+        .listen((String username) {
+      if (username.isNotEmpty) {
         // Get the user setting.
         if (_preferenceCubit.state.notificationEnabled) {
           Future<void>.delayed(AppDurations.twoSeconds, init);
@@ -44,9 +47,7 @@ class NotificationCubit extends Cubit<NotificationState> {
             _timer?.cancel();
           }
         });
-
-        _username = authState.username;
-      } else if (!authState.isLoggedIn) {
+      } else {
         emit(NotificationState.init());
       }
     });
@@ -57,7 +58,6 @@ class NotificationCubit extends Cubit<NotificationState> {
   final HackerNewsRepository _hackerNewsRepository;
   final PreferenceRepository _preferenceRepository;
   final SembastRepository _sembastRepository;
-  String? _username;
   Timer? _timer;
 
   static const Duration _refreshInterval = Duration(minutes: 5);
