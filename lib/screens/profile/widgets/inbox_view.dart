@@ -28,9 +28,6 @@ class InboxView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color textColor = Theme.of(context).brightness == Brightness.dark
-        ? Palette.white
-        : Palette.black;
     return Column(
       children: <Widget>[
         if (unreadCommentsIds.isNotEmpty)
@@ -43,6 +40,7 @@ class InboxView extends StatelessWidget {
             enablePullUp: true,
             header: WaterDropMaterialHeader(
               backgroundColor: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
             footer: CustomFooter(
               loadStyle: LoadStyle.ShowWhenLoading,
@@ -104,8 +102,10 @@ class InboxView extends StatelessWidget {
                                   text: e.text,
                                   style: TextStyle(
                                     color: unreadCommentsIds.contains(e.id)
-                                        ? textColor
-                                        : Palette.grey,
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .onSurface
+                                        : Theme.of(context).readGrey,
                                     fontSize: TextDimens.pt16,
                                   ),
                                   linkStyle: TextStyle(

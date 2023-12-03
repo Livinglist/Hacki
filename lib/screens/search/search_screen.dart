@@ -77,6 +77,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                       enablePullUp: true,
                       header: WaterDropMaterialHeader(
                         backgroundColor: Theme.of(context).colorScheme.primary,
+                        color: Theme.of(context).colorScheme.onPrimary,
                       ),
                       footer: CustomFooter(
                         loadStyle: LoadStyle.ShowWhenLoading,
