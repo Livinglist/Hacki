@@ -319,7 +319,8 @@ class WebAnalyzer {
     Response? res;
     final Uri uri = Uri.parse(url);
     final HttpClient ioClient = HttpClient()
-      ..badCertificateCallback = _certificateCheck;
+      ..badCertificateCallback = _certificateCheck
+      ..connectionTimeout = AppDurations.tenSeconds;
     final IOClient client = IOClient(ioClient);
     final BaseRequest request = Request('GET', uri)
       ..followRedirects = true
