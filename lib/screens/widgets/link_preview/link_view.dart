@@ -122,15 +122,8 @@ class LinkView extends StatelessWidget {
                             fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
                             memCacheHeight: layoutHeight.toInt() * 4,
                             cacheKey: imageUri,
-                            errorWidget: (BuildContext context, _, __) {
-                              return Image.asset(
-                                Constants.hackerNewsLogoPath,
-                                width: layoutHeight,
-                                height: layoutHeight,
-                                fit: BoxFit.fill,
-                                gaplessPlayback: true,
-                              );
-                            },
+                            errorWidget: (_, _, _) => 
+                              return const SizedBox.shrink(),
                           ),
                   ),
                 ),
