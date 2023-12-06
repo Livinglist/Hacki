@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
 import 'package:hacki/config/locator.dart';
@@ -29,15 +30,18 @@ class HackerNewsRepository {
   static const String _baseUrl = 'https://hacker-news.firebaseio.com/v0/';
 
   Future<Map<String, dynamic>?> _fetchItemJson(int id) async {
-    return _firebaseClient
-        .get('${_baseUrl}item/$id.json')
-        .then((dynamic json) => _parseJson(json as Map<String, dynamic>?));
+    final Map<String, dynamic>? json = await Isolate.run(
+      () => FirebaseClient.anonymous().get('${_baseUrl}item/$id.json'),
+    ).then((dynamic value) => value as Map<String, dynamic>?);
+    final Map<String, dynamic>? parsedJson = await _parseJson(json);
+    return parsedJson;
   }
 
   Future<Map<String, dynamic>?> _fetchRawItemJson(int id) async {
-    return _firebaseClient
-        .get('${_baseUrl}item/$id.json')
-        .then((dynamic value) => value as Map<String, dynamic>?);
+    final Map<String, dynamic>? json = await Isolate.run(
+      () => FirebaseClient.anonymous().get('${_baseUrl}item/$id.json'),
+    ).then((dynamic value) => value as Map<String, dynamic>?);
+    return json;
   }
 
   /// Fetch a [Item] based on its id.
