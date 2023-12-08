@@ -250,8 +250,8 @@ class _ParentItemSection extends StatelessWidget {
                         const Spacer(),
                         Text(
                           item.timeAgo,
-                          style: const TextStyle(
-                            color: Palette.grey,
+                          style: TextStyle(
+                            color: Theme.of(context).metadataColor,
                           ),
                           textScaler: MediaQuery.of(context).textScaler,
                         ),

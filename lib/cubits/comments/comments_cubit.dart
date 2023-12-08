@@ -34,6 +34,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     OfflineRepository? offlineRepository,
     SembastRepository? sembastRepository,
     HackerNewsRepository? hackerNewsRepository,
+    HackerNewsWebRepository? hackerNewsWebRepository,
     Logger? logger,
   })  : _filterCubit = filterCubit,
         _collapseCache = collapseCache,
@@ -44,6 +45,8 @@ class CommentsCubit extends Cubit<CommentsState> {
             sembastRepository ?? locator.get<SembastRepository>(),
         _hackerNewsRepository =
             hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
+        _hackerNewsWebRepository =
+            hackerNewsWebRepository ?? locator.get<HackerNewsWebRepository>(),
         _logger = logger ?? locator.get<Logger>(),
         super(
           CommentsState.init(
@@ -60,6 +63,7 @@ class CommentsCubit extends Cubit<CommentsState> {
   final OfflineRepository _offlineRepository;
   final SembastRepository _sembastRepository;
   final HackerNewsRepository _hackerNewsRepository;
+  final HackerNewsWebRepository _hackerNewsWebRepository;
   final Logger _logger;
 
   final ItemScrollController itemScrollController = ItemScrollController();
@@ -143,11 +147,18 @@ class CommentsCubit extends Cubit<CommentsState> {
             getFromCache: useCommentCache ? _commentCache.getComment : null,
           );
         case FetchMode.eager:
-          commentStream =
-              _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
-            ids: kids,
-            getFromCache: useCommentCache ? _commentCache.getComment : null,
-          );
+          switch (state.order) {
+            case CommentsOrder.natural:
+              commentStream =
+                  _hackerNewsWebRepository.fetchCommentsStream(state.item.id);
+            case CommentsOrder.oldestFirst:
+            case CommentsOrder.newestFirst:
+              commentStream =
+                  _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
+                ids: kids,
+                getFromCache: useCommentCache ? _commentCache.getComment : null,
+              );
+          }
       }
     }
 
@@ -195,14 +206,24 @@ class CommentsCubit extends Cubit<CommentsState> {
     final List<int> kids = _sortKids(updatedItem.kids);
 
     late final Stream<Comment> commentStream;
-    if (state.fetchMode == FetchMode.lazy) {
-      commentStream = _hackerNewsRepository.fetchCommentsStream(
-        ids: kids,
-      );
-    } else {
-      commentStream = _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
-        ids: kids,
-      );
+
+    switch (state.fetchMode) {
+      case FetchMode.lazy:
+        commentStream = _hackerNewsRepository.fetchCommentsStream(
+          ids: kids,
+        );
+      case FetchMode.eager:
+        switch (state.order) {
+          case CommentsOrder.natural:
+            commentStream =
+                _hackerNewsWebRepository.fetchCommentsStream(state.item.id);
+          case CommentsOrder.oldestFirst:
+          case CommentsOrder.newestFirst:
+            commentStream =
+                _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
+              ids: kids,
+            );
+        }
     }
 
     _streamSubscription = commentStream

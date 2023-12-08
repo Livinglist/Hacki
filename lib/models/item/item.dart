@@ -90,8 +90,13 @@ class Item extends Equatable {
   final List<int> kids;
   final List<int> parts;
 
-  String get timeAgo =>
-      DateTime.fromMillisecondsSinceEpoch(time * 1000).toTimeAgoString();
+  String get timeAgo {
+    int time = this.time;
+    if (time < 9999999999) {
+      time = time * 1000;
+    }
+    return DateTime.fromMillisecondsSinceEpoch(time).toTimeAgoString();
+  }
 
   bool get isPoll => type == 'poll';
 
