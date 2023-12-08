@@ -196,8 +196,6 @@ class CommentsCubit extends Cubit<CommentsState> {
     required AppExceptionHandler? onError,
     bool fetchFromWeb = true,
   }) async {
-    await _streamSubscription?.cancel();
-
     emit(
       state.copyWith(
         status: CommentsStatus.inProgress,
@@ -245,8 +243,6 @@ class CommentsCubit extends Cubit<CommentsState> {
               commentStream = _hackerNewsWebRepository
                   .fetchCommentsStream(state.item.id)
                   .handleError((dynamic e) {
-                _streamSubscription?.cancel();
-
                 if (e is RateLimitedWithFallbackException) {
                   onError?.call(e);
 
