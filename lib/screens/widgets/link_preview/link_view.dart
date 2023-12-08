@@ -119,7 +119,6 @@ class LinkView extends StatelessWidget {
                         : CachedNetworkImage(
                             imageUrl: imageUri!,
                             fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
-                            memCacheHeight: layoutHeight.toInt() * 4,
                             cacheKey: imageUri,
                             errorWidget: (_, __, ___) => const Center(
                               child: Text(r'¯\_(ツ)_/¯'),
