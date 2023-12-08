@@ -2,6 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/auth/auth_bloc.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/comments/comments_cubit.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
@@ -65,9 +66,11 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
     super.initState();
     scrollController.addListener(onScroll);
     textEditingController.text = widget.commentsCubit.state.inThreadSearchQuery;
-    if (textEditingController.text.isEmpty) {
-      focusNode.requestFocus();
-    }
+    Future<void>.delayed(AppDurations.ms300, () {
+      if (textEditingController.text.isEmpty) {
+        focusNode.requestFocus();
+      }
+    });
   }
 
   @override
