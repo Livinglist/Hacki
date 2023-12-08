@@ -19,6 +19,14 @@ class RateLimitedWithFallbackException extends AppException {
       : super(message: 'Rate limited, fetching from API instead...');
 }
 
+class PossibleParsingException extends AppException {
+  PossibleParsingException({
+    required this.itemId,
+  }) : super(message: 'Possible parsing failure...');
+
+  final int itemId;
+}
+
 class GeneralException extends AppException {
   GeneralException() : super(message: 'Something went wrong...');
 }
