@@ -17,7 +17,6 @@ class HackerNewsWebRepository {
     'Accept':
         'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
     'Accept-Encoding': 'gzip, deflate, br',
-    'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7',
     'Cache-Control': 'max-age=0',
     'Connection': 'keep-alive',
     'Host': 'news.ycombinator.com',
@@ -33,10 +32,6 @@ class HackerNewsWebRepository {
         ''''"Google Chrome";v="119", "Chromium";v="119", "Not?A_Brand";v="24"''',
     'sec-ch-ua-mobile': '?0',
     'sec-ch-ua-platform': 'macOS',
-    'X-Originating-IP': '127.0.0.1',
-    'X-Forwarded-For': '127.0.0.1',
-    'X-Remote-IP': '127.0.0.1',
-    'X-Remote-Addr': '127.0.0.1',
   };
 
   static const String _favoritesBaseUrl =
