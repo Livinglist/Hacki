@@ -121,8 +121,9 @@ class LinkView extends StatelessWidget {
                             fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
                             memCacheHeight: layoutHeight.toInt() * 4,
                             cacheKey: imageUri,
-                            errorWidget: (_, __, ___) =>
-                                const SizedBox.shrink(),
+                            errorWidget: (_, __, ___) => const Center(
+                              child: Text(r'¯\_(ツ)_/¯'),
+                            ),
                           ),
                   ),
                 ),
