@@ -102,7 +102,7 @@ class HackerNewsWebRepository {
   Stream<Comment> fetchCommentsStream(Item item) async* {
     final int itemId = item.id;
     final int? descendants = item is Story ? item.descendants : null;
-    late final int parentTextCount;
+    int parentTextCount = 0;
 
     Future<Iterable<Element>> fetchElements(int page) async {
       final Uri url = Uri.parse('$_itemBaseUrl$itemId&p=$page');
@@ -112,7 +112,10 @@ class HackerNewsWebRepository {
         throw RateLimitedWithFallbackException();
       }
 
-      parentTextCount = 'parent'.allMatches(response.body).length;
+      if (page == 1) {
+        parentTextCount = 'parent'.allMatches(response.body).length;
+      }
+
       final Document document = parse(response.body);
       final List<Element> elements =
           document.querySelectorAll(_athingComtrSelector);
