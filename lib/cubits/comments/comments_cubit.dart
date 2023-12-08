@@ -153,7 +153,7 @@ class CommentsCubit extends Cubit<CommentsState> {
             case CommentsOrder.natural:
               if (fetchFromWeb) {
                 commentStream = _hackerNewsWebRepository
-                    .fetchCommentsStream(state.item.id)
+                    .fetchCommentsStream(state.item)
                     .handleError((dynamic e) {
                   _streamSubscription?.cancel();
 
@@ -241,7 +241,7 @@ class CommentsCubit extends Cubit<CommentsState> {
           case CommentsOrder.natural:
             if (fetchFromWeb) {
               commentStream = _hackerNewsWebRepository
-                  .fetchCommentsStream(state.item.id)
+                  .fetchCommentsStream(state.item)
                   .handleError((dynamic e) {
                 if (e is RateLimitedWithFallbackException) {
                   onError?.call(e);

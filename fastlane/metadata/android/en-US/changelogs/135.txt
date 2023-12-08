@@ -1,0 +1,3 @@
+- Return of true dark mode.
+- Better comment fetching strategy.
+- Minor UI fixes.

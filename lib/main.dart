@@ -239,11 +239,12 @@ class HackiApp extends StatelessWidget {
         buildWhen: (PreferenceState previous, PreferenceState current) =>
             previous.appColor != current.appColor ||
             previous.font != current.font ||
-            previous.textScaleFactor != current.textScaleFactor,
+            previous.textScaleFactor != current.textScaleFactor ||
+            previous.trueDarkModeEnabled != current.trueDarkModeEnabled,
         builder: (BuildContext context, PreferenceState state) {
           return AdaptiveTheme(
             key: ValueKey<String>(
-              '''${state.appColor}${state.font}''',
+              '''${state.appColor}${state.font}${state.trueDarkModeEnabled}''',
             ),
             light: ThemeData(
               primaryColor: state.appColor,
@@ -286,6 +287,9 @@ class HackiApp extends StatelessWidget {
                     brightness:
                         isDarkModeEnabled ? Brightness.dark : Brightness.light,
                     seedColor: state.appColor,
+                    background: isDarkModeEnabled && state.trueDarkModeEnabled
+                        ? Palette.black
+                        : null,
                   );
                   return FeatureDiscovery(
                     child: MediaQuery(
@@ -297,16 +301,10 @@ class HackiApp extends StatelessWidget {
                               ),
                             ),
                       child: MaterialApp.router(
-                        key: Key(state.appColor.hashCode.toString()),
                         title: 'Hacki',
                         debugShowCheckedModeBanner: false,
                         theme: ThemeData(
-                          colorScheme: ColorScheme.fromSeed(
-                            brightness: isDarkModeEnabled
-                                ? Brightness.dark
-                                : Brightness.light,
-                            seedColor: state.appColor,
-                          ),
+                          colorScheme: colorScheme,
                           fontFamily: state.font.name,
                           dividerTheme: DividerThemeData(
                             color: Palette.grey.withOpacity(0.2),
