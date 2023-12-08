@@ -352,9 +352,6 @@ class HapticFeedbackPreference extends BooleanPreference {
 
   @override
   String get subtitle => '';
-
-  @override
-  bool get isDisplayable => Platform.isIOS;
 }
 
 class FetchModePreference extends IntPreference {
