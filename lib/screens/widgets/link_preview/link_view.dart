@@ -120,8 +120,13 @@ class LinkView extends StatelessWidget {
                             imageUrl: imageUri!,
                             fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
                             cacheKey: imageUri,
-                            errorWidget: (_, __, ___) => const Center(
-                              child: Text(r'¯\_(ツ)_/¯'),
+                            errorWidget: (_, __, ___) => Center(
+                              child: Text(
+                                r'¯\_(ツ)_/¯',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
                             ),
                           ),
                   ),
