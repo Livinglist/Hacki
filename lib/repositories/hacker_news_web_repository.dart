@@ -108,7 +108,7 @@ class HackerNewsWebRepository {
       final Response response = await get(url, headers: _headers);
 
       if (response.statusCode == HttpStatus.forbidden) {
-        throw RateLimitedException();
+        throw RateLimitedWithFallbackException();
       }
 
       final Document document = parse(response.body);

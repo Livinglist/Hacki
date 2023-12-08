@@ -90,6 +90,8 @@ class CommentsCubit extends Cubit<CommentsState> {
     bool onlyShowTargetComment = false,
     bool useCommentCache = false,
     List<Comment>? targetAncestors,
+    AppExceptionHandler? onError,
+    bool fetchFromWeb = true,
   }) async {
     if (onlyShowTargetComment && (targetAncestors?.isNotEmpty ?? false)) {
       emit(
@@ -149,8 +151,29 @@ class CommentsCubit extends Cubit<CommentsState> {
         case FetchMode.eager:
           switch (state.order) {
             case CommentsOrder.natural:
-              commentStream =
-                  _hackerNewsWebRepository.fetchCommentsStream(state.item.id);
+              if (fetchFromWeb) {
+                commentStream = _hackerNewsWebRepository
+                    .fetchCommentsStream(state.item.id)
+                    .handleError((dynamic e) {
+                  _streamSubscription?.cancel();
+
+                  if (e is RateLimitedWithFallbackException) {
+                    onError?.call(e);
+
+                    /// If fetching from web failed, fetch using API instead.
+                    init(onError: onError, fetchFromWeb: false);
+                  } else {
+                    onError?.call(GeneralException());
+                  }
+                });
+              } else {
+                commentStream =
+                    _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
+                  ids: kids,
+                  getFromCache:
+                      useCommentCache ? _commentCache.getComment : null,
+                );
+              }
             case CommentsOrder.oldestFirst:
             case CommentsOrder.newestFirst:
               commentStream =
@@ -169,7 +192,12 @@ class CommentsCubit extends Cubit<CommentsState> {
       ..onDone(_onDone);
   }
 
-  Future<void> refresh() async {
+  Future<void> refresh({
+    required AppExceptionHandler? onError,
+    bool fetchFromWeb = true,
+  }) async {
+    await _streamSubscription?.cancel();
+
     emit(
       state.copyWith(
         status: CommentsStatus.inProgress,
@@ -209,14 +237,29 @@ class CommentsCubit extends Cubit<CommentsState> {
 
     switch (state.fetchMode) {
       case FetchMode.lazy:
-        commentStream = _hackerNewsRepository.fetchCommentsStream(
-          ids: kids,
-        );
+        commentStream = _hackerNewsRepository.fetchCommentsStream(ids: kids);
       case FetchMode.eager:
         switch (state.order) {
           case CommentsOrder.natural:
-            commentStream =
-                _hackerNewsWebRepository.fetchCommentsStream(state.item.id);
+            if (fetchFromWeb) {
+              commentStream = _hackerNewsWebRepository
+                  .fetchCommentsStream(state.item.id)
+                  .handleError((dynamic e) {
+                _streamSubscription?.cancel();
+
+                if (e is RateLimitedWithFallbackException) {
+                  onError?.call(e);
+
+                  /// If fetching from web failed, fetch using API instead.
+                  refresh(onError: onError, fetchFromWeb: false);
+                } else {
+                  onError?.call(GeneralException());
+                }
+              });
+            } else {
+              commentStream = _hackerNewsRepository
+                  .fetchAllCommentsRecursivelyStream(ids: kids);
+            }
           case CommentsOrder.oldestFirst:
           case CommentsOrder.newestFirst:
             commentStream =
