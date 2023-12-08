@@ -147,6 +147,11 @@ class ItemsListView<T extends Item> extends StatelessWidget {
               if (useSimpleTileForStory || !showWebPreviewOnStoryTile)
                 const Divider(
                   height: Dimens.zero,
+                )
+              else if (context.read<SplitViewCubit>().state.enabled)
+                const Divider(
+                  height: Dimens.pt6,
+                  color: Palette.transparent,
                 ),
             ];
           } else if (e is Comment) {
