@@ -59,7 +59,12 @@ class MainView extends StatelessWidget {
                   if (context.read<StoriesBloc>().state.isOfflineReading ==
                           false &&
                       state.onlyShowTargetComment == false) {
-                    unawaited(context.read<CommentsCubit>().refresh());
+                    unawaited(
+                      context.read<CommentsCubit>().refresh(
+                            onError: (AppException e) =>
+                                context.showErrorSnackBar(e.message),
+                          ),
+                    );
 
                     if (state.item.isPoll) {
                       context.read<PollCubit>().refresh();

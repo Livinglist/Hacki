@@ -13,3 +13,12 @@ class AppException implements Exception {
 class RateLimitedException extends AppException {
   RateLimitedException() : super(message: 'Rate limited...');
 }
+
+class RateLimitedWithFallbackException extends AppException {
+  RateLimitedWithFallbackException()
+      : super(message: 'Rate limited, fetching from API instead...');
+}
+
+class GeneralException extends AppException {
+  GeneralException() : super(message: 'Something went wrong...');
+}

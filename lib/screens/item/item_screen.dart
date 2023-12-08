@@ -79,6 +79,8 @@ class ItemScreen extends StatefulWidget {
                 onlyShowTargetComment: args.onlyShowTargetComment,
                 targetAncestors: args.targetComments,
                 useCommentCache: args.useCommentCache,
+                onError: (AppException e) =>
+                    context.showErrorSnackBar(e.message),
               ),
           ),
         ],
@@ -121,6 +123,8 @@ class ItemScreen extends StatefulWidget {
               )..init(
                   onlyShowTargetComment: args.onlyShowTargetComment,
                   targetAncestors: args.targetComments,
+                  onError: (AppException e) =>
+                      context.showErrorSnackBar(e.message),
                 ),
             ),
           ],
