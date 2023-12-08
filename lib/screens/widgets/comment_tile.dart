@@ -188,20 +188,21 @@ class CommentTile extends StatelessWidget {
                                     color: Palette.grey,
                                   ),
                                 ),
-                              if (!comment.dead && isNew)
-                                const Padding(
-                                  padding: EdgeInsets.only(left: 4),
-                                  child: Icon(
-                                    Icons.sunny_snowing,
-                                    size: 16,
-                                    color: Palette.grey,
-                                  ),
-                                ),
+                              // Commented out for now, maybe review later.
+                              // if (!comment.dead && isNew)
+                              //   const Padding(
+                              //     padding: EdgeInsets.only(left: 4),
+                              //     child: Icon(
+                              //       Icons.sunny_snowing,
+                              //       size: 16,
+                              //       color: Palette.grey,
+                              //     ),
+                              //   ),
                               const Spacer(),
                               Text(
                                 comment.timeAgo,
-                                style: const TextStyle(
-                                  color: Palette.grey,
+                                style: TextStyle(
+                                  color: Theme.of(context).metadataColor,
                                 ),
                                 textScaler: MediaQuery.of(context).textScaler,
                               ),

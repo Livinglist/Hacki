@@ -89,8 +89,8 @@ class InboxView extends StatelessWidget {
                                   children: <Widget>[
                                     Text(
                                       '''${e.timeAgo} from ${e.by}:''',
-                                      style: const TextStyle(
-                                        color: Palette.grey,
+                                      style: TextStyle(
+                                        color: Theme.of(context).metadataColor,
                                       ),
                                     ),
                                     const SizedBox(

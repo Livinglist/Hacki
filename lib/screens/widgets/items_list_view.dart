@@ -97,8 +97,8 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                                 showAuthor
                                     ? '''${e.timeAgo} by ${e.by}'''
                                     : e.timeAgo,
-                                style: const TextStyle(
-                                  color: Palette.grey,
+                                style: TextStyle(
+                                  color: Theme.of(context).metadataColor,
                                 ),
                               ),
                               const SizedBox(
@@ -186,8 +186,8 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                                   showAuthor
                                       ? '''${e.timeAgo} by ${e.by}'''
                                       : e.timeAgo,
-                                  style: const TextStyle(
-                                    color: Palette.grey,
+                                  style: TextStyle(
+                                    color: Theme.of(context).metadataColor,
                                   ),
                                 ),
                                 const SizedBox(

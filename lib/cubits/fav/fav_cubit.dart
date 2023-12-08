@@ -93,7 +93,9 @@ class FavCubit extends Cubit<FavState> {
   }
 
   void removeFav(int id) {
-    _preferenceRepository.removeFav(username: username, id: id);
+    _preferenceRepository
+      ..removeFav(username: username, id: id)
+      ..removeFav(username: '', id: id);
 
     emit(
       state.copyWith(
