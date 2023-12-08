@@ -157,10 +157,17 @@ class CommentsCubit extends Cubit<CommentsState> {
                     .handleError((dynamic e) {
                   _streamSubscription?.cancel();
 
+                  _logger.e(e);
+
                   if (e is RateLimitedWithFallbackException) {
                     onError?.call(e);
 
                     /// If fetching from web failed, fetch using API instead.
+                    init(onError: onError, fetchFromWeb: false);
+                  } else if (e is PossibleParsingException) {
+                    onError?.call(e);
+
+                    /// Possible parsing error, fallback to API.
                     init(onError: onError, fetchFromWeb: false);
                   } else {
                     onError?.call(GeneralException());
@@ -243,10 +250,16 @@ class CommentsCubit extends Cubit<CommentsState> {
               commentStream = _hackerNewsWebRepository
                   .fetchCommentsStream(state.item)
                   .handleError((dynamic e) {
+                _logger.e(e);
+
                 if (e is RateLimitedWithFallbackException) {
                   onError?.call(e);
 
                   /// If fetching from web failed, fetch using API instead.
+                  refresh(onError: onError, fetchFromWeb: false);
+                } else if (e is PossibleParsingException) {
+                  onError?.call(e);
+
                   refresh(onError: onError, fetchFromWeb: false);
                 } else {
                   onError?.call(GeneralException());
