@@ -55,15 +55,12 @@ class HackerNewsWebRepository {
       }
 
       /// Due to rate limiting, we have a short break here.
-      await Future<void>.delayed(AppDurations.oneSecond);
+      await Future<void>.delayed(AppDurations.twoSeconds);
 
       final Document document = parse(response.body);
       final List<Element> elements = document.querySelectorAll(_aThingSelector);
-      final Iterable<int> parsedIds = elements
-          .map(
-            (Element e) => int.tryParse(e.id),
-          )
-          .whereNotNull();
+      final Iterable<int> parsedIds =
+          elements.map((Element e) => int.tryParse(e.id)).whereNotNull();
       return parsedIds;
     }
 
@@ -102,7 +99,10 @@ class HackerNewsWebRepository {
   static const String _commentIndentSelector =
       '''td > table > tbody > tr > td.ind''';
 
-  Stream<Comment> fetchCommentsStream(int itemId) async* {
+  Stream<Comment> fetchCommentsStream(Item item) async* {
+    final int itemId = item.id;
+    final int? descendants = item is Story ? item.descendants : null;
+
     Future<Iterable<Element>> fetchElements(int page) async {
       final Uri url = Uri.parse('$_itemBaseUrl$itemId&p=$page');
       final Response response = await get(url, headers: _headers);
@@ -117,6 +117,9 @@ class HackerNewsWebRepository {
       return elements;
     }
 
+    if (descendants == 0 || item.kids.isEmpty) return;
+
+    final Set<int> fetchedCommentIds = <int>{};
     int page = 1;
     Iterable<Element> elements = await fetchElements(page);
     final Map<int, int> indentToParentId = <int, int>{};
@@ -176,11 +179,19 @@ class HackerNewsWebRepository {
           isFromCache: false,
         );
 
+        /// Duplicate comment means we are done fetching all the comments.
+        if (fetchedCommentIds.contains(cmt.id)) return;
+
+        fetchedCommentIds.add(cmt.id);
         yield cmt;
       }
 
       /// Due to rate limiting, we have a short break here.
-      await Future<void>.delayed(AppDurations.oneSecond);
+      await Future<void>.delayed(AppDurations.twoSeconds);
+
+      if (descendants != null && fetchedCommentIds.length >= descendants) {
+        return;
+      }
 
       page++;
       elements = await fetchElements(page);
