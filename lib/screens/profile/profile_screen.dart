@@ -150,7 +150,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 ) =>
                                     TextButton(
                                   onPressed: () {
-                                    context.read<FavCubit>().merge();
+                                    context.read<FavCubit>().merge(
+                                      onError: (AppException e) {
+                                        context.showErrorSnackBar(e.message);
+                                      },
+                                    );
                                   },
                                   child: status == Status.inProgress
                                       ? const SizedBox(

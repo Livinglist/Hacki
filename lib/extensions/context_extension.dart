@@ -38,9 +38,19 @@ extension ContextExtension on BuildContext {
     );
   }
 
-  void showErrorSnackBar() => showSnackBar(
-        content: Constants.errorMessage,
-      );
+  void showErrorSnackBar([String? message]) {
+    ScaffoldMessenger.of(this).showSnackBar(
+      SnackBar(
+        backgroundColor: Theme.of(this).colorScheme.errorContainer,
+        content: Text(
+          message ?? Constants.errorMessage,
+          style: TextStyle(
+            color: Theme.of(this).colorScheme.onErrorContainer,
+          ),
+        ),
+      ),
+    );
+  }
 
   Rect? get rect {
     final RenderBox? box = findRenderObject() as RenderBox?;
