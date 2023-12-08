@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
-import 'package:hacki/models/item/comment.dart';
+import 'package:hacki/config/constants.dart';
+import 'package:hacki/models/models.dart';
 import 'package:html/dom.dart' hide Comment;
 import 'package:html/parser.dart';
 import 'package:html_unescape/html_unescape.dart';
@@ -25,6 +26,14 @@ class HackerNewsWebRepository {
         '''$_favoritesBaseUrl$username${isComment ? '&comments=t' : ''}&p=$page''',
       );
       final Response response = await get(url);
+
+      if (response.body.contains('Sorry')) {
+        throw RateLimitedException();
+      }
+
+      /// Due to rate limiting, we have a short break here.
+      await Future<void>.delayed(AppDurations.oneSecond);
+
       final Document document = parse(response.body);
       final List<Element> elements = document.querySelectorAll(_aThingSelector);
       final Iterable<int> parsedIds = elements
@@ -45,6 +54,7 @@ class HackerNewsWebRepository {
       page++;
     }
 
+    page = 1;
     while (true) {
       ids = await fetchIds(page, isComment: true);
       if (ids.isEmpty) {

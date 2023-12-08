@@ -169,20 +169,26 @@ class FavCubit extends Cubit<FavState> {
     emit(FavState.init());
   }
 
-  Future<void> merge() async {
+  Future<void> merge({required AppExceptionHandler onError}) async {
     if (_authBloc.state.isLoggedIn) {
       emit(state.copyWith(mergeStatus: Status.inProgress));
-      final Iterable<int> ids = await _hackerNewsWebRepository.fetchFavorites(
-        of: _authBloc.state.username,
-      );
-      final List<int> combinedIds = <int>[...ids, ...state.favIds];
-      final LinkedHashSet<int> mergedIds = LinkedHashSet<int>.from(combinedIds);
-      await _preferenceRepository.overwriteFav(
-        username: username,
-        ids: mergedIds,
-      );
-      emit(state.copyWith(mergeStatus: Status.success));
-      refresh();
+      try {
+        final Iterable<int> ids = await _hackerNewsWebRepository.fetchFavorites(
+          of: _authBloc.state.username,
+        );
+        final List<int> combinedIds = <int>[...ids, ...state.favIds];
+        final LinkedHashSet<int> mergedIds =
+            LinkedHashSet<int>.from(combinedIds);
+        await _preferenceRepository.overwriteFav(
+          username: username,
+          ids: mergedIds,
+        );
+        emit(state.copyWith(mergeStatus: Status.success));
+        refresh();
+      } on RateLimitedException catch (e) {
+        onError(e);
+        emit(state.copyWith(mergeStatus: Status.failure));
+      }
     }
   }
 

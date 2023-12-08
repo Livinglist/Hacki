@@ -1,3 +1,4 @@
+export 'app_exception.dart';
 export 'comments_order.dart';
 export 'discoverable_feature.dart';
 export 'export_destination.dart';
