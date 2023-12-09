@@ -14,6 +14,7 @@ import 'package:html/dom.dart' hide Comment, Text;
 import 'package:html/parser.dart' as parser;
 import 'package:http/http.dart';
 import 'package:http/io_client.dart';
+import 'package:logger/logger.dart';
 
 abstract class InfoBase {
   late DateTime _timeout;
@@ -97,6 +98,8 @@ class WebAnalyzer {
   /// Get web information
   /// return [InfoBase]
   static InfoBase? getInfoFromCache(String? cacheKey) {
+    if (cacheKey == null) return null;
+
     final InfoBase? info = cacheMap[cacheKey];
 
     if (info != null) {
@@ -104,6 +107,7 @@ class WebAnalyzer {
         cacheMap.remove(cacheKey);
       }
     }
+
     return info;
   }
 
@@ -118,10 +122,18 @@ class WebAnalyzer {
     final String key = getKey(story);
     final String url = story.url;
 
+    /// [1] Try to fetch from mem cache.
     InfoBase? info = getInfoFromCache(key);
 
-    if (info != null) return info;
+    if (info != null) {
+      locator
+          .get<Logger>()
+          .d('Fetched mem cached metadata using key $key for $story.');
+      return info;
+    }
 
+    /// [2] If story doesn't have a url and text is not empty,
+    /// just use story title and text.
     if (story.url.isEmpty && story.text.isNotEmpty) {
       info = WebInfo(
         title: story.title,
@@ -135,6 +147,7 @@ class WebAnalyzer {
       return info;
     }
 
+    /// [3] If in offline mode, use comment text for description.
     if (offlineReading) {
       int index = 0;
       Comment? comment;
@@ -159,15 +172,41 @@ class WebAnalyzer {
     }
 
     try {
+      /// [5] Try to fetch from file cache.
+      info = await locator.get<SembastRepository>().getCachedMetadata(key: key);
+
+      /// [6] If there is file cache, move it to mem cache for later retrieval.
+      if (info != null) {
+        locator
+            .get<Logger>()
+            .d('Fetched file cached metadata using key $key for $story.');
+        cacheMap[key] = info;
+        return info;
+      }
+
+      /// [7] Try to analyze the web for metadata.
       info = await _getInfoByIsolate(
         url: url,
         multimedia: multimedia,
         story: story,
       );
 
+      /// [8] If web analyzing was successful, cache it in both mem and file.
       if (info != null && !info._shouldRetry) {
         info._timeout = DateTime.now().add(cache);
         cacheMap[key] = info;
+
+        if (info is WebInfo) {
+          locator
+              .get<Logger>()
+              .d('Caching metadata using key $key for $story.');
+          unawaited(
+            locator.get<SembastRepository>().cacheMetadata(
+                  key: key,
+                  info: info,
+                ),
+          );
+        }
       }
 
       return info;
@@ -393,10 +432,9 @@ class WebAnalyzer {
         try {
           html = gbk.decode(response.bodyBytes);
         } catch (e) {
-          // locator.get<Logger>().log(
-          //       Level.error,
-          //       'Web page resolution failure from:$url Error:$e',
-          //     );
+          locator
+              .get<Logger>()
+              .e('''Web page resolution failure from:$url Error:$e''');
         }
       }
 

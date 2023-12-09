@@ -43,6 +43,7 @@ class HackerNewsWebRepository {
     final String username = of;
     final List<int> allIds = <int>[];
     int page = 1;
+    const int maxPage = 2;
 
     Future<Iterable<int>> fetchIds(int page, {bool isComment = false}) async {
       final Uri url = Uri.parse(
@@ -65,7 +66,7 @@ class HackerNewsWebRepository {
     }
 
     Iterable<int> ids;
-    while (true) {
+    while (page <= maxPage) {
       ids = await fetchIds(page);
       if (ids.isEmpty) {
         break;
@@ -75,7 +76,7 @@ class HackerNewsWebRepository {
     }
 
     page = 1;
-    while (true) {
+    while (page <= maxPage) {
       ids = await fetchIds(page, isComment: true);
       if (ids.isEmpty) {
         break;
