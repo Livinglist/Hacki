@@ -162,10 +162,10 @@ ${info.toJson()}
     }
 
     try {
-      /// [5] Try to fetch from file cache.
+      /// [4] Try to fetch from file cache.
       info = await locator.get<SembastRepository>().getCachedMetadata(key: key);
 
-      /// [6] If there is file cache, move it to mem cache for later retrieval.
+      /// [5] If there is file cache, move it to mem cache for later retrieval.
       if (info != null) {
         locator.get<Logger>().d('''
 Fetched file cached metadata using key $key for $story:
@@ -175,14 +175,14 @@ ${info.toJson()}
         return info;
       }
 
-      /// [7] Try to analyze the web for metadata.
+      /// [6] Try to analyze the web for metadata.
       info = await _getInfoByIsolate(
         url: url,
         multimedia: multimedia,
         story: story,
       );
 
-      /// [8] If web analyzing was successful, cache it in both mem and file.
+      /// [7] If web analyzing was successful, cache it in both mem and file.
       if (info != null && !info._shouldRetry) {
         cacheMap[key] = info;
 
