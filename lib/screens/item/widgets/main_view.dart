@@ -150,27 +150,28 @@ class MainView extends StatelessWidget {
             },
           ),
         ),
-        Positioned(
-          height: Dimens.pt4,
-          bottom: Dimens.zero,
-          left: Dimens.zero,
-          right: Dimens.zero,
-          child: BlocBuilder<CommentsCubit, CommentsState>(
-            buildWhen: (CommentsState prev, CommentsState current) =>
-                prev.status != current.status,
-            builder: (BuildContext context, CommentsState state) {
-              return AnimatedOpacity(
-                opacity: state.status == CommentsStatus.inProgress
-                    ? NumSwitch.on
-                    : NumSwitch.off,
-                duration: const Duration(
-                  milliseconds: _loadingIndicatorOpacityAnimationDuration,
-                ),
-                child: const LinearProgressIndicator(),
-              );
-            },
+        if (context.read<PreferenceCubit>().state.devModeEnabled)
+          Positioned(
+            height: Dimens.pt4,
+            bottom: Dimens.zero,
+            left: Dimens.zero,
+            right: Dimens.zero,
+            child: BlocBuilder<CommentsCubit, CommentsState>(
+              buildWhen: (CommentsState prev, CommentsState current) =>
+                  prev.status != current.status,
+              builder: (BuildContext context, CommentsState state) {
+                return AnimatedOpacity(
+                  opacity: state.status == CommentsStatus.inProgress
+                      ? NumSwitch.on
+                      : NumSwitch.off,
+                  duration: const Duration(
+                    milliseconds: _loadingIndicatorOpacityAnimationDuration,
+                  ),
+                  child: const LinearProgressIndicator(),
+                );
+              },
+            ),
           ),
-        ),
       ],
     );
   }
