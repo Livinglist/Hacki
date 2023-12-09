@@ -68,7 +68,7 @@ class _OnboardingViewState extends State<OnboardingView> {
             ),
           ),
           Positioned(
-            bottom: Dimens.pt40,
+            bottom: MediaQuery.of(context).viewPadding.bottom,
             left: Dimens.zero,
             right: Dimens.zero,
             child: ElevatedButton(
