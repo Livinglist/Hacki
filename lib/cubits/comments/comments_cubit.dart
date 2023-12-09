@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hacki/config/constants.dart';
@@ -82,6 +83,11 @@ class CommentsCubit extends Cubit<CommentsState> {
   final Map<int, StreamSubscription<Comment>> _streamSubscriptions =
       <int, StreamSubscription<Comment>>{};
 
+  static Future<bool> get _isOnWifi async {
+    final ConnectivityResult status = await Connectivity().checkConnectivity();
+    return status == ConnectivityResult.wifi;
+  }
+
   @override
   void emit(CommentsState state) {
     if (!isClosed) {
@@ -154,7 +160,8 @@ class CommentsCubit extends Cubit<CommentsState> {
         case FetchMode.eager:
           switch (state.order) {
             case CommentsOrder.natural:
-              if (fetchFromWeb) {
+              final bool isOnWifi = await _isOnWifi;
+              if (!isOnWifi && fetchFromWeb) {
                 commentStream = _hackerNewsWebRepository
                     .fetchCommentsStream(state.item)
                     .handleError((dynamic e) {
@@ -249,7 +256,8 @@ class CommentsCubit extends Cubit<CommentsState> {
       case FetchMode.eager:
         switch (state.order) {
           case CommentsOrder.natural:
-            if (fetchFromWeb) {
+            final bool isOnWifi = await _isOnWifi;
+            if (!isOnWifi && fetchFromWeb) {
               commentStream = _hackerNewsWebRepository
                   .fetchCommentsStream(state.item)
                   .handleError((dynamic e) {
