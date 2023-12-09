@@ -46,6 +46,7 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
       const HapticFeedbackPreference(),
       const EyeCandyModePreference(),
       const TrueDarkModePreference(),
+      const DevMode(),
     ],
   );
 
@@ -79,6 +80,7 @@ const bool _collapseModeDefaultValue = true;
 const bool _autoScrollModeDefaultValue = false;
 const bool _customTabModeDefaultValue = false;
 const bool _paginationModeDefaultValue = false;
+const bool _devModeDefaultValue = false;
 const double _textScaleFactorDefaultValue = 1;
 final int _fetchModeDefaultValue = FetchMode.eager.index;
 final int _commentsOrderDefaultValue = CommentsOrder.natural.index;
@@ -89,6 +91,27 @@ final int _tabOrderDefaultValue =
     StoryType.convertToSettingsValue(StoryType.values);
 final int _markStoriesAsReadWhenPreferenceDefaultValue =
     StoryMarkingMode.tap.index;
+
+class DevMode extends BooleanPreference {
+  const DevMode({bool? val}) : super(val: val ?? _devModeDefaultValue);
+
+  @override
+  DevMode copyWith({required bool? val}) {
+    return DevMode(val: val);
+  }
+
+  @override
+  String get key => 'devMode';
+
+  @override
+  String get title => 'Dev Mode';
+
+  @override
+  String get subtitle => '';
+
+  @override
+  bool get isDisplayable => false;
+}
 
 class SwipeGesturePreference extends BooleanPreference {
   const SwipeGesturePreference({bool? val})
