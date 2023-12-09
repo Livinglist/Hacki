@@ -8,6 +8,7 @@ import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
+import 'package:logger/logger.dart';
 
 part 'fav_state.dart';
 
@@ -18,6 +19,7 @@ class FavCubit extends Cubit<FavState> {
     PreferenceRepository? preferenceRepository,
     HackerNewsRepository? hackerNewsRepository,
     HackerNewsWebRepository? hackerNewsWebRepository,
+    Logger? logger,
   })  : _authBloc = authBloc,
         _authRepository = authRepository ?? locator.get<AuthRepository>(),
         _preferenceRepository =
@@ -26,6 +28,7 @@ class FavCubit extends Cubit<FavState> {
             hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
         _hackerNewsWebRepository =
             hackerNewsWebRepository ?? locator.get<HackerNewsWebRepository>(),
+        _logger = logger ?? locator.get<Logger>(),
         super(FavState.init()) {
     init();
   }
@@ -35,6 +38,7 @@ class FavCubit extends Cubit<FavState> {
   final PreferenceRepository _preferenceRepository;
   final HackerNewsRepository _hackerNewsRepository;
   final HackerNewsWebRepository _hackerNewsWebRepository;
+  final Logger _logger;
   late final StreamSubscription<String>? _usernameSubscription;
   static const int _pageSize = 20;
 
@@ -180,6 +184,7 @@ class FavCubit extends Cubit<FavState> {
         final Iterable<int> ids = await _hackerNewsWebRepository.fetchFavorites(
           of: _authBloc.state.username,
         );
+        _logger.d('Fetched ${ids.length} favorite items from HN.');
         final List<int> combinedIds = <int>[...ids, ...state.favIds];
         final LinkedHashSet<int> mergedIds =
             LinkedHashSet<int>.from(combinedIds);
