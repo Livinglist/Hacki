@@ -14,4 +14,10 @@ abstract class HapticFeedbackUtil {
       HapticFeedback.lightImpact();
     }
   }
+
+  static void heavy() {
+    if (enabled) {
+      HapticFeedback.heavyImpact();
+    }
+  }
 }
