@@ -233,14 +233,17 @@ class SembastRepository {
 
   //#endregion
 
-  Future<FileSystemEntity> deleteAll() async {
+  Future<FileSystemEntity> deleteCachedComments() async {
     final Directory dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
     final String dbPath = join(dir.path, 'hacki.db');
+    return File(dbPath).delete();
+  }
 
+  Future<FileSystemEntity> deleteCachedMetadata() async {
     final Directory tempDir = await getTemporaryDirectory();
     await tempDir.create(recursive: true);
-    final String cachePath = join(dir.path, 'hacki_cache.db');
-    return File(dbPath).delete().whenComplete(File(cachePath).delete);
+    final String cachePath = join(tempDir.path, 'hacki_cache.db');
+    return File(cachePath).delete();
   }
 }

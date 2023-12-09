@@ -509,6 +509,12 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                     .whenComplete(
                       DefaultCacheManager().emptyCache,
                     )
+                    .whenComplete(
+                      locator.get<SembastRepository>().deleteCachedComments,
+                    )
+                    .whenComplete(
+                      locator.get<SembastRepository>().deleteCachedMetadata,
+                    )
                     .whenComplete(() {
                   showSnackBar(content: 'Cache cleared!');
                 });

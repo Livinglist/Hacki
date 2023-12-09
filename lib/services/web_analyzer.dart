@@ -17,7 +17,6 @@ import 'package:http/io_client.dart';
 import 'package:logger/logger.dart';
 
 abstract class InfoBase {
-  late DateTime _timeout;
   late bool _shouldRetry;
 
   Map<String, dynamic> toJson();
@@ -102,12 +101,6 @@ class WebAnalyzer {
 
     final InfoBase? info = cacheMap[cacheKey];
 
-    if (info != null) {
-      if (!info._timeout.isAfter(DateTime.now())) {
-        cacheMap.remove(cacheKey);
-      }
-    }
-
     return info;
   }
 
@@ -126,9 +119,10 @@ class WebAnalyzer {
     InfoBase? info = getInfoFromCache(key);
 
     if (info != null) {
-      locator
-          .get<Logger>()
-          .d('Fetched mem cached metadata using key $key for $story.');
+      locator.get<Logger>().d('''
+Fetched mem cached metadata using key $key for $story:
+${info.toJson()}
+          ''');
       return info;
     }
 
@@ -138,9 +132,7 @@ class WebAnalyzer {
       info = WebInfo(
         title: story.title,
         description: story.text,
-      )
-        .._timeout = DateTime.now().add(cache)
-        .._shouldRetry = false;
+      ).._shouldRetry = false;
 
       cacheMap[key] = info;
 
@@ -162,9 +154,7 @@ class WebAnalyzer {
       info = WebInfo(
         title: story.title,
         description: comment != null ? '${comment.by}: ${comment.text}' : null,
-      )
-        .._shouldRetry = false
-        .._timeout = DateTime.now();
+      ).._shouldRetry = false;
 
       cacheMap[key] = info;
 
@@ -177,9 +167,10 @@ class WebAnalyzer {
 
       /// [6] If there is file cache, move it to mem cache for later retrieval.
       if (info != null) {
-        locator
-            .get<Logger>()
-            .d('Fetched file cached metadata using key $key for $story.');
+        locator.get<Logger>().d('''
+Fetched file cached metadata using key $key for $story:
+${info.toJson()}
+''');
         cacheMap[key] = info;
         return info;
       }
@@ -193,7 +184,6 @@ class WebAnalyzer {
 
       /// [8] If web analyzing was successful, cache it in both mem and file.
       if (info != null && !info._shouldRetry) {
-        info._timeout = DateTime.now().add(cache);
         cacheMap[key] = info;
 
         if (info is WebInfo) {
@@ -214,9 +204,7 @@ class WebAnalyzer {
       return WebInfo(
         title: story.title,
         description: story.text,
-      )
-        .._shouldRetry = true
-        .._timeout = DateTime.now();
+      ).._shouldRetry = true;
     }
   }
 
