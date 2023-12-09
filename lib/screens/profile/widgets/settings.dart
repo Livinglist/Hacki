@@ -662,6 +662,9 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          actionsPadding: const EdgeInsets.all(
+            Dimens.pt16,
+          ),
           actions: <Widget>[
             ElevatedButton(
               onPressed: onSendEmailTapped,

@@ -1,38 +1,19 @@
 import 'dart:io';
 
 import 'package:collection/collection.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/models.dart';
 import 'package:html/dom.dart' hide Comment;
 import 'package:html/parser.dart';
 import 'package:html_unescape/html_unescape.dart';
-import 'package:http/http.dart';
 
 /// For fetching anything that cannot be fetched through Hacker News API.
 class HackerNewsWebRepository {
-  HackerNewsWebRepository();
+  HackerNewsWebRepository({Dio? dio}) : _dio = dio ?? Dio();
 
-  static const Map<String, String> _headers = <String, String>{
-    'Accept':
-        'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Cache-Control': 'max-age=0',
-    'Connection': 'keep-alive',
-    'Host': 'news.ycombinator.com',
-    'Referer': 'https://news.ycombinator.com/',
-    'Sec-Fetch-Dest': 'document',
-    'Sec-Fetch-Mode': 'navigate',
-    'Sec-Fetch-Site': 'same-origin',
-    'Sec-Fetch-User': '?1',
-    'Upgrade-Insecure-Requests': '1',
-    'User-Agent':
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
-    'sec-ch-ua':
-        ''''"Google Chrome";v="119", "Chromium";v="119", "Not?A_Brand";v="24"''',
-    'sec-ch-ua-mobile': '?0',
-    'sec-ch-ua-platform': 'macOS',
-  };
+  final Dio _dio;
 
   static const String _favoritesBaseUrl =
       'https://news.ycombinator.com/favorites?id=';
@@ -49,7 +30,7 @@ class HackerNewsWebRepository {
       final Uri url = Uri.parse(
         '''$_favoritesBaseUrl$username${isComment ? '&comments=t' : ''}&p=$page''',
       );
-      final Response response = await get(url, headers: _headers);
+      final Response<String> response = await _dio.getUri<String>(url);
 
       if (response.statusCode == HttpStatus.forbidden) {
         throw RateLimitedException();
@@ -58,7 +39,7 @@ class HackerNewsWebRepository {
       /// Due to rate limiting, we have a short break here.
       await Future<void>.delayed(AppDurations.twoSeconds);
 
-      final Document document = parse(response.body);
+      final Document document = parse(response.data);
       final List<Element> elements = document.querySelectorAll(_aThingSelector);
       final Iterable<int> parsedIds =
           elements.map((Element e) => int.tryParse(e.id)).whereNotNull();
@@ -107,17 +88,18 @@ class HackerNewsWebRepository {
 
     Future<Iterable<Element>> fetchElements(int page) async {
       final Uri url = Uri.parse('$_itemBaseUrl$itemId&p=$page');
-      final Response response = await get(url, headers: _headers);
+      final Response<String> response = await _dio.getUri<String>(url);
+      final String data = response.data ?? '';
 
       if (response.statusCode == HttpStatus.forbidden) {
         throw RateLimitedWithFallbackException();
       }
 
       if (page == 1) {
-        parentTextCount = 'parent'.allMatches(response.body).length;
+        parentTextCount = 'parent'.allMatches(data).length;
       }
 
-      final Document document = parse(response.body);
+      final Document document = parse(data);
       final List<Element> elements =
           document.querySelectorAll(_athingComtrSelector);
       return elements;
