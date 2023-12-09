@@ -27,6 +27,6 @@ class PossibleParsingException extends AppException {
   final int itemId;
 }
 
-class GeneralException extends AppException {
-  GeneralException() : super(message: 'Something went wrong...');
+class GenericException extends AppException {
+  GenericException() : super(message: 'Something went wrong...');
 }
