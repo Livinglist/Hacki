@@ -17,7 +17,6 @@ class _OnboardingViewState extends State<OnboardingView> {
   final Throttle throttle = Throttle(delay: _throttleDelay);
 
   static const Duration _throttleDelay = AppDurations.ms100;
-  static const double _screenshotHeight = 600;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +43,7 @@ class _OnboardingViewState extends State<OnboardingView> {
             left: Dimens.zero,
             right: Dimens.zero,
             child: SizedBox(
-              height: _screenshotHeight,
+              height: MediaQuery.of(context).size.height * 0.8,
               child: PageView(
                 controller: pageController,
                 scrollDirection: Axis.vertical,
@@ -115,16 +114,14 @@ class _PageViewChild extends StatelessWidget {
   final String path;
   final String description;
 
-  static const double _height = 500;
-
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
         Material(
-          elevation: 8,
+          elevation: Dimens.pt8,
           child: SizedBox(
-            height: _height,
+            height: MediaQuery.of(context).size.height * 0.5,
             child: Image.asset(path),
           ),
         ),

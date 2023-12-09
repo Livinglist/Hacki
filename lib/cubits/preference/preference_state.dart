@@ -76,6 +76,8 @@ class PreferenceState extends Equatable {
 
   bool get hapticFeedbackEnabled => _isOn<HapticFeedbackPreference>();
 
+  bool get devModeEnabled => _isOn<DevMode>();
+
   double get textScaleFactor =>
       preferences.singleWhereType<TextScaleFactorPreference>().val;
 

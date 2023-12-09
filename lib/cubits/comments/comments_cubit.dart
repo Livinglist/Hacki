@@ -25,6 +25,7 @@ part 'comments_state.dart';
 class CommentsCubit extends Cubit<CommentsState> {
   CommentsCubit({
     required FilterCubit filterCubit,
+    required PreferenceCubit preferenceCubit,
     required CollapseCache collapseCache,
     required bool isOfflineReading,
     required Item item,
@@ -37,6 +38,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     HackerNewsWebRepository? hackerNewsWebRepository,
     Logger? logger,
   })  : _filterCubit = filterCubit,
+        _preferenceCubit = preferenceCubit,
         _collapseCache = collapseCache,
         _commentCache = commentCache ?? locator.get<CommentCache>(),
         _offlineRepository =
@@ -58,6 +60,7 @@ class CommentsCubit extends Cubit<CommentsState> {
         );
 
   final FilterCubit _filterCubit;
+  final PreferenceCubit _preferenceCubit;
   final CollapseCache _collapseCache;
   final CommentCache _commentCache;
   final OfflineRepository _offlineRepository;
@@ -160,12 +163,16 @@ class CommentsCubit extends Cubit<CommentsState> {
                   _logger.e(e);
 
                   if (e is RateLimitedWithFallbackException) {
-                    onError?.call(e);
+                    if (_preferenceCubit.state.devModeEnabled) {
+                      onError?.call(e);
+                    }
 
                     /// If fetching from web failed, fetch using API instead.
                     init(onError: onError, fetchFromWeb: false);
                   } else if (e is PossibleParsingException) {
-                    onError?.call(e);
+                    if (_preferenceCubit.state.devModeEnabled) {
+                      onError?.call(e);
+                    }
 
                     /// Possible parsing error, fallback to API.
                     init(onError: onError, fetchFromWeb: false);
@@ -253,12 +260,16 @@ class CommentsCubit extends Cubit<CommentsState> {
                 _logger.e(e);
 
                 if (e is RateLimitedWithFallbackException) {
-                  onError?.call(e);
+                  if (_preferenceCubit.state.devModeEnabled) {
+                    onError?.call(e);
+                  }
 
                   /// If fetching from web failed, fetch using API instead.
                   refresh(onError: onError, fetchFromWeb: false);
                 } else if (e is PossibleParsingException) {
-                  onError?.call(e);
+                  if (_preferenceCubit.state.devModeEnabled) {
+                    onError?.call(e);
+                  }
 
                   refresh(onError: onError, fetchFromWeb: false);
                 } else {

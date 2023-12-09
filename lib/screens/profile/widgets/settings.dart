@@ -301,6 +301,17 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                     title: const Text('About'),
                     subtitle: const Text('nothing interesting here.'),
                     onTap: showAboutHackiDialog,
+                    onLongPress: () {
+                      final DevMode updatedDevMode =
+                          DevMode(val: !preferenceState.devModeEnabled);
+                      context.read<PreferenceCubit>().update(updatedDevMode);
+                      HapticFeedbackUtil.heavy();
+                      if (updatedDevMode.val) {
+                        showSnackBar(content: 'You are a dev now.');
+                      } else {
+                        showSnackBar(content: 'Dev mode disabled');
+                      }
+                    },
                   ),
                   const SizedBox(
                     height: Dimens.pt48,

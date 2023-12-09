@@ -69,6 +69,7 @@ class ItemScreen extends StatefulWidget {
           BlocProvider<CommentsCubit>(
             create: (BuildContext context) => CommentsCubit(
               filterCubit: context.read<FilterCubit>(),
+              preferenceCubit: context.read<PreferenceCubit>(),
               isOfflineReading:
                   context.read<StoriesBloc>().state.isOfflineReading,
               item: args.item,
@@ -112,6 +113,7 @@ class ItemScreen extends StatefulWidget {
             BlocProvider<CommentsCubit>(
               create: (BuildContext context) => CommentsCubit(
                 filterCubit: context.read<FilterCubit>(),
+                preferenceCubit: context.read<PreferenceCubit>(),
                 isOfflineReading:
                     context.read<StoriesBloc>().state.isOfflineReading,
                 item: args.item,
