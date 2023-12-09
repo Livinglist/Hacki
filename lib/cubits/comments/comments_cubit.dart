@@ -161,7 +161,7 @@ class CommentsCubit extends Cubit<CommentsState> {
           switch (state.order) {
             case CommentsOrder.natural:
               final bool isOnWifi = await _isOnWifi;
-              if (isOnWifi && fetchFromWeb) {
+              if (!isOnWifi && fetchFromWeb) {
                 commentStream = _hackerNewsWebRepository
                     .fetchCommentsStream(state.item)
                     .handleError((dynamic e) {
@@ -257,7 +257,7 @@ class CommentsCubit extends Cubit<CommentsState> {
         switch (state.order) {
           case CommentsOrder.natural:
             final bool isOnWifi = await _isOnWifi;
-            if (isOnWifi && fetchFromWeb) {
+            if (!isOnWifi && fetchFromWeb) {
               commentStream = _hackerNewsWebRepository
                   .fetchCommentsStream(state.item)
                   .handleError((dynamic e) {
