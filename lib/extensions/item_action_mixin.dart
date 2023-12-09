@@ -27,7 +27,8 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
     );
   }
 
-  void showErrorSnackBar() => context.showErrorSnackBar();
+  void showErrorSnackBar([String? message]) =>
+      context.showErrorSnackBar(message);
 
   Future<void>? goToItemScreen({
     required ItemScreenArgs args,

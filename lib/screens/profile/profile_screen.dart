@@ -147,26 +147,28 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 builder: (
                                   BuildContext context,
                                   Status status,
-                                ) =>
-                                    TextButton(
-                                  onPressed: () {
-                                    context.read<FavCubit>().merge(
-                                      onError: (AppException e) {
-                                        context.showErrorSnackBar(e.message);
-                                      },
-                                    );
-                                  },
-                                  child: status == Status.inProgress
-                                      ? const SizedBox(
-                                          height: Dimens.pt12,
-                                          width: Dimens.pt12,
-                                          child:
-                                              CustomCircularProgressIndicator(
-                                            strokeWidth: Dimens.pt2,
-                                          ),
-                                        )
-                                      : const Text('Sync from Hacker News'),
-                                ),
+                                ) {
+                                  return TextButton(
+                                    onPressed: () =>
+                                        context.read<FavCubit>().merge(
+                                              onError: (AppException e) =>
+                                                  showErrorSnackBar(e.message),
+                                              onSuccess: () => showSnackBar(
+                                                content: '''Sync completed.''',
+                                              ),
+                                            ),
+                                    child: status == Status.inProgress
+                                        ? const SizedBox(
+                                            height: Dimens.pt12,
+                                            width: Dimens.pt12,
+                                            child:
+                                                CustomCircularProgressIndicator(
+                                              strokeWidth: Dimens.pt2,
+                                            ),
+                                          )
+                                        : const Text('Sync from Hacker News'),
+                                  );
+                                },
                               )
                             : null;
 

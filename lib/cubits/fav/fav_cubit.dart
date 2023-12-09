@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/locator.dart';
@@ -169,7 +170,10 @@ class FavCubit extends Cubit<FavState> {
     emit(FavState.init());
   }
 
-  Future<void> merge({required AppExceptionHandler onError}) async {
+  Future<void> merge({
+    required AppExceptionHandler onError,
+    required VoidCallback onSuccess,
+  }) async {
     if (_authBloc.state.isLoggedIn) {
       emit(state.copyWith(mergeStatus: Status.inProgress));
       try {
@@ -184,6 +188,7 @@ class FavCubit extends Cubit<FavState> {
           ids: mergedIds,
         );
         emit(state.copyWith(mergeStatus: Status.success));
+        onSuccess();
         refresh();
       } on RateLimitedException catch (e) {
         onError(e);

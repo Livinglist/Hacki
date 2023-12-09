@@ -14,9 +14,9 @@ import 'package:html/dom.dart' hide Comment, Text;
 import 'package:html/parser.dart' as parser;
 import 'package:http/http.dart';
 import 'package:http/io_client.dart';
+import 'package:logger/logger.dart';
 
 abstract class InfoBase {
-  late DateTime _timeout;
   late bool _shouldRetry;
 
   Map<String, dynamic> toJson();
@@ -97,13 +97,10 @@ class WebAnalyzer {
   /// Get web information
   /// return [InfoBase]
   static InfoBase? getInfoFromCache(String? cacheKey) {
+    if (cacheKey == null) return null;
+
     final InfoBase? info = cacheMap[cacheKey];
 
-    if (info != null) {
-      if (!info._timeout.isAfter(DateTime.now())) {
-        cacheMap.remove(cacheKey);
-      }
-    }
     return info;
   }
 
@@ -118,23 +115,31 @@ class WebAnalyzer {
     final String key = getKey(story);
     final String url = story.url;
 
+    /// [1] Try to fetch from mem cache.
     InfoBase? info = getInfoFromCache(key);
 
-    if (info != null) return info;
+    if (info != null) {
+      locator.get<Logger>().d('''
+Fetched mem cached metadata using key $key for $story:
+${info.toJson()}
+          ''');
+      return info;
+    }
 
+    /// [2] If story doesn't have a url and text is not empty,
+    /// just use story title and text.
     if (story.url.isEmpty && story.text.isNotEmpty) {
       info = WebInfo(
         title: story.title,
         description: story.text,
-      )
-        .._timeout = DateTime.now().add(cache)
-        .._shouldRetry = false;
+      ).._shouldRetry = false;
 
       cacheMap[key] = info;
 
       return info;
     }
 
+    /// [3] If in offline mode, use comment text for description.
     if (offlineReading) {
       int index = 0;
       Comment? comment;
@@ -149,9 +154,7 @@ class WebAnalyzer {
       info = WebInfo(
         title: story.title,
         description: comment != null ? '${comment.by}: ${comment.text}' : null,
-      )
-        .._shouldRetry = false
-        .._timeout = DateTime.now();
+      ).._shouldRetry = false;
 
       cacheMap[key] = info;
 
@@ -159,15 +162,41 @@ class WebAnalyzer {
     }
 
     try {
+      /// [4] Try to fetch from file cache.
+      info = await locator.get<SembastRepository>().getCachedMetadata(key: key);
+
+      /// [5] If there is file cache, move it to mem cache for later retrieval.
+      if (info != null) {
+        locator.get<Logger>().d('''
+Fetched file cached metadata using key $key for $story:
+${info.toJson()}
+''');
+        cacheMap[key] = info;
+        return info;
+      }
+
+      /// [6] Try to analyze the web for metadata.
       info = await _getInfoByIsolate(
         url: url,
         multimedia: multimedia,
         story: story,
       );
 
+      /// [7] If web analyzing was successful, cache it in both mem and file.
       if (info != null && !info._shouldRetry) {
-        info._timeout = DateTime.now().add(cache);
         cacheMap[key] = info;
+
+        if (info is WebInfo) {
+          locator
+              .get<Logger>()
+              .d('Caching metadata using key $key for $story.');
+          unawaited(
+            locator.get<SembastRepository>().cacheMetadata(
+                  key: key,
+                  info: info,
+                ),
+          );
+        }
       }
 
       return info;
@@ -175,9 +204,7 @@ class WebAnalyzer {
       return WebInfo(
         title: story.title,
         description: story.text,
-      )
-        .._shouldRetry = true
-        .._timeout = DateTime.now();
+      ).._shouldRetry = true;
     }
   }
 
@@ -393,10 +420,9 @@ class WebAnalyzer {
         try {
           html = gbk.decode(response.bodyBytes);
         } catch (e) {
-          // locator.get<Logger>().log(
-          //       Level.error,
-          //       'Web page resolution failure from:$url Error:$e',
-          //     );
+          locator
+              .get<Logger>()
+              .e('''Web page resolution failure from:$url Error:$e''');
         }
       }
 

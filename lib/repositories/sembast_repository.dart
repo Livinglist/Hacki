@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:hacki/models/models.dart';
+import 'package:hacki/services/services.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
@@ -12,28 +14,49 @@ import 'package:sembast/sembast_io.dart';
 /// documents directory assigned by host system which you can retrieve
 /// by calling [getApplicationDocumentsDirectory].
 class SembastRepository {
-  SembastRepository({Database? database}) {
+  SembastRepository({
+    Database? database,
+    Database? cache,
+  }) {
     if (database == null) {
       initializeDatabase();
     } else {
       _database = database;
     }
+
+    if (cache == null) {
+      initializeCache();
+    } else {
+      _cache = cache;
+    }
   }
 
   Database? _database;
+  Database? _cache;
   List<int>? _idsOfCommentsRepliedToMe;
 
   static const String _cachedCommentsKey = 'cachedComments';
   static const String _commentsKey = 'comments';
   static const String _idsOfCommentsRepliedToMeKey = 'idsOfCommentsRepliedToMe';
+  static const String _metadataCacheKey = 'metadata';
 
   Future<Database> initializeDatabase() async {
-    final Directory dir = await getApplicationDocumentsDirectory();
+    final Directory dir = await getApplicationCacheDirectory();
     await dir.create(recursive: true);
     final String dbPath = join(dir.path, 'hacki.db');
     final DatabaseFactory dbFactory = databaseFactoryIo;
     final Database db = await dbFactory.openDatabase(dbPath);
     _database = db;
+    return db;
+  }
+
+  Future<Database> initializeCache() async {
+    final Directory dir = await getTemporaryDirectory();
+    await dir.create(recursive: true);
+    final String dbPath = join(dir.path, 'hacki_cache.db');
+    final DatabaseFactory dbFactory = databaseFactoryIo;
+    final Database db = await dbFactory.openDatabase(dbPath);
+    _cache = db;
     return db;
   }
 
@@ -177,10 +200,50 @@ class SembastRepository {
 
   //#endregion
 
-  Future<FileSystemEntity> deleteAll() async {
+  //#region
+
+  Future<void> cacheMetadata({
+    required String key,
+    required WebInfo info,
+  }) async {
+    final Database db = _cache ?? await initializeCache();
+    final StoreRef<String, Map<String, Object?>> store =
+        stringMapStoreFactory.store(_metadataCacheKey);
+
+    return db.transaction((Transaction txn) async {
+      await store.record(key).put(txn, info.toJson());
+    });
+  }
+
+  Future<WebInfo?> getCachedMetadata({
+    required String key,
+  }) async {
+    final Database db = _cache ?? await initializeCache();
+    final StoreRef<String, Map<String, Object?>> store =
+        stringMapStoreFactory.store(_metadataCacheKey);
+    final RecordSnapshot<String, Map<String, Object?>>? snapshot =
+        await store.record(key).getSnapshot(db);
+    if (snapshot != null) {
+      final WebInfo info = WebInfo.fromJson(snapshot.value);
+      return info;
+    } else {
+      return null;
+    }
+  }
+
+  //#endregion
+
+  Future<FileSystemEntity> deleteCachedComments() async {
     final Directory dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
     final String dbPath = join(dir.path, 'hacki.db');
     return File(dbPath).delete();
+  }
+
+  Future<FileSystemEntity> deleteCachedMetadata() async {
+    final Directory tempDir = await getTemporaryDirectory();
+    await tempDir.create(recursive: true);
+    final String cachePath = join(tempDir.path, 'hacki_cache.db');
+    return File(cachePath).delete();
   }
 }
