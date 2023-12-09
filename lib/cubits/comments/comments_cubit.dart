@@ -177,7 +177,7 @@ class CommentsCubit extends Cubit<CommentsState> {
                     /// Possible parsing error, fallback to API.
                     init(onError: onError, fetchFromWeb: false);
                   } else {
-                    onError?.call(GeneralException());
+                    onError?.call(GenericException());
                   }
                 });
               } else {
@@ -273,7 +273,7 @@ class CommentsCubit extends Cubit<CommentsState> {
 
                   refresh(onError: onError, fetchFromWeb: false);
                 } else {
-                  onError?.call(GeneralException());
+                  onError?.call(GenericException());
                 }
               });
             } else {
