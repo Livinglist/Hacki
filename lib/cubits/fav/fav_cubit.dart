@@ -184,7 +184,7 @@ class FavCubit extends Cubit<FavState> {
         final Iterable<int> ids = await _hackerNewsWebRepository.fetchFavorites(
           of: _authBloc.state.username,
         );
-        _logger.d('Fetched ${ids.length} favorite items from HN.');
+        _logger.d('fetched ${ids.length} favorite items from HN.');
         final List<int> combinedIds = <int>[...ids, ...state.favIds];
         final LinkedHashSet<int> mergedIds =
             LinkedHashSet<int>.from(combinedIds);
