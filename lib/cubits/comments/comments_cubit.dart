@@ -162,22 +162,18 @@ class CommentsCubit extends Cubit<CommentsState> {
 
                   _logger.e(e);
 
-                  if (e is RateLimitedWithFallbackException) {
-                    if (_preferenceCubit.state.devModeEnabled) {
-                      onError?.call(e);
-                    }
+                  switch (e.runtimeType) {
+                    case RateLimitedWithFallbackException:
+                    case PossibleParsingException:
+                    case BrowserNotRunningException:
+                      if (_preferenceCubit.state.devModeEnabled) {
+                        onError?.call(e as AppException);
+                      }
 
-                    /// If fetching from web failed, fetch using API instead.
-                    init(onError: onError, fetchFromWeb: false);
-                  } else if (e is PossibleParsingException) {
-                    if (_preferenceCubit.state.devModeEnabled) {
-                      onError?.call(e);
-                    }
-
-                    /// Possible parsing error, fallback to API.
-                    init(onError: onError, fetchFromWeb: false);
-                  } else {
-                    onError?.call(GenericException());
+                      /// If fetching from web failed, fetch using API instead.
+                      refresh(onError: onError, fetchFromWeb: false);
+                    default:
+                      onError?.call(GenericException());
                   }
                 });
               } else {
@@ -259,21 +255,18 @@ class CommentsCubit extends Cubit<CommentsState> {
                   .handleError((dynamic e) {
                 _logger.e(e);
 
-                if (e is RateLimitedWithFallbackException) {
-                  if (_preferenceCubit.state.devModeEnabled) {
-                    onError?.call(e);
-                  }
+                switch (e.runtimeType) {
+                  case RateLimitedException:
+                  case PossibleParsingException:
+                  case BrowserNotRunningException:
+                    if (_preferenceCubit.state.devModeEnabled) {
+                      onError?.call(e as AppException);
+                    }
 
-                  /// If fetching from web failed, fetch using API instead.
-                  refresh(onError: onError, fetchFromWeb: false);
-                } else if (e is PossibleParsingException) {
-                  if (_preferenceCubit.state.devModeEnabled) {
-                    onError?.call(e);
-                  }
-
-                  refresh(onError: onError, fetchFromWeb: false);
-                } else {
-                  onError?.call(GenericException());
+                    /// If fetching from web failed, fetch using API instead.
+                    refresh(onError: onError, fetchFromWeb: false);
+                  default:
+                    onError?.call(GenericException());
                 }
               });
             } else {

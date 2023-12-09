@@ -27,6 +27,10 @@ class PossibleParsingException extends AppException {
   final int itemId;
 }
 
+class BrowserNotRunningException extends AppException {
+  BrowserNotRunningException() : super(message: 'Browser not running...');
+}
+
 class GenericException extends AppException {
   GenericException() : super(message: 'Something went wrong...');
 }
