@@ -1,6 +1,8 @@
+import 'dart:io';
+
 import 'package:collection/collection.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/models.dart';
 import 'package:html/dom.dart' hide Comment;
@@ -9,13 +11,23 @@ import 'package:html_unescape/html_unescape.dart';
 
 /// For fetching anything that cannot be fetched through Hacker News API.
 class HackerNewsWebRepository {
-  HackerNewsWebRepository({
-    HeadlessInAppWebView? headlessInAppWebView,
-  }) : _headlessInAppWebView = headlessInAppWebView ?? HeadlessInAppWebView() {
-    _headlessInAppWebView.run();
-  }
+  HackerNewsWebRepository({Dio? dio}) : _dio = dio ?? Dio();
 
-  final HeadlessInAppWebView _headlessInAppWebView;
+  final Dio _dio;
+
+  static const Map<String, String> _headers = <String, String>{
+    'accept':
+        'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+    'accept-language': 'en-US,en;q=0.9',
+    'cache-control': 'max-age=0',
+    'sec-fetch-dest': 'document',
+    'sec-fetch-mode': 'navigate',
+    'sec-fetch-site': 'same-origin',
+    'sec-fetch-user': '?1',
+    'upgrade-insecure-requests': '1',
+    'user-agent':
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 17_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1',
+  };
 
   static const String _favoritesBaseUrl =
       'https://news.ycombinator.com/favorites?id=';
@@ -29,37 +41,27 @@ class HackerNewsWebRepository {
     const int maxPage = 2;
 
     Future<Iterable<int>> fetchIds(int page, {bool isComment = false}) async {
-      await _headlessInAppWebView.webViewController.stopLoading();
+      try {
+        final Uri url = Uri.parse(
+          '''$_favoritesBaseUrl$username${isComment ? '&comments=t' : ''}&p=$page''',
+        );
+        final Response<String> response = await _dio.getUri<String>(url);
 
-      if (!_headlessInAppWebView.isRunning()) {
-        throw BrowserNotRunningException();
-      }
+        /// Due to rate limiting, we have a short break here.
+        await Future<void>.delayed(AppDurations.twoSeconds);
 
-      final Uri url = Uri.parse(
-        '''$_favoritesBaseUrl$username${isComment ? '&comments=t' : ''}&p=$page''',
-      );
-      final URLRequest urlRequest = URLRequest(url: url);
-      await _headlessInAppWebView.webViewController
-          .loadUrl(urlRequest: urlRequest);
-      String? html;
-
-      while (true) {
-        if (await _headlessInAppWebView.webViewController.isLoading() ==
-            false) {
-          html = await _headlessInAppWebView.webViewController.getHtml();
-          break;
+        final Document document = parse(response.data);
+        final List<Element> elements =
+            document.querySelectorAll(_aThingSelector);
+        final Iterable<int> parsedIds =
+            elements.map((Element e) => int.tryParse(e.id)).whereNotNull();
+        return parsedIds;
+      } on DioException catch (e) {
+        if (e.response?.statusCode == HttpStatus.forbidden) {
+          throw RateLimitedException();
         }
+        throw GenericException();
       }
-
-      if (html == 'Sorry.') {
-        throw RateLimitedException();
-      }
-
-      final Document document = parse(html);
-      final List<Element> elements = document.querySelectorAll(_aThingSelector);
-      final Iterable<int> parsedIds =
-          elements.map((Element e) => int.tryParse(e.id)).whereNotNull();
-      return parsedIds;
     }
 
     Iterable<int> ids;
@@ -71,9 +73,6 @@ class HackerNewsWebRepository {
       allIds.addAll(ids);
       page++;
     }
-
-    /// Due to rate limiting, we have a short break here.
-    await Future<void>.delayed(AppDurations.twoSeconds);
 
     page = 1;
     while (page <= maxPage) {
@@ -101,45 +100,37 @@ class HackerNewsWebRepository {
       '''td > table > tbody > tr > td.ind''';
 
   Stream<Comment> fetchCommentsStream(Item item) async* {
-    await _headlessInAppWebView.webViewController.stopLoading();
-
-    if (!_headlessInAppWebView.isRunning()) {
-      throw BrowserNotRunningException();
-    }
-
     final int itemId = item.id;
     final int? descendants = item is Story ? item.descendants : null;
     int parentTextCount = 0;
 
     Future<Iterable<Element>> fetchElements(int page) async {
-      final Uri url = Uri.parse('$_itemBaseUrl$itemId&p=$page');
-      final URLRequest urlRequest = URLRequest(url: url);
-      await _headlessInAppWebView.webViewController
-          .loadUrl(urlRequest: urlRequest);
-      String? html;
+      try {
+        final Uri url = Uri.parse('$_itemBaseUrl$itemId&p=$page');
+        final Options option = Options(
+          headers: _headers,
+          persistentConnection: true,
+        );
+        final Response<String> response = await _dio.getUri<String>(
+          url,
+          options: option,
+        );
+        final String data = response.data ?? '';
 
-      while (true) {
-        if (await _headlessInAppWebView.webViewController.isLoading() ==
-            false) {
-          html = await _headlessInAppWebView.webViewController.getHtml();
-          break;
+        if (page == 1) {
+          parentTextCount = 'parent'.allMatches(data).length;
         }
+
+        final Document document = parse(data);
+        final List<Element> elements =
+            document.querySelectorAll(_athingComtrSelector);
+        return elements;
+      } on DioException catch (e) {
+        if (e.response?.statusCode == HttpStatus.forbidden) {
+          throw RateLimitedWithFallbackException();
+        }
+        throw GenericException();
       }
-
-      final String data = html ?? '';
-
-      if (data == 'Sorry.') {
-        throw RateLimitedWithFallbackException();
-      }
-
-      if (page == 1) {
-        parentTextCount = 'parent'.allMatches(data).length;
-      }
-
-      final Document document = parse(data);
-      final List<Element> elements =
-          document.querySelectorAll(_athingComtrSelector);
-      return elements;
     }
 
     if (descendants == 0 || item.kids.isEmpty) return;
