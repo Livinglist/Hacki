@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hacki/config/constants.dart';
@@ -84,16 +85,26 @@ class CommentsCubit extends Cubit<CommentsState> {
 
   static const int _webFetchingCmtCountLowerLimit = 100;
 
-  bool get _shouldFetchFromWeb {
-    return switch (state.item) {
-      Story(descendants: final int descendants)
-          when descendants > _webFetchingCmtCountLowerLimit =>
-        true,
-      Comment(kids: final List<int> kids)
-          when kids.length > _webFetchingCmtCountLowerLimit =>
-        true,
-      _ => false,
-    };
+  Future<bool> get _shouldFetchFromWeb async {
+    final bool isOnWifi = await _isOnWifi;
+    if (isOnWifi) {
+      return switch (state.item) {
+        Story(descendants: final int descendants)
+            when descendants > _webFetchingCmtCountLowerLimit =>
+          true,
+        Comment(kids: final List<int> kids)
+            when kids.length > _webFetchingCmtCountLowerLimit =>
+          true,
+        _ => false,
+      };
+    } else {
+      return true;
+    }
+  }
+
+  static Future<bool> get _isOnWifi async {
+    final ConnectivityResult status = await Connectivity().checkConnectivity();
+    return status == ConnectivityResult.wifi;
   }
 
   @override
@@ -168,7 +179,8 @@ class CommentsCubit extends Cubit<CommentsState> {
         case FetchMode.eager:
           switch (state.order) {
             case CommentsOrder.natural:
-              if (fetchFromWeb && _shouldFetchFromWeb) {
+              final bool shouldFetchFromWeb = await _shouldFetchFromWeb;
+              if (fetchFromWeb && shouldFetchFromWeb) {
                 _logger.d('fetching from web.');
                 commentStream = _hackerNewsWebRepository
                     .fetchCommentsStream(state.item)
@@ -266,7 +278,8 @@ class CommentsCubit extends Cubit<CommentsState> {
       case FetchMode.eager:
         switch (state.order) {
           case CommentsOrder.natural:
-            if (fetchFromWeb && _shouldFetchFromWeb) {
+            final bool shouldFetchFromWeb = await _shouldFetchFromWeb;
+            if (fetchFromWeb && shouldFetchFromWeb) {
               _logger.d('fetching from web.');
               commentStream = _hackerNewsWebRepository
                   .fetchCommentsStream(state.item)

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hacki/config/constants.dart';
@@ -106,7 +107,10 @@ class HackerNewsWebRepository {
       '''td > table > tbody > tr > td.ind''';
 
   Stream<Comment> fetchCommentsStream(Item item) async* {
-    if (!_fetchAllowed) {
+    final bool isOnWifi = await _isOnWifi;
+
+    /// If user is on wifi, apply fetch delay.
+    if (isOnWifi && !_fetchAllowed) {
       throw DelayNotFinishedException();
     }
 
@@ -239,6 +243,11 @@ class HackerNewsWebRepository {
 
     _fetchAllowed = false;
     Timer(_delay, () => _fetchAllowed = true);
+  }
+
+  static Future<bool> get _isOnWifi async {
+    final ConnectivityResult status = await Connectivity().checkConnectivity();
+    return status == ConnectivityResult.wifi;
   }
 
   static Future<String> _parseCommentTextHtml(String text) async {
