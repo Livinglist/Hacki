@@ -31,6 +31,10 @@ class BrowserNotRunningException extends AppException {
   BrowserNotRunningException() : super(message: 'Browser not running...');
 }
 
+class DelayNotFinishedException extends AppException {
+  DelayNotFinishedException() : super(message: 'Delay not finished...');
+}
+
 class GenericException extends AppException {
   GenericException() : super(message: 'Something went wrong...');
 }
