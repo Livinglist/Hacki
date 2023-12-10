@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hacki/config/constants.dart';
@@ -11,9 +13,14 @@ import 'package:html_unescape/html_unescape.dart';
 
 /// For fetching anything that cannot be fetched through Hacker News API.
 class HackerNewsWebRepository {
-  HackerNewsWebRepository({Dio? dio}) : _dio = dio ?? Dio();
+  HackerNewsWebRepository({
+    Dio? dio,
+  }) : _dio = dio ?? Dio();
 
   final Dio _dio;
+  bool _fetchAllowed = true;
+
+  static const Duration _delay = Duration(seconds: 30);
 
   static const Map<String, String> _headers = <String, String>{
     'accept':
@@ -100,6 +107,13 @@ class HackerNewsWebRepository {
       '''td > table > tbody > tr > td.ind''';
 
   Stream<Comment> fetchCommentsStream(Item item) async* {
+    final bool isOnWifi = await _isOnWifi;
+
+    /// If user is on wifi, apply fetch delay.
+    if (isOnWifi && !_fetchAllowed) {
+      throw DelayNotFinishedException();
+    }
+
     final int itemId = item.id;
     final int? descendants = item is Story ? item.descendants : null;
     int parentTextCount = 0;
@@ -226,6 +240,14 @@ class HackerNewsWebRepository {
       page++;
       elements = await fetchElements(page);
     }
+
+    _fetchAllowed = false;
+    Timer(_delay, () => _fetchAllowed = true);
+  }
+
+  static Future<bool> get _isOnWifi async {
+    final ConnectivityResult status = await Connectivity().checkConnectivity();
+    return status == ConnectivityResult.wifi;
   }
 
   static Future<String> _parseCommentTextHtml(String text) async {

@@ -83,6 +83,25 @@ class CommentsCubit extends Cubit<CommentsState> {
   final Map<int, StreamSubscription<Comment>> _streamSubscriptions =
       <int, StreamSubscription<Comment>>{};
 
+  static const int _webFetchingCmtCountLowerLimit = 100;
+
+  Future<bool> get _shouldFetchFromWeb async {
+    final bool isOnWifi = await _isOnWifi;
+    if (isOnWifi) {
+      return switch (state.item) {
+        Story(descendants: final int descendants)
+            when descendants > _webFetchingCmtCountLowerLimit =>
+          true,
+        Comment(kids: final List<int> kids)
+            when kids.length > _webFetchingCmtCountLowerLimit =>
+          true,
+        _ => false,
+      };
+    } else {
+      return true;
+    }
+  }
+
   static Future<bool> get _isOnWifi async {
     final ConnectivityResult status = await Connectivity().checkConnectivity();
     return status == ConnectivityResult.wifi;
@@ -160,8 +179,9 @@ class CommentsCubit extends Cubit<CommentsState> {
         case FetchMode.eager:
           switch (state.order) {
             case CommentsOrder.natural:
-              final bool isOnWifi = await _isOnWifi;
-              if (!isOnWifi && fetchFromWeb) {
+              final bool shouldFetchFromWeb = await _shouldFetchFromWeb;
+              if (fetchFromWeb && shouldFetchFromWeb) {
+                _logger.d('fetching from web.');
                 commentStream = _hackerNewsWebRepository
                     .fetchCommentsStream(state.item)
                     .handleError((dynamic e) {
@@ -173,6 +193,7 @@ class CommentsCubit extends Cubit<CommentsState> {
                     case RateLimitedWithFallbackException:
                     case PossibleParsingException:
                     case BrowserNotRunningException:
+                    case DelayNotFinishedException:
                       if (_preferenceCubit.state.devModeEnabled) {
                         onError?.call(e as AppException);
                       }
@@ -184,6 +205,7 @@ class CommentsCubit extends Cubit<CommentsState> {
                   }
                 });
               } else {
+                _logger.d('fetching from API.');
                 commentStream =
                     _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
                   ids: kids,
@@ -256,8 +278,9 @@ class CommentsCubit extends Cubit<CommentsState> {
       case FetchMode.eager:
         switch (state.order) {
           case CommentsOrder.natural:
-            final bool isOnWifi = await _isOnWifi;
-            if (!isOnWifi && fetchFromWeb) {
+            final bool shouldFetchFromWeb = await _shouldFetchFromWeb;
+            if (fetchFromWeb && shouldFetchFromWeb) {
+              _logger.d('fetching from web.');
               commentStream = _hackerNewsWebRepository
                   .fetchCommentsStream(state.item)
                   .handleError((dynamic e) {
@@ -267,6 +290,7 @@ class CommentsCubit extends Cubit<CommentsState> {
                   case RateLimitedException:
                   case PossibleParsingException:
                   case BrowserNotRunningException:
+                  case DelayNotFinishedException:
                     if (_preferenceCubit.state.devModeEnabled) {
                       onError?.call(e as AppException);
                     }
@@ -278,6 +302,7 @@ class CommentsCubit extends Cubit<CommentsState> {
                 }
               });
             } else {
+              _logger.d('fetching from API.');
               commentStream = _hackerNewsRepository
                   .fetchAllCommentsRecursivelyStream(ids: kids);
             }
