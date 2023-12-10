@@ -14,24 +14,17 @@ import 'package:html_unescape/html_unescape.dart';
 /// For fetching anything that cannot be fetched through Hacker News API.
 class HackerNewsWebRepository {
   HackerNewsWebRepository({
+    Dio? dioWithCache,
     Dio? dio,
-  }) : _dio = dio ?? Dio();
+  })  : _dio = dio ?? Dio(),
+        _dioWithCache = dioWithCache ?? Dio()
+          ..interceptors.add(CacheInterceptorsWrapper());
 
+  final Dio _dioWithCache;
   final Dio _dio;
-  bool _fetchAllowed = true;
-
-  static const Duration _delay = Duration(seconds: 30);
 
   static const Map<String, String> _headers = <String, String>{
-    'accept':
-        'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-    'accept-language': 'en-US,en;q=0.9',
-    'cache-control': 'max-age=0',
-    'sec-fetch-dest': 'document',
-    'sec-fetch-mode': 'navigate',
-    'sec-fetch-site': 'same-origin',
-    'sec-fetch-user': '?1',
-    'upgrade-insecure-requests': '1',
+    'accept': 'text/html',
     'user-agent':
         'Mozilla/5.0 (iPhone; CPU iPhone OS 17_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1',
   };
@@ -42,6 +35,7 @@ class HackerNewsWebRepository {
       '#hnmain > tbody > tr:nth-child(3) > td > table > tbody > .athing';
 
   Future<Iterable<int>> fetchFavorites({required String of}) async {
+    final bool isOnWifi = await _isOnWifi;
     final String username = of;
     final List<int> allIds = <int>[];
     int page = 1;
@@ -52,7 +46,8 @@ class HackerNewsWebRepository {
         final Uri url = Uri.parse(
           '''$_favoritesBaseUrl$username${isComment ? '&comments=t' : ''}&p=$page''',
         );
-        final Response<String> response = await _dio.getUri<String>(url);
+        final Response<String> response =
+            await (isOnWifi ? _dioWithCache : _dio).getUri<String>(url);
 
         /// Due to rate limiting, we have a short break here.
         await Future<void>.delayed(AppDurations.twoSeconds);
@@ -108,12 +103,6 @@ class HackerNewsWebRepository {
 
   Stream<Comment> fetchCommentsStream(Item item) async* {
     final bool isOnWifi = await _isOnWifi;
-
-    /// If user is on wifi, apply fetch delay.
-    if (isOnWifi && !_fetchAllowed) {
-      throw DelayNotFinishedException();
-    }
-
     final int itemId = item.id;
     final int? descendants = item is Story ? item.descendants : null;
     int parentTextCount = 0;
@@ -125,10 +114,14 @@ class HackerNewsWebRepository {
           headers: _headers,
           persistentConnection: true,
         );
-        final Response<String> response = await _dio.getUri<String>(
+
+        /// Be more conservative while user is on wifi.
+        final Response<String> response =
+            await (isOnWifi ? _dioWithCache : _dio).getUri<String>(
           url,
           options: option,
         );
+
         final String data = response.data ?? '';
 
         if (page == 1) {
@@ -240,9 +233,6 @@ class HackerNewsWebRepository {
       page++;
       elements = await fetchElements(page);
     }
-
-    _fetchAllowed = false;
-    Timer(_delay, () => _fetchAllowed = true);
   }
 
   static Future<bool> get _isOnWifi async {

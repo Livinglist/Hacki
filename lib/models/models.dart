@@ -1,5 +1,6 @@
 export 'app_exception.dart';
 export 'comments_order.dart';
+export 'dio/cache_interceptors_wrapper.dart';
 export 'discoverable_feature.dart';
 export 'export_destination.dart';
 export 'fetch_mode.dart';
