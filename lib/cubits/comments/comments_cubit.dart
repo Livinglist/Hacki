@@ -82,12 +82,16 @@ class CommentsCubit extends Cubit<CommentsState> {
   final Map<int, StreamSubscription<Comment>> _streamSubscriptions =
       <int, StreamSubscription<Comment>>{};
 
+  static const int _webFetchingCmtCountLowerLimit = 100;
+
   bool get _shouldFetchFromWeb {
-    const int cmtCount = 100;
     return switch (state.item) {
-      Story(descendants: final int descendants) when descendants > cmtCount =>
+      Story(descendants: final int descendants)
+          when descendants > _webFetchingCmtCountLowerLimit =>
         true,
-      Comment(kids: final List<int> kids) when kids.length > cmtCount => true,
+      Comment(kids: final List<int> kids)
+          when kids.length > _webFetchingCmtCountLowerLimit =>
+        true,
       _ => false,
     };
   }
