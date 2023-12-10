@@ -83,7 +83,7 @@ class CommentsCubit extends Cubit<CommentsState> {
   final Map<int, StreamSubscription<Comment>> _streamSubscriptions =
       <int, StreamSubscription<Comment>>{};
 
-  static const int _webFetchingCmtCountLowerLimit = 100;
+  static const int _webFetchingCmtCountLowerLimit = 50;
 
   Future<bool> get _shouldFetchFromWeb async {
     final bool isOnWifi = await _isOnWifi;
@@ -192,8 +192,6 @@ class CommentsCubit extends Cubit<CommentsState> {
                   switch (e.runtimeType) {
                     case RateLimitedWithFallbackException:
                     case PossibleParsingException:
-                    case BrowserNotRunningException:
-                    case DelayNotFinishedException:
                       if (_preferenceCubit.state.devModeEnabled) {
                         onError?.call(e as AppException);
                       }
@@ -289,8 +287,6 @@ class CommentsCubit extends Cubit<CommentsState> {
                 switch (e.runtimeType) {
                   case RateLimitedException:
                   case PossibleParsingException:
-                  case BrowserNotRunningException:
-                  case DelayNotFinishedException:
                     if (_preferenceCubit.state.devModeEnabled) {
                       onError?.call(e as AppException);
                     }
