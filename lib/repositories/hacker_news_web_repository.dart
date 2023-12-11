@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/utils/utils.dart';
 import 'package:html/dom.dart' hide Comment;
 import 'package:html/parser.dart';
 import 'package:html_unescape/html_unescape.dart';
@@ -18,13 +19,18 @@ class HackerNewsWebRepository {
     Dio? dio,
   })  : _dio = dio ?? Dio(),
         _dioWithCache = dioWithCache ?? Dio()
-          ..interceptors.add(CacheInterceptorsWrapper());
+          ..interceptors.addAll(
+            <Interceptor>[
+              if (kDebugMode) LoggerInterceptor(),
+              CacheInterceptor(),
+            ],
+          );
 
   final Dio _dioWithCache;
   final Dio _dio;
 
   static const Map<String, String> _headers = <String, String>{
-    'accept': 'text/html',
+    'accept': '*/*',
     'user-agent':
         'Mozilla/5.0 (iPhone; CPU iPhone OS 17_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1',
   };

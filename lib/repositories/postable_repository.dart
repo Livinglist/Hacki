@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/auth_repository.dart';
 import 'package:hacki/repositories/post_repository.dart';
-import 'package:hacki/utils/service_exception.dart';
 
 /// [PostableRepository] is solely for hosting functionalities shared between
 /// [AuthRepository] and [PostRepository].
@@ -40,7 +39,7 @@ class PostableRepository {
       }
 
       return true;
-    } on ServiceException {
+    } on AppException {
       return false;
     }
   }
@@ -65,7 +64,7 @@ class PostableRepository {
         ),
       );
     } on DioException catch (e) {
-      throw ServiceException(e.message);
+      throw AppException(message: e.message);
     }
   }
 

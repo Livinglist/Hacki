@@ -4,8 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/dio/cached_response.dart';
 
-class CacheInterceptorsWrapper extends InterceptorsWrapper {
-  CacheInterceptorsWrapper()
+class CacheInterceptor extends InterceptorsWrapper {
+  CacheInterceptor()
       : super(
           onResponse: (
             Response<dynamic> response,
