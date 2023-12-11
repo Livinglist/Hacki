@@ -6,7 +6,7 @@ class AppException implements Exception {
     this.stackTrace,
   });
 
-  final String message;
+  final String? message;
   final StackTrace? stackTrace;
 }
 

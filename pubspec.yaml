@@ -57,6 +57,7 @@ dependencies:
   path_provider: ^2.0.12
   path_provider_android: ^2.0.22
   path_provider_foundation: ^2.1.1
+  pretty_dio_logger: ^1.3.1
   pull_to_refresh:
     git:
       url: https://github.com/livinglist/flutter_pulltorefresh
