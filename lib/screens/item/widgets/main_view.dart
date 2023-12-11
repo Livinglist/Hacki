@@ -511,6 +511,9 @@ class _ParentItemSection extends StatelessWidget {
                 style: TextStyle(color: Palette.grey),
               ),
             ),
+            const SizedBox(
+              height: 120,
+            ),
           ],
         ],
       ),
