@@ -180,7 +180,7 @@ class CommentsCubit extends Cubit<CommentsState> {
           switch (state.order) {
             case CommentsOrder.natural:
               final bool shouldFetchFromWeb = await _shouldFetchFromWeb;
-              if (fetchFromWeb && shouldFetchFromWeb) {
+              if (true) {
                 _logger.d('fetching from web.');
                 commentStream = _hackerNewsWebRepository
                     .fetchCommentsStream(state.item)

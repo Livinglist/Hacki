@@ -97,7 +97,7 @@ class HackerNewsWebRepository {
 
   static const String _itemBaseUrl = 'https://news.ycombinator.com/item?id=';
   static const String _athingComtrSelector =
-      '#hnmain > tbody > tr:nth-child(3) > td > table > tbody > .athing.comtr';
+      '#hnmain > tbody > tr > td > table > tbody > .athing.comtr';
   static const String _commentTextSelector =
       '''td > table > tbody > tr > td.default > div.comment''';
   static const String _commentHeadSelector =

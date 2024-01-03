@@ -9,6 +9,7 @@ import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
+import 'package:logger/logger.dart';
 
 part 'notification_state.dart';
 
@@ -19,6 +20,7 @@ class NotificationCubit extends Cubit<NotificationState> {
     HackerNewsRepository? hackerNewsRepository,
     PreferenceRepository? preferenceRepository,
     SembastRepository? sembastRepository,
+    Logger? logger,
   })  : _authBloc = authBloc,
         _preferenceCubit = preferenceCubit,
         _hackerNewsRepository =
@@ -27,6 +29,7 @@ class NotificationCubit extends Cubit<NotificationState> {
             preferenceRepository ?? locator.get<PreferenceRepository>(),
         _sembastRepository =
             sembastRepository ?? locator.get<SembastRepository>(),
+        _logger = logger ?? locator.get<Logger>(),
         super(NotificationState.init()) {
     _authBloc.stream
         .map((AuthState event) => event.username)
@@ -58,6 +61,7 @@ class NotificationCubit extends Cubit<NotificationState> {
   final HackerNewsRepository _hackerNewsRepository;
   final PreferenceRepository _preferenceRepository;
   final SembastRepository _sembastRepository;
+  final Logger _logger;
   Timer? _timer;
 
   static const Duration _refreshInterval = Duration(minutes: 5);
@@ -74,6 +78,7 @@ class NotificationCubit extends Cubit<NotificationState> {
     });
 
     await _preferenceRepository.unreadCommentsIds.then((List<int> unreadIds) {
+      _logger.i('NotificationCubit: ${unreadIds.length} unread items.');
       emit(state.copyWith(unreadCommentsIds: unreadIds));
     });
 
