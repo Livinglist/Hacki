@@ -120,7 +120,7 @@ class WebAnalyzer {
 
     if (info != null) {
       locator.get<Logger>().d('''
-Fetched mem cached metadata using key $key for $story:
+fetched mem cached metadata using key $key for $story:
 ${info.toJson()}
           ''');
       return info;
@@ -168,7 +168,7 @@ ${info.toJson()}
       /// [5] If there is file cache, move it to mem cache for later retrieval.
       if (info != null) {
         locator.get<Logger>().d('''
-Fetched file cached metadata using key $key for $story:
+fetched file cached metadata using key $key for $story:
 ${info.toJson()}
 ''');
         cacheMap[key] = info;
@@ -189,7 +189,7 @@ ${info.toJson()}
         if (info is WebInfo) {
           locator
               .get<Logger>()
-              .d('Caching metadata using key $key for $story.');
+              .d('caching metadata using key $key for $story.');
           unawaited(
             locator.get<SembastRepository>().cacheMetadata(
                   key: key,
@@ -422,7 +422,7 @@ ${info.toJson()}
         } catch (e) {
           locator
               .get<Logger>()
-              .e('''Web page resolution failure from:$url Error:$e''');
+              .e('''web page resolution failure from:$url Error:$e''');
         }
       }
 
