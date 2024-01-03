@@ -186,7 +186,7 @@ class AutoScrollModePreference extends BooleanPreference {
   String get key => 'autoScrollMode';
 
   @override
-  String get title => 'Auto-scroll on collapsing';
+  String get title => 'Auto-scroll on Collapsing';
 
   @override
   String get subtitle =>

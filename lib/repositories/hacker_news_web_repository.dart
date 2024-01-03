@@ -153,6 +153,10 @@ class HackerNewsWebRepository {
     Iterable<Element> elements = await fetchElements(page);
     final Map<int, int> indentToParentId = <int, int>{};
 
+    if (item is Story && item.descendants > 0 && elements.isEmpty) {
+      throw PossibleParsingException(itemId: itemId);
+    }
+
     while (elements.isNotEmpty) {
       for (final Element element in elements) {
         /// Get comment id.
