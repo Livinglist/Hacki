@@ -19,6 +19,11 @@ jobs:
       BUNDLE_GEMFILE: ${{ github.workspace }}/ios/Gemfile
 
     steps:
+      - name: Set XCode version
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
       - name: Check out from git
         uses: actions/checkout@v3
         with:
