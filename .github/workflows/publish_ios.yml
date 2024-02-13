@@ -10,7 +10,7 @@ on:
 
 jobs:
   build_and_publish:
-    runs-on: macos-latest
+    runs-on: macos-13
     timeout-minutes: 30
 
     env:
