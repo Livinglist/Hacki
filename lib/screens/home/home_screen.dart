@@ -38,7 +38,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin, RouteAware, ItemActionMixin {
   late final TabController tabController;
-  late final StreamSubscription<String> intentDataStreamSubscription;
+  late final StreamSubscription<List<SharedMediaFile>>
+      intentDataStreamSubscription;
   late final StreamSubscription<String?> notificationStreamSubscription;
   late final StreamSubscription<String?> siriSuggestionStreamSubscription;
 
@@ -61,10 +62,10 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
 
-    ReceiveSharingIntent.getInitialText().then(onShareExtensionTapped);
+    ReceiveSharingIntent.getInitialMedia().then(onShareExtensionTapped);
 
     intentDataStreamSubscription =
-        ReceiveSharingIntent.getTextStream().listen(onShareExtensionTapped);
+        ReceiveSharingIntent.getMediaStream().listen(onShareExtensionTapped);
 
     if (!selectNotificationSubject.hasListener) {
       notificationStreamSubscription =
@@ -246,10 +247,13 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
-  void onShareExtensionTapped(String? event) {
-    if (event == null) return;
+  void onShareExtensionTapped(List<SharedMediaFile> files) {
+    final SharedMediaFile? file = files.firstOrNull;
 
-    final int? id = event.itemId;
+    if (file?.type != SharedMediaType.text || file?.message == null) return;
+
+    final String message = file!.message!;
+    final int? id = message.itemId;
 
     if (id != null) {
       locator.get<HackerNewsRepository>().fetchItem(id: id).then((Item? item) {
