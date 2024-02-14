@@ -79,15 +79,16 @@ abstract class LinkUtil {
             final Color primaryColor = Theme.of(context).colorScheme.primary;
             _browser
                 .open(
-                  url: WebUri.uri(uri),
-                  settings: Platform.isAndroid
-                      ? ChromeSafariBrowserSettings(
-                          toolbarBackgroundColor: primaryColor,
-                        )
-                      : ChromeSafariBrowserSettings(
-                          entersReaderIfAvailable: useReader,
-                          preferredControlTintColor: primaryColor,
-                        ),
+                  url: uri,
+                  options: ChromeSafariBrowserClassOptions(
+                    ios: IOSSafariOptions(
+                      entersReaderIfAvailable: useReader,
+                      preferredControlTintColor: primaryColor,
+                    ),
+                    android: AndroidChromeCustomTabsOptions(
+                      toolbarBackgroundColor: primaryColor,
+                    ),
+                  ),
                 )
                 .onError((_, __) => launchUrl(uri));
           }
