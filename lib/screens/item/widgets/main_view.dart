@@ -255,7 +255,11 @@ class _ParentItemSection extends StatelessWidget {
                         ),
                         const Spacer(),
                         Text(
-                          item.timeAgo,
+                          context
+                              .read<PreferenceCubit>()
+                              .state
+                              .displayDateFormat
+                              .convertToString(item.time),
                           style: TextStyle(
                             color: Theme.of(context).metadataColor,
                           ),

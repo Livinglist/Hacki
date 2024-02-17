@@ -160,6 +160,47 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                   const SizedBox(
                     height: Dimens.pt12,
                   ),
+                  Row(
+                    children: <Widget>[
+                      const SizedBox(
+                        width: Dimens.pt16,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          const Text(
+                            'Date time display of comments',
+                          ),
+                          DropdownMenu<DisplayDateFormat>(
+                            initialSelection: preferenceState.displayDateFormat,
+                            dropdownMenuEntries: DisplayDateFormat.values
+                                .map(
+                                  (DisplayDateFormat val) =>
+                                      DropdownMenuEntry<DisplayDateFormat>(
+                                    value: val,
+                                    label: val.description,
+                                  ),
+                                )
+                                .toList(),
+                            onSelected: (DisplayDateFormat? order) {
+                              if (order != null) {
+                                HapticFeedbackUtil.selection();
+                                context.read<PreferenceCubit>().update(
+                                      DateFormatPreference(
+                                        val: order.index,
+                                      ),
+                                    );
+                                DisplayDateFormat.clearCache();
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: Dimens.pt12,
+                  ),
                   const TabBarSettings(),
                   const TextScaleFactorSettings(),
                   const Divider(),

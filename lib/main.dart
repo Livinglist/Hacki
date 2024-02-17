@@ -23,6 +23,7 @@ import 'package:hacki/utils/haptic_feedback_util.dart';
 import 'package:hacki/utils/theme_util.dart';
 import 'package:hive/hive.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart' show BehaviorSubject;
@@ -44,6 +45,8 @@ void notificationReceiver(NotificationResponse details) =>
 
 Future<void> main({bool testing = false}) async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await initializeDateFormatting(Platform.localeName);
 
   isTesting = testing;
 

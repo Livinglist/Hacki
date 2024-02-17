@@ -200,7 +200,8 @@ class CommentTile extends StatelessWidget {
                               //   ),
                               const Spacer(),
                               Text(
-                                comment.timeAgo,
+                                prefState.displayDateFormat
+                                    .convertToString(comment.time),
                                 style: TextStyle(
                                   color: Theme.of(context).metadataColor,
                                 ),
