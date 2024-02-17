@@ -27,6 +27,7 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       TabOrderPreference(),
       StoryMarkingModePreference(),
       AppColorPreference(),
+      DateFormatPreference(),
       const TextScaleFactorPreference(),
 // Order of items below matters and
 // reflects the order on settings screen.

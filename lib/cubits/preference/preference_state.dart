@@ -119,6 +119,9 @@ class PreferenceState extends Equatable {
   Font get font =>
       Font.values.elementAt(preferences.singleWhereType<FontPreference>().val);
 
+  DisplayDateFormat get displayDateFormat => DisplayDateFormat.values
+      .elementAt(preferences.singleWhereType<DateFormatPreference>().val);
+
   @override
   List<Object?> get props => <Object?>[
         ...preferences.map<dynamic>((Preference<dynamic> e) => e.val),
