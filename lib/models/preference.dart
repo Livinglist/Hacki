@@ -7,7 +7,7 @@ import 'package:hacki/models/displayable.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/styles/palette.dart';
 
-abstract class Preference<T> extends Equatable with SettingsDisplayable {
+abstract final class Preference<T> extends Equatable with SettingsDisplayable {
   const Preference({required this.val});
 
   final T val;
@@ -19,7 +19,7 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
   static final List<Preference<dynamic>> allPreferences =
       UnmodifiableListView<Preference<dynamic>>(
     <Preference<dynamic>>[
-      // Order of these preferences does not matter.
+// Order of these preferences does not matter.
       FetchModePreference(),
       CommentsOrderPreference(),
       FontPreference(),
@@ -28,14 +28,14 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
       StoryMarkingModePreference(),
       AppColorPreference(),
       const TextScaleFactorPreference(),
-      // Order of items below matters and
-      // reflects the order on settings screen.
+// Order of items below matters and
+// reflects the order on settings screen.
       const DisplayModePreference(),
       const MetadataModePreference(),
       const StoryUrlModePreference(),
-      // Divider.
+// Divider.
       const MarkReadStoriesModePreference(),
-      // Divider.
+// Divider.
       const NotificationModePreference(),
       const AutoScrollModePreference(),
       const CollapseModePreference(),
@@ -54,15 +54,15 @@ abstract class Preference<T> extends Equatable with SettingsDisplayable {
   List<Object?> get props => <Object?>[key];
 }
 
-abstract class BooleanPreference extends Preference<bool> {
+abstract final class BooleanPreference extends Preference<bool> {
   const BooleanPreference({required super.val});
 }
 
-abstract class IntPreference extends Preference<int> {
+abstract final class IntPreference extends Preference<int> {
   const IntPreference({required super.val});
 }
 
-abstract class DoublePreference extends Preference<double> {
+abstract final class DoublePreference extends Preference<double> {
   const DoublePreference({required super.val});
 }
 
@@ -92,7 +92,7 @@ final int _tabOrderDefaultValue =
 final int _markStoriesAsReadWhenPreferenceDefaultValue =
     StoryMarkingMode.tap.index;
 
-class DevMode extends BooleanPreference {
+final class DevMode extends BooleanPreference {
   const DevMode({bool? val}) : super(val: val ?? _devModeDefaultValue);
 
   @override
@@ -113,7 +113,7 @@ class DevMode extends BooleanPreference {
   bool get isDisplayable => false;
 }
 
-class SwipeGesturePreference extends BooleanPreference {
+final class SwipeGesturePreference extends BooleanPreference {
   const SwipeGesturePreference({bool? val})
       : super(val: val ?? _swipeGestureModeDefaultValue);
 
@@ -133,7 +133,7 @@ class SwipeGesturePreference extends BooleanPreference {
       '''enable swipe gesture for switching between tabs. If enabled, long press on Story tile to trigger the action menu.''';
 }
 
-class NotificationModePreference extends BooleanPreference {
+final class NotificationModePreference extends BooleanPreference {
   const NotificationModePreference({bool? val})
       : super(val: val ?? _notificationModeDefaultValue);
 
@@ -153,7 +153,7 @@ class NotificationModePreference extends BooleanPreference {
       '''Hacki scans for new replies to your 15 most recent comments or stories every 5 minutes while the app is running in the foreground.''';
 }
 
-class CollapseModePreference extends BooleanPreference {
+final class CollapseModePreference extends BooleanPreference {
   const CollapseModePreference({bool? val})
       : super(val: val ?? _collapseModeDefaultValue);
 
@@ -173,7 +173,7 @@ class CollapseModePreference extends BooleanPreference {
       '''if disabled, tap on the top of comment tile to collapse.''';
 }
 
-class AutoScrollModePreference extends BooleanPreference {
+final class AutoScrollModePreference extends BooleanPreference {
   const AutoScrollModePreference({bool? val})
       : super(val: val ?? _autoScrollModeDefaultValue);
 
@@ -195,7 +195,7 @@ class AutoScrollModePreference extends BooleanPreference {
 
 /// The value deciding whether or not the story
 /// tile should display link preview. Defaults to true.
-class DisplayModePreference extends BooleanPreference {
+final class DisplayModePreference extends BooleanPreference {
   const DisplayModePreference({bool? val})
       : super(val: val ?? _displayModeDefaultValue);
 
@@ -214,7 +214,7 @@ class DisplayModePreference extends BooleanPreference {
   String get subtitle => 'show web preview in story tile.';
 }
 
-class MetadataModePreference extends BooleanPreference {
+final class MetadataModePreference extends BooleanPreference {
   const MetadataModePreference({bool? val})
       : super(val: val ?? _metadataModeDefaultValue);
 
@@ -234,7 +234,7 @@ class MetadataModePreference extends BooleanPreference {
       '''show number of comments and post date in story tile.''';
 }
 
-class StoryUrlModePreference extends BooleanPreference {
+final class StoryUrlModePreference extends BooleanPreference {
   const StoryUrlModePreference({bool? val})
       : super(val: val ?? _storyUrlModeDefaultValue);
 
@@ -253,7 +253,7 @@ class StoryUrlModePreference extends BooleanPreference {
   String get subtitle => '''show url in story tile.''';
 }
 
-class ReaderModePreference extends BooleanPreference {
+final class ReaderModePreference extends BooleanPreference {
   const ReaderModePreference({bool? val})
       : super(val: val ?? _readerModeDefaultValue);
 
@@ -276,7 +276,7 @@ class ReaderModePreference extends BooleanPreference {
   bool get isDisplayable => Platform.isIOS;
 }
 
-class MarkReadStoriesModePreference extends BooleanPreference {
+final class MarkReadStoriesModePreference extends BooleanPreference {
   const MarkReadStoriesModePreference({bool? val})
       : super(val: val ?? _markReadStoriesModeDefaultValue);
 
@@ -295,7 +295,7 @@ class MarkReadStoriesModePreference extends BooleanPreference {
   String get subtitle => 'grey out stories you have read.';
 }
 
-class EyeCandyModePreference extends BooleanPreference {
+final class EyeCandyModePreference extends BooleanPreference {
   const EyeCandyModePreference({bool? val})
       : super(val: val ?? _eyeCandyModeDefaultValue);
 
@@ -314,7 +314,7 @@ class EyeCandyModePreference extends BooleanPreference {
   String get subtitle => 'some sort of magic.';
 }
 
-class ManualPaginationPreference extends BooleanPreference {
+final class ManualPaginationPreference extends BooleanPreference {
   const ManualPaginationPreference({bool? val})
       : super(val: val ?? _paginationModeDefaultValue);
 
@@ -337,7 +337,7 @@ class ManualPaginationPreference extends BooleanPreference {
 /// If false, default browser will be used.
 ///
 /// https://developer.chrome.com/docs/android/custom-tabs/
-class CustomTabPreference extends BooleanPreference {
+final class CustomTabPreference extends BooleanPreference {
   const CustomTabPreference({bool? val})
       : super(val: val ?? _customTabModeDefaultValue);
 
@@ -360,7 +360,7 @@ class CustomTabPreference extends BooleanPreference {
   bool get isDisplayable => Platform.isAndroid;
 }
 
-class TrueDarkModePreference extends BooleanPreference {
+final class TrueDarkModePreference extends BooleanPreference {
   const TrueDarkModePreference({bool? val})
       : super(val: val ?? _trueDarkModeDefaultValue);
 
@@ -379,7 +379,7 @@ class TrueDarkModePreference extends BooleanPreference {
   String get subtitle => 'real dark.';
 }
 
-class HapticFeedbackPreference extends BooleanPreference {
+final class HapticFeedbackPreference extends BooleanPreference {
   const HapticFeedbackPreference({bool? val})
       : super(val: val ?? _hapticFeedbackModeDefaultValue);
 
@@ -398,7 +398,7 @@ class HapticFeedbackPreference extends BooleanPreference {
   String get subtitle => '';
 }
 
-class FetchModePreference extends IntPreference {
+final class FetchModePreference extends IntPreference {
   FetchModePreference({int? val}) : super(val: val ?? _fetchModeDefaultValue);
 
   @override
@@ -413,7 +413,7 @@ class FetchModePreference extends IntPreference {
   String get title => 'Default fetch mode';
 }
 
-class CommentsOrderPreference extends IntPreference {
+final class CommentsOrderPreference extends IntPreference {
   CommentsOrderPreference({int? val})
       : super(val: val ?? _commentsOrderDefaultValue);
 
@@ -429,7 +429,7 @@ class CommentsOrderPreference extends IntPreference {
   String get title => 'Default comments order';
 }
 
-class FontPreference extends IntPreference {
+final class FontPreference extends IntPreference {
   FontPreference({int? val}) : super(val: val ?? _fontDefaultValue);
 
   @override
@@ -444,7 +444,7 @@ class FontPreference extends IntPreference {
   String get title => 'Default font';
 }
 
-class FontSizePreference extends IntPreference {
+final class FontSizePreference extends IntPreference {
   FontSizePreference({int? val}) : super(val: val ?? _fontSizeDefaultValue);
 
   @override
@@ -459,7 +459,7 @@ class FontSizePreference extends IntPreference {
   String get title => 'Default font size';
 }
 
-class TabOrderPreference extends IntPreference {
+final class TabOrderPreference extends IntPreference {
   TabOrderPreference({int? val}) : super(val: val ?? _tabOrderDefaultValue);
 
   @override
@@ -474,7 +474,7 @@ class TabOrderPreference extends IntPreference {
   String get title => 'Tab order';
 }
 
-class StoryMarkingModePreference extends IntPreference {
+final class StoryMarkingModePreference extends IntPreference {
   StoryMarkingModePreference({int? val})
       : super(val: val ?? _markStoriesAsReadWhenPreferenceDefaultValue);
 
@@ -490,7 +490,7 @@ class StoryMarkingModePreference extends IntPreference {
   String get title => 'Mark as Read on';
 }
 
-class AppColorPreference extends IntPreference {
+final class AppColorPreference extends IntPreference {
   AppColorPreference({int? val}) : super(val: val ?? _appColorDefaultValue);
 
   @override
@@ -505,7 +505,7 @@ class AppColorPreference extends IntPreference {
   String get title => 'Accent Color';
 }
 
-class TextScaleFactorPreference extends DoublePreference {
+final class TextScaleFactorPreference extends DoublePreference {
   const TextScaleFactorPreference({double? val})
       : super(val: val ?? _textScaleFactorDefaultValue);
 
