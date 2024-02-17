@@ -1,0 +1,4 @@
+enum DisplayDateFormat {
+  timeAgo,
+  date;
+}
