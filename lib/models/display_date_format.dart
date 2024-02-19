@@ -34,11 +34,18 @@ enum DisplayDateFormat {
     }
 
     final DateTime date = DateTime.fromMillisecondsSinceEpoch(updatedTimeStamp);
-    final String defaultLocale = Platform.localeName;
-    final DateFormat formatter = DateFormat(name, defaultLocale).add_Hm();
-    final String dateString = formatter.format(date);
-    _cache[timestamp] = dateString;
-    return dateString;
+
+    if (this == timeAgo) {
+      final String dateString = date.toTimeAgoString();
+      _cache[timestamp] = dateString;
+      return dateString;
+    } else {
+      final String defaultLocale = Platform.localeName;
+      final DateFormat formatter = DateFormat(name, defaultLocale).add_Hm();
+      final String dateString = formatter.format(date);
+      _cache[timestamp] = dateString;
+      return dateString;
+    }
   }
 
   static void clearCache() => _cache.clear();
