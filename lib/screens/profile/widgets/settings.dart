@@ -171,18 +171,18 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                           const Text(
                             'Date time display of comments',
                           ),
-                          DropdownMenu<DisplayDateFormat>(
+                          DropdownMenu<DateDisplayFormat>(
                             initialSelection: preferenceState.displayDateFormat,
-                            dropdownMenuEntries: DisplayDateFormat.values
+                            dropdownMenuEntries: DateDisplayFormat.values
                                 .map(
-                                  (DisplayDateFormat val) =>
-                                      DropdownMenuEntry<DisplayDateFormat>(
+                                  (DateDisplayFormat val) =>
+                                      DropdownMenuEntry<DateDisplayFormat>(
                                     value: val,
                                     label: val.description,
                                   ),
                                 )
                                 .toList(),
-                            onSelected: (DisplayDateFormat? order) {
+                            onSelected: (DateDisplayFormat? order) {
                               if (order != null) {
                                 HapticFeedbackUtil.selection();
                                 context.read<PreferenceCubit>().update(
@@ -190,7 +190,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                                         val: order.index,
                                       ),
                                     );
-                                DisplayDateFormat.clearCache();
+                                DateDisplayFormat.clearCache();
                               }
                             },
                           ),
