@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:hacki/extensions/date_time_extension.dart';
 import 'package:intl/intl.dart';
 
-enum DisplayDateFormat {
+enum DateDisplayFormat {
   timeAgo,
   yMd,
   yMEd,
@@ -25,7 +25,7 @@ enum DisplayDateFormat {
 
   String convertToString(int timestamp) {
     final bool isTimeAgo = this == timeAgo;
-    
+
     if (!isTimeAgo && _cache.containsKey(timestamp)) {
       return _cache[timestamp] ?? 'This is wrong';
     }

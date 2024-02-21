@@ -548,7 +548,7 @@ final class TextScaleFactorPreference extends DoublePreference {
 final class DateFormatPreference extends IntPreference {
   DateFormatPreference({int? val}) : super(val: val ?? _dateFormatDefaultValue);
 
-  static final int _dateFormatDefaultValue = DisplayDateFormat.timeAgo.index;
+  static final int _dateFormatDefaultValue = DateDisplayFormat.timeAgo.index;
 
   @override
   DateFormatPreference copyWith({required int? val}) {

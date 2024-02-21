@@ -119,7 +119,7 @@ class PreferenceState extends Equatable {
   Font get font =>
       Font.values.elementAt(preferences.singleWhereType<FontPreference>().val);
 
-  DisplayDateFormat get displayDateFormat => DisplayDateFormat.values
+  DateDisplayFormat get displayDateFormat => DateDisplayFormat.values
       .elementAt(preferences.singleWhereType<DateFormatPreference>().val);
 
   @override
