@@ -130,5 +130,10 @@ flutter:
         - asset: assets/fonts/exo_2/Exo2-Regular.ttf
         - asset: assets/fonts/exo_2/Exo2-Bold.ttf
           weight: 700
+    - family: AtkinsonHyperlegible
+      fonts:
+        - asset: assets/fonts/atkinson_hyperlegible/AtkinsonHyperlegible-Regular.ttf
+        - asset: assets/fonts/atkinson_hyperlegible/AtkinsonHyperlegible-Bold.ttf
+          weight: 700
 
 

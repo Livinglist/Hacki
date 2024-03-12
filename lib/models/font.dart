@@ -4,7 +4,8 @@ enum Font {
   ubuntu('Ubuntu'),
   ubuntuMono('Ubuntu Mono'),
   notoSerif('Noto Serif', isSerif: true),
-  exo2('Exo 2');
+  exo2('Exo 2'),
+  atkinsonHyperlegible('AtkinsonHyperlegible');
 
   const Font(this.uiLabel, {this.isSerif = false});
 
