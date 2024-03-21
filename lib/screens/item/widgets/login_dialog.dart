@@ -53,6 +53,7 @@ class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
                   controller: usernameController,
                   cursorColor: Theme.of(context).colorScheme.primary,
                   autocorrect: false,
+                  autofillHints: const <String>[AutofillHints.username],
                   decoration: InputDecoration(
                     hintText: 'Username',
                     focusedBorder: UnderlineInputBorder(
@@ -75,6 +76,7 @@ class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
                   cursorColor: Theme.of(context).colorScheme.primary,
                   obscureText: true,
                   autocorrect: false,
+                  autofillHints: const <String>[AutofillHints.password],
                   decoration: InputDecoration(
                     hintText: 'Password',
                     focusedBorder: UnderlineInputBorder(

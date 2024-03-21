@@ -25,16 +25,12 @@ class SubmitCubit extends Cubit<SubmitState> {
     emit(state.copyWith(text: text));
   }
 
-  void onSubmitTapped() {
+  void submit() {
     emit(state.copyWith(status: Status.inProgress));
 
     if (state.title?.isNotEmpty ?? false) {
       _postRepository
-          .submit(
-        title: state.title!,
-        url: state.url,
-        text: state.text,
-      )
+          .submit(title: state.title!, url: state.url, text: state.text)
           .then((bool successful) {
         emit(state.copyWith(status: Status.success));
       }).onError((Object? error, StackTrace stackTrace) {

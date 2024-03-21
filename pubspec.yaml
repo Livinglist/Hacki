@@ -1,11 +1,11 @@
 name: hacki
 description: A Hacker News reader.
-version: 2.7.1+139
+version: 2.7.2+140
 publish_to: none
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
-  flutter: "3.19.0"
+  flutter: "3.19.4"
 
 dependencies:
   adaptive_theme: ^3.2.0
@@ -129,6 +129,11 @@ flutter:
       fonts:
         - asset: assets/fonts/exo_2/Exo2-Regular.ttf
         - asset: assets/fonts/exo_2/Exo2-Bold.ttf
+          weight: 700
+    - family: AtkinsonHyperlegible
+      fonts:
+        - asset: assets/fonts/atkinson_hyperlegible/AtkinsonHyperlegible-Regular.ttf
+        - asset: assets/fonts/atkinson_hyperlegible/AtkinsonHyperlegible-Bold.ttf
           weight: 700
 
 

@@ -56,6 +56,14 @@ class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
                 color: Theme.of(context).colorScheme.onSurface,
               ),
               onPressed: () {
+                // Don't show confirmation dialog if content is empty.
+                if (state.text.isNullOrEmpty &&
+                    state.url.isNullOrEmpty &&
+                    state.title.isNullOrEmpty) {
+                  context.pop();
+                  return;
+                }
+
                 showDialog<bool>(
                   context: context,
                   barrierDismissible: false,
@@ -114,7 +122,36 @@ class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
                     Icons.send,
                     color: Theme.of(context).colorScheme.primary,
                   ),
-                  onPressed: context.read<SubmitCubit>().onSubmitTapped,
+                  onPressed: () {
+                    showDialog<bool>(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Submit?'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => context.pop(false),
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () => context.pop(true),
+                              child: const Text(
+                                'Yes',
+                                style: TextStyle(
+                                  color: Palette.red,
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ).then((bool? value) {
+                      if (value ?? false) {
+                        context.read<SubmitCubit>().submit();
+                      }
+                    });
+                  },
                 )
               else
                 IconButton(
