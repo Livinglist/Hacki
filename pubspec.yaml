@@ -36,7 +36,10 @@ dependencies:
   flutter_local_notifications: ^16.1.0
   flutter_material_color_picker: ^1.2.0
   flutter_secure_storage: ^9.0.0
-  flutter_siri_suggestions: ^2.1.0
+  flutter_siri_suggestions:
+    git:
+      url: https://github.com/Livinglist/flutter_siri_suggestions
+      ref: master
   flutter_slidable: ^3.0.0
   font_awesome_flutter: ^10.3.0
   get_it: ^7.2.0
