@@ -1,0 +1,25 @@
+name: Parser Check
+
+on:
+  push:
+    branches:
+      - "**"
+      - '!master'
+
+jobs:
+  releases:
+    name: Check commit
+    runs-on: macos-latest
+    timeout-minutes: 30
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - name: checkout all the submodules
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - run: submodules/flutter/bin/flutter doctor
+      - run: submodules/flutter/bin/flutter pub get
+      - run: submodules/flutter/bin/flutter test
+      - run: submodules/flutter/bin/dart scripts/parser_verifier.dart -t ${{ secrets.GITHUB_TOKEN }}
