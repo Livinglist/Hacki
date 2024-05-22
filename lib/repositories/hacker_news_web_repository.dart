@@ -99,7 +99,7 @@ class HackerNewsWebRepository {
   static const String _athingComtrSelector =
       '#hnmain > tbody > tr > td > table > tbody > .athing.comtr';
   static const String _commentTextSelector =
-      '''td > table > tbody > tr > td.default > div.comment''';
+      '''td > table > tbody > tr > td.default > div.comment > div.commtext''';
   static const String _commentHeadSelector =
       '''td > table > tbody > tr > td.default > div > span > a''';
   static const String _commentAgeSelector =
