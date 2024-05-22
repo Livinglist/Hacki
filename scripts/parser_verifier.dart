@@ -72,7 +72,7 @@ Again, if the only thing a reporter had to do was read the report to find the fa
 
     if (parsedText != text || true) {
       final Uri url =
-          Uri.parse('https://api.github.com/repos/OWNER/REPO/issues');
+          Uri.parse('https://api.github.com/repos/livinglist/hacki/issues');
       final Response<String> response = await dio.postUri(
         url,
         data: githubIssuePayload,
