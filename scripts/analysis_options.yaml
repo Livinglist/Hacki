@@ -7,8 +7,4 @@ linter:
     omit_local_variable_types: false
     one_member_abstracts: false
     always_specify_types: true
-
-analyzer:
-  exclude:
-    - "submodules/**"
-    - "scripts/**"
+    avoid_print: false

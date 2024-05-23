@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:args/args.dart';
 import 'package:dio/dio.dart';
@@ -33,14 +32,9 @@ Again, if the only thing a reporter had to do was read the report to find the fa
   const int itemId = 11536543;
   final Dio dio = Dio();
   final Uri url = Uri.parse('$itemBaseUrl$itemId');
-  final Options option = Options(
-    headers: headers,
-    persistentConnection: true,
-  );
-  final Response<String> response = await dio.getUri<String>(
-    url,
-    options: option,
-  );
+  final Options option = Options(headers: headers, persistentConnection: true);
+  final Response<String> response =
+      await dio.getUri<String>(url, options: option);
 
   /// Parse the HTML and select all the comment elements.
   final String data = response.data ?? '';
@@ -66,7 +60,7 @@ Again, if the only thing a reporter had to do was read the report to find the fa
       /// Check if an issue with same title already exists.
       final Response<String> response = await dio.getUri<String>(url);
       if (response.data?.contains(issueTitle) ?? false) {
-        log('Issue already exists.');
+        print('Issue already exists.');
         return;
       }
 

@@ -8,3 +8,6 @@ dependencies:
   dio: ^5.0.3
   html: ^0.15.1
   html_unescape: ^2.0.0
+
+dev_dependencies:
+  very_good_analysis: ^5.0.0
