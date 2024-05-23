@@ -32,7 +32,6 @@ Future<void> main(List<String> arguments) async {
     'assignees': ['livinglist'],
     'milestone': 1,
     'labels': ['bug'],
-    'headers': {'X-GitHub-Api-Version': '2022-11-28'}
   };
   const String athingComtrSelector =
       '#hnmain > tbody > tr > td > table > tbody > .athing.comtr';
