@@ -7,7 +7,7 @@ on:
       - '!master'
 
 jobs:
-  releases:
+  commit_check:
     name: Check commit
     runs-on: macos-latest
     timeout-minutes: 30
