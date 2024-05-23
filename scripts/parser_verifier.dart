@@ -12,7 +12,7 @@ Future<void> main(List<String> arguments) async {
   final ArgResults argResults = parser.parse(arguments);
   final String token = argResults.rest.first;
   const String itemBaseUrl = 'https://news.ycombinator.com/item?id=';
-  print('token has Bearer: $token}');
+  print('token has Bearer: ${token.length}');
   const Map<String, String> headers = <String, String>{
     'accept': '*/*',
     'user-agent':
