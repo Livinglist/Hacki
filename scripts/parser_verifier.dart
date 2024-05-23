@@ -7,26 +7,28 @@ import 'package:html/parser.dart';
 import 'package:html_unescape/html_unescape.dart';
 
 Future<void> main(List<String> arguments) async {
+  /// Get the GitHub token from args for so that we can create issues if
+  /// anything doesn't go as expected.
   final ArgParser parser = ArgParser()
     ..addFlag('github-token', negatable: false, abbr: 't');
   final ArgResults argResults = parser.parse(arguments);
   final String token = argResults.rest.first;
-  const String itemBaseUrl = 'https://news.ycombinator.com/item?id=';
-  const Map<String, String> headers = <String, String>{
-    'accept': '*/*',
-    'user-agent':
-        'Mozilla/5.0 (iPhone; CPU iPhone OS 17_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1',
-  };
-  const String athingComtrSelector =
-      '#hnmain > tbody > tr > td > table > tbody > .athing.comtr';
-  const String commentTextSelector =
-      '''td > table > tbody > tr > td.default > div.comment > div.commtext''';
+
+  /// The expected parser result.
   const String text = '''
 What does it say about the world we live in where blogs do more basic journalism than CNN? All that one would have had to do is read the report actually provided.
 
 I don't think I'm being too extreme when I say that, apart from maybe PBS, there is no reputable source of news in America. If you don't believe me, pick a random story, watch it as it gets rewritten a million times through Reuters, then check back on the facts of the story one year later. A news story gets twisted to promote some narrative that will sell papers, and when the facts of the story are finally verified (usually not by the news themselves, but lawyers or courts or whoever), the story is dropped and never reported on again.
 
 Again, if the only thing a reporter had to do was read the report to find the facts of the case to verify what is and isn't true, what the fuck is even the point of a news agency?''';
+
+  /// Get HTML of the thread.
+  const String itemBaseUrl = 'https://news.ycombinator.com/item?id=';
+  const Map<String, String> headers = <String, String>{
+    'accept': '*/*',
+    'user-agent':
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 17_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1',
+  };
   const int itemId = 11536543;
   final Dio dio = Dio();
   final Uri url = Uri.parse('$itemBaseUrl$itemId');
@@ -38,12 +40,19 @@ Again, if the only thing a reporter had to do was read the report to find the fa
     url,
     options: option,
   );
-  final String data = response.data ?? '';
 
+  /// Parse the HTML and select all the comment elements.
+  final String data = response.data ?? '';
   final Document document = parse(data);
+  const String athingComtrSelector =
+      '#hnmain > tbody > tr > td > table > tbody > .athing.comtr';
   final List<Element> elements = document.querySelectorAll(athingComtrSelector);
+
+  /// Verify comment text parser using the first comment element.
   if (elements.isNotEmpty) {
     final Element e = elements.first;
+    const String commentTextSelector =
+        '''td > table > tbody > tr > td.default > div.comment > div.commtext''';
     final Element? cmtTextElement = e.querySelector(commentTextSelector);
     final String parsedText =
         await parseCommentTextHtml(cmtTextElement?.innerHtml ?? '');
@@ -68,6 +77,8 @@ Again, if the only thing a reporter had to do was read the report to find the fa
         ),
       );
     }
+  } else {
+    throw Exception('No comment from Hacker News.');
   }
 }
 
