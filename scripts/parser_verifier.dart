@@ -22,7 +22,7 @@ Future<void> main(List<String> arguments) async {
     'Accept': 'application/vnd.github+json',
     'Authorization': 'Bearer $token',
     'X-GitHub-Api-Version': '2022-11-28',
-    'Content-Type': 'application/x-www-form-urlencoded',
+    'Content-Type': 'application/json',
   };
   const Map<String, dynamic> githubIssuePayload = <String, dynamic>{
     'owner': 'livinglist',
