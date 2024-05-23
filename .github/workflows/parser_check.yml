@@ -11,8 +11,8 @@ jobs:
     name: Check comment parser
     runs-on: macos-latest
     timeout-minutes: 30
-    env:
-      GITHUB_TOKEN: ${{ github.token }}
+    permissions:
+      issues: write
     steps:
       - name: checkout all the submodules
         uses: actions/checkout@v3
