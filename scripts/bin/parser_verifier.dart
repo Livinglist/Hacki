@@ -52,7 +52,7 @@ Again, if the only thing a reporter had to do was read the report to find the fa
     final String parsedText =
         await parseCommentTextHtml(cmtTextElement?.innerHtml ?? '');
 
-    if (parsedText != text) {
+    if (parsedText != text || true) {
       final Uri url =
           Uri.parse('https://api.github.com/repos/livinglist/hacki/issues');
       const String issueTitle = 'Parser check failed.';
