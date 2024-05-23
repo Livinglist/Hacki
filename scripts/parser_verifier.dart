@@ -19,7 +19,7 @@ Future<void> main(List<String> arguments) async {
         'Mozilla/5.0 (iPhone; CPU iPhone OS 17_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1',
   };
   final Map<String, String> githubHeaders = <String, String>{
-    'Accept': 'application/vnd.github+json',
+    //'Accept': 'application/vnd.github+json',
     'Authorization': 'Bearer $token',
     'X-GitHub-Api-Version': '2022-11-28',
     'Content-Type': 'application/json',
@@ -29,9 +29,7 @@ Future<void> main(List<String> arguments) async {
     'repo': 'Hacki',
     'title': 'Found a bug',
     'body': 'I\'m having a problem with this.',
-    'assignees': ['livinglist'],
-    'milestone': 1,
-    'labels': ['bug'],
+    //'labels': ['bug'],
   };
   const String athingComtrSelector =
       '#hnmain > tbody > tr > td > table > tbody > .athing.comtr';
