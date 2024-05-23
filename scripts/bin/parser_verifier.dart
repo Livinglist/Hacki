@@ -72,6 +72,7 @@ Again, if the only thing a reporter had to do was read the report to find the fa
           'Content-Type': 'application/json',
         };
         final Map<String, dynamic> githubIssuePayload = <String, dynamic>{
+          'assignees': <String>['livinglist'],
           'title': issueTitle,
           'body': '''
 | Expected  | Actual |
