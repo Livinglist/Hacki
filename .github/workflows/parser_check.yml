@@ -3,8 +3,9 @@ name: Parser Check
 on:
   push:
     branches:
-      - "**"
-      - '!master'
+      - "master"
+  schedule:
+    - cron: "0 */2 * * *"
 
 jobs:
   parser_check:

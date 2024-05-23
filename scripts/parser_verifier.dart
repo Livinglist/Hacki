@@ -60,13 +60,22 @@ Again, if the only thing a reporter had to do was read the report to find the fa
     if (parsedText != text || true) {
       final Uri url =
           Uri.parse('https://api.github.com/repos/livinglist/hacki/issues');
+      const String issueTitle = 'Parser check failed.';
+
+      /// Check if an issue with same title already exists.
+      final Response<String> response = await dio.getUri<String>(url);
+      if (response.data?.contains(issueTitle) ?? false) {
+        return;
+      }
+
+      /// Create the issue if one does not exist.
       final Map<String, String> githubHeaders = <String, String>{
         'Authorization': 'Bearer $token',
         'X-GitHub-Api-Version': '2022-11-28',
         'Content-Type': 'application/json',
       };
       final Map<String, dynamic> githubIssuePayload = <String, dynamic>{
-        'title': 'Parser check failed.',
+        'title': issueTitle,
         'body': '''
 | Expected  | Actual |
 | ------------- | ------------- |
