@@ -25,8 +25,6 @@ Future<void> main(List<String> arguments) async {
     'Content-Type': 'application/json',
   };
   const Map<String, dynamic> githubIssuePayload = <String, dynamic>{
-    'owner': 'livinglist',
-    'repo': 'Hacki',
     'title': 'Found a bug',
     'body': 'I\'m having a problem with this.',
     //'labels': ['bug'],
