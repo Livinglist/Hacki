@@ -10,15 +10,16 @@ on:
 
 jobs:
   parser_check:
-    name: Check comment text parser
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
       issues: write
-    working-directory: ./scripts
     steps:
       - uses: actions/checkout@v4
       - uses: dart-lang/setup-dart@v1
-      - run: ls
-      - run: dart pub get
-      - run: dart scripts/lib/parser_verifier.dart -t ${{ secrets.GITHUB_TOKEN }}
+      - name: Verify comment text parser
+        working-directory: ./scripts
+        run: |
+          ls
+          dart pub get
+          dart scripts/lib/parser_verifier.dart -t ${{ secrets.GITHUB_TOKEN }}
