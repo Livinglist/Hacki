@@ -11,16 +11,11 @@ on:
 jobs:
   parser_check:
     name: Check comment text parser
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
       issues: write
     steps:
-      - name: checkout all the submodules
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-          fetch-depth: 0
-      - run: submodules/flutter/bin/flutter doctor
-      - run: submodules/flutter/bin/flutter pub get
-      - run: submodules/flutter/bin/dart scripts/parser_verifier.dart -t ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+      - run: dart scripts/parser_verifier.dart -t ${{ secrets.GITHUB_TOKEN }}
