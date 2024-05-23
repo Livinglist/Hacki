@@ -1,9 +1,12 @@
 name: Parser Check
 
 on:
+  # Allow manual builds of this workflow.
+  workflow_dispatch: { }
   push:
     branches:
       - "master"
+  # Run this job every hour.
   schedule:
     - cron: "0 * * * *"
 
