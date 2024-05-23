@@ -90,6 +90,7 @@ dependency_overrides:
   win32: ^5.0.2
 
 dev_dependencies:
+  args: ^2.5.0
   bloc_test: ^9.1.0
   flutter_driver:
     sdk: flutter

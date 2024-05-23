@@ -2,17 +2,17 @@ import 'dart:async';
 
 import 'package:args/args.dart';
 import 'package:dio/dio.dart';
+import 'package:hacki/config/constants.dart';
+import 'package:hacki/repositories/hacker_news_web_repository.dart';
 import 'package:html/dom.dart' hide Comment;
 import 'package:html/parser.dart';
-import 'package:html_unescape/html_unescape.dart';
 
 Future<void> main(List<String> arguments) async {
   final ArgParser parser = ArgParser()
     ..addFlag('github-token', negatable: false, abbr: 't');
   final ArgResults argResults = parser.parse(arguments);
   final String token = argResults.rest.first;
-  const String itemBaseUrl = 'https://news.ycombinator.com/item?id=';
-  print('token has Bearer: ${token.length}');
+  const String itemBaseUrl = Constants.hackerNewsItemLinkPrefix;
   const Map<String, String> headers = <String, String>{
     'accept': '*/*',
     'user-agent':
@@ -27,22 +27,17 @@ Future<void> main(List<String> arguments) async {
   const Map<String, dynamic> githubIssuePayload = <String, dynamic>{
     'owner': 'livinglist',
     'repo': 'Hacki',
-    'title': 'Found a bug',
-    'body': 'I\'m having a problem with this.',
-    'assignees': ['livinglist'],
+    'title': 'Parser error.',
+    'body': '',
+    'assignees': <String>['livinglist'],
     'milestone': 1,
-    'labels': ['bug'],
-    'headers': {'X-GitHub-Api-Version': '2022-11-28'}
+    'labels': <String>['bug'],
+    'headers': <String, String>{'X-GitHub-Api-Version': '2022-11-28'},
   };
   const String athingComtrSelector =
-      '#hnmain > tbody > tr > td > table > tbody > .athing.comtr';
+      HackerNewsWebRepository.athingComtrSelector;
   const String commentTextSelector =
-      '''td > table > tbody > tr > td.default > div.comment > div.commtext''';
-  const String commentHeadSelector =
-      '''td > table > tbody > tr > td.default > div > span > a''';
-  const String commentAgeSelector =
-      '''td > table > tbody > tr > td.default > div > span > span.age''';
-  const String commentIndentSelector = '''td > table > tbody > tr > td.ind''';
+      HackerNewsWebRepository.commentTextSelector;
   const String text = '''
 What does it say about the world we live in where blogs do more basic journalism than CNN? All that one would have had to do is read the report actually provided.
 
@@ -69,54 +64,20 @@ Again, if the only thing a reporter had to do was read the report to find the fa
     final Element e = elements.first;
     final Element? cmtTextElement = e.querySelector(commentTextSelector);
     final String parsedText =
-        await parseCommentTextHtml(cmtTextElement?.innerHtml ?? '');
+        await HackerNewsWebRepository.parseCommentTextHtml(
+      cmtTextElement?.innerHtml ?? '',
+    );
 
     if (parsedText != text || true) {
       final Uri url =
           Uri.parse('https://api.github.com/repos/livinglist/hacki/issues');
-      final Response<String> response = await dio.postUri(
+      await dio.postUri<String>(
         url,
         data: githubIssuePayload,
         options: Options(
           headers: githubHeaders,
         ),
       );
-      print('response is ${response.data}');
     }
   }
-}
-
-Future<String> parseCommentTextHtml(String text) async {
-  return HtmlUnescape()
-      .convert(text)
-      .replaceAllMapped(
-        RegExp(
-          r'\<div class="reply"\>(.*?)\<\/div\>',
-          dotAll: true,
-        ),
-        (Match match) => '',
-      )
-      .replaceAllMapped(
-        RegExp(
-          r'\<span class="(.*?)"\>(.*?)\<\/span\>',
-          dotAll: true,
-        ),
-        (Match match) => '${match[2]}',
-      )
-      .replaceAllMapped(
-        RegExp(
-          r'\<p\>(.*?)\<\/p\>',
-          dotAll: true,
-        ),
-        (Match match) => '\n\n${match[1]}',
-      )
-      .replaceAllMapped(
-        RegExp(r'\<a href=\"(.*?)\".*?\>.*?\<\/a\>'),
-        (Match match) => match[1] ?? '',
-      )
-      .replaceAllMapped(
-        RegExp(r'\<i\>(.*?)\<\/i\>'),
-        (Match match) => '*${match[1]}*',
-      )
-      .trim();
 }
