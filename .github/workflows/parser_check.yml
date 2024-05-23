@@ -3,15 +3,14 @@ name: Parser Check
 on:
   push:
     branches:
-      - "**"
       - "master"
   schedule:
-    - cron: "0 */2 * * *"
+    - cron: "0 * * * *"
 
 jobs:
   parser_check:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 0.5
     permissions:
       issues: write
     steps:
