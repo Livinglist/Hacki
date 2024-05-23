@@ -3,7 +3,6 @@ name: Parser Check
 on:
   push:
     branches:
-      - "**"
       - "master"
   schedule:
     - cron: "0 * * * *"
@@ -18,8 +17,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dart-lang/setup-dart@v1
       - name: Verify comment text parser
-        working-directory: ./scripts/lib
+        working-directory: ./scripts/bin
         run: |
-          ls
           dart pub get
           dart parser_verifier.dart -t ${{ secrets.GITHUB_TOKEN }}
