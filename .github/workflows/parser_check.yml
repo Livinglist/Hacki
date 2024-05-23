@@ -18,8 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dart-lang/setup-dart@v1
-      - run: ls
-      - run: cd scripts/parser_verifier
+      - working-directory: ./scripts/parser_verifier
       - run: ls
       - run: dart pub get
       - run: dart scripts/parser_verifier.dart -t ${{ secrets.GITHUB_TOKEN }}
