@@ -12,32 +12,15 @@ Future<void> main(List<String> arguments) async {
   final ArgResults argResults = parser.parse(arguments);
   final String token = argResults.rest.first;
   const String itemBaseUrl = 'https://news.ycombinator.com/item?id=';
-  print('token has Bearer: ${token.length}');
   const Map<String, String> headers = <String, String>{
     'accept': '*/*',
     'user-agent':
         'Mozilla/5.0 (iPhone; CPU iPhone OS 17_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1',
   };
-  final Map<String, String> githubHeaders = <String, String>{
-    //'Accept': 'application/vnd.github+json',
-    'Authorization': 'Bearer $token',
-    'X-GitHub-Api-Version': '2022-11-28',
-    'Content-Type': 'application/json',
-  };
-  const Map<String, dynamic> githubIssuePayload = <String, dynamic>{
-    'title': 'Found a bug',
-    'body': 'I\'m having a problem with this.',
-    //'labels': ['bug'],
-  };
   const String athingComtrSelector =
       '#hnmain > tbody > tr > td > table > tbody > .athing.comtr';
   const String commentTextSelector =
       '''td > table > tbody > tr > td.default > div.comment > div.commtext''';
-  const String commentHeadSelector =
-      '''td > table > tbody > tr > td.default > div > span > a''';
-  const String commentAgeSelector =
-      '''td > table > tbody > tr > td.default > div > span > span.age''';
-  const String commentIndentSelector = '''td > table > tbody > tr > td.ind''';
   const String text = '''
 What does it say about the world we live in where blogs do more basic journalism than CNN? All that one would have had to do is read the report actually provided.
 
@@ -51,7 +34,6 @@ Again, if the only thing a reporter had to do was read the report to find the fa
     headers: headers,
     persistentConnection: true,
   );
-
   final Response<String> response = await dio.getUri<String>(
     url,
     options: option,
@@ -69,14 +51,22 @@ Again, if the only thing a reporter had to do was read the report to find the fa
     if (parsedText != text || true) {
       final Uri url =
           Uri.parse('https://api.github.com/repos/livinglist/hacki/issues');
-      final Response<String> response = await dio.postUri(
+      final Map<String, String> githubHeaders = <String, String>{
+        'Authorization': 'Bearer $token',
+        'X-GitHub-Api-Version': '2022-11-28',
+        'Content-Type': 'application/json',
+      };
+      final Map<String, dynamic> githubIssuePayload = <String, dynamic>{
+        'title': 'Parser check failed.',
+        'body': 'Expected: $text\nbut value is:\n $parsedText',
+      };
+      await dio.postUri<String>(
         url,
         data: githubIssuePayload,
         options: Options(
           headers: githubHeaders,
         ),
       );
-      print('response is ${response.data}');
     }
   }
 }
