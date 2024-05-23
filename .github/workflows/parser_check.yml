@@ -22,5 +22,4 @@ jobs:
           submodules: recursive
           fetch-depth: 0
       - run: submodules/flutter/bin/flutter doctor
-      - run: submodules/flutter/bin/flutter pub get
       - run: submodules/flutter/bin/dart scripts/parser_verifier.dart -t ${{ secrets.GITHUB_TOKEN }}
