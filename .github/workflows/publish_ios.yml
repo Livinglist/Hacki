@@ -1,9 +1,8 @@
 name: Publish (iOS)
 
 on:
-  # Allow manual builds of this workflow
+  # Allow manual builds of this workflow.
   workflow_dispatch: {}
-  # Run the workflow whenever a new tag named 'v*' is pushed
   push:
     branches:
       - master

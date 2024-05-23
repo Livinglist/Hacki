@@ -1,0 +1,13 @@
+name: parser_verifier
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  args: ^2.5.0
+  dio: ^5.0.3
+  html: ^0.15.1
+  html_unescape: ^2.0.0
+
+dev_dependencies:
+  very_good_analysis: ^5.0.0

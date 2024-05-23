@@ -1,0 +1,26 @@
+name: Parser Check
+
+on:
+  # Allow manual builds of this workflow.
+  workflow_dispatch: { }
+  push:
+    branches:
+      - "master"
+  # Run this job every hour.
+  schedule:
+    - cron: "0 * * * *"
+
+jobs:
+  parser_check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 0.5
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+      - name: Verify comment text parser
+        working-directory: ./scripts/bin
+        run: |
+          dart pub get
+          dart parser_verifier.dart -t ${{ secrets.GITHUB_TOKEN }}
