@@ -18,8 +18,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dart-lang/setup-dart@v1
       - name: Verify comment text parser
-        working-directory: ./scripts
+        working-directory: ./scripts/lib
         run: |
           ls
           dart pub get
-          dart scripts/lib/parser_verifier.dart -t ${{ secrets.GITHUB_TOKEN }}
+          dart parser_verifier.dart -t ${{ secrets.GITHUB_TOKEN }}
