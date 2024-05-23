@@ -4,9 +4,6 @@ on:
   # Allow manual builds of this workflow.
   workflow_dispatch: { }
   # Run this job every hour.
-  push:
-    branch:
-      - "**"
   schedule:
     - cron: "0 * * * *"
 
