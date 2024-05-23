@@ -96,15 +96,15 @@ class HackerNewsWebRepository {
   }
 
   static const String _itemBaseUrl = 'https://news.ycombinator.com/item?id=';
-  static const String athingComtrSelector =
+  static const String _athingComtrSelector =
       '#hnmain > tbody > tr > td > table > tbody > .athing.comtr';
-  static const String commentTextSelector =
+  static const String _commentTextSelector =
       '''td > table > tbody > tr > td.default > div.comment > div.commtext''';
-  static const String commentHeadSelector =
+  static const String _commentHeadSelector =
       '''td > table > tbody > tr > td.default > div > span > a''';
-  static const String commentAgeSelector =
+  static const String _commentAgeSelector =
       '''td > table > tbody > tr > td.default > div > span > span.age''';
-  static const String commentIndentSelector =
+  static const String _commentIndentSelector =
       '''td > table > tbody > tr > td.ind''';
 
   Stream<Comment> fetchCommentsStream(Item item) async* {
@@ -136,7 +136,7 @@ class HackerNewsWebRepository {
 
         final Document document = parse(data);
         final List<Element> elements =
-            document.querySelectorAll(athingComtrSelector);
+            document.querySelectorAll(_athingComtrSelector);
         return elements;
       } on DioException catch (e) {
         if (e.response?.statusCode == HttpStatus.forbidden) {
@@ -165,20 +165,20 @@ class HackerNewsWebRepository {
 
         /// Get comment text.
         final Element? cmtTextElement =
-            element.querySelector(commentTextSelector);
+            element.querySelector(_commentTextSelector);
         final String parsedText = await compute(
-          parseCommentTextHtml,
+          _parseCommentTextHtml,
           cmtTextElement?.innerHtml ?? '',
         );
 
         /// Get comment author.
         final Element? cmtHeadElement =
-            element.querySelector(commentHeadSelector);
+            element.querySelector(_commentHeadSelector);
         final String? cmtAuthor = cmtHeadElement?.text;
 
         /// Get comment age.
         final Element? cmtAgeElement =
-            element.querySelector(commentAgeSelector);
+            element.querySelector(_commentAgeSelector);
         final String? ageString = cmtAgeElement?.attributes['title'];
 
         final int? timestamp = ageString == null
@@ -189,7 +189,7 @@ class HackerNewsWebRepository {
 
         /// Get comment indent.
         final Element? cmtIndentElement =
-            element.querySelector(commentIndentSelector);
+            element.querySelector(_commentIndentSelector);
         final String? indentString = cmtIndentElement?.attributes['indent'];
         final int indent =
             indentString == null ? 0 : (int.tryParse(indentString) ?? 0);
@@ -250,7 +250,7 @@ class HackerNewsWebRepository {
     return status == ConnectivityResult.wifi;
   }
 
-  static Future<String> parseCommentTextHtml(String text) async {
+  static Future<String> _parseCommentTextHtml(String text) async {
     return HtmlUnescape()
         .convert(text)
         .replaceAllMapped(
