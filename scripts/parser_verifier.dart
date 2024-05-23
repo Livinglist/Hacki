@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:args/args.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/rendering.dart';
 import 'package:html/dom.dart' hide Comment;
 import 'package:html/parser.dart';
 import 'package:html_unescape/html_unescape.dart';
@@ -65,6 +66,7 @@ Again, if the only thing a reporter had to do was read the report to find the fa
       /// Check if an issue with same title already exists.
       final Response<String> response = await dio.getUri<String>(url);
       if (response.data?.contains(issueTitle) ?? false) {
+        debugPrint('Issue already exists.');
         return;
       }
 
