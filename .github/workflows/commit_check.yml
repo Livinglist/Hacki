@@ -5,11 +5,6 @@ on:
     branches:
       - "**"
       - '!master'
-    paths:
-      - lib/**
-      - pubspec.lock
-      - pubspec.yaml
-      - submodules/**
 
 jobs:
   commit_check:
