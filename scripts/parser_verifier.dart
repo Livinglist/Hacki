@@ -58,7 +58,7 @@ Again, if the only thing a reporter had to do was read the report to find the fa
       };
       final Map<String, dynamic> githubIssuePayload = <String, dynamic>{
         'title': 'Parser check failed.',
-        'body': 'Expected: $text\nbut value is:\n $parsedText',
+        'body': 'Expected:\n```$text```\nbut value is:\n```$parsedText```',
       };
       await dio.postUri<String>(
         url,
