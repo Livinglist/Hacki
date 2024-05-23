@@ -6,6 +6,11 @@ on:
   push:
     branches:
       - master
+    paths:
+      - lib/**
+      - pubspec.lock
+      - pubspec.yaml
+      - submodules/**
 
 jobs:
   build_and_publish:
