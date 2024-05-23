@@ -62,28 +62,34 @@ Again, if the only thing a reporter had to do was read the report to find the fa
       if (response.data?.contains(issueTitle) ?? false) {
         print('Issue already exists.');
         return;
-      }
+      } else {
+        print('Diff detected, creating issue...');
 
-      /// Create the issue if one does not exist.
-      final Map<String, String> githubHeaders = <String, String>{
-        'Authorization': 'Bearer $token',
-        'X-GitHub-Api-Version': '2022-11-28',
-        'Content-Type': 'application/json',
-      };
-      final Map<String, dynamic> githubIssuePayload = <String, dynamic>{
-        'title': issueTitle,
-        'body': '''
+        /// Create the issue if one does not exist.
+        final Map<String, String> githubHeaders = <String, String>{
+          'Authorization': 'Bearer $token',
+          'X-GitHub-Api-Version': '2022-11-28',
+          'Content-Type': 'application/json',
+        };
+        final Map<String, dynamic> githubIssuePayload = <String, dynamic>{
+          'title': issueTitle,
+          'body': '''
 | Expected  | Actual |
 | ------------- | ------------- |
 | ${text.replaceAll('\n', '<br>')} | ${parsedText.replaceAll('\n', '<br>')} |''',
-      };
-      await dio.postUri<String>(
-        url,
-        data: githubIssuePayload,
-        options: Options(
-          headers: githubHeaders,
-        ),
-      );
+        };
+        await dio.postUri<String>(
+          url,
+          data: githubIssuePayload,
+          options: Options(
+            headers: githubHeaders,
+          ),
+        );
+        print('Issue created.');
+      }
+    } else {
+      print('Expected:\n$text\n');
+      print('Actual:\n$parsedText\n');
     }
   } else {
     throw Exception('No comment from Hacker News.');
