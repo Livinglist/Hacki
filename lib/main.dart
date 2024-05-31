@@ -290,9 +290,6 @@ class HackiApp extends StatelessWidget {
                     brightness:
                         isDarkModeEnabled ? Brightness.dark : Brightness.light,
                     seedColor: state.appColor,
-                    surface: isDarkModeEnabled && state.trueDarkModeEnabled
-                        ? Palette.black
-                        : null,
                   );
                   return FeatureDiscovery(
                     child: MediaQuery(
@@ -309,6 +306,10 @@ class HackiApp extends StatelessWidget {
                         theme: ThemeData(
                           colorScheme: colorScheme,
                           fontFamily: state.font.name,
+                          scaffoldBackgroundColor:
+                              isDarkModeEnabled && state.trueDarkModeEnabled
+                                  ? Palette.black
+                                  : null,
                           dividerTheme: DividerThemeData(
                             color: Palette.grey.withOpacity(0.2),
                           ),

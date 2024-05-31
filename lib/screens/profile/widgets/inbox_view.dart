@@ -133,6 +133,9 @@ class InboxView extends StatelessWidget {
                         ),
                       ),
                     ),
+                    const Divider(
+                      height: Dimens.zero,
+                    ),
                   ];
                 }).expand((List<Widget> element) => element),
                 const SizedBox(
