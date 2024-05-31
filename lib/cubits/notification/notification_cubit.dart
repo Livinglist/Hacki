@@ -253,12 +253,24 @@ class NotificationCubit extends Cubit<NotificationState> {
     Comment comment, {
     void Function((Story, List<Comment>)? res)? then,
   }) {
-    emit(state.copyWith(commentFetchingStatus: Status.inProgress));
+    if (state.commentFetchingStatus == Status.inProgress) return;
+
+    emit(
+      state.copyWith(
+        commentFetchingStatus: Status.inProgress,
+        tappedCommentId: comment.id,
+      ),
+    );
+
     locator
         .get<HackerNewsRepository>()
         .fetchParentStoryWithComments(id: comment.parent)
         .then(((Story, List<Comment>)? res) {
-      emit(state.copyWith(commentFetchingStatus: Status.success));
+      emit(
+        state.copyWith(
+          commentFetchingStatus: Status.success,
+        ),
+      );
       then?.call(res);
     });
   }

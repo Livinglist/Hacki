@@ -18,13 +18,15 @@ class CustomChip extends StatelessWidget {
     return FilterChip(
       shadowColor: Palette.transparent,
       selectedShadowColor: Palette.transparent,
-      backgroundColor: Palette.transparent,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       side: selected
           ? BorderSide(color: Theme.of(context).colorScheme.primary)
           : BorderSide(color: Theme.of(context).colorScheme.onSurface),
       label: Text(label),
       labelStyle: TextStyle(
-        color: selected ? Theme.of(context).colorScheme.onPrimary : null,
+        color: selected
+            ? Theme.of(context).colorScheme.onPrimary
+            : Theme.of(context).colorScheme.onSurface,
       ),
       checkmarkColor: selected ? Theme.of(context).colorScheme.onPrimary : null,
       selected: selected,

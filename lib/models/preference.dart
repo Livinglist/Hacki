@@ -19,7 +19,7 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
   static final List<Preference<dynamic>> allPreferences =
       UnmodifiableListView<Preference<dynamic>>(
     <Preference<dynamic>>[
-// Order of these preferences does not matter.
+      /// Order of these preferences does not matter.
       FetchModePreference(),
       CommentsOrderPreference(),
       FontPreference(),
@@ -29,14 +29,17 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       AppColorPreference(),
       DateFormatPreference(),
       const TextScaleFactorPreference(),
-// Order of items below matters and
-// reflects the order on settings screen.
+
+      /// Order of items below matters and
+      /// reflects the order on settings screen.
       const DisplayModePreference(),
       const MetadataModePreference(),
       const StoryUrlModePreference(),
-// Divider.
+
+      /// Divider.
       const MarkReadStoriesModePreference(),
-// Divider.
+
+      /// Divider.
       const NotificationModePreference(),
       const AutoScrollModePreference(),
       const CollapseModePreference(),
