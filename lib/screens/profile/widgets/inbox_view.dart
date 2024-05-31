@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
+import 'package:hacki/cubits/notification/notification_cubit.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
@@ -35,6 +37,9 @@ class InboxView extends StatelessWidget {
             onPressed: onMarkAllAsReadTapped,
             child: const Text('Mark all as read'),
           ),
+        if (context.read<NotificationCubit>().state.commentFetchingStatus ==
+            Status.inProgress)
+          const LinearProgressIndicator(),
         Expanded(
           child: SmartRefresher(
             enablePullUp: true,
@@ -127,9 +132,6 @@ class InboxView extends StatelessWidget {
                           ),
                         ),
                       ),
-                    ),
-                    const Divider(
-                      height: Dimens.zero,
                     ),
                   ];
                 }).expand((List<Widget> element) => element),

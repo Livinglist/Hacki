@@ -5,11 +5,9 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
-import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
-import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/profile/models/models.dart';
 import 'package:hacki/screens/profile/widgets/widgets.dart';
 import 'package:hacki/screens/screens.dart';
@@ -417,27 +415,27 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   void onCommentTapped(Comment comment, {VoidCallback? then}) {
     throttle.run(() {
-      locator
-          .get<HackerNewsRepository>()
-          .fetchParentStoryWithComments(id: comment.parent)
-          .then(((Story, List<Comment>)? res) {
-        if (res != null && mounted) {
-          final Story parent = res.$1;
-          final List<Comment> children = res.$2;
-          goToItemScreen(
-            args: ItemScreenArgs(
-              item: parent,
-              targetComments: children.isEmpty
-                  ? <Comment>[comment]
-                  : <Comment>[
-                      ...children,
-                      comment.copyWith(level: children.length),
-                    ],
-              onlyShowTargetComment: true,
-            ),
-          )?.then((_) => then?.call());
-        }
-      });
+      context.read<NotificationCubit>().onCommentTapped(
+        comment,
+        then: ((Story, List<Comment>)? res) {
+          if (res != null && mounted) {
+            final Story parent = res.$1;
+            final List<Comment> children = res.$2;
+            goToItemScreen(
+              args: ItemScreenArgs(
+                item: parent,
+                targetComments: children.isEmpty
+                    ? <Comment>[comment]
+                    : <Comment>[
+                        ...children,
+                        comment.copyWith(level: children.length),
+                      ],
+                onlyShowTargetComment: true,
+              ),
+            )?.then((_) => then?.call());
+          }
+        },
+      );
     });
   }
 

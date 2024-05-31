@@ -128,10 +128,10 @@ class _StoriesListViewState extends State<StoriesListView>
                     child: OutlinedButton(
                       onPressed: loadMoreStories,
                       style: ButtonStyle(
-                        minimumSize: MaterialStateProperty.all(
+                        minimumSize: WidgetStateProperty.all(
                           const Size(double.infinity, Dimens.pt48),
                         ),
-                        foregroundColor: MaterialStateColor.resolveWith(
+                        foregroundColor: WidgetStateColor.resolveWith(
                           (_) => Theme.of(context).colorScheme.onSurface,
                         ),
                       ),

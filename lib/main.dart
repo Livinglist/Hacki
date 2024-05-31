@@ -290,7 +290,7 @@ class HackiApp extends StatelessWidget {
                     brightness:
                         isDarkModeEnabled ? Brightness.dark : Brightness.light,
                     seedColor: state.appColor,
-                    background: isDarkModeEnabled && state.trueDarkModeEnabled
+                    surface: isDarkModeEnabled && state.trueDarkModeEnabled
                         ? Palette.black
                         : null,
                   );
@@ -313,9 +313,9 @@ class HackiApp extends StatelessWidget {
                             color: Palette.grey.withOpacity(0.2),
                           ),
                           switchTheme: SwitchThemeData(
-                            trackColor: MaterialStateProperty.resolveWith(
-                              (Set<MaterialState> states) {
-                                if (states.contains(MaterialState.selected)) {
+                            trackColor: WidgetStateProperty.resolveWith(
+                              (Set<WidgetState> states) {
+                                if (states.contains(WidgetState.selected)) {
                                   return colorScheme.primary.withOpacity(0.6);
                                 } else {
                                   return Palette.grey.withOpacity(0.2);
@@ -345,7 +345,7 @@ class HackiApp extends StatelessWidget {
                           ),
                           outlinedButtonTheme: OutlinedButtonThemeData(
                             style: ButtonStyle(
-                              side: MaterialStateBorderSide.resolveWith(
+                              side: WidgetStateBorderSide.resolveWith(
                                 (_) => const BorderSide(
                                   color: Palette.grey,
                                 ),

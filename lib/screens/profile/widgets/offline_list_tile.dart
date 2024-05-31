@@ -91,8 +91,10 @@ class OfflineListTile extends StatelessWidget {
                 }
               });
             } else {
-              Connectivity().checkConnectivity().then((ConnectivityResult res) {
-                if (res != ConnectivityResult.none) {
+              Connectivity()
+                  .checkConnectivity()
+                  .then((List<ConnectivityResult> res) {
+                if (!res.contains(ConnectivityResult.none)) {
                   showDialog<bool>(
                     context: context,
                     builder: (BuildContext context) => AlertDialog(

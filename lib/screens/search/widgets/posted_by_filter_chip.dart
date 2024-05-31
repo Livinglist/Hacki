@@ -76,7 +76,7 @@ class PostedByFilterChip extends StatelessWidget {
                     ),
                   ),
                   TextButton(
-                    onPressed: () => context.pop(null),
+                    onPressed: () => context.pop(),
                     child: const Text(
                       'Clear',
                     ),
@@ -87,7 +87,7 @@ class PostedByFilterChip extends StatelessWidget {
                       context.pop(text.isEmpty ? null : text);
                     },
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(
+                      backgroundColor: WidgetStateProperty.all(
                         Theme.of(context).colorScheme.primary,
                       ),
                     ),

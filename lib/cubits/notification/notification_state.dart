@@ -8,6 +8,7 @@ class NotificationState extends Equatable {
     required this.currentPage,
     required this.offset,
     required this.status,
+    required this.commentFetchingStatus,
   });
 
   NotificationState.init()
@@ -16,7 +17,8 @@ class NotificationState extends Equatable {
         allCommentsIds = <int>[],
         currentPage = 0,
         offset = 0,
-        status = Status.idle;
+        status = Status.idle,
+        commentFetchingStatus = Status.idle;
 
   final List<Comment> comments;
   final List<int> allCommentsIds;
@@ -24,6 +26,7 @@ class NotificationState extends Equatable {
   final int currentPage;
   final int offset;
   final Status status;
+  final Status commentFetchingStatus;
 
   NotificationState copyWith({
     List<Comment>? comments,
@@ -32,6 +35,7 @@ class NotificationState extends Equatable {
     int? currentPage,
     int? offset,
     Status? status,
+    Status? commentFetchingStatus,
   }) {
     return NotificationState(
       comments: comments ?? this.comments,
@@ -40,6 +44,8 @@ class NotificationState extends Equatable {
       currentPage: currentPage ?? this.currentPage,
       offset: offset ?? this.offset,
       status: status ?? this.status,
+      commentFetchingStatus:
+          commentFetchingStatus ?? this.commentFetchingStatus,
     );
   }
 
@@ -51,6 +57,7 @@ class NotificationState extends Equatable {
       currentPage: currentPage,
       offset: offset,
       status: status,
+      commentFetchingStatus: commentFetchingStatus,
     );
   }
 
@@ -65,6 +72,7 @@ class NotificationState extends Equatable {
       currentPage: currentPage,
       offset: offset + 1,
       status: status,
+      commentFetchingStatus: commentFetchingStatus,
     );
   }
 
@@ -73,6 +81,7 @@ class NotificationState extends Equatable {
         currentPage,
         offset,
         status,
+        commentFetchingStatus,
         comments,
         unreadCommentsIds,
         allCommentsIds,
