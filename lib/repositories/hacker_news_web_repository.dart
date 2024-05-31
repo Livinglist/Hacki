@@ -246,8 +246,9 @@ class HackerNewsWebRepository {
   }
 
   static Future<bool> get _isOnWifi async {
-    final ConnectivityResult status = await Connectivity().checkConnectivity();
-    return status == ConnectivityResult.wifi;
+    final List<ConnectivityResult> status =
+        await Connectivity().checkConnectivity();
+    return status.contains(ConnectivityResult.wifi);
   }
 
   static Future<String> _parseCommentTextHtml(String text) async {

@@ -184,7 +184,7 @@ class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
                         }
                       },
                       style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
+                        backgroundColor: WidgetStateProperty.all(
                           state.agreedToEULA
                               ? Theme.of(context).colorScheme.primary
                               : Palette.grey,

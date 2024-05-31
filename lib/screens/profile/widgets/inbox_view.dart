@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
+import 'package:hacki/cubits/notification/notification_cubit.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
@@ -69,64 +71,79 @@ class InboxView extends StatelessWidget {
             child: ListView(
               children: <Widget>[
                 ...comments.map((Comment e) {
+                  final NotificationState state =
+                      context.read<NotificationCubit>().state;
                   return <Widget>[
-                    FadeIn(
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          left: Dimens.pt6,
-                        ),
-                        child: InkWell(
-                          onTap: () => onCommentTapped(e),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: Dimens.pt8,
-                              horizontal: Dimens.pt6,
+                    Stack(
+                      children: <Widget>[
+                        if (state.commentFetchingStatus == Status.inProgress &&
+                            state.tappedCommentId == e.id)
+                          Positioned(
+                            left: Dimens.zero,
+                            right: Dimens.zero,
+                            top: Dimens.zero,
+                            bottom: Dimens.zero,
+                            child: LinearProgressIndicator(
+                              color: Theme.of(context)
+                                  .primaryColor
+                                  .withOpacity(0.1),
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Row(
-                                  children: <Widget>[
-                                    Text(
-                                      '''${e.timeAgo} from ${e.by}:''',
-                                      style: TextStyle(
-                                        color: Theme.of(context).metadataColor,
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      width: Dimens.pt12,
-                                    ),
-                                  ],
-                                ),
-                                Linkify(
-                                  text: e.text,
-                                  style: TextStyle(
-                                    color: unreadCommentsIds.contains(e.id)
-                                        ? Theme.of(context)
-                                            .colorScheme
-                                            .onSurface
-                                        : Theme.of(context).readGrey,
-                                    fontSize: TextDimens.pt16,
-                                  ),
-                                  linkStyle: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .primary
-                                        .withOpacity(
-                                          unreadCommentsIds.contains(e.id)
-                                              ? 1
-                                              : 0.6,
+                          ),
+                        FadeIn(
+                          child: InkWell(
+                            onTap: () => onCommentTapped(e),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: Dimens.pt8,
+                                horizontal: Dimens.pt12,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Row(
+                                    children: <Widget>[
+                                      Text(
+                                        '''${e.timeAgo} from ${e.by}:''',
+                                        style: TextStyle(
+                                          color:
+                                              Theme.of(context).metadataColor,
                                         ),
+                                      ),
+                                      const SizedBox(
+                                        width: Dimens.pt12,
+                                      ),
+                                    ],
                                   ),
-                                  maxLines: 4,
-                                  onOpen: (LinkableElement link) =>
-                                      LinkUtil.launch(link.url, context),
-                                ),
-                              ],
+                                  Linkify(
+                                    text: e.text,
+                                    style: TextStyle(
+                                      color: unreadCommentsIds.contains(e.id)
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .onSurface
+                                          : Theme.of(context).readGrey,
+                                      fontSize: TextDimens.pt16,
+                                    ),
+                                    linkStyle: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary
+                                          .withOpacity(
+                                            unreadCommentsIds.contains(e.id)
+                                                ? 1
+                                                : 0.6,
+                                          ),
+                                    ),
+                                    maxLines: 4,
+                                    onOpen: (LinkableElement link) =>
+                                        LinkUtil.launch(link.url, context),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                     const Divider(
                       height: Dimens.zero,
