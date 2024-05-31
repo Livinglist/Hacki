@@ -50,7 +50,7 @@ class FavCubit extends Cubit<FavState> {
       _preferenceRepository.favList(of: username).then((List<int> favIds) {
         emit(
           state.copyWith(
-            favIds: favIds,
+            favIds: LinkedHashSet<int>.from(favIds).toList(),
             favItems: <Item>[],
             currentPage: 0,
           ),
