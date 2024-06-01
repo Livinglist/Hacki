@@ -1,0 +1,7 @@
+{
+  "athingComtrSelector": "#hnmain > tbody > tr > td > table > tbody > .athing.comtr",
+  "commentTextSelector": "td > table > tbody > tr > td.default > div.comment > div.commtext",
+  "commentHeadSelector": "td > table > tbody > tr > td.default > div > span > a",
+  "commentAgeSelector": "td > table > tbody > tr > td.default > div > span > span.age",
+  "commentIndentSelector": "td > table > tbody > tr > td.ind"
+}

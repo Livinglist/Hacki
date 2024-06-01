@@ -6,6 +6,8 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/config/locator.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:html/dom.dart' hide Comment;
@@ -15,6 +17,7 @@ import 'package:html_unescape/html_unescape.dart';
 /// For fetching anything that cannot be fetched through Hacker News API.
 class HackerNewsWebRepository {
   HackerNewsWebRepository({
+    RemoteConfigCubit? remoteConfigCubit,
     Dio? dioWithCache,
     Dio? dio,
   })  : _dio = dio ?? Dio(),
@@ -24,10 +27,13 @@ class HackerNewsWebRepository {
               if (kDebugMode) LoggerInterceptor(),
               CacheInterceptor(),
             ],
-          );
+          ),
+        _remoteConfigCubit =
+            remoteConfigCubit ?? locator.get<RemoteConfigCubit>();
 
   final Dio _dioWithCache;
   final Dio _dio;
+  final RemoteConfigCubit _remoteConfigCubit;
 
   static const Map<String, String> _headers = <String, String>{
     'accept': '*/*',

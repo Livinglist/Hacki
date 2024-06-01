@@ -13,7 +13,9 @@ class TabCubit extends Cubit<TabState> {
     Logger? logger,
   })  : _preferenceCubit = preferenceCubit,
         _logger = logger ?? locator.get<Logger>(),
-        super(TabState.init());
+        super(TabState.init()) {
+    init();
+  }
 
   final PreferenceCubit _preferenceCubit;
   final Logger _logger;

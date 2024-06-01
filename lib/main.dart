@@ -162,6 +162,9 @@ class HackiApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: <BlocProvider<dynamic>>[
+        BlocProvider<RemoteConfigCubit>.value(
+          value: locator.get<RemoteConfigCubit>(),
+        ),
         BlocProvider<PreferenceCubit>(
           lazy: false,
           create: (BuildContext context) => PreferenceCubit(),
@@ -217,7 +220,7 @@ class HackiApp extends StatelessWidget {
         ),
         BlocProvider<ReminderCubit>(
           lazy: false,
-          create: (BuildContext context) => ReminderCubit()..init(),
+          create: (BuildContext context) => ReminderCubit(),
         ),
         BlocProvider<PostCubit>(
           lazy: false,
@@ -230,7 +233,7 @@ class HackiApp extends StatelessWidget {
         BlocProvider<TabCubit>(
           create: (BuildContext context) => TabCubit(
             preferenceCubit: context.read<PreferenceCubit>(),
-          )..init(),
+          ),
         ),
       ],
       child: BlocConsumer<PreferenceCubit, PreferenceState>(
