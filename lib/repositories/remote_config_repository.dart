@@ -9,7 +9,7 @@ class RemoteConfigRepository {
 
   Future<Map<String, dynamic>> fetchRemoteConfig() async {
     final Response<dynamic> response = await _dio.get(
-      'https://raw.githubusercontent.com/Livinglist/Hacki/jf/simple-tile-fix/assets/remote-config.json',
+      'https://raw.githubusercontent.com/Livinglist/Hacki/master/assets/remote-config.json',
     );
     final String data = response.data as String? ?? '';
     final Map<String, dynamic> json = jsonDecode(data) as Map<String, dynamic>;
