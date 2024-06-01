@@ -54,6 +54,13 @@ Future<void> main({bool testing = false}) async {
   final String tempPath = tempDir.path;
   Hive.init(tempPath);
 
+  final HydratedStorage storage = await HydratedStorage.build(
+    storageDirectory: kIsWeb
+        ? HydratedStorage.webStorageDirectory
+        : await getTemporaryDirectory(),
+  );
+  HydratedBloc.storage = storage;
+
   await setUpLocator();
 
   EquatableConfig.stringify = true;
@@ -65,12 +72,6 @@ Future<void> main({bool testing = false}) async {
           stackTrace: details.stack,
         );
   };
-
-  final HydratedStorage storage = await HydratedStorage.build(
-    storageDirectory: kIsWeb
-        ? HydratedStorage.webStorageDirectory
-        : await getTemporaryDirectory(),
-  );
 
   if (Platform.isIOS) {
     unawaited(
@@ -139,8 +140,6 @@ Future<void> main({bool testing = false}) async {
   // Uncomment this line to log events from bloc/cubit.
   // Bloc.observer = CustomBlocObserver();
 
-  HydratedBloc.storage = storage;
-
   VisibilityDetectorController.instance.updateInterval = AppDurations.ms200;
 
   runApp(
@@ -162,6 +161,9 @@ class HackiApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: <BlocProvider<dynamic>>[
+        BlocProvider<RemoteConfigCubit>.value(
+          value: locator.get<RemoteConfigCubit>(),
+        ),
         BlocProvider<PreferenceCubit>(
           lazy: false,
           create: (BuildContext context) => PreferenceCubit(),
@@ -217,7 +219,7 @@ class HackiApp extends StatelessWidget {
         ),
         BlocProvider<ReminderCubit>(
           lazy: false,
-          create: (BuildContext context) => ReminderCubit()..init(),
+          create: (BuildContext context) => ReminderCubit(),
         ),
         BlocProvider<PostCubit>(
           lazy: false,
@@ -230,7 +232,7 @@ class HackiApp extends StatelessWidget {
         BlocProvider<TabCubit>(
           create: (BuildContext context) => TabCubit(
             preferenceCubit: context.read<PreferenceCubit>(),
-          )..init(),
+          ),
         ),
       ],
       child: BlocConsumer<PreferenceCubit, PreferenceState>(

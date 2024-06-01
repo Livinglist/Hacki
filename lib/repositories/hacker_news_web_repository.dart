@@ -6,6 +6,8 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/config/locator.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:html/dom.dart' hide Comment;
@@ -15,6 +17,7 @@ import 'package:html_unescape/html_unescape.dart';
 /// For fetching anything that cannot be fetched through Hacker News API.
 class HackerNewsWebRepository {
   HackerNewsWebRepository({
+    RemoteConfigCubit? remoteConfigCubit,
     Dio? dioWithCache,
     Dio? dio,
   })  : _dio = dio ?? Dio(),
@@ -24,10 +27,13 @@ class HackerNewsWebRepository {
               if (kDebugMode) LoggerInterceptor(),
               CacheInterceptor(),
             ],
-          );
+          ),
+        _remoteConfigCubit =
+            remoteConfigCubit ?? locator.get<RemoteConfigCubit>();
 
   final Dio _dioWithCache;
   final Dio _dio;
+  final RemoteConfigCubit _remoteConfigCubit;
 
   static const Map<String, String> _headers = <String, String>{
     'accept': '*/*',
@@ -96,16 +102,20 @@ class HackerNewsWebRepository {
   }
 
   static const String _itemBaseUrl = 'https://news.ycombinator.com/item?id=';
-  static const String _athingComtrSelector =
-      '#hnmain > tbody > tr > td > table > tbody > .athing.comtr';
-  static const String _commentTextSelector =
-      '''td > table > tbody > tr > td.default > div.comment > div.commtext''';
-  static const String _commentHeadSelector =
-      '''td > table > tbody > tr > td.default > div > span > a''';
-  static const String _commentAgeSelector =
-      '''td > table > tbody > tr > td.default > div > span > span.age''';
-  static const String _commentIndentSelector =
-      '''td > table > tbody > tr > td.ind''';
+
+  String get _athingComtrSelector =>
+      _remoteConfigCubit.state.athingComtrSelector;
+
+  String get _commentTextSelector =>
+      _remoteConfigCubit.state.commentTextSelector;
+
+  String get _commentHeadSelector =>
+      _remoteConfigCubit.state.commentHeadSelector;
+
+  String get _commentAgeSelector => _remoteConfigCubit.state.commentAgeSelector;
+
+  String get _commentIndentSelector =>
+      _remoteConfigCubit.state.commentIndentSelector;
 
   Stream<Comment> fetchCommentsStream(Item item) async* {
     final bool isOnWifi = await _isOnWifi;

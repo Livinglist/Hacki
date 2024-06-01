@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hacki/config/custom_log_filter.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
@@ -24,6 +25,8 @@ Future<void> setUpLocator() async {
       ),
     )
     ..registerSingleton<SembastRepository>(SembastRepository())
+    ..registerSingleton<RemoteConfigRepository>(RemoteConfigRepository())
+    ..registerSingleton<RemoteConfigCubit>(RemoteConfigCubit())
     ..registerSingleton<HackerNewsRepository>(HackerNewsRepository())
     ..registerSingleton<HackerNewsWebRepository>(HackerNewsWebRepository())
     ..registerSingleton<PreferenceRepository>(PreferenceRepository())

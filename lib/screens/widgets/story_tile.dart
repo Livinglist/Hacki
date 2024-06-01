@@ -187,7 +187,7 @@ class StoryTile extends StatelessWidget {
                     ],
                   ),
                 const SizedBox(
-                  height: Dimens.pt8,
+                  height: Dimens.pt14,
                 ),
               ],
             ),

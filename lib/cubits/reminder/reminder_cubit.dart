@@ -9,7 +9,9 @@ class ReminderCubit extends Cubit<ReminderState> {
   ReminderCubit({PreferenceRepository? preferenceRepository})
       : _preferenceRepository =
             preferenceRepository ?? locator.get<PreferenceRepository>(),
-        super(const ReminderState.init());
+        super(const ReminderState.init()) {
+    init();
+  }
 
   final PreferenceRepository _preferenceRepository;
 
