@@ -107,16 +107,15 @@ class HackerNewsWebRepository {
       _remoteConfigCubit.state.athingComtrSelector;
 
   String get _commentTextSelector =>
-      _remoteConfigCubit.state.athingComtrSelector;
+      _remoteConfigCubit.state.commentTextSelector;
 
   String get _commentHeadSelector =>
-      _remoteConfigCubit.state.athingComtrSelector;
+      _remoteConfigCubit.state.commentHeadSelector;
 
-  String get _commentAgeSelector =>
-      _remoteConfigCubit.state.athingComtrSelector;
+  String get _commentAgeSelector => _remoteConfigCubit.state.commentAgeSelector;
 
   String get _commentIndentSelector =>
-      _remoteConfigCubit.state.athingComtrSelector;
+      _remoteConfigCubit.state.commentIndentSelector;
 
   Stream<Comment> fetchCommentsStream(Item item) async* {
     final bool isOnWifi = await _isOnWifi;

@@ -7,24 +7,8 @@ final class RemoteConfigState extends Equatable {
 
   RemoteConfigState.init() : data = <String, dynamic>{};
 
+  @protected
   final Map<String, dynamic> data;
-
-  Map<String, dynamic> get _data {
-    if (data.isEmpty) {
-      return <String, dynamic>{
-        'athingComtrSelector':
-            '''#hnmain > tbody > tr > td > table > tbody > .athing.comtr''',
-        'commentTextSelector':
-            '''td > table > tbody > tr > td.default > div.comment > div.commtext''',
-        'commentHeadSelector':
-            '''td > table > tbody > tr > td.default > div > span > a''',
-        'commentAgeSelector':
-            '''td > table > tbody > tr > td.default > div > span > span.age''',
-        'commentIndentSelector': '''td > table > tbody > tr > td.ind''',
-      };
-    }
-    return data;
-  }
 
   String get athingComtrSelector => getString(
         key: 'athingComtrSelector',
@@ -55,15 +39,15 @@ final class RemoteConfigState extends Equatable {
       );
 
   String getString({required String key, String fallback = ''}) {
-    return _data[key] as String? ?? fallback;
+    return data[key] as String? ?? fallback;
   }
 
   bool getBool({required String key, bool fallback = false}) {
-    return _data[key] as bool? ?? fallback;
+    return data[key] as bool? ?? fallback;
   }
 
   int getInt({required String key, int fallback = 0}) {
-    return _data[key] as int? ?? fallback;
+    return data[key] as int? ?? fallback;
   }
 
   RemoteConfigState copyWith({Map<String, dynamic>? data}) {

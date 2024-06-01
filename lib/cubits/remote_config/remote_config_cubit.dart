@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/repositories/remote_config_repository.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -19,7 +20,9 @@ class RemoteConfigCubit extends HydratedCubit<RemoteConfigState> {
     _remoteConfigRepository
         .fetchRemoteConfig()
         .then((Map<String, dynamic> data) {
-      emit(state.copyWith(data: data));
+      if (data.isNotEmpty) {
+        emit(state.copyWith(data: data));
+      }
     });
   }
 

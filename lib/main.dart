@@ -54,6 +54,13 @@ Future<void> main({bool testing = false}) async {
   final String tempPath = tempDir.path;
   Hive.init(tempPath);
 
+  final HydratedStorage storage = await HydratedStorage.build(
+    storageDirectory: kIsWeb
+        ? HydratedStorage.webStorageDirectory
+        : await getTemporaryDirectory(),
+  );
+  HydratedBloc.storage = storage;
+
   await setUpLocator();
 
   EquatableConfig.stringify = true;
@@ -65,12 +72,6 @@ Future<void> main({bool testing = false}) async {
           stackTrace: details.stack,
         );
   };
-
-  final HydratedStorage storage = await HydratedStorage.build(
-    storageDirectory: kIsWeb
-        ? HydratedStorage.webStorageDirectory
-        : await getTemporaryDirectory(),
-  );
 
   if (Platform.isIOS) {
     unawaited(
@@ -138,8 +139,6 @@ Future<void> main({bool testing = false}) async {
 
   // Uncomment this line to log events from bloc/cubit.
   // Bloc.observer = CustomBlocObserver();
-
-  HydratedBloc.storage = storage;
 
   VisibilityDetectorController.instance.updateInterval = AppDurations.ms200;
 

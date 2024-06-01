@@ -25,6 +25,8 @@ Future<void> setUpLocator() async {
       ),
     )
     ..registerSingleton<SembastRepository>(SembastRepository())
+    ..registerSingleton<RemoteConfigRepository>(RemoteConfigRepository())
+    ..registerSingleton<RemoteConfigCubit>(RemoteConfigCubit())
     ..registerSingleton<HackerNewsRepository>(HackerNewsRepository())
     ..registerSingleton<HackerNewsWebRepository>(HackerNewsWebRepository())
     ..registerSingleton<PreferenceRepository>(PreferenceRepository())
@@ -32,8 +34,6 @@ Future<void> setUpLocator() async {
     ..registerSingleton<AuthRepository>(AuthRepository())
     ..registerSingleton<PostRepository>(PostRepository())
     ..registerSingleton<OfflineRepository>(OfflineRepository())
-    ..registerSingleton<RemoteConfigRepository>(RemoteConfigRepository())
-    ..registerSingleton<RemoteConfigCubit>(RemoteConfigCubit())
     ..registerSingleton<DraftCache>(DraftCache())
     ..registerSingleton<CommentCache>(CommentCache())
     ..registerSingleton<LocalNotificationService>(LocalNotificationService())
