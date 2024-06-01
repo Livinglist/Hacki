@@ -279,13 +279,13 @@ class HackiApp extends StatelessWidget {
                         .instance.platformDispatcher.platformBrightness,
                     mode,
                   );
-                  final bool isDarkModeEnabled =
+                  final bool isDarkModeEnabled = mode == null ||
                       mode == AdaptiveThemeMode.dark ||
-                          (mode == AdaptiveThemeMode.system &&
-                              View.of(context)
-                                      .platformDispatcher
-                                      .platformBrightness ==
-                                  Brightness.dark);
+                      (mode == AdaptiveThemeMode.system &&
+                          View.of(context)
+                                  .platformDispatcher
+                                  .platformBrightness ==
+                              Brightness.dark);
                   final ColorScheme colorScheme = ColorScheme.fromSeed(
                     brightness:
                         isDarkModeEnabled ? Brightness.dark : Brightness.light,
@@ -306,6 +306,10 @@ class HackiApp extends StatelessWidget {
                         theme: ThemeData(
                           colorScheme: colorScheme,
                           fontFamily: state.font.name,
+                          canvasColor:
+                              isDarkModeEnabled && state.trueDarkModeEnabled
+                                  ? Palette.black
+                                  : null,
                           scaffoldBackgroundColor:
                               isDarkModeEnabled && state.trueDarkModeEnabled
                                   ? Palette.black
