@@ -50,7 +50,7 @@ class FavCubit extends Cubit<FavState> {
       _preferenceRepository.favList(of: username).then((List<int> favIds) {
         emit(
           state.copyWith(
-            favIds: favIds,
+            favIds: LinkedHashSet<int>.from(favIds).toList(),
             favItems: <Item>[],
             currentPage: 0,
           ),
@@ -155,7 +155,7 @@ class FavCubit extends Cubit<FavState> {
     );
 
     _preferenceRepository.favList(of: username).then((List<int> favIds) {
-      emit(state.copyWith(favIds: favIds));
+      emit(state.copyWith(favIds: LinkedHashSet<int>.from(favIds).toList()));
       _hackerNewsRepository
           .fetchItemsStream(
             ids: favIds.sublist(0, _pageSize.clamp(0, favIds.length)),
