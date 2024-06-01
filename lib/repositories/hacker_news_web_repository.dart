@@ -102,16 +102,21 @@ class HackerNewsWebRepository {
   }
 
   static const String _itemBaseUrl = 'https://news.ycombinator.com/item?id=';
-  static const String _athingComtrSelector =
-      '#hnmain > tbody > tr > td > table > tbody > .athing.comtr';
-  static const String _commentTextSelector =
-      '''td > table > tbody > tr > td.default > div.comment > div.commtext''';
-  static const String _commentHeadSelector =
-      '''td > table > tbody > tr > td.default > div > span > a''';
-  static const String _commentAgeSelector =
-      '''td > table > tbody > tr > td.default > div > span > span.age''';
-  static const String _commentIndentSelector =
-      '''td > table > tbody > tr > td.ind''';
+
+  String get _athingComtrSelector =>
+      _remoteConfigCubit.state.athingComtrSelector;
+
+  String get _commentTextSelector =>
+      _remoteConfigCubit.state.athingComtrSelector;
+
+  String get _commentHeadSelector =>
+      _remoteConfigCubit.state.athingComtrSelector;
+
+  String get _commentAgeSelector =>
+      _remoteConfigCubit.state.athingComtrSelector;
+
+  String get _commentIndentSelector =>
+      _remoteConfigCubit.state.athingComtrSelector;
 
   Stream<Comment> fetchCommentsStream(Item item) async* {
     final bool isOnWifi = await _isOnWifi;
