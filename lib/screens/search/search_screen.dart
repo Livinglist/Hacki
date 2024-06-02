@@ -362,6 +362,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                             prefState.complexStoryTileEnabled,
                                         showMetadata: prefState.metadataEnabled,
                                         showUrl: prefState.urlEnabled,
+                                        showFavicon: prefState.isFavIconEnabled,
                                         story: e,
                                         onTap: () => goToItemScreen(
                                           args: ItemScreenArgs(item: e),

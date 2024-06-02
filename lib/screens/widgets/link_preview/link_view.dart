@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/screens/widgets/tap_down_wrapper.dart';
 import 'package:hacki/styles/styles.dart';
@@ -111,12 +112,15 @@ class LinkView extends StatelessWidget {
                   child: SizedBox(
                     height: layoutHeight,
                     width: layoutHeight,
-                    child: (imageUri?.isEmpty ?? true) && imagePath != null
-                        ? Image.asset(
-                            imagePath!,
-                            fit: BoxFit.cover,
-                          )
-                        : CachedNetworkImage(
+                    child: () {
+                      if (imageUri != null && imageUri!.isNotEmpty) {
+                        if (imageUri!.endsWith('.svg')) {
+                          return SvgPicture.network(
+                            imageUri!,
+                            fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
+                          );
+                        } else {
+                          return CachedNetworkImage(
                             imageUrl: imageUri!,
                             fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
                             cacheKey: imageUri,
@@ -128,7 +132,15 @@ class LinkView extends StatelessWidget {
                                 ),
                               ),
                             ),
-                          ),
+                          );
+                        }
+                      } else if (imagePath != null) {
+                        return Image.asset(
+                          imagePath!,
+                          fit: BoxFit.cover,
+                        );
+                      }
+                    }(),
                   ),
                 ),
               )

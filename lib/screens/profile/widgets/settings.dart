@@ -210,6 +210,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                     showWebPreview: preferenceState.complexStoryTileEnabled,
                     showMetadata: preferenceState.metadataEnabled,
                     showUrl: preferenceState.urlEnabled,
+                    showFavicon: preferenceState.isFavIconEnabled,
                     story: Story.placeholder(),
                     onTap: () => LinkUtil.launch(
                       Constants.guidelineLink,

@@ -202,6 +202,24 @@ class SembastRepository {
 
   //#region
 
+  Future<String> cacheFavicon({
+    required String host,
+    required String faviconUrl,
+  }) async {
+    final Database db = _cache ?? await initializeCache();
+    final StoreRef<String, String> store = StoreRef<String, String>.main();
+    return store.record(host).put(db, faviconUrl);
+  }
+
+  Future<String?> getCachedFavicon({
+    required String host,
+  }) async {
+    final Database db = _cache ?? await initializeCache();
+    final StoreRef<String, String> store = StoreRef<String, String>.main();
+    final String? url = await store.record(host).get(db);
+    return url;
+  }
+
   Future<void> cacheMetadata({
     required String key,
     required WebInfo info,
@@ -209,7 +227,6 @@ class SembastRepository {
     final Database db = _cache ?? await initializeCache();
     final StoreRef<String, Map<String, Object?>> store =
         stringMapStoreFactory.store(_metadataCacheKey);
-
     return db.transaction((Transaction txn) async {
       await store.record(key).put(txn, info.toJson());
     });

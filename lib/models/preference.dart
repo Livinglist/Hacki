@@ -33,6 +33,7 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       /// Order of items below matters and
       /// reflects the order on settings screen.
       const DisplayModePreference(),
+      const FavIconModePreference(),
       const MetadataModePreference(),
       const StoryUrlModePreference(),
 
@@ -202,6 +203,27 @@ final class DisplayModePreference extends BooleanPreference {
 
   @override
   String get subtitle => 'show web preview in story tile.';
+}
+
+final class FavIconModePreference extends BooleanPreference {
+  const FavIconModePreference({bool? val})
+      : super(val: val ?? _favIconModePreferenceDefaultValue);
+
+  static const bool _favIconModePreferenceDefaultValue = false;
+
+  @override
+  FavIconModePreference copyWith({required bool? val}) {
+    return FavIconModePreference(val: val);
+  }
+
+  @override
+  String get key => 'faviconMode';
+
+  @override
+  String get title => 'Show Favicon';
+
+  @override
+  String get subtitle => 'show favicon in story tile.';
 }
 
 final class MetadataModePreference extends BooleanPreference {

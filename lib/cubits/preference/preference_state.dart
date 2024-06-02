@@ -52,6 +52,8 @@ class PreferenceState extends Equatable {
 
   bool get complexStoryTileEnabled => _isOn<DisplayModePreference>();
 
+  bool get isFavIconEnabled => _isOn<FavIconModePreference>();
+
   bool get eyeCandyEnabled => _isOn<EyeCandyModePreference>();
 
   bool get readerEnabled => _isOn<ReaderModePreference>();

@@ -87,6 +87,7 @@ class _StoriesListViewState extends State<StoriesListView>
               showWebPreviewOnStoryTile:
                   preferenceState.complexStoryTileEnabled,
               showMetadataOnStoryTile: preferenceState.metadataEnabled,
+              showFavicon: preferenceState.isFavIconEnabled,
               showUrl: preferenceState.urlEnabled,
               refreshController: refreshController,
               scrollController: scrollController,
