@@ -13,6 +13,7 @@ import 'package:responsive_builder/responsive_builder.dart';
 import 'package:rxdart/rxdart.dart';
 
 part 'stories_event.dart';
+
 part 'stories_state.dart';
 
 class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
@@ -95,7 +96,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         storiesToBeDownloaded: state.storiesToBeDownloaded,
       ),
     );
-    for (final StoryType type in StoryType.values) {
+
+    for (final StoryType type in _preferenceCubit.state.tabs) {
       add(LoadStories(type: type));
     }
   }
@@ -111,28 +113,44 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       emit(
         state
             .copyWithStoryIdsUpdated(type: type, to: ids)
-            .copyWithCurrentPageUpdated(type: type, to: 0),
+            .copyWithCurrentPageUpdated(type: type, to: 0)
+            .copyWithStatusUpdated(type: type, to: Status.inProgress),
       );
       _offlineRepository
           .getCachedStoriesStream(
-        ids: ids.sublist(0, min(ids.length, state.currentPageSize)),
-      )
-          .listen((Story story) {
-        add(StoryLoaded(story: story, type: type));
-      }).onDone(() {
-        add(StoriesLoaded(type: type));
-      });
+            ids: ids.sublist(0, min(ids.length, state.currentPageSize)),
+          )
+          .listen((Story story) => add(StoryLoaded(story: story, type: type)))
+          .onDone(() => add(StoriesLoaded(type: type)));
     } else {
       final List<int> ids =
           await _hackerNewsRepository.fetchStoryIds(type: type);
       emit(
         state
             .copyWithStoryIdsUpdated(type: type, to: ids)
-            .copyWithCurrentPageUpdated(type: type, to: 0),
+            .copyWithCurrentPageUpdated(type: type, to: 0)
+            .copyWithStatusUpdated(type: type, to: Status.inProgress),
       );
+      bool hasFirstArrived = false;
       await _hackerNewsRepository
-          .fetchStoriesStream(ids: ids.sublist(0, state.currentPageSize))
+          .fetchStoriesStream(
+        ids: ids.sublist(0, state.currentPageSize),
+        sequential: !event.isRefreshing,
+      )
           .listen((Story story) {
+        /// When it's refreshing, only flush
+        /// previous stories when new stories has been fetched.
+        if (event.isRefreshing && !hasFirstArrived) {
+          hasFirstArrived = true;
+          final Map<StoryType, List<Story>> newStoriesMap =
+              Map<StoryType, List<Story>>.from(state.storiesByType);
+          newStoriesMap[type] = <Story>[];
+          emit(
+            state.copyWith(
+              storiesByType: newStoriesMap,
+            ),
+          );
+        }
         add(StoryLoaded(story: story, type: type));
       }).asFuture<void>();
       add(StoriesLoaded(type: type));
@@ -161,11 +179,13 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       );
     } else {
       emit(state.copyWithRefreshed(type: event.type));
-      add(LoadStories(type: event.type));
+      add(LoadStories(type: event.type, isRefreshing: true));
     }
   }
 
   void onLoadMore(StoriesLoadMore event, Emitter<StoriesState> emit) {
+    if (state.statusByType[event.type] == Status.inProgress) return;
+
     emit(
       state.copyWithStatusUpdated(
         type: event.type,
@@ -190,39 +210,27 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       if (state.isOfflineReading) {
         _offlineRepository
             .getCachedStoriesStream(
-          ids: state.storyIdsByType[event.type]!.sublist(
-            lower,
-            upper,
-          ),
-        )
-            .listen((Story story) {
-          add(
-            StoryLoaded(
-              story: story,
-              type: event.type,
-            ),
-          );
-        }).onDone(() {
-          add(StoriesLoaded(type: event.type));
-        });
+              ids: state.storyIdsByType[event.type]!.sublist(
+                lower,
+                upper,
+              ),
+            )
+            .listen(
+              (Story story) => add(StoryLoaded(story: story, type: event.type)),
+            )
+            .onDone(() => add(StoriesLoaded(type: event.type)));
       } else {
         _hackerNewsRepository
             .fetchStoriesStream(
-          ids: state.storyIdsByType[event.type]!.sublist(
-            lower,
-            upper,
-          ),
-        )
-            .listen((Story story) {
-          add(
-            StoryLoaded(
-              story: story,
-              type: event.type,
-            ),
-          );
-        }).onDone(() {
-          add(StoriesLoaded(type: event.type));
-        });
+              ids: state.storyIdsByType[event.type]!.sublist(
+                lower,
+                upper,
+              ),
+            )
+            .listen(
+              (Story story) => add(StoryLoaded(story: story, type: event.type)),
+            )
+            .onDone(() => add(StoriesLoaded(type: event.type)));
       }
     } else {
       emit(
