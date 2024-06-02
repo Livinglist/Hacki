@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:favicon/favicon.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/repositories/sembast_repository.dart';
 
@@ -11,7 +12,7 @@ class FaviconRepository {
 
   final SembastRepository _sembastRepository;
 
-  static final Map<String, String?> _cache = <String, String>{};
+  static final Map<String, String?> _cache = <String, String?>{};
 
   Future<String?> getFaviconUrl(String url) async {
     final Uri uri = Uri.parse(url);
@@ -19,24 +20,31 @@ class FaviconRepository {
     if (_cache.containsKey(host)) {
       return _cache[host];
     } else {
-      final String? faviconUrl =
+      String? faviconUrl =
           await _sembastRepository.getCachedFavicon(host: host);
       if (faviconUrl != null) {
         _cache[host] = faviconUrl;
         return faviconUrl;
       } else {
-        final Favicon? result = await FaviconFinder.getBest(url);
-        _cache[host] = result?.url;
-        if (result?.url != null) {
+        faviconUrl = await compute(_fetchFaviconUrl, url);
+        print('host is $host for $url');
+        print('faviconUrl == null ${faviconUrl == null}');
+        _cache[host] = faviconUrl;
+        if (faviconUrl != null) {
           unawaited(
             _sembastRepository.cacheFavicon(
               host: host,
-              faviconUrl: result!.url,
+              faviconUrl: faviconUrl,
             ),
           );
         }
-        return result?.url;
+        return faviconUrl;
       }
     }
+  }
+
+  static Future<String?> _fetchFaviconUrl(String url) async {
+    final Favicon? result = await FaviconFinder.getBest(url);
+    return result?.url;
   }
 }
