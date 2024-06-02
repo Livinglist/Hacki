@@ -59,7 +59,9 @@ class OfflineBanner extends StatelessWidget {
                       },
                     ).then((bool? value) {
                       if (value ?? false) {
-                        context.read<StoriesBloc>().add(StoriesExitOffline());
+                        context
+                            .read<StoriesBloc>()
+                            .add(StoriesExitOfflineMode());
                         context.read<AuthBloc>().add(AuthInitialize());
                         context.read<PinCubit>().init();
                         WebAnalyzer.cacheMap.clear();
