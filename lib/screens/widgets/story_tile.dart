@@ -3,10 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/utils/utils.dart';
 import 'package:shimmer/shimmer.dart';
 
 class StoryTile extends StatelessWidget {
@@ -123,6 +125,17 @@ class StoryTile extends StatelessWidget {
         excludeSemantics: true,
         child: InkWell(
           onTap: onTap,
+          onLongPress: () {
+            if (story.url.isNotEmpty) {
+              LinkUtil.launch(
+                story.url,
+                context,
+                useReader: context.read<PreferenceCubit>().state.readerEnabled,
+                offlineReading:
+                    context.read<StoriesBloc>().state.isOfflineReading,
+              );
+            }
+          },
           child: Padding(
             padding: const EdgeInsets.only(left: Dimens.pt12),
             child: Column(
