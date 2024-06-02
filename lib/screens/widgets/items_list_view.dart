@@ -76,7 +76,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
           if (e is Story) {
             final bool hasRead = context.read<StoriesBloc>().hasRead(e);
             final bool swipeGestureEnabled =
-                context.read<PreferenceCubit>().state.swipeGestureEnabled;
+                context.read<PreferenceCubit>().state.isSwipeGestureEnabled;
             return <Widget>[
               if (useSimpleTileForStory)
                 FadeIn(

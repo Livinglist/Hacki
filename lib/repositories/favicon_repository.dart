@@ -27,8 +27,6 @@ class FaviconRepository {
         return faviconUrl;
       } else {
         faviconUrl = await compute(_fetchFaviconUrl, url);
-        print('host is $host for $url');
-        print('faviconUrl == null ${faviconUrl == null}');
         _cache[host] = faviconUrl;
         if (faviconUrl != null) {
           unawaited(

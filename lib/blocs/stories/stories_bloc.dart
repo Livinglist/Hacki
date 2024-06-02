@@ -81,19 +81,19 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   ) async {
     _preferenceSubscription ??= _preferenceCubit.stream
         .distinct((PreferenceState previous, PreferenceState next) {
-          return previous.complexStoryTileEnabled ==
-              next.complexStoryTileEnabled;
+          return previous.isComplexStoryTileEnabled ==
+              next.isComplexStoryTileEnabled;
         })
         .debounceTime(AppDurations.twoSeconds)
         .listen((PreferenceState event) {
-          final bool isComplexTile = event.complexStoryTileEnabled;
+          final bool isComplexTile = event.isComplexStoryTileEnabled;
           final int pageSize = getPageSize(isComplexTile: isComplexTile);
 
           if (pageSize != state.currentPageSize) {
             add(StoriesPageSizeChanged(pageSize: pageSize));
           }
         });
-    final bool isComplexTile = _preferenceCubit.state.complexStoryTileEnabled;
+    final bool isComplexTile = _preferenceCubit.state.isComplexStoryTileEnabled;
     final int pageSize = getPageSize(isComplexTile: isComplexTile);
     emit(
       const StoriesState.init().copyWith(
@@ -264,7 +264,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
           regExp.hasMatch(story.text.toLowerCase());
     });
 
-    if (_preferenceCubit.state.isFavIconEnabled &&
+    if (_preferenceCubit.state.isFaviconEnabled &&
         state.storiesByType[event.type]!.length < state.currentPageSize &&
         story.url.isNotEmpty) {
       await _faviconRepository.getFaviconUrl(story.url);

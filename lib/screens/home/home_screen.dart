@@ -123,9 +123,10 @@ class _HomeScreenState extends State<HomeScreen>
     final BlocBuilder<PreferenceCubit, PreferenceState> homeScreen =
         BlocBuilder<PreferenceCubit, PreferenceState>(
       buildWhen: (PreferenceState previous, PreferenceState current) =>
-          previous.complexStoryTileEnabled != current.complexStoryTileEnabled ||
-          previous.metadataEnabled != current.metadataEnabled ||
-          previous.swipeGestureEnabled != current.swipeGestureEnabled,
+          previous.isComplexStoryTileEnabled !=
+              current.isComplexStoryTileEnabled ||
+          previous.isMetadataEnabled != current.isMetadataEnabled ||
+          previous.isSwipeGestureEnabled != current.isSwipeGestureEnabled,
       builder: (BuildContext context, PreferenceState preferenceState) {
         return DefaultTabController(
           length: tabLength,
@@ -150,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen>
             body: BlocBuilder<TabCubit, TabState>(
               builder: (BuildContext context, TabState state) {
                 return TabBarView(
-                  physics: preferenceState.swipeGestureEnabled
+                  physics: preferenceState.isSwipeGestureEnabled
                       ? const PageScrollPhysics()
                       : const NeverScrollableScrollPhysics(),
                   controller: tabController,
@@ -190,12 +191,12 @@ class _HomeScreenState extends State<HomeScreen>
 
   void onStoryTapped(Story story) {
     final PreferenceState prefState = context.read<PreferenceCubit>().state;
-    final bool useReader = prefState.readerEnabled;
+    final bool useReader = prefState.isReaderEnabled;
     final StoryMarkingMode storyMarkingMode = prefState.storyMarkingMode;
     final bool offlineReading =
         context.read<StoriesBloc>().state.isOfflineReading;
     final bool splitViewEnabled = context.read<SplitViewCubit>().state.enabled;
-    final bool markReadStoriesEnabled = prefState.markReadStoriesEnabled;
+    final bool markReadStoriesEnabled = prefState.isMarkReadStoriesEnabled;
 
     // If a story is a job story and it has a link to the job posting,
     // it would be better to just navigate to the web page.

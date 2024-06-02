@@ -73,7 +73,8 @@ abstract class LinkUtil {
       if (val) {
         if (link.contains('http')) {
           if (Platform.isAndroid &&
-              context.read<PreferenceCubit>().state.customTabEnabled == false) {
+              context.read<PreferenceCubit>().state.isCustomTabEnabled ==
+                  false) {
             launchUrl(uri, mode: LaunchMode.externalApplication);
           } else {
             final Color primaryColor = Theme.of(context).colorScheme.primary;
