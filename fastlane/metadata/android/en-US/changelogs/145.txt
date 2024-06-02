@@ -1,0 +1,2 @@
+- Favicon in mini story tile.
+- UX improvements.
