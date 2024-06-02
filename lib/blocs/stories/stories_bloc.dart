@@ -96,7 +96,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         storiesToBeDownloaded: state.storiesToBeDownloaded,
       ),
     );
-    for (final StoryType type in StoryType.values) {
+
+    for (final StoryType type in _preferenceCubit.state.tabs) {
       add(LoadStories(type: type));
     }
   }
@@ -144,13 +145,9 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
           final Map<StoryType, List<Story>> newStoriesMap =
               Map<StoryType, List<Story>>.from(state.storiesByType);
           newStoriesMap[type] = <Story>[];
-          final Map<StoryType, List<int>> newStoryIdsMap =
-              Map<StoryType, List<int>>.from(state.storyIdsByType);
-          newStoryIdsMap[type] = <int>[];
           emit(
             state.copyWith(
               storiesByType: newStoriesMap,
-              storyIdsByType: newStoryIdsMap,
             ),
           );
         }
