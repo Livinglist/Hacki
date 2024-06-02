@@ -329,16 +329,32 @@ class HackerNewsRepository {
 
   /// Fetch a list of [Story] based on ids and return results
   /// using a stream.
-  Stream<Story> fetchStoriesStream({required List<int> ids}) async* {
-    for (final int id in ids) {
-      final Story? story =
-          await _fetchItemJson(id).then((Map<String, dynamic>? json) async {
-        if (json == null) return null;
-        final Story story = Story.fromJson(json);
-        return story;
-      });
+  Stream<Story> fetchStoriesStream({
+    required List<int> ids,
+    bool sequential = false,
+  }) async* {
+    if (sequential) {
+      for (final int id in ids) {
+        final Story? story =
+            await _fetchItemJson(id).then((Map<String, dynamic>? json) async {
+          if (json == null) return null;
+          final Story story = Story.fromJson(json);
+          return story;
+        });
 
-      if (story != null) {
+        if (story != null) {
+          yield story;
+        }
+      }
+    } else {
+      final List<Map<String, dynamic>?> responses = await Future.wait(
+        <Future<Map<String, dynamic>?>>[
+          ...ids.map(_fetchItemJson),
+        ],
+      );
+      for (final Map<String, dynamic>? json in responses) {
+        if (json == null) continue;
+        final Story story = Story.fromJson(json);
         yield story;
       }
     }
