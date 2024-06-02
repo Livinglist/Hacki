@@ -83,7 +83,7 @@ class CommentsCubit extends Cubit<CommentsState> {
   final Map<int, StreamSubscription<Comment>> _streamSubscriptions =
       <int, StreamSubscription<Comment>>{};
 
-  static const int _webFetchingCmtCountLowerLimit = 50;
+  static const int _webFetchingCmtCountLowerLimit = 5;
 
   Future<bool> get _shouldFetchFromWeb async {
     final bool isOnWifi = await _isOnWifi;
