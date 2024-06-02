@@ -1,11 +1,15 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/repositories/favicon_repository.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
@@ -15,6 +19,7 @@ class StoryTile extends StatelessWidget {
   const StoryTile({
     required this.showWebPreview,
     required this.showMetadata,
+    required this.showFavicon,
     required this.showUrl,
     required this.story,
     required this.onTap,
@@ -25,6 +30,7 @@ class StoryTile extends StatelessWidget {
 
   final bool showWebPreview;
   final bool showMetadata;
+  final bool showFavicon;
   final bool showUrl;
   final bool hasRead;
   final Story story;
@@ -138,69 +144,118 @@ class StoryTile extends StatelessWidget {
           },
           child: Padding(
             padding: const EdgeInsets.only(left: Dimens.pt12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                const SizedBox(
-                  height: Dimens.pt8,
-                ),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Text.rich(
-                        TextSpan(
-                          children: <TextSpan>[
-                            TextSpan(
-                              text: story.title,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                    color: hasRead
-                                        ? Theme.of(context).readGrey
-                                        : null,
-                                    fontWeight:
-                                        hasRead ? null : FontWeight.bold,
-                                  ),
-                            ),
-                            if (showUrl && story.url.isNotEmpty)
+                if (showFavicon) ...<Widget>[
+                  SizedBox(
+                    height: Dimens.pt20,
+                    width: Dimens.pt24,
+                    child: Center(
+                      child: FutureBuilder<String?>(
+                        future: locator
+                            .get<FaviconRepository>()
+                            .getFaviconUrl(story.url),
+                        builder: (
+                          BuildContext context,
+                          AsyncSnapshot<String?> snapshot,
+                        ) {
+                          final String? url = snapshot.data;
+                          if (url != null) {
+                            if (url.endsWith('.svg')) {
+                              return SvgPicture.network(
+                                url,
+                                fit: BoxFit.fitHeight,
+                              );
+                            } else {
+                              return CachedNetworkImage(
+                                fit: BoxFit.fitHeight,
+                                imageUrl: url,
+                              );
+                            }
+                          } else {
+                            return const Icon(
+                              Icons.public,
+                              size: Dimens.pt20,
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: Dimens.pt8,
+                  ),
+                ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const SizedBox(
+                        height: Dimens.pt8,
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Text.rich(
                               TextSpan(
-                                text: ' (${story.readableUrl})',
+                                children: <TextSpan>[
+                                  TextSpan(
+                                    text: story.title,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(
+                                          color: hasRead
+                                              ? Theme.of(context).readGrey
+                                              : null,
+                                          fontWeight:
+                                              hasRead ? null : FontWeight.bold,
+                                        ),
+                                  ),
+                                  if (showUrl && story.url.isNotEmpty)
+                                    TextSpan(
+                                      text: ' (${story.readableUrl})',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
+                                            color: hasRead
+                                                ? Theme.of(context).readGrey
+                                                : null,
+                                          ),
+                                    ),
+                                ],
+                              ),
+                              textScaler: MediaQuery.of(context).textScaler,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (showMetadata)
+                        Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Text(
+                                story.metadata,
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodySmall
                                     ?.copyWith(
                                       color: hasRead
                                           ? Theme.of(context).readGrey
-                                          : null,
+                                          : Theme.of(context).metadataColor,
                                     ),
+                                maxLines: 1,
                               ),
+                            ),
                           ],
                         ),
-                        textScaler: MediaQuery.of(context).textScaler,
-                      ),
-                    ),
-                  ],
-                ),
-                if (showMetadata)
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Text(
-                          story.metadata,
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: hasRead
-                                        ? Theme.of(context).readGrey
-                                        : Theme.of(context).metadataColor,
-                                  ),
-                          maxLines: 1,
-                        ),
+                      const SizedBox(
+                        height: Dimens.pt14,
                       ),
                     ],
                   ),
-                const SizedBox(
-                  height: Dimens.pt14,
                 ),
               ],
             ),

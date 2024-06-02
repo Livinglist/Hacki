@@ -54,6 +54,7 @@ class PinnedStories extends StatelessWidget {
                       showWebPreview: preferenceState.complexStoryTileEnabled,
                       showMetadata: preferenceState.metadataEnabled,
                       showUrl: preferenceState.urlEnabled,
+                      showFavicon: preferenceState.isFavIconEnabled,
                     ),
                   ),
                 ),

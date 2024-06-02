@@ -96,6 +96,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                         return ItemsListView<Item>(
                           showWebPreviewOnStoryTile: false,
                           showMetadataOnStoryTile: false,
+                          showFavicon: false,
                           showUrl: false,
                           showAuthor: false,
                           useSimpleTileForStory: true,
@@ -204,6 +205,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                   prefState.complexStoryTileEnabled,
                               showMetadataOnStoryTile:
                                   prefState.metadataEnabled,
+                              showFavicon: prefState.isFavIconEnabled,
                               showUrl: prefState.urlEnabled,
                               useSimpleTileForStory: true,
                               refreshController: refreshControllerFav,
