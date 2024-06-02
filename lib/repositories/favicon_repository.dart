@@ -35,7 +35,6 @@ class FaviconRepository {
             ),
           );
         }
-        print('result ${result?.url}');
         return result?.url;
       }
     }
