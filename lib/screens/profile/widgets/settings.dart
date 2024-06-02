@@ -23,6 +23,7 @@ import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/profile/models/page_type.dart';
 import 'package:hacki/screens/profile/qr_code_scanner_screen.dart';
 import 'package:hacki/screens/profile/qr_code_view_screen.dart';
+import 'package:hacki/screens/profile/widgets/enter_offline_mode_list_tile.dart';
 import 'package:hacki/screens/profile/widgets/offline_list_tile.dart';
 import 'package:hacki/screens/profile/widgets/tab_bar_settings.dart';
 import 'package:hacki/screens/profile/widgets/text_scale_factor_settings.dart';
@@ -78,6 +79,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                       }
                     },
                   ),
+                  const EnterOfflineModeListTile(),
                   const OfflineListTile(),
                   const SizedBox(
                     height: Dimens.pt8,

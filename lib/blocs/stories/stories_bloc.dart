@@ -51,7 +51,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     on<StoriesDownload>(onDownload);
     on<StoriesCancelDownload>(onCancelDownload);
     on<StoryDownloaded>(onStoryDownloaded);
-    on<StoriesExitOffline>(onExitOffline);
+    on<StoriesEnterOfflineMode>(onEnterOfflineMode);
+    on<StoriesExitOfflineMode>(onExitOfflineMode);
     on<StoriesPageSizeChanged>(onPageSizeChanged);
     on<ClearAllReadStories>(onClearAllReadStories);
   }
@@ -82,18 +83,15 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         add(StoriesPageSizeChanged(pageSize: pageSize));
       }
     });
-    final bool hasCachedStories = await _offlineRepository.hasCachedStories;
     final bool isComplexTile = _preferenceCubit.state.complexStoryTileEnabled;
     final int pageSize = getPageSize(isComplexTile: isComplexTile);
     emit(
       const StoriesState.init().copyWith(
-        isOfflineReading: hasCachedStories &&
-            // Only go into offline mode in the next session.
-            state.downloadStatus == StoriesDownloadStatus.idle,
         currentPageSize: pageSize,
         downloadStatus: state.downloadStatus,
         storiesDownloaded: state.storiesDownloaded,
         storiesToBeDownloaded: state.storiesToBeDownloaded,
+        isOfflineReading: state.isOfflineReading,
       ),
     );
 
@@ -282,6 +280,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     await _offlineRepository.deleteAllStoryIds();
     await _offlineRepository.deleteAllStories();
     await _offlineRepository.deleteAllComments();
+    await _offlineRepository.deleteAllWebPages();
 
     final Set<int> prioritizedIds = <int>{};
 
@@ -463,15 +462,19 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     add(StoriesInitialize());
   }
 
-  Future<void> onExitOffline(
-    StoriesExitOffline event,
+  Future<void> onExitOfflineMode(
+    StoriesExitOfflineMode event,
     Emitter<StoriesState> emit,
   ) async {
-    await _offlineRepository.deleteAllStoryIds();
-    await _offlineRepository.deleteAllStories();
-    await _offlineRepository.deleteAllComments();
-    await _offlineRepository.deleteAllWebPages();
     emit(state.copyWith(isOfflineReading: false));
+    add(StoriesInitialize());
+  }
+
+  Future<void> onEnterOfflineMode(
+    StoriesEnterOfflineMode event,
+    Emitter<StoriesState> emit,
+  ) async {
+    emit(state.copyWith(isOfflineReading: true));
     add(StoriesInitialize());
   }
 
