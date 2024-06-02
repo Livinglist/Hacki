@@ -18,8 +18,8 @@ class EnterOfflineModeListTile extends StatelessWidget {
           onChanged: (bool value) {
             HapticFeedbackUtil.light();
             context.read<StoriesBloc>().add(
-              value ? StoriesEnterOfflineMode() : StoriesExitOfflineMode(),
-            );
+                  value ? StoriesEnterOfflineMode() : StoriesExitOfflineMode(),
+                );
           },
         );
       },
