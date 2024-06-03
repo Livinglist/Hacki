@@ -558,8 +558,14 @@ ${info.toJson()}
 
     if (metaIcon != null) {
       icon = metaIcon.attributes['href'];
+      locator.get<Logger>().d('favicon $icon fetched for $uri from metaIcon');
     } else {
-      return '${uri.origin}/favicon.ico';
+      // locator.get<Logger>().d('fetching favicon for $uri');
+      // final String? faviconUrl =
+      //     await locator.get<FaviconRepository>().getFaviconUrl(uri.toString());
+      // locator.get<Logger>().d('favicon $faviconUrl fetched for $uri');
+      // return faviconUrl ?? '${uri.origin}/favicon.ico';
+      return '';
     }
 
     return _handleUrl(uri, icon);

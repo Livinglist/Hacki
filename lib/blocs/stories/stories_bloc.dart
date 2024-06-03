@@ -81,18 +81,18 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   ) async {
     _preferenceSubscription ??= _preferenceCubit.stream
         .distinct((PreferenceState previous, PreferenceState next) {
-          return previous.isComplexStoryTileEnabled ==
-              next.isComplexStoryTileEnabled;
-        })
-        .debounceTime(AppDurations.twoSeconds)
+      return previous.isComplexStoryTileEnabled ==
+          next.isComplexStoryTileEnabled;
+    })
+        //.debounceTime(AppDurations.twoSeconds)
         .listen((PreferenceState event) {
-          final bool isComplexTile = event.isComplexStoryTileEnabled;
-          final int pageSize = getPageSize(isComplexTile: isComplexTile);
+      final bool isComplexTile = event.isComplexStoryTileEnabled;
+      final int pageSize = getPageSize(isComplexTile: isComplexTile);
 
-          if (pageSize != state.currentPageSize) {
-            add(StoriesPageSizeChanged(pageSize: pageSize));
-          }
-        });
+      if (pageSize != state.currentPageSize) {
+        add(StoriesPageSizeChanged(pageSize: pageSize));
+      }
+    });
     final bool isComplexTile = _preferenceCubit.state.isComplexStoryTileEnabled;
     final int pageSize = getPageSize(isComplexTile: isComplexTile);
     emit(
@@ -143,7 +143,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       await _hackerNewsRepository
           .fetchStoriesStream(
         ids: ids.sublist(0, state.currentPageSize),
-        sequential: !event.isRefreshing,
+        // TODO(Jiaqi): verify if this is worth it.
+        //sequential: !event.isRefreshing,
       )
           .listen((Story story) {
         /// When it's refreshing, only flush
@@ -265,9 +266,17 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     });
 
     if (_preferenceCubit.state.isFaviconEnabled &&
-        state.storiesByType[event.type]!.length < state.currentPageSize &&
+        !_preferenceCubit.state.isComplexStoryTileEnabled &&
         story.url.isNotEmpty) {
-      await _faviconRepository.getFaviconUrl(story.url);
+      await _faviconRepository
+          .getFaviconUrl(story.url)
+          .timeout(AppDurations.oneSecond)
+          .catchError((dynamic err) {
+        _logger
+          ..d('failed to fetch favicon for ${story.url}')
+          ..d('due to $err');
+        return '';
+      });
     }
 
     emit(

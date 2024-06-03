@@ -4,13 +4,18 @@ import 'package:favicon/favicon.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/repositories/sembast_repository.dart';
+import 'package:logger/logger.dart';
 
 class FaviconRepository {
-  FaviconRepository({SembastRepository? sembastRepository})
-      : _sembastRepository =
-            sembastRepository ?? locator.get<SembastRepository>();
+  FaviconRepository({
+    SembastRepository? sembastRepository,
+    Logger? logger,
+  })  : _sembastRepository =
+            sembastRepository ?? locator.get<SembastRepository>(),
+        _logger = logger ?? locator.get<Logger>();
 
   final SembastRepository _sembastRepository;
+  final Logger _logger;
 
   static final Map<String, String?> _cache = <String, String?>{};
 
@@ -24,6 +29,7 @@ class FaviconRepository {
           await _sembastRepository.getCachedFavicon(host: host);
       if (faviconUrl != null) {
         _cache[host] = faviconUrl;
+        _logger.d('cached favicon url ($faviconUrl) fetched for $url');
         return faviconUrl;
       } else {
         faviconUrl = await compute(_fetchFaviconUrl, url);
@@ -36,6 +42,7 @@ class FaviconRepository {
             ),
           );
         }
+        _logger.d('favicon url ($faviconUrl) fetched for $url');
         return faviconUrl;
       }
     }

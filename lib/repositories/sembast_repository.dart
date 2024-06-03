@@ -51,9 +51,9 @@ class SembastRepository {
   }
 
   Future<Database> initializeCache() async {
-    final Directory dir = await getTemporaryDirectory();
-    await dir.create(recursive: true);
-    final String dbPath = join(dir.path, 'hacki_cache.db');
+    final Directory tempDir = await getTemporaryDirectory();
+    await tempDir.create(recursive: true);
+    final String dbPath = join(tempDir.path, 'hacki_cache.db');
     final DatabaseFactory dbFactory = databaseFactoryIo;
     final Database db = await dbFactory.openDatabase(dbPath);
     _cache = db;
@@ -250,17 +250,23 @@ class SembastRepository {
 
   //#endregion
 
-  Future<FileSystemEntity> deleteCachedComments() async {
+  Future<void> deleteCachedComments() async {
     final Directory dir = await getApplicationDocumentsDirectory();
     await dir.create(recursive: true);
     final String dbPath = join(dir.path, 'hacki.db');
-    return File(dbPath).delete();
+    final File file = File(dbPath);
+    if (file.existsSync()) {
+      await file.delete();
+    }
   }
 
-  Future<FileSystemEntity> deleteCachedMetadata() async {
+  Future<void> deleteCachedMetadata() async {
     final Directory tempDir = await getTemporaryDirectory();
     await tempDir.create(recursive: true);
     final String cachePath = join(tempDir.path, 'hacki_cache.db');
-    return File(cachePath).delete();
+    final File file = File(cachePath);
+    if (file.existsSync()) {
+      await file.delete();
+    }
   }
 }
