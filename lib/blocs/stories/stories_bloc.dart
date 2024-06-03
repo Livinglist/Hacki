@@ -263,15 +263,14 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     if (_preferenceCubit.state.isFaviconEnabled &&
         !_preferenceCubit.state.isComplexStoryTileEnabled &&
         story.url.isNotEmpty) {
-      await _faviconRepository
-          .getFaviconUrl(story.url)
-          .timeout(AppDurations.ms500)
-          .catchError((dynamic err) {
-        _logger
-          ..d('failed to fetch favicon for ${story.url}')
-          ..d('due to $err');
-        return '';
-      });
+      unawaited(
+        _faviconRepository.getFaviconUrl(story.url).catchError((dynamic err) {
+          _logger
+            ..d('failed to fetch favicon for ${story.url}')
+            ..d('due to $err');
+          return '';
+        }),
+      );
     }
 
     emit(
