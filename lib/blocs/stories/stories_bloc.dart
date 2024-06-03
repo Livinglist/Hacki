@@ -81,18 +81,18 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   ) async {
     _preferenceSubscription ??= _preferenceCubit.stream
         .distinct((PreferenceState previous, PreferenceState next) {
-          return previous.isComplexStoryTileEnabled ==
-              next.isComplexStoryTileEnabled;
-        })
-        .debounceTime(AppDurations.twoSeconds)
+      return previous.isComplexStoryTileEnabled ==
+          next.isComplexStoryTileEnabled;
+    })
+        //.debounceTime(AppDurations.twoSeconds)
         .listen((PreferenceState event) {
-          final bool isComplexTile = event.isComplexStoryTileEnabled;
-          final int pageSize = getPageSize(isComplexTile: isComplexTile);
+      final bool isComplexTile = event.isComplexStoryTileEnabled;
+      final int pageSize = getPageSize(isComplexTile: isComplexTile);
 
-          if (pageSize != state.currentPageSize) {
-            add(StoriesPageSizeChanged(pageSize: pageSize));
-          }
-        });
+      if (pageSize != state.currentPageSize) {
+        add(StoriesPageSizeChanged(pageSize: pageSize));
+      }
+    });
     final bool isComplexTile = _preferenceCubit.state.isComplexStoryTileEnabled;
     final int pageSize = getPageSize(isComplexTile: isComplexTile);
     emit(
@@ -139,27 +139,13 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
             .copyWithCurrentPageUpdated(type: type, to: 0)
             .copyWithStatusUpdated(type: type, to: Status.inProgress),
       );
-      bool hasFirstArrived = false;
       await _hackerNewsRepository
           .fetchStoriesStream(
         ids: ids.sublist(0, state.currentPageSize),
-        sequential: !event.isRefreshing,
+        sequential: _preferenceCubit.state.isComplexStoryTileEnabled ||
+            _preferenceCubit.state.isFaviconEnabled,
       )
           .listen((Story story) {
-        /// When it's refreshing, only flush
-        /// previous stories when new stories has been fetched.
-        if (event.isRefreshing && !hasFirstArrived) {
-          hasFirstArrived = true;
-          final Map<StoryType, List<Story>> newStoriesMap =
-              Map<StoryType, List<Story>>.from(state.storiesByType);
-          newStoriesMap[type] = <Story>[];
-          emit(
-            state.copyWith(
-              storiesByType: newStoriesMap,
-            ),
-          );
-        }
-
         add(StoryLoaded(story: story, type: type));
       }).asFuture<void>();
       add(StoriesLoaded(type: type));
@@ -256,6 +242,10 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     Emitter<StoriesState> emit,
   ) async {
     final Story story = event.story;
+    if (state.storiesByType[event.type]?.contains(story) ?? false) {
+      _logger.d('story already exists.');
+      return;
+    }
     final bool hasRead = await _preferenceRepository.hasRead(story.id);
     final bool hidden = _filterCubit.state.keywords.any((String keyword) {
       // Match word only.
@@ -265,9 +255,17 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     });
 
     if (_preferenceCubit.state.isFaviconEnabled &&
-        state.storiesByType[event.type]!.length < state.currentPageSize &&
+        !_preferenceCubit.state.isComplexStoryTileEnabled &&
         story.url.isNotEmpty) {
-      await _faviconRepository.getFaviconUrl(story.url);
+      await _faviconRepository
+          .getFaviconUrl(story.url)
+          .timeout(AppDurations.oneSecond)
+          .catchError((dynamic err) {
+        _logger
+          ..d('failed to fetch favicon for ${story.url}')
+          ..d('due to $err');
+        return '';
+      });
     }
 
     emit(

@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:fast_gbk/fast_gbk.dart';
+import 'package:favicon/favicon.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
@@ -232,23 +233,20 @@ ${info.toJson()}
     required Story story,
     String? url,
   }) async {
-    List<dynamic>? res;
-
-    if (url != null) {
-      res = await compute(
-        _fetchInfoFromUrl,
-        <dynamic>[url, multimedia],
-      );
-    }
+    if (url == null) return null;
+    final List<dynamic>? res = await compute(
+      _fetchInfoFromUrl,
+      <dynamic>[url, multimedia],
+    );
 
     late final bool shouldRetry;
     InfoBase? info;
     String? fallbackDescription;
 
+    // If description is empty, use one of the comments under the story.
     if (res == null || isEmpty(res[2] as String?)) {
       final List<int> ids = <int>[story.id, ...story.kids];
       final String? commentText = await _fetchInfoFromStory(ids);
-
       shouldRetry = commentText == null;
       fallbackDescription = commentText ?? 'no comment yet';
     } else {
@@ -267,19 +265,22 @@ ${info.toJson()}
           image: res[4] as String?,
         ).._shouldRetry = shouldRetry;
       } else {
+        final Favicon? favicon = await FaviconFinder.getBest(url);
         info = WebInfo(
           image: res[1] as String,
+          icon: favicon?.url,
           title: story.title,
           description: story.text.isEmpty ? fallbackDescription : story.text,
         ).._shouldRetry = shouldRetry;
       }
     } else {
+      final Favicon? favicon = await FaviconFinder.getBest(url);
       return WebInfo(
         title: story.title,
         description: fallbackDescription,
+        icon: favicon?.url,
       ).._shouldRetry = shouldRetry;
     }
-
     return info;
   }
 
@@ -291,7 +292,6 @@ ${info.toJson()}
       final bool multimedia = message[1] as bool;
 
       final InfoBase? info = await _getInfo(url, multimedia);
-
       if (info is WebInfo) {
         return <dynamic>[
           '0',
@@ -419,14 +419,12 @@ ${info.toJson()}
       } catch (e) {
         try {
           html = gbk.decode(response.bodyBytes);
-        } catch (e) {
-          locator
-              .get<Logger>()
-              .e('''web page resolution failure from:$url Error:$e''');
-        }
+        } catch (_) {}
       }
 
-      if (html == null) return null;
+      if (html == null) {
+        return null;
+      }
 
       final String headHtml = _getHeadHtml(html);
       final Document document = parser.parse(headHtml);
@@ -443,7 +441,7 @@ ${info.toJson()}
 
       final WebInfo info = WebInfo(
         title: _analyzeTitle(document),
-        icon: _analyzeIcon(document, uri),
+        icon: await _analyzeIcon(document, uri),
         description: _analyzeDescription(document, html),
         image: _analyzeImage(document, uri),
       );
@@ -530,7 +528,7 @@ ${info.toJson()}
     return description;
   }
 
-  static String? _analyzeIcon(Document document, Uri uri) {
+  static Future<String?> _analyzeIcon(Document document, Uri uri) async {
     final List<Element> meta = document.head!.getElementsByTagName('link');
     String? icon = '';
     // get icon first
@@ -559,7 +557,8 @@ ${info.toJson()}
     if (metaIcon != null) {
       icon = metaIcon.attributes['href'];
     } else {
-      return '${uri.origin}/favicon.ico';
+      final Favicon? favicon = await FaviconFinder.getBest(uri.toString());
+      return favicon?.url;
     }
 
     return _handleUrl(uri, icon);
