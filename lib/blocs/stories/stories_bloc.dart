@@ -139,28 +139,12 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
             .copyWithCurrentPageUpdated(type: type, to: 0)
             .copyWithStatusUpdated(type: type, to: Status.inProgress),
       );
-      bool hasFirstArrived = false;
       await _hackerNewsRepository
           .fetchStoriesStream(
         ids: ids.sublist(0, state.currentPageSize),
-        // TODO(Jiaqi): verify if this is worth it.
-        //sequential: !event.isRefreshing,
+        sequential: _preferenceCubit.state.isComplexStoryTileEnabled,
       )
           .listen((Story story) {
-        /// When it's refreshing, only flush
-        /// previous stories when new stories has been fetched.
-        if (event.isRefreshing && !hasFirstArrived) {
-          hasFirstArrived = true;
-          final Map<StoryType, List<Story>> newStoriesMap =
-              Map<StoryType, List<Story>>.from(state.storiesByType);
-          newStoriesMap[type] = <Story>[];
-          emit(
-            state.copyWith(
-              storiesByType: newStoriesMap,
-            ),
-          );
-        }
-
         add(StoryLoaded(story: story, type: type));
       }).asFuture<void>();
       add(StoriesLoaded(type: type));

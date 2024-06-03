@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hacki/blocs/blocs.dart';
+import 'package:hacki/config/locator.dart';
+import 'package:hacki/repositories/favicon_repository.dart';
 import 'package:hacki/screens/widgets/tap_down_wrapper.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/link_util.dart';
@@ -125,13 +127,36 @@ class LinkView extends StatelessWidget {
                             fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
                             cacheKey: imageUri,
                             errorWidget: (_, __, ___) => Center(
-                              child: Text(
-                                r'¯\_(ツ)_/¯',
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                              ),
-                            ),
+                                child: FutureBuilder<String?>(
+                              future: locator
+                                  .get<FaviconRepository>()
+                                  .getFaviconUrl(url),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<String?> snapshot) {
+                                final String? faviconUrl = snapshot.data;
+                                if (faviconUrl == null) {
+                                  return Text(
+                                    r'¯\_(ツ)_/¯',
+                                    style: TextStyle(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                  );
+                                } else {
+                                  if (faviconUrl.endsWith('.svg')) {
+                                    return SvgPicture.network(
+                                      faviconUrl,
+                                      fit: BoxFit.fitHeight,
+                                    );
+                                  } else {
+                                    return CachedNetworkImage(
+                                      fit: BoxFit.fitHeight,
+                                      imageUrl: faviconUrl,
+                                    );
+                                  }
+                                }
+                              },
+                            )),
                           );
                         }
                       } else if (imagePath != null) {
