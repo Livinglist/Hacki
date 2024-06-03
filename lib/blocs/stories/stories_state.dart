@@ -151,10 +151,10 @@ class StoriesState extends Equatable {
 
   StoriesState copyWithRefreshed({required StoryType type}) {
     final Map<StoryType, List<Story>> newStoriesMap =
-    Map<StoryType, List<Story>>.from(storiesByType);
+        Map<StoryType, List<Story>>.from(storiesByType);
     newStoriesMap[type] = <Story>[];
     final Map<StoryType, List<int>> newStoryIdsMap =
-    Map<StoryType, List<int>>.from(storyIdsByType);
+        Map<StoryType, List<int>>.from(storyIdsByType);
     newStoryIdsMap[type] = <int>[];
     final Map<StoryType, Status> newStatusMap =
         Map<StoryType, Status>.from(statusByType);
