@@ -121,9 +121,11 @@ class LinkView extends StatelessWidget {
                       cacheKey: imageUri,
                       errorWidget: (_, __, ___) {
                         if (url.isEmpty) {
-                          return Center(
-                            child: _HackerNewsImage(
-                              height: layoutHeight,
+                          return FadeIn(
+                            child: Center(
+                              child: _HackerNewsImage(
+                                height: layoutHeight,
+                              ),
                             ),
                           );
                         }
@@ -133,9 +135,11 @@ class LinkView extends StatelessWidget {
                             fit: BoxFit.scaleDown,
                             cacheKey: iconUri,
                             errorWidget: (_, __, ___) {
-                              return const Icon(
-                                Icons.public,
-                                size: Dimens.pt20,
+                              return const FadeIn(
+                                child: Icon(
+                                  Icons.public,
+                                  size: Dimens.pt20,
+                                ),
                               );
                             },
                           ),
