@@ -23,15 +23,6 @@ class StoriesInitialize extends StoriesEvent {
   List<Object?> get props => <Object?>[];
 }
 
-class StoriesLoaded extends StoriesEvent {
-  StoriesLoaded({required this.type});
-
-  final StoryType type;
-
-  @override
-  List<Object?> get props => <Object?>[type];
-}
-
 class StoriesRefresh extends StoriesEvent {
   StoriesRefresh({required this.type});
 
@@ -102,6 +93,10 @@ class StoryLoaded extends StoriesEvent {
 
   @override
   List<Object?> get props => <Object?>[story, type];
+}
+
+class StoryLoadingCompleted extends StoryLoaded {
+  StoryLoadingCompleted({required super.type}) : super(story: Story.empty());
 }
 
 class StoryRead extends StoriesEvent {
