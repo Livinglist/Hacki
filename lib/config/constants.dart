@@ -67,7 +67,7 @@ abstract class Constants {
   static final String loginErrorMessage =
       '''Failed to log in $sadFace, this could happen if your account requires a CAPTCHA, please try logging in inside a browser to see if this is the case, if so, you may try logging in here again later after CAPTCHA is no longer needed.''';
 
-  static String favicon(String url, {double size = 32}) {
+  static String favicon(String url, {int size = 32}) {
     final Uri uri = Uri.parse(url);
     final String host = uri.host;
     return 'https://www.google.com/s2/favicons?domain=$host&sz=$size';
