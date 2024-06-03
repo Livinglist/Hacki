@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/screens/widgets/tap_down_wrapper.dart';
@@ -118,20 +119,32 @@ class LinkView extends StatelessWidget {
                       imageUrl: imageUri ?? '',
                       fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
                       cacheKey: imageUri,
-                      errorWidget: (_, __, ___) => Center(
-                        child: CachedNetworkImage(
-                          imageUrl: Constants.favicon(url),
-                          fit: BoxFit.scaleDown,
-                          cacheKey: iconUri,
-                          errorWidget: (_, __, ___) {
-                            return Center(
-                              child: _FallbackIcon(
+                      errorWidget: (_, __, ___) {
+                        if (url.isEmpty) {
+                          return FadeIn(
+                            child: Center(
+                              child: _HackerNewsImage(
                                 height: layoutHeight,
                               ),
-                            );
-                          },
-                        ),
-                      ),
+                            ),
+                          );
+                        }
+                        return Center(
+                          child: CachedNetworkImage(
+                            imageUrl: Constants.favicon(url),
+                            fit: BoxFit.scaleDown,
+                            cacheKey: iconUri,
+                            errorWidget: (_, __, ___) {
+                              return const FadeIn(
+                                child: Icon(
+                                  Icons.public,
+                                  size: Dimens.pt20,
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
@@ -161,8 +174,8 @@ class LinkView extends StatelessWidget {
   }
 }
 
-class _FallbackIcon extends StatelessWidget {
-  const _FallbackIcon({
+class _HackerNewsImage extends StatelessWidget {
+  const _HackerNewsImage({
     required this.height,
   });
 
@@ -170,11 +183,13 @@ class _FallbackIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset(
-      Constants.hackerNewsLogoPath,
-      height: height,
-      width: height,
-      fit: BoxFit.fitWidth,
+    return FadeIn(
+      child: Image.asset(
+        Constants.hackerNewsLogoPath,
+        height: height,
+        width: height,
+        fit: BoxFit.fitWidth,
+      ),
     );
   }
 }
