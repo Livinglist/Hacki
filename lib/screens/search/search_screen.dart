@@ -359,10 +359,11 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                     FadeIn(
                                       child: StoryTile(
                                         showWebPreview:
-                                            prefState.complexStoryTileEnabled,
-                                        showMetadata: prefState.metadataEnabled,
-                                        showUrl: prefState.urlEnabled,
-                                        showFavicon: prefState.isFavIconEnabled,
+                                            prefState.isComplexStoryTileEnabled,
+                                        showMetadata:
+                                            prefState.isMetadataEnabled,
+                                        showUrl: prefState.isUrlEnabled,
+                                        showFavicon: prefState.isFaviconEnabled,
                                         story: e,
                                         onTap: () => goToItemScreen(
                                           args: ItemScreenArgs(item: e),
@@ -384,7 +385,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                         ),
                                       ),
                                     ),
-                                  if (!prefState.complexStoryTileEnabled)
+                                  if (!prefState.isComplexStoryTileEnabled)
                                     const Divider(
                                       height: Dimens.zero,
                                     ),

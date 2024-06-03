@@ -37,7 +37,7 @@ class PinnedStories extends StatelessWidget {
                         },
                         backgroundColor: Palette.red,
                         foregroundColor: Palette.white,
-                        icon: preferenceState.complexStoryTileEnabled
+                        icon: preferenceState.isComplexStoryTileEnabled
                             ? Icons.close
                             : null,
                         label: 'Unpin',
@@ -51,10 +51,10 @@ class PinnedStories extends StatelessWidget {
                       key: ValueKey<String>('${story.id}-PinnedStoryTile'),
                       story: story,
                       onTap: () => onStoryTapped(story),
-                      showWebPreview: preferenceState.complexStoryTileEnabled,
-                      showMetadata: preferenceState.metadataEnabled,
-                      showUrl: preferenceState.urlEnabled,
-                      showFavicon: preferenceState.isFavIconEnabled,
+                      showWebPreview: preferenceState.isComplexStoryTileEnabled,
+                      showMetadata: preferenceState.isMetadataEnabled,
+                      showUrl: preferenceState.isUrlEnabled,
+                      showFavicon: preferenceState.isFaviconEnabled,
                     ),
                   ),
                 ),
