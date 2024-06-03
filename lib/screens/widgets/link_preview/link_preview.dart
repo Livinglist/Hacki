@@ -145,6 +145,7 @@ class _LinkPreviewState extends State<LinkPreview> {
     String? title = '',
     String? desc = '',
     String? imageUri = '',
+    String? iconUri = '',
     bool isIcon = false,
   }) {
     return Container(
@@ -169,6 +170,7 @@ class _LinkPreviewState extends State<LinkPreview> {
         title: widget.story.title,
         description: desc ?? title ?? 'no comment yet.',
         imageUri: imageUri,
+        iconUri: iconUri,
         imagePath: Constants.hackerNewsLogoPath,
         onTap: widget.onTap,
         hasRead: widget.hasRead,
@@ -209,6 +211,7 @@ class _LinkPreviewState extends State<LinkPreview> {
             title: _errorTitle,
             desc: _errorBody,
             imageUri: null,
+            iconUri: null,
           )
         : _buildLinkContainer(
             context.storyTileHeight,
@@ -216,14 +219,8 @@ class _LinkPreviewState extends State<LinkPreview> {
             desc: WebAnalyzer.isNotEmpty(info!.description)
                 ? info.description
                 : _errorBody,
-            imageUri: widget.showMultimedia
-                ? (WebAnalyzer.isNotEmpty(info.image)
-                    ? info.image
-                    : WebAnalyzer.isNotEmpty(info.icon)
-                        ? info.icon
-                        : null)
-                : null,
-            isIcon: !WebAnalyzer.isNotEmpty(info.image),
+            imageUri: widget.showMultimedia ? info.image : null,
+            iconUri: widget.showMultimedia ? info.icon : null,
           );
 
     return AnimatedCrossFade(

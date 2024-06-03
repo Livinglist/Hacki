@@ -149,41 +149,53 @@ class StoryTile extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 if (showFavicon) ...<Widget>[
-                  SizedBox(
-                    height: Dimens.pt20,
-                    width: Dimens.pt24,
-                    child: Center(
-                      child: FutureBuilder<String?>(
-                        future: locator
-                            .get<FaviconRepository>()
-                            .getFaviconUrl(story.url),
-                        builder: (
-                          BuildContext context,
-                          AsyncSnapshot<String?> snapshot,
-                        ) {
-                          final String? url = snapshot.data;
-                          if (url != null) {
-                            if (url.endsWith('.svg')) {
-                              return SvgPicture.network(
-                                url,
-                                fit: BoxFit.fitHeight,
-                              );
+                  if (story.url.isNotEmpty)
+                    SizedBox(
+                      height: Dimens.pt20,
+                      width: Dimens.pt24,
+                      child: Center(
+                        child: FutureBuilder<String?>(
+                          future: locator
+                              .get<FaviconRepository>()
+                              .getFaviconUrl(story.url),
+                          builder: (
+                            BuildContext context,
+                            AsyncSnapshot<String?> snapshot,
+                          ) {
+                            final String? url = snapshot.data;
+                            if (url != null) {
+                              if (url.endsWith('.svg')) {
+                                return SvgPicture.network(
+                                  url,
+                                  fit: BoxFit.fitHeight,
+                                );
+                              } else {
+                                return CachedNetworkImage(
+                                  fit: BoxFit.fitHeight,
+                                  imageUrl: url,
+                                );
+                              }
                             } else {
-                              return CachedNetworkImage(
-                                fit: BoxFit.fitHeight,
-                                imageUrl: url,
+                              return const Icon(
+                                Icons.public,
+                                size: Dimens.pt20,
                               );
                             }
-                          } else {
-                            return const Icon(
-                              Icons.public,
-                              size: Dimens.pt20,
-                            );
-                          }
-                        },
+                          },
+                        ),
+                      ),
+                    )
+                  else
+                    const SizedBox(
+                      height: Dimens.pt20,
+                      width: Dimens.pt24,
+                      child: Center(
+                        child: Icon(
+                          Icons.public,
+                          size: Dimens.pt20,
+                        ),
                       ),
                     ),
-                  ),
                   const SizedBox(
                     width: Dimens.pt8,
                   ),

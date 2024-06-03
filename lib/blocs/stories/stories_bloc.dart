@@ -142,7 +142,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       await _hackerNewsRepository
           .fetchStoriesStream(
         ids: ids.sublist(0, state.currentPageSize),
-        sequential: _preferenceCubit.state.isComplexStoryTileEnabled,
+        sequential: _preferenceCubit.state.isComplexStoryTileEnabled ||
+            _preferenceCubit.state.isFaviconEnabled,
       )
           .listen((Story story) {
         add(StoryLoaded(story: story, type: type));
@@ -241,6 +242,10 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     Emitter<StoriesState> emit,
   ) async {
     final Story story = event.story;
+    if (state.storiesByType[event.type]?.contains(story) ?? false) {
+      _logger.d('story already exists.');
+      return;
+    }
     final bool hasRead = await _preferenceRepository.hasRead(story.id);
     final bool hidden = _filterCubit.state.keywords.any((String keyword) {
       // Match word only.

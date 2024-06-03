@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hacki/blocs/blocs.dart';
-import 'package:hacki/config/locator.dart';
-import 'package:hacki/repositories/favicon_repository.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/screens/widgets/tap_down_wrapper.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/link_util.dart';
@@ -26,6 +25,7 @@ class LinkView extends StatelessWidget {
     required this.bodyMaxLines,
     super.key,
     this.imageUri,
+    this.iconUri,
     this.imagePath,
     this.showMultiMedia = true,
     this.bodyTextOverflow,
@@ -46,6 +46,7 @@ class LinkView extends StatelessWidget {
   final String title;
   final String description;
   final String? imageUri;
+  final String? iconUri;
   final String? imagePath;
   final VoidCallback onTap;
   final bool showMultiMedia;
@@ -115,54 +116,40 @@ class LinkView extends StatelessWidget {
                     height: layoutHeight,
                     width: layoutHeight,
                     child: () {
-                      if (imageUri != null && imageUri!.isNotEmpty) {
-                        if (imageUri!.endsWith('.svg')) {
+                      if ((imageUri != null && imageUri!.isNotEmpty) ||
+                          (iconUri != null && iconUri!.isNotEmpty)) {
+                        if (imageUri?.endsWith('.svg') ??
+                            iconUri!.endsWith('.svg')) {
                           return SvgPicture.network(
-                            imageUri!,
+                            imageUri ?? iconUri ?? '',
                             fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
                           );
                         } else {
                           return CachedNetworkImage(
-                            imageUrl: imageUri!,
+                            imageUrl: imageUri ?? '',
                             fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
                             cacheKey: imageUri,
                             errorWidget: (_, __, ___) => Center(
-                                child: FutureBuilder<String?>(
-                              future: locator
-                                  .get<FaviconRepository>()
-                                  .getFaviconUrl(url),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<String?> snapshot) {
-                                final String? faviconUrl = snapshot.data;
-                                if (faviconUrl == null) {
-                                  return Text(
-                                    r'¯\_(ツ)_/¯',
-                                    style: TextStyle(
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
+                              child: CachedNetworkImage(
+                                imageUrl: iconUri ?? '',
+                                fit: BoxFit.scaleDown,
+                                cacheKey: iconUri,
+                                errorWidget: (_, __, ___) {
+                                  return Center(
+                                    child: _FallbackIcon(
+                                      height: layoutHeight,
                                     ),
                                   );
-                                } else {
-                                  if (faviconUrl.endsWith('.svg')) {
-                                    return SvgPicture.network(
-                                      faviconUrl,
-                                      fit: BoxFit.fitHeight,
-                                    );
-                                  } else {
-                                    return CachedNetworkImage(
-                                      fit: BoxFit.fitHeight,
-                                      imageUrl: faviconUrl,
-                                    );
-                                  }
-                                }
-                              },
-                            )),
+                                },
+                              ),
+                            ),
                           );
                         }
-                      } else if (imagePath != null) {
-                        return Image.asset(
-                          imagePath!,
-                          fit: BoxFit.cover,
+                      } else {
+                        return Center(
+                          child: _FallbackIcon(
+                            height: layoutHeight,
+                          ),
                         );
                       }
                     }(),
@@ -190,6 +177,24 @@ class LinkView extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+class _FallbackIcon extends StatelessWidget {
+  const _FallbackIcon({
+    required this.height,
+  });
+
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      Constants.hackerNewsLogoPath,
+      height: height,
+      width: height,
+      fit: BoxFit.fitWidth,
     );
   }
 }

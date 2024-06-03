@@ -20,6 +20,7 @@ class FaviconRepository {
   static final Map<String, String?> _cache = <String, String?>{};
 
   Future<String?> getFaviconUrl(String url) async {
+    if (url.isEmpty) return null;
     final Uri uri = Uri.parse(url);
     final String host = uri.host;
     if (_cache.containsKey(host)) {
@@ -32,6 +33,7 @@ class FaviconRepository {
         _logger.d('cached favicon url ($faviconUrl) fetched for $url');
         return faviconUrl;
       } else {
+        _logger.d('fetching favicon for $url');
         faviconUrl = await compute(_fetchFaviconUrl, url);
         _cache[host] = faviconUrl;
         if (faviconUrl != null) {
