@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
-import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
@@ -24,7 +23,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     OfflineRepository? offlineRepository,
     HackerNewsRepository? hackerNewsRepository,
     PreferenceRepository? preferenceRepository,
-    FaviconRepository? faviconRepository,
     Logger? logger,
   })  : _preferenceCubit = preferenceCubit,
         _filterCubit = filterCubit,
@@ -34,8 +32,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
             hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
         _preferenceRepository =
             preferenceRepository ?? locator.get<PreferenceRepository>(),
-        _faviconRepository =
-            faviconRepository ?? locator.get<FaviconRepository>(),
         _logger = logger ?? locator.get<Logger>(),
         super(const StoriesState.init()) {
     on<LoadStories>(
@@ -66,10 +62,9 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   final OfflineRepository _offlineRepository;
   final HackerNewsRepository _hackerNewsRepository;
   final PreferenceRepository _preferenceRepository;
-  final FaviconRepository _faviconRepository;
   final Logger _logger;
   DeviceScreenType? deviceScreenType;
-  StreamSubscription<PreferenceState>? _preferenceSubscription;
+  StreamSubscription<PreferenceState>? _streamSubscription;
   static const int _smallPageSize = 10;
   static const int _largePageSize = 20;
   static const int _tabletSmallPageSize = 15;
@@ -79,21 +74,16 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     StoriesInitialize event,
     Emitter<StoriesState> emit,
   ) async {
-    _preferenceSubscription ??= _preferenceCubit.stream
-        .distinct((PreferenceState previous, PreferenceState next) {
-          return previous.isComplexStoryTileEnabled ==
-              next.isComplexStoryTileEnabled;
-        })
-        .debounceTime(AppDurations.twoSeconds)
-        .listen((PreferenceState event) {
-          final bool isComplexTile = event.isComplexStoryTileEnabled;
-          final int pageSize = getPageSize(isComplexTile: isComplexTile);
+    _streamSubscription ??=
+        _preferenceCubit.stream.listen((PreferenceState event) {
+      final bool isComplexTile = event.complexStoryTileEnabled;
+      final int pageSize = getPageSize(isComplexTile: isComplexTile);
 
-          if (pageSize != state.currentPageSize) {
-            add(StoriesPageSizeChanged(pageSize: pageSize));
-          }
-        });
-    final bool isComplexTile = _preferenceCubit.state.isComplexStoryTileEnabled;
+      if (pageSize != state.currentPageSize) {
+        add(StoriesPageSizeChanged(pageSize: pageSize));
+      }
+    });
+    final bool isComplexTile = _preferenceCubit.state.complexStoryTileEnabled;
     final int pageSize = getPageSize(isComplexTile: isComplexTile);
     emit(
       const StoriesState.init().copyWith(
@@ -159,7 +149,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
             ),
           );
         }
-
         add(StoryLoaded(story: story, type: type));
       }).asFuture<void>();
       add(StoriesLoaded(type: type));
@@ -263,13 +252,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       return regExp.hasMatch(story.title.toLowerCase()) ||
           regExp.hasMatch(story.text.toLowerCase());
     });
-
-    if (_preferenceCubit.state.isFaviconEnabled &&
-        state.storiesByType[event.type]!.length < state.currentPageSize &&
-        story.url.isNotEmpty) {
-      await _faviconRepository.getFaviconUrl(story.url);
-    }
-
     emit(
       state.copyWithStoryAdded(
         type: event.type,
@@ -549,7 +531,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
 
   @override
   Future<void> close() async {
-    await _preferenceSubscription?.cancel();
+    await _streamSubscription?.cancel();
     await super.close();
   }
 }

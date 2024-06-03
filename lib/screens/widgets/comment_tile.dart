@@ -308,7 +308,7 @@ class CommentTile extends StatelessWidget {
           final double commentBackgroundColorOpacity =
               Theme.of(context).canvasColor != Palette.white ? 0.03 : 0.15;
 
-          final Color commentColor = prefState.isEyeCandyEnabled
+          final Color commentColor = prefState.eyeCandyEnabled
               ? color.withOpacity(commentBackgroundColorOpacity)
               : Palette.transparent;
           final bool isMyComment = comment.deleted == false &&
@@ -404,7 +404,7 @@ class CommentTile extends StatelessWidget {
   }
 
   void _onTextTapped(BuildContext context) {
-    if (context.read<PreferenceCubit>().state.isTapAnywhereToCollapseEnabled) {
+    if (context.read<PreferenceCubit>().state.tapAnywhereToCollapseEnabled) {
       _collapse(context);
     }
   }
@@ -414,7 +414,7 @@ class CommentTile extends StatelessWidget {
     final CollapseCubit collapseCubit = context.read<CollapseCubit>()
       ..collapse(onStateChanged: HapticFeedbackUtil.selection);
     if (collapseCubit.state.collapsed &&
-        preferenceCubit.state.isAutoScrollEnabled) {
+        preferenceCubit.state.autoScrollEnabled) {
       final CommentsCubit commentsCubit = context.read<CommentsCubit>();
       final List<Comment> comments = commentsCubit.state.comments;
       final int indexOfNextComment = comments.indexOf(comment) + 1;

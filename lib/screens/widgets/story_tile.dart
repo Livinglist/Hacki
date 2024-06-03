@@ -136,8 +136,7 @@ class StoryTile extends StatelessWidget {
               LinkUtil.launch(
                 story.url,
                 context,
-                useReader:
-                    context.read<PreferenceCubit>().state.isReaderEnabled,
+                useReader: context.read<PreferenceCubit>().state.readerEnabled,
                 offlineReading:
                     context.read<StoriesBloc>().state.isOfflineReading,
               );

@@ -237,19 +237,19 @@ class HackiApp extends StatelessWidget {
       ],
       child: BlocConsumer<PreferenceCubit, PreferenceState>(
         listenWhen: (PreferenceState previous, PreferenceState current) =>
-            previous.isHapticFeedbackEnabled != current.isHapticFeedbackEnabled,
+            previous.hapticFeedbackEnabled != current.hapticFeedbackEnabled,
         listener: (_, PreferenceState state) {
-          HapticFeedbackUtil.enabled = state.isHapticFeedbackEnabled;
+          HapticFeedbackUtil.enabled = state.hapticFeedbackEnabled;
         },
         buildWhen: (PreferenceState previous, PreferenceState current) =>
             previous.appColor != current.appColor ||
             previous.font != current.font ||
             previous.textScaleFactor != current.textScaleFactor ||
-            previous.isTrueDarkModeEnabled != current.isTrueDarkModeEnabled,
+            previous.trueDarkModeEnabled != current.trueDarkModeEnabled,
         builder: (BuildContext context, PreferenceState state) {
           return AdaptiveTheme(
             key: ValueKey<String>(
-              '''${state.appColor}${state.font}${state.isTrueDarkModeEnabled}''',
+              '''${state.appColor}${state.font}${state.trueDarkModeEnabled}''',
             ),
             light: ThemeData(
               primaryColor: state.appColor,
@@ -317,11 +317,11 @@ class HackiApp extends StatelessWidget {
                           colorScheme: colorScheme,
                           fontFamily: state.font.name,
                           canvasColor:
-                              isDarkModeEnabled && state.isTrueDarkModeEnabled
+                              isDarkModeEnabled && state.trueDarkModeEnabled
                                   ? Palette.black
                                   : null,
                           scaffoldBackgroundColor:
-                              isDarkModeEnabled && state.isTrueDarkModeEnabled
+                              isDarkModeEnabled && state.trueDarkModeEnabled
                                   ? Palette.black
                                   : null,
                           dividerTheme: DividerThemeData(

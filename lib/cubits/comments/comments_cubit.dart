@@ -194,7 +194,7 @@ class CommentsCubit extends Cubit<CommentsState> {
                     case RateLimitedException:
                     case RateLimitedWithFallbackException:
                     case PossibleParsingException:
-                      if (_preferenceCubit.state.isDevModeEnabled) {
+                      if (_preferenceCubit.state.devModeEnabled) {
                         onError?.call(e as AppException);
                       }
 
@@ -290,7 +290,7 @@ class CommentsCubit extends Cubit<CommentsState> {
                   case RateLimitedException:
                   case RateLimitedWithFallbackException:
                   case PossibleParsingException:
-                    if (_preferenceCubit.state.isDevModeEnabled) {
+                    if (_preferenceCubit.state.devModeEnabled) {
                       onError?.call(e as AppException);
                     }
 

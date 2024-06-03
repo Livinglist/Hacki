@@ -207,10 +207,10 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                   const TextScaleFactorSettings(),
                   const Divider(),
                   StoryTile(
-                    showWebPreview: preferenceState.isComplexStoryTileEnabled,
-                    showMetadata: preferenceState.isMetadataEnabled,
-                    showUrl: preferenceState.isUrlEnabled,
-                    showFavicon: preferenceState.isFaviconEnabled,
+                    showWebPreview: preferenceState.complexStoryTileEnabled,
+                    showMetadata: preferenceState.metadataEnabled,
+                    showUrl: preferenceState.urlEnabled,
+                    showFavicon: preferenceState.isFavIconEnabled,
                     story: Story.placeholder(),
                     onTap: () => LinkUtil.launch(
                       Constants.guidelineLink,
@@ -255,7 +255,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                           horizontal: Dimens.pt16,
                         ),
                         child: DropdownMenu<StoryMarkingMode>(
-                          enabled: preferenceState.isMarkReadStoriesEnabled,
+                          enabled: preferenceState.markReadStoriesEnabled,
                           label: Text(StoryMarkingModePreference().title),
                           initialSelection: preferenceState.storyMarkingMode,
                           onSelected: (StoryMarkingMode? storyMarkingMode) {
@@ -347,7 +347,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                     onTap: showAboutHackiDialog,
                     onLongPress: () {
                       final DevMode updatedDevMode =
-                          DevMode(val: !preferenceState.isDevModeEnabled);
+                          DevMode(val: !preferenceState.devModeEnabled);
                       context.read<PreferenceCubit>().update(updatedDevMode);
                       HapticFeedbackUtil.heavy();
                       if (updatedDevMode.val) {
