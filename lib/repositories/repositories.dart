@@ -1,5 +1,4 @@
 export 'auth_repository.dart';
-export 'favicon_repository.dart';
 export 'hacker_news_repository.dart';
 export 'hacker_news_web_repository.dart';
 export 'offline_repository.dart';
