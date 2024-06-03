@@ -49,9 +49,11 @@ class _StoriesListViewState extends State<StoriesListView>
 
     return BlocBuilder<PreferenceCubit, PreferenceState>(
       buildWhen: (PreferenceState previous, PreferenceState current) =>
-          previous.complexStoryTileEnabled != current.complexStoryTileEnabled ||
-          previous.metadataEnabled != current.metadataEnabled ||
-          previous.manualPaginationEnabled != current.manualPaginationEnabled,
+          previous.isComplexStoryTileEnabled !=
+              current.isComplexStoryTileEnabled ||
+          previous.isMetadataEnabled != current.isMetadataEnabled ||
+          previous.isManualPaginationEnabled !=
+              current.isManualPaginationEnabled,
       builder: (BuildContext context, PreferenceState preferenceState) {
         return BlocConsumer<StoriesBloc, StoriesState>(
           listenWhen: (StoriesState previous, StoriesState current) =>
@@ -75,7 +77,7 @@ class _StoriesListViewState extends State<StoriesListView>
                   current.statusByType[widget.storyType]),
           builder: (BuildContext context, StoriesState state) {
             bool shouldShowLoadButton() {
-              return preferenceState.manualPaginationEnabled &&
+              return preferenceState.isManualPaginationEnabled &&
                   state.statusByType[widget.storyType] == Status.success &&
                   (state.storiesByType[widget.storyType]?.length ?? 0) <
                       (state.storyIdsByType[widget.storyType]?.length ?? 0);
@@ -83,12 +85,12 @@ class _StoriesListViewState extends State<StoriesListView>
 
             return ItemsListView<Story>(
               showOfflineBanner: true,
-              markReadStories: preferenceState.markReadStoriesEnabled,
+              markReadStories: preferenceState.isMarkReadStoriesEnabled,
               showWebPreviewOnStoryTile:
-                  preferenceState.complexStoryTileEnabled,
-              showMetadataOnStoryTile: preferenceState.metadataEnabled,
-              showFavicon: preferenceState.isFavIconEnabled,
-              showUrl: preferenceState.urlEnabled,
+                  preferenceState.isComplexStoryTileEnabled,
+              showMetadataOnStoryTile: preferenceState.isMetadataEnabled,
+              showFavicon: preferenceState.isFaviconEnabled,
+              showUrl: preferenceState.isUrlEnabled,
               refreshController: refreshController,
               scrollController: scrollController,
               items: state.storiesByType[storyType]!,
@@ -100,7 +102,7 @@ class _StoriesListViewState extends State<StoriesListView>
                 context.read<PinCubit>().refresh();
               },
               onLoadMore: () {
-                if (preferenceState.manualPaginationEnabled) {
+                if (preferenceState.isManualPaginationEnabled) {
                   refreshController
                     ..refreshCompleted(resetFooterState: true)
                     ..loadComplete();
@@ -148,7 +150,7 @@ class _StoriesListViewState extends State<StoriesListView>
               itemBuilder: (Widget child, Story story) {
                 return Slidable(
                   key: ValueKey<Story>(story),
-                  enabled: !preferenceState.swipeGestureEnabled,
+                  enabled: !preferenceState.isSwipeGestureEnabled,
                   startActionPane: ActionPane(
                     motion: const BehindMotion(),
                     children: <Widget>[
@@ -160,10 +162,10 @@ class _StoriesListViewState extends State<StoriesListView>
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor:
                             Theme.of(context).colorScheme.onPrimary,
-                        icon: preferenceState.complexStoryTileEnabled
+                        icon: preferenceState.isComplexStoryTileEnabled
                             ? Icons.push_pin_outlined
                             : null,
-                        label: preferenceState.complexStoryTileEnabled
+                        label: preferenceState.isComplexStoryTileEnabled
                             ? null
                             : 'Pin',
                       ),
@@ -172,10 +174,10 @@ class _StoriesListViewState extends State<StoriesListView>
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor:
                             Theme.of(context).colorScheme.onPrimary,
-                        icon: preferenceState.complexStoryTileEnabled
+                        icon: preferenceState.isComplexStoryTileEnabled
                             ? Icons.more_horiz
                             : null,
-                        label: preferenceState.complexStoryTileEnabled
+                        label: preferenceState.isComplexStoryTileEnabled
                             ? null
                             : 'More',
                       ),
@@ -194,9 +196,10 @@ class _StoriesListViewState extends State<StoriesListView>
                     children: <Widget>[
                       SlidableAction(
                         onPressed: (_) => mark(story),
-                        backgroundColor: preferenceState.markReadStoriesEnabled
-                            ? Theme.of(context).colorScheme.primary
-                            : Palette.grey,
+                        backgroundColor:
+                            preferenceState.isMarkReadStoriesEnabled
+                                ? Theme.of(context).colorScheme.primary
+                                : Palette.grey,
                         foregroundColor:
                             Theme.of(context).colorScheme.onPrimary,
                         icon: state.readStoriesIds.contains(story.id)
@@ -242,7 +245,7 @@ class _StoriesListViewState extends State<StoriesListView>
     HapticFeedbackUtil.light();
     final StoriesBloc storiesBloc = context.read<StoriesBloc>();
     final bool markReadStoriesEnabled =
-        context.read<PreferenceCubit>().state.markReadStoriesEnabled;
+        context.read<PreferenceCubit>().state.isMarkReadStoriesEnabled;
     if (markReadStoriesEnabled) {
       if (storiesBloc.state.readStoriesIds.contains(story.id)) {
         storiesBloc.add(StoryUnread(story: story));

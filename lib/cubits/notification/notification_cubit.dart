@@ -37,16 +37,16 @@ class NotificationCubit extends Cubit<NotificationState> {
         .listen((String username) {
       if (username.isNotEmpty) {
         // Get the user setting.
-        if (_preferenceCubit.state.notificationEnabled) {
+        if (_preferenceCubit.state.isNotificationEnabled) {
           Future<void>.delayed(AppDurations.twoSeconds, init);
         }
 
         // Listen for setting changes in the future.
         _preferenceCubit.stream.listen((PreferenceState prefState) {
           final bool isActive = _timer?.isActive ?? false;
-          if (prefState.notificationEnabled && !isActive) {
+          if (prefState.isNotificationEnabled && !isActive) {
             init();
-          } else if (!prefState.notificationEnabled) {
+          } else if (!prefState.isNotificationEnabled) {
             _timer?.cancel();
           }
         });
@@ -133,7 +133,7 @@ class NotificationCubit extends Cubit<NotificationState> {
 
   Future<void> refresh() async {
     if (_authBloc.state.isLoggedIn &&
-        _preferenceCubit.state.notificationEnabled) {
+        _preferenceCubit.state.isNotificationEnabled) {
       emit(
         state.copyWith(
           status: Status.inProgress,

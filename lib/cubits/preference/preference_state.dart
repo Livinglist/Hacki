@@ -48,37 +48,37 @@ class PreferenceState extends Equatable {
         .val;
   }
 
-  bool get notificationEnabled => _isOn<NotificationModePreference>();
+  bool get isNotificationEnabled => _isOn<NotificationModePreference>();
 
-  bool get complexStoryTileEnabled => _isOn<DisplayModePreference>();
+  bool get isComplexStoryTileEnabled => _isOn<DisplayModePreference>();
 
-  bool get isFavIconEnabled => _isOn<FavIconModePreference>();
+  bool get isFaviconEnabled => _isOn<FaviconModePreference>();
 
-  bool get eyeCandyEnabled => _isOn<EyeCandyModePreference>();
+  bool get isEyeCandyEnabled => _isOn<EyeCandyModePreference>();
 
-  bool get readerEnabled => _isOn<ReaderModePreference>();
+  bool get isReaderEnabled => _isOn<ReaderModePreference>();
 
-  bool get markReadStoriesEnabled => _isOn<MarkReadStoriesModePreference>();
+  bool get isMarkReadStoriesEnabled => _isOn<MarkReadStoriesModePreference>();
 
-  bool get metadataEnabled => _isOn<MetadataModePreference>();
+  bool get isMetadataEnabled => _isOn<MetadataModePreference>();
 
-  bool get urlEnabled => _isOn<StoryUrlModePreference>();
+  bool get isUrlEnabled => _isOn<StoryUrlModePreference>();
 
-  bool get tapAnywhereToCollapseEnabled => _isOn<CollapseModePreference>();
+  bool get isTapAnywhereToCollapseEnabled => _isOn<CollapseModePreference>();
 
-  bool get swipeGestureEnabled => _isOn<SwipeGesturePreference>();
+  bool get isSwipeGestureEnabled => _isOn<SwipeGesturePreference>();
 
-  bool get autoScrollEnabled => _isOn<AutoScrollModePreference>();
+  bool get isAutoScrollEnabled => _isOn<AutoScrollModePreference>();
 
-  bool get customTabEnabled => _isOn<CustomTabPreference>();
+  bool get isCustomTabEnabled => _isOn<CustomTabPreference>();
 
-  bool get manualPaginationEnabled => _isOn<ManualPaginationPreference>();
+  bool get isManualPaginationEnabled => _isOn<ManualPaginationPreference>();
 
-  bool get trueDarkModeEnabled => _isOn<TrueDarkModePreference>();
+  bool get isTrueDarkModeEnabled => _isOn<TrueDarkModePreference>();
 
-  bool get hapticFeedbackEnabled => _isOn<HapticFeedbackPreference>();
+  bool get isHapticFeedbackEnabled => _isOn<HapticFeedbackPreference>();
 
-  bool get devModeEnabled => _isOn<DevMode>();
+  bool get isDevModeEnabled => _isOn<DevMode>();
 
   double get textScaleFactor =>
       preferences.singleWhereType<TextScaleFactorPreference>().val;

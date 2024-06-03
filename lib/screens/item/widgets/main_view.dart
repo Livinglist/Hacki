@@ -150,7 +150,7 @@ class MainView extends StatelessWidget {
             },
           ),
         ),
-        if (context.read<PreferenceCubit>().state.devModeEnabled)
+        if (context.read<PreferenceCubit>().state.isDevModeEnabled)
           Positioned(
             height: Dimens.pt4,
             bottom: Dimens.zero,
@@ -289,7 +289,7 @@ class _ParentItemSection extends StatelessWidget {
                                 useReader: context
                                     .read<PreferenceCubit>()
                                     .state
-                                    .readerEnabled,
+                                    .isReaderEnabled,
                                 offlineReading: context
                                     .read<StoriesBloc>()
                                     .state
