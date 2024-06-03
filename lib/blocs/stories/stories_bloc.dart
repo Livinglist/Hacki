@@ -40,7 +40,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         super(const StoriesState.init()) {
     on<LoadStories>(
       onLoadStories,
-      transformer: concurrent(),
+      transformer: sequential(),
     );
     on<StoriesInitialize>(onInitialize);
     on<StoriesRefresh>(onRefresh);
@@ -51,7 +51,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     );
     on<StoryRead>(onStoryRead);
     on<StoryUnread>(onStoryUnread);
-    on<StoriesLoaded>(onStoriesLoaded);
     on<StoriesDownload>(onDownload);
     on<StoriesCancelDownload>(onCancelDownload);
     on<StoryDownloaded>(onStoryDownloaded);
@@ -129,7 +128,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
             ids: ids.sublist(0, min(ids.length, state.currentPageSize)),
           )
           .listen((Story story) => add(StoryLoaded(story: story, type: type)))
-          .onDone(() => add(StoriesLoaded(type: type)));
+          .onDone(() => add(StoryLoadingCompleted(type: type)));
     } else {
       final List<int> ids =
           await _hackerNewsRepository.fetchStoryIds(type: type);
@@ -148,7 +147,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
           .listen((Story story) {
         add(StoryLoaded(story: story, type: type));
       }).asFuture<void>();
-      add(StoriesLoaded(type: type));
+      add(StoryLoadingCompleted(type: type));
     }
   }
 
@@ -213,7 +212,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
             .listen(
               (Story story) => add(StoryLoaded(story: story, type: event.type)),
             )
-            .onDone(() => add(StoriesLoaded(type: event.type)));
+            .onDone(() => add(StoryLoadingCompleted(type: event.type)));
       } else {
         _hackerNewsRepository
             .fetchStoriesStream(
@@ -225,7 +224,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
             .listen(
               (Story story) => add(StoryLoaded(story: story, type: event.type)),
             )
-            .onDone(() => add(StoriesLoaded(type: event.type)));
+            .onDone(() => add(StoryLoadingCompleted(type: event.type)));
       }
     } else {
       emit(
@@ -241,6 +240,13 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     StoryLoaded event,
     Emitter<StoriesState> emit,
   ) async {
+    if (event is StoryLoadingCompleted) {
+      emit(
+        state.copyWithStatusUpdated(type: event.type, to: Status.success),
+      );
+      return;
+    }
+
     final Story story = event.story;
     if (state.storiesByType[event.type]?.contains(story) ?? false) {
       _logger.d('story already exists.');
@@ -274,12 +280,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         story: story.copyWith(hidden: hidden),
         hasRead: hasRead,
       ),
-    );
-  }
-
-  void onStoriesLoaded(StoriesLoaded event, Emitter<StoriesState> emit) {
-    emit(
-      state.copyWithStatusUpdated(type: event.type, to: Status.success),
     );
   }
 
