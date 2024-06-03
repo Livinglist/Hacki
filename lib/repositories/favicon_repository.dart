@@ -18,11 +18,20 @@ class FaviconRepository {
   final Logger _logger;
 
   static final Map<String, String?> _cache = <String, String?>{};
+  static final Set<String> _requested = <String>{};
 
   Future<String?> getFaviconUrl(String url) async {
     if (url.isEmpty) return null;
     final Uri uri = Uri.parse(url);
     final String host = uri.host;
+
+    /// Prevent duplicate request.
+    if (_requested.contains(host)) {
+      return null;
+    } else {
+      _requested.add(url);
+    }
+
     if (_cache.containsKey(host)) {
       return _cache[host];
     } else {

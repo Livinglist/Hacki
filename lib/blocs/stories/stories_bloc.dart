@@ -265,7 +265,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         story.url.isNotEmpty) {
       await _faviconRepository
           .getFaviconUrl(story.url)
-          .timeout(AppDurations.oneSecond)
+          .timeout(AppDurations.ms500)
           .catchError((dynamic err) {
         _logger
           ..d('failed to fetch favicon for ${story.url}')
