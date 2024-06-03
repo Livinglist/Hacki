@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/screens/widgets/tap_down_wrapper.dart';
@@ -115,44 +114,25 @@ class LinkView extends StatelessWidget {
                   child: SizedBox(
                     height: layoutHeight,
                     width: layoutHeight,
-                    child: () {
-                      if ((imageUri != null && imageUri!.isNotEmpty) ||
-                          (iconUri != null && iconUri!.isNotEmpty)) {
-                        if (imageUri?.endsWith('.svg') ??
-                            iconUri!.endsWith('.svg')) {
-                          return SvgPicture.network(
-                            imageUri ?? iconUri ?? '',
-                            fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
-                          );
-                        } else {
-                          return CachedNetworkImage(
-                            imageUrl: imageUri ?? '',
-                            fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
-                            cacheKey: imageUri,
-                            errorWidget: (_, __, ___) => Center(
-                              child: CachedNetworkImage(
-                                imageUrl: iconUri ?? '',
-                                fit: BoxFit.scaleDown,
-                                cacheKey: iconUri,
-                                errorWidget: (_, __, ___) {
-                                  return Center(
-                                    child: _FallbackIcon(
-                                      height: layoutHeight,
-                                    ),
-                                  );
-                                },
+                    child: CachedNetworkImage(
+                      imageUrl: imageUri ?? '',
+                      fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
+                      cacheKey: imageUri,
+                      errorWidget: (_, __, ___) => Center(
+                        child: CachedNetworkImage(
+                          imageUrl: Constants.favicon(url),
+                          fit: BoxFit.scaleDown,
+                          cacheKey: iconUri,
+                          errorWidget: (_, __, ___) {
+                            return Center(
+                              child: _FallbackIcon(
+                                height: layoutHeight,
                               ),
-                            ),
-                          );
-                        }
-                      } else {
-                        return Center(
-                          child: _FallbackIcon(
-                            height: layoutHeight,
-                          ),
-                        );
-                      }
-                    }(),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               )

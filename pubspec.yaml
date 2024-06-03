@@ -21,7 +21,6 @@ dependencies:
   dio: ^5.4.3+1
   equatable: ^2.0.5
   fast_gbk: ^1.0.0
-  favicon: ^1.1.2
   feature_discovery:
     git:
       url: https://github.com/livinglist/feature_discovery

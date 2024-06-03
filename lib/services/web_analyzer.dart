@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:fast_gbk/fast_gbk.dart';
-import 'package:favicon/favicon.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
@@ -265,20 +264,16 @@ ${info.toJson()}
           image: res[4] as String?,
         ).._shouldRetry = shouldRetry;
       } else {
-        final Favicon? favicon = await FaviconFinder.getBest(url);
         info = WebInfo(
           image: res[1] as String,
-          icon: favicon?.url,
           title: story.title,
           description: story.text.isEmpty ? fallbackDescription : story.text,
         ).._shouldRetry = shouldRetry;
       }
     } else {
-      final Favicon? favicon = await FaviconFinder.getBest(url);
       return WebInfo(
         title: story.title,
         description: fallbackDescription,
-        icon: favicon?.url,
       ).._shouldRetry = shouldRetry;
     }
     return info;
@@ -557,8 +552,7 @@ ${info.toJson()}
     if (metaIcon != null) {
       icon = metaIcon.attributes['href'];
     } else {
-      final Favicon? favicon = await FaviconFinder.getBest(uri.toString());
-      return favicon?.url;
+      return null;
     }
 
     return _handleUrl(uri, icon);

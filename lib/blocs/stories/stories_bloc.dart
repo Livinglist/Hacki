@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
-import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
@@ -24,7 +23,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     OfflineRepository? offlineRepository,
     HackerNewsRepository? hackerNewsRepository,
     PreferenceRepository? preferenceRepository,
-    FaviconRepository? faviconRepository,
     Logger? logger,
   })  : _preferenceCubit = preferenceCubit,
         _filterCubit = filterCubit,
@@ -34,8 +32,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
             hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
         _preferenceRepository =
             preferenceRepository ?? locator.get<PreferenceRepository>(),
-        _faviconRepository =
-            faviconRepository ?? locator.get<FaviconRepository>(),
         _logger = logger ?? locator.get<Logger>(),
         super(const StoriesState.init()) {
     on<LoadStories>(
@@ -65,7 +61,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   final OfflineRepository _offlineRepository;
   final HackerNewsRepository _hackerNewsRepository;
   final PreferenceRepository _preferenceRepository;
-  final FaviconRepository _faviconRepository;
   final Logger _logger;
   DeviceScreenType? deviceScreenType;
   StreamSubscription<PreferenceState>? _preferenceSubscription;
@@ -259,20 +254,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       return regExp.hasMatch(story.title.toLowerCase()) ||
           regExp.hasMatch(story.text.toLowerCase());
     });
-
-    if (_preferenceCubit.state.isFaviconEnabled &&
-        !_preferenceCubit.state.isComplexStoryTileEnabled &&
-        story.url.isNotEmpty) {
-      await _faviconRepository
-          .getFaviconUrl(story.url)
-          .timeout(AppDurations.ms500)
-          .catchError((dynamic err) {
-        _logger
-          ..d('failed to fetch favicon for ${story.url}')
-          ..d('due to $err');
-        return '';
-      });
-    }
 
     emit(
       state.copyWithStoryAdded(

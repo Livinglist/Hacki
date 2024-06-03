@@ -2,14 +2,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
-import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
-import 'package:hacki/repositories/favicon_repository.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
@@ -154,33 +151,14 @@ class StoryTile extends StatelessWidget {
                       height: Dimens.pt20,
                       width: Dimens.pt24,
                       child: Center(
-                        child: FutureBuilder<String?>(
-                          future: locator
-                              .get<FaviconRepository>()
-                              .getFaviconUrl(story.url),
-                          builder: (
-                            BuildContext context,
-                            AsyncSnapshot<String?> snapshot,
-                          ) {
-                            final String? url = snapshot.data;
-                            if (url != null) {
-                              if (url.endsWith('.svg')) {
-                                return SvgPicture.network(
-                                  url,
-                                  fit: BoxFit.fitHeight,
-                                );
-                              } else {
-                                return CachedNetworkImage(
-                                  fit: BoxFit.fitHeight,
-                                  imageUrl: url,
-                                );
-                              }
-                            } else {
-                              return const Icon(
-                                Icons.public,
-                                size: Dimens.pt20,
-                              );
-                            }
+                        child: CachedNetworkImage(
+                          fit: BoxFit.fitHeight,
+                          imageUrl: Constants.favicon(story.url),
+                          errorWidget: (_, __, ___) {
+                            return const Icon(
+                              Icons.public,
+                              size: Dimens.pt20,
+                            );
                           },
                         ),
                       ),
