@@ -77,9 +77,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         .distinct((PreferenceState previous, PreferenceState next) {
       return previous.isComplexStoryTileEnabled ==
           next.isComplexStoryTileEnabled;
-    })
-        //.debounceTime(AppDurations.twoSeconds)
-        .listen((PreferenceState event) {
+    }).listen((PreferenceState event) {
       final bool isComplexTile = event.isComplexStoryTileEnabled;
       final int pageSize = getPageSize(isComplexTile: isComplexTile);
 
