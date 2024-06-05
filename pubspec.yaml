@@ -41,7 +41,6 @@ dependencies:
       url: https://github.com/Livinglist/flutter_siri_suggestions
       ref: master
   flutter_slidable: ^3.0.0
-  flutter_svg: ^2.0.10+1
   font_awesome_flutter: ^10.3.0
   get_it: ^7.7.0
   go_router: ^14.1.4
