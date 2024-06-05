@@ -46,7 +46,9 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
   void dispose() {
     refreshController.dispose();
     scrollController.dispose();
-    focusNode.dispose();
+    focusNode
+      ..unfocus()
+      ..dispose();
     textEditingController.dispose();
     super.dispose();
   }
