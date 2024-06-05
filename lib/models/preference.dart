@@ -209,7 +209,7 @@ final class FaviconModePreference extends BooleanPreference {
   const FaviconModePreference({bool? val})
       : super(val: val ?? _faviconModePreferenceDefaultValue);
 
-  static const bool _faviconModePreferenceDefaultValue = false;
+  static const bool _faviconModePreferenceDefaultValue = true;
 
   @override
   FaviconModePreference copyWith({required bool? val}) {
