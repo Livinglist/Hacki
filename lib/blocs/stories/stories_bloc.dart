@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
@@ -75,18 +76,18 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   ) async {
     _preferenceSubscription ??= _preferenceCubit.stream
         .distinct((PreferenceState previous, PreferenceState next) {
-      return previous.isComplexStoryTileEnabled ==
-          next.isComplexStoryTileEnabled;
-    })
-        //.debounceTime(AppDurations.twoSeconds)
+          return previous.isComplexStoryTileEnabled ==
+              next.isComplexStoryTileEnabled;
+        })
+        .debounceTime(AppDurations.oneSecond)
         .listen((PreferenceState event) {
-      final bool isComplexTile = event.isComplexStoryTileEnabled;
-      final int pageSize = getPageSize(isComplexTile: isComplexTile);
+          final bool isComplexTile = event.isComplexStoryTileEnabled;
+          final int pageSize = getPageSize(isComplexTile: isComplexTile);
 
-      if (pageSize != state.currentPageSize) {
-        add(StoriesPageSizeChanged(pageSize: pageSize));
-      }
-    });
+          if (pageSize != state.currentPageSize) {
+            add(StoriesPageSizeChanged(pageSize: pageSize));
+          }
+        });
     final bool isComplexTile = _preferenceCubit.state.isComplexStoryTileEnabled;
     final int pageSize = getPageSize(isComplexTile: isComplexTile);
     emit(
