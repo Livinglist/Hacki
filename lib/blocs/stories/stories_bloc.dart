@@ -37,7 +37,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         super(const StoriesState.init()) {
     on<LoadStories>(
       onLoadStories,
-      transformer: sequential(),
+      transformer: concurrent(),
     );
     on<StoriesInitialize>(onInitialize);
     on<StoriesRefresh>(onRefresh);
