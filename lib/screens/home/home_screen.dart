@@ -43,13 +43,14 @@ class _HomeScreenState extends State<HomeScreen>
   late final StreamSubscription<String?> siriSuggestionStreamSubscription;
 
   static final int tabLength = StoryType.values.length + 1;
+  static const String logPrefix = '[HomeScreen]';
 
   @override
   void didPopNext() {
     super.didPopNext();
     if (context.read<StoriesBloc>().deviceScreenType ==
         DeviceScreenType.mobile) {
-      locator.get<Logger>().i('resetting comments in CommentCache');
+      locator.get<Logger>().i('$logPrefix resetting comments in CommentCache');
       Future<void>.delayed(
         AppDurations.ms500,
         locator.get<CommentCache>().resetComments,

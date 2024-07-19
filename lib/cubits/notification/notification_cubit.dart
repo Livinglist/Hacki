@@ -67,6 +67,7 @@ class NotificationCubit extends Cubit<NotificationState> {
   static const Duration _refreshInterval = Duration(minutes: 5);
   static const int _subscriptionUpperLimit = 15;
   static const int _pageSize = 20;
+  static const String _logPrefix = '[NotificationCubit]';
 
   Future<void> init() async {
     emit(NotificationState.init());
@@ -78,7 +79,7 @@ class NotificationCubit extends Cubit<NotificationState> {
     });
 
     await _preferenceRepository.unreadCommentsIds.then((List<int> unreadIds) {
-      _logger.i('NotificationCubit: ${unreadIds.length} unread items.');
+      _logger.i('$_logPrefix ${unreadIds.length} unread items.');
       emit(state.copyWith(unreadCommentsIds: unreadIds));
     });
 

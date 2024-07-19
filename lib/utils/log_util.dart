@@ -8,10 +8,12 @@ import 'package:path_provider/path_provider.dart';
 
 abstract class LogUtil {
   static LogPrinter get logPrinter => kReleaseMode
-      ? SimplePrinter(colors: false)
-      : PrettyPrinter(
-          methodCount: 0,
+      ? SimplePrinter(
           colors: false,
+          printTime: true,
+        )
+      : PrettyPrinter(
+          printTime: true,
         );
 
   static LogOutput logOutput(File outputFile) => MultiOutput(

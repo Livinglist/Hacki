@@ -19,17 +19,20 @@ class TabCubit extends Cubit<TabState> {
 
   final PreferenceCubit _preferenceCubit;
   final Logger _logger;
+  static const String _logPrefix = '[TabCubit]';
 
   void init() {
     final List<StoryType> tabs = _preferenceCubit.state.tabs;
 
-    _logger.i('updating tabs to $tabs');
+    _logger.i('$_logPrefix updating tabs to $tabs');
 
     emit(state.copyWith(tabs: tabs));
   }
 
   void update(int startIndex, int endIndex) {
-    _logger.d('updating ${state.tabs} by moving $startIndex to $endIndex');
+    _logger.d(
+      '$_logPrefix updating ${state.tabs} by moving $startIndex to $endIndex',
+    );
     final StoryType tab = state.tabs.elementAt(startIndex);
     final List<StoryType> updatedTabs = List<StoryType>.from(state.tabs)
       ..insert(endIndex, tab)

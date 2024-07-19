@@ -23,6 +23,7 @@ class PreferenceCubit extends Cubit<PreferenceState> {
 
   final PreferenceRepository _preferenceRepository;
   final Logger _logger;
+  static const String _logPrefix = '[PreferenceCubit]';
 
   void init() {
     for (final BooleanPreference p
@@ -73,7 +74,7 @@ class PreferenceCubit extends Cubit<PreferenceState> {
   }
 
   void update<T>(Preference<T> preference) {
-    _logger.i('updating $preference to ${preference.val}');
+    _logger.i('$_logPrefix updating $preference to ${preference.val}');
 
     emit(state.copyWithPreference(preference));
 

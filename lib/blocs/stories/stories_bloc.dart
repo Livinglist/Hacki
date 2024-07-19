@@ -69,6 +69,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   static const int _largePageSize = 20;
   static const int _tabletSmallPageSize = 15;
   static const int _tabletLargePageSize = 25;
+  static const String _logPrefix = '[StoriesBloc]';
 
   Future<void> onInitialize(
     StoriesInitialize event,
@@ -245,7 +246,9 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
 
     final Story story = event.story;
     if (state.storiesByType[event.type]?.contains(story) ?? false) {
-      _logger.d('story already exists.');
+      _logger.d(
+        '$_logPrefix story ${story.id} for ${event.type} already exists.',
+      );
       return;
     }
     final bool hasRead = await _preferenceRepository.hasRead(story.id);
@@ -349,20 +352,20 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         <StreamSubscription<Comment>>[];
     for (final int id in ids) {
       if (state.downloadStatus == StoriesDownloadStatus.canceled) {
-        _logger.d('aborting downloading');
+        _logger.d('$_logPrefix aborting downloading');
 
         for (final StreamSubscription<Comment> stream in downloadStreams) {
           await stream.cancel();
         }
 
-        _logger.d('deleting downloaded contents');
+        _logger.d('$_logPrefix deleting downloaded contents');
         await _offlineRepository.deleteAllStoryIds();
         await _offlineRepository.deleteAllStories();
         await _offlineRepository.deleteAllComments();
         break;
       }
 
-      _logger.d('fetching story $id');
+      _logger.d('$_logPrefix fetching story $id');
       final Story? story = await _hackerNewsRepository.fetchStory(id: id);
 
       if (story == null) {
@@ -382,7 +385,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       await _offlineRepository.cacheStory(story: story);
 
       if (story.url.isNotEmpty && includingWebPage) {
-        _logger.i('downloading ${story.url}');
+        _logger.i('$_logPrefix downloading ${story.url}');
         await _offlineRepository.cacheUrl(url: story.url);
       }
 
@@ -399,19 +402,19 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
           .listen(
         (Comment comment) {
           if (state.downloadStatus == StoriesDownloadStatus.canceled) {
-            _logger.d('aborting downloading from comments stream');
+            _logger.d('$_logPrefix aborting downloading from comments stream');
             downloadStream?.cancel();
             return;
           }
 
-          _logger.d('fetched comment ${comment.id}');
+          _logger.d('$_logPrefix fetched comment ${comment.id}');
           unawaited(
             _offlineRepository.cacheComment(comment: comment),
           );
         },
       )..onDone(() {
           _logger.d(
-            '''finished downloading story ${story.id} with ${story.descendants} comments''',
+            '''$_logPrefix finished downloading story ${story.id} with ${story.descendants} comments''',
           );
           add(StoryDownloaded(skipped: false));
         });

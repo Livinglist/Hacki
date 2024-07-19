@@ -38,15 +38,15 @@ abstract class Fetcher {
     final Logger logger = Logger();
     final PreferenceRepository preferenceRepository =
         PreferenceRepository(logger: logger);
-
     final AuthRepository authRepository = AuthRepository(
       preferenceRepository: preferenceRepository,
       logger: logger,
     );
-
-    final HackerNewsRepository hackerNewsRepository = HackerNewsRepository();
     final SembastRepository sembastRepository = SembastRepository();
-
+    final HackerNewsRepository hackerNewsRepository = HackerNewsRepository(
+      sembastRepository: sembastRepository,
+      logger: logger,
+    );
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();
 
