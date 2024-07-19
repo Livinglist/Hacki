@@ -32,7 +32,9 @@ class InboxView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        if (unreadCommentsIds.isNotEmpty)
+        if (context.read<NotificationCubit>().state.status !=
+                Status.inProgress &&
+            unreadCommentsIds.isNotEmpty)
           TextButton(
             onPressed: onMarkAllAsReadTapped,
             child: const Text('Mark all as read'),

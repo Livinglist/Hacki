@@ -105,31 +105,17 @@ class NotificationCubit extends Cubit<NotificationState> {
   }
 
   void markAsRead(int id) {
-    Future.doWhile(() {
-      if (state.status != Status.inProgress) {
-        if (state.unreadCommentsIds.contains(id)) {
-          final List<int> updatedUnreadIds = <int>[...state.unreadCommentsIds]
-            ..remove(id);
-          _preferenceRepository.updateUnreadCommentsIds(updatedUnreadIds);
-          emit(state.copyWith(unreadCommentsIds: updatedUnreadIds));
-        }
-        return false;
-      }
-
-      return true;
-    });
+    if (state.unreadCommentsIds.contains(id)) {
+      final List<int> updatedUnreadIds = <int>[...state.unreadCommentsIds]
+        ..remove(id);
+      _preferenceRepository.updateUnreadCommentsIds(updatedUnreadIds);
+      emit(state.copyWith(unreadCommentsIds: updatedUnreadIds));
+    }
   }
 
   void markAllAsRead() {
-    Future.doWhile(() {
-      if (state.status != Status.inProgress) {
-        emit(state.copyWith(unreadCommentsIds: <int>[]));
-        _preferenceRepository.updateUnreadCommentsIds(<int>[]);
-        return false;
-      }
-
-      return true;
-    });
+    emit(state.copyWith(unreadCommentsIds: <int>[]));
+    _preferenceRepository.updateUnreadCommentsIds(<int>[]);
   }
 
   Future<void> refresh() async {
