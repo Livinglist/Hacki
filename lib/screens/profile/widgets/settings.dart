@@ -341,14 +341,12 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                     ),
                     onTap: showClearCacheDialog,
                   ),
-                  if(preferenceState.isDevModeEnabled)
+                  if (preferenceState.isDevModeEnabled)
                     ListTile(
                       title: const Text(
                         'Logs',
                       ),
-                      onTap: (){
-
-                      },
+                      onTap: () {},
                     ),
                   ListTile(
                     title: const Text('About'),
