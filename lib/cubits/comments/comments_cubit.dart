@@ -84,6 +84,7 @@ class CommentsCubit extends Cubit<CommentsState> {
       <int, StreamSubscription<Comment>>{};
 
   static const int _webFetchingCmtCountLowerLimit = 5;
+  static const String _logPrefix = '[CommentsCubit]';
 
   Future<bool> get _shouldFetchFromWeb async {
     final bool isOnWifi = await _isOnWifi;
@@ -182,13 +183,14 @@ class CommentsCubit extends Cubit<CommentsState> {
             case CommentsOrder.natural:
               final bool shouldFetchFromWeb = await _shouldFetchFromWeb;
               if (fetchFromWeb && shouldFetchFromWeb) {
-                _logger.d('fetching from web.');
+                _logger
+                    .d('$_logPrefix fetching comments of ${item.id} from web.');
                 commentStream = _hackerNewsWebRepository
                     .fetchCommentsStream(state.item)
                     .handleError((dynamic e) {
                   _streamSubscription?.cancel();
 
-                  _logger.e(e);
+                  _logger.e('$_logPrefix $e');
 
                   switch (e.runtimeType) {
                     case RateLimitedException:
@@ -205,7 +207,8 @@ class CommentsCubit extends Cubit<CommentsState> {
                   }
                 });
               } else {
-                _logger.d('fetching from API.');
+                _logger
+                    .d('$_logPrefix fetching comments of ${item.id} from API.');
                 commentStream =
                     _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
                   ids: kids,
@@ -280,11 +283,13 @@ class CommentsCubit extends Cubit<CommentsState> {
           case CommentsOrder.natural:
             final bool shouldFetchFromWeb = await _shouldFetchFromWeb;
             if (fetchFromWeb && shouldFetchFromWeb) {
-              _logger.d('fetching from web.');
+              _logger.d(
+                '$_logPrefix fetching comments of ${item.id} from web.',
+              );
               commentStream = _hackerNewsWebRepository
                   .fetchCommentsStream(state.item)
                   .handleError((dynamic e) {
-                _logger.e(e);
+                _logger.e('$_logPrefix $e');
 
                 switch (e.runtimeType) {
                   case RateLimitedException:
@@ -301,7 +306,8 @@ class CommentsCubit extends Cubit<CommentsState> {
                 }
               });
             } else {
-              _logger.d('fetching from API.');
+              _logger
+                  .d('$_logPrefix fetching comments of ${item.id} from API.');
               commentStream = _hackerNewsRepository
                   .fetchAllCommentsRecursivelyStream(ids: kids);
             }

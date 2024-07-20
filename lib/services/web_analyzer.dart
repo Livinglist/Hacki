@@ -85,6 +85,7 @@ class WebAnalyzer {
       RegExp('(title|icon|description|image)', caseSensitive: false);
   static final RegExp _lineReg = RegExp(r'[\n\r]|&nbsp;|&gt;');
   static final RegExp _spaceReg = RegExp(r'\s+');
+  static const String _logPrefix = '[WebAnalyzer]';
 
   static bool isEmpty(String? str) {
     return !isNotEmpty(str);
@@ -120,7 +121,7 @@ class WebAnalyzer {
 
     if (info != null) {
       locator.get<Logger>().d('''
-fetched mem cached metadata using key $key for $story:
+$_logPrefix fetched mem cached metadata using key $key for $story:
 ${info.toJson()}
           ''');
       return info;
@@ -168,7 +169,7 @@ ${info.toJson()}
       /// [5] If there is file cache, move it to mem cache for later retrieval.
       if (info != null) {
         locator.get<Logger>().d('''
-fetched file cached metadata using key $key for $story:
+$_logPrefix fetched file cached metadata using key $key for $story:
 ${info.toJson()}
 ''');
         cacheMap[key] = info;
@@ -189,7 +190,7 @@ ${info.toJson()}
         if (info is WebInfo) {
           locator
               .get<Logger>()
-              .d('caching metadata using key $key for $story.');
+              .d('$_logPrefix caching metadata using key $key for $story.');
           unawaited(
             locator.get<SembastRepository>().cacheMetadata(
                   key: key,

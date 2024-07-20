@@ -17,9 +17,10 @@ class SplitViewCubit extends Cubit<SplitViewState> {
 
   final Logger _logger;
   final CommentCache _commentCache;
+  static const String _logPrefix = '[SplitViewCubit]';
 
   void updateItemScreenArgs(ItemScreenArgs args) {
-    _logger.i('resetting comments in CommentCache');
+    _logger.i('$_logPrefix resetting comments in CommentCache');
     _commentCache.resetComments();
     emit(state.copyWith(itemScreenArgs: args));
   }

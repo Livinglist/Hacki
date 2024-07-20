@@ -1,11 +1,11 @@
 name: hacki
 description: A Hacker News reader.
-version: 2.8.1+146
+version: 2.8.2+147
 publish_to: none
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
-  flutter: "3.22.2"
+  flutter: "3.22.3"
 
 dependencies:
   adaptive_theme: ^3.2.0
@@ -35,6 +35,7 @@ dependencies:
   flutter_inappwebview: ^6.0.0
   flutter_local_notifications: ^17.1.2
   flutter_material_color_picker: ^1.2.0
+  flutter_native_splash: ^2.4.1
   flutter_secure_storage: ^9.2.2
   flutter_siri_suggestions:
     git:
@@ -138,5 +139,24 @@ flutter:
         - asset: assets/fonts/atkinson_hyperlegible/AtkinsonHyperlegible-Regular.ttf
         - asset: assets/fonts/atkinson_hyperlegible/AtkinsonHyperlegible-Bold.ttf
           weight: 700
+
+flutter_native_splash:
+  # This package generates native code to customize Flutter's default white native splash screen
+  # with background color and splash image.
+  # Customize the parameters below, and run the following command in the terminal:
+  # dart run flutter_native_splash:create
+  # To restore Flutter's default white splash screen, run the following command in the terminal:
+  # dart run flutter_native_splash:remove
+
+  # IMPORTANT NOTE: These parameter do not affect the configuration of Android 12 and later, which
+  # handle splash screens differently that prior versions of Android.  Android 12 and later must be
+  # configured specifically in the android_12 section below.
+
+  # color or background_image is the only required parameter.  Use color to set the background
+  # of your splash screen to a solid color.  Use background_image to set the background of your
+  # splash screen to a png image.  This is useful for gradients. The image will be stretch to the
+  # size of the app. Only one parameter can be used, color and background_image cannot both be set.
+  color: "#ffffff"
+  color_dark: "#000000"
 
 
