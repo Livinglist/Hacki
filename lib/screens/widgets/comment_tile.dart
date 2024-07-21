@@ -420,12 +420,12 @@ class CommentTile extends StatelessWidget {
       final int indexOfNextComment = comments.indexOf(comment) + 1;
       if (indexOfNextComment < comments.length) {
         Future<void>.delayed(
-          AppDurations.ms300,
+          Duration.zero,
           () {
             commentsCubit.itemScrollController.scrollTo(
               index: indexOfNextComment,
               alignment: 0.1,
-              duration: AppDurations.ms300,
+              duration: AppDurations.ms100,
             );
           },
         );

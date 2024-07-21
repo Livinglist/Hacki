@@ -164,7 +164,7 @@ final class AutoScrollModePreference extends BooleanPreference {
   const AutoScrollModePreference({bool? val})
       : super(val: val ?? _autoScrollModeDefaultValue);
 
-  static const bool _autoScrollModeDefaultValue = false;
+  static const bool _autoScrollModeDefaultValue = true;
 
   @override
   AutoScrollModePreference copyWith({required bool? val}) {
