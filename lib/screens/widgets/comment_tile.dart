@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -10,6 +11,7 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class CommentTile extends StatelessWidget {
   const CommentTile({
@@ -417,18 +419,29 @@ class CommentTile extends StatelessWidget {
         preferenceCubit.state.isAutoScrollEnabled) {
       final CommentsCubit commentsCubit = context.read<CommentsCubit>();
       final List<Comment> comments = commentsCubit.state.comments;
-      final int indexOfNextComment = comments.indexOf(comment) + 1;
+      final int indexOfComment = comments.indexOf(comment);
+      final int indexOfNextComment = indexOfComment + 1;
       if (indexOfNextComment < comments.length) {
-        Future<void>.delayed(
-          AppDurations.ms300,
-          () {
-            commentsCubit.itemScrollController.scrollTo(
-              index: indexOfNextComment,
-              alignment: 0.1,
-              duration: AppDurations.ms300,
-            );
-          },
-        );
+        final double? leadingEdge =
+            commentsCubit.itemPositionsListener.itemPositions.value
+                .singleWhereOrNull(
+                  (ItemPosition e) => e.index - 1 == indexOfComment,
+                )
+                ?.itemLeadingEdge;
+        final bool willBeOutsideOfScreen =
+            leadingEdge != null && leadingEdge < 0.1;
+        if (willBeOutsideOfScreen) {
+          Future<void>.delayed(
+            AppDurations.ms200,
+            () {
+              commentsCubit.itemScrollController.scrollTo(
+                index: indexOfNextComment,
+                alignment: 0.1,
+                duration: AppDurations.ms200,
+              );
+            },
+          );
+        }
       }
     }
   }
