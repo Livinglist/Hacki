@@ -41,13 +41,22 @@ class TabletHomeScreen extends StatelessWidget {
                   curve: Curves.elasticOut,
                   child: homeScreen,
                 ),
-                Positioned(
-                  left: Dimens.pt24,
-                  bottom: Dimens.pt36,
-                  height: Dimens.pt40,
-                  width: homeScreenWidth - Dimens.pt24,
-                  child: const CountdownReminder(),
-                ),
+                if (!context.read<ReminderCubit>().state.hasShown)
+                  Positioned(
+                    left: Dimens.pt24,
+                    bottom: Dimens.pt36,
+                    height: Dimens.pt40,
+                    width: homeScreenWidth - Dimens.pt24,
+                    child: const CountdownReminder(),
+                  )
+                else
+                  Positioned(
+                    left: Dimens.pt24,
+                    bottom: Dimens.pt36,
+                    height: Dimens.pt40,
+                    width: homeScreenWidth - Dimens.pt24,
+                    child: const DownloadProgressReminder(),
+                  ),
                 AnimatedPositioned(
                   right: Dimens.zero,
                   top: Dimens.zero,
