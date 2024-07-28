@@ -437,7 +437,7 @@ class CommentTile extends StatelessWidget {
               commentsCubit.itemScrollController.scrollTo(
                 index: indexOfNextComment,
                 alignment: 0.1,
-                duration: AppDurations.ms200,
+                duration: AppDurations.ms300,
               );
             },
           );
