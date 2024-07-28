@@ -420,8 +420,7 @@ class CommentTile extends StatelessWidget {
       final CommentsCubit commentsCubit = context.read<CommentsCubit>();
       final List<Comment> comments = commentsCubit.state.comments;
       final int indexOfComment = comments.indexOf(comment);
-      final int indexOfNextComment = indexOfComment + 1;
-      if (indexOfNextComment < comments.length) {
+      if (indexOfComment < comments.length) {
         final double? leadingEdge =
             commentsCubit.itemPositionsListener.itemPositions.value
                 .singleWhereOrNull(
@@ -435,8 +434,8 @@ class CommentTile extends StatelessWidget {
             AppDurations.ms200,
             () {
               commentsCubit.itemScrollController.scrollTo(
-                index: indexOfNextComment,
-                alignment: 0.1,
+                index: indexOfComment + 1,
+                alignment: 0.15,
                 duration: AppDurations.ms300,
               );
             },
