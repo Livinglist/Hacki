@@ -24,6 +24,14 @@ class MobileHomeScreen extends StatelessWidget {
             bottom: Dimens.pt36,
             height: Dimens.pt40,
             child: CountdownReminder(),
+          )
+        else
+          const Positioned(
+            left: Dimens.pt24,
+            right: Dimens.pt24,
+            bottom: Dimens.pt36,
+            height: Dimens.pt40,
+            child: DownloadProgressReminder(),
           ),
       ],
     );
