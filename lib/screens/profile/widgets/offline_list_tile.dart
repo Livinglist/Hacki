@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 class OfflineListTile extends StatelessWidget {
   const OfflineListTile({super.key});
@@ -18,7 +18,7 @@ class OfflineListTile extends StatelessWidget {
       listener: (BuildContext context, StoriesState state) {
         if (state.downloadStatus == StoriesDownloadStatus.failure ||
             state.downloadStatus == StoriesDownloadStatus.finished) {
-          Wakelock.disable();
+          WakelockPlus.disable();
         }
       },
       buildWhen: (StoriesState previous, StoriesState current) =>
@@ -86,7 +86,7 @@ class OfflineListTile extends StatelessWidget {
                 ),
               ).then((bool? abortDownloading) {
                 if (abortDownloading ?? false) {
-                  Wakelock.enable();
+                  WakelockPlus.enable();
                   context.read<StoriesBloc>().add(StoriesCancelDownload());
                 }
               });
@@ -117,7 +117,7 @@ class OfflineListTile extends StatelessWidget {
                     ),
                   ).then((bool? includeWebPage) {
                     if (includeWebPage != null) {
-                      Wakelock.enable();
+                      WakelockPlus.enable();
                       context.read<StoriesBloc>().add(
                             StoriesDownload(
                               includingWebPage: includeWebPage,
