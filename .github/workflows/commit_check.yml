@@ -3,7 +3,6 @@ name: Commit Guard
 on:
   push:
     branches:
-      - "**"
       - '!master'
 
 jobs:
