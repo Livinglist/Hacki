@@ -3,8 +3,10 @@ name: Commit Guard
 on:
   push:
     branches:
-      - "**"
       - '!master'
+  pull_request:
+    # Run on any TARGET branches.
+    branches: [ '**' ]
 
 jobs:
   commit_check:
