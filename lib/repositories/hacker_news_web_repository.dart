@@ -58,6 +58,10 @@ class HackerNewsWebRepository {
 
   String get _cmtCountSelector => _remoteConfigCubit.state.cmtCountSelector;
 
+  String get _moreLinkSelector => _remoteConfigCubit.state.moreLinkSelector;
+
+  static final Map<int, int> _next = <int, int>{};
+
   Stream<Story> fetchStoriesStream(
     StoryType storyType, {
     required int page,
@@ -66,11 +70,16 @@ class HackerNewsWebRepository {
       int page,
     ) async {
       try {
-        final Uri url = Uri.parse(
-          storyType == StoryType.top
-              ? '$_storiesBaseUrl?p=$page'
-              : '$_storiesBaseUrl/${storyType.webPathParam}?p=$page',
-        );
+        final String urlStr = switch (storyType) {
+          StoryType.top => '$_storiesBaseUrl?p=$page',
+          StoryType.best ||
+          StoryType.ask ||
+          StoryType.show =>
+            '$_storiesBaseUrl/${storyType.webPathParam}?p=$page',
+          StoryType.latest =>
+            '$_storiesBaseUrl/${storyType.webPathParam}?next=${_next[page]}'
+        };
+        final Uri url = Uri.parse(urlStr);
         final Options option = Options(
           headers: _headers,
           persistentConnection: true,
@@ -88,6 +97,23 @@ class HackerNewsWebRepository {
             document.querySelectorAll(_storySelector);
         final List<Element> subtextElements =
             document.querySelectorAll(_subtextSelector);
+
+        if (storyType == StoryType.latest) {
+          /// Get the next id for latest stories.
+          final Element? moreLinkElement =
+              document.querySelector(_moreLinkSelector);
+
+          /// Example: "newest?next=41240344&n=31"
+          final String? href = moreLinkElement?.attributes['href'];
+          final String? nextIdStr =
+              href?.split('&n').firstOrNull?.split('=').lastOrNull;
+          final int? nextId = int.tryParse(nextIdStr ?? '');
+
+          if (nextId != null) {
+            _next[page + 1] = nextId;
+          }
+        }
+
         return List<(Element, Element)>.generate(
           min(elements.length, subtextElements.length),
           (int index) =>

@@ -39,7 +39,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         super(const StoriesState.init()) {
     on<LoadStories>(
       onLoadStories,
-      transformer: concurrent(),
+      transformer: sequential(),
     );
     on<StoriesInitialize>(onInitialize);
     on<StoriesRefresh>(onRefresh);
@@ -229,7 +229,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
           .onDone(() => add(StoryLoadingCompleted(type: event.type)));
     } else {
       _hackerNewsWebRepository
-          .fetchStoriesStream(event.type, page: currentPage + 1)
+          .fetchStoriesStream(event.type, page: currentPage)
           .handleError((dynamic e) {
             _logger.e('$_logPrefix error loading more stories $e');
 

@@ -46,6 +46,12 @@ final class RemoteConfigState extends Equatable {
         fallback: '''.subline > a''',
       );
 
+  String get moreLinkSelector => getString(
+        key: 'moreLinkSelector',
+        fallback:
+            ''''#hnmain > tbody > tr:nth-child(3) > td > table > tbody > tr > td.title > a''',
+      );
+
   String get athingComtrSelector => getString(
         key: 'athingComtrSelector',
         fallback:

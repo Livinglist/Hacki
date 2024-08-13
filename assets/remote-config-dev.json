@@ -10,5 +10,6 @@
   "pointSelector": ".subline > .score",
   "userSelector": ".subline > .hnuser",
   "ageSelector": ".subline > .age",
-  "cmtCountSelector": ".subline > a"
+  "cmtCountSelector": ".subline > a",
+  "moreLinkSelector": "#hnmain > tbody > tr:nth-child(3) > td > table > tbody > tr > td.title > a"
 }
