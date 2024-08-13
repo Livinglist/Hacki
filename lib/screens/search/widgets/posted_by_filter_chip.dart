@@ -68,6 +68,7 @@ class PostedByFilterChip extends StatelessWidget {
                 right: Dimens.pt12,
               ),
               child: OverflowBar(
+                alignment: MainAxisAlignment.end,
                 children: <Widget>[
                   TextButton(
                     onPressed: () => context.pop(filter?.author),

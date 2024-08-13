@@ -158,6 +158,7 @@ class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
                   right: Dimens.pt12,
                 ),
                 child: OverflowBar(
+                  alignment: MainAxisAlignment.end,
                   children: <Widget>[
                     TextButton(
                       onPressed: () {
