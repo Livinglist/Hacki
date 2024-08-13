@@ -157,7 +157,7 @@ class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
                 padding: const EdgeInsets.only(
                   right: Dimens.pt12,
                 ),
-                child: ButtonBar(
+                child: OverflowBar(
                   children: <Widget>[
                     TextButton(
                       onPressed: () {
