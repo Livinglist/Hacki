@@ -3,5 +3,13 @@
   "commentTextSelector": "td > table > tbody > tr > td.default > div.comment > div.commtext",
   "commentHeadSelector": "td > table > tbody > tr > td.default > div > span > a",
   "commentAgeSelector": "td > table > tbody > tr > td.default > div > span > span.age",
-  "commentIndentSelector": "td > table > tbody > tr > td.ind"
+  "commentIndentSelector": "td > table > tbody > tr > td.ind",
+  "storySelector": "#hnmain > tbody > tr > td > table > tbody > .athing",
+  "subtextSelector": "#hnmain > tbody > tr > td > table > tbody > tr > .subtext",
+  "titlelineSelector": ".title > .titleline > a",
+  "pointSelector": ".subline > .score",
+  "userSelector": ".subline > .hnuser",
+  "ageSelector": ".subline > .age",
+  "cmtCountSelector": ".subline > a",
+  "moreLinkSelector": "#hnmain > tbody > tr:nth-child(3) > td > table > tbody > tr > td.title > a"
 }

@@ -1,13 +1,22 @@
 enum StoryType {
-  top('topstories'),
-  best('beststories'),
-  latest('newstories'),
-  ask('askstories'),
-  show('showstories');
+  top('topstories', ''),
+  best('beststories', 'best'),
+  latest('newstories', 'newest'),
+  ask('askstories', 'ask'),
+  show('showstories', 'show');
 
-  const StoryType(this.path);
+  const StoryType(
+    this.apiPathParam,
+    this.webPathParam,
+  );
 
-  final String path;
+  /// The path param used in the official Hacker News API.
+  /// e.g. https://hacker-news.firebaseio.com/v0/{apiPathParam}.json
+  final String apiPathParam;
+
+  /// The path param used in the HN web.
+  /// e.g. https://news.ycombinator.com/{webPathParam}
+  final String webPathParam;
 
   String get label {
     switch (this) {

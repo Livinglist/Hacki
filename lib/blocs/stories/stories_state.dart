@@ -17,7 +17,6 @@ class StoriesState extends Equatable {
     required this.readStoriesIds,
     required this.isOfflineReading,
     required this.downloadStatus,
-    required this.currentPageSize,
     required this.storiesDownloaded,
     required this.storiesToBeDownloaded,
   });
@@ -53,7 +52,6 @@ class StoriesState extends Equatable {
     },
   })  : isOfflineReading = false,
         downloadStatus = StoriesDownloadStatus.idle,
-        currentPageSize = 0,
         readStoriesIds = const <int>{},
         storiesDownloaded = 0,
         storiesToBeDownloaded = 0;
@@ -65,7 +63,6 @@ class StoriesState extends Equatable {
   final Set<int> readStoriesIds;
   final StoriesDownloadStatus downloadStatus;
   final bool isOfflineReading;
-  final int currentPageSize;
   final int storiesDownloaded;
   final int storiesToBeDownloaded;
 
@@ -77,7 +74,6 @@ class StoriesState extends Equatable {
     Set<int>? readStoriesIds,
     StoriesDownloadStatus? downloadStatus,
     bool? isOfflineReading,
-    int? currentPageSize,
     int? storiesDownloaded,
     int? storiesToBeDownloaded,
   }) {
@@ -89,7 +85,6 @@ class StoriesState extends Equatable {
       readStoriesIds: readStoriesIds ?? this.readStoriesIds,
       isOfflineReading: isOfflineReading ?? this.isOfflineReading,
       downloadStatus: downloadStatus ?? this.downloadStatus,
-      currentPageSize: currentPageSize ?? this.currentPageSize,
       storiesDownloaded: storiesDownloaded ?? this.storiesDownloaded,
       storiesToBeDownloaded:
           storiesToBeDownloaded ?? this.storiesToBeDownloaded,
@@ -179,7 +174,6 @@ class StoriesState extends Equatable {
         readStoriesIds,
         isOfflineReading,
         downloadStatus,
-        currentPageSize,
         storiesDownloaded,
         storiesToBeDownloaded,
       ];

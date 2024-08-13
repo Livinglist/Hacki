@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
-import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
@@ -23,6 +22,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     required FilterCubit filterCubit,
     OfflineRepository? offlineRepository,
     HackerNewsRepository? hackerNewsRepository,
+    HackerNewsWebRepository? hackerNewsWebRepository,
     PreferenceRepository? preferenceRepository,
     Logger? logger,
   })  : _preferenceCubit = preferenceCubit,
@@ -31,13 +31,15 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
             offlineRepository ?? locator.get<OfflineRepository>(),
         _hackerNewsRepository =
             hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
+        _hackerNewsWebRepository =
+            hackerNewsWebRepository ?? locator.get<HackerNewsWebRepository>(),
         _preferenceRepository =
             preferenceRepository ?? locator.get<PreferenceRepository>(),
         _logger = logger ?? locator.get<Logger>(),
         super(const StoriesState.init()) {
     on<LoadStories>(
       onLoadStories,
-      transformer: concurrent(),
+      transformer: sequential(),
     );
     on<StoriesInitialize>(onInitialize);
     on<StoriesRefresh>(onRefresh);
@@ -61,39 +63,20 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   final FilterCubit _filterCubit;
   final OfflineRepository _offlineRepository;
   final HackerNewsRepository _hackerNewsRepository;
+  final HackerNewsWebRepository _hackerNewsWebRepository;
   final PreferenceRepository _preferenceRepository;
   final Logger _logger;
   DeviceScreenType? deviceScreenType;
   StreamSubscription<PreferenceState>? _preferenceSubscription;
-  static const int _smallPageSize = 10;
-  static const int _largePageSize = 20;
-  static const int _tabletSmallPageSize = 15;
-  static const int _tabletLargePageSize = 25;
   static const String _logPrefix = '[StoriesBloc]';
+  static const int apiPageSize = 30;
 
   Future<void> onInitialize(
     StoriesInitialize event,
     Emitter<StoriesState> emit,
   ) async {
-    _preferenceSubscription ??= _preferenceCubit.stream
-        .distinct((PreferenceState previous, PreferenceState next) {
-          return previous.isComplexStoryTileEnabled ==
-              next.isComplexStoryTileEnabled;
-        })
-        .debounceTime(AppDurations.oneSecond)
-        .listen((PreferenceState event) {
-          final bool isComplexTile = event.isComplexStoryTileEnabled;
-          final int pageSize = getPageSize(isComplexTile: isComplexTile);
-
-          if (pageSize != state.currentPageSize) {
-            add(StoriesPageSizeChanged(pageSize: pageSize));
-          }
-        });
-    final bool isComplexTile = _preferenceCubit.state.isComplexStoryTileEnabled;
-    final int pageSize = getPageSize(isComplexTile: isComplexTile);
     emit(
       const StoriesState.init().copyWith(
-        currentPageSize: pageSize,
         downloadStatus: state.downloadStatus,
         storiesDownloaded: state.storiesDownloaded,
         storiesToBeDownloaded: state.storiesToBeDownloaded,
@@ -121,12 +104,10 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
             .copyWithStatusUpdated(type: type, to: Status.inProgress),
       );
       _offlineRepository
-          .getCachedStoriesStream(
-            ids: ids.sublist(0, min(ids.length, state.currentPageSize)),
-          )
+          .getCachedStoriesStream(ids: ids)
           .listen((Story story) => add(StoryLoaded(story: story, type: type)))
           .onDone(() => add(StoryLoadingCompleted(type: type)));
-    } else {
+    } else if (event.useApi) {
       final List<int> ids =
           await _hackerNewsRepository.fetchStoryIds(type: type);
       emit(
@@ -135,13 +116,35 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
             .copyWithCurrentPageUpdated(type: type, to: 0)
             .copyWithStatusUpdated(type: type, to: Status.inProgress),
       );
+
       await _hackerNewsRepository
           .fetchStoriesStream(
-        ids: ids.sublist(0, state.currentPageSize),
+        ids: ids.sublist(0, apiPageSize),
         sequential: _preferenceCubit.state.isComplexStoryTileEnabled ||
             _preferenceCubit.state.isFaviconEnabled,
       )
           .listen((Story story) {
+        add(StoryLoaded(story: story, type: type));
+      }).asFuture<void>();
+    } else {
+      emit(
+        state
+            .copyWithCurrentPageUpdated(type: type, to: 0)
+            .copyWithStatusUpdated(type: type, to: Status.inProgress),
+      );
+
+      await _hackerNewsWebRepository
+          .fetchStoriesStream(event.type, page: 1)
+          .handleError((dynamic e) {
+        _logger.e('$_logPrefix error loading stories $e');
+
+        switch (e.runtimeType) {
+          case RateLimitedException:
+          case RateLimitedWithFallbackException:
+          case PossibleParsingException:
+            add(event.copyWith(useApi: true));
+        }
+      }).listen((Story story) {
         add(StoryLoaded(story: story, type: type));
       }).asFuture<void>();
       add(StoryLoadingCompleted(type: type));
@@ -174,7 +177,10 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     }
   }
 
-  void onLoadMore(StoriesLoadMore event, Emitter<StoriesState> emit) {
+  Future<void> onLoadMore(
+    StoriesLoadMore event,
+    Emitter<StoriesState> emit,
+  ) async {
     if (state.statusByType[event.type] == Status.inProgress) return;
 
     emit(
@@ -184,52 +190,60 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       ),
     );
 
-    final int currentPage = state.currentPageByType[event.type]!;
-    final int len = state.storyIdsByType[event.type]!.length;
+    final int currentPage = state.currentPageByType[event.type]! + 1;
     emit(
-      state.copyWithCurrentPageUpdated(type: event.type, to: currentPage + 1),
+      state.copyWithCurrentPageUpdated(type: event.type, to: currentPage),
     );
-    final int currentPageSize = state.currentPageSize;
-    final int lower = currentPageSize * (currentPage + 1);
-    int upper = currentPageSize + lower;
 
-    if (len > lower) {
-      if (len < upper) {
-        upper = len;
-      }
-
-      if (state.isOfflineReading) {
-        _offlineRepository
-            .getCachedStoriesStream(
-              ids: state.storyIdsByType[event.type]!.sublist(
-                lower,
-                upper,
-              ),
-            )
-            .listen(
-              (Story story) => add(StoryLoaded(story: story, type: event.type)),
-            )
-            .onDone(() => add(StoryLoadingCompleted(type: event.type)));
-      } else {
-        _hackerNewsRepository
-            .fetchStoriesStream(
-              ids: state.storyIdsByType[event.type]!.sublist(
-                lower,
-                upper,
-              ),
-            )
-            .listen(
-              (Story story) => add(StoryLoaded(story: story, type: event.type)),
-            )
-            .onDone(() => add(StoryLoadingCompleted(type: event.type)));
-      }
-    } else {
+    if (state.isOfflineReading) {
       emit(
         state.copyWithStatusUpdated(
           type: event.type,
           to: Status.success,
         ),
       );
+    } else if (event.useApi) {
+      late final int length;
+      final List<int>? ids = state.storyIdsByType[event.type];
+
+      if (ids?.isEmpty ?? true) {
+        final List<int> ids =
+            await _hackerNewsRepository.fetchStoryIds(type: event.type);
+        length = ids.length;
+      } else {
+        length = ids!.length;
+      }
+
+      final int lower = apiPageSize * currentPage;
+      final int upper = min(length, lower + apiPageSize);
+      _hackerNewsRepository
+          .fetchStoriesStream(
+            ids: state.storyIdsByType[event.type]!.sublist(
+              lower,
+              upper,
+            ),
+          )
+          .listen(
+            (Story story) => add(StoryLoaded(story: story, type: event.type)),
+          )
+          .onDone(() => add(StoryLoadingCompleted(type: event.type)));
+    } else {
+      _hackerNewsWebRepository
+          .fetchStoriesStream(event.type, page: currentPage)
+          .handleError((dynamic e) {
+            _logger.e('$_logPrefix error loading more stories $e');
+
+            switch (e.runtimeType) {
+              case RateLimitedException:
+              case RateLimitedWithFallbackException:
+              case PossibleParsingException:
+                add(event.copyWith(useApi: true));
+            }
+          })
+          .listen(
+            (Story story) => add(StoryLoaded(story: story, type: event.type)),
+          )
+          .onDone(() => add(StoryLoadingCompleted(type: event.type)));
     }
   }
 
@@ -519,16 +533,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   }
 
   bool hasRead(Story story) => state.readStoriesIds.contains(story.id);
-
-  int getPageSize({required bool isComplexTile}) {
-    int pageSize = isComplexTile ? _smallPageSize : _largePageSize;
-
-    if (deviceScreenType != DeviceScreenType.mobile) {
-      pageSize = isComplexTile ? _tabletSmallPageSize : _tabletLargePageSize;
-    }
-
-    return pageSize;
-  }
 
   @override
   Future<void> close() async {

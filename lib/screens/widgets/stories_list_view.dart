@@ -86,7 +86,7 @@ class _StoriesListViewState extends State<StoriesListView>
             return ItemsListView<Story>(
               showOfflineBanner: true,
               markReadStories: preferenceState.isMarkReadStoriesEnabled,
-              showWebPreviewOnStoryTile:
+              showWebPreviewOnStoryTile: storyType != StoryType.ask &&
                   preferenceState.isComplexStoryTileEnabled,
               showMetadataOnStoryTile: preferenceState.isMetadataEnabled,
               showFavicon: preferenceState.isFaviconEnabled,

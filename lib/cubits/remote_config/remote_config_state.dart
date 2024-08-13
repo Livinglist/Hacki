@@ -10,6 +10,48 @@ final class RemoteConfigState extends Equatable {
   @protected
   final Map<String, dynamic> data;
 
+  String get storySelector => getString(
+        key: 'storySelector',
+        fallback: '''#hnmain > tbody > tr > td > table > tbody > .athing''',
+      );
+
+  String get subtextSelector => getString(
+        key: 'subtextSelector',
+        fallback:
+            '''#hnmain > tbody > tr > td > table > tbody > tr > .subtext''',
+      );
+
+  String get titlelineSelector => getString(
+        key: 'titlelineSelector',
+        fallback: '''.title > .titleline > a''',
+      );
+
+  String get pointSelector => getString(
+        key: 'pointSelector',
+        fallback: '''.subline > .score''',
+      );
+
+  String get userSelector => getString(
+        key: 'userSelector',
+        fallback: '''.subline > .hnuser''',
+      );
+
+  String get ageSelector => getString(
+        key: 'ageSelector',
+        fallback: '''.subline > .age''',
+      );
+
+  String get cmtCountSelector => getString(
+        key: 'cmtCountSelector',
+        fallback: '''.subline > a''',
+      );
+
+  String get moreLinkSelector => getString(
+        key: 'moreLinkSelector',
+        fallback:
+            ''''#hnmain > tbody > tr:nth-child(3) > td > table > tbody > tr > td.title > a''',
+      );
+
   String get athingComtrSelector => getString(
         key: 'athingComtrSelector',
         fallback:
