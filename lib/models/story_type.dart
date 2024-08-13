@@ -10,7 +10,12 @@ enum StoryType {
     this.webPathParam,
   );
 
+  /// The path param used in the official Hacker News API.
+  /// e.g. https://hacker-news.firebaseio.com/v0/{apiPathParam}.json
   final String apiPathParam;
+
+  /// The path param used in the HN web.
+  /// e.g. https://news.ycombinator.com/{webPathParam}
   final String webPathParam;
 
   String get label {
