@@ -18,14 +18,14 @@ class RemoteConfigRepository {
         '$_path$fileName',
       );
       final String data = response.data as String? ?? '';
-      final Map<String, dynamic> json = jsonDecode(data) as Map<String,
-          dynamic>;
+      final Map<String, dynamic> json =
+          jsonDecode(data) as Map<String, dynamic>;
       return json;
     } else {
       const String fileName = 'remote-config-dev.json';
       final String data = await rootBundle.loadString('assets/$fileName');
-      final Map<String, dynamic> json = jsonDecode(data) as Map<String,
-          dynamic>;
+      final Map<String, dynamic> json =
+          jsonDecode(data) as Map<String, dynamic>;
       return json;
     }
   }
