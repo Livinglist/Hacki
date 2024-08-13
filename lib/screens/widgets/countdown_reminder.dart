@@ -117,7 +117,9 @@ class _CountDownReminderState extends State<CountdownReminder>
                         final ItemScreenArgs args = ItemScreenArgs(item: story);
                         goToItemScreen(args: args);
 
-                        context.read<ReminderCubit>().removeLastReadStoryId();
+                        if (context.mounted) {
+                          context.read<ReminderCubit>().removeLastReadStoryId();
+                        }
                       });
                     }
 

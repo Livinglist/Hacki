@@ -300,9 +300,11 @@ class _ParentItemSection extends StatelessWidget {
                                   FlutterClipboard.copy(item.url)
                                       .whenComplete(() {
                                     HapticFeedbackUtil.selection();
-                                    context.showSnackBar(
-                                      content: 'Link copied.',
-                                    );
+                                    if (context.mounted) {
+                                      context.showSnackBar(
+                                        content: 'Link copied.',
+                                      );
+                                    }
                                   });
                                 }
                               },

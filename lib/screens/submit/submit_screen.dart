@@ -88,7 +88,7 @@ class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
                     );
                   },
                 ).then((bool? value) {
-                  if (value ?? false) {
+                  if (context.mounted && (value ?? false)) {
                     context.pop();
                   }
                 });
@@ -147,7 +147,7 @@ class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
                         );
                       },
                     ).then((bool? value) {
-                      if (value ?? false) {
+                      if (context.mounted && (value ?? false)) {
                         context.read<SubmitCubit>().submit();
                       }
                     });

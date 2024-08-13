@@ -70,7 +70,7 @@ abstract class LinkUtil {
     final Uri uri = Uri.parse(link);
 
     canLaunchUrl(uri).then((bool val) {
-      if (val) {
+      if (val && context.mounted) {
         if (link.contains('http')) {
           if (Platform.isAndroid &&
               context.read<PreferenceCubit>().state.isCustomTabEnabled ==

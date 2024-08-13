@@ -87,14 +87,17 @@ class OfflineListTile extends StatelessWidget {
               ).then((bool? abortDownloading) {
                 if (abortDownloading ?? false) {
                   WakelockPlus.enable();
-                  context.read<StoriesBloc>().add(StoriesCancelDownload());
+
+                  if (context.mounted) {
+                    context.read<StoriesBloc>().add(StoriesCancelDownload());
+                  }
                 }
               });
             } else {
               Connectivity()
                   .checkConnectivity()
                   .then((List<ConnectivityResult> res) {
-                if (!res.contains(ConnectivityResult.none)) {
+                if (!res.contains(ConnectivityResult.none) && context.mounted) {
                   showDialog<bool>(
                     context: context,
                     builder: (BuildContext context) => AlertDialog(
@@ -118,11 +121,12 @@ class OfflineListTile extends StatelessWidget {
                   ).then((bool? includeWebPage) {
                     if (includeWebPage != null) {
                       WakelockPlus.enable();
-                      context.read<StoriesBloc>().add(
-                            StoriesDownload(
-                              includingWebPage: includeWebPage,
-                            ),
-                          );
+
+                      if (context.mounted) {
+                        context.read<StoriesBloc>().add(
+                              StoriesDownload(includingWebPage: includeWebPage),
+                            );
+                      }
                     }
                   });
                 }
