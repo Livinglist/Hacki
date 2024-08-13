@@ -68,8 +68,6 @@
 			<string>UIInterfaceOrientationLandscapeLeft</string>
 			<string>UIInterfaceOrientationLandscapeRight</string>
 		</array>
-		<key>UIViewControllerBasedStatusBarAppearance</key>
-		<false/>
 		<key>com.apple.developer.associated-domains</key>
 		<array>
 			<string>applinks:example.com</string>
