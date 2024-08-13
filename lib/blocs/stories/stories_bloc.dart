@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
@@ -68,6 +69,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   DeviceScreenType? deviceScreenType;
   StreamSubscription<PreferenceState>? _preferenceSubscription;
   static const String _logPrefix = '[StoriesBloc]';
+  static const int apiPageSize = 30;
 
   Future<void> onInitialize(
     StoriesInitialize event,
@@ -105,7 +107,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
           .getCachedStoriesStream(ids: ids)
           .listen((Story story) => add(StoryLoaded(story: story, type: type)))
           .onDone(() => add(StoryLoadingCompleted(type: type)));
-    } else {
+    } else if (event.useApi) {
       final List<int> ids =
           await _hackerNewsRepository.fetchStoryIds(type: type);
       emit(
@@ -115,9 +117,34 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
             .copyWithStatusUpdated(type: type, to: Status.inProgress),
       );
 
+      await _hackerNewsRepository
+          .fetchStoriesStream(
+        ids: ids.sublist(0, apiPageSize),
+        sequential: _preferenceCubit.state.isComplexStoryTileEnabled ||
+            _preferenceCubit.state.isFaviconEnabled,
+      )
+          .listen((Story story) {
+        add(StoryLoaded(story: story, type: type));
+      }).asFuture<void>();
+    } else {
+      emit(
+        state
+            .copyWithCurrentPageUpdated(type: type, to: 0)
+            .copyWithStatusUpdated(type: type, to: Status.inProgress),
+      );
+
       await _hackerNewsWebRepository
           .fetchStoriesStream(event.type, page: 1)
-          .listen((Story story) {
+          .handleError((dynamic e) {
+        _logger.e('$_logPrefix error loading stories $e');
+
+        switch (e.runtimeType) {
+          case RateLimitedException:
+          case RateLimitedWithFallbackException:
+          case PossibleParsingException:
+            add(event.copyWith(useApi: true));
+        }
+      }).listen((Story story) {
         add(StoryLoaded(story: story, type: type));
       }).asFuture<void>();
       add(StoryLoadingCompleted(type: type));
@@ -150,7 +177,10 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     }
   }
 
-  void onLoadMore(StoriesLoadMore event, Emitter<StoriesState> emit) {
+  Future<void> onLoadMore(
+    StoriesLoadMore event,
+    Emitter<StoriesState> emit,
+  ) async {
     if (state.statusByType[event.type] == Status.inProgress) return;
 
     emit(
@@ -160,9 +190,9 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       ),
     );
 
-    final int currentPage = state.currentPageByType[event.type]!;
+    final int currentPage = state.currentPageByType[event.type]! + 1;
     emit(
-      state.copyWithCurrentPageUpdated(type: event.type, to: currentPage + 1),
+      state.copyWithCurrentPageUpdated(type: event.type, to: currentPage),
     );
 
     if (state.isOfflineReading) {
@@ -172,9 +202,44 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
           to: Status.success,
         ),
       );
+    } else if (event.useApi) {
+      late final int length;
+      final List<int>? ids = state.storyIdsByType[event.type];
+
+      if (ids?.isEmpty ?? true) {
+        final List<int> ids =
+            await _hackerNewsRepository.fetchStoryIds(type: event.type);
+        length = ids.length;
+      } else {
+        length = ids!.length;
+      }
+
+      final int lower = apiPageSize * currentPage;
+      final int upper = min(length, lower + apiPageSize);
+      _hackerNewsRepository
+          .fetchStoriesStream(
+            ids: state.storyIdsByType[event.type]!.sublist(
+              lower,
+              upper,
+            ),
+          )
+          .listen(
+            (Story story) => add(StoryLoaded(story: story, type: event.type)),
+          )
+          .onDone(() => add(StoryLoadingCompleted(type: event.type)));
     } else {
       _hackerNewsWebRepository
           .fetchStoriesStream(event.type, page: currentPage + 1)
+          .handleError((dynamic e) {
+            _logger.e('$_logPrefix error loading more stories $e');
+
+            switch (e.runtimeType) {
+              case RateLimitedException:
+              case RateLimitedWithFallbackException:
+              case PossibleParsingException:
+                add(event.copyWith(useApi: true));
+            }
+          })
           .listen(
             (Story story) => add(StoryLoaded(story: story, type: event.type)),
           )

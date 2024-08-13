@@ -6,15 +6,25 @@ abstract class StoriesEvent extends Equatable {
 }
 
 class LoadStories extends StoriesEvent {
-  LoadStories({required this.type, this.isRefreshing = false});
+  LoadStories({
+    required this.type,
+    this.isRefreshing = false,
+    this.useApi = false,
+  });
 
   final StoryType type;
   final bool isRefreshing;
+  final bool useApi;
+
+  LoadStories copyWith({required bool useApi}) {
+    return LoadStories(type: type, isRefreshing: isRefreshing, useApi: useApi);
+  }
 
   @override
   List<Object?> get props => <Object?>[
         type,
         isRefreshing,
+        useApi,
       ];
 }
 
@@ -33,12 +43,24 @@ class StoriesRefresh extends StoriesEvent {
 }
 
 class StoriesLoadMore extends StoriesEvent {
-  StoriesLoadMore({required this.type});
+  StoriesLoadMore({
+    required this.type,
+    this.useApi = false,
+  });
 
   final StoryType type;
 
+  final bool useApi;
+
+  StoriesLoadMore copyWith({required bool useApi}) {
+    return StoriesLoadMore(type: type, useApi: useApi);
+  }
+
   @override
-  List<Object?> get props => <Object?>[type];
+  List<Object?> get props => <Object?>[
+        type,
+        useApi,
+      ];
 }
 
 class StoriesDownload extends StoriesEvent {
