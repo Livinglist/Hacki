@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -40,6 +41,151 @@ class HackerNewsWebRepository {
     'user-agent':
         'Mozilla/5.0 (iPhone; CPU iPhone OS 17_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1',
   };
+
+  static const String _storiesBaseUrl = 'https://news.ycombinator.com';
+
+  String get _storySelector => _remoteConfigCubit.state.storySelector;
+
+  String get _titlelineSelector => _remoteConfigCubit.state.titlelineSelector;
+
+  String get _subtextSelector => _remoteConfigCubit.state.subtextSelector;
+
+  String get _pointSelector => _remoteConfigCubit.state.pointSelector;
+
+  String get _userSelector => _remoteConfigCubit.state.userSelector;
+
+  String get _ageSelector => _remoteConfigCubit.state.ageSelector;
+
+  String get _cmtCountSelector => _remoteConfigCubit.state.cmtCountSelector;
+
+  Stream<Story> fetchStoriesStream(
+    StoryType storyType, {
+    required int page,
+  }) async* {
+    Future<Iterable<(Element, Element)>> fetchElements(
+      int page,
+    ) async {
+      try {
+        final Uri url = Uri.parse(
+          storyType == StoryType.top
+              ? '$_storiesBaseUrl?p=$page'
+              : '$_storiesBaseUrl/${storyType.webPathParam}?p=$page',
+        );
+        final Options option = Options(
+          headers: _headers,
+          persistentConnection: true,
+        );
+
+        /// Be more conservative while user is on wifi.
+        final Response<String> response = await _dio.getUri<String>(
+          url,
+          options: option,
+        );
+
+        final String data = response.data ?? '';
+        final Document document = parse(data);
+        final List<Element> elements =
+            document.querySelectorAll(_storySelector);
+        final List<Element> subtextElements =
+            document.querySelectorAll(_subtextSelector);
+        return List<(Element, Element)>.generate(
+          min(elements.length, subtextElements.length),
+          (int index) =>
+              (elements.elementAt(index), subtextElements.elementAt(index)),
+        );
+      } on DioException catch (e) {
+        if (e.response?.statusCode == HttpStatus.forbidden) {
+          throw RateLimitedWithFallbackException();
+        }
+        throw GenericException();
+      }
+    }
+
+    final Set<int> fetchedCommentIds = <int>{};
+    final Iterable<(Element, Element)> elements = await fetchElements(page);
+
+    while (elements.isNotEmpty) {
+      for (final (Element, Element) element in elements) {
+        final Element titleElement = element.$1;
+        final Element subtextElement = element.$2;
+
+        /// Get id.
+        final String? idStr = titleElement.attributes['id'];
+        final int? id = int.tryParse(idStr ?? '');
+
+        /// Get user.
+        final Element? userElement =
+            subtextElement.querySelector(_userSelector);
+        final String? user = userElement?.nodes.firstOrNull?.text;
+
+        /// Get post date.
+        final Element? postDateElement =
+            subtextElement.querySelector(_ageSelector);
+        final String? dateStr = postDateElement?.attributes['title'];
+        final int? timestamp = dateStr == null
+            ? null
+            : DateTime.parse(dateStr)
+                .copyWith(isUtc: true)
+                .millisecondsSinceEpoch;
+
+        /// Get descendants.
+        final Element? cmtCountElement =
+            subtextElement.querySelectorAll(_cmtCountSelector).lastOrNull;
+        final String cmtCountStr = cmtCountElement?.nodes.firstOrNull?.text
+                ?.split('\u{00A0}')
+                .firstOrNull ??
+            '';
+        final int cmtCount = int.tryParse(cmtCountStr) ?? 0;
+
+        /// Get title;
+        final Element? titlelineElement =
+            titleElement.querySelector(_titlelineSelector);
+        final String title = titlelineElement?.nodes.firstOrNull?.text ?? '';
+        final String url = titlelineElement?.attributes['href'] ?? '';
+
+        /// Get points.
+        final Element? ptElement = subtextElement.querySelector(_pointSelector);
+
+        /// Example: "80 points"
+        final String? pointsStr = ptElement?.nodes.firstOrNull?.text;
+        final int? points =
+            int.tryParse(pointsStr?.split(' ').firstOrNull ?? '');
+
+        final Story story = Story(
+          id: id ?? 0,
+          time: timestamp ?? 0,
+          score: points ?? 0,
+          by: user ?? '',
+          text: '',
+          kids: const <int>[],
+          hidden: false,
+          descendants: cmtCount,
+          title: title,
+          type: '',
+          url: storyType == StoryType.ask ? '$_itemBaseUrl$id' : url,
+          parts: const <int>[],
+        );
+
+        /// Skip any comment with no valid id or timestamp.
+        if (story.id == 0 || timestamp == 0) {
+          continue;
+        }
+
+        /// Duplicate comment means we are done fetching all the comments.
+        if (fetchedCommentIds.contains(story.id)) return;
+
+        fetchedCommentIds.add(story.id);
+        yield story;
+      }
+
+      /// Due to rate limiting, we have a short break here.
+      await Future<void>.delayed(AppDurations.twoSeconds);
+
+      page++;
+      //elements = await fetchElements(page);
+      return;
+    }
+  }
 
   static const String _favoritesBaseUrl =
       'https://news.ycombinator.com/favorites?id=';

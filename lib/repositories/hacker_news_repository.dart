@@ -118,7 +118,7 @@ class HackerNewsRepository {
   /// Fetch ids of stories of a certain [StoryType].
   Future<List<int>> fetchStoryIds({required StoryType type}) async {
     final List<int> ids = await _firebaseClient
-        .get('$_baseUrl${type.path}.json')
+        .get('$_baseUrl${type.apiPathParam}.json')
         .then((dynamic val) {
       final List<int> ids = (val as List<dynamic>).cast<int>();
       return ids;

@@ -1,13 +1,17 @@
 enum StoryType {
-  top('topstories'),
-  best('beststories'),
-  latest('newstories'),
-  ask('askstories'),
-  show('showstories');
+  top('topstories', ''),
+  best('beststories', 'best'),
+  latest('newstories', 'newest'),
+  ask('askstories', 'ask'),
+  show('showstories', 'show');
 
-  const StoryType(this.path);
+  const StoryType(
+    this.apiPathParam,
+    this.webPathParam,
+  );
 
-  final String path;
+  final String apiPathParam;
+  final String webPathParam;
 
   String get label {
     switch (this) {

@@ -13,7 +13,7 @@ abstract class LogUtil {
           printTime: true,
         )
       : PrettyPrinter(
-          printTime: true,
+          dateTimeFormat: DateTimeFormat.dateAndTime,
         );
 
   static LogOutput logOutput(File outputFile) => MultiOutput(
