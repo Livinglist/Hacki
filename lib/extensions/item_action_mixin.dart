@@ -164,7 +164,7 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
         );
       },
     ).then((bool? yesTapped) {
-      if (yesTapped ?? false) {
+      if (mounted && (yesTapped ?? false)) {
         context.read<AuthBloc>().add(AuthFlag(item: item));
         showSnackBar(content: 'Comment flagged!');
       }
@@ -202,6 +202,8 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
         );
       },
     ).then((bool? yesTapped) {
+      if (!mounted) return;
+
       if (yesTapped ?? false) {
         if (isBlocked) {
           context.read<BlocklistCubit>().removeFromBlocklist(item.by);

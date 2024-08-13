@@ -59,7 +59,9 @@ class _QrCodeScannerScreenState extends State<QrCodeScannerScreen> {
     });
     controller.scannedDataStream.listen((Barcode scanData) {
       controller.stopCamera();
-      context.pop(scanData.code);
+      if (mounted) {
+        context.pop(scanData.code);
+      }
     });
   }
 

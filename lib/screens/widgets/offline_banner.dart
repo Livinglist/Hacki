@@ -58,7 +58,7 @@ class OfflineBanner extends StatelessWidget {
                         );
                       },
                     ).then((bool? value) {
-                      if (value ?? false) {
+                      if (context.mounted && (value ?? false)) {
                         context
                             .read<StoriesBloc>()
                             .add(StoriesExitOfflineMode());
