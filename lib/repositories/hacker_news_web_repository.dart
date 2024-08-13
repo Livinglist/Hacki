@@ -161,7 +161,7 @@ class HackerNewsWebRepository {
           hidden: false,
           descendants: cmtCount,
           title: title,
-          type: '',
+          type: 'story',
           url: storyType == StoryType.ask ? '$_itemBaseUrl$id' : url,
           parts: const <int>[],
         );
@@ -180,9 +180,6 @@ class HackerNewsWebRepository {
 
       /// Due to rate limiting, we have a short break here.
       await Future<void>.delayed(AppDurations.twoSeconds);
-
-      page++;
-      //elements = await fetchElements(page);
       return;
     }
   }

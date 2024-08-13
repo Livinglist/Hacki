@@ -121,17 +121,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         add(StoryLoaded(story: story, type: type));
       }).asFuture<void>();
       add(StoryLoadingCompleted(type: type));
-
-      // await _hackerNewsRepository
-      //     .fetchStoriesStream(
-      //   ids: ids.sublist(0, state.currentPageSize),
-      //   sequential: _preferenceCubit.state.isComplexStoryTileEnabled ||
-      //       _preferenceCubit.state.isFaviconEnabled,
-      // )
-      //     .listen((Story story) {
-      //   add(StoryLoaded(story: story, type: type));
-      // }).asFuture<void>();
-      // add(StoryLoadingCompleted(type: type));
     }
   }
 
