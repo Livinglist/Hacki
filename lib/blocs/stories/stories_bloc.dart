@@ -190,10 +190,18 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       ),
     );
 
-    final int currentPage = state.currentPageByType[event.type]! + 1;
-    emit(
-      state.copyWithCurrentPageUpdated(type: event.type, to: currentPage),
-    );
+    late final int currentPage;
+
+    /// If useApi is true, it means this is a fallback fetch.
+    /// Don't increase page number in this case.
+    if (event.useApi) {
+      currentPage = state.currentPageByType[event.type]!;
+    } else {
+      currentPage = state.currentPageByType[event.type]! + 1;
+      emit(
+        state.copyWithCurrentPageUpdated(type: event.type, to: currentPage),
+      );
+    }
 
     if (state.isOfflineReading) {
       emit(
@@ -259,7 +267,10 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     }
 
     final Story story = event.story;
-    if (state.storiesByType[event.type]?.contains(story) ?? false) {
+    if (state.storiesByType[event.type]
+            ?.where((Story s) => s.id == story.id)
+            .isNotEmpty ??
+        false) {
       _logger.d(
         '$_logPrefix story ${story.id} for ${event.type} already exists.',
       );
