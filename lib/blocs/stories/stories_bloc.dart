@@ -193,7 +193,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     late final int currentPage;
 
     /// If useApi is true, it means this is a fallback fetch.
-    /// Don't increase page number in this case.
+    /// Don't increment the page number in this case.
     if (event.useApi) {
       currentPage = state.currentPageByType[event.type]!;
     } else {
