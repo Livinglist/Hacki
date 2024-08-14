@@ -253,16 +253,18 @@ class _HomeScreenState extends State<HomeScreen>
     if (event == null) return;
 
     final int? id = event.itemId;
+    locator
+        .get<Logger>()
+        .i('$logPrefix share intent received with item id: $id');
 
     if (id != null) {
       locator.get<HackerNewsRepository>().fetchItem(id: id).then((Item? item) {
-        if (mounted) {
-          if (item != null) {
-            goToItemScreen(
-              args: ItemScreenArgs(item: item),
-              forceNewScreen: true,
-            );
-          }
+        locator.get<Logger>().i('$logPrefix item fetched successfully.');
+        if (item != null) {
+          goToItemScreen(
+            args: ItemScreenArgs(item: item),
+            forceNewScreen: true,
+          );
         }
       });
     }
