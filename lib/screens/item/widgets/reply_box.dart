@@ -1,5 +1,5 @@
-import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:go_router/go_router.dart';
@@ -343,8 +343,8 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                             fontSize: TextDimens.pt14,
                           ),
                         ),
-                        onPressed: () => FlutterClipboard.copy(
-                          replyingTo.text,
+                        onPressed: () => Clipboard.setData(
+                          ClipboardData(text: replyingTo.text),
                         ).then((_) => HapticFeedbackUtil.selection()),
                       ),
                       IconButton(

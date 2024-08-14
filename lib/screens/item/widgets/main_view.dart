@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -297,8 +297,9 @@ class _ParentItemSection extends StatelessWidget {
                               ),
                               onLongPress: () {
                                 if (item.url.isNotEmpty) {
-                                  FlutterClipboard.copy(item.url)
-                                      .whenComplete(() {
+                                  Clipboard.setData(
+                                    ClipboardData(text: item.url),
+                                  ).whenComplete(() {
                                     HapticFeedbackUtil.selection();
                                     if (context.mounted) {
                                       context.showSnackBar(
