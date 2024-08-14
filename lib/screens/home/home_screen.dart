@@ -11,6 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/config/paths.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/main.dart';
@@ -218,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen>
       if (splitViewEnabled) {
         context.read<SplitViewCubit>().updateItemScreenArgs(args);
       } else {
-        context.push('/${ItemScreen.routeName}', extra: args);
+        context.push(Paths.item.landing, extra: args);
       }
     }
 

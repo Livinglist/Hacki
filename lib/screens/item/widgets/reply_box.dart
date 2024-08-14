@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/config/paths.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
@@ -279,7 +280,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
       return;
     } else if (replyingTo is Story) {
       final ItemScreenArgs args = ItemScreenArgs(item: replyingTo);
-      context.push('/${ItemScreen.routeName}', extra: args);
+      context.push(Paths.item.landing, extra: args);
       expanded = false;
       return;
     }

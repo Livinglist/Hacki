@@ -3,12 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/auth/auth_bloc.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/config/paths.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/item/models/models.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
-import 'package:hacki/screens/screens.dart' show ItemScreen, ItemScreenArgs;
+import 'package:hacki/screens/screens.dart' show ItemScreenArgs;
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:share_plus/share_plus.dart';
@@ -39,7 +40,7 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
     if (splitViewEnabled && !forceNewScreen) {
       context.read<SplitViewCubit>().updateItemScreenArgs(args);
     } else {
-      context.push('/${ItemScreen.routeName}', extra: args);
+      context.push(Paths.item.landing, extra: args);
     }
 
     return Future<void>.value();
