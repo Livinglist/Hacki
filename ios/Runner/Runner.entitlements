@@ -22,9 +22,5 @@
 	<array>
 		<string>group.com.jiaqi.hacki</string>
 	</array>
-    <key>com.apple.developer.associated-domains</key>
-    <array>
-        <string>applinks:example.com</string>
-    </array>
 </dict>
 </plist>
