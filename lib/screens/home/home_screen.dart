@@ -259,7 +259,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     if (id != null) {
       locator.get<HackerNewsRepository>().fetchItem(id: id).then((Item? item) {
-        locator.get<Logger>().i('$logPrefix item fetched successfully.');
+        locator.get<Logger>().i('$logPrefix item fetched successfully: $item');
         if (item != null) {
           goToItemScreen(
             args: ItemScreenArgs(item: item),
