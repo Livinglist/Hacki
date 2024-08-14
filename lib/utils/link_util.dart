@@ -5,12 +5,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/config/paths.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
-import 'package:hacki/screens/screens.dart'
-    show ItemScreen, ItemScreenArgs, WebViewScreen;
+import 'package:hacki/screens/screens.dart' show ItemScreenArgs;
 import 'package:url_launcher/url_launcher.dart';
 
 abstract class LinkUtil {
@@ -40,7 +40,7 @@ abstract class LinkUtil {
           .then((bool cached) {
         if (cached) {
           router.push(
-            '/${WebViewScreen.routeName}',
+            Paths.webView.landing,
             extra: link,
           );
         }
@@ -58,7 +58,7 @@ abstract class LinkUtil {
             .then((Item? item) {
           if (item != null) {
             router.push(
-              '/${ItemScreen.routeName}',
+              Paths.item.landing,
               extra: ItemScreenArgs(item: item),
             );
           }

@@ -39,7 +39,7 @@ class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
           context.pop();
           HapticFeedbackUtil.light();
           showSnackBar(
-            content: 'Post submitted successfully.',
+            content: 'Post submitted.',
           );
         } else if (state.status == Status.failure) {
           showErrorSnackBar();

@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:adaptive_theme/adaptive_theme.dart';
-import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
@@ -16,13 +16,12 @@ import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/config/paths.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/profile/models/page_type.dart';
-import 'package:hacki/screens/profile/qr_code_scanner_screen.dart';
-import 'package:hacki/screens/profile/qr_code_view_screen.dart';
 import 'package:hacki/screens/profile/widgets/enter_offline_mode_list_tile.dart';
 import 'package:hacki/screens/profile/widgets/offline_list_tile.dart';
 import 'package:hacki/screens/profile/widgets/tab_bar_settings.dart';
@@ -346,7 +345,9 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                       title: const Text(
                         'Logs',
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        context.go(Paths.log.landing);
+                      },
                     ),
                   ListTile(
                     title: const Text('About'),
@@ -908,8 +909,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
   }
 
   Future<void> onImportFavoritesTapped(FavCubit favCubit) async {
-    final String? res =
-        await router.push('/${QrCodeScannerScreen.routeName}') as String?;
+    final String? res = await router.push(Paths.qrCode.scanner) as String?;
     final List<int>? ids =
         res?.split('\n').map(int.tryParse).whereType<int>().toList();
     if (ids == null) return;
@@ -933,12 +933,12 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
     switch (destination) {
       case ExportDestination.qrCode:
         await router.push(
-          '/${QrCodeViewScreen.routeName}',
+          Paths.qrCode.viewer,
           extra: allFavoritesStr,
         );
       case ExportDestination.clipBoard:
         try {
-          await FlutterClipboard.copy(allFavoritesStr)
+          await Clipboard.setData(ClipboardData(text: allFavoritesStr))
               .whenComplete(HapticFeedbackUtil.selection);
           showSnackBar(
             content: 'Ids of favorites have been copied to clipboard.',

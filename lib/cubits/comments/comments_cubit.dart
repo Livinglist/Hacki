@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/config/paths.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
@@ -418,7 +419,7 @@ class CommentsCubit extends Cubit<CommentsState> {
       return;
     } else {
       await router.push(
-        '/${ItemScreen.routeName}',
+        Paths.item.landing,
         extra: ItemScreenArgs(item: parent),
       );
 
@@ -441,7 +442,7 @@ class CommentsCubit extends Cubit<CommentsState> {
       return;
     } else {
       await router.push(
-        '/${ItemScreen.routeName}',
+        Paths.item.landing,
         extra: ItemScreenArgs(item: parent),
       );
 

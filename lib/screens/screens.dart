@@ -1,5 +1,6 @@
 export 'home/home_screen.dart';
 export 'item/item_screen.dart';
+export 'log/log_screen.dart';
 export 'profile/profile_screen.dart';
 export 'profile/qr_code_scanner_screen.dart';
 export 'profile/qr_code_view_screen.dart';

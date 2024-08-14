@@ -63,7 +63,7 @@ class _PollViewState extends State<PollView> with ItemActionMixin {
                       ScaffoldMessenger.of(context).clearSnackBars();
                       if (voteState.status == VoteStatus.submitted) {
                         showSnackBar(
-                          content: 'Vote submitted successfully.',
+                          content: 'Vote submitted.',
                         );
                       } else if (voteState.status == VoteStatus.canceled) {
                         showSnackBar(content: 'Vote canceled.');
