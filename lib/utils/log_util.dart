@@ -45,12 +45,29 @@ abstract class LogUtil {
 
     final Uint8List fileContent = await currentSessionLog.readAsBytes();
     await previousSessionLog.writeAsString(
-      'Current session logs:\n',
+      '===============Current session logs===============\n',
       mode: FileMode.append,
     );
     return previousSessionLog.writeAsBytes(
       fileContent,
       mode: FileMode.append,
     );
+  }
+
+  static Future<List<String>> exportLogAsStrings() async {
+    final Directory tempDir = await getTemporaryDirectory();
+    final String logPath = '${tempDir.path}/${Constants.logFilename}';
+    final String previousLogPath =
+        '${tempDir.path}/${Constants.previousLogFileName}';
+    final File currentSessionLog = File(logPath);
+    final File previousSessionLog = File(previousLogPath);
+
+    final List<String> currentLog = await currentSessionLog.readAsLines();
+    final List<String> prevLog = await previousSessionLog.readAsLines();
+    return <String>[
+      ...prevLog,
+      '\n===============Current session logs===============\n',
+      ...currentLog,
+    ];
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/config/paths.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
@@ -316,7 +317,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             selected: false,
                             onSelected: (bool val) {
                               if (authState.isLoggedIn) {
-                                context.push('/${SubmitScreen.routeName}');
+                                context.push(Paths.item.submit);
                               } else {
                                 showSnackBar(
                                   content: 'You need to log in first.',
