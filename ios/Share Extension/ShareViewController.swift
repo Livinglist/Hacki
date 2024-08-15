@@ -8,11 +8,11 @@ class ShareViewController: SLComposeServiceViewController {
     let sharedKey = "ShareKey"
     var sharedMedia: [SharedMediaFile] = []
     var sharedText: [String] = []
-    let imageContentType = kUTTypeImage as String
-    let videoContentType = kUTTypeMovie as String
-    let textContentType = kUTTypeText as String
-    let urlContentType = kUTTypeURL as String
-    let fileURLType = kUTTypeFileURL as String;
+    let imageContentType = UTType.image
+    let videoContentType = UTType.movie
+    let textContentType =  UTType.text
+    let urlContentType =  UTType.url
+    let fileURLType = UTType.fileURL
     
     override func isContentValid() -> Bool {
         return true
@@ -29,15 +29,15 @@ class ShareViewController: SLComposeServiceViewController {
         if let content = extensionContext!.inputItems[0] as? NSExtensionItem {
             if let contents = content.attachments {
                 for (index, attachment) in (contents).enumerated() {
-                    if attachment.hasItemConformingToTypeIdentifier(imageContentType) {
+                    if attachment.hasItemConformingToTypeIdentifier(imageContentType.identifier) {
                         handleImages(content: content, attachment: attachment, index: index)
-                    } else if attachment.hasItemConformingToTypeIdentifier(textContentType) {
+                    } else if attachment.hasItemConformingToTypeIdentifier(textContentType.identifier) {
                         handleText(content: content, attachment: attachment, index: index)
-                    } else if attachment.hasItemConformingToTypeIdentifier(fileURLType) {
+                    } else if attachment.hasItemConformingToTypeIdentifier(fileURLType.identifier) {
                         handleFiles(content: content, attachment: attachment, index: index)
-                    } else if attachment.hasItemConformingToTypeIdentifier(urlContentType) {
+                    } else if attachment.hasItemConformingToTypeIdentifier(urlContentType.identifier) {
                         handleUrl(content: content, attachment: attachment, index: index)
-                    } else if attachment.hasItemConformingToTypeIdentifier(videoContentType) {
+                    } else if attachment.hasItemConformingToTypeIdentifier(videoContentType.identifier) {
                         handleVideos(content: content, attachment: attachment, index: index)
                     }
                 }
@@ -55,8 +55,8 @@ class ShareViewController: SLComposeServiceViewController {
     }
     
     private func handleText (content: NSExtensionItem, attachment: NSItemProvider, index: Int) {
-        attachment.loadItem(forTypeIdentifier: textContentType, options: nil) { [weak self] data, error in
-            
+        attachment.loadItem(forTypeIdentifier: textContentType.identifier, options: nil) { [weak self] data, error in
+
             if error == nil, let item = data as? String, let this = self {
                 
                 this.sharedText.append(item)
@@ -76,8 +76,8 @@ class ShareViewController: SLComposeServiceViewController {
     }
     
     private func handleUrl (content: NSExtensionItem, attachment: NSItemProvider, index: Int) {
-        attachment.loadItem(forTypeIdentifier: urlContentType, options: nil) { [weak self] data, error in
-            
+        attachment.loadItem(forTypeIdentifier: urlContentType.identifier, options: nil) { [weak self] data, error in
+
             if error == nil, let item = data as? URL, let this = self {
                 
                 this.sharedText.append(item.absoluteString)
@@ -85,7 +85,6 @@ class ShareViewController: SLComposeServiceViewController {
                 // If this is the last item, save imagesData in userDefaults and redirect to host app
                 if index == (content.attachments?.count)! - 1 {
                     let userDefaults = UserDefaults(suiteName: "group.\(this.hostAppBundleIdentifier)")
-                    userDefaults?.set("this", forKey: "fuck")
                     userDefaults?.set(this.sharedText, forKey: this.sharedKey)
                     userDefaults?.synchronize()
 
@@ -99,8 +98,8 @@ class ShareViewController: SLComposeServiceViewController {
     }
     
     private func handleImages (content: NSExtensionItem, attachment: NSItemProvider, index: Int) {
-        attachment.loadItem(forTypeIdentifier: imageContentType, options: nil) { [weak self] data, error in
-            
+        attachment.loadItem(forTypeIdentifier: imageContentType.identifier, options: nil) { [weak self] data, error in
+
             if error == nil, let url = data as? URL, let this = self {
                 
                 // Always copy
@@ -128,8 +127,8 @@ class ShareViewController: SLComposeServiceViewController {
     }
     
     private func handleVideos (content: NSExtensionItem, attachment: NSItemProvider, index: Int) {
-        attachment.loadItem(forTypeIdentifier: videoContentType, options: nil) { [weak self] data, error in
-            
+        attachment.loadItem(forTypeIdentifier: videoContentType.identifier, options: nil) { [weak self] data, error in
+
             if error == nil, let url = data as? URL, let this = self {
                 
                 // Always copy
@@ -160,8 +159,8 @@ class ShareViewController: SLComposeServiceViewController {
     }
     
     private func handleFiles (content: NSExtensionItem, attachment: NSItemProvider, index: Int) {
-        attachment.loadItem(forTypeIdentifier: fileURLType, options: nil) { [weak self] data, error in
-            
+        attachment.loadItem(forTypeIdentifier: fileURLType.identifier, options: nil) { [weak self] data, error in
+
             if error == nil, let url = data as? URL, let this = self {
                 
                 // Always copy
@@ -204,8 +203,6 @@ class ShareViewController: SLComposeServiceViewController {
         let url = URL(string: "ShareMedia-\(hostAppBundleIdentifier)://dataUrl=\(sharedKey)#\(type)")
         var responder = self as UIResponder?
         let selectorOpenURL = sel_registerName("openURL:")
-
-        print("fuck \(url)")
 
         while (responder != nil) {
             if (responder?.responds(to: selectorOpenURL))! {
@@ -315,7 +312,7 @@ class ShareViewController: SLComposeServiceViewController {
         
         // Debug method to print out SharedMediaFile details in the console
         func toString() {
-            print("[SharedMediaFile] \n\tpath: \(self.path)\n\tthumbnail: \(self.thumbnail)\n\tduration: \(self.duration)\n\ttype: \(self.type)")
+            print("[SharedMediaFile] \n\tpath: \(self.path)\n\tthumbnail: \(String(describing: self.thumbnail))\n\tduration: \(String(describing: self.duration))\n\ttype: \(self.type)")
         }
     }
     
