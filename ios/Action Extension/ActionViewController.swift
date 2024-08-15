@@ -13,7 +13,7 @@ class ActionViewController: UIViewController {
     let hostAppBundleIdentifier = "com.jiaqi.hacki"
     let sharedKey = "ShareKey"
     var sharedText: [String] = []
-    let urlContentType = kUTTypeURL as String
+    let urlContentType = UTType.url
     @IBOutlet weak var imageView: UIImageView!
     
     override func viewDidLoad() {
@@ -32,7 +32,7 @@ class ActionViewController: UIViewController {
     }
     
     private func handleUrl (content: NSExtensionItem, attachment: NSItemProvider, index: Int) {
-        attachment.loadItem(forTypeIdentifier: urlContentType, options: nil) { [weak self] data, error in
+        attachment.loadItem(forTypeIdentifier: urlContentType.identifier, options: nil) { [weak self] data, error in
             
             if error == nil, let item = data as? URL, let this = self {
                 this.sharedText.append(item.absoluteString)
@@ -66,7 +66,7 @@ class ActionViewController: UIViewController {
     }
     
     private func redirectToHostApp() {
-        let url = URL(string: "ShareMedia://dataUrl=\(sharedKey)#text")
+        let url = URL(string: "ShareMedia-\(hostAppBundleIdentifier)://dataUrl=\(sharedKey)#text")
         var responder = self as UIResponder?
         let selectorOpenURL = sel_registerName("openURL:")
         

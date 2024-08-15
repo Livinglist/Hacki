@@ -22,7 +22,7 @@ import flutter_local_notifications
         WorkmanagerPlugin.registerTask(withIdentifier: "workmanager.background.task")
         
         if #available(iOS 10.0, *) {
-            UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
+            UNUserNotificationCenter.current().delegate = self as UNUserNotificationCenterDelegate
         }
         UIApplication.shared.setMinimumBackgroundFetchInterval(TimeInterval(60*15))
         
