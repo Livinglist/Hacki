@@ -251,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen>
 
   void onShareExtensionTapped(String? event) {
     locator.get<Logger>().i('$logPrefix share intent received: $event');
-    
+
     if (event == null) return;
 
     final int? id = event.itemId;
