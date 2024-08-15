@@ -250,12 +250,11 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void onShareExtensionTapped(String? event) {
+    locator.get<Logger>().i('$logPrefix share intent received: $event');
+
     if (event == null) return;
 
     final int? id = event.itemId;
-    locator
-        .get<Logger>()
-        .i('$logPrefix share intent received with item id: $id');
 
     if (id != null) {
       locator.get<HackerNewsRepository>().fetchItem(id: id).then((Item? item) {
