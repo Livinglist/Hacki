@@ -66,7 +66,7 @@ class ActionViewController: UIViewController {
     }
     
     private func redirectToHostApp() {
-        let url = URL(string: "ShareMedia://dataUrl=\(sharedKey)#text")
+        let url = URL(string: "ShareMedia-\(hostAppBundleIdentifier)://dataUrl=\(sharedKey)#text")
         var responder = self as UIResponder?
         let selectorOpenURL = sel_registerName("openURL:")
         
