@@ -49,7 +49,7 @@ class Settings extends StatefulWidget {
   State<Settings> createState() => _SettingsState();
 }
 
-class _SettingsState extends State<Settings> with ItemActionMixin {
+class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PreferenceCubit, PreferenceState>(
@@ -786,7 +786,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
         LinkUtil.launchInExternalBrowser(Constants.githubIssueLink);
       }
     } catch (error, stackTrace) {
-      error.logError(stackTrace: stackTrace);
+      logError(error, stackTrace: stackTrace);
     }
   }
 
@@ -944,7 +944,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
             content: 'Ids of favorites have been copied to clipboard.',
           );
         } catch (error, stackTrace) {
-          error.logError(stackTrace: stackTrace);
+          logError(error, stackTrace: stackTrace);
         }
     }
   }
@@ -972,7 +972,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
                   context.read<FavCubit>().removeAll();
                   showSnackBar(content: 'All favorites have been removed.');
                 } catch (error, stackTrace) {
-                  error.logError(stackTrace: stackTrace);
+                  logError(error, stackTrace: stackTrace);
                 }
               },
               child: const Text(
@@ -987,4 +987,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin {
       },
     );
   }
+
+  @override
+  String get logIdentifier => '[SettingsState]';
 }

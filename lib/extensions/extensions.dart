@@ -3,7 +3,7 @@ export 'date_time_extension.dart';
 export 'int_extension.dart';
 export 'item_action_mixin.dart';
 export 'list_extension.dart';
-export 'object_extension.dart';
+export 'loggable.dart';
 export 'set_extension.dart';
 export 'string_extension.dart';
 export 'widget_extension.dart';
