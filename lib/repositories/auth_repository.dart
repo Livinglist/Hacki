@@ -6,7 +6,6 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/post_repository.dart';
 import 'package:hacki/repositories/postable_repository.dart';
 import 'package:hacki/repositories/preference_repository.dart';
-import 'package:logger/logger.dart';
 
 /// [AuthRepository] if for logging user in/out and performing actions
 /// that require a logged in user such as [flag], [favorite], [upvote],
@@ -17,13 +16,10 @@ class AuthRepository extends PostableRepository with Loggable {
   AuthRepository({
     super.dio,
     PreferenceRepository? preferenceRepository,
-    Logger? logger,
-  })  : _preferenceRepository =
-            preferenceRepository ?? locator.get<PreferenceRepository>(),
-        _logger = logger ?? locator.get<Logger>();
+  }) : _preferenceRepository =
+            preferenceRepository ?? locator.get<PreferenceRepository>();
 
   final PreferenceRepository _preferenceRepository;
-  final Logger _logger;
 
   Future<bool> get loggedIn async => _preferenceRepository.loggedIn;
 
@@ -50,8 +46,8 @@ class AuthRepository extends PostableRepository with Loggable {
           username: username,
           password: password,
         );
-      } catch (_) {
-        _logger.e(_);
+      } catch (e) {
+        logError(e);
         return false;
       }
     }

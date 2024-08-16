@@ -29,6 +29,7 @@ import 'package:hacki/screens/profile/widgets/text_scale_factor_settings.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
+import 'package:logger/logger.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -359,8 +360,12 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                       context.read<PreferenceCubit>().update(updatedDevMode);
                       HapticFeedbackUtil.heavy();
                       if (updatedDevMode.val) {
+                        locator.get<LogFilter>().level = Level.all;
+                        logInfo('dev mode enabled.');
                         showSnackBar(content: 'You are a dev now.');
                       } else {
+                        locator.get<LogFilter>().level = Level.info;
+                        logInfo('dev mode disabled.');
                         showSnackBar(content: 'Dev mode disabled');
                       }
                     },

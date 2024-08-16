@@ -5,13 +5,13 @@ class CustomLogFilter extends LogFilter {
   Level? get level => Level.trace;
 
   /// The minimal level allowed in production.
-  static const Level _minimalLevel = Level.info;
+  static const Level minimalLevel = Level.info;
 
   @override
   bool shouldLog(LogEvent event) {
     bool shouldLog = false;
 
-    if (event.level.index >= _minimalLevel.index) {
+    if (event.level.index >= minimalLevel.index) {
       return true;
     }
 
