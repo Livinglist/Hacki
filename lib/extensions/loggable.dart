@@ -4,7 +4,7 @@ import 'package:logger/logger.dart';
 mixin Loggable {
   String get logIdentifier;
 
-  Logger get _logger => locator.get<Logger>() ;
+  Logger get _logger => locator.get<Logger>();
 
   /// Log a message at level [Level.trace].
   void logTrace(
