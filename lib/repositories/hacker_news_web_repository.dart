@@ -208,7 +208,7 @@ class HackerNewsWebRepository {
             title.contains('Ask HN:')) {
           final Story? fallbackStory = await _hackerNewsRepository
               .fetchStory(id: id)
-              .timeout(AppDurations.tenSeconds);
+              .timeout(AppDurations.fiveSeconds);
           if (fallbackStory != null) {
             story = fallbackStory;
           }
