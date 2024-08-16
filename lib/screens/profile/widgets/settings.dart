@@ -29,7 +29,6 @@ import 'package:hacki/screens/profile/widgets/text_scale_factor_settings.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
-import 'package:logger/logger.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -156,6 +155,46 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                       ),
                       const SizedBox(
                         width: Dimens.pt16,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: Dimens.pt12,
+                  ),
+                  Row(
+                    children: <Widget>[
+                      const SizedBox(
+                        width: Dimens.pt16,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          const Text(
+                            'Data source',
+                          ),
+                          DropdownMenu<HackerNewsDataSource>(
+                            initialSelection: preferenceState.dataSource,
+                            dropdownMenuEntries: HackerNewsDataSource.values
+                                .map(
+                                  (HackerNewsDataSource val) =>
+                                      DropdownMenuEntry<HackerNewsDataSource>(
+                                    value: val,
+                                    label: val.description,
+                                  ),
+                                )
+                                .toList(),
+                            onSelected: (HackerNewsDataSource? source) {
+                              if (source != null) {
+                                HapticFeedbackUtil.selection();
+                                context.read<PreferenceCubit>().update(
+                                      HackerNewsDataSourcePreference(
+                                        val: source.index,
+                                      ),
+                                    );
+                              }
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -360,12 +399,8 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                       context.read<PreferenceCubit>().update(updatedDevMode);
                       HapticFeedbackUtil.heavy();
                       if (updatedDevMode.val) {
-                        locator.get<LogFilter>().level = Level.all;
-                        logInfo('dev mode enabled.');
                         showSnackBar(content: 'You are a dev now.');
                       } else {
-                        locator.get<LogFilter>().level = Level.info;
-                        logInfo('dev mode disabled.');
                         showSnackBar(content: 'Dev mode disabled');
                       }
                     },

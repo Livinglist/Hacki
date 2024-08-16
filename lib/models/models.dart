@@ -6,6 +6,7 @@ export 'export_destination.dart';
 export 'fetch_mode.dart';
 export 'font.dart';
 export 'font_size.dart';
+export 'hacker_news_data_source.dart';
 export 'item/item.dart';
 export 'post_data.dart';
 export 'preference.dart';

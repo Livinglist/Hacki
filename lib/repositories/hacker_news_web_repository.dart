@@ -10,6 +10,7 @@ import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/repositories/hacker_news_repository.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:html/dom.dart' hide Comment;
 import 'package:html/parser.dart';
@@ -19,6 +20,7 @@ import 'package:html_unescape/html_unescape.dart';
 class HackerNewsWebRepository {
   HackerNewsWebRepository({
     RemoteConfigCubit? remoteConfigCubit,
+    HackerNewsRepository? hackerNewsRepository,
     Dio? dioWithCache,
     Dio? dio,
   })  : _dio = dio ?? Dio(),
@@ -30,11 +32,14 @@ class HackerNewsWebRepository {
             ],
           ),
         _remoteConfigCubit =
-            remoteConfigCubit ?? locator.get<RemoteConfigCubit>();
+            remoteConfigCubit ?? locator.get<RemoteConfigCubit>(),
+        _hackerNewsRepository =
+            hackerNewsRepository ?? locator.get<HackerNewsRepository>();
 
   final Dio _dioWithCache;
   final Dio _dio;
   final RemoteConfigCubit _remoteConfigCubit;
+  final HackerNewsRepository _hackerNewsRepository;
 
   static const Map<String, String> _headers = <String, String>{
     'accept': '*/*',
@@ -127,7 +132,7 @@ class HackerNewsWebRepository {
       }
     }
 
-    final Set<int> fetchedCommentIds = <int>{};
+    final Set<int> fetchedStoryIds = <int>{};
     final Iterable<(Element, Element)> elements = await fetchElements(page);
 
     while (elements.isNotEmpty) {
@@ -146,7 +151,9 @@ class HackerNewsWebRepository {
 
         /// Get post date.
         final Element? postDateElement =
-            subtextElement.querySelector(_ageSelector);
+            subtextElement.querySelector(_ageSelector) ??
+                subtextElement.querySelector('.age');
+
         final String? dateStr = postDateElement?.attributes['title'];
         final int? timestamp = dateStr == null
             ? null
@@ -177,8 +184,10 @@ class HackerNewsWebRepository {
         final int? points =
             int.tryParse(pointsStr?.split(' ').firstOrNull ?? '');
 
-        final Story story = Story(
-          id: id ?? 0,
+        if (id == null) continue;
+
+        Story story = Story(
+          id: id,
           time: timestamp ?? 0,
           score: points ?? 0,
           by: user ?? '',
@@ -192,15 +201,23 @@ class HackerNewsWebRepository {
           parts: const <int>[],
         );
 
-        /// Skip any comment with no valid id or timestamp.
-        if (story.id == 0 || timestamp == 0) {
-          continue;
+        if (timestamp == null ||
+            url.isEmpty ||
+            url.contains('item?id=') ||
+            title.contains('Launch HN:') ||
+            title.contains('Ask HN:')) {
+          final Story? fallbackStory = await _hackerNewsRepository
+              .fetchStory(id: id)
+              .timeout(AppDurations.fiveSeconds);
+          if (fallbackStory != null) {
+            story = fallbackStory;
+          }
         }
 
         /// Duplicate comment means we are done fetching all the comments.
-        if (fetchedCommentIds.contains(story.id)) return;
+        if (fetchedStoryIds.contains(story.id)) return;
 
-        fetchedCommentIds.add(story.id);
+        fetchedStoryIds.add(story.id);
         yield story;
       }
 

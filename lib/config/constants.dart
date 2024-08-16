@@ -88,6 +88,7 @@ abstract class AppDurations {
   static const Duration ms600 = Duration(milliseconds: 600);
   static const Duration oneSecond = Duration(seconds: 1);
   static const Duration twoSeconds = Duration(seconds: 2);
+  static const Duration fiveSeconds = Duration(seconds: 5);
   static const Duration tenSeconds = Duration(seconds: 10);
   static const Duration sec30 = Duration(seconds: 30);
   static const Duration oneMinute = Duration(minutes: 1);

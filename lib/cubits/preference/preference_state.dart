@@ -89,6 +89,12 @@ class PreferenceState extends Equatable {
     ) as MaterialColor;
   }
 
+  HackerNewsDataSource get dataSource {
+    return HackerNewsDataSource.values.elementAt(
+      preferences.singleWhereType<HackerNewsDataSourcePreference>().val,
+    );
+  }
+
   List<StoryType> get tabs {
     final String result =
         preferences.singleWhereType<TabOrderPreference>().val.toString();

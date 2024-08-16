@@ -28,6 +28,7 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       StoryMarkingModePreference(),
       AppColorPreference(),
       DateFormatPreference(),
+      HackerNewsDataSourcePreference(),
       const TextScaleFactorPreference(),
 
       /// Order of items below matters and
@@ -585,4 +586,23 @@ final class DateFormatPreference extends IntPreference {
 
   @override
   String get title => 'Date Format';
+}
+
+final class HackerNewsDataSourcePreference extends IntPreference {
+  HackerNewsDataSourcePreference({int? val})
+      : super(val: val ?? _hackerNewsDataSourceDefaultValue);
+
+  static final int _hackerNewsDataSourceDefaultValue =
+      HackerNewsDataSource.api.index;
+
+  @override
+  HackerNewsDataSourcePreference copyWith({required int? val}) {
+    return HackerNewsDataSourcePreference(val: val);
+  }
+
+  @override
+  String get key => 'hackerNewsDataSource';
+
+  @override
+  String get title => 'Date Source';
 }
