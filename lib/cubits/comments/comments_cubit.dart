@@ -18,13 +18,12 @@ import 'package:hacki/screens/screens.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:linkify/linkify.dart';
-import 'package:logger/logger.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 part 'comments_state.dart';
 
-class CommentsCubit extends Cubit<CommentsState> {
+class CommentsCubit extends Cubit<CommentsState> with Loggable {
   CommentsCubit({
     required FilterCubit filterCubit,
     required PreferenceCubit preferenceCubit,
@@ -38,7 +37,6 @@ class CommentsCubit extends Cubit<CommentsState> {
     SembastRepository? sembastRepository,
     HackerNewsRepository? hackerNewsRepository,
     HackerNewsWebRepository? hackerNewsWebRepository,
-    Logger? logger,
   })  : _filterCubit = filterCubit,
         _preferenceCubit = preferenceCubit,
         _collapseCache = collapseCache,
@@ -51,7 +49,6 @@ class CommentsCubit extends Cubit<CommentsState> {
             hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
         _hackerNewsWebRepository =
             hackerNewsWebRepository ?? locator.get<HackerNewsWebRepository>(),
-        _logger = logger ?? locator.get<Logger>(),
         super(
           CommentsState.init(
             isOfflineReading: isOfflineReading,
@@ -69,7 +66,6 @@ class CommentsCubit extends Cubit<CommentsState> {
   final SembastRepository _sembastRepository;
   final HackerNewsRepository _hackerNewsRepository;
   final HackerNewsWebRepository _hackerNewsWebRepository;
-  final Logger _logger;
 
   final ItemScrollController itemScrollController = ItemScrollController();
   final ItemPositionsListener itemPositionsListener =
@@ -85,7 +81,6 @@ class CommentsCubit extends Cubit<CommentsState> {
       <int, StreamSubscription<Comment>>{};
 
   static const int _webFetchingCmtCountLowerLimit = 5;
-  static const String _logPrefix = '[CommentsCubit]';
 
   Future<bool> get _shouldFetchFromWeb async {
     final bool isOnWifi = await _isOnWifi;
@@ -184,14 +179,13 @@ class CommentsCubit extends Cubit<CommentsState> {
             case CommentsOrder.natural:
               final bool shouldFetchFromWeb = await _shouldFetchFromWeb;
               if (fetchFromWeb && shouldFetchFromWeb) {
-                _logger
-                    .d('$_logPrefix fetching comments of ${item.id} from web.');
+                logDebug('fetching comments of ${item.id} from web.');
                 commentStream = _hackerNewsWebRepository
                     .fetchCommentsStream(state.item)
                     .handleError((dynamic e) {
                   _streamSubscription?.cancel();
 
-                  _logger.e('$_logPrefix $e');
+                  logError(e);
 
                   switch (e.runtimeType) {
                     case RateLimitedException:
@@ -208,8 +202,7 @@ class CommentsCubit extends Cubit<CommentsState> {
                   }
                 });
               } else {
-                _logger
-                    .d('$_logPrefix fetching comments of ${item.id} from API.');
+                logDebug('fetching comments of ${item.id} from API.');
                 commentStream =
                     _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
                   ids: kids,
@@ -284,13 +277,13 @@ class CommentsCubit extends Cubit<CommentsState> {
           case CommentsOrder.natural:
             final bool shouldFetchFromWeb = await _shouldFetchFromWeb;
             if (fetchFromWeb && shouldFetchFromWeb) {
-              _logger.d(
-                '$_logPrefix fetching comments of ${item.id} from web.',
+              logDebug(
+                'fetching comments of ${item.id} from web.',
               );
               commentStream = _hackerNewsWebRepository
                   .fetchCommentsStream(state.item)
                   .handleError((dynamic e) {
-                _logger.e('$_logPrefix $e');
+                logError(e);
 
                 switch (e.runtimeType) {
                   case RateLimitedException:
@@ -307,8 +300,7 @@ class CommentsCubit extends Cubit<CommentsState> {
                 }
               });
             } else {
-              _logger
-                  .d('$_logPrefix fetching comments of ${item.id} from API.');
+              logDebug('fetching comments of ${item.id} from API.');
               commentStream = _hackerNewsRepository
                   .fetchAllCommentsRecursivelyStream(ids: kids);
             }
@@ -392,8 +384,8 @@ class CommentsCubit extends Cubit<CommentsState> {
                 _streamSubscriptions[comment.id]?.cancel();
                 _streamSubscriptions.remove(comment.id);
               })
-              ..onError((dynamic error) {
-                _logger.e(error);
+              ..onError((dynamic e) {
+                logError(e);
                 _streamSubscriptions[comment.id]?.cancel();
                 _streamSubscriptions.remove(comment.id);
               });
@@ -739,4 +731,7 @@ class CommentsCubit extends Cubit<CommentsState> {
     }
     await super.close();
   }
+
+  @override
+  String get logIdentifier => '[CommentsCubit]';
 }

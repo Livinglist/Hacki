@@ -6,9 +6,9 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
-import 'package:logger/logger.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -16,7 +16,7 @@ part 'stories_event.dart';
 
 part 'stories_state.dart';
 
-class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
+class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
   StoriesBloc({
     required PreferenceCubit preferenceCubit,
     required FilterCubit filterCubit,
@@ -24,7 +24,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     HackerNewsRepository? hackerNewsRepository,
     HackerNewsWebRepository? hackerNewsWebRepository,
     PreferenceRepository? preferenceRepository,
-    Logger? logger,
   })  : _preferenceCubit = preferenceCubit,
         _filterCubit = filterCubit,
         _offlineRepository =
@@ -35,7 +34,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
             hackerNewsWebRepository ?? locator.get<HackerNewsWebRepository>(),
         _preferenceRepository =
             preferenceRepository ?? locator.get<PreferenceRepository>(),
-        _logger = logger ?? locator.get<Logger>(),
         super(const StoriesState.init()) {
     on<LoadStories>(
       onLoadStories,
@@ -65,10 +63,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
   final HackerNewsRepository _hackerNewsRepository;
   final HackerNewsWebRepository _hackerNewsWebRepository;
   final PreferenceRepository _preferenceRepository;
-  final Logger _logger;
   DeviceScreenType? deviceScreenType;
   StreamSubscription<PreferenceState>? _preferenceSubscription;
-  static const String _logPrefix = '[StoriesBloc]';
   static const int apiPageSize = 30;
 
   Future<void> onInitialize(
@@ -136,7 +132,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       await _hackerNewsWebRepository
           .fetchStoriesStream(event.type, page: 1)
           .handleError((dynamic e) {
-        _logger.e('$_logPrefix error loading stories $e');
+        logError('error loading stories $e');
 
         switch (e.runtimeType) {
           case RateLimitedException:
@@ -239,7 +235,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       _hackerNewsWebRepository
           .fetchStoriesStream(event.type, page: currentPage)
           .handleError((dynamic e) {
-            _logger.e('$_logPrefix error loading more stories $e');
+            logError('error loading more stories $e');
 
             switch (e.runtimeType) {
               case RateLimitedException:
@@ -271,9 +267,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
             ?.where((Story s) => s.id == story.id)
             .isNotEmpty ??
         false) {
-      _logger.d(
-        '$_logPrefix story ${story.id} for ${event.type} already exists.',
-      );
+      logDebug('story ${story.id} for ${event.type} already exists.');
       return;
     }
     final bool hasRead = await _preferenceRepository.hasRead(story.id);
@@ -377,20 +371,20 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         <StreamSubscription<Comment>>[];
     for (final int id in ids) {
       if (state.downloadStatus == StoriesDownloadStatus.canceled) {
-        _logger.d('$_logPrefix aborting downloading');
+        logDebug('aborting downloading');
 
         for (final StreamSubscription<Comment> stream in downloadStreams) {
           await stream.cancel();
         }
 
-        _logger.d('$_logPrefix deleting downloaded contents');
+        logDebug('deleting downloaded contents');
         await _offlineRepository.deleteAllStoryIds();
         await _offlineRepository.deleteAllStories();
         await _offlineRepository.deleteAllComments();
         break;
       }
 
-      _logger.d('$_logPrefix fetching story $id');
+      logDebug('fetching story $id');
       final Story? story = await _hackerNewsRepository.fetchStory(id: id);
 
       if (story == null) {
@@ -410,7 +404,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       await _offlineRepository.cacheStory(story: story);
 
       if (story.url.isNotEmpty && includingWebPage) {
-        _logger.i('$_logPrefix downloading ${story.url}');
+        logInfo('downloading ${story.url}');
         await _offlineRepository.cacheUrl(url: story.url);
       }
 
@@ -427,19 +421,19 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
           .listen(
         (Comment comment) {
           if (state.downloadStatus == StoriesDownloadStatus.canceled) {
-            _logger.d('$_logPrefix aborting downloading from comments stream');
+            logDebug('aborting downloading from comments stream');
             downloadStream?.cancel();
             return;
           }
 
-          _logger.d('$_logPrefix fetched comment ${comment.id}');
+          logDebug('fetched comment ${comment.id}');
           unawaited(
             _offlineRepository.cacheComment(comment: comment),
           );
         },
       )..onDone(() {
-          _logger.d(
-            '''$_logPrefix finished downloading story ${story.id} with ${story.descendants} comments''',
+          logDebug(
+            '''finished downloading story ${story.id} with ${story.descendants} comments''',
           );
           add(StoryDownloaded(skipped: false));
         });
@@ -550,4 +544,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     await _preferenceSubscription?.cancel();
     await super.close();
   }
+
+  @override
+  String get logIdentifier => '[StoriesBloc]';
 }

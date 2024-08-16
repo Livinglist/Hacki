@@ -7,7 +7,6 @@ import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/utils/utils.dart';
-import 'package:logger/logger.dart';
 import 'package:path_provider_android/path_provider_android.dart';
 import 'package:path_provider_foundation/path_provider_foundation.dart';
 import 'package:shared_preferences_android/shared_preferences_android.dart';
@@ -35,18 +34,12 @@ abstract class Fetcher {
   static const int _subscriptionUpperLimit = 15;
 
   static Future<void> fetchReplies() async {
-    final Logger logger = Logger();
-    final PreferenceRepository preferenceRepository =
-        PreferenceRepository(logger: logger);
-    final AuthRepository authRepository = AuthRepository(
-      preferenceRepository: preferenceRepository,
-      logger: logger,
-    );
+    final PreferenceRepository preferenceRepository = PreferenceRepository();
+    final AuthRepository authRepository =
+        AuthRepository(preferenceRepository: preferenceRepository);
     final SembastRepository sembastRepository = SembastRepository();
-    final HackerNewsRepository hackerNewsRepository = HackerNewsRepository(
-      sembastRepository: sembastRepository,
-      logger: logger,
-    );
+    final HackerNewsRepository hackerNewsRepository =
+        HackerNewsRepository(sembastRepository: sembastRepository);
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();
 

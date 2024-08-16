@@ -1,9 +1,10 @@
 import 'package:flutter/foundation.dart';
-import 'package:hacki/config/locator.dart';
+import 'package:hacki/config/constants.dart';
+import 'package:hacki/extensions/extensions.dart';
+import 'package:hacki/extensions/loggable.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
-import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// [OfflineRepository] is for storing [Story] and [Comment] for
@@ -12,20 +13,18 @@ import 'package:path_provider/path_provider.dart';
 /// [Hive] is used as its database and is being stored in the temporary
 /// directory assigned by host system which you can retrieve
 /// by calling [getTemporaryDirectory].
-class OfflineRepository {
+class OfflineRepository with Loggable {
   OfflineRepository({
     Future<Box<List<int>>>? storyIdBox,
     Future<Box<Map<dynamic, dynamic>>>? storyBox,
     Future<LazyBox<String>>? webPageBox,
     Future<LazyBox<Map<dynamic, dynamic>>>? commentBox,
-    Logger? logger,
   })  : _storyIdBox = storyIdBox ?? Hive.openBox<List<int>>(_storyIdBoxName),
         _storyBox =
             storyBox ?? Hive.openBox<Map<dynamic, dynamic>>(_storyBoxName),
         _webPageBox = webPageBox ?? Hive.openLazyBox<String>(_webPageBoxName),
         _commentBox = commentBox ??
-            Hive.openLazyBox<Map<dynamic, dynamic>>(_commentBoxName),
-        _logger = logger ?? locator.get<Logger>();
+            Hive.openLazyBox<Map<dynamic, dynamic>>(_commentBoxName);
 
   static const String _storyIdBoxName = 'storyIdBox';
   static const String _storyBoxName = 'storyBox';
@@ -35,7 +34,6 @@ class OfflineRepository {
   final Future<Box<Map<dynamic, dynamic>>> _storyBox;
   final Future<LazyBox<Map<dynamic, dynamic>>> _commentBox;
   final Future<LazyBox<String>> _webPageBox;
-  final Logger _logger;
 
   Future<bool> get hasCachedStories =>
       _storyBox.then((Box<Map<dynamic, dynamic>> box) => box.isNotEmpty);
@@ -48,8 +46,8 @@ class OfflineRepository {
 
     try {
       box = await _storyIdBox;
-    } catch (_) {
-      _logger.e(_);
+    } catch (e) {
+      logError(e);
       await Hive.deleteBoxFromDisk(_storyIdBoxName);
       box = await _storyIdBox;
     }
@@ -62,8 +60,8 @@ class OfflineRepository {
 
     try {
       box = await _storyBox;
-    } catch (_) {
-      _logger.e(_);
+    } catch (e) {
+      logError(e);
       await Hive.deleteBoxFromDisk(_storyBoxName);
       box = await _storyBox;
     }
@@ -76,13 +74,19 @@ class OfflineRepository {
 
     try {
       box = await _webPageBox;
-    } catch (_) {
-      _logger.e(_);
+    } catch (e) {
+      logError(e);
       await Hive.deleteBoxFromDisk(_webPageBoxName);
       box = await _webPageBox;
     }
 
-    final String html = await compute(_downloadWebPage, url);
+    final String html = await compute(_downloadWebPage, url).timeout(
+      AppDurations.tenSeconds,
+      onTimeout: () {
+        logInfo('failed to download $url');
+        return 'download timeout.';
+      },
+    );
     return box.put(url, html);
   }
 
@@ -90,8 +94,8 @@ class OfflineRepository {
     try {
       final LazyBox<String> box = await _webPageBox;
       return box.get(url);
-    } catch (_) {
-      _logger.e(_);
+    } catch (e) {
+      logError(e);
       await Hive.deleteBoxFromDisk(_webPageBoxName);
       return null;
     }
@@ -101,8 +105,8 @@ class OfflineRepository {
     try {
       final LazyBox<String> box = await _webPageBox;
       return box.containsKey(url);
-    } catch (_) {
-      _logger.e(_);
+    } catch (e) {
+      logError(e);
       await Hive.deleteBoxFromDisk(_webPageBoxName);
       return false;
     }
@@ -113,8 +117,8 @@ class OfflineRepository {
       final Box<List<int>> box = await _storyIdBox;
       final List<int>? ids = box.get(type.name);
       return ids ?? <int>[];
-    } catch (_) {
-      _logger.e(_);
+    } catch (e) {
+      logError(e);
       await Hive.deleteBoxFromDisk(_storyIdBoxName);
       return <int>[];
     }
@@ -125,8 +129,8 @@ class OfflineRepository {
 
     try {
       box = await _storyBox;
-    } catch (_) {
-      _logger.e(_);
+    } catch (e) {
+      logError(e);
       await Hive.deleteBoxFromDisk(_storyBoxName);
       return;
     }
@@ -150,8 +154,8 @@ class OfflineRepository {
 
     try {
       box = await _storyBox;
-    } catch (_) {
-      _logger.e(_);
+    } catch (e) {
+      logError(e);
       await Hive.deleteBoxFromDisk(_storyBoxName);
       return null;
     }
@@ -169,8 +173,8 @@ class OfflineRepository {
 
     try {
       box = await _commentBox;
-    } catch (_) {
-      _logger.e(_);
+    } catch (e) {
+      logError(e);
       await Hive.deleteBoxFromDisk(_commentBoxName);
       box = await _commentBox;
     }
@@ -189,8 +193,8 @@ class OfflineRepository {
       typedJson['fromCache'] = true;
       final Comment comment = Comment.fromJson(typedJson);
       return comment;
-    } catch (_) {
-      _logger.e(_);
+    } catch (e) {
+      logError(e);
       await Hive.deleteBoxFromDisk(_commentBoxName);
       return null;
     }
@@ -220,8 +224,8 @@ class OfflineRepository {
     try {
       final Box<List<int>> box = await _storyIdBox;
       return box.clear();
-    } catch (_) {
-      _logger.e(_);
+    } catch (e) {
+      logError(e);
       await Hive.deleteBoxFromDisk(_storyIdBoxName);
       return 0;
     }
@@ -231,8 +235,8 @@ class OfflineRepository {
     try {
       final Box<Map<dynamic, dynamic>> box = await _storyBox;
       return box.clear();
-    } catch (_) {
-      _logger.e(_);
+    } catch (e) {
+      logError(e);
       await Hive.deleteBoxFromDisk(_storyBoxName);
       return 0;
     }
@@ -242,8 +246,8 @@ class OfflineRepository {
     try {
       final LazyBox<Map<dynamic, dynamic>> box = await _commentBox;
       return box.clear();
-    } catch (_) {
-      _logger.e(_);
+    } catch (e) {
+      logError(e);
       await Hive.deleteBoxFromDisk(_commentBoxName);
       return 0;
     }
@@ -253,8 +257,8 @@ class OfflineRepository {
     try {
       final LazyBox<String> box = await _webPageBox;
       return box.clear();
-    } catch (_) {
-      _logger.e(_);
+    } catch (e) {
+      logError(e);
       await Hive.deleteBoxFromDisk(_webPageBoxName);
       return 0;
     }
@@ -275,8 +279,11 @@ class OfflineRepository {
       final String body = response.body;
       client.close();
       return body;
-    } catch (_) {
+    } catch (e) {
       return '''Web page not available.''';
     }
   }
+
+  @override
+  String get logIdentifier => '[OfflineRepository]';
 }

@@ -23,7 +23,6 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
-import 'package:logger/logger.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
@@ -37,21 +36,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin, RouteAware, ItemActionMixin {
+    with SingleTickerProviderStateMixin, RouteAware, ItemActionMixin, Loggable {
   late final TabController tabController;
   late final StreamSubscription<String> intentDataStreamSubscription;
   late final StreamSubscription<String?> notificationStreamSubscription;
   late final StreamSubscription<String?> siriSuggestionStreamSubscription;
 
   static final int tabLength = StoryType.values.length + 1;
-  static const String logPrefix = '[HomeScreen]';
 
   @override
   void didPopNext() {
     super.didPopNext();
     if (context.read<StoriesBloc>().deviceScreenType ==
         DeviceScreenType.mobile) {
-      locator.get<Logger>().i('$logPrefix resetting comments in CommentCache');
+      logInfo('resetting comments in CommentCache');
       Future<void>.delayed(
         AppDurations.ms500,
         locator.get<CommentCache>().resetComments,
@@ -250,7 +248,7 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void onShareExtensionTapped(String? event) {
-    locator.get<Logger>().i('$logPrefix share intent received: $event');
+    logInfo('share intent received: $event');
 
     if (event == null) return;
 
@@ -258,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     if (id != null) {
       locator.get<HackerNewsRepository>().fetchItem(id: id).then((Item? item) {
-        locator.get<Logger>().i('$logPrefix item fetched successfully: $item');
+        logInfo('item fetched successfully: $item');
         if (item != null) {
           goToItemScreen(
             args: ItemScreenArgs(item: item),
@@ -322,4 +320,7 @@ class _HomeScreenState extends State<HomeScreen>
       DiscoverableFeature.pinToTop.featureId,
     ]);
   }
+
+  @override
+  String get logIdentifier => '[HomeScreen]';
 }

@@ -115,37 +115,36 @@ class LinkView extends StatelessWidget {
                   child: SizedBox(
                     height: layoutHeight,
                     width: layoutHeight,
-                    child: CachedNetworkImage(
-                      imageUrl: imageUri ?? '',
-                      fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
-                      cacheKey: imageUri,
-                      errorWidget: (_, __, ___) {
-                        if (url.isEmpty) {
-                          return FadeIn(
-                            child: Center(
-                              child: _HackerNewsImage(
-                                height: layoutHeight,
-                              ),
-                            ),
-                          );
-                        }
-                        return Center(
-                          child: CachedNetworkImage(
-                            imageUrl: Constants.favicon(url),
-                            fit: BoxFit.scaleDown,
-                            cacheKey: iconUri,
+                    child: (imageUri != null &&
+                            imageUri!.isNotEmpty &&
+                            imageUri!.contains('http'))
+                        ? CachedNetworkImage(
+                            imageUrl: imageUri!,
+                            fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
+                            cacheKey: imageUri,
                             errorWidget: (_, __, ___) {
-                              return const FadeIn(
-                                child: Icon(
-                                  Icons.public,
-                                  size: Dimens.pt20,
+                              return Center(
+                                child: CachedNetworkImage(
+                                  imageUrl: Constants.favicon(url),
+                                  fit: BoxFit.scaleDown,
+                                  cacheKey: iconUri,
+                                  errorWidget: (_, __, ___) {
+                                    return const FadeIn(
+                                      child: Icon(
+                                        Icons.public,
+                                        size: Dimens.pt20,
+                                      ),
+                                    );
+                                  },
                                 ),
                               );
                             },
+                          )
+                        : Center(
+                            child: _HackerNewsImage(
+                              height: layoutHeight,
+                            ),
                           ),
-                        );
-                      },
-                    ),
                   ),
                 ),
               )
