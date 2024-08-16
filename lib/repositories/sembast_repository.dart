@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:hacki/config/locator.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/services/services.dart';
-import 'package:logger/logger.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
@@ -15,12 +14,11 @@ import 'package:sembast/sembast_io.dart';
 /// Sembast [Database] is used as its database and is being stored in the
 /// documents directory assigned by host system which you can retrieve
 /// by calling [getApplicationDocumentsDirectory].
-class SembastRepository {
+class SembastRepository with Loggable {
   SembastRepository({
     Database? database,
     Database? cache,
-    Logger? logger,
-  }) : _logger = logger ?? locator.get<Logger>() {
+  }) {
     if (database == null) {
       initializeDatabase();
     } else {
@@ -33,9 +31,6 @@ class SembastRepository {
       _cache = cache;
     }
   }
-
-  final Logger _logger;
-  static const String _logPrefix = '[SembastRepository]';
 
   Database? _database;
   Database? _cache;
@@ -52,7 +47,7 @@ class SembastRepository {
     final String dbPath = join(dir.path, 'hacki.db');
     final File file = File(dbPath);
     final FileStat stat = file.statSync();
-    _logger.i('$_logPrefix hacki.db file size: ${stat.size / 1000000}MB');
+    logInfo('hacki.db file size: ${stat.size / 1000000}MB');
     final DatabaseFactory dbFactory = databaseFactoryIo;
     final Database db = await dbFactory.openDatabase(dbPath);
     _database = db;
@@ -65,7 +60,7 @@ class SembastRepository {
     final String dbPath = join(tempDir.path, 'hacki_cache.db');
     final File file = File(dbPath);
     final FileStat stat = file.statSync();
-    _logger.i('$_logPrefix hacki_cache.db file size: ${stat.size / 1000000}MB');
+    logInfo('hacki_cache.db file size: ${stat.size / 1000000}MB');
     final DatabaseFactory dbFactory = databaseFactoryIo;
     final Database db = await dbFactory.openDatabase(dbPath);
     _cache = db;
@@ -263,4 +258,7 @@ class SembastRepository {
       await file.delete();
     }
   }
+
+  @override
+  String get logIdentifier => '[SembastRepository]';
 }

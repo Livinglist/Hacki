@@ -6,24 +6,19 @@ import 'package:hacki/config/locator.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
-import 'package:logger/logger.dart';
 
 part 'preference_state.dart';
 
-class PreferenceCubit extends Cubit<PreferenceState> {
+class PreferenceCubit extends Cubit<PreferenceState> with Loggable {
   PreferenceCubit({
     PreferenceRepository? preferenceRepository,
-    Logger? logger,
   })  : _preferenceRepository =
             preferenceRepository ?? locator.get<PreferenceRepository>(),
-        _logger = logger ?? locator.get<Logger>(),
         super(PreferenceState.init()) {
     init();
   }
 
   final PreferenceRepository _preferenceRepository;
-  final Logger _logger;
-  static const String _logPrefix = '[PreferenceCubit]';
 
   void init() {
     for (final BooleanPreference p
@@ -74,7 +69,7 @@ class PreferenceCubit extends Cubit<PreferenceState> {
   }
 
   void update<T>(Preference<T> preference) {
-    _logger.i('$_logPrefix updating $preference to ${preference.val}');
+    logInfo('updating $preference to ${preference.val}');
 
     emit(state.copyWithPreference(preference));
 
@@ -98,4 +93,7 @@ class PreferenceCubit extends Cubit<PreferenceState> {
         throw UnimplementedError();
     }
   }
+
+  @override
+  String get logIdentifier => '[PreferenceCubit]';
 }

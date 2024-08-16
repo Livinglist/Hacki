@@ -2,30 +2,27 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
-import 'package:logger/logger.dart';
 
 /// [HackerNewsRepository] is for fetching
 /// [Item] such as [Story], [PollOption], [Comment] or [User].
 ///
 /// You can learn more about the Hacker News API at
 /// https://github.com/HackerNews/API.
-class HackerNewsRepository {
+class HackerNewsRepository with Loggable {
   HackerNewsRepository({
     FirebaseClient? firebaseClient,
     SembastRepository? sembastRepository,
-    Logger? logger,
   })  : _firebaseClient = firebaseClient ?? FirebaseClient.anonymous(),
         _sembastRepository =
-            sembastRepository ?? locator.get<SembastRepository>(),
-        _logger = logger ?? locator.get<Logger>();
+            sembastRepository ?? locator.get<SembastRepository>();
 
   final FirebaseClient _firebaseClient;
   final SembastRepository _sembastRepository;
-  final Logger _logger;
   static const String _baseUrl = 'https://hacker-news.firebaseio.com/v0/';
 
   Future<Map<String, dynamic>?> _fetchItemJson(int id) async {
@@ -246,7 +243,7 @@ class HackerNewsRepository {
 
         return comment;
       }).onError((Object? error, StackTrace stackTrace) {
-        _logger.e(error, stackTrace: stackTrace);
+        logError(error, stackTrace: stackTrace);
         return _sembastRepository
             .getCachedComment(id: id)
             .then((Comment? value) => value?.copyWith(level: level));
@@ -284,7 +281,7 @@ class HackerNewsRepository {
 
         return comment;
       }).onError((Object? error, StackTrace stackTrace) {
-        _logger.e(error, stackTrace: stackTrace);
+        logError(error, stackTrace: stackTrace);
         return _sembastRepository
             .getCachedComment(id: id)
             .then((Comment? value) => value?.copyWith(level: level));
@@ -425,6 +422,9 @@ class HackerNewsRepository {
 
     return json;
   }
+
+  @override
+  String get logIdentifier => '[HackerNewsRepository]';
 }
 
 extension on Map<String, dynamic> {
