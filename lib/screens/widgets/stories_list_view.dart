@@ -106,37 +106,39 @@ class _StoriesListViewState extends State<StoriesListView>
               onPinned: context.read<PinCubit>().pinStory,
               header: state.isOfflineReading ? null : header,
               loadStyle: LoadStyle.HideAlways,
-              footer: Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    left: Dimens.pt48,
-                    right: Dimens.pt48,
-                    top: Dimens.pt36,
-                    bottom: Dimens.pt12,
-                  ),
-                  child: OutlinedButton(
-                    onPressed: loadMoreStories,
-                    style: ButtonStyle(
-                      minimumSize: WidgetStateProperty.all(
-                        const Size(double.infinity, Dimens.pt48),
+              footer: preferenceState.isManualPaginationEnabled
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          left: Dimens.pt48,
+                          right: Dimens.pt48,
+                          top: Dimens.pt36,
+                          bottom: Dimens.pt12,
+                        ),
+                        child: OutlinedButton(
+                          onPressed: loadMoreStories,
+                          style: ButtonStyle(
+                            minimumSize: WidgetStateProperty.all(
+                              const Size(double.infinity, Dimens.pt48),
+                            ),
+                            foregroundColor: WidgetStateColor.resolveWith(
+                              (_) => Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                          child: state.statusByType[widget.storyType] ==
+                                  Status.success
+                              ? Text(
+                                  '''Load Page ${(state.currentPageByType[widget.storyType] ?? 0) + 1}''',
+                                )
+                              : const SizedBox(
+                                  height: Dimens.pt6,
+                                  width: Dimens.pt6,
+                                  child: CustomCircularProgressIndicator(),
+                                ),
+                        ),
                       ),
-                      foregroundColor: WidgetStateColor.resolveWith(
-                        (_) => Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                    child:
-                        state.statusByType[widget.storyType] == Status.success
-                            ? Text(
-                                '''Load Page ${(state.currentPageByType[widget.storyType] ?? 0) + 2}''',
-                              )
-                            : const SizedBox(
-                                height: Dimens.pt6,
-                                width: Dimens.pt6,
-                                child: CustomCircularProgressIndicator(),
-                              ),
-                  ),
-                ),
-              ),
+                    )
+                  : const SizedBox.shrink(),
               onMoreTapped: onMoreTapped,
               itemBuilder: (Widget child, Story story) {
                 return Slidable(

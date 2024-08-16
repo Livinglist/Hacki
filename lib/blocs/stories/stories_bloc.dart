@@ -113,7 +113,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       emit(
         state
             .copyWithStoryIdsUpdated(type: type, to: ids)
-            .copyWithCurrentPageUpdated(type: type, to: 0)
+            .copyWithCurrentPageUpdated(type: type, to: 1)
             .copyWithStatusUpdated(type: type, to: Status.inProgress),
       );
 
@@ -129,7 +129,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     } else {
       emit(
         state
-            .copyWithCurrentPageUpdated(type: type, to: 0)
+            .copyWithCurrentPageUpdated(type: type, to: 1)
             .copyWithStatusUpdated(type: type, to: Status.inProgress),
       );
 
@@ -190,18 +190,11 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
       ),
     );
 
-    late final int currentPage;
+    final int currentPage = state.currentPageByType[event.type]! + 1;
 
-    /// If useApi is true, it means this is a fallback fetch.
-    /// Don't increment the page number in this case.
-    if (event.useApi) {
-      currentPage = state.currentPageByType[event.type]!;
-    } else {
-      currentPage = state.currentPageByType[event.type]! + 1;
-      emit(
-        state.copyWithCurrentPageUpdated(type: event.type, to: currentPage),
-      );
-    }
+    emit(
+      state.copyWithCurrentPageUpdated(type: event.type, to: currentPage),
+    );
 
     if (state.isOfflineReading) {
       emit(
@@ -222,7 +215,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
         length = ids!.length;
       }
 
-      final int lower = apiPageSize * currentPage;
+      final int lower = min(length, apiPageSize * (currentPage - 1));
       final int upper = min(length, lower + apiPageSize);
       _hackerNewsRepository
           .fetchStoriesStream(
@@ -245,7 +238,15 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
               case RateLimitedException:
               case RateLimitedWithFallbackException:
               case PossibleParsingException:
+
+                /// Fall back to use API instead.
                 add(event.copyWith(useApi: true));
+                emit(
+                  state.copyWithCurrentPageUpdated(
+                    type: event.type,
+                    to: currentPage - 1,
+                  ),
+                );
             }
           })
           .listen(
