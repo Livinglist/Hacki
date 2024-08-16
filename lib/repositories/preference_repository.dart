@@ -2,22 +2,19 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:hacki/config/locator.dart';
-import 'package:logger/logger.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:synced_shared_preferences/synced_shared_preferences.dart';
 
 /// [PreferenceRepository] is for storing user preferences.
-class PreferenceRepository {
+class PreferenceRepository with Loggable {
   PreferenceRepository({
     SyncedSharedPreferences? syncedPrefs,
     Future<SharedPreferences>? prefs,
     FlutterSecureStorage? secureStorage,
-    Logger? logger,
   })  : _syncedPrefs = syncedPrefs ?? SyncedSharedPreferences.instance,
         _prefs = prefs ?? SharedPreferences.getInstance(),
-        _secureStorage = secureStorage ?? const FlutterSecureStorage(),
-        _logger = logger ?? locator.get<Logger>();
+        _secureStorage = secureStorage ?? const FlutterSecureStorage();
 
   static const String _usernameKey = 'username';
   static const String _passwordKey = 'password';
@@ -30,7 +27,6 @@ class PreferenceRepository {
   final SyncedSharedPreferences _syncedPrefs;
   final Future<SharedPreferences> _prefs;
   final FlutterSecureStorage _secureStorage;
-  final Logger _logger;
 
   Future<bool> get loggedIn async => await username != null;
 
@@ -109,8 +105,8 @@ class PreferenceRepository {
         await _secureStorage.deleteAll(
           aOptions: androidOptions,
         );
-      } catch (_) {
-        _logger.e(_);
+      } catch (e) {
+        logError(e);
       }
 
       rethrow;
@@ -448,4 +444,7 @@ class PreferenceRepository {
   static String _getPushNotificationKey(int commentId) => 'pushed_$commentId';
 
   static String _getHasReadKey(int storyId) => 'hasRead_$storyId';
+
+  @override
+  String get logIdentifier => '[PreferenceRepository]';
 }

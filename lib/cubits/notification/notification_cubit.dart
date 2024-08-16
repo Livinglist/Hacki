@@ -7,20 +7,19 @@ import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
-import 'package:logger/logger.dart';
 
 part 'notification_state.dart';
 
-class NotificationCubit extends Cubit<NotificationState> {
+class NotificationCubit extends Cubit<NotificationState> with Loggable {
   NotificationCubit({
     required AuthBloc authBloc,
     required PreferenceCubit preferenceCubit,
     HackerNewsRepository? hackerNewsRepository,
     PreferenceRepository? preferenceRepository,
     SembastRepository? sembastRepository,
-    Logger? logger,
   })  : _authBloc = authBloc,
         _preferenceCubit = preferenceCubit,
         _hackerNewsRepository =
@@ -29,7 +28,6 @@ class NotificationCubit extends Cubit<NotificationState> {
             preferenceRepository ?? locator.get<PreferenceRepository>(),
         _sembastRepository =
             sembastRepository ?? locator.get<SembastRepository>(),
-        _logger = logger ?? locator.get<Logger>(),
         super(NotificationState.init()) {
     _authBloc.stream
         .map((AuthState event) => event.username)
@@ -61,13 +59,11 @@ class NotificationCubit extends Cubit<NotificationState> {
   final HackerNewsRepository _hackerNewsRepository;
   final PreferenceRepository _preferenceRepository;
   final SembastRepository _sembastRepository;
-  final Logger _logger;
   Timer? _timer;
 
   static const Duration _refreshInterval = Duration(minutes: 5);
   static const int _subscriptionUpperLimit = 15;
   static const int _pageSize = 20;
-  static const String _logPrefix = '[NotificationCubit]';
 
   Future<void> init() async {
     emit(NotificationState.init());
@@ -79,7 +75,7 @@ class NotificationCubit extends Cubit<NotificationState> {
     });
 
     await _preferenceRepository.unreadCommentsIds.then((List<int> unreadIds) {
-      _logger.i('$_logPrefix ${unreadIds.length} unread items.');
+      logInfo('${unreadIds.length} unread items.');
       emit(state.copyWith(unreadCommentsIds: unreadIds));
     });
 
@@ -261,4 +257,7 @@ class NotificationCubit extends Cubit<NotificationState> {
       then?.call(res);
     });
   }
+
+  @override
+  String get logIdentifier => '[NotificationCubit]';
 }

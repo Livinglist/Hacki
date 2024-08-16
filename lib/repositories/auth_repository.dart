@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/post_repository.dart';
 import 'package:hacki/repositories/postable_repository.dart';
@@ -12,7 +13,7 @@ import 'package:logger/logger.dart';
 /// and [downvote].
 ///
 /// For posting actions such as posting a comment, see [PostRepository].
-class AuthRepository extends PostableRepository {
+class AuthRepository extends PostableRepository with Loggable {
   AuthRepository({
     super.dio,
     PreferenceRepository? preferenceRepository,
@@ -131,4 +132,7 @@ class AuthRepository extends PostableRepository {
 
     return performDefaultPost(uri, data);
   }
+
+  @override
+  String get logIdentifier => '[AuthRepository]';
 }
