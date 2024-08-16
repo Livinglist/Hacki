@@ -71,12 +71,24 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     StoriesInitialize event,
     Emitter<StoriesState> emit,
   ) async {
+    _preferenceSubscription = _preferenceCubit.stream
+        .distinct(
+      (PreferenceState lhs, PreferenceState rhs) =>
+          lhs.dataSource == rhs.dataSource,
+    )
+        .listen((PreferenceState prefState) {
+      add(StoriesInitialize());
+    });
+
+    final HackerNewsDataSource dataSource = _preferenceCubit.state.dataSource;
+
     emit(
       const StoriesState.init().copyWith(
         downloadStatus: state.downloadStatus,
         storiesDownloaded: state.storiesDownloaded,
         storiesToBeDownloaded: state.storiesToBeDownloaded,
         isOfflineReading: state.isOfflineReading,
+        dataSource: dataSource,
       ),
     );
 
@@ -89,6 +101,10 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     LoadStories event,
     Emitter<StoriesState> emit,
   ) async {
+    if (state.dataSource == null) {
+      logError('data source should not be null.');
+    }
+
     final StoryType type = event.type;
     if (state.isOfflineReading) {
       final List<int> ids =
@@ -103,7 +119,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
           .getCachedStoriesStream(ids: ids)
           .listen((Story story) => add(StoryLoaded(story: story, type: type)))
           .onDone(() => add(StoryLoadingCompleted(type: type)));
-    } else if (event.useApi) {
+    } else if (event.useApi || state.dataSource == HackerNewsDataSource.api) {
       final List<int> ids =
           await _hackerNewsRepository.fetchStoryIds(type: type);
       emit(
@@ -199,7 +215,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
           to: Status.success,
         ),
       );
-    } else if (event.useApi) {
+    } else if (event.useApi || state.dataSource == HackerNewsDataSource.api) {
       late final int length;
       final List<int>? ids = state.storyIdsByType[event.type];
 

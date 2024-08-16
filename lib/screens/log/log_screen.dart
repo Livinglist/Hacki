@@ -15,8 +15,9 @@ class LogScreen extends StatelessWidget {
       future: LogUtil.exportLogAsStrings(),
       builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
         return Scaffold(
+          extendBodyBehindAppBar: true,
           appBar: AppBar(
-            backgroundColor: Theme.of(context).canvasColor,
+            backgroundColor: Theme.of(context).canvasColor.withOpacity(0.6),
             elevation: 0,
             actions: <Widget>[
               if (snapshot.data != null)

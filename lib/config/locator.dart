@@ -15,13 +15,11 @@ final GetIt locator = GetIt.instance;
 /// Set up [GetIt] locator.
 Future<void> setUpLocator() async {
   final File logOutputFile = await LogUtil.initLogFile();
-  final LogFilter customLogFilter = CustomLogFilter();
 
   locator
-    ..registerSingleton<LogFilter>(customLogFilter)
     ..registerSingleton<Logger>(
       Logger(
-        filter: customLogFilter,
+        filter: CustomLogFilter(),
         printer: LogUtil.logPrinter,
         output: LogUtil.logOutput(logOutputFile),
       ),
