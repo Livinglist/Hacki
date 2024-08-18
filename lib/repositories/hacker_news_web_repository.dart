@@ -214,7 +214,7 @@ class HackerNewsWebRepository {
           }
         }
 
-        /// Duplicate comment means we are done fetching all the comments.
+        /// Duplicate story means we are done fetching all the stories.
         if (fetchedStoryIds.contains(story.id)) return;
 
         fetchedStoryIds.add(story.id);
