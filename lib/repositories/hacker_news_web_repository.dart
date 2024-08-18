@@ -201,6 +201,9 @@ class HackerNewsWebRepository {
           parts: const <int>[],
         );
 
+        /// If it is a story about launching or from ask section, then
+        /// we need to fetch it from API since the html doesn't contain
+        /// too much info.
         if (timestamp == null ||
             url.isEmpty ||
             url.contains('item?id=') ||
