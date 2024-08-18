@@ -62,7 +62,7 @@ class Story extends Item {
   }
 
   String get metadata =>
-      '''$score point${score > 1 ? 's' : ''} by $by $timeAgo | $descendants comment${descendants > 1 ? 's' : ''}''';
+      '''$score point${score > 1 ? 's' : ''}${by.isNotEmpty ? ' $by ' : ' '}$timeAgo | $descendants comment${descendants > 1 ? 's' : ''}''';
 
   String get screenReaderLabel =>
       '''$title, at $readableUrl, by $by $timeAgo. This story has $score point${score > 1 ? 's' : ''} and $descendants comment${descendants > 1 ? 's' : ''}''';

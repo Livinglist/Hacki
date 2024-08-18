@@ -53,8 +53,14 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     on<StoryDownloaded>(onStoryDownloaded);
     on<StoriesEnterOfflineMode>(onEnterOfflineMode);
     on<StoriesExitOfflineMode>(onExitOfflineMode);
-    on<StoriesPageSizeChanged>(onPageSizeChanged);
     on<ClearAllReadStories>(onClearAllReadStories);
+
+    _preferenceSubscription = _preferenceCubit.stream
+        .distinct((PreferenceState lhs, PreferenceState rhs) {
+      return lhs.dataSource == rhs.dataSource;
+    }).listen((PreferenceState prefState) {
+      add(StoriesInitialize());
+    });
   }
 
   final PreferenceCubit _preferenceCubit;
@@ -71,15 +77,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     StoriesInitialize event,
     Emitter<StoriesState> emit,
   ) async {
-    _preferenceSubscription = _preferenceCubit.stream
-        .distinct(
-      (PreferenceState lhs, PreferenceState rhs) =>
-          lhs.dataSource == rhs.dataSource,
-    )
-        .listen((PreferenceState prefState) {
-      add(StoriesInitialize());
-    });
-
     final HackerNewsDataSource dataSource = _preferenceCubit.state.dataSource;
 
     emit(
@@ -490,13 +487,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         ),
       );
     }
-  }
-
-  Future<void> onPageSizeChanged(
-    StoriesPageSizeChanged event,
-    Emitter<StoriesState> emit,
-  ) async {
-    add(StoriesInitialize());
   }
 
   Future<void> onExitOfflineMode(

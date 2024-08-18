@@ -106,7 +106,8 @@ class _StoriesListViewState extends State<StoriesListView>
               onPinned: context.read<PinCubit>().pinStory,
               header: state.isOfflineReading ? null : header,
               loadStyle: LoadStyle.HideAlways,
-              footer: preferenceState.isManualPaginationEnabled
+              footer: preferenceState.isManualPaginationEnabled &&
+                      state.statusByType[widget.storyType] == Status.success
                   ? Center(
                       child: Padding(
                         padding: const EdgeInsets.only(
@@ -125,16 +126,9 @@ class _StoriesListViewState extends State<StoriesListView>
                               (_) => Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
-                          child: state.statusByType[widget.storyType] ==
-                                  Status.success
-                              ? Text(
-                                  '''Load Page ${(state.currentPageByType[widget.storyType] ?? 0) + 1}''',
-                                )
-                              : const SizedBox(
-                                  height: Dimens.pt6,
-                                  width: Dimens.pt6,
-                                  child: CustomCircularProgressIndicator(),
-                                ),
+                          child: Text(
+                            '''Load Page ${(state.currentPageByType[widget.storyType] ?? 0) + 1}''',
+                          ),
                         ),
                       ),
                     )
