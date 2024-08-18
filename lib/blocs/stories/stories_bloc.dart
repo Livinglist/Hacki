@@ -44,7 +44,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     on<StoriesLoadMore>(onLoadMore);
     on<StoryLoaded>(
       onStoryLoaded,
-      transformer: sequential(),
+      transformer: concurrent(),
     );
     on<StoryRead>(onStoryRead);
     on<StoryUnread>(onStoryUnread);
@@ -135,6 +135,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
           .listen((Story story) {
         add(StoryLoaded(story: story, type: type));
       }).asFuture<void>();
+      add(StoryLoadingCompleted(type: type));
     } else {
       emit(
         state
@@ -220,6 +221,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         final List<int> ids =
             await _hackerNewsRepository.fetchStoryIds(type: event.type);
         length = ids.length;
+        emit(state.copyWith());
       } else {
         length = ids!.length;
       }

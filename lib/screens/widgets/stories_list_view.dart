@@ -66,8 +66,8 @@ class _StoriesListViewState extends State<StoriesListView>
             }
           },
           buildWhen: (StoriesState previous, StoriesState current) =>
-              (current.currentPageByType[storyType] == 0 &&
-                  previous.currentPageByType[storyType] == 0) ||
+              (current.currentPageByType[storyType] == 1 &&
+                  previous.currentPageByType[storyType] == 1) ||
               (previous.storiesByType[storyType]!.length !=
                   current.storiesByType[storyType]!.length) ||
               (previous.readStoriesIds.length !=
