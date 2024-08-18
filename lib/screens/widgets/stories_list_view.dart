@@ -244,6 +244,8 @@ class _StoriesListViewState extends State<StoriesListView>
     }
   }
 
-  void loadMoreStories() =>
-      context.read<StoriesBloc>().add(StoriesLoadMore(type: widget.storyType));
+  void loadMoreStories() {
+    HapticFeedbackUtil.light();
+    context.read<StoriesBloc>().add(StoriesLoadMore(type: widget.storyType));
+  }
 }

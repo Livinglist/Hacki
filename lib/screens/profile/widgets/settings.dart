@@ -212,6 +212,17 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                               'Data source',
                             ),
                             DropdownMenu<HackerNewsDataSource>(
+                              /// Make sure no stories are being fetched before
+                              /// switching data source.
+                              enabled: !context
+                                  .read<StoriesBloc>()
+                                  .state
+                                  .statusByType
+                                  .values
+                                  .any(
+                                    (Status status) =>
+                                        status == Status.inProgress,
+                                  ),
                               initialSelection: preferenceState.dataSource,
                               dropdownMenuEntries: HackerNewsDataSource.values
                                   .map(
