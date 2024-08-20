@@ -36,10 +36,6 @@ dependencies:
   flutter_material_color_picker: ^1.2.0
   flutter_native_splash: ^2.4.1
   flutter_secure_storage: ^9.2.2
-  flutter_siri_suggestions:
-    git:
-      url: https://github.com/Livinglist/flutter_siri_suggestions
-      ref: master
   flutter_slidable: ^3.0.0
   font_awesome_flutter: ^10.3.0
   get_it: ^7.7.0
