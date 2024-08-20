@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
@@ -71,13 +72,14 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
   final PreferenceRepository _preferenceRepository;
   DeviceScreenType? deviceScreenType;
   StreamSubscription<PreferenceState>? _preferenceSubscription;
-  static const int apiPageSize = 30;
+  static const int _pageSize = 30;
 
   Future<void> onInitialize(
     StoriesInitialize event,
     Emitter<StoriesState> emit,
   ) async {
     final HackerNewsDataSource dataSource = _preferenceCubit.state.dataSource;
+    logInfo('data source: $dataSource');
 
     emit(
       const StoriesState.init().copyWith(
@@ -88,6 +90,16 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         dataSource: dataSource,
       ),
     );
+
+    if (event.startup) {
+      final List<ConnectivityResult> status =
+          await Connectivity().checkConnectivity();
+      logInfo('network status: $status');
+      if (status.contains(ConnectivityResult.none)) {
+        logInfo('no network connection, entering offline mode.');
+        add(StoriesEnterOfflineMode());
+      }
+    }
 
     for (final StoryType type in _preferenceCubit.state.tabs) {
       add(LoadStories(type: type));
@@ -104,6 +116,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
 
     final StoryType type = event.type;
     if (state.isOfflineReading) {
+      logInfo('($type) loading stories from local cache.');
       final List<int> ids =
           await _offlineRepository.getCachedStoryIds(type: type);
       emit(
@@ -113,10 +126,11 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
             .copyWithStatusUpdated(type: type, to: Status.inProgress),
       );
       _offlineRepository
-          .getCachedStoriesStream(ids: ids.sublist(0, apiPageSize))
+          .getCachedStoriesStream(ids: ids.sublist(0, _pageSize))
           .listen((Story story) => add(StoryLoaded(story: story, type: type)))
           .onDone(() => add(StoryLoadingCompleted(type: type)));
     } else if (event.useApi || state.dataSource == HackerNewsDataSource.api) {
+      logInfo('($type) loading stories from API.');
       final List<int> ids =
           await _hackerNewsRepository.fetchStoryIds(type: type);
       emit(
@@ -128,7 +142,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
 
       await _hackerNewsRepository
           .fetchStoriesStream(
-        ids: ids.sublist(0, apiPageSize),
+        ids: ids.sublist(0, _pageSize),
         sequential: true,
       )
           .listen((Story story) {
@@ -136,6 +150,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
       }).asFuture<void>();
       add(StoryLoadingCompleted(type: type));
     } else {
+      logInfo('($type) loading stories from web.');
       emit(
         state
             .copyWithCurrentPageUpdated(type: type, to: 1)
@@ -145,7 +160,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
       await _hackerNewsWebRepository
           .fetchStoriesStream(event.type, page: 1)
           .handleError((dynamic e) {
-        logError('error loading stories $e');
+        logError('($type) error loading stories from web $e');
 
         switch (e.runtimeType) {
           case RateLimitedException:
@@ -220,8 +235,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         return;
       }
       final int length = ids.length;
-      final int lower = min(length, apiPageSize * (currentPage - 1));
-      final int upper = min(length, lower + apiPageSize);
+      final int lower = min(length, _pageSize * (currentPage - 1));
+      final int upper = min(length, lower + _pageSize);
       final List<int> idsForCurrentPage = ids.sublist(
         lower,
         upper,
@@ -242,8 +257,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         length = ids.length;
       }
 
-      final int lower = min(length, apiPageSize * (currentPage - 1));
-      final int upper = min(length, lower + apiPageSize);
+      final int lower = min(length, _pageSize * (currentPage - 1));
+      final int upper = min(length, lower + _pageSize);
       final List<int> idsForCurrentPage = ids.sublist(
         lower,
         upper,

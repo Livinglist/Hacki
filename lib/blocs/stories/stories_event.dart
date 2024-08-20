@@ -29,6 +29,12 @@ class LoadStories extends StoriesEvent {
 }
 
 class StoriesInitialize extends StoriesEvent {
+  StoriesInitialize({
+    this.startup = false,
+  });
+
+  final bool startup;
+
   @override
   List<Object?> get props => <Object?>[];
 }

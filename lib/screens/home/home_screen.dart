@@ -99,17 +99,6 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final DeviceScreenType deviceType =
-        getDeviceType(MediaQuery.of(context).size);
-    if (context.read<StoriesBloc>().deviceScreenType != deviceType) {
-      context.read<StoriesBloc>().deviceScreenType = deviceType;
-      context.read<StoriesBloc>().add(StoriesInitialize());
-    }
-  }
-
-  @override
   void dispose() {
     tabController.dispose();
     intentDataStreamSubscription.cancel();
