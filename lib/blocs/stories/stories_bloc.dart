@@ -37,14 +37,14 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         super(const StoriesState.init()) {
     on<LoadStories>(
       onLoadStories,
-      transformer: sequential(),
+      transformer: concurrent(),
     );
     on<StoriesInitialize>(onInitialize);
     on<StoriesRefresh>(onRefresh);
     on<StoriesLoadMore>(onLoadMore);
     on<StoryLoaded>(
       onStoryLoaded,
-      transformer: concurrent(),
+      transformer: sequential(),
     );
     on<StoryRead>(onStoryRead);
     on<StoryUnread>(onStoryUnread);
@@ -109,11 +109,11 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
       emit(
         state
             .copyWithStoryIdsUpdated(type: type, to: ids)
-            .copyWithCurrentPageUpdated(type: type, to: 0)
+            .copyWithCurrentPageUpdated(type: type, to: 1)
             .copyWithStatusUpdated(type: type, to: Status.inProgress),
       );
       _offlineRepository
-          .getCachedStoriesStream(ids: ids)
+          .getCachedStoriesStream(ids: ids.sublist(0, apiPageSize))
           .listen((Story story) => add(StoryLoaded(story: story, type: type)))
           .onDone(() => add(StoryLoadingCompleted(type: type)));
     } else if (event.useApi || state.dataSource == HackerNewsDataSource.api) {
@@ -191,57 +191,73 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     StoriesLoadMore event,
     Emitter<StoriesState> emit,
   ) async {
-    if (state.statusByType[event.type] == Status.inProgress) return;
+    final StoryType type = event.type;
+
+    if (state.statusByType[type] == Status.inProgress) return;
 
     emit(
       state.copyWithStatusUpdated(
-        type: event.type,
+        type: type,
         to: Status.inProgress,
       ),
     );
 
-    final int currentPage = state.currentPageByType[event.type]! + 1;
+    final int currentPage = state.currentPageByType[type]! + 1;
 
     emit(
-      state.copyWithCurrentPageUpdated(type: event.type, to: currentPage),
+      state.copyWithCurrentPageUpdated(type: type, to: currentPage),
     );
 
     if (state.isOfflineReading) {
-      emit(
-        state.copyWithStatusUpdated(
-          type: event.type,
-          to: Status.success,
-        ),
+      final List<int>? ids = state.storyIdsByType[type];
+      if (ids == null) {
+        logError('ids should not be null.');
+        emit(
+          state.copyWithStatusUpdated(
+            type: type,
+            to: Status.failure,
+          ),
+        );
+        return;
+      }
+      final int length = ids.length;
+      final int lower = min(length, apiPageSize * (currentPage - 1));
+      final int upper = min(length, lower + apiPageSize);
+      final List<int> idsForCurrentPage = ids.sublist(
+        lower,
+        upper,
       );
+      _offlineRepository
+          .getCachedStoriesStream(ids: idsForCurrentPage)
+          .listen((Story story) => add(StoryLoaded(story: story, type: type)))
+          .onDone(() => add(StoryLoadingCompleted(type: type)));
     } else if (event.useApi || state.dataSource == HackerNewsDataSource.api) {
       late final int length;
-      final List<int>? ids = state.storyIdsByType[event.type];
+      List<int>? ids = state.storyIdsByType[type];
 
-      if (ids?.isEmpty ?? true) {
-        final List<int> ids =
-            await _hackerNewsRepository.fetchStoryIds(type: event.type);
+      if (ids == null || ids.isEmpty) {
+        ids = await _hackerNewsRepository.fetchStoryIds(type: type);
         length = ids.length;
-        emit(state.copyWith());
+        emit(state.copyWithStoryIdsUpdated(type: type, to: ids));
       } else {
-        length = ids!.length;
+        length = ids.length;
       }
 
       final int lower = min(length, apiPageSize * (currentPage - 1));
       final int upper = min(length, lower + apiPageSize);
+      final List<int> idsForCurrentPage = ids.sublist(
+        lower,
+        upper,
+      );
       _hackerNewsRepository
-          .fetchStoriesStream(
-            ids: state.storyIdsByType[event.type]!.sublist(
-              lower,
-              upper,
-            ),
-          )
+          .fetchStoriesStream(ids: idsForCurrentPage)
           .listen(
-            (Story story) => add(StoryLoaded(story: story, type: event.type)),
+            (Story story) => add(StoryLoaded(story: story, type: type)),
           )
-          .onDone(() => add(StoryLoadingCompleted(type: event.type)));
+          .onDone(() => add(StoryLoadingCompleted(type: type)));
     } else {
       _hackerNewsWebRepository
-          .fetchStoriesStream(event.type, page: currentPage)
+          .fetchStoriesStream(type, page: currentPage)
           .handleError((dynamic e) {
             logError('error loading more stories $e');
 
@@ -254,16 +270,16 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
                 add(event.copyWith(useApi: true));
                 emit(
                   state.copyWithCurrentPageUpdated(
-                    type: event.type,
+                    type: type,
                     to: currentPage - 1,
                   ),
                 );
             }
           })
           .listen(
-            (Story story) => add(StoryLoaded(story: story, type: event.type)),
+            (Story story) => add(StoryLoaded(story: story, type: type)),
           )
-          .onDone(() => add(StoryLoadingCompleted(type: event.type)));
+          .onDone(() => add(StoryLoadingCompleted(type: type)));
     }
   }
 
