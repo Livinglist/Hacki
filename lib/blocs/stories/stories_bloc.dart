@@ -79,7 +79,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     Emitter<StoriesState> emit,
   ) async {
     final HackerNewsDataSource dataSource = _preferenceCubit.state.dataSource;
-    logDebug('data source: $dataSource');
+    logInfo('data source: $dataSource');
 
     emit(
       const StoriesState.init().copyWith(
