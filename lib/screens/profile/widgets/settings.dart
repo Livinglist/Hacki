@@ -83,159 +83,169 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                   const SizedBox(
                     height: Dimens.pt8,
                   ),
-                  Flex(
-                    direction: Axis.horizontal,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
+                  OverflowBar(
+                    alignment: MainAxisAlignment.spaceBetween,
+                    overflowSpacing: Dimens.pt12,
                     children: <Widget>[
-                      Flexible(
-                        child: Row(
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: Dimens.pt16,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            const SizedBox(
-                              width: Dimens.pt16,
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                const Text('Default fetch mode'),
-                                DropdownMenu<FetchMode>(
-                                  initialSelection: preferenceState.fetchMode,
-                                  dropdownMenuEntries: FetchMode.values
-                                      .map(
-                                        (FetchMode val) =>
-                                            DropdownMenuEntry<FetchMode>(
-                                          value: val,
-                                          label: val.description,
+                            const Text('Default fetch mode'),
+                            DropdownMenu<FetchMode>(
+                              initialSelection: preferenceState.fetchMode,
+                              dropdownMenuEntries: FetchMode.values
+                                  .map(
+                                    (FetchMode val) =>
+                                        DropdownMenuEntry<FetchMode>(
+                                      value: val,
+                                      label: val.description,
+                                    ),
+                                  )
+                                  .toList(),
+                              onSelected: (FetchMode? fetchMode) {
+                                if (fetchMode != null) {
+                                  HapticFeedbackUtil.selection();
+                                  context.read<PreferenceCubit>().update(
+                                        FetchModePreference(
+                                          val: fetchMode.index,
                                         ),
-                                      )
-                                      .toList(),
-                                  onSelected: (FetchMode? fetchMode) {
-                                    if (fetchMode != null) {
-                                      HapticFeedbackUtil.selection();
-                                      context.read<PreferenceCubit>().update(
-                                            FetchModePreference(
-                                              val: fetchMode.index,
-                                            ),
-                                          );
-                                    }
-                                  },
-                                ),
-                              ],
+                                      );
+                                }
+                              },
                             ),
                           ],
                         ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          const Text('Default comments order'),
-                          DropdownMenu<CommentsOrder>(
-                            initialSelection: preferenceState.order,
-                            dropdownMenuEntries: CommentsOrder.values
-                                .map(
-                                  (CommentsOrder val) =>
-                                      DropdownMenuEntry<CommentsOrder>(
-                                    value: val,
-                                    label: val.description,
-                                  ),
-                                )
-                                .toList(),
-                            onSelected: (CommentsOrder? order) {
-                              if (order != null) {
-                                HapticFeedbackUtil.selection();
-                                context.read<PreferenceCubit>().update(
-                                      CommentsOrderPreference(
-                                        val: order.index,
-                                      ),
-                                    );
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        width: Dimens.pt16,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: Dimens.pt12,
-                  ),
-                  Row(
-                    children: <Widget>[
-                      const SizedBox(
-                        width: Dimens.pt16,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          const Text(
-                            'Data source',
-                          ),
-                          DropdownMenu<HackerNewsDataSource>(
-                            initialSelection: preferenceState.dataSource,
-                            dropdownMenuEntries: HackerNewsDataSource.values
-                                .map(
-                                  (HackerNewsDataSource val) =>
-                                      DropdownMenuEntry<HackerNewsDataSource>(
-                                    value: val,
-                                    label: val.description,
-                                  ),
-                                )
-                                .toList(),
-                            onSelected: (HackerNewsDataSource? source) {
-                              if (source != null) {
-                                HapticFeedbackUtil.selection();
-                                context.read<PreferenceCubit>().update(
-                                      HackerNewsDataSourcePreference(
-                                        val: source.index,
-                                      ),
-                                    );
-                              }
-                            },
-                          ),
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: Dimens.pt16,
+                          right: Dimens.pt16,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            const Text('Default comments order'),
+                            DropdownMenu<CommentsOrder>(
+                              initialSelection: preferenceState.order,
+                              dropdownMenuEntries: CommentsOrder.values
+                                  .map(
+                                    (CommentsOrder val) =>
+                                        DropdownMenuEntry<CommentsOrder>(
+                                      value: val,
+                                      label: val.description,
+                                    ),
+                                  )
+                                  .toList(),
+                              onSelected: (CommentsOrder? order) {
+                                if (order != null) {
+                                  HapticFeedbackUtil.selection();
+                                  context.read<PreferenceCubit>().update(
+                                        CommentsOrderPreference(
+                                          val: order.index,
+                                        ),
+                                      );
+                                }
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(
                     height: Dimens.pt12,
                   ),
-                  Row(
+                  OverflowBar(
+                    alignment: MainAxisAlignment.spaceBetween,
+                    overflowSpacing: Dimens.pt12,
                     children: <Widget>[
-                      const SizedBox(
-                        width: Dimens.pt16,
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: Dimens.pt16,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            const Text(
+                              'Date time display of comments',
+                            ),
+                            DropdownMenu<DateDisplayFormat>(
+                              initialSelection:
+                                  preferenceState.displayDateFormat,
+                              dropdownMenuEntries: DateDisplayFormat.values
+                                  .map(
+                                    (DateDisplayFormat val) =>
+                                        DropdownMenuEntry<DateDisplayFormat>(
+                                      value: val,
+                                      label: val.description,
+                                    ),
+                                  )
+                                  .toList(),
+                              onSelected: (DateDisplayFormat? order) {
+                                if (order != null) {
+                                  HapticFeedbackUtil.selection();
+                                  context.read<PreferenceCubit>().update(
+                                        DateFormatPreference(
+                                          val: order.index,
+                                        ),
+                                      );
+                                  DateDisplayFormat.clearCache();
+                                }
+                              },
+                            ),
+                          ],
+                        ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          const Text(
-                            'Date time display of comments',
-                          ),
-                          DropdownMenu<DateDisplayFormat>(
-                            initialSelection: preferenceState.displayDateFormat,
-                            dropdownMenuEntries: DateDisplayFormat.values
-                                .map(
-                                  (DateDisplayFormat val) =>
-                                      DropdownMenuEntry<DateDisplayFormat>(
-                                    value: val,
-                                    label: val.description,
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: Dimens.pt16,
+                          right: Dimens.pt16,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            const Text(
+                              'Data source',
+                            ),
+                            DropdownMenu<HackerNewsDataSource>(
+                              /// Make sure no stories are being fetched before
+                              /// switching data source.
+                              enabled: !context
+                                  .read<StoriesBloc>()
+                                  .state
+                                  .statusByType
+                                  .values
+                                  .any(
+                                    (Status status) =>
+                                        status == Status.inProgress,
                                   ),
-                                )
-                                .toList(),
-                            onSelected: (DateDisplayFormat? order) {
-                              if (order != null) {
-                                HapticFeedbackUtil.selection();
-                                context.read<PreferenceCubit>().update(
-                                      DateFormatPreference(
-                                        val: order.index,
-                                      ),
-                                    );
-                                DateDisplayFormat.clearCache();
-                              }
-                            },
-                          ),
-                        ],
+                              initialSelection: preferenceState.dataSource,
+                              dropdownMenuEntries: HackerNewsDataSource.values
+                                  .map(
+                                    (HackerNewsDataSource val) =>
+                                        DropdownMenuEntry<HackerNewsDataSource>(
+                                      value: val,
+                                      label: val.description,
+                                    ),
+                                  )
+                                  .toList(),
+                              onSelected: (HackerNewsDataSource? source) {
+                                if (source != null) {
+                                  HapticFeedbackUtil.selection();
+                                  context.read<PreferenceCubit>().update(
+                                        HackerNewsDataSourcePreference(
+                                          val: source.index,
+                                        ),
+                                      );
+                                }
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),

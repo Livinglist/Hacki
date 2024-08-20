@@ -201,6 +201,9 @@ class HackerNewsWebRepository {
           parts: const <int>[],
         );
 
+        /// If it is a story about launching or from ask section, then
+        /// we need to fetch it from API since the html doesn't contain
+        /// too much info.
         if (timestamp == null ||
             url.isEmpty ||
             url.contains('item?id=') ||
@@ -214,7 +217,7 @@ class HackerNewsWebRepository {
           }
         }
 
-        /// Duplicate comment means we are done fetching all the comments.
+        /// Duplicate story means we are done fetching all the stories.
         if (fetchedStoryIds.contains(story.id)) return;
 
         fetchedStoryIds.add(story.id);

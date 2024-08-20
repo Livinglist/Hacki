@@ -44,7 +44,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     on<StoriesLoadMore>(onLoadMore);
     on<StoryLoaded>(
       onStoryLoaded,
-      transformer: sequential(),
+      transformer: concurrent(),
     );
     on<StoryRead>(onStoryRead);
     on<StoryUnread>(onStoryUnread);
@@ -53,8 +53,14 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     on<StoryDownloaded>(onStoryDownloaded);
     on<StoriesEnterOfflineMode>(onEnterOfflineMode);
     on<StoriesExitOfflineMode>(onExitOfflineMode);
-    on<StoriesPageSizeChanged>(onPageSizeChanged);
     on<ClearAllReadStories>(onClearAllReadStories);
+
+    _preferenceSubscription = _preferenceCubit.stream
+        .distinct((PreferenceState lhs, PreferenceState rhs) {
+      return lhs.dataSource == rhs.dataSource;
+    }).listen((PreferenceState prefState) {
+      add(StoriesInitialize());
+    });
   }
 
   final PreferenceCubit _preferenceCubit;
@@ -71,15 +77,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     StoriesInitialize event,
     Emitter<StoriesState> emit,
   ) async {
-    _preferenceSubscription = _preferenceCubit.stream
-        .distinct(
-      (PreferenceState lhs, PreferenceState rhs) =>
-          lhs.dataSource == rhs.dataSource,
-    )
-        .listen((PreferenceState prefState) {
-      add(StoriesInitialize());
-    });
-
     final HackerNewsDataSource dataSource = _preferenceCubit.state.dataSource;
 
     emit(
@@ -138,6 +135,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
           .listen((Story story) {
         add(StoryLoaded(story: story, type: type));
       }).asFuture<void>();
+      add(StoryLoadingCompleted(type: type));
     } else {
       emit(
         state
@@ -223,6 +221,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         final List<int> ids =
             await _hackerNewsRepository.fetchStoryIds(type: event.type);
         length = ids.length;
+        emit(state.copyWith());
       } else {
         length = ids!.length;
       }
@@ -490,13 +489,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         ),
       );
     }
-  }
-
-  Future<void> onPageSizeChanged(
-    StoriesPageSizeChanged event,
-    Emitter<StoriesState> emit,
-  ) async {
-    add(StoriesInitialize());
   }
 
   Future<void> onExitOfflineMode(

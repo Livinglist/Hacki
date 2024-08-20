@@ -66,8 +66,8 @@ class _StoriesListViewState extends State<StoriesListView>
             }
           },
           buildWhen: (StoriesState previous, StoriesState current) =>
-              (current.currentPageByType[storyType] == 0 &&
-                  previous.currentPageByType[storyType] == 0) ||
+              (current.currentPageByType[storyType] == 1 &&
+                  previous.currentPageByType[storyType] == 1) ||
               (previous.storiesByType[storyType]!.length !=
                   current.storiesByType[storyType]!.length) ||
               (previous.readStoriesIds.length !=
@@ -106,7 +106,8 @@ class _StoriesListViewState extends State<StoriesListView>
               onPinned: context.read<PinCubit>().pinStory,
               header: state.isOfflineReading ? null : header,
               loadStyle: LoadStyle.HideAlways,
-              footer: preferenceState.isManualPaginationEnabled
+              footer: preferenceState.isManualPaginationEnabled &&
+                      state.statusByType[widget.storyType] == Status.success
                   ? Center(
                       child: Padding(
                         padding: const EdgeInsets.only(
@@ -125,16 +126,9 @@ class _StoriesListViewState extends State<StoriesListView>
                               (_) => Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
-                          child: state.statusByType[widget.storyType] ==
-                                  Status.success
-                              ? Text(
-                                  '''Load Page ${(state.currentPageByType[widget.storyType] ?? 0) + 1}''',
-                                )
-                              : const SizedBox(
-                                  height: Dimens.pt6,
-                                  width: Dimens.pt6,
-                                  child: CustomCircularProgressIndicator(),
-                                ),
+                          child: Text(
+                            '''Load Page ${(state.currentPageByType[widget.storyType] ?? 0) + 1}''',
+                          ),
                         ),
                       ),
                     )
@@ -250,6 +244,8 @@ class _StoriesListViewState extends State<StoriesListView>
     }
   }
 
-  void loadMoreStories() =>
-      context.read<StoriesBloc>().add(StoriesLoadMore(type: widget.storyType));
+  void loadMoreStories() {
+    HapticFeedbackUtil.light();
+    context.read<StoriesBloc>().add(StoriesLoadMore(type: widget.storyType));
+  }
 }
