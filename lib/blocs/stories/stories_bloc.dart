@@ -129,8 +129,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
       await _hackerNewsRepository
           .fetchStoriesStream(
         ids: ids.sublist(0, apiPageSize),
-        sequential: _preferenceCubit.state.isComplexStoryTileEnabled ||
-            _preferenceCubit.state.isFaviconEnabled,
+        sequential: true,
       )
           .listen((Story story) {
         add(StoryLoaded(story: story, type: type));
