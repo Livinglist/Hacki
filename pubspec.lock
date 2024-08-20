@@ -513,15 +513,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.2"
-  flutter_siri_suggestions:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: master
-      resolved-ref: "849f17a0b26c1388c45178b554c0690637527849"
-      url: "https://github.com/Livinglist/flutter_siri_suggestions"
-    source: git
-    version: "2.1.0"
   flutter_slidable:
     dependency: "direct main"
     description:

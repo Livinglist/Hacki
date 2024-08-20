@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart' hide Badge;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_siri_suggestions/flutter_siri_suggestions.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
@@ -221,18 +219,6 @@ class _HomeScreenState extends State<HomeScreen>
 
     if (markReadStoriesEnabled && storyMarkingMode.shouldDetectTapping) {
       context.read<StoriesBloc>().add(StoryRead(story: story));
-    }
-
-    if (Platform.isIOS) {
-      FlutterSiriSuggestions.instance.registerActivity(
-        FlutterSiriActivity(
-          story.title,
-          story.id.toString(),
-          suggestedInvocationPhrase: '',
-          contentDescription: story.text,
-          persistentIdentifier: story.id.toString(),
-        ),
-      );
     }
   }
 
