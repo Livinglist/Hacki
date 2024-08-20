@@ -211,37 +211,42 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                             const Text(
                               'Data source',
                             ),
-                            DropdownMenu<HackerNewsDataSource>(
-                              /// Make sure no stories are being fetched before
-                              /// switching data source.
-                              enabled: !context
-                                  .read<StoriesBloc>()
-                                  .state
-                                  .statusByType
-                                  .values
-                                  .any(
-                                    (Status status) =>
-                                        status == Status.inProgress,
-                                  ),
-                              initialSelection: preferenceState.dataSource,
-                              dropdownMenuEntries: HackerNewsDataSource.values
-                                  .map(
-                                    (HackerNewsDataSource val) =>
-                                        DropdownMenuEntry<HackerNewsDataSource>(
-                                      value: val,
-                                      label: val.description,
-                                    ),
-                                  )
-                                  .toList(),
-                              onSelected: (HackerNewsDataSource? source) {
-                                if (source != null) {
-                                  HapticFeedbackUtil.selection();
-                                  context.read<PreferenceCubit>().update(
-                                        HackerNewsDataSourcePreference(
-                                          val: source.index,
-                                        ),
-                                      );
-                                }
+                            BlocSelector<StoriesBloc, StoriesState, bool>(
+                              selector: (StoriesState state) =>
+                                  state.statusByType.values.any(
+                                (Status status) => status == Status.inProgress,
+                              ),
+                              builder: (
+                                BuildContext context,
+                                bool isInProgress,
+                              ) {
+                                return DropdownMenu<HackerNewsDataSource>(
+                                  /// Make sure no stories are being fetched
+                                  /// before switching data source.
+                                  enabled: !isInProgress,
+                                  initialSelection: preferenceState.dataSource,
+                                  dropdownMenuEntries:
+                                      HackerNewsDataSource.values
+                                          .map(
+                                            (HackerNewsDataSource val) =>
+                                                DropdownMenuEntry<
+                                                    HackerNewsDataSource>(
+                                              value: val,
+                                              label: val.description,
+                                            ),
+                                          )
+                                          .toList(),
+                                  onSelected: (HackerNewsDataSource? source) {
+                                    if (source != null) {
+                                      HapticFeedbackUtil.selection();
+                                      context.read<PreferenceCubit>().update(
+                                            HackerNewsDataSourcePreference(
+                                              val: source.index,
+                                            ),
+                                          );
+                                    }
+                                  },
+                                );
                               },
                             ),
                           ],

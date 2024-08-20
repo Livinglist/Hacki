@@ -14,6 +14,7 @@ class EnterOfflineModeListTile extends StatelessWidget {
       builder: (BuildContext context, StoriesState state) {
         return SwitchListTile(
           value: state.isOfflineReading,
+          activeColor: Theme.of(context).colorScheme.primary,
           title: const Text('Offline Mode'),
           onChanged: (bool value) {
             HapticFeedbackUtil.light();
