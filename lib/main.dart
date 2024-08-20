@@ -351,6 +351,14 @@ class HackiApp extends StatelessWidget {
                                     : Palette.black,
                               ),
                             ),
+                            disabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: (isDarkModeEnabled
+                                        ? Palette.white
+                                        : Palette.black)
+                                    .withOpacity(0.4),
+                              ),
+                            ),
                           ),
                           sliderTheme: SliderThemeData(
                             inactiveTrackColor:
