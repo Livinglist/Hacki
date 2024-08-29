@@ -46,7 +46,7 @@
 			<string>mailto</string>
 		</array>
 		<key>LSMinimumSystemVersion</key>
-		<string>15.0</string>
+		<string>14.0</string>
 		<key>LSRequiresIPhoneOS</key>
 		<true/>
 		<key>UIBackgroundModes</key>
