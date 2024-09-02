@@ -484,18 +484,40 @@ class _ParentItemSection extends StatelessWidget {
                   ],
                   const Spacer(),
                   if (!state.isOfflineReading)
-                    CustomDropdownMenu<FetchMode>(
-                      menuChildren: FetchMode.values,
-                      onSelected: context.read<CommentsCubit>().updateFetchMode,
-                      selected: state.fetchMode,
+                    Semantics(
+                      container: true,
+                      label: 'Fetch Mode',
+                      hint: 'Select fetch mode for comments',
+                      child: GestureDetector(
+                        onTap: () {},
+                        child: Container(
+                          padding: const EdgeInsets.all(8.0),
+                          child: CustomDropdownMenu<FetchMode>(
+                            menuChildren: FetchMode.values,
+                            onSelected: context.read<CommentsCubit>().updateFetchMode,
+                            selected: state.fetchMode,
+                          ),
+                        ),
+                      ),
                     ),
                   const SizedBox(
                     width: Dimens.pt6,
                   ),
-                  CustomDropdownMenu<CommentsOrder>(
-                    menuChildren: CommentsOrder.values,
-                    onSelected: context.read<CommentsCubit>().updateOrder,
-                    selected: state.order,
+                  Semantics(
+                    container: true,
+                    label: 'Comments Order',
+                    hint: 'Select order to sort comments',
+                    child: GestureDetector(
+                      onTap: () {},  
+                      child: Container(
+                        padding: const EdgeInsets.all(8.0), 
+                        child: CustomDropdownMenu<CommentsOrder>(
+                          menuChildren: CommentsOrder.values,
+                          onSelected: context.read<CommentsCubit>().updateOrder,
+                          selected: state.order,
+                        ),
+                      ),
+                    ),
                   ),
                   const SizedBox(
                     width: Dimens.pt4,
