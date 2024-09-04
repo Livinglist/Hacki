@@ -33,8 +33,15 @@ class TabletHomeScreen extends StatelessWidget {
               previous.expanded != current.expanded ||
               previous.submissionPanelWidth != current.submissionPanelWidth,
           builder: (BuildContext context, SplitViewState state) {
-            final double submissionPanelWidth =
+            double submissionPanelWidth =
                 state.submissionPanelWidth ?? homeScreenWidth;
+
+            /// Prevent overflow after orientation change.
+            if (submissionPanelWidth > MediaQuery.of(context).size.width) {
+              submissionPanelWidth =
+                  MediaQuery.of(context).size.width - Dimens.pt64;
+            }
+
             return Stack(
               children: <Widget>[
                 AnimatedPositioned(
