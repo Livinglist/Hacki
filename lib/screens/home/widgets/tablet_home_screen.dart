@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' hide Badge;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/screens/screens.dart';
@@ -14,6 +15,8 @@ class TabletHomeScreen extends StatelessWidget {
   });
 
   final Widget homeScreen;
+  static const double _dragPanelWidth = Dimens.pt6;
+  static const double _dragDotHeight = 30;
 
   @override
   Widget build(BuildContext context) {
@@ -28,16 +31,19 @@ class TabletHomeScreen extends StatelessWidget {
 
         return BlocBuilder<SplitViewCubit, SplitViewState>(
           buildWhen: (SplitViewState previous, SplitViewState current) =>
-              previous.expanded != current.expanded,
+              previous.expanded != current.expanded ||
+              previous.submissionPanelWidth != current.submissionPanelWidth,
           builder: (BuildContext context, SplitViewState state) {
+            final double submissionPanelWidth =
+                state.submissionPanelWidth ?? homeScreenWidth;
             return Stack(
               children: <Widget>[
                 AnimatedPositioned(
                   left: Dimens.zero,
                   top: Dimens.zero,
                   bottom: Dimens.zero,
-                  width: homeScreenWidth,
-                  duration: AppDurations.ms300,
+                  width: submissionPanelWidth,
+                  duration: state.resizingAnimationDuration,
                   curve: Curves.elasticOut,
                   child: homeScreen,
                 ),
@@ -46,7 +52,7 @@ class TabletHomeScreen extends StatelessWidget {
                     left: Dimens.pt24,
                     bottom: Dimens.pt36,
                     height: Dimens.pt40,
-                    width: homeScreenWidth - Dimens.pt24,
+                    width: submissionPanelWidth - Dimens.pt24,
                     child: const CountdownReminder(),
                   )
                 else
@@ -54,17 +60,67 @@ class TabletHomeScreen extends StatelessWidget {
                     left: Dimens.pt24,
                     bottom: Dimens.pt36,
                     height: Dimens.pt40,
-                    width: homeScreenWidth - Dimens.pt24,
+                    width: submissionPanelWidth - Dimens.pt24,
                     child: const DownloadProgressReminder(),
                   ),
                 AnimatedPositioned(
                   right: Dimens.zero,
                   top: Dimens.zero,
                   bottom: Dimens.zero,
-                  left: state.expanded ? Dimens.zero : homeScreenWidth,
-                  duration: AppDurations.ms300,
+                  left: state.expanded
+                      ? Dimens.zero
+                      : submissionPanelWidth + _dragPanelWidth,
+                  duration: state.resizingAnimationDuration,
                   curve: Curves.elasticOut,
                   child: const _TabletStoryView(),
+                ),
+                Positioned(
+                  left: submissionPanelWidth,
+                  top: Dimens.zero,
+                  bottom: Dimens.zero,
+                  width: _dragPanelWidth,
+                  child: GestureDetector(
+                    onHorizontalDragUpdate: (DragUpdateDetails details) {
+                      context.read<SplitViewCubit>().updateSubmissionPanelWidth(
+                            details.globalPosition.dx,
+                          );
+                    },
+                    child: ColoredBox(
+                      color: Theme.of(context).colorScheme.tertiary,
+                      child: const SizedBox.shrink(),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  left: submissionPanelWidth +
+                      _dragPanelWidth / 2 -
+                      _dragDotHeight / 2,
+                  top:
+                      (MediaQuery.of(context).size.height - _dragDotHeight) / 2,
+                  height: _dragDotHeight,
+                  width: _dragDotHeight,
+                  child: GestureDetector(
+                    onHorizontalDragUpdate: (DragUpdateDetails details) {
+                      context.read<SplitViewCubit>().updateSubmissionPanelWidth(
+                            details.globalPosition.dx,
+                          );
+                    },
+                    child: Container(
+                      width: _dragDotHeight,
+                      height: _dragDotHeight,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.tertiary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: FaIcon(
+                          FontAwesomeIcons.gripLinesVertical,
+                          color: Theme.of(context).colorScheme.onTertiary,
+                          size: TextDimens.pt16,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             );
