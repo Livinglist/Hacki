@@ -47,7 +47,6 @@ class SplitViewCubit extends HydratedCubit<SplitViewState> with Loggable {
 
   @override
   SplitViewState? fromJson(Map<String, dynamic> json) {
-    return state;
     return state.copyWith(
       submissionPanelWidth: json[_submissionPanelWidthKey] as double?,
     );
@@ -55,7 +54,6 @@ class SplitViewCubit extends HydratedCubit<SplitViewState> with Loggable {
 
   @override
   Map<String, dynamic>? toJson(SplitViewState state) {
-    return {};
     return <String, dynamic>{
       _submissionPanelWidthKey: state.submissionPanelWidth,
     };

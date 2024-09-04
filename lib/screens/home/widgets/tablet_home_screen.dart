@@ -52,7 +52,7 @@ class TabletHomeScreen extends StatelessWidget {
                     left: Dimens.pt24,
                     bottom: Dimens.pt36,
                     height: Dimens.pt40,
-                    width: submissionPanelWidth - Dimens.pt24,
+                    width: submissionPanelWidth - Dimens.pt48,
                     child: const CountdownReminder(),
                   )
                 else
@@ -60,7 +60,7 @@ class TabletHomeScreen extends StatelessWidget {
                     left: Dimens.pt24,
                     bottom: Dimens.pt36,
                     height: Dimens.pt40,
-                    width: submissionPanelWidth - Dimens.pt24,
+                    width: submissionPanelWidth - Dimens.pt48,
                     child: const DownloadProgressReminder(),
                   ),
                 AnimatedPositioned(
