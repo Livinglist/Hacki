@@ -1,0 +1,1 @@
+- Improved tablet mode, you can now resize submission panel.
