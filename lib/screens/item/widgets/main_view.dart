@@ -494,7 +494,8 @@ class _ParentItemSection extends StatelessWidget {
                           padding: const EdgeInsets.all(8),
                           child: CustomDropdownMenu<FetchMode>(
                             menuChildren: FetchMode.values,
-                            onSelected: context.read<CommentsCubit>().updateFetchMode,
+                            onSelected:
+                                context.read<CommentsCubit>().updateFetchMode,
                             selected: state.fetchMode,
                           ),
                         ),
