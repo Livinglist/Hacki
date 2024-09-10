@@ -491,7 +491,7 @@ class _ParentItemSection extends StatelessWidget {
                       child: GestureDetector(
                         onTap: () {},
                         child: Container(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(8),
                           child: CustomDropdownMenu<FetchMode>(
                             menuChildren: FetchMode.values,
                             onSelected: context.read<CommentsCubit>().updateFetchMode,
