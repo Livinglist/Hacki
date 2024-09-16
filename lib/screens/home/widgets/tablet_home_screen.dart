@@ -14,7 +14,7 @@ class TabletHomeScreen extends StatelessWidget {
   });
 
   final Widget homeScreen;
-  static const double _dragPanelWidth = Dimens.pt6;
+  static const double _dragPanelWidth = Dimens.pt2;
   static const double _dragDotHeight = Dimens.pt30;
 
   @override
