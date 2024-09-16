@@ -80,54 +80,60 @@ class TabletHomeScreen extends StatelessWidget {
                   curve: Curves.elasticOut,
                   child: const _TabletStoryView(),
                 ),
-                Positioned(
-                  left: submissionPanelWidth,
-                  top: Dimens.zero,
-                  bottom: Dimens.zero,
-                  width: _dragPanelWidth,
-                  child: GestureDetector(
-                    onHorizontalDragUpdate: (DragUpdateDetails details) {
-                      context.read<SplitViewCubit>().updateSubmissionPanelWidth(
-                            details.globalPosition.dx,
-                          );
-                    },
-                    child: ColoredBox(
-                      color: Theme.of(context).colorScheme.tertiary,
-                      child: const SizedBox.shrink(),
+                if (!state.expanded) ...<Widget>[
+                  Positioned(
+                    left: submissionPanelWidth,
+                    top: Dimens.zero,
+                    bottom: Dimens.zero,
+                    width: _dragPanelWidth,
+                    child: GestureDetector(
+                      onHorizontalDragUpdate: (DragUpdateDetails details) {
+                        context
+                            .read<SplitViewCubit>()
+                            .updateSubmissionPanelWidth(
+                              details.globalPosition.dx,
+                            );
+                      },
+                      child: ColoredBox(
+                        color: Theme.of(context).colorScheme.tertiary,
+                        child: const SizedBox.shrink(),
+                      ),
                     ),
                   ),
-                ),
-                Positioned(
-                  left: submissionPanelWidth +
-                      _dragPanelWidth / 2 -
-                      _dragDotHeight / 2,
-                  top:
-                      (MediaQuery.of(context).size.height - _dragDotHeight) / 2,
-                  height: _dragDotHeight,
-                  width: _dragDotHeight,
-                  child: GestureDetector(
-                    onHorizontalDragUpdate: (DragUpdateDetails details) {
-                      context.read<SplitViewCubit>().updateSubmissionPanelWidth(
-                            details.globalPosition.dx,
-                          );
-                    },
-                    child: Container(
-                      width: _dragDotHeight,
-                      height: _dragDotHeight,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.tertiary,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: FaIcon(
-                          FontAwesomeIcons.gripLinesVertical,
-                          color: Theme.of(context).colorScheme.onTertiary,
-                          size: TextDimens.pt16,
+                  Positioned(
+                    left: submissionPanelWidth +
+                        _dragPanelWidth / 2 -
+                        _dragDotHeight / 2,
+                    top: (MediaQuery.of(context).size.height - _dragDotHeight) /
+                        2,
+                    height: _dragDotHeight,
+                    width: _dragDotHeight,
+                    child: GestureDetector(
+                      onHorizontalDragUpdate: (DragUpdateDetails details) {
+                        context
+                            .read<SplitViewCubit>()
+                            .updateSubmissionPanelWidth(
+                              details.globalPosition.dx,
+                            );
+                      },
+                      child: Container(
+                        width: _dragDotHeight,
+                        height: _dragDotHeight,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.tertiary,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: FaIcon(
+                            FontAwesomeIcons.gripLinesVertical,
+                            color: Theme.of(context).colorScheme.onTertiary,
+                            size: TextDimens.pt16,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ],
             );
           },
