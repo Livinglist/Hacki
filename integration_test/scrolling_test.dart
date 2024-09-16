@@ -60,7 +60,7 @@ void main() {
         expect(firstStoryFinder, findsOneWidget);
 
         await tester.tap(firstStoryFinder);
-        await tester.pump(const Duration(seconds: 4));
+        await tester.pump(const Duration(seconds: 5));
       },
       reportKey: 'scrolling_timeline',
     );
