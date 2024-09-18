@@ -18,6 +18,7 @@ dependencies:
   connectivity_plus: ^6.0.3
   device_info_plus: ^10.1.0
   dio: ^5.4.3+1
+  dio_smart_retry: ^6.0.0
   equatable: ^2.0.5
   fast_gbk: ^1.0.0
   feature_discovery:

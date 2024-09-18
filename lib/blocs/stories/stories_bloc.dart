@@ -126,7 +126,9 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
             .copyWithStatusUpdated(type: type, to: Status.inProgress),
       );
       _offlineRepository
-          .getCachedStoriesStream(ids: ids.sublist(0, _pageSize))
+          .getCachedStoriesStream(
+            ids: ids.sublist(0, min(_pageSize, ids.length)),
+          )
           .listen((Story story) => add(StoryLoaded(story: story, type: type)))
           .onDone(() => add(StoryLoadingCompleted(type: type)));
     } else if (event.useApi || state.dataSource == HackerNewsDataSource.api) {
@@ -142,7 +144,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
 
       await _hackerNewsRepository
           .fetchStoriesStream(
-        ids: ids.sublist(0, _pageSize),
+        ids: ids.sublist(0, min(_pageSize, ids.length)),
         sequential: true,
       )
           .listen((Story story) {

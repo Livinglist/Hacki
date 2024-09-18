@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
+import 'package:dio_smart_retry/dio_smart_retry.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
@@ -23,7 +24,12 @@ class HackerNewsWebRepository {
     HackerNewsRepository? hackerNewsRepository,
     Dio? dioWithCache,
     Dio? dio,
-  })  : _dio = dio ?? Dio(),
+  })  : _dio = dio ?? Dio()
+          ..interceptors.addAll(
+            <Interceptor>[
+              if (kDebugMode) LoggerInterceptor(),
+            ],
+          ),
         _dioWithCache = dioWithCache ?? Dio()
           ..interceptors.addAll(
             <Interceptor>[
@@ -34,10 +40,18 @@ class HackerNewsWebRepository {
         _remoteConfigCubit =
             remoteConfigCubit ?? locator.get<RemoteConfigCubit>(),
         _hackerNewsRepository =
-            hackerNewsRepository ?? locator.get<HackerNewsRepository>();
+            hackerNewsRepository ?? locator.get<HackerNewsRepository>() {
+    _dio.interceptors.add(RetryInterceptor(dio: _dio));
+  }
 
+  /// The client for fetching comments. We should be careful
+  /// while fetching comments because it will easily trigger
+  /// 503 from the server.
   final Dio _dioWithCache;
+
+  /// The client for fetching stories.
   final Dio _dio;
+
   final RemoteConfigCubit _remoteConfigCubit;
   final HackerNewsRepository _hackerNewsRepository;
 
@@ -66,6 +80,10 @@ class HackerNewsWebRepository {
   String get _moreLinkSelector => _remoteConfigCubit.state.moreLinkSelector;
 
   static final Map<int, int> _next = <int, int>{};
+  static const List<int> _rateLimitedStatusCode = <int>[
+    HttpStatus.forbidden,
+    HttpStatus.serviceUnavailable,
+  ];
 
   Stream<Story> fetchStoriesStream(
     StoryType storyType, {
@@ -84,6 +102,7 @@ class HackerNewsWebRepository {
           StoryType.latest =>
             '$_storiesBaseUrl/${storyType.webPathParam}?next=${_next[page]}'
         };
+
         final Uri url = Uri.parse(urlStr);
         final Options option = Options(
           headers: _headers,
@@ -125,8 +144,8 @@ class HackerNewsWebRepository {
               (elements.elementAt(index), subtextElements.elementAt(index)),
         );
       } on DioException catch (e) {
-        if (e.response?.statusCode == HttpStatus.forbidden) {
-          throw RateLimitedWithFallbackException();
+        if (_rateLimitedStatusCode.contains(e.response?.statusCode)) {
+          throw RateLimitedWithFallbackException(e.response?.statusCode);
         }
         throw GenericException();
       }
@@ -260,8 +279,8 @@ class HackerNewsWebRepository {
             elements.map((Element e) => int.tryParse(e.id)).whereNotNull();
         return parsedIds;
       } on DioException catch (e) {
-        if (e.response?.statusCode == HttpStatus.forbidden) {
-          throw RateLimitedException();
+        if (_rateLimitedStatusCode.contains(e.response?.statusCode)) {
+          throw RateLimitedException(e.response?.statusCode);
         }
         throw GenericException();
       }
@@ -338,8 +357,8 @@ class HackerNewsWebRepository {
             document.querySelectorAll(_athingComtrSelector);
         return elements;
       } on DioException catch (e) {
-        if (e.response?.statusCode == HttpStatus.forbidden) {
-          throw RateLimitedWithFallbackException();
+        if (_rateLimitedStatusCode.contains(e.response?.statusCode)) {
+          throw RateLimitedWithFallbackException(e.response?.statusCode);
         }
         throw GenericException();
       }
