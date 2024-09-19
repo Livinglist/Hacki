@@ -11,12 +11,19 @@ class AppException implements Exception {
 }
 
 class RateLimitedException extends AppException {
-  RateLimitedException() : super(message: 'Rate limited...');
+  RateLimitedException(this.statusCode)
+      : super(message: 'Rate limited ($statusCode)...');
+
+  final int? statusCode;
 }
 
 class RateLimitedWithFallbackException extends AppException {
-  RateLimitedWithFallbackException()
-      : super(message: 'Rate limited, fetching from API instead...');
+  RateLimitedWithFallbackException(this.statusCode)
+      : super(
+          message: 'Rate limited ($statusCode), fetching from API instead...',
+        );
+
+  final int? statusCode;
 }
 
 class PossibleParsingException extends AppException {
