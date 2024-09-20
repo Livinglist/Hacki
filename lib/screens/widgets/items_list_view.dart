@@ -82,6 +82,13 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                 FadeIn(
                   child: InkWell(
                     onTap: () => onTap(e),
+
+                    /// If swipe gesture is enabled on home screen, use
+                    /// long press instead of slide action to trigger
+                    /// the action menu.
+                    onLongPress: swipeGestureEnabled
+                        ? () => onMoreTapped?.call(e, context.rect)
+                        : null,
                     child: Padding(
                       padding: const EdgeInsets.only(
                         top: Dimens.pt8,
