@@ -128,7 +128,7 @@ class StoryTile extends StatelessWidget {
         excludeSemantics: true,
         child: InkWell(
           onTap: onTap,
-          onLongPress: () {
+          onDoubleTap: () {
             if (story.url.isNotEmpty) {
               LinkUtil.launch(
                 story.url,

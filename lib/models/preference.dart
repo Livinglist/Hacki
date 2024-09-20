@@ -114,7 +114,7 @@ final class SwipeGesturePreference extends BooleanPreference {
 
   @override
   String get subtitle =>
-      '''enable swipe gesture for switching between tabs. If enabled, long press on Story tile to trigger the action menu.''';
+      '''enable swipe gesture for switching between tabs. If enabled, long press on Story tile to trigger the action menu and double tap to open the url.''';
 }
 
 final class NotificationModePreference extends BooleanPreference {

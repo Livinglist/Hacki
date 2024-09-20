@@ -123,20 +123,41 @@ class LinkView extends StatelessWidget {
                               ),
                             ),
                           )
-                        : CachedNetworkImage(
-                            imageUrl: imageUri ?? Constants.favicon(url),
-                            fit: isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
-                            cacheKey: imageUri,
-                            errorWidget: (_, __, ___) {
-                              if (url.isEmpty) {
-                                return FadeIn(
-                                  child: Center(
-                                    child: _HackerNewsImage(
-                                      height: layoutHeight,
+                        : () {
+                            if (imageUri?.isNotEmpty ?? false) {
+                              return CachedNetworkImage(
+                                imageUrl: imageUri!,
+                                fit:
+                                    isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
+                                cacheKey: imageUri,
+                                errorWidget: (_, __, ___) {
+                                  if (url.isEmpty) {
+                                    return FadeIn(
+                                      child: Center(
+                                        child: _HackerNewsImage(
+                                          height: layoutHeight,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  return Center(
+                                    child: CachedNetworkImage(
+                                      imageUrl: Constants.favicon(url),
+                                      fit: BoxFit.scaleDown,
+                                      cacheKey: iconUri,
+                                      errorWidget: (_, __, ___) {
+                                        return const FadeIn(
+                                          child: Icon(
+                                            Icons.public,
+                                            size: Dimens.pt20,
+                                          ),
+                                        );
+                                      },
                                     ),
-                                  ),
-                                );
-                              }
+                                  );
+                                },
+                              );
+                            } else if (url.isNotEmpty) {
                               return Center(
                                 child: CachedNetworkImage(
                                   imageUrl: Constants.favicon(url),
@@ -152,8 +173,16 @@ class LinkView extends StatelessWidget {
                                   },
                                 ),
                               );
-                            },
-                          ),
+                            } else {
+                              return FadeIn(
+                                child: Center(
+                                  child: _HackerNewsImage(
+                                    height: layoutHeight,
+                                  ),
+                                ),
+                              );
+                            }
+                          }(),
                   ),
                 ),
               )
