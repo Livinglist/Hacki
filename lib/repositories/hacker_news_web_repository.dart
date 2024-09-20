@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/hacker_news_repository.dart';
 import 'package:hacki/utils/utils.dart';
@@ -18,7 +19,7 @@ import 'package:html/parser.dart';
 import 'package:html_unescape/html_unescape.dart';
 
 /// For fetching anything that cannot be fetched through Hacker News API.
-class HackerNewsWebRepository {
+class HackerNewsWebRepository with Loggable {
   HackerNewsWebRepository({
     RemoteConfigCubit? remoteConfigCubit,
     HackerNewsRepository? hackerNewsRepository,
@@ -144,6 +145,7 @@ class HackerNewsWebRepository {
               (elements.elementAt(index), subtextElements.elementAt(index)),
         );
       } on DioException catch (e) {
+        logError('error fetching stories on page $page: $e');
         if (_rateLimitedStatusCode.contains(e.response?.statusCode)) {
           throw RateLimitedWithFallbackException(e.response?.statusCode);
         }
@@ -280,6 +282,7 @@ class HackerNewsWebRepository {
         return parsedIds;
       } on DioException catch (e) {
         if (_rateLimitedStatusCode.contains(e.response?.statusCode)) {
+          logError('error fetching favorites on page $page: $e');
           throw RateLimitedException(e.response?.statusCode);
         }
         throw GenericException();
@@ -358,6 +361,7 @@ class HackerNewsWebRepository {
         return elements;
       } on DioException catch (e) {
         if (_rateLimitedStatusCode.contains(e.response?.statusCode)) {
+          logError('error fetching comments on page $page: $e');
           throw RateLimitedWithFallbackException(e.response?.statusCode);
         }
         throw GenericException();
@@ -503,4 +507,7 @@ class HackerNewsWebRepository {
         )
         .trim();
   }
+
+  @override
+  String get logIdentifier => 'HackerNewsWebRepository';
 }
