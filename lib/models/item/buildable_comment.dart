@@ -41,6 +41,7 @@ class BuildableComment extends Comment with Buildable {
   BuildableComment copyWith({
     int? level,
     bool? hidden,
+    int? kid,
   }) {
     return BuildableComment(
       id: id,
@@ -49,7 +50,7 @@ class BuildableComment extends Comment with Buildable {
       score: score,
       by: by,
       text: text,
-      kids: kids,
+      kids: kid == null ? kids : <int>[...kids, kid],
       dead: dead,
       deleted: deleted,
       hidden: hidden ?? this.hidden,

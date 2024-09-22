@@ -7,6 +7,7 @@ class FavState extends Equatable {
     required this.status,
     required this.mergeStatus,
     required this.currentPage,
+    required this.isDisplayingStories,
   });
 
   FavState.init()
@@ -14,13 +15,15 @@ class FavState extends Equatable {
         favItems = <Item>[],
         status = Status.idle,
         mergeStatus = Status.idle,
-        currentPage = 0;
+        currentPage = 0,
+        isDisplayingStories = true;
 
   final List<int> favIds;
   final List<Item> favItems;
   final Status status;
   final Status mergeStatus;
   final int currentPage;
+  final bool isDisplayingStories;
 
   FavState copyWith({
     List<int>? favIds,
@@ -28,6 +31,7 @@ class FavState extends Equatable {
     Status? status,
     Status? mergeStatus,
     int? currentPage,
+    bool? isDisplayingStories,
   }) {
     return FavState(
       favIds: favIds ?? this.favIds,
@@ -35,6 +39,7 @@ class FavState extends Equatable {
       status: status ?? this.status,
       mergeStatus: mergeStatus ?? this.mergeStatus,
       currentPage: currentPage ?? this.currentPage,
+      isDisplayingStories: isDisplayingStories ?? this.isDisplayingStories,
     );
   }
 
@@ -45,5 +50,6 @@ class FavState extends Equatable {
         currentPage,
         favIds,
         favItems,
+        isDisplayingStories,
       ];
 }

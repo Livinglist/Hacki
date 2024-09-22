@@ -1,7 +1,5 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
@@ -130,124 +128,12 @@ class _ProfileScreenState extends State<ProfileScreen>
                   top: Dimens.pt50,
                   child: Visibility(
                     visible: pageType == PageType.fav,
-                    child: BlocConsumer<FavCubit, FavState>(
-                      listener: (BuildContext context, FavState favState) {
-                        if (favState.status == Status.success) {
-                          refreshControllerFav
-                            ..refreshCompleted()
-                            ..loadComplete();
-                        }
-                      },
-                      buildWhen: (FavState previous, FavState current) =>
-                          previous.favItems.length != current.favItems.length,
-                      builder: (BuildContext context, FavState favState) {
-                        Widget? header() => authState.isLoggedIn
-                            ? BlocSelector<FavCubit, FavState, Status>(
-                                selector: (FavState state) => state.mergeStatus,
-                                builder: (
-                                  BuildContext context,
-                                  Status status,
-                                ) {
-                                  return TextButton(
-                                    onPressed: () =>
-                                        context.read<FavCubit>().merge(
-                                              onError: (AppException e) =>
-                                                  showErrorSnackBar(e.message),
-                                              onSuccess: () => showSnackBar(
-                                                content: '''Sync completed.''',
-                                              ),
-                                            ),
-                                    child: status == Status.inProgress
-                                        ? const SizedBox(
-                                            height: Dimens.pt12,
-                                            width: Dimens.pt12,
-                                            child:
-                                                CustomCircularProgressIndicator(
-                                              strokeWidth: Dimens.pt2,
-                                            ),
-                                          )
-                                        : const Text('Sync from Hacker News'),
-                                  );
-                                },
-                              )
-                            : null;
-
-                        if (favState.favItems.isEmpty &&
-                            favState.status != Status.inProgress) {
-                          return Column(
-                            children: <Widget>[
-                              header() ?? const SizedBox.shrink(),
-                              const CenteredMessageView(
-                                content:
-                                    'Your favorite stories will show up here.'
-                                    '\nThey will be synced to your Hacker '
-                                    'News account if you are logged in.',
-                              ),
-                            ],
-                          );
-                        }
-
-                        return BlocBuilder<PreferenceCubit, PreferenceState>(
-                          buildWhen: (
-                            PreferenceState previous,
-                            PreferenceState current,
-                          ) =>
-                              previous.isComplexStoryTileEnabled !=
-                                  current.isComplexStoryTileEnabled ||
-                              previous.isMetadataEnabled !=
-                                  current.isMetadataEnabled ||
-                              previous.isUrlEnabled != current.isUrlEnabled,
-                          builder: (
-                            BuildContext context,
-                            PreferenceState prefState,
-                          ) {
-                            return ItemsListView<Item>(
-                              showWebPreviewOnStoryTile:
-                                  prefState.isComplexStoryTileEnabled,
-                              showMetadataOnStoryTile:
-                                  prefState.isMetadataEnabled,
-                              showFavicon: prefState.isFaviconEnabled,
-                              showUrl: prefState.isUrlEnabled,
-                              useSimpleTileForStory: true,
-                              refreshController: refreshControllerFav,
-                              items: favState.favItems,
-                              onRefresh: () {
-                                HapticFeedbackUtil.light();
-                                context.read<FavCubit>().refresh();
-                              },
-                              onLoadMore: () {
-                                context.read<FavCubit>().loadMore();
-                              },
-                              onTap: (Item item) => goToItemScreen(
-                                args: ItemScreenArgs(item: item),
-                              ),
-                              header: header(),
-                              itemBuilder: (Widget child, Item item) {
-                                return Slidable(
-                                  dragStartBehavior: DragStartBehavior.start,
-                                  startActionPane: ActionPane(
-                                    motion: const BehindMotion(),
-                                    children: <Widget>[
-                                      SlidableAction(
-                                        onPressed: (_) {
-                                          HapticFeedbackUtil.light();
-                                          context
-                                              .read<FavCubit>()
-                                              .removeFav(item.id);
-                                        },
-                                        backgroundColor: Palette.red,
-                                        foregroundColor: Palette.white,
-                                        icon: Icons.close,
-                                      ),
-                                    ],
-                                  ),
-                                  child: child,
-                                );
-                              },
-                            );
-                          },
-                        );
-                      },
+                    child: FavoritesScreen(
+                      refreshController: refreshControllerFav,
+                      authState: authState,
+                      onItemTap: (Item item) => goToItemScreen(
+                        args: ItemScreenArgs(item: item),
+                      ),
                     ),
                   ),
                 ),

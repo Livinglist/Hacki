@@ -75,6 +75,13 @@ class SembastRepository with Loggable {
     return store.record(comment.id).put(db, comment.toJson());
   }
 
+  Future<Map<String, Object?>> cacheItem(Item item) async {
+    final Database db = _database ?? await initializeDatabase();
+    final StoreRef<int, Map<String, Object?>> store =
+        intMapStoreFactory.store(_cachedCommentsKey);
+    return store.record(item.id).put(db, item.toJson());
+  }
+
   Future<Comment?> getCachedComment({required int id}) async {
     final Database db = _database ?? await initializeDatabase();
     final StoreRef<int, Map<String, Object?>> store =
@@ -84,6 +91,26 @@ class SembastRepository with Loggable {
     if (snapshot != null) {
       final Comment comment = Comment.fromJson(snapshot.value);
       return comment;
+    } else {
+      return null;
+    }
+  }
+
+  Future<Item?> getCachedItem({required int id}) async {
+    final Database db = _database ?? await initializeDatabase();
+    final StoreRef<int, Map<String, Object?>> store =
+        intMapStoreFactory.store(_cachedCommentsKey);
+    final RecordSnapshot<int, Map<String, Object?>>? snapshot =
+        await store.record(id).getSnapshot(db);
+    if (snapshot != null) {
+      final bool isStory = snapshot['type'] == 'story';
+      if (isStory) {
+        final Story story = Story.fromJson(snapshot.value);
+        return story;
+      } else {
+        final Comment comment = Comment.fromJson(snapshot.value);
+        return comment;
+      }
     } else {
       return null;
     }
