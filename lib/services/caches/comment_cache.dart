@@ -6,6 +6,9 @@ class CommentCache {
   void cacheComment(Comment comment) {
     _comments[comment.id] = comment;
 
+    /// Comments fetched from `HackerNewsWebRepository` doesn't have populated
+    /// `kids` field, this is why we need to update that of the parent
+    /// comment here.
     final int parentId = comment.parent;
     final Comment? parent = _comments[parentId];
     if (parent == null || parent.kids.contains(comment.id)) return;
