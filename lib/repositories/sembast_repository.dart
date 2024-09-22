@@ -67,7 +67,7 @@ class SembastRepository with Loggable {
     return db;
   }
 
-  //#region Cached comments for time machine feature.
+  //#region Cached comments for time machine feature and favorites screen.
   Future<Map<String, Object?>> cacheComment(Comment comment) async {
     final Database db = _database ?? await initializeDatabase();
     final StoreRef<int, Map<String, Object?>> store =
@@ -89,7 +89,34 @@ class SembastRepository with Loggable {
     }
   }
 
-  Future<int> deleteAllCachedComments() async {
+  Future<Map<String, Object?>> cacheItem(Item item) async {
+    final Database db = _database ?? await initializeDatabase();
+    final StoreRef<int, Map<String, Object?>> store =
+        intMapStoreFactory.store(_cachedCommentsKey);
+    return store.record(item.id).put(db, item.toJson());
+  }
+
+  Future<Item?> getCachedItem({required int id}) async {
+    final Database db = _database ?? await initializeDatabase();
+    final StoreRef<int, Map<String, Object?>> store =
+        intMapStoreFactory.store(_cachedCommentsKey);
+    final RecordSnapshot<int, Map<String, Object?>>? snapshot =
+        await store.record(id).getSnapshot(db);
+    if (snapshot != null) {
+      final bool isStory = snapshot['type'] == 'story';
+      if (isStory) {
+        final Story story = Story.fromJson(snapshot.value);
+        return story;
+      } else {
+        final Comment comment = Comment.fromJson(snapshot.value);
+        return comment;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  Future<int> deleteAllCachedItems() async {
     final Database db = _database ?? await initializeDatabase();
     final StoreRef<int, Map<String, Object?>> store =
         intMapStoreFactory.store(_cachedCommentsKey);

@@ -606,7 +606,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                 context.pop();
                 locator
                     .get<SembastRepository>()
-                    .deleteAllCachedComments()
+                    .deleteAllCachedItems()
                     .whenComplete(
                       locator.get<OfflineRepository>().deleteAll,
                     )

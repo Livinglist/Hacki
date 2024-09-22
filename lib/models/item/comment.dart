@@ -36,6 +36,7 @@ class Comment extends Item {
   Comment copyWith({
     int? level,
     bool? hidden,
+    int? kid,
   }) {
     return Comment(
       id: id,
@@ -44,7 +45,7 @@ class Comment extends Item {
       score: score,
       by: by,
       text: text,
-      kids: kids,
+      kids: kid == null ? kids : <int>[...kids, kid],
       dead: dead,
       deleted: deleted,
       hidden: hidden ?? this.hidden,

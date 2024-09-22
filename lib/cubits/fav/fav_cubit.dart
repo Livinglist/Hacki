@@ -19,6 +19,7 @@ class FavCubit extends Cubit<FavState> with Loggable {
     PreferenceRepository? preferenceRepository,
     HackerNewsRepository? hackerNewsRepository,
     HackerNewsWebRepository? hackerNewsWebRepository,
+    SembastRepository? sembastRepository,
   })  : _authBloc = authBloc,
         _authRepository = authRepository ?? locator.get<AuthRepository>(),
         _preferenceRepository =
@@ -27,6 +28,8 @@ class FavCubit extends Cubit<FavState> with Loggable {
             hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
         _hackerNewsWebRepository =
             hackerNewsWebRepository ?? locator.get<HackerNewsWebRepository>(),
+        _sembastRepository =
+            sembastRepository ?? locator.get<SembastRepository>(),
         super(FavState.init()) {
     init();
   }
@@ -36,8 +39,9 @@ class FavCubit extends Cubit<FavState> with Loggable {
   final PreferenceRepository _preferenceRepository;
   final HackerNewsRepository _hackerNewsRepository;
   final HackerNewsWebRepository _hackerNewsWebRepository;
+  final SembastRepository _sembastRepository;
   late final StreamSubscription<String>? _usernameSubscription;
-  static const int _pageSize = 20;
+  static const int _pageSize = 100;
 
   Future<void> init() async {
     _usernameSubscription = _authBloc.stream
@@ -55,6 +59,8 @@ class FavCubit extends Cubit<FavState> with Loggable {
         _hackerNewsRepository
             .fetchItemsStream(
               ids: favIds.sublist(0, _pageSize.clamp(0, favIds.length)),
+              getFromCache: (int id) =>
+                  _sembastRepository.getCachedItem(id: id),
             )
             .listen(_onItemLoaded)
             .onDone(() {
@@ -97,7 +103,10 @@ class FavCubit extends Cubit<FavState> with Loggable {
   void removeFav(int id) {
     _preferenceRepository
       ..removeFav(username: username, id: id)
-      ..removeFav(username: '', id: id);
+      ..removeFav(
+        username: '',
+        id: id,
+      );
 
     emit(
       state.copyWith(
@@ -200,12 +209,16 @@ class FavCubit extends Cubit<FavState> with Loggable {
   }
 
   void _onItemLoaded(Item item) {
+    _sembastRepository.cacheItem(item);
     emit(
       state.copyWith(
         favItems: List<Item>.from(state.favItems)..add(item),
       ),
     );
   }
+
+  void switchTab() =>
+      emit(state.copyWith(isDisplayingStories: !state.isDisplayingStories));
 
   @override
   Future<void> close() {

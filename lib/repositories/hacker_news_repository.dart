@@ -302,24 +302,32 @@ class HackerNewsRepository with Loggable {
 
   /// Fetch a list of [Item] based on ids and return results
   /// using a stream.
-  Stream<Item> fetchItemsStream({required List<int> ids}) async* {
+  Stream<Item> fetchItemsStream({
+    required List<int> ids,
+    Future<Item?> Function(int)? getFromCache,
+  }) async* {
     for (final int id in ids) {
-      final Item? item =
-          await _fetchItemJson(id).then((Map<String, dynamic>? json) async {
-        if (json == null) return null;
+      final Item? cachedItem = await getFromCache?.call(id);
+      if (cachedItem != null) {
+        yield cachedItem;
+      } else {
+        final Item? item =
+            await _fetchItemJson(id).then((Map<String, dynamic>? json) async {
+          if (json == null) return null;
 
-        if (json.isStory) {
-          final Story story = Story.fromJson(json);
-          return story;
-        } else if (json.isComment) {
-          final Comment comment = Comment.fromJson(json);
-          return comment;
+          if (json.isStory) {
+            final Story story = Story.fromJson(json);
+            return story;
+          } else if (json.isComment) {
+            final Comment comment = Comment.fromJson(json);
+            return comment;
+          }
+          return null;
+        });
+
+        if (item != null) {
+          yield item;
         }
-        return null;
-      });
-
-      if (item != null) {
-        yield item;
       }
     }
   }
