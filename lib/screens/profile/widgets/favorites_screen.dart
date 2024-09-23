@@ -103,6 +103,27 @@ class FavoritesScreen extends StatelessWidget {
               ),
             ],
           );
+        } else {
+          if (favState.isDisplayingStories && favState.favStories.isEmpty) {
+            return Column(
+              children: <Widget>[
+                header() ?? const SizedBox.shrink(),
+                const CenteredMessageView(
+                  content: 'No favorite story.',
+                ),
+              ],
+            );
+          } else if (!favState.isDisplayingStories &&
+              favState.favComments.isEmpty) {
+            return Column(
+              children: <Widget>[
+                header() ?? const SizedBox.shrink(),
+                const CenteredMessageView(
+                  content: 'No favorite comment.',
+                ),
+              ],
+            );
+          }
         }
 
         return BlocBuilder<PreferenceCubit, PreferenceState>(
@@ -126,10 +147,8 @@ class FavoritesScreen extends StatelessWidget {
               useSimpleTileForStory: true,
               refreshController: refreshController,
               items: favState.isDisplayingStories
-                  ? favState.favItems.whereType<Story>().toList(growable: false)
-                  : favState.favItems
-                      .whereType<Comment>()
-                      .toList(growable: false),
+                  ? favState.favStories
+                  : favState.favComments,
               onRefresh: () {
                 HapticFeedbackUtil.light();
                 context.read<FavCubit>().refresh();
