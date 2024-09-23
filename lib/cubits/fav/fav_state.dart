@@ -25,6 +25,12 @@ class FavState extends Equatable {
   final int currentPage;
   final bool isDisplayingStories;
 
+  List<Comment> get favComments =>
+      favItems.whereType<Comment>().toList(growable: false);
+
+  List<Story> get favStories =>
+      favItems.whereType<Story>().toList(growable: false);
+
   FavState copyWith({
     List<int>? favIds,
     List<Item>? favItems,
