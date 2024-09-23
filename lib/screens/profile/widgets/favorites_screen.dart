@@ -38,60 +38,59 @@ class FavoritesScreen extends StatelessWidget {
           previous.favItems.length != current.favItems.length ||
           previous.isDisplayingStories != current.isDisplayingStories,
       builder: (BuildContext context, FavState favState) {
-        Widget? header() => authState.isLoggedIn
-            ? Column(
-                children: <Widget>[
-                  BlocSelector<FavCubit, FavState, Status>(
-                    selector: (FavState state) => state.mergeStatus,
-                    builder: (
-                      BuildContext context,
-                      Status status,
+        Widget? header() => Column(
+          children: <Widget>[
+            if (authState.isLoggedIn)
+              BlocSelector<FavCubit, FavState, Status>(
+                selector: (FavState state) => state.mergeStatus,
+                builder: (
+                    BuildContext context,
+                    Status status,
                     ) {
-                      return TextButton(
-                        onPressed: () => context.read<FavCubit>().merge(
-                              onError: (AppException e) =>
-                                  context.showErrorSnackBar(e.message),
-                              onSuccess: () => context.showSnackBar(
-                                content: '''Sync completed.''',
-                              ),
-                            ),
-                        child: status == Status.inProgress
-                            ? const SizedBox(
-                                height: Dimens.pt12,
-                                width: Dimens.pt12,
-                                child: CustomCircularProgressIndicator(
-                                  strokeWidth: Dimens.pt2,
-                                ),
-                              )
-                            : const Text(
-                                'Sync from Hacker News',
-                              ),
-                      );
-                    },
-                  ),
-                  Row(
-                    children: <Widget>[
-                      const SizedBox(
-                        width: Dimens.pt12,
+                  return TextButton(
+                    onPressed: () => context.read<FavCubit>().merge(
+                      onError: (AppException e) =>
+                          context.showErrorSnackBar(e.message),
+                      onSuccess: () => context.showSnackBar(
+                        content: '''Sync completed.''',
                       ),
-                      CustomChip(
-                        selected: favState.isDisplayingStories,
-                        label: 'Story',
-                        onSelected: (_) => context.read<FavCubit>().switchTab(),
+                    ),
+                    child: status == Status.inProgress
+                        ? const SizedBox(
+                      height: Dimens.pt12,
+                      width: Dimens.pt12,
+                      child: CustomCircularProgressIndicator(
+                        strokeWidth: Dimens.pt2,
                       ),
-                      const SizedBox(
-                        width: Dimens.pt12,
-                      ),
-                      CustomChip(
-                        selected: !favState.isDisplayingStories,
-                        label: 'Comment',
-                        onSelected: (_) => context.read<FavCubit>().switchTab(),
-                      ),
-                    ],
-                  ),
-                ],
-              )
-            : null;
+                    )
+                        : const Text(
+                      'Sync from Hacker News',
+                    ),
+                  );
+                },
+              ),
+            Row(
+              children: <Widget>[
+                const SizedBox(
+                  width: Dimens.pt12,
+                ),
+                CustomChip(
+                  selected: favState.isDisplayingStories,
+                  label: 'Story',
+                  onSelected: (_) => context.read<FavCubit>().switchTab(),
+                ),
+                const SizedBox(
+                  width: Dimens.pt12,
+                ),
+                CustomChip(
+                  selected: !favState.isDisplayingStories,
+                  label: 'Comment',
+                  onSelected: (_) => context.read<FavCubit>().switchTab(),
+                ),
+              ],
+            ),
+          ],
+        );
 
         if (favState.favItems.isEmpty && favState.status != Status.inProgress) {
           return Column(
