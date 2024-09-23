@@ -10,6 +10,7 @@ import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 
 /// [SembastRepository] is for storing stories and comments for faster loading.
+/// This is currently used by time machine, notification and favorites screen.
 ///
 /// Sembast [Database] is used as its database and is being stored in the
 /// documents directory assigned by host system which you can retrieve
