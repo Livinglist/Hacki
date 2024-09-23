@@ -38,9 +38,9 @@ class FavoritesScreen extends StatelessWidget {
           previous.favItems.length != current.favItems.length ||
           previous.isDisplayingStories != current.isDisplayingStories,
       builder: (BuildContext context, FavState favState) {
-        Widget? header() => authState.isLoggedIn
-            ? Column(
-                children: <Widget>[
+        Widget? header() => Column(
+              children: <Widget>[
+                if (authState.isLoggedIn)
                   BlocSelector<FavCubit, FavState, Status>(
                     selector: (FavState state) => state.mergeStatus,
                     builder: (
@@ -69,29 +69,28 @@ class FavoritesScreen extends StatelessWidget {
                       );
                     },
                   ),
-                  Row(
-                    children: <Widget>[
-                      const SizedBox(
-                        width: Dimens.pt12,
-                      ),
-                      CustomChip(
-                        selected: favState.isDisplayingStories,
-                        label: 'Story',
-                        onSelected: (_) => context.read<FavCubit>().switchTab(),
-                      ),
-                      const SizedBox(
-                        width: Dimens.pt12,
-                      ),
-                      CustomChip(
-                        selected: !favState.isDisplayingStories,
-                        label: 'Comment',
-                        onSelected: (_) => context.read<FavCubit>().switchTab(),
-                      ),
-                    ],
-                  ),
-                ],
-              )
-            : null;
+                Row(
+                  children: <Widget>[
+                    const SizedBox(
+                      width: Dimens.pt12,
+                    ),
+                    CustomChip(
+                      selected: favState.isDisplayingStories,
+                      label: 'Story',
+                      onSelected: (_) => context.read<FavCubit>().switchTab(),
+                    ),
+                    const SizedBox(
+                      width: Dimens.pt12,
+                    ),
+                    CustomChip(
+                      selected: !favState.isDisplayingStories,
+                      label: 'Comment',
+                      onSelected: (_) => context.read<FavCubit>().switchTab(),
+                    ),
+                  ],
+                ),
+              ],
+            );
 
         if (favState.favItems.isEmpty && favState.status != Status.inProgress) {
           return Column(

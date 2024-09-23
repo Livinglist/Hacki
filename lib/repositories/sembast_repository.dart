@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/services/services.dart';
@@ -10,6 +11,8 @@ import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 
 /// [SembastRepository] is for storing stories and comments for faster loading.
+/// This is currently used by [TimeMachineCubit], [NotificationCubit] and
+/// [FavCubit].
 ///
 /// Sembast [Database] is used as its database and is being stored in the
 /// documents directory assigned by host system which you can retrieve
