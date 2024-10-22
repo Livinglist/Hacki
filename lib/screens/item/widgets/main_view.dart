@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -48,7 +49,7 @@ class MainView extends StatelessWidget {
         Positioned.fill(
           child: BlocBuilder<CommentsCubit, CommentsState>(
             buildWhen: (CommentsState previous, CommentsState current) =>
-                previous.comments.length != current.comments.length ||
+            previous.comments.length != current.comments.length ||
                 previous.status != current.status,
             builder: (BuildContext context, CommentsState state) {
               return RefreshIndicator(
@@ -57,13 +58,13 @@ class MainView extends StatelessWidget {
                   HapticFeedbackUtil.light();
 
                   if (context.read<StoriesBloc>().state.isOfflineReading ==
-                          false &&
+                      false &&
                       state.onlyShowTargetComment == false) {
                     unawaited(
                       context.read<CommentsCubit>().refresh(
-                            onError: (AppException e) =>
-                                context.showErrorSnackBar(e.message),
-                          ),
+                        onError: (AppException e) =>
+                            context.showErrorSnackBar(e.message),
+                      ),
                     );
 
                     if (state.item.isPoll) {
@@ -74,9 +75,9 @@ class MainView extends StatelessWidget {
                 child: ScrollablePositionedList.builder(
                   physics: const AlwaysScrollableScrollPhysics(),
                   itemScrollController:
-                      context.read<CommentsCubit>().itemScrollController,
+                  context.read<CommentsCubit>().itemScrollController,
                   itemPositionsListener:
-                      context.read<CommentsCubit>().itemPositionsListener,
+                  context.read<CommentsCubit>().itemPositionsListener,
                   itemCount: state.comments.length + 2,
                   padding: EdgeInsets.only(top: topPadding),
                   scrollOffsetListener: scrollOffsetListener,
@@ -93,7 +94,7 @@ class MainView extends StatelessWidget {
                       );
                     } else if (index == state.comments.length + 1) {
                       if ((state.status == CommentsStatus.allLoaded &&
-                              state.comments.isNotEmpty) ||
+                          state.comments.isNotEmpty) ||
                           state.onlyShowTargetComment) {
                         return SizedBox(
                           height: _trailingBoxHeight,
@@ -158,7 +159,7 @@ class MainView extends StatelessWidget {
             right: Dimens.zero,
             child: BlocBuilder<CommentsCubit, CommentsState>(
               buildWhen: (CommentsState prev, CommentsState current) =>
-                  prev.status != current.status,
+              prev.status != current.status,
               builder: (BuildContext context, CommentsState state) {
                 return AnimatedOpacity(
                   opacity: state.status == CommentsStatus.inProgress
@@ -196,12 +197,124 @@ class _ParentItemSection extends StatelessWidget {
   final void Function(Item item, Rect? rect) onMoreTapped;
   final ValueChanged<Comment> onRightMoreTapped;
 
+  bool GithubApiExists(String originalLink) {
+    final RegExp githubUrlPattern =
+    RegExp(r'^https://github\.com/[\w\-]+/[\w\-]+$');
+    if (githubUrlPattern.hasMatch(originalLink)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  Future<Widget> fullGithub(String link) async {
+    if (GithubApiExists(link)) {
+      final List<String> value = await GithubDetails(link);
+      if (value[4] == 'null') value[4] = 'No License';
+      return Padding(
+        padding: const EdgeInsets.all(10),
+        child: Container(
+          height: 210,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.white, width: 2),
+            borderRadius: const BorderRadius.all(Radius.circular(25)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Text(
+                  value[0],
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: 16,),
+                ),
+                Text(value[1]),
+                Row(
+                  children: <Widget>[
+                    const Icon(Icons.star_border_sharp),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Text('${value[2]} Stars'),
+                    const Spacer(),
+                    const Icon(Icons.file_copy_sharp),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Text(value[4]),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    const Icon(Icons.remove_red_eye_sharp),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Text('${value[5]} watching'),
+                    const Spacer(),
+                    const Icon(Icons.code),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Text(value[3]),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    const Icon(Icons.fork_right_sharp),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Text('${value[6]} forks'),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    } else {
+      return Container();
+    }
+  }
+  Future<List<String>> GithubDetails(String originalLink) async {
+    final Dio dio = Dio();
+    final String newLink = originalLink.replaceFirst(
+      'https://github.com/',
+      'https://api.github.com/repos/',
+    );
+    Response<dynamic> response;
+    const String token =
+        'Your GITHUB ACCESS TOKEN ADMIN'; //GITHUB ACCESS TOKEN
+    response = await dio.get(newLink,
+        options: Options(headers: {
+          'Authorization': 'Bearer $token'
+        })); //options: Options(headers: {'Authorization': 'Bearer $token'}
+    final String forks = response.data['forks_count'].toString();
+    final String full_name = response.data['full_name'].toString();
+    final String stars = response.data['stargazers_count'].toString();
+    final String language = response.data['language'].toString();
+    final String license = response.data['license']['name'].toString();
+    final String watching = response.data['subscribers_count'].toString();
+    final String description = response.data['description'].toString();
+    return <String>[
+      full_name,
+      description,
+      stars,
+      language,
+      license,
+      watching,
+      forks,
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final Item item = state.item;
     return Semantics(
       label:
-          '''Posted by ${item.by} ${item.timeAgo}, ${item.title}. ${item.text}''',
+      '''Posted by ${item.by} ${item.timeAgo}, ${item.title}. ${item.text}''',
       child: Column(
         children: <Widget>[
           if (!splitViewEnabled)
@@ -270,85 +383,105 @@ class _ParentItemSection extends StatelessWidget {
                   ),
                   BlocBuilder<PreferenceCubit, PreferenceState>(
                     buildWhen: (
-                      PreferenceState previous,
-                      PreferenceState current,
-                    ) =>
-                        previous.fontSize != current.fontSize,
+                        PreferenceState previous,
+                        PreferenceState current,
+                        ) =>
+                    previous.fontSize != current.fontSize,
                     builder: (
-                      BuildContext context,
-                      PreferenceState prefState,
-                    ) {
+                        BuildContext context,
+                        PreferenceState prefState,
+                        ) {
                       final double fontSize = prefState.fontSize.fontSize;
                       return Column(
                         children: <Widget>[
                           if (item is Story)
-                            InkWell(
-                              onTap: () => LinkUtil.launch(
-                                item.url,
-                                context,
-                                useReader: context
-                                    .read<PreferenceCubit>()
-                                    .state
-                                    .isReaderEnabled,
-                                offlineReading: context
-                                    .read<StoriesBloc>()
-                                    .state
-                                    .isOfflineReading,
-                              ),
-                              onLongPress: () {
-                                if (item.url.isNotEmpty) {
-                                  Clipboard.setData(
-                                    ClipboardData(text: item.url),
-                                  ).whenComplete(() {
-                                    HapticFeedbackUtil.selection();
-                                    if (context.mounted) {
-                                      context.showSnackBar(
-                                        content: 'Link copied.',
-                                      );
+                            Column(
+                              children: <Widget>[
+                                InkWell(
+                                  onTap: () => LinkUtil.launch(
+                                    item.url,
+                                    context,
+                                    useReader: context
+                                        .read<PreferenceCubit>()
+                                        .state
+                                        .isReaderEnabled,
+                                    offlineReading: context
+                                        .read<StoriesBloc>()
+                                        .state
+                                        .isOfflineReading,
+                                  ),
+                                  onLongPress: () {
+                                    if (item.url.isNotEmpty) {
+                                      Clipboard.setData(
+                                        ClipboardData(text: item.url),
+                                      ).whenComplete(() {
+                                        HapticFeedbackUtil.selection();
+                                        if (context.mounted) {
+                                          context.showSnackBar(
+                                            content: 'Link copied.',
+                                          );
+                                        }
+                                      });
                                     }
-                                  });
-                                }
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                  left: Dimens.pt6,
-                                  right: Dimens.pt6,
-                                  bottom: Dimens.pt12,
-                                  top: Dimens.pt6,
-                                ),
-                                child: Text.rich(
-                                  TextSpan(
-                                    children: <TextSpan>[
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                      left: Dimens.pt6,
+                                      right: Dimens.pt6,
+                                      bottom: Dimens.pt12,
+                                      top: Dimens.pt6,
+                                    ),
+                                    child: Text.rich(
                                       TextSpan(
-                                        semanticsLabel: item.title,
-                                        text: item.title,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: fontSize,
-                                          color: item.url.isNotEmpty
-                                              ? Theme.of(context)
+                                        children: <TextSpan>[
+                                          TextSpan(
+                                            semanticsLabel: item.title,
+                                            text: item.title,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: fontSize,
+                                              color: item.url.isNotEmpty
+                                                  ? Theme.of(context)
                                                   .colorScheme
                                                   .primary
-                                              : null,
-                                        ),
-                                      ),
-                                      if (item.url.isNotEmpty)
-                                        TextSpan(
-                                          text: ''' (${item.readableUrl})''',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: fontSize - 4,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
+                                                  : null,
+                                            ),
                                           ),
-                                        ),
-                                    ],
+                                          if (item.url.isNotEmpty)
+                                            TextSpan(
+                                              text:
+                                              ''' (${item.readableUrl})''',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: fontSize - 4,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      textScaler:
+                                      MediaQuery.of(context).textScaler,
+                                    ),
                                   ),
-                                  textAlign: TextAlign.center,
-                                  textScaler: MediaQuery.of(context).textScaler,
                                 ),
-                              ),
+                                FutureBuilder<Widget>(
+                                  future: fullGithub(item
+                                      .url,), // The future you want to resolve
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<Widget> snapshot,) {
+                                    if (snapshot.hasError) {
+                                      return const Text(
+                                          'Error: Github Details Could Not be Resolved');
+                                    } else {
+                                      return snapshot.data ??
+                                          Container();
+                                    }
+                                  },
+                                ),
+                              ],
                             )
                           else
                             const SizedBox(
@@ -365,7 +498,7 @@ class _ParentItemSection extends StatelessWidget {
                                   child: ItemText(
                                     item: item,
                                     textScaler:
-                                        MediaQuery.of(context).textScaler,
+                                    MediaQuery.of(context).textScaler,
                                     selectable: true,
                                   ),
                                 ),
@@ -378,7 +511,7 @@ class _ParentItemSection extends StatelessWidget {
                   if (item is Story && item.isPoll)
                     BlocProvider<PollCubit>(
                       create: (BuildContext context) =>
-                          PollCubit(story: item)..init(),
+                      PollCubit(story: item)..init(),
                       child: const PollView(),
                     ),
                 ],
@@ -422,32 +555,32 @@ class _ParentItemSection extends StatelessWidget {
                     ),
                     BlocSelector<CommentsCubit, CommentsState, CommentsStatus>(
                       selector: (CommentsState state) =>
-                          state.fetchParentStatus,
+                      state.fetchParentStatus,
                       builder: (BuildContext context, CommentsStatus status) {
                         return TextButton(
                           onPressed:
-                              context.read<CommentsCubit>().loadParentThread,
+                          context.read<CommentsCubit>().loadParentThread,
                           child: status == CommentsStatus.inProgress
                               ? const SizedBox(
-                                  height: Dimens.pt12,
-                                  width: Dimens.pt12,
-                                  child: CustomCircularProgressIndicator(
-                                    strokeWidth: Dimens.pt2,
-                                  ),
-                                )
+                            height: Dimens.pt12,
+                            width: Dimens.pt12,
+                            child: CustomCircularProgressIndicator(
+                              strokeWidth: Dimens.pt2,
+                            ),
+                          )
                               : Text(
-                                  'View Parent',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelLarge
-                                      ?.copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ),
-                                  textScaler:
-                                      MediaQuery.of(context).clampedTextScaler,
-                                ),
+                            'View Parent',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelLarge
+                                ?.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primary,
+                            ),
+                            textScaler:
+                            MediaQuery.of(context).clampedTextScaler,
+                          ),
                         );
                       },
                     ),
@@ -456,28 +589,28 @@ class _ParentItemSection extends StatelessWidget {
                       builder: (BuildContext context, CommentsStatus status) {
                         return TextButton(
                           onPressed:
-                              context.read<CommentsCubit>().loadRootThread,
+                          context.read<CommentsCubit>().loadRootThread,
                           child: status == CommentsStatus.inProgress
                               ? const SizedBox(
-                                  height: Dimens.pt12,
-                                  width: Dimens.pt12,
-                                  child: CustomCircularProgressIndicator(
-                                    strokeWidth: Dimens.pt2,
-                                  ),
-                                )
+                            height: Dimens.pt12,
+                            width: Dimens.pt12,
+                            child: CustomCircularProgressIndicator(
+                              strokeWidth: Dimens.pt2,
+                            ),
+                          )
                               : Text(
-                                  'View Root',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelLarge
-                                      ?.copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ),
-                                  textScaler:
-                                      MediaQuery.of(context).clampedTextScaler,
-                                ),
+                            'View Root',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelLarge
+                                ?.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primary,
+                            ),
+                            textScaler:
+                            MediaQuery.of(context).clampedTextScaler,
+                          ),
                         );
                       },
                     ),
