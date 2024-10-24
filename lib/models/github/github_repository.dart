@@ -32,7 +32,7 @@ class GithubRepository extends Equatable {
 
   factory GithubRepository.fromJson(Map<String, dynamic> json) {
     return GithubRepository(
-      fullName: json['full_name']?.toString() ?? '',
+      fullName: json['full_name'] as String? ?? '',
       description: json['description']?.toString() ?? '',
       stars: json['stargazers_count'] as int? ?? 0,
       language: json['language']?.toString() ?? '',
