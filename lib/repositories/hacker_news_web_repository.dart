@@ -401,7 +401,8 @@ class HackerNewsWebRepository with Loggable {
         /// Get comment age.
         final Element? cmtAgeElement =
             element.querySelector(_commentAgeSelector);
-        final String? ageString = cmtAgeElement?.attributes['title'];
+        final String? ageString =
+            cmtAgeElement?.attributes['title']?.split(' ').firstOrNull;
 
         final int? timestamp = ageString == null
             ? null
