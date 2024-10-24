@@ -8,8 +8,10 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/cubits/github/github_cubit.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/screens/item/widgets/github_repository_card.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
@@ -196,6 +198,10 @@ class _ParentItemSection extends StatelessWidget {
   final void Function(Item item, Rect? rect) onMoreTapped;
   final ValueChanged<Comment> onRightMoreTapped;
 
+  bool _isValidGithubUrl(String url) {
+    return RegExp(r'^https://github\.com/[\w\-]+/[\w\-]+$').hasMatch(url);
+  }
+
   @override
   Widget build(BuildContext context) {
     final Item item = state.item;
@@ -279,99 +285,126 @@ class _ParentItemSection extends StatelessWidget {
                       PreferenceState prefState,
                     ) {
                       final double fontSize = prefState.fontSize.fontSize;
-                      return Column(
-                        children: <Widget>[
-                          if (item is Story)
-                            InkWell(
-                              onTap: () => LinkUtil.launch(
-                                item.url,
-                                context,
-                                useReader: context
-                                    .read<PreferenceCubit>()
-                                    .state
-                                    .isReaderEnabled,
-                                offlineReading: context
-                                    .read<StoriesBloc>()
-                                    .state
-                                    .isOfflineReading,
-                              ),
-                              onLongPress: () {
-                                if (item.url.isNotEmpty) {
-                                  Clipboard.setData(
-                                    ClipboardData(text: item.url),
-                                  ).whenComplete(() {
-                                    HapticFeedbackUtil.selection();
-                                    if (context.mounted) {
-                                      context.showSnackBar(
-                                        content: 'Link copied.',
-                                      );
-                                    }
-                                  });
-                                }
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                  left: Dimens.pt6,
-                                  right: Dimens.pt6,
-                                  bottom: Dimens.pt12,
-                                  top: Dimens.pt6,
-                                ),
-                                child: Text.rich(
-                                  TextSpan(
-                                    children: <TextSpan>[
-                                      TextSpan(
-                                        semanticsLabel: item.title,
-                                        text: item.title,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: fontSize,
-                                          color: item.url.isNotEmpty
-                                              ? Theme.of(context)
-                                                  .colorScheme
-                                                  .primary
-                                              : null,
+                      return BlocProvider<GithubCubit>(
+                        create: (BuildContext context) => GithubCubit(),
+                        child: Builder(
+                          builder: (context) {
+                            return Column(
+                              children: <Widget>[
+                                if (item is Story)
+                                  Column(
+                                    children: <Widget>[
+                                      InkWell(
+                                        onTap: () => LinkUtil.launch(
+                                          item.url,
+                                          context,
+                                          useReader: context
+                                              .read<PreferenceCubit>()
+                                              .state
+                                              .isReaderEnabled,
+                                          offlineReading: context
+                                              .read<StoriesBloc>()
+                                              .state
+                                              .isOfflineReading,
                                         ),
-                                      ),
-                                      if (item.url.isNotEmpty)
-                                        TextSpan(
-                                          text: ''' (${item.readableUrl})''',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: fontSize - 4,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
+                                        onLongPress: () {
+                                          if (item.url.isNotEmpty) {
+                                            Clipboard.setData(
+                                              ClipboardData(text: item.url),
+                                            ).whenComplete(() {
+                                              HapticFeedbackUtil.selection();
+                                              if (context.mounted) {
+                                                context.showSnackBar(
+                                                  content: 'Link copied.',
+                                                );
+                                              }
+                                            });
+                                          }
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                            left: Dimens.pt6,
+                                            right: Dimens.pt6,
+                                            bottom: Dimens.pt12,
+                                            top: Dimens.pt6,
+                                          ),
+                                          child: Text.rich(
+                                            TextSpan(
+                                              children: <TextSpan>[
+                                                TextSpan(
+                                                  semanticsLabel: item.title,
+                                                  text: item.title,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: fontSize,
+                                                    color: item.url.isNotEmpty
+                                                        ? Theme.of(context)
+                                                            .colorScheme
+                                                            .primary
+                                                        : null,
+                                                  ),
+                                                ),
+                                                if (item.url.isNotEmpty)
+                                                  TextSpan(
+                                                    text:
+                                                        ''' (${item.readableUrl})''',
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: fontSize - 4,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
+                                                    ),
+                                                  ),
+                                              ],
+                                            ),
+                                            textAlign: TextAlign.center,
+                                            textScaler: MediaQuery.of(context)
+                                                .textScaler,
                                           ),
                                         ),
+                                      ),
+                                      if (_isValidGithubUrl(
+                                          item.url)) ...<Widget>[
+                                        Builder(
+                                          builder: (context) {
+                                            // Trigger fetch when the widget is built
+                                            context
+                                                .read<GithubCubit>()
+                                                .fetchRepository(item.url);
+                                            return GithubRepositoryCard(
+                                                url: item.url);
+                                          },
+                                        ),
+                                      ],
                                     ],
+                                  )
+                                else
+                                  const SizedBox(
+                                    height: Dimens.pt6,
                                   ),
-                                  textAlign: TextAlign.center,
-                                  textScaler: MediaQuery.of(context).textScaler,
-                                ),
-                              ),
-                            )
-                          else
-                            const SizedBox(
-                              height: Dimens.pt6,
-                            ),
-                          if (item.text.isNotEmpty)
-                            FadeIn(
-                              child: SizedBox(
-                                width: double.infinity,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: Dimens.pt8,
+                                if (item.text.isNotEmpty)
+                                  FadeIn(
+                                    child: SizedBox(
+                                      width: double.infinity,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                          left: Dimens.pt8,
+                                        ),
+                                        child: ItemText(
+                                          item: item,
+                                          textScaler:
+                                              MediaQuery.of(context).textScaler,
+                                          selectable: true,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                  child: ItemText(
-                                    item: item,
-                                    textScaler:
-                                        MediaQuery.of(context).textScaler,
-                                    selectable: true,
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ],
+                              ],
+                            );
+                          },
+                        ),
                       );
                     },
                   ),
