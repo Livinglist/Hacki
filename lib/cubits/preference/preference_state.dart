@@ -90,6 +90,7 @@ class PreferenceState extends Equatable {
   }
 
   HackerNewsDataSource get dataSource {
+    return HackerNewsDataSource.web;
     return HackerNewsDataSource.values.elementAt(
       preferences.singleWhereType<HackerNewsDataSourcePreference>().val,
     );
