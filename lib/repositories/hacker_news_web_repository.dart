@@ -175,7 +175,8 @@ class HackerNewsWebRepository with Loggable {
             subtextElement.querySelector(_ageSelector) ??
                 subtextElement.querySelector('.age');
 
-        final String? dateStr = postDateElement?.attributes['title'];
+        final String? dateStr =
+            postDateElement?.attributes['title']?.split(' ').firstOrNull;
         final int? timestamp = dateStr == null
             ? null
             : DateTime.parse(dateStr)

@@ -1,6 +1,6 @@
 name: hacki
 description: A Hacker News reader.
-version: 2.9.6+154
+version: 2.9.7+155
 publish_to: none
 
 environment:
@@ -32,7 +32,7 @@ dependencies:
   flutter_email_sender: ^6.0.3
   flutter_fadein: ^2.0.0
   flutter_feather_icons: 2.0.0+1
-  flutter_inappwebview: ^6.0.0
+  flutter_inappwebview: ^6.1.5
   flutter_local_notifications: ^17.1.2
   flutter_material_color_picker: ^1.2.0
   flutter_native_splash: ^2.4.1
@@ -82,6 +82,9 @@ dependencies:
   wakelock_plus: ^1.2.5
   webview_flutter: ^4.8.0
   workmanager: ^0.5.1
+
+dependency_overrides:
+  web: ^1.0.0
 
 dev_dependencies:
   bloc_test: ^9.1.0
