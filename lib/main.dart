@@ -29,15 +29,6 @@ import 'package:rxdart/rxdart.dart' show BehaviorSubject;
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:workmanager/workmanager.dart';
 
-class MyHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
-  }
-}
-
 // For receiving payload event from local notifications.
 final BehaviorSubject<String?> selectNotificationSubject =
     BehaviorSubject<String?>();
@@ -53,8 +44,6 @@ void notificationReceiver(NotificationResponse details) =>
 
 Future<void> main({bool testing = false}) async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  HttpOverrides.global = MyHttpOverrides();
 
   await initializeDateFormatting(Platform.localeName);
 
