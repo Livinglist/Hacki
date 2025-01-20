@@ -117,8 +117,18 @@
 		E59F28EE283B477D00512089 /* Share Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Share Extension.entitlements"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		E5CE97012D3E528500430A81 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = E573DDF52D3E273F00831A51 /* Story Widget Extension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		E573DDFB2D3E273F00831A51 /* StoryWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = StoryWidget; sourceTree = "<group>"; };
+		E573DDFB2D3E273F00831A51 /* StoryWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (E5CE97012D3E528500430A81 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = StoryWidget; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -281,9 +291,6 @@
 				E530B1B3283B54DA004E8EB6 /* PBXTargetDependency */,
 				E573DE062D3E274000831A51 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				E573DDFB2D3E273F00831A51 /* StoryWidget */,
-			);
 			name = Runner;
 			productName = Runner;
 			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
@@ -334,6 +341,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				E573DDFB2D3E273F00831A51 /* StoryWidget */,
 			);
 			name = "Story Widget Extension";
 			packageProductDependencies = (
@@ -1096,7 +1106,6 @@
 		};
 		E573DE082D3E274000831A51 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
