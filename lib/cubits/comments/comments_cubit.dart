@@ -499,7 +499,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
               ? state.comments.elementAt(e.index - 1)
               : null,
         )
-        .whereNotNull()
+        .nonNulls
         .toList();
 
     if (onScreenComments.isEmpty && state.comments.isNotEmpty) {
@@ -557,7 +557,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
               ? state.comments.elementAt(e.index - 1)
               : null,
         )
-        .whereNotNull()
+        .nonNulls
         .toList();
 
     /// The index of first comment visible on screen.

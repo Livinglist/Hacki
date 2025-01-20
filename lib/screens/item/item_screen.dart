@@ -309,7 +309,7 @@ class _ItemScreenState extends State<ItemScreen>
                                 context: context,
                                 backgroundColor: Theme.of(context)
                                     .canvasColor
-                                    .withOpacity(0.6),
+                                    .withValues(alpha: 0.6),
                                 foregroundColor:
                                     Theme.of(context).iconTheme.color,
                                 item: widget.item,
@@ -351,7 +351,7 @@ class _ItemScreenState extends State<ItemScreen>
                     appBar: CustomAppBar(
                       context: context,
                       backgroundColor:
-                          Theme.of(context).canvasColor.withOpacity(0.6),
+                          Theme.of(context).canvasColor.withValues(alpha: 0.6),
                       foregroundColor: Theme.of(context).iconTheme.color,
                       item: widget.item,
                       onFontSizeTap: onFontSizeTapped,

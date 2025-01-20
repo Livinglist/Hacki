@@ -224,7 +224,7 @@ class CommentTile extends StatelessWidget {
                                   color: Theme.of(context)
                                       .colorScheme
                                       .primary
-                                      .withOpacity(0.8),
+                                      .withValues(alpha: 0.8),
                                 )
                               else if (comment.hidden)
                                 const CenteredText.hidden()
@@ -311,7 +311,7 @@ class CommentTile extends StatelessWidget {
               Theme.of(context).canvasColor != Palette.white ? 0.03 : 0.15;
 
           final Color commentColor = prefState.isEyeCandyEnabled
-              ? color.withOpacity(commentBackgroundColorOpacity)
+              ? color.withValues(alpha: commentBackgroundColorOpacity)
               : Palette.transparent;
           final bool isMyComment = comment.deleted == false &&
               context.read<AuthBloc>().state.username == comment.by;
@@ -322,7 +322,9 @@ class CommentTile extends StatelessWidget {
             return Container(
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                color: Theme.of(context).colorScheme.primary.withValues(
+                      alpha: 0.2,
+                    ),
               ),
               child: wrapper,
             );
@@ -349,7 +351,7 @@ class CommentTile extends StatelessWidget {
                       )
                     : null,
                 color: shouldHighlight
-                    ? primaryColor.withOpacity(0.2)
+                    ? primaryColor.withValues(alpha: 0.2)
                     : commentColor,
               ),
               child: wrapper,
@@ -387,7 +389,7 @@ class CommentTile extends StatelessWidget {
     }
 
     final double opacity = ((10 - level) / 10).clamp(0.3, 1);
-    final Color color = primaryColor.withOpacity(opacity);
+    final Color color = primaryColor.withValues(alpha: opacity);
 
     levelToBorderColors[cacheKey] = color;
     return color;

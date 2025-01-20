@@ -1033,10 +1033,10 @@ packages:
     dependency: "direct main"
     description:
       name: receive_sharing_intent
-      sha256: ec76056e4d258ad708e76d85591d933678625318e411564dcb9059048ca3a593
+      sha256: a5f662546fbbd63d990401d90e7627740a1e4e0e16a7d64a12f6623662b1bcd9
       url: "https://pub.dev"
     source: hosted
-    version: "1.8.1"
+    version: "1.5.3"
   responsive_builder:
     dependency: "direct main"
     description:

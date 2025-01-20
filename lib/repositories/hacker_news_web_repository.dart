@@ -279,7 +279,7 @@ class HackerNewsWebRepository with Loggable {
         final List<Element> elements =
             document.querySelectorAll(_aThingSelector);
         final Iterable<int> parsedIds =
-            elements.map((Element e) => int.tryParse(e.id)).whereNotNull();
+            elements.map((Element e) => int.tryParse(e.id)).nonNulls;
         return parsedIds;
       } on DioException catch (e) {
         if (_rateLimitedStatusCode.contains(e.response?.statusCode)) {
