@@ -27,7 +27,7 @@ jobs:
       - name: Set XCode version
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '15.0'
+          xcode-version: '15.3'
 
       - name: Check out from git
         uses: actions/checkout@v3
