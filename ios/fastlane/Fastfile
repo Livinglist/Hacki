@@ -34,7 +34,7 @@ platform :ios do
     # Download code signing certificates using `match` (and the `MATCH_PASSWORD` secret)
     sync_code_signing(
       type: "appstore",
-      app_identifier: [APP_IDENTIFIER, "#{APP_IDENTIFIER}.Share-Extension", "#{APP_IDENTIFIER}.Action-Extension"],
+      app_identifier: [APP_IDENTIFIER, "#{APP_IDENTIFIER}.Share-Extension", "#{APP_IDENTIFIER}.Action-Extension", "#{APP_IDENTIFIER}.Widget-Extension"],
       readonly: true
     )
 

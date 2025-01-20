@@ -297,12 +297,11 @@ packages:
   feature_discovery:
     dependency: "direct main"
     description:
-      path: "."
-      ref: bcf4ef28542acb0c98ec7dfa9d20d8fa7a0a594b
-      resolved-ref: bcf4ef28542acb0c98ec7dfa9d20d8fa7a0a594b
-      url: "https://github.com/livinglist/feature_discovery"
-    source: git
-    version: "0.14.1"
+      name: feature_discovery
+      sha256: "54c2e0c7cc229c4a7149ef21d933fa7115cf034b985926477488aa2d0619321b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.14.2"
   ffi:
     dependency: transitive
     description:
