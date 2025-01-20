@@ -17,7 +17,7 @@ struct StoryTimelineProvider: AppIntentTimelineProvider {
             text: "text",
             url: "",
             type: "story",
-            by: "Z Combinator",
+            by: "Hacki",
             score: 100,
             descendants: 24,
             time: Int(Date().timeIntervalSince1970)
