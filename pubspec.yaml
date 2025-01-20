@@ -11,14 +11,14 @@ dependencies:
   adaptive_theme: ^3.2.0
   animations: ^2.0.8
   badges: ^3.0.2
-  bloc: ^8.1.1
-  bloc_concurrency: ^0.2.5
+  bloc: ^9.0.0
+  bloc_concurrency: ^0.3.0
   cached_network_image: ^3.3.0
-  collection: ^1.17.1
+  collection: ^1.19.0
   connectivity_plus: ^6.0.3
-  device_info_plus: ^10.1.0
+  device_info_plus: ^11.2.1
   dio: ^5.7.0
-  dio_smart_retry: ^6.0.0
+  dio_smart_retry: ^7.0.1
   equatable: ^2.0.5
   fast_gbk: ^1.0.0
   feature_discovery:
@@ -27,49 +27,49 @@ dependencies:
       ref: bcf4ef28542acb0c98ec7dfa9d20d8fa7a0a594b
   flutter:
     sdk: flutter
-  flutter_bloc: ^8.1.5
+  flutter_bloc: ^9.0.0
   flutter_cache_manager: ^3.3.2
   flutter_email_sender: ^6.0.3
   flutter_fadein: ^2.0.0
   flutter_feather_icons: 2.0.0+1
   flutter_inappwebview: ^6.1.5
-  flutter_local_notifications: ^17.1.2
+  flutter_local_notifications: ^18.0.1
   flutter_material_color_picker: ^1.2.0
-  flutter_native_splash: ^2.4.1
-  flutter_secure_storage: ^9.2.2
+  flutter_native_splash: ^2.4.4
+  flutter_secure_storage: ^9.2.4
   flutter_slidable: ^3.0.0
   font_awesome_flutter: ^10.3.0
-  get_it: ^7.7.0
+  get_it: ^8.0.3
   go_router: ^14.1.4
   hive: ^2.2.3
   html: ^0.15.1
   html_unescape: ^2.0.0
   http: ^1.1.0
-  hydrated_bloc: ^9.1.5
+  hydrated_bloc: ^10.0.0
   in_app_review:
     path: components/in_app_review
-  intl: ^0.19.0
+  intl: ^0.20.1
   linkify: ^5.0.0
   logger: ^2.4.0
   memoize: ^3.0.0
   package_info_plus: ^8.0.0
-  path: ^1.8.2
-  path_provider: ^2.1.3
-  path_provider_android: ^2.2.5
-  path_provider_foundation: ^2.4.0
-  pretty_dio_logger: ^1.3.1
+  path: ^1.9.0
+  path_provider: ^2.1.5
+  path_provider_android: ^2.2.15
+  path_provider_foundation: ^2.4.1
+  pretty_dio_logger: ^1.4.0
   pull_to_refresh:
     git:
       url: https://github.com/livinglist/flutter_pulltorefresh
       ref: master
   qr_code_scanner: ^1.0.1
   qr_flutter: ^4.1.0
-  receive_sharing_intent: 1.5.4
+  receive_sharing_intent: ^1.8.1
   responsive_builder: ^0.7.0
-  rxdart: ^0.27.7
+  rxdart: ^0.28.0
   scrollable_positioned_list: ^0.3.5
   sembast: ^3.7.1
-  share_plus: ^9.0.0
+  share_plus: ^10.1.4
   shared_preferences: ^2.2.3
   shared_preferences_android: ^2.2.3
   shared_preferences_foundation: ^2.4.0
@@ -87,7 +87,7 @@ dependency_overrides:
   web: ^1.0.0
 
 dev_dependencies:
-  bloc_test: ^9.1.0
+  bloc_test: ^10.0.0
   flutter_driver:
     sdk: flutter
   flutter_test:
@@ -95,7 +95,7 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   mocktail: ^1.0.0
-  very_good_analysis: ^5.0.0
+  very_good_analysis: ^7.0.0
 
 flutter:
   uses-material-design: true
