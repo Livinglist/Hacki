@@ -44,7 +44,7 @@ jobs:
       - name: Setup ruby & Bundler
         uses: ruby/setup-ruby@v1
         with:
-          bundler-cache: true
+          bundler-cache: false
 
       # Start an ssh-agent that will provide the SSH key from the
       # SSH_PRIVATE_KEY secret to `fastlane match`
