@@ -21,10 +21,7 @@ dependencies:
   dio_smart_retry: ^7.0.1
   equatable: ^2.0.5
   fast_gbk: ^1.0.0
-  feature_discovery:
-    git:
-      url: https://github.com/livinglist/feature_discovery
-      ref: bcf4ef28542acb0c98ec7dfa9d20d8fa7a0a594b
+  feature_discovery: ^0.14.2
   flutter:
     sdk: flutter
   flutter_bloc: ^9.0.0

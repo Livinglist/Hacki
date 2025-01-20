@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -22,6 +22,11 @@
 		E530B1AD283B54DA004E8EB6 /* ActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E530B1AC283B54DA004E8EB6 /* ActionViewController.swift */; };
 		E530B1B0283B54DA004E8EB6 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E530B1AE283B54DA004E8EB6 /* MainInterface.storyboard */; };
 		E530B1B4283B54DA004E8EB6 /* Action Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = E530B1A6283B54DA004E8EB6 /* Action Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		E573DDF82D3E273F00831A51 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E573DDF72D3E273F00831A51 /* WidgetKit.framework */; };
+		E573DDFA2D3E273F00831A51 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E573DDF92D3E273F00831A51 /* SwiftUI.framework */; };
+		E573DE072D3E274000831A51 /* Story Widget Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = E573DDF62D3E273F00831A51 /* Story Widget Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		E573DE392D3E282700831A51 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = E573DE382D3E282700831A51 /* Alamofire */; };
+		E573DE3E2D3E28CD00831A51 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = E573DE3D2D3E28CD00831A51 /* SwiftSoup */; };
 		E575B6F127EBC6DB002B1508 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E575B6F027EBC6DA002B1508 /* CloudKit.framework */; };
 /* End PBXBuildFile section */
 
@@ -40,12 +45,19 @@
 			remoteGlobalIDString = E530B1A5283B54DA004E8EB6;
 			remoteInfo = "Action Extension";
 		};
+		E573DE052D3E274000831A51 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E573DDF52D3E273F00831A51;
+			remoteInfo = StoryWidgetExtension;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		9705A1C41CF9048500538489 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
@@ -60,6 +72,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				E51D52B7283B464E00FC8DD8 /* Share Extension.appex in Embed App Extensions */,
+				E573DE072D3E274000831A51 /* Story Widget Extension.appex in Embed App Extensions */,
 				E530B1B4283B54DA004E8EB6 /* Action Extension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
@@ -96,10 +109,27 @@
 		E530B1AF283B54DA004E8EB6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		E530B1B1283B54DA004E8EB6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E530B1B9283B54E4004E8EB6 /* Action Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Action Extension.entitlements"; sourceTree = "<group>"; };
+		E573DDF62D3E273F00831A51 /* Story Widget Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Story Widget Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E573DDF72D3E273F00831A51 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		E573DDF92D3E273F00831A51 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		E575B6EF27EBC6C6002B1508 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		E575B6F027EBC6DA002B1508 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		E59F28EE283B477D00512089 /* Share Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Share Extension.entitlements"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		E573DE0B2D3E274000831A51 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = E573DDF52D3E273F00831A51 /* Story Widget Extension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		E573DDFB2D3E273F00831A51 /* StoryWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (E573DE0B2D3E274000831A51 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = StoryWidget; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		97C146EB1CF9000F007C117D /* Frameworks */ = {
@@ -126,6 +156,17 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E573DDF32D3E273F00831A51 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E573DE392D3E282700831A51 /* Alamofire in Frameworks */,
+				E573DDFA2D3E273F00831A51 /* SwiftUI.framework in Frameworks */,
+				E573DDF82D3E273F00831A51 /* WidgetKit.framework in Frameworks */,
+				E573DE3E2D3E28CD00831A51 /* SwiftSoup in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -147,6 +188,7 @@
 				97C146F01CF9000F007C117D /* Runner */,
 				E51D52AE283B464E00FC8DD8 /* Share Extension */,
 				E530B1A9283B54DA004E8EB6 /* Action Extension */,
+				E573DDFB2D3E273F00831A51 /* StoryWidget */,
 				97C146EF1CF9000F007C117D /* Products */,
 				D79CD63C88FF49EF451AFDDF /* Pods */,
 				B3F4F49CF582C662A01499C0 /* Frameworks */,
@@ -159,6 +201,7 @@
 				97C146EE1CF9000F007C117D /* Runner.app */,
 				E51D52AD283B464E00FC8DD8 /* Share Extension.appex */,
 				E530B1A6283B54DA004E8EB6 /* Action Extension.appex */,
+				E573DDF62D3E273F00831A51 /* Story Widget Extension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -185,6 +228,8 @@
 				E575B6F027EBC6DA002B1508 /* CloudKit.framework */,
 				E530B1A7283B54DA004E8EB6 /* UniformTypeIdentifiers.framework */,
 				8BF0A917F40A838BF30D8F4C /* Pods_Runner.framework */,
+				E573DDF72D3E273F00831A51 /* WidgetKit.framework */,
+				E573DDF92D3E273F00831A51 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -244,6 +289,7 @@
 			dependencies = (
 				E51D52B6283B464E00FC8DD8 /* PBXTargetDependency */,
 				E530B1B3283B54DA004E8EB6 /* PBXTargetDependency */,
+				E573DE062D3E274000831A51 /* PBXTargetDependency */,
 			);
 			name = Runner;
 			productName = Runner;
@@ -284,13 +330,37 @@
 			productReference = E530B1A6283B54DA004E8EB6 /* Action Extension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		E573DDF52D3E273F00831A51 /* Story Widget Extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E573DE0C2D3E274000831A51 /* Build configuration list for PBXNativeTarget "Story Widget Extension" */;
+			buildPhases = (
+				E573DDF22D3E273F00831A51 /* Sources */,
+				E573DDF32D3E273F00831A51 /* Frameworks */,
+				E573DDF42D3E273F00831A51 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				E573DDFB2D3E273F00831A51 /* StoryWidget */,
+			);
+			name = "Story Widget Extension";
+			packageProductDependencies = (
+				E573DE382D3E282700831A51 /* Alamofire */,
+				E573DE3D2D3E28CD00831A51 /* SwiftSoup */,
+			);
+			productName = StoryWidgetExtension;
+			productReference = E573DDF62D3E273F00831A51 /* Story Widget Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		97C146E61CF9000F007C117D /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1330;
+				LastSwiftUpdateCheck = 1610;
 				LastUpgradeCheck = 1510;
 				ORGANIZATIONNAME = "";
 				TargetAttributes = {
@@ -304,6 +374,9 @@
 					E530B1A5283B54DA004E8EB6 = {
 						CreatedOnToolsVersion = 13.3;
 					};
+					E573DDF52D3E273F00831A51 = {
+						CreatedOnToolsVersion = 16.1;
+					};
 				};
 			};
 			buildConfigurationList = 97C146E91CF9000F007C117D /* Build configuration list for PBXProject "Runner" */;
@@ -315,6 +388,10 @@
 				Base,
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
+			packageReferences = (
+				E573DE372D3E282700831A51 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				E573DE3C2D3E28CD00831A51 /* XCRemoteSwiftPackageReference "SwiftSoup" */,
+			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -322,6 +399,7 @@
 				97C146ED1CF9000F007C117D /* Runner */,
 				E51D52AC283B464E00FC8DD8 /* Share Extension */,
 				E530B1A5283B54DA004E8EB6 /* Action Extension */,
+				E573DDF52D3E273F00831A51 /* Story Widget Extension */,
 			);
 		};
 /* End PBXProject section */
@@ -355,6 +433,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E573DDF42D3E273F00831A51 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -372,7 +457,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin";
+			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin\n";
 		};
 		9740EEB61CF901F6004384FC /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -456,6 +541,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E573DDF22D3E273F00831A51 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -468,6 +560,11 @@
 			isa = PBXTargetDependency;
 			target = E530B1A5283B54DA004E8EB6 /* Action Extension */;
 			targetProxy = E530B1B2283B54DA004E8EB6 /* PBXContainerItemProxy */;
+		};
+		E573DE062D3E274000831A51 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E573DDF52D3E273F00831A51 /* Story Widget Extension */;
+			targetProxy = E573DE052D3E274000831A51 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -575,7 +672,7 @@
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Hacki;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.news";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -718,7 +815,7 @@
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Hacki;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.news";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -753,7 +850,7 @@
 				INFOPLIST_FILE = Runner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Hacki;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.news";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -789,7 +886,7 @@
 				INFOPLIST_FILE = "Share Extension/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Share Extension";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -831,7 +928,7 @@
 				INFOPLIST_FILE = "Share Extension/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Share Extension";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -869,7 +966,7 @@
 				INFOPLIST_FILE = "Share Extension/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Share Extension";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -908,7 +1005,7 @@
 				INFOPLIST_FILE = "Action Extension/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Open in Hacki";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -952,7 +1049,7 @@
 				INFOPLIST_FILE = "Action Extension/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Open in Hacki";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -992,7 +1089,7 @@
 				INFOPLIST_FILE = "Action Extension/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Open in Hacki";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1001,6 +1098,136 @@
 				MARKETING_VERSION = "";
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.jiaqi.hacki.Action-Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Profile;
+		};
+		E573DE082D3E274000831A51 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QMWX3X2NF7;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = StoryWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = StoryWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jiaqi.hacki.Widget-Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E573DE092D3E274000831A51 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = QMWX3X2NF7;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = StoryWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = StoryWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jiaqi.hacki.Widget-Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.jiaqi.hacki.Widget-Extension";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		E573DE0A2D3E274000831A51 /* Profile */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QMWX3X2NF7;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = StoryWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = StoryWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jiaqi.hacki.Widget-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -1053,7 +1280,49 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		E573DE0C2D3E274000831A51 /* Build configuration list for PBXNativeTarget "Story Widget Extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E573DE082D3E274000831A51 /* Debug */,
+				E573DE092D3E274000831A51 /* Release */,
+				E573DE0A2D3E274000831A51 /* Profile */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E573DE372D3E282700831A51 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.10.2;
+			};
+		};
+		E573DE3C2D3E28CD00831A51 /* XCRemoteSwiftPackageReference "SwiftSoup" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scinfu/SwiftSoup.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.7.6;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E573DE382D3E282700831A51 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E573DE372D3E282700831A51 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		E573DE3D2D3E28CD00831A51 /* SwiftSoup */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E573DE3C2D3E28CD00831A51 /* XCRemoteSwiftPackageReference "SwiftSoup" */;
+			productName = SwiftSoup;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 97C146E61CF9000F007C117D /* Project object */;
 }
