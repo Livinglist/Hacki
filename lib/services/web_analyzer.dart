@@ -502,7 +502,9 @@ ${info.toJson()}
     final String? desc =
         _getMetaContent(document, 'property', 'og:description');
     if (desc != null &&
-        !desc.contains('JavaScript is disabled in your browser')) return desc;
+        !desc.contains('JavaScript is disabled in your browser')) {
+      return desc;
+    }
 
     final String? description =
         _getMetaContent(document, 'name', 'description') ??

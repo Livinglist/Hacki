@@ -221,9 +221,6 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                                 bool isInProgress,
                               ) {
                                 return DropdownMenu<HackerNewsDataSource>(
-                                  /// Make sure no stories are being fetched
-                                  /// before switching data source.
-                                  enabled: !isInProgress,
                                   initialSelection: preferenceState.dataSource,
                                   dropdownMenuEntries:
                                       HackerNewsDataSource.values

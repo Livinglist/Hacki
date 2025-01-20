@@ -5,7 +5,6 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:equatable/equatable.dart';
 import 'package:feature_discovery/feature_discovery.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -54,9 +53,7 @@ Future<void> main({bool testing = false}) async {
   Hive.init(tempPath);
 
   final HydratedStorage storage = await HydratedStorage.build(
-    storageDirectory: kIsWeb
-        ? HydratedStorage.webStorageDirectory
-        : await getTemporaryDirectory(),
+    storageDirectory: HydratedStorageDirectory(tempPath),
   );
   HydratedBloc.storage = storage;
 
@@ -314,15 +311,16 @@ class HackiApp extends StatelessWidget {
                                   ? Palette.black
                                   : null,
                           dividerTheme: DividerThemeData(
-                            color: Palette.grey.withOpacity(0.2),
+                            color: Palette.grey.withValues(alpha: 0.2),
                           ),
                           switchTheme: SwitchThemeData(
                             trackColor: WidgetStateProperty.resolveWith(
                               (Set<WidgetState> states) {
                                 if (states.contains(WidgetState.selected)) {
-                                  return colorScheme.primary.withOpacity(0.6);
+                                  return colorScheme.primary
+                                      .withValues(alpha: 0.6);
                                 } else {
-                                  return Palette.grey.withOpacity(0.2);
+                                  return Palette.grey.withValues(alpha: 0.2);
                                 }
                               },
                             ),
@@ -345,13 +343,13 @@ class HackiApp extends StatelessWidget {
                                 color: (isDarkModeEnabled
                                         ? Palette.white
                                         : Palette.black)
-                                    .withOpacity(0.4),
+                                    .withValues(alpha: 0.4),
                               ),
                             ),
                           ),
                           sliderTheme: SliderThemeData(
                             inactiveTrackColor:
-                                colorScheme.primary.withOpacity(0.5),
+                                colorScheme.primary.withValues(alpha: 0.5),
                             activeTrackColor: colorScheme.primary,
                             thumbColor: colorScheme.primary,
                           ),

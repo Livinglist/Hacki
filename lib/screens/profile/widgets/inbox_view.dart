@@ -88,7 +88,7 @@ class InboxView extends StatelessWidget {
                             child: LinearProgressIndicator(
                               color: Theme.of(context)
                                   .primaryColor
-                                  .withOpacity(0.1),
+                                  .withValues(alpha: 0.1),
                             ),
                           ),
                         FadeIn(
@@ -130,10 +130,11 @@ class InboxView extends StatelessWidget {
                                       color: Theme.of(context)
                                           .colorScheme
                                           .primary
-                                          .withOpacity(
-                                            unreadCommentsIds.contains(e.id)
-                                                ? 1
-                                                : 0.6,
+                                          .withValues(
+                                            alpha:
+                                                unreadCommentsIds.contains(e.id)
+                                                    ? 1
+                                                    : 0.6,
                                           ),
                                     ),
                                     maxLines: 4,

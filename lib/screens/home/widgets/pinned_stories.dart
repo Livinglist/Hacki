@@ -45,8 +45,9 @@ class PinnedStories extends StatelessWidget {
                     ],
                   ),
                   child: ColoredBox(
-                    color:
-                        Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                    color: Theme.of(context).colorScheme.primary.withValues(
+                          alpha: 0.2,
+                        ),
                     child: StoryTile(
                       key: ValueKey<String>('${story.id}-PinnedStoryTile'),
                       story: story,
@@ -63,7 +64,10 @@ class PinnedStories extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: Dimens.pt12),
                 child: Divider(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .primary
+                      .withValues(alpha: 0.8),
                 ),
               ),
           ],
