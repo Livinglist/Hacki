@@ -3,7 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/extensions.dart';
+import 'package:hacki/models/item/item.dart';
+import 'package:hacki/repositories/hacker_news_repository.dart';
 import 'package:hacki/screens/screens.dart';
+import 'package:hacki/styles/dimens.dart';
 
 final GoRouter router = GoRouter(
   observers: <NavigatorObserver>[
@@ -23,6 +27,32 @@ final GoRouter router = GoRouter(
               throw GoError("args can't be null");
             }
             return ItemScreen.phone(args);
+          },
+        ),
+        GoRoute(
+          path: '${ItemScreen.routeName}/:itemId',
+          builder: (BuildContext context, GoRouterState state) {
+            final String? itemIdStr = state.pathParameters['itemId'];
+            final int? itemId = itemIdStr?.itemId;
+            if (itemId == null) {
+              throw GoError("item id can't be null");
+            }
+            return FutureBuilder<Item?>(
+              future: locator.get<HackerNewsRepository>().fetchItem(id: itemId),
+              builder: (BuildContext context, AsyncSnapshot<Item?> snapshot) {
+                if (snapshot.hasData) {
+                  final ItemScreenArgs args =
+                      ItemScreenArgs(item: snapshot.data!);
+                  return ItemScreen.phone(args);
+                } else {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: Dimens.pt2,
+                    ),
+                  );
+                }
+              },
+            );
           },
         ),
         GoRoute(
