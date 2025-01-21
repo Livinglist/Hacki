@@ -280,6 +280,7 @@ GEM
 
 PLATFORMS
   universal-darwin-21
+  universal-darwin-22
   universal-darwin-23
   x86_64-darwin-19
 
