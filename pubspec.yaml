@@ -5,7 +5,7 @@ publish_to: none
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
-  flutter: "3.27.2"
+  flutter: "3.27.3"
 
 dependencies:
   adaptive_theme: ^3.2.0
@@ -34,7 +34,10 @@ dependencies:
   flutter_material_color_picker: ^1.2.0
   flutter_native_splash: ^2.4.4
   flutter_secure_storage: ^9.2.4
-  flutter_slidable: ^3.0.0
+  flutter_slidable:
+    git:
+      url: https://github.com/TimeFinderApp/flutter_slidable
+      ref: 6ab5a79f1f8f984ad5b5733fd94e90c8f97a0c8d
   font_awesome_flutter: ^10.3.0
   get_it: ^8.0.3
   go_router: ^14.1.4
