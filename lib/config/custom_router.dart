@@ -45,9 +45,11 @@ final GoRouter router = GoRouter(
                       ItemScreenArgs(item: snapshot.data!);
                   return ItemScreen.phone(args);
                 } else {
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      strokeWidth: Dimens.pt2,
+                  return const Scaffold(
+                    body: Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: Dimens.pt2,
+                      ),
                     ),
                   );
                 }

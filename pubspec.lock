@@ -531,10 +531,11 @@ packages:
   flutter_slidable:
     dependency: "direct main"
     description:
-      name: flutter_slidable
-      sha256: a857de7ea701f276fd6a6c4c67ae885b60729a3449e42766bb0e655171042801
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: "6ab5a79f1f8f984ad5b5733fd94e90c8f97a0c8d"
+      resolved-ref: "6ab5a79f1f8f984ad5b5733fd94e90c8f97a0c8d"
+      url: "https://github.com/TimeFinderApp/flutter_slidable"
+    source: git
     version: "3.1.2"
   flutter_test:
     dependency: "direct dev"
@@ -1626,4 +1627,4 @@ packages:
     version: "3.1.3"
 sdks:
   dart: ">=3.6.0 <4.0.0"
-  flutter: ">=3.27.2"
+  flutter: ">=3.27.3"

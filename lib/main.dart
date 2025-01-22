@@ -286,6 +286,7 @@ class HackiApp extends StatelessWidget {
                     brightness:
                         isDarkModeEnabled ? Brightness.dark : Brightness.light,
                     seedColor: state.appColor,
+                    dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
                   );
                   return FeatureDiscovery(
                     child: MediaQuery(
