@@ -40,10 +40,12 @@ class LogScreen extends StatelessWidget {
                 ),
             ],
           ),
-          body: ListView(
-            children: <Widget>[
-              ...?snapshot.data?.map(Text.new),
-            ],
+          body: Scrollbar(
+            child: ListView(
+              children: <Widget>[
+                ...?snapshot.data?.map(Text.new),
+              ],
+            ),
           ),
         );
       },

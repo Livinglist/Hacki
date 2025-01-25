@@ -50,7 +50,6 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       const ManualPaginationPreference(),
       const SwipeGesturePreference(),
       const HapticFeedbackPreference(),
-      const EyeCandyModePreference(),
       const TrueDarkModePreference(),
       const DevMode(),
     ],
@@ -314,27 +313,6 @@ final class MarkReadStoriesModePreference extends BooleanPreference {
 
   @override
   String get subtitle => 'grey out stories you have read.';
-}
-
-final class EyeCandyModePreference extends BooleanPreference {
-  const EyeCandyModePreference({bool? val})
-      : super(val: val ?? _eyeCandyModeDefaultValue);
-
-  static const bool _eyeCandyModeDefaultValue = false;
-
-  @override
-  EyeCandyModePreference copyWith({required bool? val}) {
-    return EyeCandyModePreference(val: val);
-  }
-
-  @override
-  String get key => 'eyeCandyMode';
-
-  @override
-  String get title => 'Eye Candy';
-
-  @override
-  String get subtitle => 'some sort of magic.';
 }
 
 final class ManualPaginationPreference extends BooleanPreference {

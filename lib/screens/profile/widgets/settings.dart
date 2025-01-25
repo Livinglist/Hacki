@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -62,6 +63,12 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
               child: Column(
                 children: <Widget>[
                   ListTile(
+                    leading: Icon(
+                      Icons.person,
+                      color: widget.authState.isLoggedIn
+                          ? Theme.of(context).primaryColor
+                          : null,
+                    ),
                     title: Text(
                       widget.authState.isLoggedIn ? 'Log Out' : 'Log In',
                     ),
@@ -392,7 +399,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                     ),
                     onTap: showClearCacheDialog,
                   ),
-                  if (preferenceState.isDevModeEnabled)
+                  if (preferenceState.isDevModeEnabled) ...<Widget>[
                     ListTile(
                       title: const Text(
                         'Logs',
@@ -401,6 +408,20 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                         context.go(Paths.log.landing);
                       },
                     ),
+                    ListTile(
+                      title: const Text(
+                        'Reset Feature Discovery',
+                      ),
+                      onTap: () {
+                        HapticFeedbackUtil.light();
+                        FeatureDiscovery.clearPreferences(
+                          context,
+                          DiscoverableFeature.values
+                              .map((DiscoverableFeature f) => f.featureId),
+                        );
+                      },
+                    ),
+                  ],
                   ListTile(
                     title: const Text('About'),
                     subtitle: const Text('nothing interesting here.'),

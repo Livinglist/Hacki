@@ -22,9 +22,9 @@ class InThreadSearchIconButton extends StatelessWidget {
       transitionType: ContainerTransitionType.fadeThrough,
       closedBuilder: (BuildContext context, void Function() action) {
         return CustomDescribedFeatureOverlay(
-          tapTarget: const Icon(
+          tapTarget: Icon(
             Icons.search,
-            color: Palette.white,
+            color: Theme.of(context).colorScheme.onPrimary,
           ),
           feature: DiscoverableFeature.searchInThread,
           child: IconButton(

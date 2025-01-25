@@ -245,6 +245,8 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                             hintStyle: TextStyle(
                               color: Palette.grey,
                             ),
+                            enabledBorder: InputBorder.none,
+                            disabledBorder: InputBorder.none,
                             focusedBorder: InputBorder.none,
                             border: InputBorder.none,
                           ),
