@@ -413,6 +413,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                         'Reset Feature Discovery',
                       ),
                       onTap: () {
+                        HapticFeedbackUtil.light();
                         FeatureDiscovery.clearPreferences(
                           context,
                           DiscoverableFeature.values
