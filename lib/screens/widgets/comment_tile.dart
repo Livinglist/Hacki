@@ -75,11 +75,6 @@ class CommentTile extends StatelessWidget {
 
           final Color primaryColor = Theme.of(context).colorScheme.primary;
           final Brightness brightness = Theme.of(context).brightness;
-          final Color color = _getColor(
-            level,
-            primaryColor: primaryColor,
-            brightness: brightness,
-          );
 
           final Widget child = DeviceGestureWrapper(
             child: Column(
@@ -307,12 +302,7 @@ class CommentTile extends StatelessWidget {
             ),
           );
 
-          final double commentBackgroundColorOpacity =
-              Theme.of(context).canvasColor != Palette.white ? 0.03 : 0.15;
-
-          final Color commentColor = prefState.isEyeCandyEnabled
-              ? color.withValues(alpha: commentBackgroundColorOpacity)
-              : Palette.transparent;
+          const Color commentColor = Palette.transparent;
           final bool isMyComment = comment.deleted == false &&
               context.read<AuthBloc>().state.username == comment.by;
 
