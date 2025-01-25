@@ -33,9 +33,9 @@ class CustomFloatingActionButton extends StatelessWidget {
               CustomDescribedFeatureOverlay(
                 feature: DiscoverableFeature.jumpUpButton,
                 contentLocation: ContentLocation.above,
-                tapTarget: const Icon(
+                tapTarget: Icon(
                   Icons.keyboard_arrow_up,
-                  color: Palette.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
                 child: InkWell(
                   onLongPress: () =>
@@ -59,9 +59,9 @@ class CustomFloatingActionButton extends StatelessWidget {
               ),
               CustomDescribedFeatureOverlay(
                 feature: DiscoverableFeature.jumpDownButton,
-                tapTarget: const Icon(
+                tapTarget: Icon(
                   Icons.keyboard_arrow_down,
-                  color: Palette.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
                 child: InkWell(
                   onLongPress: () {

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/discoverable_feature.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
-import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 
 class LinkIconButton extends StatelessWidget {
@@ -17,13 +16,13 @@ class LinkIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       tooltip: 'Open this story in browser',
-      icon: const CustomDescribedFeatureOverlay(
+      icon: CustomDescribedFeatureOverlay(
         tapTarget: Icon(
           Icons.stream,
-          color: Palette.white,
+          color: Theme.of(context).colorScheme.onPrimary,
         ),
         feature: DiscoverableFeature.openStoryInWebView,
-        child: Icon(
+        child: const Icon(
           Icons.stream,
         ),
       ),

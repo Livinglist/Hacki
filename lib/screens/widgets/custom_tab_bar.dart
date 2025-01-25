@@ -84,10 +84,10 @@ class _CustomTabBarState extends State<CustomTabBar> {
             Tab(
               child: CustomDescribedFeatureOverlay(
                 onComplete: showOnboarding,
-                tapTarget: const Icon(
+                tapTarget: Icon(
                   Icons.person,
                   size: TextDimens.pt16,
-                  color: Palette.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
                 feature: DiscoverableFeature.login,
                 child: BlocBuilder<NotificationCubit, NotificationState>(

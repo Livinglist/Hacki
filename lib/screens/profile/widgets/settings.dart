@@ -62,6 +62,12 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
               child: Column(
                 children: <Widget>[
                   ListTile(
+                    leading: Icon(
+                      Icons.person,
+                      color: widget.authState.isLoggedIn
+                          ? Theme.of(context).primaryColor
+                          : null,
+                    ),
                     title: Text(
                       widget.authState.isLoggedIn ? 'Log Out' : 'Log In',
                     ),

@@ -10,11 +10,13 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/services/fetcher.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/haptic_feedback_util.dart';
@@ -231,7 +233,8 @@ class HackiApp extends StatelessWidget {
             previous.appColor != current.appColor ||
             previous.font != current.font ||
             previous.textScaleFactor != current.textScaleFactor ||
-            previous.isTrueDarkModeEnabled != current.isTrueDarkModeEnabled,
+            previous.isTrueDarkModeEnabled != current.isTrueDarkModeEnabled ||
+            previous.isEyeCandyEnabled != current.isEyeCandyEnabled,
         builder: (BuildContext context, PreferenceState state) {
           return AdaptiveTheme(
             key: ValueKey<String>(
@@ -285,7 +288,9 @@ class HackiApp extends StatelessWidget {
                   final ColorScheme colorScheme = ColorScheme.fromSeed(
                     brightness:
                         isDarkModeEnabled ? Brightness.dark : Brightness.light,
-                    seedColor: state.appColor,
+                    seedColor: state.isEyeCandyEnabled
+                        ? materialColors.randomlyPicked!
+                        : state.appColor,
                     dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
                   );
                   return FeatureDiscovery(

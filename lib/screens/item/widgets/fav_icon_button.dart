@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/discoverable_feature.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
-import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 
 class FavIconButton extends StatelessWidget {
@@ -24,7 +23,7 @@ class FavIconButton extends StatelessWidget {
           icon: CustomDescribedFeatureOverlay(
             tapTarget: Icon(
               isFav ? Icons.favorite : Icons.favorite_border,
-              color: Palette.white,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
             feature: DiscoverableFeature.addStoryToFavList,
             child: Icon(

@@ -43,7 +43,7 @@ abstract class Constants {
     '٩(˘◡˘)۶',
     '(─‿‿─)',
     '(¬‿¬)',
-  ].pickRandomly()!;
+  ].randomlyPicked!;
 
   static final String sadFace = <String>[
     'ಥ_ಥ',
@@ -55,13 +55,13 @@ abstract class Constants {
     '(ㆆ_ㆆ)',
     'ʕ•́ᴥ•̀ʔっ',
     '(ㆆ_ㆆ)',
-  ].pickRandomly()!;
+  ].randomlyPicked!;
 
   static final String magicWord = <String>[
     'to be over the rainbow!',
     'to infinity and beyond!',
     'to see the future.',
-  ].pickRandomly()!;
+  ].randomlyPicked!;
 
   static final String errorMessage = 'Something went wrong...$sadFace';
   static final String loginErrorMessage =
