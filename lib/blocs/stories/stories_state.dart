@@ -57,7 +57,7 @@ class StoriesState extends Equatable {
         readStoriesIds = const <int>{},
         storiesDownloaded = 0,
         storiesToBeDownloaded = 0,
-        maxOfflineStoriesCount = MaxOfflineStoriesCount.all,
+        maxOfflineStoriesCount = null,
         dataSource = null;
 
   final Map<StoryType, List<Story>> storiesByType;
@@ -69,7 +69,7 @@ class StoriesState extends Equatable {
   final bool isOfflineReading;
   final int storiesDownloaded;
   final int storiesToBeDownloaded;
-  final MaxOfflineStoriesCount maxOfflineStoriesCount;
+  final MaxOfflineStoriesCount? maxOfflineStoriesCount;
   final HackerNewsDataSource? dataSource;
 
   StoriesState copyWith({

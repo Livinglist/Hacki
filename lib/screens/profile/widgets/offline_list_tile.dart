@@ -104,12 +104,12 @@ class OfflineListTile extends StatelessWidget {
                     context: context,
                     builder: (BuildContext context) {
                       return BlocSelector<StoriesBloc, StoriesState,
-                          MaxOfflineStoriesCount>(
+                          MaxOfflineStoriesCount?>(
                         selector: (StoriesState state) =>
                             state.maxOfflineStoriesCount,
                         builder: (
-                          BuildContext context,
-                          MaxOfflineStoriesCount maxStories,
+                          BuildContext c,
+                          MaxOfflineStoriesCount? maxStories,
                         ) {
                           return SafeArea(
                             child: Column(
@@ -127,14 +127,20 @@ class OfflineListTile extends StatelessWidget {
                                     title: Text(count.label),
                                     onChanged: (MaxOfflineStoriesCount? val) {
                                       HapticFeedbackUtil.selection();
+
                                       if (val != null) {
-                                        context.read<StoriesBloc>().add(
-                                              UpdateMaxOfflineStoriesCount(
-                                                count: val,
-                                              ),
-                                            );
                                         context.pop();
-                                        showConfirmationDialog(context);
+                                        final StoriesBloc storiesBloc =
+                                            context.read<StoriesBloc>()
+                                              ..add(
+                                                UpdateMaxOfflineStoriesCount(
+                                                  count: val,
+                                                ),
+                                              );
+                                        showConfirmationDialog(
+                                          context,
+                                          storiesBloc,
+                                        );
                                       }
                                     },
                                   ),
@@ -154,7 +160,7 @@ class OfflineListTile extends StatelessWidget {
     );
   }
 
-  void showConfirmationDialog(BuildContext context) {
+  void showConfirmationDialog(BuildContext context, StoriesBloc storiesBloc) {
     showDialog<bool>(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -179,13 +185,11 @@ class OfflineListTile extends StatelessWidget {
       if (includeWebPage != null) {
         WakelockPlus.enable();
 
-        if (context.mounted) {
-          context.read<StoriesBloc>().add(
-                StoriesDownload(
-                  includingWebPage: includeWebPage,
-                ),
-              );
-        }
+        storiesBloc.add(
+          StoriesDownload(
+            includingWebPage: includeWebPage,
+          ),
+        );
       }
     });
   }
