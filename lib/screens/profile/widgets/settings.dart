@@ -849,10 +849,12 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
     try {
       final File originalFile = await LogUtil.exportLog();
       final XFile file = XFile(originalFile.path);
-      final ShareResult result = await Share.shareXFiles(
-        <XFile>[file],
-        subject: 'hacki_log',
-        sharePositionOrigin: rect,
+      final ShareResult result = await SharePlus.instance.share(
+        ShareParams(
+          files: <XFile>[file],
+          subject: 'hacki_log',
+          sharePositionOrigin: rect,
+        ),
       );
 
       if (result.status == ShareResultStatus.success) {

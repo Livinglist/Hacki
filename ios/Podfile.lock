@@ -1,7 +1,6 @@
 PODS:
   - connectivity_plus (0.0.1):
     - Flutter
-    - FlutterMacOS
   - device_info_plus (0.0.1):
     - Flutter
   - Flutter (1.0.0)
@@ -57,7 +56,7 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
-  - connectivity_plus (from `.symlinks/plugins/connectivity_plus/darwin`)
+  - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - Flutter (from `Flutter`)
   - flutter_email_sender (from `.symlinks/plugins/flutter_email_sender/ios`)
@@ -87,7 +86,7 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   connectivity_plus:
-    :path: ".symlinks/plugins/connectivity_plus/darwin"
+    :path: ".symlinks/plugins/connectivity_plus/ios"
   device_info_plus:
     :path: ".symlinks/plugins/device_info_plus/ios"
   Flutter:
@@ -132,13 +131,13 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/workmanager/ios"
 
 SPEC CHECKSUMS:
-  connectivity_plus: 18382e7311ba19efcaee94442b23b32507b20695
+  connectivity_plus: 2a701ffec2c0ae28a48cf7540e279787e77c447d
   device_info_plus: bf2e3232933866d73fe290f2942f2156cdd10342
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_email_sender: 10a22605f92809a11ef52b2f412db806c6082d40
+  flutter_email_sender: e03bdda7637bcd3539bfe718fddd980e9508efaa
   flutter_inappwebview_ios: 6f63631e2c62a7c350263b13fa5427aedefe81d4
-  flutter_local_notifications: df98d66e515e1ca797af436137b4459b160ad8c9
-  flutter_native_splash: f71420956eb811e6d310720fee915f1d42852e7a
+  flutter_local_notifications: ff50f8405aaa0ccdc7dcfb9022ca192e8ad9688f
+  flutter_native_splash: df59bb2e1421aa0282cb2e95618af4dcb0c56c29
   flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
   in_app_review: 318597b3a06c22bb46dc454d56828c85f444f99d
   integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
@@ -153,8 +152,8 @@ SPEC CHECKSUMS:
   sqflite_darwin: 5a7236e3b501866c1c9befc6771dfd73ffb8702d
   synced_shared_preferences: f722742b06d65c7315b8e9f56b794c9fbd5597f7
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
-  wakelock_plus: 373cfe59b235a6dd5837d0fb88791d2f13a90d56
-  webview_flutter_wkwebview: 0982481e3d9c78fd5c6f62a002fcd24fc791f1e4
+  wakelock_plus: 76957ab028e12bfa4e66813c99e46637f367fc7e
+  webview_flutter_wkwebview: a4af96a051138e28e29f60101d094683b9f82188
   workmanager: 0afdcf5628bbde6924c21af7836fed07b42e30e6
 
 PODFILE CHECKSUM: f03c7c11cf2b623592c89c68c628682778bb78b4
