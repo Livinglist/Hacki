@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:dio/dio.dart';
@@ -30,11 +31,18 @@ Again, if the only thing a reporter had to do was read the report to find the fa
         'Mozilla/5.0 (iPhone; CPU iPhone OS 17_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1',
   };
   const int itemId = 11536543;
-  final Dio dio = Dio();
+  final Dio dio = Dio(BaseOptions(validateStatus: (_) => true));
   final Uri url = Uri.parse('$itemBaseUrl$itemId');
   final Options option = Options(headers: headers, persistentConnection: true);
-  final Response<String> response =
-      await dio.getUri<String>(url, options: option);
+  final Response<String> response = await dio.getUri<String>(
+    url,
+    options: option,
+  );
+
+  if (response.statusCode != HttpStatus.ok) {
+    print('Status code: ${response.statusCode}');
+    return;
+  }
 
   /// Parse the HTML and select all the comment elements.
   final String data = response.data ?? '';
@@ -49,12 +57,14 @@ Again, if the only thing a reporter had to do was read the report to find the fa
     const String commentTextSelector =
         '''td > table > tbody > tr > td.default > div.comment > div.commtext''';
     final Element? cmtTextElement = e.querySelector(commentTextSelector);
-    final String parsedText =
-        await parseCommentTextHtml(cmtTextElement?.innerHtml ?? '');
+    final String parsedText = await parseCommentTextHtml(
+      cmtTextElement?.innerHtml ?? '',
+    );
 
     if (parsedText != text) {
-      final Uri url =
-          Uri.parse('https://api.github.com/repos/livinglist/hacki/issues');
+      final Uri url = Uri.parse(
+        'https://api.github.com/repos/livinglist/hacki/issues',
+      );
       const String issueTitle = 'Parser check failed.';
 
       /// Check if an issue with same title already exists.
@@ -82,9 +92,7 @@ Again, if the only thing a reporter had to do was read the report to find the fa
         await dio.postUri<String>(
           url,
           data: githubIssuePayload,
-          options: Options(
-            headers: githubHeaders,
-          ),
+          options: Options(headers: githubHeaders),
         );
         print('Issue created.');
       }
@@ -101,24 +109,15 @@ Future<String> parseCommentTextHtml(String text) async {
   return HtmlUnescape()
       .convert(text)
       .replaceAllMapped(
-        RegExp(
-          r'\<div class="reply"\>(.*?)\<\/div\>',
-          dotAll: true,
-        ),
+        RegExp(r'\<div class="reply"\>(.*?)\<\/div\>', dotAll: true),
         (Match match) => '',
       )
       .replaceAllMapped(
-        RegExp(
-          r'\<span class="(.*?)"\>(.*?)\<\/span\>',
-          dotAll: true,
-        ),
+        RegExp(r'\<span class="(.*?)"\>(.*?)\<\/span\>', dotAll: true),
         (Match match) => '${match[2]}',
       )
       .replaceAllMapped(
-        RegExp(
-          r'\<p\>(.*?)\<\/p\>',
-          dotAll: true,
-        ),
+        RegExp(r'\<p\>(.*?)\<\/p\>', dotAll: true),
         (Match match) => '\n\n${match[1]}',
       )
       .replaceAllMapped(
