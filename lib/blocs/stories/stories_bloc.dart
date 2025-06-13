@@ -14,7 +14,6 @@ import 'package:responsive_builder/responsive_builder.dart';
 import 'package:rxdart/rxdart.dart';
 
 part 'stories_event.dart';
-
 part 'stories_state.dart';
 
 class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
@@ -55,6 +54,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     on<StoriesEnterOfflineMode>(onEnterOfflineMode);
     on<StoriesExitOfflineMode>(onExitOfflineMode);
     on<ClearAllReadStories>(onClearAllReadStories);
+    on<UpdateMaxOfflineStoriesCount>(onUpdateMaxOfflineStoriesCount);
 
     _preferenceSubscription = _preferenceCubit.stream
         .distinct((PreferenceState lhs, PreferenceState rhs) {
@@ -350,12 +350,16 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     await _offlineRepository.deleteAllComments();
     await _offlineRepository.deleteAllWebPages();
 
-    final Set<int> prioritizedIds = <int>{};
+    List<int> prioritizedIds = <int>[];
 
     /// Prioritizing all types of stories except StoryType.latest since
     /// new stories tend to have less or no comment at all.
-    final List<StoryType> prioritizedTypes = <StoryType>[...StoryType.values]
-      ..remove(StoryType.latest);
+    final List<StoryType> prioritizedTypes = <StoryType>[
+      StoryType.top,
+      StoryType.best,
+      StoryType.ask,
+      StoryType.show,
+    ];
 
     for (final StoryType type in prioritizedTypes) {
       final List<int> ids =
@@ -363,6 +367,14 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
       await _offlineRepository.cacheStoryIds(type: type, ids: ids);
       prioritizedIds.addAll(ids);
     }
+
+    prioritizedIds = prioritizedIds.toSet().toList().sublist(
+          0,
+          min(
+            state.maxOfflineStoriesCount?.count ?? prioritizedIds.length,
+            prioritizedIds.length,
+          ),
+        );
 
     emit(
       state.copyWith(
@@ -537,6 +549,13 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
   ) async {
     emit(state.copyWith(isOfflineReading: true));
     add(StoriesInitialize());
+  }
+
+  Future<void> onUpdateMaxOfflineStoriesCount(
+    UpdateMaxOfflineStoriesCount event,
+    Emitter<StoriesState> emit,
+  ) async {
+    emit(state.copyWith(maxOfflineStoriesCount: event.count));
   }
 
   Future<void> onStoryRead(

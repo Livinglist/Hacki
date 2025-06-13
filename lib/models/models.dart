@@ -8,6 +8,7 @@ export 'font.dart';
 export 'font_size.dart';
 export 'hacker_news_data_source.dart';
 export 'item/item.dart';
+export 'max_offline_stories_count.dart';
 export 'post_data.dart';
 export 'preference.dart';
 export 'search_params.dart';

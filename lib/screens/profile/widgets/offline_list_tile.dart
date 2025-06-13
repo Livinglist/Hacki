@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
+import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/utils/haptic_feedback_util.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 class OfflineListTile extends StatelessWidget {
@@ -98,37 +100,57 @@ class OfflineListTile extends StatelessWidget {
                   .checkConnectivity()
                   .then((List<ConnectivityResult> res) {
                 if (!res.contains(ConnectivityResult.none) && context.mounted) {
-                  showDialog<bool>(
+                  showModalBottomSheet<void>(
                     context: context,
-                    builder: (BuildContext context) => AlertDialog(
-                      title: const Text('Download web pages as well?'),
-                      content: const Text('It will take longer time.'),
-                      actions: <Widget>[
-                        TextButton(
-                          onPressed: () => context.pop(),
-                          child: const Text('Cancel'),
-                        ),
-                        TextButton(
-                          onPressed: () => context.pop(false),
-                          child: const Text('No'),
-                        ),
-                        TextButton(
-                          onPressed: () => context.pop(true),
-                          child: const Text('Yes'),
-                        ),
-                      ],
-                    ),
-                  ).then((bool? includeWebPage) {
-                    if (includeWebPage != null) {
-                      WakelockPlus.enable();
+                    builder: (BuildContext context) {
+                      return BlocSelector<StoriesBloc, StoriesState,
+                          MaxOfflineStoriesCount?>(
+                        selector: (StoriesState state) =>
+                            state.maxOfflineStoriesCount,
+                        builder: (
+                          BuildContext c,
+                          MaxOfflineStoriesCount? maxStories,
+                        ) {
+                          return SafeArea(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                SizedBoxes.pt12,
+                                const Text(
+                                  'How many stories do you want to download?',
+                                ),
+                                for (final MaxOfflineStoriesCount count
+                                    in MaxOfflineStoriesCount.values)
+                                  RadioListTile<MaxOfflineStoriesCount>(
+                                    value: count,
+                                    groupValue: state.maxOfflineStoriesCount,
+                                    title: Text(count.label),
+                                    onChanged: (MaxOfflineStoriesCount? val) {
+                                      HapticFeedbackUtil.selection();
 
-                      if (context.mounted) {
-                        context.read<StoriesBloc>().add(
-                              StoriesDownload(includingWebPage: includeWebPage),
-                            );
-                      }
-                    }
-                  });
+                                      if (val != null) {
+                                        context.pop();
+                                        final StoriesBloc storiesBloc =
+                                            context.read<StoriesBloc>()
+                                              ..add(
+                                                UpdateMaxOfflineStoriesCount(
+                                                  count: val,
+                                                ),
+                                              );
+                                        showConfirmationDialog(
+                                          context,
+                                          storiesBloc,
+                                        );
+                                      }
+                                    },
+                                  ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  );
                 }
               });
             }
@@ -136,5 +158,39 @@ class OfflineListTile extends StatelessWidget {
         );
       },
     );
+  }
+
+  void showConfirmationDialog(BuildContext context, StoriesBloc storiesBloc) {
+    showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Download web pages as well?'),
+        content: const Text('It will take longer time.'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => context.pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => context.pop(false),
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () => context.pop(true),
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    ).then((bool? includeWebPage) {
+      if (includeWebPage != null) {
+        WakelockPlus.enable();
+
+        storiesBloc.add(
+          StoriesDownload(
+            includingWebPage: includeWebPage,
+          ),
+        );
+      }
+    });
   }
 }
