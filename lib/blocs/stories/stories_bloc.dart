@@ -55,6 +55,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     on<StoriesExitOfflineMode>(onExitOfflineMode);
     on<ClearAllReadStories>(onClearAllReadStories);
     on<UpdateMaxOfflineStoriesCount>(onUpdateMaxOfflineStoriesCount);
+    on<ClearMaxOfflineStoriesCount>(onClearMaxOfflineStoriesCount);
 
     _preferenceSubscription = _preferenceCubit.stream
         .distinct((PreferenceState lhs, PreferenceState rhs) {
@@ -556,6 +557,13 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     Emitter<StoriesState> emit,
   ) async {
     emit(state.copyWith(maxOfflineStoriesCount: event.count));
+  }
+
+  Future<void> onClearMaxOfflineStoriesCount(
+    ClearMaxOfflineStoriesCount event,
+    Emitter<StoriesState> emit,
+  ) async {
+    emit(state.copyWithMaxOfflineStoriesCountReset());
   }
 
   Future<void> onStoryRead(

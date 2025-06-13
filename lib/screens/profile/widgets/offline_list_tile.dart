@@ -96,6 +96,7 @@ class OfflineListTile extends StatelessWidget {
                 }
               });
             } else {
+              context.read<StoriesBloc>().add(ClearMaxOfflineStoriesCount());
               Connectivity()
                   .checkConnectivity()
                   .then((List<ConnectivityResult> res) {
@@ -103,51 +104,37 @@ class OfflineListTile extends StatelessWidget {
                   showModalBottomSheet<void>(
                     context: context,
                     builder: (BuildContext context) {
-                      return BlocSelector<StoriesBloc, StoriesState,
-                          MaxOfflineStoriesCount?>(
-                        selector: (StoriesState state) =>
-                            state.maxOfflineStoriesCount,
-                        builder: (
-                          BuildContext c,
-                          MaxOfflineStoriesCount? maxStories,
-                        ) {
-                          return SafeArea(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                SizedBoxes.pt12,
-                                const Text(
-                                  'How many stories do you want to download?',
-                                ),
-                                for (final MaxOfflineStoriesCount count
-                                    in MaxOfflineStoriesCount.values)
-                                  RadioListTile<MaxOfflineStoriesCount>(
-                                    value: count,
-                                    groupValue: state.maxOfflineStoriesCount,
-                                    title: Text(count.label),
-                                    onChanged: (MaxOfflineStoriesCount? val) {
-                                      HapticFeedbackUtil.selection();
-
-                                      if (val != null) {
-                                        context.pop();
-                                        final StoriesBloc storiesBloc =
-                                            context.read<StoriesBloc>()
-                                              ..add(
-                                                UpdateMaxOfflineStoriesCount(
-                                                  count: val,
-                                                ),
-                                              );
-                                        showConfirmationDialog(
-                                          context,
-                                          storiesBloc,
-                                        );
-                                      }
-                                    },
-                                  ),
-                              ],
+                      return SafeArea(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            SizedBoxes.pt12,
+                            const Text(
+                              'How many stories do you want to download?',
                             ),
-                          );
-                        },
+                            for (final MaxOfflineStoriesCount count
+                                in MaxOfflineStoriesCount.values)
+                              ListTile(
+                                title: Text(count.label),
+                                onTap: () {
+                                  HapticFeedbackUtil.selection();
+
+                                  context.pop();
+                                  final StoriesBloc storiesBloc =
+                                      context.read<StoriesBloc>()
+                                        ..add(
+                                          UpdateMaxOfflineStoriesCount(
+                                            count: count,
+                                          ),
+                                        );
+                                  showConfirmationDialog(
+                                    context,
+                                    storiesBloc,
+                                  );
+                                },
+                              ),
+                          ],
+                        ),
                       );
                     },
                   );

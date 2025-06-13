@@ -102,6 +102,22 @@ class StoriesState extends Equatable {
     );
   }
 
+  StoriesState copyWithMaxOfflineStoriesCountReset() {
+    return StoriesState(
+      storiesByType: storiesByType,
+      storyIdsByType: storyIdsByType,
+      statusByType: statusByType,
+      currentPageByType: currentPageByType,
+      readStoriesIds: readStoriesIds,
+      isOfflineReading: isOfflineReading,
+      downloadStatus: downloadStatus,
+      storiesDownloaded: storiesDownloaded,
+      storiesToBeDownloaded: storiesToBeDownloaded,
+      dataSource: dataSource,
+      maxOfflineStoriesCount: null,
+    );
+  }
+
   StoriesState copyWithStoryAdded({
     required StoryType type,
     required Story story,

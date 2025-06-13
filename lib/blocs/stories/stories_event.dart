@@ -113,6 +113,13 @@ class UpdateMaxOfflineStoriesCount extends StoriesEvent {
   List<Object?> get props => <Object?>[count];
 }
 
+class ClearMaxOfflineStoriesCount extends StoriesEvent {
+  ClearMaxOfflineStoriesCount();
+
+  @override
+  List<Object?> get props => <Object?>[];
+}
+
 class StoryLoaded extends StoriesEvent {
   StoryLoaded({required this.story, required this.type});
 
