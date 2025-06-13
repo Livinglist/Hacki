@@ -19,6 +19,7 @@ class StoriesState extends Equatable {
     required this.downloadStatus,
     required this.storiesDownloaded,
     required this.storiesToBeDownloaded,
+    required this.maxOfflineStoriesCount,
     required this.dataSource,
   });
 
@@ -56,6 +57,7 @@ class StoriesState extends Equatable {
         readStoriesIds = const <int>{},
         storiesDownloaded = 0,
         storiesToBeDownloaded = 0,
+        maxOfflineStoriesCount = MaxOfflineStoriesCount.all,
         dataSource = null;
 
   final Map<StoryType, List<Story>> storiesByType;
@@ -67,6 +69,7 @@ class StoriesState extends Equatable {
   final bool isOfflineReading;
   final int storiesDownloaded;
   final int storiesToBeDownloaded;
+  final MaxOfflineStoriesCount maxOfflineStoriesCount;
   final HackerNewsDataSource? dataSource;
 
   StoriesState copyWith({
@@ -79,6 +82,7 @@ class StoriesState extends Equatable {
     bool? isOfflineReading,
     int? storiesDownloaded,
     int? storiesToBeDownloaded,
+    MaxOfflineStoriesCount? maxOfflineStoriesCount,
     HackerNewsDataSource? dataSource,
   }) {
     return StoriesState(
@@ -93,6 +97,8 @@ class StoriesState extends Equatable {
       storiesToBeDownloaded:
           storiesToBeDownloaded ?? this.storiesToBeDownloaded,
       dataSource: dataSource ?? this.dataSource,
+      maxOfflineStoriesCount:
+          maxOfflineStoriesCount ?? this.maxOfflineStoriesCount,
     );
   }
 
@@ -182,5 +188,6 @@ class StoriesState extends Equatable {
         storiesDownloaded,
         storiesToBeDownloaded,
         dataSource,
+        maxOfflineStoriesCount,
       ];
 }

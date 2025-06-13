@@ -104,6 +104,15 @@ class StoriesEnterOfflineMode extends StoriesEvent {
   List<Object?> get props => <Object?>[];
 }
 
+class UpdateMaxOfflineStoriesCount extends StoriesEvent {
+  UpdateMaxOfflineStoriesCount({required this.count});
+
+  final MaxOfflineStoriesCount count;
+
+  @override
+  List<Object?> get props => <Object?>[count];
+}
+
 class StoryLoaded extends StoriesEvent {
   StoryLoaded({required this.story, required this.type});
 
