@@ -5,7 +5,7 @@ publish_to: none
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
-  flutter: "3.27.3"
+  flutter: "3.32.3"
 
 dependencies:
   adaptive_theme: ^3.2.0
@@ -26,11 +26,11 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^9.0.0
   flutter_cache_manager: ^3.3.2
-  flutter_email_sender: ^6.0.3
+  flutter_email_sender: ^7.0.0
   flutter_fadein: ^2.0.0
   flutter_feather_icons: 2.0.0+1
   flutter_inappwebview: ^6.1.5
-  flutter_local_notifications: ^18.0.1
+  flutter_local_notifications: ^19.2.1
   flutter_material_color_picker: ^1.2.0
   flutter_native_splash: ^2.4.4
   flutter_secure_storage: ^9.2.4
@@ -40,7 +40,7 @@ dependencies:
       ref: 6ab5a79f1f8f984ad5b5733fd94e90c8f97a0c8d
   font_awesome_flutter: ^10.3.0
   get_it: ^8.0.3
-  go_router: ^14.1.4
+  go_router: ^15.2.0
   hive: ^2.2.3
   html: ^0.15.1
   html_unescape: ^2.0.0
@@ -64,12 +64,12 @@ dependencies:
       ref: master
   qr_code_scanner: ^1.0.1
   qr_flutter: ^4.1.0
-  receive_sharing_intent: ^1.5.3
+  receive_sharing_intent: 1.5.3
   responsive_builder: ^0.7.0
   rxdart: ^0.28.0
   scrollable_positioned_list: ^0.3.5
   sembast: ^3.7.1
-  share_plus: ^10.1.4
+  share_plus: ^11.0.0
   shared_preferences: ^2.2.3
   shared_preferences_android: ^2.2.3
   shared_preferences_foundation: ^2.4.0
@@ -81,7 +81,7 @@ dependencies:
   visibility_detector: ^0.4.0+2
   wakelock_plus: ^1.2.5
   webview_flutter: ^4.8.0
-  workmanager: ^0.5.1
+  workmanager: ^0.6.0
 
 dependency_overrides:
   web: ^1.0.0
@@ -95,7 +95,7 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   mocktail: ^1.0.0
-  very_good_analysis: ^7.0.0
+  very_good_analysis: ^9.0.0
 
 flutter:
   uses-material-design: true

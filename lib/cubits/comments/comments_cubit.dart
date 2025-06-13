@@ -520,7 +520,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       final int firstVisibleRootCommentIndex =
           state.comments.indexOf(firstVisibleRootComment);
       startIndex = min(firstVisibleRootCommentIndex + 1, totalComments);
-    } else {
+    } else if (onScreenComments.isNotEmpty) {
       final int lastVisibleCommentIndex =
           state.comments.indexOf(onScreenComments.last);
       startIndex = min(lastVisibleCommentIndex + 1, totalComments);

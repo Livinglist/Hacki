@@ -348,6 +348,23 @@ class CommentTile extends StatelessWidget {
             );
           }
 
+          if (<int>[0, 1, 2, 3].contains(level)) {
+            wrapper = Stack(
+              children: <Widget>[
+                wrapper,
+                Positioned(
+                  left: Dimens.zero,
+                  top: Dimens.zero,
+                  bottom: Dimens.zero,
+                  width: Dimens.pt24,
+                  child: Container(
+                    color: Colors.transparent,
+                  ),
+                ),
+              ],
+            );
+          }
+
           return wrapper;
         },
       ),

@@ -129,9 +129,11 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
     }
 
     if (linkToShare != null) {
-      await Share.share(
-        linkToShare,
-        sharePositionOrigin: rect,
+      await SharePlus.instance.share(
+        ShareParams(
+          uri: Uri.parse(linkToShare),
+          sharePositionOrigin: rect,
+        ),
       );
     }
   }
