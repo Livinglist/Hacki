@@ -25,6 +25,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
+    namespace "dev.britannio.in_app_review"
+
     compileSdkVersion 31
 
     compileOptions {

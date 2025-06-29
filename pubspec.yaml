@@ -1,11 +1,11 @@
 name: hacki
 description: A Hacker News reader.
-version: 2.10.0+156
+version: 2.11.0+157
 publish_to: none
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
-  flutter: "3.32.4"
+  flutter: "3.32.5"
 
 dependencies:
   adaptive_theme: ^3.2.0
@@ -30,7 +30,7 @@ dependencies:
   flutter_fadein: ^2.0.0
   flutter_feather_icons: 2.0.0+1
   flutter_inappwebview: ^6.1.5
-  flutter_local_notifications: ^19.2.1
+  flutter_local_notifications: ^19.3.0
   flutter_material_color_picker: ^1.2.0
   flutter_native_splash: ^2.4.4
   flutter_secure_storage: ^9.2.4
@@ -62,9 +62,9 @@ dependencies:
     git:
       url: https://github.com/livinglist/flutter_pulltorefresh
       ref: master
-  qr_code_scanner: ^1.0.1
+  qr_code_scanner_plus: ^2.0.10+1
   qr_flutter: ^4.1.0
-  receive_sharing_intent: 1.5.3
+  receive_sharing_intent: 1.8.1
   responsive_builder: ^0.7.0
   rxdart: ^0.28.0
   scrollable_positioned_list: ^0.3.5
