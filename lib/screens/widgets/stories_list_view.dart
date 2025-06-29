@@ -52,7 +52,8 @@ class _StoriesListViewState extends State<StoriesListView>
               current.isComplexStoryTileEnabled ||
           previous.isMetadataEnabled != current.isMetadataEnabled ||
           previous.isManualPaginationEnabled !=
-              current.isManualPaginationEnabled,
+              current.isManualPaginationEnabled ||
+          previous.isDividerEnabled != current.isDividerEnabled,
       builder: (BuildContext context, PreferenceState preferenceState) {
         return BlocConsumer<StoriesBloc, StoriesState>(
           listenWhen: (StoriesState previous, StoriesState current) =>
@@ -76,6 +77,7 @@ class _StoriesListViewState extends State<StoriesListView>
                   current.statusByType[widget.storyType]),
           builder: (BuildContext context, StoriesState state) {
             return ItemsListView<Story>(
+              showDivider: preferenceState.isDividerEnabled,
               showOfflineBanner: true,
               markReadStories: preferenceState.isMarkReadStoriesEnabled,
               showWebPreviewOnStoryTile:

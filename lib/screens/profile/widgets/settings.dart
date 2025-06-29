@@ -347,7 +347,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                       ),
                       const Divider(),
                     ],
-                    if (preference is StoryUrlModePreference) const Divider(),
+                    if (preference is DividerPreference) const Divider(),
                   ],
                   ListTile(
                     title: const Text(
