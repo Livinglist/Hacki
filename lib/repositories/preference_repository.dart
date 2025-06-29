@@ -404,7 +404,7 @@ class PreferenceRepository with Loggable {
     );
   }
 
-  final List<String> _storiesIdQueue = [];
+  final List<String> _storiesIdQueue = <String>[];
   final Debouncer _debouncer = Debouncer(delay: AppDurations.tenSeconds);
 
   Future<void> addHasRead(int storyId) async {
