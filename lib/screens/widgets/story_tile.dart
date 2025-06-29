@@ -126,9 +126,9 @@ class StoryTile extends StatelessWidget {
       return Semantics(
         label: story.screenReaderLabel,
         excludeSemantics: true,
-        child: InkWell(
+        child: TapDownWrapper(
           onTap: onTap,
-          onDoubleTap: () {
+          onLongPress: () {
             if (story.url.isNotEmpty) {
               LinkUtil.launch(
                 story.url,
