@@ -13,7 +13,6 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class ItemsListView<T extends Item> extends StatelessWidget {
   const ItemsListView({
-    this.showDivider = false,
     required this.showWebPreviewOnStoryTile,
     required this.showMetadataOnStoryTile,
     required this.showFavicon,
@@ -21,6 +20,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     required this.items,
     required this.onTap,
     required this.refreshController,
+    this.showDivider = false,
     super.key,
     this.showAuthor = true,
     this.useSimpleTileForStory = false,
