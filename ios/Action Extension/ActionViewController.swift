@@ -9,10 +9,78 @@ import UIKit
 import MobileCoreServices
 import UniformTypeIdentifiers
 
+public class SharedMediaFile: Codable {
+    var path: String
+    var mimeType: String?
+    var thumbnail: String? // video thumbnail
+    var duration: Double? // video duration in milliseconds
+    var message: String? // post message
+    var type: SharedMediaType
+    
+    
+    public init(
+        path: String,
+        mimeType: String? = nil,
+        thumbnail: String? = nil,
+        duration: Double? = nil,
+        message: String?=nil,
+        type: SharedMediaType) {
+            self.path = path
+            self.mimeType = mimeType
+            self.thumbnail = thumbnail
+            self.duration = duration
+            self.message = message
+            self.type = type
+        }
+}
+
+public enum SharedMediaType: String, Codable, CaseIterable {
+    case image
+    case video
+    case text
+    case file
+    case url
+
+    public var toUTTypeIdentifier: String {
+        if #available(iOS 14.0, *) {
+            switch self {
+            case .image:
+                return UTType.image.identifier
+            case .video:
+                return UTType.movie.identifier
+            case .text:
+                return UTType.text.identifier
+            case .file:
+                return UTType.fileURL.identifier
+            case .url:
+                return UTType.url.identifier
+            }
+        }
+        switch self {
+        case .image:
+            return "public.image"
+        case .video:
+            return "public.movie"
+        case .text:
+            return "public.text"
+        case .file:
+            return "public.file-url"
+        case .url:
+            return "public.url"
+        }
+    }
+}
+
+public let kSchemePrefix = "ShareMedia"
+public let kUserDefaultsKey = "ShareKey"
+public let kUserDefaultsMessageKey = "ShareMessageKey"
+public let kAppGroupIdKey = "AppGroupId"
+
 class ActionViewController: UIViewController {
-    let hostAppBundleIdentifier = "com.jiaqi.hacki"
-    let sharedKey = "ShareKey"
+    var hostAppBundleIdentifier = "com.jiaqi.hacki"
+    var appGroupId = "group.com.jiaqi.hacki"
     var sharedText: [String] = []
+    var sharedMedia: [SharedMediaFile] = []
     let urlContentType = UTType.url
     @IBOutlet weak var imageView: UIImageView!
     
@@ -39,13 +107,11 @@ class ActionViewController: UIViewController {
                 
                 // If this is the last item, save imagesData in userDefaults and redirect to host app
                 if index == (content.attachments?.count)! - 1 {
-                    let userDefaults = UserDefaults(suiteName: "group.\(this.hostAppBundleIdentifier)")
-                    userDefaults?.set(this.sharedText, forKey: this.sharedKey)
-                    userDefaults?.synchronize()
+                    this.sharedMedia.removeAll()
+                    this.sharedMedia.append(.init(path: item.absoluteString, type: .url))
                     print(this.sharedText)
-                    this.redirectToHostApp()
+                    this.saveAndRedirect()
                 }
-                
             } else {
                 self?.dismissWithError()
             }
@@ -65,19 +131,64 @@ class ActionViewController: UIViewController {
         extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
     }
     
+    // Save shared media and redirect to host app
+    private func saveAndRedirect(message: String? = nil) {
+        let userDefaults = UserDefaults(suiteName: appGroupId)
+        userDefaults?.set(toData(data: sharedMedia), forKey: kUserDefaultsKey)
+        userDefaults?.set(message, forKey: kUserDefaultsMessageKey)
+        userDefaults?.synchronize()
+        redirectToHostApp()
+    }
+    
+    private func toData(data: [SharedMediaFile]) -> Data {
+        let encodedData = try? JSONEncoder().encode(data)
+        return encodedData!
+    }
+    
     private func redirectToHostApp() {
-        let url = URL(string: "ShareMedia-\(hostAppBundleIdentifier)://dataUrl=\(sharedKey)#text")
+        // ids may not loaded yet so we need loadIds here too
+        loadIds()
+        let url = URL(string: "\(kSchemePrefix)-\(hostAppBundleIdentifier):share")
         var responder = self as UIResponder?
-        let selectorOpenURL = sel_registerName("openURL:")
         
-        while (responder != nil) {
-            if let application = responder as? UIApplication {
-                application.performSelector(inBackground: selectorOpenURL, with: url)
+        if #available(iOS 18.0, *) {
+            while responder != nil {
+                if let application = responder as? UIApplication {
+                    application.open(url!, options: [:], completionHandler: nil)
+                }
+                responder = responder?.next
             }
+        } else {
+            let selectorOpenURL = sel_registerName("openURL:")
             
-            responder = responder!.next
+            while (responder != nil) {
+                if (responder?.responds(to: selectorOpenURL))! {
+                    _ = responder?.perform(selectorOpenURL, with: url)
+                }
+                responder = responder!.next
+            }
         }
+
         extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+    }
+    
+    private func loadIds() {
+        // loading Share extension App Id
+        let shareExtensionAppBundleIdentifier = Bundle.main.bundleIdentifier!
+        
+        
+        // extract host app bundle id from ShareExtension id
+        // by default it's <hostAppBundleIdentifier>.<ShareExtension>
+        // for example: "com.kasem.sharing.Share-Extension" -> com.kasem.sharing
+        let lastIndexOfPoint = shareExtensionAppBundleIdentifier.lastIndex(of: ".")
+        hostAppBundleIdentifier = String(shareExtensionAppBundleIdentifier[..<lastIndexOfPoint!])
+        let defaultAppGroupId = "group.\(hostAppBundleIdentifier)"
+        
+        
+        // loading custom AppGroupId from Build Settings or use group.<hostAppBundleIdentifier>
+        let customAppGroupId = Bundle.main.object(forInfoDictionaryKey: kAppGroupIdKey) as? String
+        
+        appGroupId = customAppGroupId ?? defaultAppGroupId
     }
     
     @IBAction func done() {
@@ -85,5 +196,4 @@ class ActionViewController: UIViewController {
         // This template doesn't do anything, so we just echo the passed in items.
         self.extensionContext!.completeRequest(returningItems: self.extensionContext!.inputItems, completionHandler: nil)
     }
-    
 }
