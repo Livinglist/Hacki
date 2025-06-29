@@ -30,10 +30,10 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - qr_code_scanner (0.2.0):
+  - qr_code_scanner_plus (0.2.6):
     - Flutter
     - MTBBarcodeScanner
-  - receive_sharing_intent (1.5.3):
+  - receive_sharing_intent (1.8.1):
     - Flutter
   - share_plus (0.0.1):
     - Flutter
@@ -68,7 +68,7 @@ DEPENDENCIES:
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
-  - qr_code_scanner (from `.symlinks/plugins/qr_code_scanner/ios`)
+  - qr_code_scanner_plus (from `.symlinks/plugins/qr_code_scanner_plus/ios`)
   - receive_sharing_intent (from `.symlinks/plugins/receive_sharing_intent/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
@@ -109,8 +109,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/package_info_plus/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
-  qr_code_scanner:
-    :path: ".symlinks/plugins/qr_code_scanner/ios"
+  qr_code_scanner_plus:
+    :path: ".symlinks/plugins/qr_code_scanner_plus/ios"
   receive_sharing_intent:
     :path: ".symlinks/plugins/receive_sharing_intent/ios"
   share_plus:
@@ -145,8 +145,8 @@ SPEC CHECKSUMS:
   OrderedSet: e539b66b644ff081c73a262d24ad552a69be3a94
   package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
-  qr_code_scanner: bb67d64904c3b9658ada8c402e8b4d406d5d796e
-  receive_sharing_intent: 753f808c6be5550247f6a20f2a14972466a5f33c
+  qr_code_scanner_plus: 3bfe4deb7f28996a63a2a580819d49dae80d5ed3
+  receive_sharing_intent: 79c848f5b045674ad60b9fea3bafea59962ad2c1
   share_plus: 8b6f8b3447e494cca5317c8c3073de39b3600d1f
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
   sqflite_darwin: 5a7236e3b501866c1c9befc6771dfd73ffb8702d
@@ -158,4 +158,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: f03c7c11cf2b623592c89c68c628682778bb78b4
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.15.2

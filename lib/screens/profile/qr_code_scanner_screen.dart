@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 
 class QrCodeScannerScreen extends StatefulWidget {
   const QrCodeScannerScreen({super.key});
@@ -63,11 +63,5 @@ class _QrCodeScannerScreenState extends State<QrCodeScannerScreen> {
         context.pop(scanData.code);
       }
     });
-  }
-
-  @override
-  void dispose() {
-    controller?.dispose();
-    super.dispose();
   }
 }
