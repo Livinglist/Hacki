@@ -1,11 +1,3 @@
-
-//
-//  RSIShareViewController.swift
-//  receive_sharing_intent
-//
-//  Created by Kasem Mohamed on 2024-01-25.
-//
-
 import UIKit
 import Social
 import MobileCoreServices
@@ -18,7 +10,6 @@ public class SharedMediaFile: Codable {
     var duration: Double? // video duration in milliseconds
     var message: String? // post message
     var type: SharedMediaType
-    
     
     public init(
         path: String,
@@ -73,13 +64,12 @@ public enum SharedMediaType: String, Codable, CaseIterable {
     }
 }
 
-public let kSchemePrefix = "ShareMedia"
-public let kUserDefaultsKey = "ShareKey"
-public let kUserDefaultsMessageKey = "ShareMessageKey"
-public let kAppGroupIdKey = "AppGroupId"
+let kSchemePrefix = "ShareMedia"
+let kUserDefaultsKey = "ShareKey"
+let kUserDefaultsMessageKey = "ShareMessageKey"
+let kAppGroupIdKey = "AppGroupId"
 
-@available(swift, introduced: 5.0)
-open class RSIShareViewController: SLComposeServiceViewController {
+class ShareViewController: SLComposeServiceViewController {
     var hostAppBundleIdentifier = "com.jiaqi.hacki"
     var appGroupId = "group.com.jiaqi.hacki"
     var sharedMedia: [SharedMediaFile] = []

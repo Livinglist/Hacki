@@ -1,10 +1,3 @@
-//
-//  ActionViewController.swift
-//  Action Extension
-//
-//  Created by Jiaqi Feng on 5/22/22.
-//
-
 import UIKit
 import MobileCoreServices
 import UniformTypeIdentifiers
@@ -16,7 +9,6 @@ public class SharedMediaFile: Codable {
     var duration: Double? // video duration in milliseconds
     var message: String? // post message
     var type: SharedMediaType
-    
     
     public init(
         path: String,
@@ -71,10 +63,10 @@ public enum SharedMediaType: String, Codable, CaseIterable {
     }
 }
 
-public let kSchemePrefix = "ShareMedia"
-public let kUserDefaultsKey = "ShareKey"
-public let kUserDefaultsMessageKey = "ShareMessageKey"
-public let kAppGroupIdKey = "AppGroupId"
+let kSchemePrefix = "ShareMedia"
+let kUserDefaultsKey = "ShareKey"
+let kUserDefaultsMessageKey = "ShareMessageKey"
+let kAppGroupIdKey = "AppGroupId"
 
 class ActionViewController: UIViewController {
     var hostAppBundleIdentifier = "com.jiaqi.hacki"
