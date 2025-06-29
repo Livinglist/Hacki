@@ -274,7 +274,7 @@ final class DividerPreference extends BooleanPreference {
   const DividerPreference({bool? val})
       : super(val: val ?? _dividerDefaultValue);
 
-  static const bool _dividerDefaultValue = false;
+  static const bool _dividerDefaultValue = true;
 
   @override
   DividerPreference copyWith({required bool? val}) {
