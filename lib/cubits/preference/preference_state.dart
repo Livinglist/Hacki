@@ -52,6 +52,8 @@ class PreferenceState extends Equatable {
 
   bool get isComplexStoryTileEnabled => _isOn<DisplayModePreference>();
 
+  bool get isDividerEnabled => _isOn<DividerPreference>();
+
   bool get isFaviconEnabled => _isOn<FaviconModePreference>();
 
   bool get isReaderEnabled => _isOn<ReaderModePreference>();

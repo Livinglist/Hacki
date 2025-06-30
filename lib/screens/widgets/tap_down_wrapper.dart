@@ -6,9 +6,11 @@ class TapDownWrapper extends StatefulWidget {
     required this.child,
     super.key,
     this.onTap,
+    this.onLongPress,
   });
 
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
   final Widget child;
 
   @override
@@ -37,6 +39,7 @@ class _TapDownWrapperState extends State<TapDownWrapper>
       onTapDown: onTapDown,
       onTapUp: onTapUp,
       onTapCancel: onTapCancel,
+      onLongPress: widget.onLongPress,
       behavior: HitTestBehavior.opaque,
       child: AnimatedBuilder(
         animation:

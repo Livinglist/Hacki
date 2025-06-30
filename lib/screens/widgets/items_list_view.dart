@@ -20,6 +20,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     required this.items,
     required this.onTap,
     required this.refreshController,
+    this.showDivider = false,
     super.key,
     this.showAuthor = true,
     this.useSimpleTileForStory = false,
@@ -38,6 +39,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   });
 
   final bool showAuthor;
+  final bool showDivider;
   final bool useSimpleTileForStory;
   final bool showWebPreviewOnStoryTile;
   final bool showMetadataOnStoryTile;
@@ -78,6 +80,21 @@ class ItemsListView<T extends Item> extends StatelessWidget {
             final bool swipeGestureEnabled =
                 context.read<PreferenceCubit>().state.isSwipeGestureEnabled;
             return <Widget>[
+              if (showDivider)
+                Padding(
+                  padding: EdgeInsetsGeometry.only(
+                    bottom:
+                        showWebPreviewOnStoryTile ? Dimens.pt8 : Dimens.zero,
+                  ),
+                  child: const Divider(
+                    height: Dimens.zero,
+                  ),
+                )
+              else if (context.read<SplitViewCubit>().state.enabled)
+                const Divider(
+                  height: Dimens.pt6,
+                  color: Palette.transparent,
+                ),
               if (useSimpleTileForStory)
                 FadeIn(
                   child: InkWell(
@@ -134,7 +151,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                     ),
                   ),
                 )
-              else
+              else ...<Widget>[
                 GestureDetector(
                   /// If swipe gesture is enabled on home screen, use long press
                   /// instead of slide action to trigger the action menu.
@@ -154,15 +171,11 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                     ),
                   ),
                 ),
-              if (useSimpleTileForStory || !showWebPreviewOnStoryTile)
-                const Divider(
-                  height: Dimens.zero,
-                )
-              else if (context.read<SplitViewCubit>().state.enabled)
-                const Divider(
-                  height: Dimens.pt6,
-                  color: Palette.transparent,
-                ),
+                if (showDivider && showWebPreviewOnStoryTile)
+                  const SizedBox(
+                    height: Dimens.pt8,
+                  ),
+              ],
             ];
           } else if (e is Comment) {
             return <Widget>[

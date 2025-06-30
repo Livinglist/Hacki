@@ -60,7 +60,8 @@ class PinnedStories extends StatelessWidget {
                   ),
                 ),
               ),
-            if (state.pinnedStories.isNotEmpty)
+            if (state.pinnedStories.isNotEmpty &&
+                !preferenceState.isDividerEnabled)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: Dimens.pt12),
                 child: Divider(

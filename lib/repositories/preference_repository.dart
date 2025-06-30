@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/extensions/extensions.dart';
+import 'package:hacki/utils/debouncer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:synced_shared_preferences/synced_shared_preferences.dart';
 
@@ -402,10 +404,20 @@ class PreferenceRepository with Loggable {
     );
   }
 
+  final List<String> _storiesIdQueue = <String>[];
+  final Debouncer _debouncer = Debouncer(delay: AppDurations.tenSeconds);
+
   Future<void> addHasRead(int storyId) async {
     final String key = _getHasReadKey(storyId);
+
     if (Platform.isIOS) {
-      await _syncedPrefs.setBool(key: key, val: true);
+      _storiesIdQueue.add(key);
+      _debouncer.run(() {
+        for (final String key in _storiesIdQueue) {
+          _syncedPrefs.setBool(key: key, val: true);
+        }
+        _storiesIdQueue.clear();
+      });
     } else {
       final SharedPreferences prefs = await _prefs;
 

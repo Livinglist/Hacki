@@ -37,6 +37,7 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       const FaviconModePreference(),
       const MetadataModePreference(),
       const StoryUrlModePreference(),
+      const DividerPreference(),
 
       /// Divider.
       const MarkReadStoriesModePreference(),
@@ -267,6 +268,27 @@ final class StoryUrlModePreference extends BooleanPreference {
 
   @override
   String get subtitle => '''show url in story tile.''';
+}
+
+final class DividerPreference extends BooleanPreference {
+  const DividerPreference({bool? val})
+      : super(val: val ?? _dividerDefaultValue);
+
+  static const bool _dividerDefaultValue = true;
+
+  @override
+  DividerPreference copyWith({required bool? val}) {
+    return DividerPreference(val: val);
+  }
+
+  @override
+  String get key => 'dividerPreference';
+
+  @override
+  String get title => 'Divider';
+
+  @override
+  String get subtitle => '''show divider between story tiles.''';
 }
 
 final class ReaderModePreference extends BooleanPreference {
