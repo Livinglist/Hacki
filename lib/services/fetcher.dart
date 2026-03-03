@@ -121,10 +121,10 @@ abstract class Fetcher {
         await preferenceRepository.updateHasPushed(newReply!.id);
 
         await flutterLocalNotificationsPlugin.show(
-          newReply?.id ?? 0,
-          'You have a new reply! ${Constants.happyFace}',
-          '${newReply?.by}: $text',
-          const NotificationDetails(
+          id: newReply?.id ?? 0,
+          title: 'You have a new reply! ${Constants.happyFace}',
+          body: '${newReply?.by}: $text',
+          notificationDetails: const NotificationDetails(
             iOS: DarwinNotificationDetails(
               presentBadge: false,
               threadIdentifier: 'hacki',

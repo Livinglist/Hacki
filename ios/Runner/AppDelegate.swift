@@ -1,25 +1,27 @@
 import UIKit
 import Flutter
-import workmanager
+import workmanager_apple
 import shared_preferences_foundation
-import flutter_secure_storage
-import path_provider_foundation
 import flutter_local_notifications
+import flutter_secure_storage_darwin
 
 @main
-@objc class AppDelegate: FlutterAppDelegate {
+@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        GeneratedPluginRegistrant.register(with: self)
-        
         let center = UNUserNotificationCenter.current()
         center.delegate = self
         
-        WorkmanagerPlugin.register(with: self.registrar(forPlugin: "be.tramckrijte.workmanager.WorkmanagerPlugin")!)
+        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
+    
+    func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
+        GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+        WorkmanagerPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "be.tramckrijte.workmanager.WorkmanagerPlugin")!)
 
-        WorkmanagerPlugin.registerTask(withIdentifier: "workmanager.background.task")
+        WorkmanagerPlugin.registerBGProcessingTask(withIdentifier: "workmanager.background.task")
         
         if #available(iOS 10.0, *) {
             UNUserNotificationCenter.current().delegate = self as UNUserNotificationCenterDelegate
@@ -28,12 +30,16 @@ import flutter_local_notifications
         
         WorkmanagerPlugin.setPluginRegistrantCallback { registry in
             GeneratedPluginRegistrant.register(with: registry)
-            SharedPreferencesPlugin.register(with: registry.registrar(forPlugin: "io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin")!)
-            PathProviderPlugin.register(with: registry.registrar(forPlugin: "io.flutter.plugins.pathprovider.PathProviderPlugin")!)
-            FlutterLocalNotificationsPlugin.register(with: registry.registrar(forPlugin: "com.dexterous.flutterlocalnotifications.FlutterLocalNotificationsPlugin")!)
+            if let registrarResult = registry.registrar(forPlugin: "FlutterSecureStorageDarwinPlugin") {
+                FlutterSecureStorageDarwinPlugin.register(with: registrarResult)
+            }
+            if let registrarResult = registry.registrar(forPlugin: "io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin") {
+                SharedPreferencesPlugin.register(with: registrarResult)
+            }
+            if let registrarResult = registry.registrar(forPlugin: "com.dexterous.flutterlocalnotifications.FlutterLocalNotificationsPlugin") {
+                FlutterLocalNotificationsPlugin.register(with: registrarResult)
+            }
         }
-        
-        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
 }
 

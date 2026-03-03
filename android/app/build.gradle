@@ -32,8 +32,8 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.jiaqifeng.hacki"
-    compileSdkVersion 35
-    ndkVersion = "27.0.12077973"
+    compileSdkVersion 36
+    ndkVersion = "28.2.13676358"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -53,7 +53,7 @@ android {
     defaultConfig {
         applicationId "com.jiaqifeng.hacki"
         minSdkVersion 25
-        targetSdkVersion 35
+        targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
