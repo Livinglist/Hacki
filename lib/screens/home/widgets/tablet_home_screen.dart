@@ -15,7 +15,8 @@ class TabletHomeScreen extends StatelessWidget {
 
   final Widget homeScreen;
   static const double _dragPanelWidth = Dimens.pt2;
-  static const double _dragDotHeight = Dimens.pt30;
+  static const double _dragDotHeight = Dimens.pt80;
+  static const double _dragDotWidth = Dimens.pt40;
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +96,7 @@ class TabletHomeScreen extends StatelessWidget {
                             );
                       },
                       child: ColoredBox(
-                        color: Theme.of(context).colorScheme.tertiary,
+                        color: Theme.of(context).colorScheme.primary,
                         child: const SizedBox.shrink(),
                       ),
                     ),
@@ -103,11 +104,11 @@ class TabletHomeScreen extends StatelessWidget {
                   Positioned(
                     left: submissionPanelWidth +
                         _dragPanelWidth / 2 -
-                        _dragDotHeight / 2,
+                        _dragDotWidth / 2,
                     top: (MediaQuery.of(context).size.height - _dragDotHeight) /
                         2,
                     height: _dragDotHeight,
-                    width: _dragDotHeight,
+                    width: _dragDotWidth,
                     child: GestureDetector(
                       onHorizontalDragUpdate: (DragUpdateDetails details) {
                         context
@@ -116,18 +117,25 @@ class TabletHomeScreen extends StatelessWidget {
                               details.globalPosition.dx,
                             );
                       },
-                      child: Container(
-                        width: _dragDotHeight,
-                        height: _dragDotHeight,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.tertiary,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: FaIcon(
-                            FontAwesomeIcons.gripLinesVertical,
-                            color: Theme.of(context).colorScheme.onTertiary,
-                            size: TextDimens.pt16,
+                      child: Center(
+                        child: SizedBox(
+                          child: CustomPaint(
+                            painter: SpindlePainter(
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: Dimens.pt4,
+                                ),
+                                child: FaIcon(
+                                  FontAwesomeIcons.gripLinesVertical,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
+                                  size: TextDimens.pt18,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),
