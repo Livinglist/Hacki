@@ -119,6 +119,10 @@ class MainView extends StatelessWidget {
                         fetchMode: state.fetchMode,
                         isResponse: state.isResponse(comment),
                         isNew: shouldMarkNewComment && !comment.isFromCache,
+                        isEyeCandyEnabled: context
+                            .read<PreferenceCubit>()
+                            .state
+                            .isEyeCandyEnabled,
                         onReplyTapped: (Comment cmt) {
                           HapticFeedbackUtil.light();
                           if (cmt.deleted || cmt.dead) {

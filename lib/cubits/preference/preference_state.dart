@@ -83,6 +83,8 @@ class PreferenceState extends Equatable {
 
   bool get isHapticFeedbackEnabled => _isOn<HapticFeedbackPreference>();
 
+  bool get isEyeCandyEnabled => _isOn<EyeCandyPreference>();
+
   bool get isDevModeEnabled => _isOn<DevMode>();
 
   double get textScaleFactor =>

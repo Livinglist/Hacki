@@ -57,6 +57,7 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       const HapticFeedbackPreference(),
       const TrueDarkModePreference(),
       const SplitViewPreference(),
+      const EyeCandyPreference(),
       const DevMode(),
     ],
   );
@@ -121,6 +122,27 @@ final class SplitViewPreference extends BooleanPreference {
   @override
   String get subtitle =>
       '''enable split view on large screen. Relaunch the app to see effect.''';
+}
+
+final class EyeCandyPreference extends BooleanPreference {
+  const EyeCandyPreference({bool? val})
+      : super(val: val ?? _eyeCandyPreferenceDefaultValue);
+
+  static const bool _eyeCandyPreferenceDefaultValue = false;
+
+  @override
+  EyeCandyPreference copyWith({required bool? val}) {
+    return EyeCandyPreference(val: val);
+  }
+
+  @override
+  String get key => 'eyeCandyPreference';
+
+  @override
+  String get title => 'Eye Candy';
+
+  @override
+  String get subtitle => '''get everybody moving.''';
 }
 
 final class SwipeGesturePreference extends BooleanPreference {

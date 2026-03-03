@@ -60,7 +60,9 @@ abstract class Constants {
   static final String magicWord = <String>[
     'to be over the rainbow!',
     'to infinity and beyond!',
-    'to see the future.',
+    'to seek the light.',
+    'to rewind 1577712900.',
+    'to understand 1 Corinthians 13:4-8.',
   ].randomlyPicked!;
 
   static final String errorMessage = 'Something went wrong...$sadFace';
