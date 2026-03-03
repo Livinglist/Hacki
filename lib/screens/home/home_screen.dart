@@ -168,17 +168,24 @@ class _HomeScreenState extends State<HomeScreen>
       },
     );
 
-    return ScreenTypeLayout.builder(
-      mobile: (BuildContext context) {
-        context.read<SplitViewCubit>().disableSplitView();
-        return MobileHomeScreen(
+    if (context.read<PreferenceCubit>().state.isSplitViewEnabled) {
+      return ScreenTypeLayout.builder(
+        mobile: (BuildContext context) {
+          context.read<SplitViewCubit>().disableSplitView();
+          return MobileHomeScreen(
+            homeScreen: homeScreen,
+          );
+        },
+        tablet: (BuildContext context) => TabletHomeScreen(
           homeScreen: homeScreen,
-        );
-      },
-      tablet: (BuildContext context) => TabletHomeScreen(
+        ),
+      );
+    } else {
+      context.read<SplitViewCubit>().disableSplitView();
+      return MobileHomeScreen(
         homeScreen: homeScreen,
-      ),
-    );
+      );
+    }
   }
 
   void onStoryTapped(Story story) {
