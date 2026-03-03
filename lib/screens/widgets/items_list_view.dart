@@ -76,13 +76,14 @@ class ItemsListView<T extends Item> extends StatelessWidget {
             showExitButton: true,
           ),
         if (header != null) header!,
-        ...items.map((T e) {
+        ...List<int>.generate(items.length, (_) => _).map((int index) {
+          final T e = items.elementAt(index);
           if (e is Story) {
             final bool hasRead = context.read<StoriesBloc>().hasRead(e);
             final bool swipeGestureEnabled =
                 context.read<PreferenceCubit>().state.isSwipeGestureEnabled;
             return <Widget>[
-              if (showDivider)
+              if (showDivider && items.first.id != e.id)
                 Padding(
                   padding: EdgeInsetsGeometry.only(
                     bottom:

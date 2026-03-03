@@ -161,7 +161,7 @@ class _LinkPreviewState extends State<LinkPreview> {
                   const BoxShadow(blurRadius: 3, color: Palette.grey),
                 ],
       ),
-      height: height,
+      height: widget.showMultimedia ? height : null,
       child: LinkView(
         key: widget.key ?? Key(widget.link),
         metadata: widget.story.simpleMetadata,

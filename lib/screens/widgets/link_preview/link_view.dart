@@ -59,6 +59,7 @@ class LinkView extends StatelessWidget {
 
   static final Func3<TextScaler, TextStyle?, double, int> _computeMaxLines =
       memo3((TextScaler textScaler, TextStyle? style, double layoutHeight) {
+    if (layoutHeight.isInfinite) return 20;
     final Size size = (TextPainter(
       text: TextSpan(text: 'ABCDEFG', style: style),
       maxLines: 1,
@@ -66,7 +67,6 @@ class LinkView extends StatelessWidget {
       textDirection: TextDirection.ltr,
     )..layout())
         .size;
-
     final int maxLines = max(1, (layoutHeight / size.height).floor());
 
     return maxLines;
@@ -189,7 +189,7 @@ class LinkView extends StatelessWidget {
             TapDownWrapper(
               onTap: onTap,
               child: SizedBox(
-                height: layoutHeight,
+                height: showMultiMedia ? layoutHeight : null,
                 width: showMultiMedia
                     ? layoutWidth - layoutHeight - 8
                     : layoutWidth,

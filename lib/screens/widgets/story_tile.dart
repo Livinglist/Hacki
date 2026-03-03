@@ -108,6 +108,7 @@ class StoryTile extends StatelessWidget {
                     context.read<StoriesBloc>().state.isOfflineReading,
                 placeholderWidget: _LinkPreviewPlaceholder(
                   height: height,
+                  showPreviewImage: showPreviewImage,
                 ),
                 errorImage: Constants.hackerNewsLogoLink,
                 backgroundColor: Palette.transparent,
@@ -263,15 +264,17 @@ class StoryTile extends StatelessWidget {
 class _LinkPreviewPlaceholder extends StatelessWidget {
   const _LinkPreviewPlaceholder({
     required this.height,
+    required this.showPreviewImage,
   });
 
   final double height;
+  final bool showPreviewImage;
 
   @override
   Widget build(BuildContext context) {
     return FadeIn(
       child: SizedBox(
-        height: height,
+        height: showPreviewImage ? height : null,
         child: Shimmer.fromColors(
           baseColor: Theme.of(context).colorScheme.primary,
           highlightColor:
@@ -279,23 +282,24 @@ class _LinkPreviewPlaceholder extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(
-                  right: Dimens.pt5,
-                  bottom: Dimens.pt5,
-                  top: Dimens.pt5,
+              if (showPreviewImage)
+                Padding(
+                  padding: const EdgeInsets.only(
+                    right: Dimens.pt5,
+                    bottom: Dimens.pt5,
+                    top: Dimens.pt5,
+                  ),
+                  child: Container(
+                    height: height,
+                    width: height,
+                    color: Palette.white,
+                  ),
                 ),
-                child: Container(
-                  height: height,
-                  width: height,
-                  color: Palette.white,
-                ),
-              ),
               Expanded(
                 flex: 4,
                 child: Padding(
-                  padding: const EdgeInsets.only(
-                    left: Dimens.pt4,
+                  padding: EdgeInsets.only(
+                    left: showPreviewImage ? Dimens.pt4 : Dimens.zero,
                     top: Dimens.pt6,
                   ),
                   child: Column(

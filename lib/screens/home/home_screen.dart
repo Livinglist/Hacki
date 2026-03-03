@@ -118,7 +118,9 @@ class _HomeScreenState extends State<HomeScreen>
               current.isComplexStoryTileEnabled ||
           previous.isMetadataEnabled != current.isMetadataEnabled ||
           previous.isSwipeGestureEnabled != current.isSwipeGestureEnabled ||
-          previous.isDividerEnabled != current.isDividerEnabled,
+          previous.isDividerEnabled != current.isDividerEnabled ||
+          previous.isStoryTilePreviewImageEnabled !=
+              current.isStoryTilePreviewImageEnabled,
       builder: (BuildContext context, PreferenceState preferenceState) {
         return DefaultTabController(
           length: tabLength,

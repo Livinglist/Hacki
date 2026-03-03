@@ -369,13 +369,14 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
       prioritizedIds.addAll(ids);
     }
 
-    prioritizedIds = prioritizedIds.toSet().toList().sublist(
-          0,
-          min(
-            state.maxOfflineStoriesCount?.count ?? prioritizedIds.length,
-            prioritizedIds.length,
-          ),
-        );
+    prioritizedIds = prioritizedIds.toSet().toList();
+    prioritizedIds = prioritizedIds.sublist(
+      0,
+      min(
+        state.maxOfflineStoriesCount?.count ?? prioritizedIds.length,
+        prioritizedIds.length,
+      ),
+    );
 
     emit(
       state.copyWith(
@@ -443,10 +444,19 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         await _offlineRepository.deleteAllStories();
         await _offlineRepository.deleteAllComments();
         break;
+      } else if (state.downloadStatus == StoriesDownloadStatus.finished) {
+        logDebug(
+          'download status is finished, abort fetching stories and comments',
+        );
+        for (final StreamSubscription<Comment> stream in downloadStreams) {
+          await stream.cancel();
+        }
+        return;
       }
 
       logDebug('fetching story $id');
       final Story? story = await _hackerNewsRepository.fetchStory(id: id);
+      logDebug('fetched story $id');
 
       if (story == null) {
         if (isPrioritized) {
@@ -476,6 +486,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
       /// In other words, we are prioritizing the story itself instead of
       /// the comments in the story.
       late final StreamSubscription<Comment>? downloadStream;
+      logDebug('start fetching comments for story ${story.id}');
       downloadStream = _hackerNewsRepository
           .fetchAllChildrenComments(ids: story.kids)
           .whereType<Comment>()
@@ -484,6 +495,14 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
           if (state.downloadStatus == StoriesDownloadStatus.canceled) {
             logDebug('aborting downloading from comments stream');
             downloadStream?.cancel();
+            return;
+          } else if (state.downloadStatus == StoriesDownloadStatus.finished) {
+            logDebug(
+              '''A download status is finished, abort fetching stories and comments''',
+            );
+            for (final StreamSubscription<Comment> stream in downloadStreams) {
+              stream.cancel();
+            }
             return;
           }
 
@@ -510,10 +529,11 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
       emit(
         state.copyWith(
           storiesToBeDownloaded: updatedStoriesToBeDownloaded,
-          downloadStatus:
-              state.storiesDownloaded == updatedStoriesToBeDownloaded
-                  ? StoriesDownloadStatus.finished
-                  : null,
+          downloadStatus: updatedStoriesToBeDownloaded == 0 ||
+                  state.storiesDownloaded >=
+                      (state.maxOfflineStoriesCount?.count ?? 1000)
+              ? StoriesDownloadStatus.finished
+              : null,
         ),
       );
     } else {
@@ -527,10 +547,11 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         state.copyWith(
           storiesDownloaded: updatedStoriesDownloaded,
           storiesToBeDownloaded: updatedStoriesToBeDownloaded,
-          downloadStatus:
-              updatedStoriesDownloaded == updatedStoriesToBeDownloaded
-                  ? StoriesDownloadStatus.finished
-                  : null,
+          downloadStatus: updatedStoriesToBeDownloaded == 0 ||
+                  state.storiesDownloaded >=
+                      (state.maxOfflineStoriesCount?.count ?? 1000)
+              ? StoriesDownloadStatus.finished
+              : null,
         ),
       );
     }
