@@ -3,6 +3,7 @@ import Flutter
 import workmanager_apple
 import shared_preferences_foundation
 import flutter_local_notifications
+import flutter_secure_storage_darwin
 
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
@@ -29,8 +30,15 @@ import flutter_local_notifications
         
         WorkmanagerPlugin.setPluginRegistrantCallback { registry in
             GeneratedPluginRegistrant.register(with: registry)
-            SharedPreferencesPlugin.register(with: registry.registrar(forPlugin: "io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin")!)
-            FlutterLocalNotificationsPlugin.register(with: registry.registrar(forPlugin: "com.dexterous.flutterlocalnotifications.FlutterLocalNotificationsPlugin")!)
+            if let registrarResult = registry.registrar(forPlugin: "FlutterSecureStorageDarwinPlugin") {
+                FlutterSecureStorageDarwinPlugin.register(with: registrarResult)
+            }
+            if let registrarResult = registry.registrar(forPlugin: "io.flutter.plugins.sharedpreferences.SharedPreferencesPlugin") {
+                SharedPreferencesPlugin.register(with: registrarResult)
+            }
+            if let registrarResult = registry.registrar(forPlugin: "com.dexterous.flutterlocalnotifications.FlutterLocalNotificationsPlugin") {
+                FlutterLocalNotificationsPlugin.register(with: registrarResult)
+            }
         }
     }
 }
