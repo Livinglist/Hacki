@@ -8,6 +8,7 @@ import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/link_preview/image_wrapped_text.dart';
 import 'package:hacki/screens/widgets/link_preview/link_view.dart';
+import 'package:hacki/screens/widgets/tap_down_wrapper.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 
@@ -154,32 +155,49 @@ class _LinkPreviewState extends State<LinkPreview> {
     bool isIcon = false,
   }) {
     if (widget.isExpandedTileEnabled) {
-      return ImageWrapText(
-        text: desc ?? 'test',
-        url: widget.story.url,
-        imageSize: height,
-        image: Center(
-          child: CachedNetworkImage(
-            imageUrl: imageUri ??
-                Constants.favicon(
-                  widget.story.url.isNotEmpty
-                      ? widget.story.url
-                      : Constants.hackerNewsLogoLink,
-                ),
-            fit: BoxFit.scaleDown,
-            cacheKey: imageUri,
-            errorWidget: (_, __, ___) {
-              return const FadeIn(
-                child: Icon(
-                  Icons.public,
-                  size: Dimens.pt20,
-                ),
-              );
-            },
+      if (widget.showMultimedia) {
+        return ImageWrapText(
+          text: desc ?? '',
+          url: widget.story.url,
+          imageSize: height,
+          image: Center(
+            child: CachedNetworkImage(
+              imageUrl: imageUri ??
+                  Constants.favicon(
+                    widget.story.url.isNotEmpty
+                        ? widget.story.url
+                        : Constants.hackerNewsLogoLink,
+                  ),
+              fit: BoxFit.scaleDown,
+              cacheKey: imageUri,
+              errorWidget: (_, __, ___) {
+                return const FadeIn(
+                  child: Icon(
+                    Icons.public,
+                    size: Dimens.pt20,
+                  ),
+                );
+              },
+            ),
           ),
-        ),
-        onTap: widget.onTap,
-      );
+          onTap: widget.onTap,
+        );
+      } else {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            SizedBox(
+              width: MediaQuery.of(context).size.width - Dimens.pt24,
+              child: TapDownWrapper(
+                onTap: widget.onTap,
+                child: Text(
+                  desc ?? '',
+                ),
+              ),
+            ),
+          ],
+        );
+      }
     }
 
     return Container(
