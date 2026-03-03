@@ -428,7 +428,7 @@ class CommentTile extends StatelessWidget {
   static Color _getRainbowColor(int level, Color background) {
     const int colorCount = 6;
 
-    // If id is larger than 8, take modulo
+    // If id is larger than 6, take modulo
     int index = level % colorCount;
 
     final Color? cachedColor = levelToRainbowBorderColors[index];
