@@ -156,31 +156,39 @@ class _LinkPreviewState extends State<LinkPreview> {
   }) {
     if (widget.isExpandedTileEnabled) {
       if (widget.showMultimedia) {
-        return ImageWrapText(
-          text: desc ?? '',
-          url: widget.story.url,
-          imageSize: height,
-          image: Center(
-            child: CachedNetworkImage(
-              imageUrl: imageUri ??
-                  Constants.favicon(
-                    widget.story.url.isNotEmpty
-                        ? widget.story.url
-                        : Constants.hackerNewsLogoLink,
-                  ),
-              fit: BoxFit.scaleDown,
-              cacheKey: imageUri,
-              errorWidget: (_, __, ___) {
-                return const FadeIn(
-                  child: Icon(
-                    Icons.public,
-                    size: Dimens.pt20,
-                  ),
-                );
-              },
-            ),
-          ),
-          onTap: widget.onTap,
+        final String imageUrl = imageUri ??
+            Constants.favicon(
+              widget.story.url.isNotEmpty
+                  ? widget.story.url
+                  : Constants.guidelineLink,
+            );
+        return FutureBuilder<double>(
+          future: ImageRatioProvider.getImageRatio(imageUrl),
+          builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
+            return ImageWrapText(
+              text: desc ?? '',
+              url: widget.story.url,
+              imageHeight: height,
+              imageWidth: height * (snapshot.data ?? 1),
+              hasRead: widget.hasRead,
+              image: Center(
+                child: CachedNetworkImage(
+                  imageUrl: imageUrl,
+                  fit: BoxFit.scaleDown,
+                  cacheKey: imageUrl,
+                  errorWidget: (_, __, ___) {
+                    return const FadeIn(
+                      child: Icon(
+                        Icons.public,
+                        size: Dimens.pt20,
+                      ),
+                    );
+                  },
+                ),
+              ),
+              onTap: widget.onTap,
+            );
+          },
         );
       } else {
         return Row(

@@ -55,6 +55,7 @@ class CommentTile extends StatelessWidget {
   final VoidCallback? onTap;
 
   static final Map<int, Color> levelToBorderColors = <int, Color>{};
+  static final Map<int, Color> levelToRainbowBorderColors = <int, Color>{};
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +78,12 @@ class CommentTile extends StatelessWidget {
 
           final Color primaryColor = Theme.of(context).colorScheme.primary;
           final Brightness brightness = Theme.of(context).brightness;
+          final Color slidableBackgroundColor = isEyeCandyEnabled && level > 0
+              ? _getRainbowColor(
+                  level,
+                  Theme.of(context).colorScheme.surface,
+                )
+              : Theme.of(context).colorScheme.primary;
 
           final Widget child = DeviceGestureWrapper(
             child: Column(
@@ -89,12 +96,7 @@ class CommentTile extends StatelessWidget {
                           children: <Widget>[
                             CustomSlidableAction(
                               onPressed: (_) => onReplyTapped?.call(comment),
-                              backgroundColor: isEyeCandyEnabled
-                                  ? getRainbowColor(
-                                      level,
-                                      Theme.of(context).colorScheme.surface,
-                                    )
-                                  : Theme.of(context).colorScheme.primary,
+                              backgroundColor: slidableBackgroundColor,
                               foregroundColor:
                                   Theme.of(context).colorScheme.onPrimary,
                               child: const Icon(
@@ -106,8 +108,7 @@ class CommentTile extends StatelessWidget {
                                 comment.by)
                               CustomSlidableAction(
                                 onPressed: (_) => onEditTapped?.call(comment),
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.primary,
+                                backgroundColor: slidableBackgroundColor,
                                 foregroundColor:
                                     Theme.of(context).colorScheme.onPrimary,
                                 child: const Icon(
@@ -121,8 +122,7 @@ class CommentTile extends StatelessWidget {
                                 comment,
                                 context.rect,
                               ),
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.primary,
+                              backgroundColor: slidableBackgroundColor,
                               foregroundColor:
                                   Theme.of(context).colorScheme.onPrimary,
                               child: const Icon(
@@ -340,7 +340,7 @@ class CommentTile extends StatelessWidget {
 
           for (final int i in level.to(0, inclusive: false)) {
             final Color wrapperBorderColor = isEyeCandyEnabled
-                ? getRainbowColor(
+                ? _getRainbowColor(
                     i,
                     Theme.of(context).colorScheme.surface,
                   )
@@ -425,11 +425,15 @@ class CommentTile extends StatelessWidget {
     return color;
   }
 
-  static Color getRainbowColor(int level, Color background) {
-    const int colorCount = 20;
+  static Color _getRainbowColor(int level, Color background) {
+    const int colorCount = 6;
 
-    // If id is larger than 20, take modulo
+    // If id is larger than 8, take modulo
     int index = level % colorCount;
+
+    final Color? cachedColor = levelToRainbowBorderColors[index];
+
+    if (cachedColor != null) return cachedColor;
 
     // Ensure positive index
     if (index < 0) {
@@ -444,13 +448,14 @@ class CommentTile extends StatelessWidget {
 
     const double saturation = 0.85;
     final double lightness = isDarkBg ? 0.60 : 0.45;
-
-    return HSLColor.fromAHSL(
+    final Color color = HSLColor.fromAHSL(
       1, // Fully opaque
       hue,
       saturation,
       lightness,
     ).toColor();
+    levelToRainbowBorderColors[index] = color;
+    return color;
   }
 
   bool _shouldShowLoadButton(BuildContext context) {

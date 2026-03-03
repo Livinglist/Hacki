@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/stories/stories_bloc.dart';
 import 'package:hacki/screens/widgets/tap_down_wrapper.dart';
-import 'package:hacki/styles/dimens.dart';
-import 'package:hacki/styles/sized_boxes.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/link_util.dart';
 
 class ImageWrapText extends StatelessWidget {
@@ -14,19 +13,23 @@ class ImageWrapText extends StatelessWidget {
     required this.image,
     required this.onTap,
     required this.url,
+    required this.hasRead,
     super.key,
-    this.imageSize = 200,
+    this.imageHeight = 200,
+    this.imageWidth = 200,
     this.gap = 12,
     this.style,
   });
 
   final String text;
   final Widget image;
-  final double imageSize;
+  final double imageHeight;
+  final double imageWidth;
   final double gap;
   final TextStyle? style;
   final String url;
   final VoidCallback onTap;
+  final bool hasRead;
 
   @override
   Widget build(BuildContext context) {
@@ -36,14 +39,14 @@ class ImageWrapText extends StatelessWidget {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         final double maxWidth = constraints.maxWidth;
-        final double rightWidth = math.max(0, maxWidth - imageSize - gap);
+        final double rightWidth = math.max(0, maxWidth - imageWidth - gap);
 
         // 先测出行高（用一小段字符即可）
         final double lineHeight = _measureLineHeight(effectiveStyle, context);
 
         // 图片高度能放下多少行文字（至少 1 行）
         final int linesBesideImage =
-            math.max(1, (imageSize / lineHeight).floor());
+            math.max(1, (imageHeight / lineHeight).floor());
 
         // 计算 text 在右侧区域、限定行数下能放多少字符，得到切分点
         final int splitIndex = _findSplitIndex(
@@ -84,8 +87,8 @@ class ImageWrapText extends StatelessWidget {
                       }
                     },
                     child: SizedBox(
-                      width: imageSize,
-                      height: imageSize,
+                      width: imageWidth,
+                      height: imageHeight,
                       child: image,
                     ),
                   ),
@@ -96,7 +99,9 @@ class ImageWrapText extends StatelessWidget {
                     onTap: onTap,
                     child: Text(
                       firstPart,
-                      style: effectiveStyle,
+                      style: effectiveStyle.copyWith(
+                        color: hasRead ? Theme.of(context).readGrey : null,
+                      ),
                     ),
                   ),
                 ),
@@ -108,7 +113,9 @@ class ImageWrapText extends StatelessWidget {
                 onTap: onTap,
                 child: Text(
                   secondPart,
-                  style: effectiveStyle,
+                  style: effectiveStyle.copyWith(
+                    color: hasRead ? Theme.of(context).readGrey : null,
+                  ),
                   maxLines: 20,
                 ),
               ),
@@ -119,7 +126,7 @@ class ImageWrapText extends StatelessWidget {
     );
   }
 
-  double _measureLineHeight(TextStyle style, BuildContext context) {
+  static double _measureLineHeight(TextStyle style, BuildContext context) {
     final TextPainter tp = TextPainter(
       text: TextSpan(text: 'A', style: style),
       textDirection: Directionality.of(context),
@@ -128,7 +135,7 @@ class ImageWrapText extends StatelessWidget {
     return tp.height; // 单行高度
   }
 
-  int _findSplitIndex({
+  static int _findSplitIndex({
     required String text,
     required TextStyle style,
     required BuildContext context,

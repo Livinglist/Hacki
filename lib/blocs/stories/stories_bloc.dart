@@ -548,7 +548,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
           storiesDownloaded: updatedStoriesDownloaded,
           storiesToBeDownloaded: updatedStoriesToBeDownloaded,
           downloadStatus: updatedStoriesToBeDownloaded == 0 ||
-                  state.storiesDownloaded >=
+                  updatedStoriesDownloaded >=
                       (state.maxOfflineStoriesCount?.count ?? 1000)
               ? StoriesDownloadStatus.finished
               : null,

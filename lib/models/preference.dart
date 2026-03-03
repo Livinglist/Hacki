@@ -165,7 +165,7 @@ final class SwipeGesturePreference extends BooleanPreference {
 
   @override
   String get subtitle =>
-      '''enable swipe gesture for switching between tabs. If enabled, long press on Story tile to trigger the action menu and double tap to open the url (if complex tile is disabled).''';
+      '''enable swipe gesture for switching between tabs. If enabled, long press on Story tile to trigger the action menu and double tap to open the url (if rich tile is disabled).''';
 }
 
 final class NotificationModePreference extends BooleanPreference {
@@ -251,13 +251,13 @@ final class DisplayModePreference extends BooleanPreference {
   String get key => 'displayMode';
 
   @override
-  String get title => 'Complex Story Tile';
+  String get title => 'Rich Story Tile';
 
   @override
   String get subtitle => 'show web preview in story tile.';
 }
 
-/// When enabled, text on complex story tile will have the same height as
+/// When enabled, text on rich story tile will have the same height as
 /// the preview image.
 final class ExpandTileForLongerTextPreference extends BooleanPreference {
   const ExpandTileForLongerTextPreference({bool? val})
@@ -298,7 +298,7 @@ final class LargeStoryTileImageDisplayPreference extends BooleanPreference {
   String get title => 'Show Preview Image';
 
   @override
-  String get subtitle => 'show preview image in complex story tile.';
+  String get subtitle => 'show preview image in rich story tile.';
 }
 
 final class FaviconModePreference extends BooleanPreference {
@@ -319,7 +319,7 @@ final class FaviconModePreference extends BooleanPreference {
   String get title => 'Show Favicon';
 
   @override
-  String get subtitle => 'show favicon in story tile.';
+  String get subtitle => 'show favicon in simple story tile.';
 }
 
 final class MetadataModePreference extends BooleanPreference {

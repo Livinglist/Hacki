@@ -59,7 +59,7 @@ class LinkView extends StatelessWidget {
 
   static final Func3<TextScaler, TextStyle?, double, int> _computeMaxLines =
       memo3((TextScaler textScaler, TextStyle? style, double layoutHeight) {
-    if (layoutHeight.isInfinite) return 20;
+    if (layoutHeight.isInfinite) return 5;
     final Size size = (TextPainter(
       text: TextSpan(text: 'ABCDEFG', style: style),
       maxLines: 1,
