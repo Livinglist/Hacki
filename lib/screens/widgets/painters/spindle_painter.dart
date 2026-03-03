@@ -50,6 +50,13 @@ class SpindlePainter extends CustomPainter {
       )
       ..close();
 
+    // Uncomment for shadow:
+    // final Paint shadowPaint = Paint()
+    //   ..color = Colors.black38
+    //   ..style = PaintingStyle.fill
+    //   ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
+    // canvas.drawPath(path.shift(const Offset(4, 4)), shadowPaint);
+
     canvas
       ..drawPath(path, fillPaint) // fill first
       ..drawPath(path, strokePaint); // outline on top

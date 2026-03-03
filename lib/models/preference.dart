@@ -59,6 +59,7 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       const TrueDarkModePreference(),
       const SplitViewPreference(),
       const EyeCandyPreference(),
+      const HackerNewsThemePreference(),
       const DevMode(),
     ],
   );
@@ -144,6 +145,27 @@ final class EyeCandyPreference extends BooleanPreference {
 
   @override
   String get subtitle => '''get everybody moving.''';
+}
+
+final class HackerNewsThemePreference extends BooleanPreference {
+  const HackerNewsThemePreference({bool? val})
+      : super(val: val ?? _hackerNewsThemePreferenceDefaultValue);
+
+  static const bool _hackerNewsThemePreferenceDefaultValue = false;
+
+  @override
+  HackerNewsThemePreference copyWith({required bool? val}) {
+    return HackerNewsThemePreference(val: val);
+  }
+
+  @override
+  String get key => 'hackerNewsThemePreference';
+
+  @override
+  String get title => 'Hacker News Theme';
+
+  @override
+  String get subtitle => '''experimental.''';
 }
 
 final class SwipeGesturePreference extends BooleanPreference {

@@ -89,6 +89,8 @@ class PreferenceState extends Equatable {
 
   bool get isDevModeEnabled => _isOn<DevMode>();
 
+  bool get isHackerNewsThemeEnabled => _isOn<HackerNewsThemePreference>();
+
   double get textScaleFactor =>
       preferences.singleWhereType<TextScaleFactorPreference>().val;
 

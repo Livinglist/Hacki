@@ -191,19 +191,25 @@ class _LinkPreviewState extends State<LinkPreview> {
           },
         );
       } else {
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            SizedBox(
-              width: MediaQuery.of(context).size.width - Dimens.pt24,
+        return LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            final double availableWidth = constraints.maxWidth;
+
+            return SizedBox(
+              width: availableWidth - Dimens.pt12,
               child: TapDownWrapper(
                 onTap: widget.onTap,
                 child: Text(
                   desc ?? '',
+                  maxLines: 20,
+                  style: DefaultTextStyle.of(context).style.copyWith(
+                        color:
+                            widget.hasRead ? Theme.of(context).readGrey : null,
+                      ),
                 ),
               ),
-            ),
-          ],
+            );
+          },
         );
       }
     }
