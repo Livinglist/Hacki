@@ -29,8 +29,6 @@ platform :ios do
   lane :beta do |options|
     setup_ci if ENV['CI']
 
-    is_example_repo = ENV['CI'] && ENV['GITHUB_REPOSITORY'] == 'jorgenpt/flutter_github_example'
-
     # Download code signing certificates using `match` (and the `MATCH_PASSWORD` secret)
     sync_code_signing(
       type: "appstore",
