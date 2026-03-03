@@ -25,6 +25,8 @@ class _CustomTabBarState extends State<CustomTabBar> {
 
   int currentIndex = 0;
 
+  static const int _profileTabIndex = 5;
+
   @override
   void initState() {
     super.initState();
@@ -40,6 +42,8 @@ class _CustomTabBarState extends State<CustomTabBar> {
   Widget build(BuildContext context) {
     return BlocBuilder<TabCubit, TabState>(
       builder: (BuildContext context, TabState state) {
+        final bool isHackerNewsThemeEnabled =
+            context.read<PreferenceCubit>().state.isHackerNewsThemeEnabled;
         return TabBar(
           controller: widget.tabController,
           dividerHeight: 0,
@@ -66,15 +70,34 @@ class _CustomTabBarState extends State<CustomTabBar> {
                 child: AnimatedDefaultTextStyle(
                   style: TextStyle(
                     fontFamily: context.read<PreferenceCubit>().state.font.name,
-                    fontSize:
-                        currentIndex == i ? TextDimens.pt12 : TextDimens.pt10,
-                    color: currentIndex == i
-                        ? Theme.of(context).colorScheme.primary
-                        : Palette.grey,
+                    fontSize: () {
+                      if (isHackerNewsThemeEnabled) {
+                        return currentIndex == i
+                            ? TextDimens.pt18
+                            : TextDimens.pt12;
+                      } else {
+                        return currentIndex == i
+                            ? TextDimens.pt12
+                            : TextDimens.pt10;
+                      }
+                    }(),
+                    color: () {
+                      if (isHackerNewsThemeEnabled) {
+                        return currentIndex == i
+                            ? Palette.white
+                            : Palette.black;
+                      } else {
+                        return currentIndex == i
+                            ? Theme.of(context).colorScheme.primary
+                            : Palette.grey;
+                      }
+                    }(),
                   ),
                   duration: AppDurations.ms200,
                   child: Text(
-                    state.tabs.elementAt(i).label,
+                    isHackerNewsThemeEnabled
+                        ? state.tabs.elementAt(i).label.toLowerCase()
+                        : state.tabs.elementAt(i).label,
                     key: ValueKey<String>(
                       '${state.tabs.elementAt(i).label}-${currentIndex == i}',
                     ),
@@ -113,12 +136,28 @@ class _CustomTabBarState extends State<CustomTabBar> {
                       ),
                       child: Icon(
                         Icons.person,
-                        size: currentIndex == 5
-                            ? TextDimens.pt16
-                            : TextDimens.pt12,
-                        color: currentIndex == 5
-                            ? Theme.of(context).colorScheme.primary
-                            : Palette.grey,
+                        size: () {
+                          if (isHackerNewsThemeEnabled) {
+                            return currentIndex == _profileTabIndex
+                                ? TextDimens.pt20
+                                : TextDimens.pt14;
+                          } else {
+                            return currentIndex == _profileTabIndex
+                                ? TextDimens.pt16
+                                : TextDimens.pt12;
+                          }
+                        }(),
+                        color: () {
+                          if (isHackerNewsThemeEnabled) {
+                            return currentIndex == _profileTabIndex
+                                ? Palette.white
+                                : Palette.black;
+                          } else {
+                            return currentIndex == _profileTabIndex
+                                ? Theme.of(context).colorScheme.primary
+                                : Palette.grey;
+                          }
+                        }(),
                       ),
                     );
                   },

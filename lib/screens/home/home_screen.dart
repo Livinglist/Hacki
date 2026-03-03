@@ -131,15 +131,18 @@ class _HomeScreenState extends State<HomeScreen>
                 Dimens.zero,
                 Dimens.pt40,
               ),
-              child: Column(
-                children: <Widget>[
-                  SizedBox(
-                    height: MediaQuery.of(context).padding.top - Dimens.pt8,
-                  ),
-                  CustomTabBar(
-                    tabController: tabController,
-                  ),
-                ],
+              child: ColoredBox(
+                color: Theme.of(context).primaryColor,
+                child: Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: MediaQuery.of(context).padding.top - Dimens.pt8,
+                    ),
+                    CustomTabBar(
+                      tabController: tabController,
+                    ),
+                  ],
+                ),
               ),
             ),
             body: BlocBuilder<TabCubit, TabState>(
