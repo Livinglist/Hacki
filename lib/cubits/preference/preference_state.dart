@@ -68,6 +68,8 @@ class PreferenceState extends Equatable {
 
   bool get isSwipeGestureEnabled => _isOn<SwipeGesturePreference>();
 
+  bool get isSplitViewEnabled => _isOn<SplitViewPreference>();
+
   bool get isAutoScrollEnabled => _isOn<AutoScrollModePreference>();
 
   bool get isCustomTabEnabled => _isOn<CustomTabPreference>();
