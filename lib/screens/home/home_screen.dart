@@ -131,8 +131,12 @@ class _HomeScreenState extends State<HomeScreen>
                 Dimens.zero,
                 Dimens.pt40,
               ),
-              child: ColoredBox(
-                color: Theme.of(context).primaryColor,
+              child: OptionalWrapper(
+                enabled: preferenceState.isHackerNewsThemeEnabled,
+                wrapper: (Widget c) => ColoredBox(
+                  color: Theme.of(context).primaryColor,
+                  child: c,
+                ),
                 child: Column(
                   children: <Widget>[
                     SizedBox(
