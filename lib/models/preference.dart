@@ -31,8 +31,11 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       HackerNewsDataSourcePreference(),
       const TextScaleFactorPreference(),
 
-      /// Order of items below matters and
-      /// reflects the order on settings screen.
+      ///
+      /// !!! NOTE !!!
+      /// The order of items below matters and
+      /// reflects the order on in-app settings screen.
+      ///
       const DisplayModePreference(),
       const FaviconModePreference(),
       const MetadataModePreference(),
@@ -52,6 +55,7 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       const SwipeGesturePreference(),
       const HapticFeedbackPreference(),
       const TrueDarkModePreference(),
+      const SplitViewPreference(),
       const DevMode(),
     ],
   );
@@ -93,6 +97,29 @@ final class DevMode extends BooleanPreference {
 
   @override
   bool get isDisplayable => false;
+}
+
+final class SplitViewPreference extends BooleanPreference {
+  const SplitViewPreference({bool? val})
+      : super(val: val ?? _splitViewPreferenceDefaultValue);
+
+  /// Enable split view by default.
+  static const bool _splitViewPreferenceDefaultValue = true;
+
+  @override
+  SplitViewPreference copyWith({required bool? val}) {
+    return SplitViewPreference(val: val);
+  }
+
+  @override
+  String get key => 'splitViewPreference';
+
+  @override
+  String get title => 'Split View';
+
+  @override
+  String get subtitle =>
+      '''enable split view on large screen. Relaunch the app to see effect.''';
 }
 
 final class SwipeGesturePreference extends BooleanPreference {

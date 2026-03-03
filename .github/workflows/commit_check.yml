@@ -19,8 +19,35 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
-      - run: submodules/flutter/bin/flutter doctor
-      - run: submodules/flutter/bin/flutter pub get
-      - run: submodules/flutter/bin/dart format --set-exit-if-changed lib test integration_test
-      - run: submodules/flutter/bin/flutter analyze lib test integration_test
-      - run: submodules/flutter/bin/flutter test
+
+      # Check if commit contains any changes under /lib, /test or /integration_test dir.
+      - name: Detect Flutter code changes
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            flutter:
+              - 'lib/**'
+              - 'test/**'
+              - 'integration_test/**'
+              - 'pubspec.yaml'
+
+      - name: Flutter doctor
+        if: steps.changes.outputs.flutter == 'true' || steps.changes.outputs.unitTests == 'true'
+        run: submodules/flutter/bin/flutter doctor
+
+      - name: Flutter pub get
+        if: steps.changes.outputs.flutter == 'true' || steps.changes.outputs.unitTests == 'true'
+        run: submodules/flutter/bin/flutter pub get
+
+      - name: Flutter format
+        if: steps.changes.outputs.flutter == 'true' || steps.changes.outputs.unitTests == 'true'
+        run: submodules/flutter/bin/dart format --set-exit-if-changed lib test integration_test
+
+      - name: Flutter analyze
+        if: steps.changes.outputs.flutter == 'true' || steps.changes.outputs.unitTests == 'true'
+        run: submodules/flutter/bin/flutter analyze lib test integration_test
+
+      - name: Flutter test
+        if: steps.changes.outputs.flutter == 'true' || steps.changes.outputs.unitTests == 'true'
+        run: submodules/flutter/bin/flutter test
