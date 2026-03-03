@@ -28,6 +28,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.enablePullDown = true,
     this.markReadStories = false,
     this.showOfflineBanner = false,
+    this.isExpandedTileEnabled = false,
     this.loadStyle = LoadStyle.ShowWhenLoading,
     this.onRefresh,
     this.onLoadMore,
@@ -50,6 +51,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   final bool enablePullDown;
   final bool markReadStories;
   final bool showOfflineBanner;
+  final bool isExpandedTileEnabled;
 
   final LoadStyle loadStyle;
   final List<T> items;
@@ -171,6 +173,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                       showUrl: showUrl,
                       showFavicon: showFavicon,
                       showPreviewImage: showPreviewImage,
+                      isExpandedTileEnabled: isExpandedTileEnabled,
                       hasRead: markReadStories && hasRead,
                     ),
                   ),

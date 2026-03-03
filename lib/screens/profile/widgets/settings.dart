@@ -271,6 +271,8 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                     showFavicon: preferenceState.isFaviconEnabled,
                     showPreviewImage:
                         preferenceState.isStoryTilePreviewImageEnabled,
+                    isExpandedTileEnabled:
+                        preferenceState.isExpandedTileEnabled,
                     story: Story.placeholder(),
                     onTap: () => LinkUtil.launch(
                       Constants.guidelineLink,

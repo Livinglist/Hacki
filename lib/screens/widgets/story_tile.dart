@@ -19,6 +19,7 @@ class StoryTile extends StatelessWidget {
     required this.showMetadata,
     required this.showFavicon,
     required this.showUrl,
+    required this.isExpandedTileEnabled,
     required this.story,
     required this.onTap,
     super.key,
@@ -32,6 +33,7 @@ class StoryTile extends StatelessWidget {
   final bool showFavicon;
   final bool showUrl;
   final bool hasRead;
+  final bool isExpandedTileEnabled;
   final Story story;
   final VoidCallback onTap;
   final double simpleTileFontSize;
@@ -106,6 +108,7 @@ class StoryTile extends StatelessWidget {
                 link: story.url,
                 isOfflineReading:
                     context.read<StoriesBloc>().state.isOfflineReading,
+                isExpandedTileEnabled: isExpandedTileEnabled,
                 placeholderWidget: _LinkPreviewPlaceholder(
                   height: height,
                   showPreviewImage: showPreviewImage,

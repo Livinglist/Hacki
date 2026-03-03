@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/screens/widgets/link_preview/image_wrapped_text.dart';
 import 'package:hacki/screens/widgets/link_preview/link_view.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
@@ -17,6 +20,7 @@ class LinkPreview extends StatefulWidget {
     required this.showUrl,
     required this.isOfflineReading,
     required this.hasRead,
+    required this.isExpandedTileEnabled,
     super.key,
     this.cache = const Duration(days: 30),
     this.showMultimedia = true,
@@ -101,6 +105,7 @@ class LinkPreview extends StatefulWidget {
   final bool showMetadata;
   final bool showUrl;
   final bool isOfflineReading;
+  final bool isExpandedTileEnabled;
 
   @override
   _LinkPreviewState createState() => _LinkPreviewState();
@@ -148,6 +153,35 @@ class _LinkPreviewState extends State<LinkPreview> {
     String? iconUri = '',
     bool isIcon = false,
   }) {
+    if (widget.isExpandedTileEnabled) {
+      return ImageWrapText(
+        text: desc ?? 'test',
+        url: widget.story.url,
+        imageSize: height,
+        image: Center(
+          child: CachedNetworkImage(
+            imageUrl: imageUri ??
+                Constants.favicon(
+                  widget.story.url.isNotEmpty
+                      ? widget.story.url
+                      : Constants.hackerNewsLogoLink,
+                ),
+            fit: BoxFit.scaleDown,
+            cacheKey: imageUri,
+            errorWidget: (_, __, ___) {
+              return const FadeIn(
+                child: Icon(
+                  Icons.public,
+                  size: Dimens.pt20,
+                ),
+              );
+            },
+          ),
+        ),
+        onTap: widget.onTap,
+      );
+    }
+
     return Container(
       decoration: BoxDecoration(
         color: widget.backgroundColor,

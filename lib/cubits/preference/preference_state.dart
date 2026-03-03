@@ -52,6 +52,8 @@ class PreferenceState extends Equatable {
 
   bool get isComplexStoryTileEnabled => _isOn<DisplayModePreference>();
 
+  bool get isExpandedTileEnabled => _isOn<ExpandTileForLongerTextPreference>();
+
   bool get isStoryTilePreviewImageEnabled =>
       _isOn<LargeStoryTileImageDisplayPreference>();
 

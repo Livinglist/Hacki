@@ -37,6 +37,7 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       /// reflects the order on in-app settings screen.
       ///
       const DisplayModePreference(),
+      const ExpandTileForLongerTextPreference(),
       const FaviconModePreference(),
       const LargeStoryTileImageDisplayPreference(),
       const MetadataModePreference(),
@@ -254,6 +255,29 @@ final class DisplayModePreference extends BooleanPreference {
 
   @override
   String get subtitle => 'show web preview in story tile.';
+}
+
+/// When enabled, text on complex story tile will have the same height as
+/// the preview image.
+final class ExpandTileForLongerTextPreference extends BooleanPreference {
+  const ExpandTileForLongerTextPreference({bool? val})
+      : super(val: val ?? _expandTileForLongerTextPreferenceDefaultValue);
+
+  static const bool _expandTileForLongerTextPreferenceDefaultValue = false;
+
+  @override
+  ExpandTileForLongerTextPreference copyWith({required bool? val}) {
+    return ExpandTileForLongerTextPreference(val: val);
+  }
+
+  @override
+  String get key => 'expandTileForLongerTextPreference';
+
+  @override
+  String get title => 'Expand Tile for Longer Text';
+
+  @override
+  String get subtitle => '''more space for more text.''';
 }
 
 final class LargeStoryTileImageDisplayPreference extends BooleanPreference {
