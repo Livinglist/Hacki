@@ -214,7 +214,7 @@ class _ParentItemSection extends StatelessWidget {
               startActionPane: ActionPane(
                 motion: const BehindMotion(),
                 children: <Widget>[
-                  SlidableAction(
+                  CustomSlidableAction(
                     onPressed: (_) {
                       HapticFeedbackUtil.light();
 
@@ -226,7 +226,9 @@ class _ParentItemSection extends StatelessWidget {
                     },
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                    icon: Icons.message,
+                    child: const Icon(
+                      Icons.message,
+                    ),
                   ),
                   SlidableAction(
                     onPressed: (BuildContext context) =>

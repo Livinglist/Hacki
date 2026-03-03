@@ -83,6 +83,7 @@ class _StoriesListViewState extends State<StoriesListView>
               showWebPreviewOnStoryTile:
                   preferenceState.isComplexStoryTileEnabled,
               showMetadataOnStoryTile: preferenceState.isMetadataEnabled,
+              showPreviewImage: preferenceState.isStoryTilePreviewImageEnabled,
               showFavicon: preferenceState.isFaviconEnabled,
               showUrl: preferenceState.isUrlEnabled,
               refreshController: refreshController,
@@ -143,7 +144,7 @@ class _StoriesListViewState extends State<StoriesListView>
                   startActionPane: ActionPane(
                     motion: const BehindMotion(),
                     children: <Widget>[
-                      SlidableAction(
+                      CustomSlidableAction(
                         onPressed: (_) {
                           HapticFeedbackUtil.light();
                           context.read<PinCubit>().pinStory(story);
@@ -151,24 +152,40 @@ class _StoriesListViewState extends State<StoriesListView>
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor:
                             Theme.of(context).colorScheme.onPrimary,
-                        icon: preferenceState.isComplexStoryTileEnabled
-                            ? Icons.push_pin_outlined
-                            : null,
-                        label: preferenceState.isComplexStoryTileEnabled
-                            ? null
-                            : 'Pin',
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            if (preferenceState.isComplexStoryTileEnabled)
+                              const Icon(
+                                Icons.push_pin_outlined,
+                                size: Dimens.pt24,
+                              ),
+                            if (!preferenceState.isComplexStoryTileEnabled)
+                              const Text(
+                                'Pin',
+                              ),
+                          ],
+                        ),
                       ),
-                      SlidableAction(
+                      CustomSlidableAction(
                         onPressed: (_) => onMoreTapped(story, context.rect),
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor:
                             Theme.of(context).colorScheme.onPrimary,
-                        icon: preferenceState.isComplexStoryTileEnabled
-                            ? Icons.more_horiz
-                            : null,
-                        label: preferenceState.isComplexStoryTileEnabled
-                            ? null
-                            : 'More',
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            if (preferenceState.isComplexStoryTileEnabled)
+                              const Icon(
+                                Icons.more_horiz,
+                                size: Dimens.pt24,
+                              ),
+                            if (!preferenceState.isComplexStoryTileEnabled)
+                              const Text(
+                                'More',
+                              ),
+                          ],
+                        ),
                       ),
                     ],
                   ),

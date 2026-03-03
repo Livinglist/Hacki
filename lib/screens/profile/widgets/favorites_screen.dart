@@ -142,6 +142,7 @@ class FavoritesScreen extends StatelessWidget {
             return ItemsListView<Item>(
               showWebPreviewOnStoryTile: prefState.isComplexStoryTileEnabled,
               showMetadataOnStoryTile: prefState.isMetadataEnabled,
+              showPreviewImage: prefState.isStoryTilePreviewImageEnabled,
               showFavicon: prefState.isFaviconEnabled,
               showUrl: prefState.isUrlEnabled,
               useSimpleTileForStory: true,

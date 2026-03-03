@@ -269,6 +269,8 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                     showMetadata: preferenceState.isMetadataEnabled,
                     showUrl: preferenceState.isUrlEnabled,
                     showFavicon: preferenceState.isFaviconEnabled,
+                    showPreviewImage:
+                        preferenceState.isStoryTilePreviewImageEnabled,
                     story: Story.placeholder(),
                     onTap: () => LinkUtil.launch(
                       Constants.guidelineLink,

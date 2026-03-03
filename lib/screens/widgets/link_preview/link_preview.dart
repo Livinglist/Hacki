@@ -180,7 +180,6 @@ class _LinkPreviewState extends State<LinkPreview> {
         isIcon: isIcon,
         bgColor: widget.backgroundColor,
         radius: widget.borderRadius ?? 12,
-        showMetadata: widget.showMetadata,
         showUrl: widget.showUrl,
       ),
     );

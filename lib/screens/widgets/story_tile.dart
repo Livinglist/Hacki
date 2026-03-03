@@ -15,6 +15,7 @@ import 'package:shimmer/shimmer.dart';
 class StoryTile extends StatelessWidget {
   const StoryTile({
     required this.showWebPreview,
+    required this.showPreviewImage,
     required this.showMetadata,
     required this.showFavicon,
     required this.showUrl,
@@ -26,6 +27,7 @@ class StoryTile extends StatelessWidget {
   });
 
   final bool showWebPreview;
+  final bool showPreviewImage;
   final bool showMetadata;
   final bool showFavicon;
   final bool showUrl;
@@ -115,6 +117,7 @@ class StoryTile extends StatelessWidget {
                 errorTitle: story.title,
                 hasRead: hasRead,
                 showMetadata: showMetadata,
+                showMultimedia: showPreviewImage,
                 showUrl: showUrl,
                 onTap: onTap,
               ),

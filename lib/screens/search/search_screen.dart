@@ -362,6 +362,8 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                       child: StoryTile(
                                         showWebPreview:
                                             prefState.isComplexStoryTileEnabled,
+                                        showPreviewImage: prefState
+                                            .isStoryTilePreviewImageEnabled,
                                         showMetadata:
                                             prefState.isMetadataEnabled,
                                         showUrl: prefState.isUrlEnabled,

@@ -95,6 +95,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                         return ItemsListView<Item>(
                           showWebPreviewOnStoryTile: false,
                           showMetadataOnStoryTile: false,
+                          showPreviewImage: context
+                              .read<PreferenceCubit>()
+                              .state
+                              .isStoryTilePreviewImageEnabled,
                           showFavicon: false,
                           showUrl: false,
                           showAuthor: false,

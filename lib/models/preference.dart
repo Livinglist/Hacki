@@ -38,6 +38,7 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       ///
       const DisplayModePreference(),
       const FaviconModePreference(),
+      const LargeStoryTileImageDisplayPreference(),
       const MetadataModePreference(),
       const StoryUrlModePreference(),
       const DividerPreference(),
@@ -231,6 +232,27 @@ final class DisplayModePreference extends BooleanPreference {
 
   @override
   String get subtitle => 'show web preview in story tile.';
+}
+
+final class LargeStoryTileImageDisplayPreference extends BooleanPreference {
+  const LargeStoryTileImageDisplayPreference({bool? val})
+      : super(val: val ?? _storyTileImageDisplayPreferenceDefaultValue);
+
+  static const bool _storyTileImageDisplayPreferenceDefaultValue = true;
+
+  @override
+  LargeStoryTileImageDisplayPreference copyWith({required bool? val}) {
+    return LargeStoryTileImageDisplayPreference(val: val);
+  }
+
+  @override
+  String get key => 'largeStoryTileImageDisplayPreference';
+
+  @override
+  String get title => 'Show Preview Image';
+
+  @override
+  String get subtitle => 'show preview image in complex story tile.';
 }
 
 final class FaviconModePreference extends BooleanPreference {

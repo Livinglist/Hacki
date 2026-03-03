@@ -15,6 +15,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   const ItemsListView({
     required this.showWebPreviewOnStoryTile,
     required this.showMetadataOnStoryTile,
+    required this.showPreviewImage,
     required this.showFavicon,
     required this.showUrl,
     required this.items,
@@ -44,6 +45,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   final bool showWebPreviewOnStoryTile;
   final bool showMetadataOnStoryTile;
   final bool showFavicon;
+  final bool showPreviewImage;
   final bool showUrl;
   final bool enablePullDown;
   final bool markReadStories;
@@ -167,6 +169,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                       showMetadata: showMetadataOnStoryTile,
                       showUrl: showUrl,
                       showFavicon: showFavicon,
+                      showPreviewImage: showPreviewImage,
                       hasRead: markReadStories && hasRead,
                     ),
                   ),

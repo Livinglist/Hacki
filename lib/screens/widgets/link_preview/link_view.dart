@@ -20,7 +20,6 @@ class LinkView extends StatelessWidget {
     required this.title,
     required this.description,
     required this.onTap,
-    required this.showMetadata,
     required bool showUrl,
     required this.bodyMaxLines,
     super.key,
@@ -56,7 +55,6 @@ class LinkView extends StatelessWidget {
   final bool isIcon;
   final double radius;
   final Color? bgColor;
-  final bool showMetadata;
   final bool showUrl;
 
   static final Func3<TextScaler, TextStyle?, double, int> _computeMaxLines =
@@ -187,12 +185,14 @@ class LinkView extends StatelessWidget {
                 ),
               )
             else
-              const SizedBox(width: Dimens.pt5),
+              const SizedBox(width: Dimens.zero),
             TapDownWrapper(
               onTap: onTap,
               child: SizedBox(
                 height: layoutHeight,
-                width: layoutWidth - layoutHeight - 8,
+                width: showMultiMedia
+                    ? layoutWidth - layoutHeight - 8
+                    : layoutWidth,
                 child: Text(
                   description,
                   textAlign: TextAlign.left,
