@@ -88,9 +88,9 @@ Future<void> main({bool testing = false}) async {
       iOS: initializationSettingsIOS,
     );
     await flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
       onDidReceiveBackgroundNotificationResponse: notificationReceiver,
       onDidReceiveNotificationResponse: notificationReceiver,
+      settings: initializationSettings,
     );
     await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<

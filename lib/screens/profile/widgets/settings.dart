@@ -304,7 +304,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                               .add(ClearAllReadStories());
                         }
                       },
-                      activeColor: Theme.of(context).colorScheme.primary,
+                      activeThumbColor: Theme.of(context).colorScheme.primary,
                     ),
                     if (preference
                         is MarkReadStoriesModePreference) ...<Widget>[
@@ -496,26 +496,28 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
               previous.font != current.font,
           builder: (BuildContext context, PreferenceState state) {
             return AlertDialog(
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  for (final Font font in Font.values)
-                    RadioListTile<Font>(
-                      value: font,
-                      groupValue: state.font,
-                      onChanged: (Font? val) {
-                        if (val != null) {
-                          context
-                              .read<PreferenceCubit>()
-                              .update(FontPreference(val: val.index));
-                        }
-                      },
-                      title: Text(
-                        font.uiLabel,
-                        style: TextStyle(fontFamily: font.name),
+              content: RadioGroup<Font>(
+                groupValue: state.font,
+                onChanged: (Font? val) {
+                  if (val != null) {
+                    context
+                        .read<PreferenceCubit>()
+                        .update(FontPreference(val: val.index));
+                  }
+                },
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    for (final Font font in Font.values)
+                      RadioListTile<Font>(
+                        value: font,
+                        title: Text(
+                          font.uiLabel,
+                          style: TextStyle(fontFamily: font.name),
+                        ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             );
           },
@@ -530,28 +532,26 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
       builder: (_) {
         final AdaptiveThemeMode themeMode = AdaptiveTheme.of(context).mode;
         return AlertDialog(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              RadioListTile<AdaptiveThemeMode>(
-                value: AdaptiveThemeMode.light,
-                groupValue: themeMode,
-                onChanged: updateThemeSetting,
-                title: const Text('Light'),
-              ),
-              RadioListTile<AdaptiveThemeMode>(
-                value: AdaptiveThemeMode.dark,
-                groupValue: themeMode,
-                onChanged: updateThemeSetting,
-                title: const Text('Dark'),
-              ),
-              RadioListTile<AdaptiveThemeMode>(
-                value: AdaptiveThemeMode.system,
-                groupValue: themeMode,
-                onChanged: updateThemeSetting,
-                title: const Text('System'),
-              ),
-            ],
+          content: RadioGroup<AdaptiveThemeMode>(
+            groupValue: themeMode,
+            onChanged: updateThemeSetting,
+            child: const Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                RadioListTile<AdaptiveThemeMode>(
+                  value: AdaptiveThemeMode.light,
+                  title: Text('Light'),
+                ),
+                RadioListTile<AdaptiveThemeMode>(
+                  value: AdaptiveThemeMode.dark,
+                  title: Text('Dark'),
+                ),
+                RadioListTile<AdaptiveThemeMode>(
+                  value: AdaptiveThemeMode.system,
+                  title: Text('System'),
+                ),
+              ],
+            ),
           ),
         );
       },

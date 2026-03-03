@@ -16,10 +16,10 @@ class LocalNotificationService {
     final String payload = jsonEncode(payloadJson);
 
     return flutterLocalNotificationsPlugin.show(
-      newReply.id,
-      'You have a new reply! ${Constants.happyFace}',
-      '${newReply.by}: ${newReply.text}',
-      const NotificationDetails(
+      id: newReply.id,
+      title: 'You have a new reply! ${Constants.happyFace}',
+      body: '${newReply.by}: ${newReply.text}',
+      notificationDetails: const NotificationDetails(
         iOS: DarwinNotificationDetails(
           presentBadge: false,
           threadIdentifier: 'hacki',

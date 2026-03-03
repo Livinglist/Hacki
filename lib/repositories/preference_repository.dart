@@ -90,7 +90,7 @@ class PreferenceRepository with Loggable {
     required String username,
     required String password,
   }) async {
-    const AndroidOptions androidOptions = AndroidOptions(resetOnError: true);
+    const AndroidOptions androidOptions = AndroidOptions.defaultOptions;
     try {
       await _secureStorage.write(
         key: _usernameKey,
