@@ -53,10 +53,10 @@ dependencies:
   logger: ^2.4.0
   memoize: ^3.0.0
   package_info_plus: ^9.0.0
-  path: ^1.9.0
+  path: ^1.9.1
   path_provider: ^2.1.5
-  path_provider_android: ^2.2.15
-  path_provider_foundation: ^2.4.1
+  path_provider_android: ^2.2.22
+  path_provider_foundation: ^2.6.0
   pretty_dio_logger: ^1.4.0
   pull_to_refresh:
     git:
