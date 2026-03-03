@@ -171,13 +171,15 @@ class StoryTile extends StatelessWidget {
                       ),
                     )
                   else
-                    const SizedBox(
+                    SizedBox(
                       height: Dimens.pt20,
                       width: Dimens.pt24,
                       child: Center(
-                        child: Icon(
-                          Icons.public,
-                          size: Dimens.pt20,
+                        child: Image.asset(
+                          Constants.hackerNewsLogoPath,
+                          fit: BoxFit.fitWidth,
+                          height: Dimens.pt20,
+                          width: Dimens.pt20,
                         ),
                       ),
                     ),

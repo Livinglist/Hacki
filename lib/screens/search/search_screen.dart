@@ -389,9 +389,12 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                         ),
                                       ),
                                     ),
-                                  if (!prefState.isComplexStoryTileEnabled)
-                                    const Divider(
-                                      height: Dimens.zero,
+                                  if (e is Story)
+                                    Divider(
+                                      height:
+                                          prefState.isComplexStoryTileEnabled
+                                              ? Dimens.pt6
+                                              : Dimens.zero,
                                     ),
                                 ],
                               )

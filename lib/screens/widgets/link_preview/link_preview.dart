@@ -160,7 +160,7 @@ class _LinkPreviewState extends State<LinkPreview> {
             Constants.favicon(
               widget.story.url.isNotEmpty
                   ? widget.story.url
-                  : Constants.guidelineLink,
+                  : Constants.hackerNewsHomepageLink,
             );
         return FutureBuilder<double>(
           future: ImageRatioProvider.getImageRatio(imageUrl),
