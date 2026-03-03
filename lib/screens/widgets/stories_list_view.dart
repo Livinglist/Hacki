@@ -200,7 +200,7 @@ class _StoriesListViewState extends State<StoriesListView>
                       onDismissed: () {},
                     ),
                     children: <Widget>[
-                      SlidableAction(
+                      CustomSlidableAction(
                         onPressed: (_) => mark(story),
                         backgroundColor:
                             preferenceState.isMarkReadStoriesEnabled
@@ -208,9 +208,12 @@ class _StoriesListViewState extends State<StoriesListView>
                                 : Palette.grey,
                         foregroundColor:
                             Theme.of(context).colorScheme.onPrimary,
-                        icon: state.readStoriesIds.contains(story.id)
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+                        child: Icon(
+                          state.readStoriesIds.contains(story.id)
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          size: Dimens.pt24,
+                        ),
                       ),
                     ],
                   ),

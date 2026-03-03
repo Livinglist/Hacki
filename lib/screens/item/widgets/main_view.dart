@@ -228,14 +228,18 @@ class _ParentItemSection extends StatelessWidget {
                     foregroundColor: Theme.of(context).colorScheme.onPrimary,
                     child: const Icon(
                       Icons.message,
+                      size: Dimens.pt24,
                     ),
                   ),
-                  SlidableAction(
+                  CustomSlidableAction(
                     onPressed: (BuildContext context) =>
                         onMoreTapped(item, context.rect),
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                    icon: Icons.more_horiz,
+                    child: const Icon(
+                      Icons.more_horiz,
+                      size: Dimens.pt24,
+                    ),
                   ),
                 ],
               ),

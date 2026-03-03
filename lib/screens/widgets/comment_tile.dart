@@ -85,25 +85,31 @@ class CommentTile extends StatelessWidget {
                       ? ActionPane(
                           motion: const StretchMotion(),
                           children: <Widget>[
-                            SlidableAction(
+                            CustomSlidableAction(
                               onPressed: (_) => onReplyTapped?.call(comment),
                               backgroundColor:
                                   Theme.of(context).colorScheme.primary,
                               foregroundColor:
                                   Theme.of(context).colorScheme.onPrimary,
-                              icon: Icons.message,
+                              child: const Icon(
+                                Icons.message,
+                                size: Dimens.pt24,
+                              ),
                             ),
                             if (context.read<AuthBloc>().state.user.id ==
                                 comment.by)
-                              SlidableAction(
+                              CustomSlidableAction(
                                 onPressed: (_) => onEditTapped?.call(comment),
                                 backgroundColor:
                                     Theme.of(context).colorScheme.primary,
                                 foregroundColor:
                                     Theme.of(context).colorScheme.onPrimary,
-                                icon: Icons.edit,
+                                child: const Icon(
+                                  Icons.edit,
+                                  size: Dimens.pt24,
+                                ),
                               ),
-                            SlidableAction(
+                            CustomSlidableAction(
                               onPressed: (BuildContext context) =>
                                   onMoreTapped?.call(
                                 comment,
@@ -113,7 +119,10 @@ class CommentTile extends StatelessWidget {
                                   Theme.of(context).colorScheme.primary,
                               foregroundColor:
                                   Theme.of(context).colorScheme.onPrimary,
-                              icon: Icons.more_horiz,
+                              child: const Icon(
+                                Icons.more_horiz,
+                                size: Dimens.pt24,
+                              ),
                             ),
                           ],
                         )
@@ -122,14 +131,17 @@ class CommentTile extends StatelessWidget {
                       ? ActionPane(
                           motion: const StretchMotion(),
                           children: <Widget>[
-                            SlidableAction(
+                            CustomSlidableAction(
                               onPressed: (_) =>
                                   onRightMoreTapped?.call(comment),
                               backgroundColor:
                                   Theme.of(context).colorScheme.primary,
                               foregroundColor:
                                   Theme.of(context).colorScheme.onPrimary,
-                              icon: Icons.av_timer,
+                              child: const Icon(
+                                Icons.av_timer,
+                                size: Dimens.pt24,
+                              ),
                             ),
                           ],
                         )

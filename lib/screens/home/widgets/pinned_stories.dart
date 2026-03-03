@@ -30,17 +30,24 @@ class PinnedStories extends StatelessWidget {
                   startActionPane: ActionPane(
                     motion: const BehindMotion(),
                     children: <Widget>[
-                      SlidableAction(
+                      CustomSlidableAction(
                         onPressed: (_) {
                           HapticFeedbackUtil.light();
                           context.read<PinCubit>().unpinStory(story);
                         },
                         backgroundColor: Palette.red,
                         foregroundColor: Palette.white,
-                        icon: preferenceState.isComplexStoryTileEnabled
-                            ? Icons.close
-                            : null,
-                        label: 'Unpin',
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            if (preferenceState.isComplexStoryTileEnabled)
+                              const Icon(
+                                Icons.close,
+                                size: Dimens.pt24,
+                              ),
+                            const Text('Unpin'),
+                          ],
+                        ),
                       ),
                     ],
                   ),
