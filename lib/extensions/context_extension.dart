@@ -13,6 +13,8 @@ extension ContextExtension on BuildContext {
     }
   }
 
+  void removeSnackBar() => ScaffoldMessenger.of(this).removeCurrentSnackBar();
+
   void showSnackBar({
     required String content,
     VoidCallback? action,

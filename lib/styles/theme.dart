@@ -149,10 +149,10 @@ class HackerNewsDarkTheme {
             fontWeight: FontWeight.bold,
             fontFamily: Font.courier.name,
           ),
-          iconTheme: const IconThemeData(color: hnOrange),
         ),
 
         // Text
+        fontFamily: Font.courier.name,
         textTheme: TextTheme(
           titleMedium: TextStyle(
             color: hnText,
@@ -216,11 +216,6 @@ class HackerNewsDarkTheme {
               color: hnOrange.withValues(alpha: 0.4),
             ),
           ),
-        ),
-
-        // Icons
-        iconTheme: const IconThemeData(
-          color: hnOrange,
         ),
       );
 }

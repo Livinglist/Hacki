@@ -491,7 +491,17 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
     );
   }
 
+  void showHackerNewsThemeError() {
+    context
+      ..removeSnackBar()
+      ..showErrorSnackBar('Please disable Hacker News Theme first.');
+  }
+
   void showFontSettingDialog() {
+    if (context.read<PreferenceCubit>().state.isHackerNewsThemeEnabled) {
+      showHackerNewsThemeError();
+      return;
+    }
     showDialog<void>(
       context: context,
       builder: (_) {
@@ -531,6 +541,10 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
   }
 
   void showThemeSettingDialog() {
+    if (context.read<PreferenceCubit>().state.isHackerNewsThemeEnabled) {
+      showHackerNewsThemeError();
+      return;
+    }
     showDialog<void>(
       context: context,
       builder: (_) {
@@ -579,6 +593,10 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
   }
 
   void showColorPicker() {
+    if (context.read<PreferenceCubit>().state.isHackerNewsThemeEnabled) {
+      showHackerNewsThemeError();
+      return;
+    }
     showDialog<void>(
       context: context,
       builder: (_) {
