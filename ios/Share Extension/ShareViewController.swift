@@ -181,7 +181,16 @@ class ShareViewController: SLComposeServiceViewController {
         ))
         if index == (content.attachments?.count ?? 0) - 1 {
             if shouldAutoRedirect() {
-                saveAndRedirect()
+                if let url = URL(string: item),
+                   let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+                   let queryItems = components.queryItems {
+                    for item in queryItems {
+                        if item.name == "id" {
+                            saveAndRedirect(message: item.value)
+                            return
+                        }
+                    }
+                }
             }
         }
     }
@@ -241,17 +250,17 @@ class ShareViewController: SLComposeServiceViewController {
     
     // Save shared media and redirect to host app
     private func saveAndRedirect(message: String? = nil) {
-        let userDefaults = UserDefaults(suiteName: appGroupId)
-        userDefaults?.set(toData(data: sharedMedia), forKey: kUserDefaultsKey)
-        userDefaults?.set(message, forKey: kUserDefaultsMessageKey)
-        userDefaults?.synchronize()
-        redirectToHostApp()
+//        let userDefaults = UserDefaults(suiteName: appGroupId)
+//        userDefaults?.set(toData(data: sharedMedia), forKey: kUserDefaultsKey)
+//        userDefaults?.set(message, forKey: kUserDefaultsMessageKey)
+//        userDefaults?.synchronize()
+        redirectToHostApp(itemId: message ?? "")
     }
     
-    private func redirectToHostApp() {
+    private func redirectToHostApp(itemId: String) {
         // ids may not loaded yet so we need loadIds here too
         loadIds()
-        let url = URL(string: "\(kSchemePrefix)-\(hostAppBundleIdentifier):share")
+        let url = URL(string: "/item/\(itemId)")
         var responder = self as UIResponder?
         
         if #available(iOS 18.0, *) {
