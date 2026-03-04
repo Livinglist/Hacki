@@ -63,7 +63,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           },
           builder: (BuildContext context, NotificationState notificationState) {
             final double topPadding =
-                context.read<PreferenceCubit>().state.isHackerNewsThemeEnabled
+                context.watch<PreferenceCubit>().state.isHackerNewsThemeEnabled
                     ? Dimens.pt64
                     : Dimens.pt50;
             return Stack(
