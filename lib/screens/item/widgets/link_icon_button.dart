@@ -1,3 +1,4 @@
+import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/discoverable_feature.dart';
@@ -22,6 +23,7 @@ class LinkIconButton extends StatelessWidget {
           color: Theme.of(context).colorScheme.onPrimary,
         ),
         feature: DiscoverableFeature.openStoryInWebView,
+        contentLocation: ContentLocation.below,
         child: const Icon(
           Icons.stream,
         ),

@@ -20,6 +20,7 @@ abstract class Constants {
       '$githubLink/issues/new?title=Found+a+bug+in+Hacki&body=Please+describe+the+problem.';
   static const String wikipediaLink = 'https://en.wikipedia.org/wiki/';
   static const String wiktionaryLink = 'https://en.wiktionary.org/wiki/';
+  static const String hackerNewsHomepageLink = 'https://news.ycombinator.com/';
   static const String hackerNewsItemLinkPrefix =
       'https://news.ycombinator.com/item?id=';
   static const String supportEmail = 'georgefung98@gmail.com';
@@ -60,7 +61,9 @@ abstract class Constants {
   static final String magicWord = <String>[
     'to be over the rainbow!',
     'to infinity and beyond!',
-    'to see the future.',
+    'to seek the light.',
+    'to rewind 1577712900.',
+    'to understand 1 Corinthians 13:4-8.',
   ].randomlyPicked!;
 
   static final String errorMessage = 'Something went wrong...$sadFace';

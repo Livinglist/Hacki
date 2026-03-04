@@ -1,10 +1,14 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/screens/widgets/link_preview/image_wrapped_text.dart';
 import 'package:hacki/screens/widgets/link_preview/link_view.dart';
+import 'package:hacki/screens/widgets/tap_down_wrapper.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 
@@ -17,6 +21,7 @@ class LinkPreview extends StatefulWidget {
     required this.showUrl,
     required this.isOfflineReading,
     required this.hasRead,
+    required this.isExpandedTileEnabled,
     super.key,
     this.cache = const Duration(days: 30),
     this.showMultimedia = true,
@@ -101,6 +106,7 @@ class LinkPreview extends StatefulWidget {
   final bool showMetadata;
   final bool showUrl;
   final bool isOfflineReading;
+  final bool isExpandedTileEnabled;
 
   @override
   _LinkPreviewState createState() => _LinkPreviewState();
@@ -148,6 +154,66 @@ class _LinkPreviewState extends State<LinkPreview> {
     String? iconUri = '',
     bool isIcon = false,
   }) {
+    if (widget.isExpandedTileEnabled) {
+      if (widget.showMultimedia) {
+        final String imageUrl = imageUri ??
+            Constants.favicon(
+              widget.story.url.isNotEmpty
+                  ? widget.story.url
+                  : Constants.hackerNewsHomepageLink,
+            );
+        return FutureBuilder<double>(
+          future: ImageRatioProvider.getImageRatio(imageUrl),
+          builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
+            return ImageWrapText(
+              text: desc ?? '',
+              url: widget.story.url,
+              imageHeight: height,
+              imageWidth: height * (snapshot.data ?? 1),
+              hasRead: widget.hasRead,
+              image: Center(
+                child: CachedNetworkImage(
+                  imageUrl: imageUrl,
+                  fit: BoxFit.scaleDown,
+                  cacheKey: imageUrl,
+                  errorWidget: (_, __, ___) {
+                    return const FadeIn(
+                      child: Icon(
+                        Icons.public,
+                        size: Dimens.pt20,
+                      ),
+                    );
+                  },
+                ),
+              ),
+              onTap: widget.onTap,
+            );
+          },
+        );
+      } else {
+        return LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            final double availableWidth = constraints.maxWidth;
+
+            return SizedBox(
+              width: availableWidth - Dimens.pt12,
+              child: TapDownWrapper(
+                onTap: widget.onTap,
+                child: Text(
+                  desc ?? '',
+                  maxLines: 20,
+                  style: DefaultTextStyle.of(context).style.copyWith(
+                        color:
+                            widget.hasRead ? Theme.of(context).readGrey : null,
+                      ),
+                ),
+              ),
+            );
+          },
+        );
+      }
+    }
+
     return Container(
       decoration: BoxDecoration(
         color: widget.backgroundColor,
@@ -161,7 +227,7 @@ class _LinkPreviewState extends State<LinkPreview> {
                   const BoxShadow(blurRadius: 3, color: Palette.grey),
                 ],
       ),
-      height: height,
+      height: widget.showMultimedia ? height : null,
       child: LinkView(
         key: widget.key ?? Key(widget.link),
         metadata: widget.story.simpleMetadata,
@@ -180,7 +246,6 @@ class _LinkPreviewState extends State<LinkPreview> {
         isIcon: isIcon,
         bgColor: widget.backgroundColor,
         radius: widget.borderRadius ?? 12,
-        showMetadata: widget.showMetadata,
         showUrl: widget.showUrl,
       ),
     );

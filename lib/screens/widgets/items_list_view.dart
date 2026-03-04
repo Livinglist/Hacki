@@ -15,6 +15,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   const ItemsListView({
     required this.showWebPreviewOnStoryTile,
     required this.showMetadataOnStoryTile,
+    required this.showPreviewImage,
     required this.showFavicon,
     required this.showUrl,
     required this.items,
@@ -27,6 +28,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.enablePullDown = true,
     this.markReadStories = false,
     this.showOfflineBanner = false,
+    this.isExpandedTileEnabled = false,
     this.loadStyle = LoadStyle.ShowWhenLoading,
     this.onRefresh,
     this.onLoadMore,
@@ -44,10 +46,12 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   final bool showWebPreviewOnStoryTile;
   final bool showMetadataOnStoryTile;
   final bool showFavicon;
+  final bool showPreviewImage;
   final bool showUrl;
   final bool enablePullDown;
   final bool markReadStories;
   final bool showOfflineBanner;
+  final bool isExpandedTileEnabled;
 
   final LoadStyle loadStyle;
   final List<T> items;
@@ -74,13 +78,14 @@ class ItemsListView<T extends Item> extends StatelessWidget {
             showExitButton: true,
           ),
         if (header != null) header!,
-        ...items.map((T e) {
+        ...List<int>.generate(items.length, (_) => _).map((int index) {
+          final T e = items.elementAt(index);
           if (e is Story) {
             final bool hasRead = context.read<StoriesBloc>().hasRead(e);
             final bool swipeGestureEnabled =
                 context.read<PreferenceCubit>().state.isSwipeGestureEnabled;
             return <Widget>[
-              if (showDivider)
+              if (showDivider && items.first.id != e.id)
                 Padding(
                   padding: EdgeInsetsGeometry.only(
                     bottom:
@@ -167,6 +172,8 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                       showMetadata: showMetadataOnStoryTile,
                       showUrl: showUrl,
                       showFavicon: showFavicon,
+                      showPreviewImage: showPreviewImage,
+                      isExpandedTileEnabled: isExpandedTileEnabled,
                       hasRead: markReadStories && hasRead,
                     ),
                   ),

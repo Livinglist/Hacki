@@ -15,9 +15,11 @@ import 'package:shimmer/shimmer.dart';
 class StoryTile extends StatelessWidget {
   const StoryTile({
     required this.showWebPreview,
+    required this.showPreviewImage,
     required this.showMetadata,
     required this.showFavicon,
     required this.showUrl,
+    required this.isExpandedTileEnabled,
     required this.story,
     required this.onTap,
     super.key,
@@ -26,10 +28,12 @@ class StoryTile extends StatelessWidget {
   });
 
   final bool showWebPreview;
+  final bool showPreviewImage;
   final bool showMetadata;
   final bool showFavicon;
   final bool showUrl;
   final bool hasRead;
+  final bool isExpandedTileEnabled;
   final Story story;
   final VoidCallback onTap;
   final double simpleTileFontSize;
@@ -104,8 +108,10 @@ class StoryTile extends StatelessWidget {
                 link: story.url,
                 isOfflineReading:
                     context.read<StoriesBloc>().state.isOfflineReading,
+                isExpandedTileEnabled: isExpandedTileEnabled,
                 placeholderWidget: _LinkPreviewPlaceholder(
                   height: height,
+                  showPreviewImage: showPreviewImage,
                 ),
                 errorImage: Constants.hackerNewsLogoLink,
                 backgroundColor: Palette.transparent,
@@ -115,6 +121,7 @@ class StoryTile extends StatelessWidget {
                 errorTitle: story.title,
                 hasRead: hasRead,
                 showMetadata: showMetadata,
+                showMultimedia: showPreviewImage,
                 showUrl: showUrl,
                 onTap: onTap,
               ),
@@ -164,13 +171,15 @@ class StoryTile extends StatelessWidget {
                       ),
                     )
                   else
-                    const SizedBox(
+                    SizedBox(
                       height: Dimens.pt20,
                       width: Dimens.pt24,
                       child: Center(
-                        child: Icon(
-                          Icons.public,
-                          size: Dimens.pt20,
+                        child: Image.asset(
+                          Constants.hackerNewsLogoPath,
+                          fit: BoxFit.fitWidth,
+                          height: Dimens.pt20,
+                          width: Dimens.pt20,
                         ),
                       ),
                     ),
@@ -260,15 +269,17 @@ class StoryTile extends StatelessWidget {
 class _LinkPreviewPlaceholder extends StatelessWidget {
   const _LinkPreviewPlaceholder({
     required this.height,
+    required this.showPreviewImage,
   });
 
   final double height;
+  final bool showPreviewImage;
 
   @override
   Widget build(BuildContext context) {
     return FadeIn(
       child: SizedBox(
-        height: height,
+        height: showPreviewImage ? height : null,
         child: Shimmer.fromColors(
           baseColor: Theme.of(context).colorScheme.primary,
           highlightColor:
@@ -276,23 +287,24 @@ class _LinkPreviewPlaceholder extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(
-                  right: Dimens.pt5,
-                  bottom: Dimens.pt5,
-                  top: Dimens.pt5,
+              if (showPreviewImage)
+                Padding(
+                  padding: const EdgeInsets.only(
+                    right: Dimens.pt5,
+                    bottom: Dimens.pt5,
+                    top: Dimens.pt5,
+                  ),
+                  child: Container(
+                    height: height,
+                    width: height,
+                    color: Palette.white,
+                  ),
                 ),
-                child: Container(
-                  height: height,
-                  width: height,
-                  color: Palette.white,
-                ),
-              ),
               Expanded(
                 flex: 4,
                 child: Padding(
-                  padding: const EdgeInsets.only(
-                    left: Dimens.pt4,
+                  padding: EdgeInsets.only(
+                    left: showPreviewImage ? Dimens.pt4 : Dimens.zero,
                     top: Dimens.pt6,
                   ),
                   child: Column(

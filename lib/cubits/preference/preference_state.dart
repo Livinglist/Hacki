@@ -52,6 +52,11 @@ class PreferenceState extends Equatable {
 
   bool get isComplexStoryTileEnabled => _isOn<DisplayModePreference>();
 
+  bool get isExpandedTileEnabled => _isOn<ExpandTileForLongerTextPreference>();
+
+  bool get isStoryTilePreviewImageEnabled =>
+      _isOn<LargeStoryTileImageDisplayPreference>();
+
   bool get isDividerEnabled => _isOn<DividerPreference>();
 
   bool get isFaviconEnabled => _isOn<FaviconModePreference>();
@@ -80,7 +85,11 @@ class PreferenceState extends Equatable {
 
   bool get isHapticFeedbackEnabled => _isOn<HapticFeedbackPreference>();
 
+  bool get isEyeCandyEnabled => _isOn<EyeCandyPreference>();
+
   bool get isDevModeEnabled => _isOn<DevMode>();
+
+  bool get isHackerNewsThemeEnabled => _isOn<HackerNewsThemePreference>();
 
   double get textScaleFactor =>
       preferences.singleWhereType<TextScaleFactorPreference>().val;

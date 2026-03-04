@@ -1,0 +1,3 @@
+- Improved split view.
+- More options for homepage layout.
+- Bugfixes for offline mode.

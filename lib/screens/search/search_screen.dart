@@ -366,6 +366,8 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                             prefState.isMetadataEnabled,
                                         showUrl: prefState.isUrlEnabled,
                                         showFavicon: prefState.isFaviconEnabled,
+                                        showPreviewImage: true,
+                                        isExpandedTileEnabled: false,
                                         story: e,
                                         onTap: () => goToItemScreen(
                                           args: ItemScreenArgs(item: e),
@@ -387,9 +389,12 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                         ),
                                       ),
                                     ),
-                                  if (!prefState.isComplexStoryTileEnabled)
-                                    const Divider(
-                                      height: Dimens.zero,
+                                  if (e is Story)
+                                    Divider(
+                                      height:
+                                          prefState.isComplexStoryTileEnabled
+                                              ? Dimens.pt6
+                                              : Dimens.zero,
                                     ),
                                 ],
                               )

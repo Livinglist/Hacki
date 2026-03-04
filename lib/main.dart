@@ -231,7 +231,9 @@ class HackiApp extends StatelessWidget {
             previous.appColor != current.appColor ||
             previous.font != current.font ||
             previous.textScaleFactor != current.textScaleFactor ||
-            previous.isTrueDarkModeEnabled != current.isTrueDarkModeEnabled,
+            previous.isTrueDarkModeEnabled != current.isTrueDarkModeEnabled ||
+            previous.isHackerNewsThemeEnabled !=
+                current.isHackerNewsThemeEnabled,
         builder: (BuildContext context, PreferenceState state) {
           return AdaptiveTheme(
             key: ValueKey<String>(
@@ -300,70 +302,77 @@ class HackiApp extends StatelessWidget {
                       child: MaterialApp.router(
                         title: 'Hacki',
                         debugShowCheckedModeBanner: false,
-                        theme: ThemeData(
-                          colorScheme: colorScheme,
-                          fontFamily: state.font.name,
-                          canvasColor:
-                              isDarkModeEnabled && state.isTrueDarkModeEnabled
-                                  ? Palette.black
-                                  : null,
-                          scaffoldBackgroundColor:
-                              isDarkModeEnabled && state.isTrueDarkModeEnabled
-                                  ? Palette.black
-                                  : null,
-                          dividerTheme: DividerThemeData(
-                            color: Palette.grey.withValues(alpha: 0.2),
-                          ),
-                          switchTheme: SwitchThemeData(
-                            trackColor: WidgetStateProperty.resolveWith(
-                              (Set<WidgetState> states) {
-                                if (states.contains(WidgetState.selected)) {
-                                  return colorScheme.primary
-                                      .withValues(alpha: 0.6);
-                                } else {
-                                  return Palette.grey.withValues(alpha: 0.2);
-                                }
-                              },
-                            ),
-                          ),
-                          bottomSheetTheme: const BottomSheetThemeData(
-                            modalElevation: 8,
-                            clipBehavior: Clip.hardEdge,
-                            shadowColor: Palette.black,
-                          ),
-                          inputDecorationTheme: InputDecorationTheme(
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: isDarkModeEnabled
-                                    ? Palette.white
-                                    : Palette.black,
-                              ),
-                            ),
-                            disabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: (isDarkModeEnabled
-                                        ? Palette.white
-                                        : Palette.black)
-                                    .withValues(alpha: 0.4),
-                              ),
-                            ),
-                          ),
-                          sliderTheme: SliderThemeData(
-                            inactiveTrackColor:
-                                colorScheme.primary.withValues(alpha: 0.5),
-                            activeTrackColor: colorScheme.primary,
-                            thumbColor: colorScheme.primary,
-                          ),
-                          outlinedButtonTheme: OutlinedButtonThemeData(
-                            style: ButtonStyle(
-                              side: WidgetStateBorderSide.resolveWith(
-                                (_) => const BorderSide(
-                                  color: Palette.grey,
+                        darkTheme: state.isHackerNewsThemeEnabled
+                            ? HackerNewsDarkTheme.theme
+                            : null,
+                        theme: state.isHackerNewsThemeEnabled
+                            ? HackerNewsTheme.theme
+                            : ThemeData(
+                                colorScheme: colorScheme,
+                                fontFamily: state.font.name,
+                                canvasColor: isDarkModeEnabled &&
+                                        state.isTrueDarkModeEnabled
+                                    ? Palette.black
+                                    : null,
+                                scaffoldBackgroundColor: isDarkModeEnabled &&
+                                        state.isTrueDarkModeEnabled
+                                    ? Palette.black
+                                    : null,
+                                dividerTheme: DividerThemeData(
+                                  color: Palette.grey.withValues(alpha: 0.2),
+                                ),
+                                switchTheme: SwitchThemeData(
+                                  trackColor: WidgetStateProperty.resolveWith(
+                                    (Set<WidgetState> states) {
+                                      if (states
+                                          .contains(WidgetState.selected)) {
+                                        return colorScheme.primary
+                                            .withValues(alpha: 0.6);
+                                      } else {
+                                        return Palette.grey
+                                            .withValues(alpha: 0.2);
+                                      }
+                                    },
+                                  ),
+                                ),
+                                bottomSheetTheme: const BottomSheetThemeData(
+                                  modalElevation: 8,
+                                  clipBehavior: Clip.hardEdge,
+                                  shadowColor: Palette.black,
+                                ),
+                                inputDecorationTheme: InputDecorationTheme(
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: isDarkModeEnabled
+                                          ? Palette.white
+                                          : Palette.black,
+                                    ),
+                                  ),
+                                  disabledBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: (isDarkModeEnabled
+                                              ? Palette.white
+                                              : Palette.black)
+                                          .withValues(alpha: 0.4),
+                                    ),
+                                  ),
+                                ),
+                                sliderTheme: SliderThemeData(
+                                  inactiveTrackColor: colorScheme.primary
+                                      .withValues(alpha: 0.5),
+                                  activeTrackColor: colorScheme.primary,
+                                  thumbColor: colorScheme.primary,
+                                ),
+                                outlinedButtonTheme: OutlinedButtonThemeData(
+                                  style: ButtonStyle(
+                                    side: WidgetStateBorderSide.resolveWith(
+                                      (_) => const BorderSide(
+                                        color: Palette.grey,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                        ),
                         routerConfig: router,
                       ),
                     ),

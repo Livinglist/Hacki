@@ -1,4 +1,5 @@
 import 'package:animations/animations.dart';
+import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/auth/auth_bloc.dart';
@@ -27,6 +28,7 @@ class InThreadSearchIconButton extends StatelessWidget {
             color: Theme.of(context).colorScheme.onPrimary,
           ),
           feature: DiscoverableFeature.searchInThread,
+          contentLocation: ContentLocation.below,
           child: IconButton(
             tooltip: 'Search in thread',
             icon: const Icon(Icons.search),

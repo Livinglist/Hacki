@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/screens/widgets/tap_down_wrapper.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/link_util.dart';
@@ -20,7 +21,6 @@ class LinkView extends StatelessWidget {
     required this.title,
     required this.description,
     required this.onTap,
-    required this.showMetadata,
     required bool showUrl,
     required this.bodyMaxLines,
     super.key,
@@ -56,11 +56,11 @@ class LinkView extends StatelessWidget {
   final bool isIcon;
   final double radius;
   final Color? bgColor;
-  final bool showMetadata;
   final bool showUrl;
 
   static final Func3<TextScaler, TextStyle?, double, int> _computeMaxLines =
       memo3((TextScaler textScaler, TextStyle? style, double layoutHeight) {
+    if (layoutHeight.isInfinite) return 5;
     final Size size = (TextPainter(
       text: TextSpan(text: 'ABCDEFG', style: style),
       maxLines: 1,
@@ -68,7 +68,6 @@ class LinkView extends StatelessWidget {
       textDirection: TextDirection.ltr,
     )..layout())
         .size;
-
     final int maxLines = max(1, (layoutHeight / size.height).floor());
 
     return maxLines;
@@ -105,6 +104,10 @@ class LinkView extends StatelessWidget {
                         url,
                         context,
                         useHackiForHnLink: false,
+                        useReader: context
+                            .read<PreferenceCubit>()
+                            .state
+                            .isReaderEnabled,
                         offlineReading:
                             context.read<StoriesBloc>().state.isOfflineReading,
                       );
@@ -187,12 +190,14 @@ class LinkView extends StatelessWidget {
                 ),
               )
             else
-              const SizedBox(width: Dimens.pt5),
+              const SizedBox(width: Dimens.zero),
             TapDownWrapper(
               onTap: onTap,
               child: SizedBox(
-                height: layoutHeight,
-                width: layoutWidth - layoutHeight - 8,
+                height: showMultiMedia ? layoutHeight : null,
+                width: showMultiMedia
+                    ? layoutWidth - layoutHeight - 8
+                    : layoutWidth,
                 child: Text(
                   description,
                   textAlign: TextAlign.left,

@@ -142,6 +142,7 @@ class FavoritesScreen extends StatelessWidget {
             return ItemsListView<Item>(
               showWebPreviewOnStoryTile: prefState.isComplexStoryTileEnabled,
               showMetadataOnStoryTile: prefState.isMetadataEnabled,
+              showPreviewImage: prefState.isStoryTilePreviewImageEnabled,
               showFavicon: prefState.isFaviconEnabled,
               showUrl: prefState.isUrlEnabled,
               useSimpleTileForStory: true,
@@ -164,14 +165,17 @@ class FavoritesScreen extends StatelessWidget {
                   startActionPane: ActionPane(
                     motion: const BehindMotion(),
                     children: <Widget>[
-                      SlidableAction(
+                      CustomSlidableAction(
                         onPressed: (_) {
                           HapticFeedbackUtil.light();
                           context.read<FavCubit>().removeFav(item.id);
                         },
                         backgroundColor: Palette.red,
                         foregroundColor: Palette.white,
-                        icon: Icons.close,
+                        child: const Icon(
+                          Icons.close,
+                          size: Dimens.pt24,
+                        ),
                       ),
                     ],
                   ),

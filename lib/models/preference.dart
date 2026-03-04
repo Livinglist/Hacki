@@ -37,7 +37,9 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       /// reflects the order on in-app settings screen.
       ///
       const DisplayModePreference(),
+      const ExpandTileForLongerTextPreference(),
       const FaviconModePreference(),
+      const LargeStoryTileImageDisplayPreference(),
       const MetadataModePreference(),
       const StoryUrlModePreference(),
       const DividerPreference(),
@@ -56,6 +58,8 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       const HapticFeedbackPreference(),
       const TrueDarkModePreference(),
       const SplitViewPreference(),
+      const EyeCandyPreference(),
+      const HackerNewsThemePreference(),
       const DevMode(),
     ],
   );
@@ -122,6 +126,48 @@ final class SplitViewPreference extends BooleanPreference {
       '''enable split view on large screen. Relaunch the app to see effect.''';
 }
 
+final class EyeCandyPreference extends BooleanPreference {
+  const EyeCandyPreference({bool? val})
+      : super(val: val ?? _eyeCandyPreferenceDefaultValue);
+
+  static const bool _eyeCandyPreferenceDefaultValue = false;
+
+  @override
+  EyeCandyPreference copyWith({required bool? val}) {
+    return EyeCandyPreference(val: val);
+  }
+
+  @override
+  String get key => 'eyeCandyPreference';
+
+  @override
+  String get title => 'Eye Candy';
+
+  @override
+  String get subtitle => '''get everybody moving.''';
+}
+
+final class HackerNewsThemePreference extends BooleanPreference {
+  const HackerNewsThemePreference({bool? val})
+      : super(val: val ?? _hackerNewsThemePreferenceDefaultValue);
+
+  static const bool _hackerNewsThemePreferenceDefaultValue = false;
+
+  @override
+  HackerNewsThemePreference copyWith({required bool? val}) {
+    return HackerNewsThemePreference(val: val);
+  }
+
+  @override
+  String get key => 'hackerNewsThemePreference';
+
+  @override
+  String get title => 'Hacker News Theme';
+
+  @override
+  String get subtitle => '''experimental.''';
+}
+
 final class SwipeGesturePreference extends BooleanPreference {
   const SwipeGesturePreference({bool? val})
       : super(val: val ?? _swipeGestureModeDefaultValue);
@@ -141,7 +187,7 @@ final class SwipeGesturePreference extends BooleanPreference {
 
   @override
   String get subtitle =>
-      '''enable swipe gesture for switching between tabs. If enabled, long press on Story tile to trigger the action menu and double tap to open the url (if complex tile is disabled).''';
+      '''enable swipe gesture for switching between tabs. If enabled, long press on Story tile to trigger the action menu and double tap to open the url (if rich tile is disabled).''';
 }
 
 final class NotificationModePreference extends BooleanPreference {
@@ -227,10 +273,54 @@ final class DisplayModePreference extends BooleanPreference {
   String get key => 'displayMode';
 
   @override
-  String get title => 'Complex Story Tile';
+  String get title => 'Rich Story Tile';
 
   @override
   String get subtitle => 'show web preview in story tile.';
+}
+
+/// When enabled, text on rich story tile will have the same height as
+/// the preview image.
+final class ExpandTileForLongerTextPreference extends BooleanPreference {
+  const ExpandTileForLongerTextPreference({bool? val})
+      : super(val: val ?? _expandTileForLongerTextPreferenceDefaultValue);
+
+  static const bool _expandTileForLongerTextPreferenceDefaultValue = false;
+
+  @override
+  ExpandTileForLongerTextPreference copyWith({required bool? val}) {
+    return ExpandTileForLongerTextPreference(val: val);
+  }
+
+  @override
+  String get key => 'expandTileForLongerTextPreference';
+
+  @override
+  String get title => 'Expand Tile for Longer Text';
+
+  @override
+  String get subtitle => '''more space for more text.''';
+}
+
+final class LargeStoryTileImageDisplayPreference extends BooleanPreference {
+  const LargeStoryTileImageDisplayPreference({bool? val})
+      : super(val: val ?? _storyTileImageDisplayPreferenceDefaultValue);
+
+  static const bool _storyTileImageDisplayPreferenceDefaultValue = true;
+
+  @override
+  LargeStoryTileImageDisplayPreference copyWith({required bool? val}) {
+    return LargeStoryTileImageDisplayPreference(val: val);
+  }
+
+  @override
+  String get key => 'largeStoryTileImageDisplayPreference';
+
+  @override
+  String get title => 'Show Preview Image';
+
+  @override
+  String get subtitle => 'show preview image in rich story tile.';
 }
 
 final class FaviconModePreference extends BooleanPreference {
@@ -251,7 +341,7 @@ final class FaviconModePreference extends BooleanPreference {
   String get title => 'Show Favicon';
 
   @override
-  String get subtitle => 'show favicon in story tile.';
+  String get subtitle => 'show favicon in simple story tile.';
 }
 
 final class MetadataModePreference extends BooleanPreference {

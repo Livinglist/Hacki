@@ -56,7 +56,9 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
     return BlocBuilder<PreferenceCubit, PreferenceState>(
       builder: (BuildContext context, PreferenceState preferenceState) {
         return Positioned.fill(
-          top: Dimens.pt50,
+          top: preferenceState.isHackerNewsThemeEnabled
+              ? Dimens.pt64
+              : Dimens.pt50,
           child: Visibility(
             visible: widget.pageType == PageType.settings,
             child: SingleChildScrollView(
@@ -269,6 +271,10 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                     showMetadata: preferenceState.isMetadataEnabled,
                     showUrl: preferenceState.isUrlEnabled,
                     showFavicon: preferenceState.isFaviconEnabled,
+                    showPreviewImage:
+                        preferenceState.isStoryTilePreviewImageEnabled,
+                    isExpandedTileEnabled:
+                        preferenceState.isExpandedTileEnabled,
                     story: Story.placeholder(),
                     onTap: () => LinkUtil.launch(
                       Constants.guidelineLink,
@@ -487,7 +493,17 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
     );
   }
 
+  void showHackerNewsThemeError() {
+    context
+      ..removeSnackBar()
+      ..showErrorSnackBar('Please disable Hacker News Theme first.');
+  }
+
   void showFontSettingDialog() {
+    if (context.read<PreferenceCubit>().state.isHackerNewsThemeEnabled) {
+      showHackerNewsThemeError();
+      return;
+    }
     showDialog<void>(
       context: context,
       builder: (_) {
@@ -527,6 +543,10 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
   }
 
   void showThemeSettingDialog() {
+    if (context.read<PreferenceCubit>().state.isHackerNewsThemeEnabled) {
+      showHackerNewsThemeError();
+      return;
+    }
     showDialog<void>(
       context: context,
       builder: (_) {
@@ -575,6 +595,10 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
   }
 
   void showColorPicker() {
+    if (context.read<PreferenceCubit>().state.isHackerNewsThemeEnabled) {
+      showHackerNewsThemeError();
+      return;
+    }
     showDialog<void>(
       context: context,
       builder: (_) {

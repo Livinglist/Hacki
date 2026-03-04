@@ -119,6 +119,10 @@ class MainView extends StatelessWidget {
                         fetchMode: state.fetchMode,
                         isResponse: state.isResponse(comment),
                         isNew: shouldMarkNewComment && !comment.isFromCache,
+                        isEyeCandyEnabled: context
+                            .read<PreferenceCubit>()
+                            .state
+                            .isEyeCandyEnabled,
                         onReplyTapped: (Comment cmt) {
                           HapticFeedbackUtil.light();
                           if (cmt.deleted || cmt.dead) {
@@ -214,7 +218,7 @@ class _ParentItemSection extends StatelessWidget {
               startActionPane: ActionPane(
                 motion: const BehindMotion(),
                 children: <Widget>[
-                  SlidableAction(
+                  CustomSlidableAction(
                     onPressed: (_) {
                       HapticFeedbackUtil.light();
 
@@ -226,14 +230,20 @@ class _ParentItemSection extends StatelessWidget {
                     },
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                    icon: Icons.message,
+                    child: const Icon(
+                      Icons.message,
+                      size: Dimens.pt24,
+                    ),
                   ),
-                  SlidableAction(
+                  CustomSlidableAction(
                     onPressed: (BuildContext context) =>
                         onMoreTapped(item, context.rect),
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                    icon: Icons.more_horiz,
+                    child: const Icon(
+                      Icons.more_horiz,
+                      size: Dimens.pt24,
+                    ),
                   ),
                 ],
               ),

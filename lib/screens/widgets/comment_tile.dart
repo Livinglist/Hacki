@@ -28,6 +28,7 @@ class CommentTile extends StatelessWidget {
     this.selectable = true,
     this.isResponse = false,
     this.isNew = false,
+    this.isEyeCandyEnabled = false,
     this.level = 0,
     this.index,
     this.onTap,
@@ -42,6 +43,7 @@ class CommentTile extends StatelessWidget {
   final bool selectable;
   final bool isResponse;
   final bool isNew;
+  final bool isEyeCandyEnabled;
   final FetchMode fetchMode;
 
   final void Function(Comment)? onReplyTapped;
@@ -53,6 +55,7 @@ class CommentTile extends StatelessWidget {
   final VoidCallback? onTap;
 
   static final Map<int, Color> levelToBorderColors = <int, Color>{};
+  static final Map<int, Color> levelToRainbowBorderColors = <int, Color>{};
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +78,12 @@ class CommentTile extends StatelessWidget {
 
           final Color primaryColor = Theme.of(context).colorScheme.primary;
           final Brightness brightness = Theme.of(context).brightness;
+          final Color slidableBackgroundColor = isEyeCandyEnabled && level > 0
+              ? _getRainbowColor(
+                  level,
+                  Theme.of(context).colorScheme.surface,
+                )
+              : Theme.of(context).colorScheme.primary;
 
           final Widget child = DeviceGestureWrapper(
             child: Column(
@@ -85,35 +94,41 @@ class CommentTile extends StatelessWidget {
                       ? ActionPane(
                           motion: const StretchMotion(),
                           children: <Widget>[
-                            SlidableAction(
+                            CustomSlidableAction(
                               onPressed: (_) => onReplyTapped?.call(comment),
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.primary,
+                              backgroundColor: slidableBackgroundColor,
                               foregroundColor:
                                   Theme.of(context).colorScheme.onPrimary,
-                              icon: Icons.message,
+                              child: const Icon(
+                                Icons.message,
+                                size: Dimens.pt24,
+                              ),
                             ),
                             if (context.read<AuthBloc>().state.user.id ==
                                 comment.by)
-                              SlidableAction(
+                              CustomSlidableAction(
                                 onPressed: (_) => onEditTapped?.call(comment),
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.primary,
+                                backgroundColor: slidableBackgroundColor,
                                 foregroundColor:
                                     Theme.of(context).colorScheme.onPrimary,
-                                icon: Icons.edit,
+                                child: const Icon(
+                                  Icons.edit,
+                                  size: Dimens.pt24,
+                                ),
                               ),
-                            SlidableAction(
+                            CustomSlidableAction(
                               onPressed: (BuildContext context) =>
                                   onMoreTapped?.call(
                                 comment,
                                 context.rect,
                               ),
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.primary,
+                              backgroundColor: slidableBackgroundColor,
                               foregroundColor:
                                   Theme.of(context).colorScheme.onPrimary,
-                              icon: Icons.more_horiz,
+                              child: const Icon(
+                                Icons.more_horiz,
+                                size: Dimens.pt24,
+                              ),
                             ),
                           ],
                         )
@@ -122,14 +137,17 @@ class CommentTile extends StatelessWidget {
                       ? ActionPane(
                           motion: const StretchMotion(),
                           children: <Widget>[
-                            SlidableAction(
+                            CustomSlidableAction(
                               onPressed: (_) =>
                                   onRightMoreTapped?.call(comment),
                               backgroundColor:
                                   Theme.of(context).colorScheme.primary,
                               foregroundColor:
                                   Theme.of(context).colorScheme.onPrimary,
-                              icon: Icons.av_timer,
+                              child: const Icon(
+                                Icons.av_timer,
+                                size: Dimens.pt24,
+                              ),
                             ),
                           ],
                         )
@@ -321,11 +339,16 @@ class CommentTile extends StatelessWidget {
           }
 
           for (final int i in level.to(0, inclusive: false)) {
-            final Color wrapperBorderColor = _getColor(
-              i,
-              primaryColor: primaryColor,
-              brightness: brightness,
-            );
+            final Color wrapperBorderColor = isEyeCandyEnabled
+                ? _getRainbowColor(
+                    i,
+                    Theme.of(context).colorScheme.surface,
+                  )
+                : _getColor(
+                    i,
+                    primaryColor: primaryColor,
+                    brightness: brightness,
+                  );
             final bool shouldHighlight = isMyComment && i == level;
             wrapper = Container(
               clipBehavior: Clip.hardEdge,
@@ -399,6 +422,39 @@ class CommentTile extends StatelessWidget {
     final Color color = primaryColor.withValues(alpha: opacity);
 
     levelToBorderColors[cacheKey] = color;
+    return color;
+  }
+
+  static Color _getRainbowColor(int level, Color background) {
+    const int colorCount = 6;
+
+    // If id is larger than 6, take modulo
+    int index = level % colorCount;
+
+    final Color? cachedColor = levelToRainbowBorderColors[index];
+
+    if (cachedColor != null) return cachedColor;
+
+    // Ensure positive index
+    if (index < 0) {
+      index += colorCount;
+    }
+
+    // Evenly distribute hue across 20 colors
+    final double hue = (index / colorCount) * 360.0;
+
+    // Adjust saturation & lightness based on background brightness
+    final bool isDarkBg = background.computeLuminance() < 0.5;
+
+    const double saturation = 0.85;
+    final double lightness = isDarkBg ? 0.60 : 0.45;
+    final Color color = HSLColor.fromAHSL(
+      1, // Fully opaque
+      hue,
+      saturation,
+      lightness,
+    ).toColor();
+    levelToRainbowBorderColors[index] = color;
     return color;
   }
 

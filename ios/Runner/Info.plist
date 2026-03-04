@@ -105,5 +105,7 @@
 	<false/>
 	<key>AppGroupId</key>
 	<string>group.com.jiaqi.hacki</string>
+	<key>FlutterDeepLinkingEnabled</key>
+	<false/>
 </dict>
 </plist>

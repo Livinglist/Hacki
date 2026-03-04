@@ -118,7 +118,10 @@ class _HomeScreenState extends State<HomeScreen>
               current.isComplexStoryTileEnabled ||
           previous.isMetadataEnabled != current.isMetadataEnabled ||
           previous.isSwipeGestureEnabled != current.isSwipeGestureEnabled ||
-          previous.isDividerEnabled != current.isDividerEnabled,
+          previous.isDividerEnabled != current.isDividerEnabled ||
+          previous.isStoryTilePreviewImageEnabled !=
+              current.isStoryTilePreviewImageEnabled ||
+          previous.isHackerNewsThemeEnabled != current.isHackerNewsThemeEnabled,
       builder: (BuildContext context, PreferenceState preferenceState) {
         return DefaultTabController(
           length: tabLength,
@@ -129,15 +132,22 @@ class _HomeScreenState extends State<HomeScreen>
                 Dimens.zero,
                 Dimens.pt40,
               ),
-              child: Column(
-                children: <Widget>[
-                  SizedBox(
-                    height: MediaQuery.of(context).padding.top - Dimens.pt8,
-                  ),
-                  CustomTabBar(
-                    tabController: tabController,
-                  ),
-                ],
+              child: OptionalWrapper(
+                enabled: preferenceState.isHackerNewsThemeEnabled,
+                wrapper: (Widget c) => ColoredBox(
+                  color: HackerNewsTheme.hnOrange,
+                  child: c,
+                ),
+                child: Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: MediaQuery.of(context).padding.top - Dimens.pt8,
+                    ),
+                    CustomTabBar(
+                      tabController: tabController,
+                    ),
+                  ],
+                ),
               ),
             ),
             body: BlocBuilder<TabCubit, TabState>(

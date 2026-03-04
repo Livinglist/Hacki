@@ -62,10 +62,14 @@ class _ProfileScreenState extends State<ProfileScreen>
             }
           },
           builder: (BuildContext context, NotificationState notificationState) {
+            final double topPadding =
+                context.watch<PreferenceCubit>().state.isHackerNewsThemeEnabled
+                    ? Dimens.pt64
+                    : Dimens.pt50;
             return Stack(
               children: <Widget>[
                 Positioned.fill(
-                  top: Dimens.pt50,
+                  top: topPadding,
                   child: Visibility(
                     visible: pageType == PageType.history,
                     child: BlocConsumer<HistoryCubit, HistoryState>(
@@ -95,6 +99,10 @@ class _ProfileScreenState extends State<ProfileScreen>
                         return ItemsListView<Item>(
                           showWebPreviewOnStoryTile: false,
                           showMetadataOnStoryTile: false,
+                          showPreviewImage: context
+                              .read<PreferenceCubit>()
+                              .state
+                              .isStoryTilePreviewImageEnabled,
                           showFavicon: false,
                           showUrl: false,
                           showAuthor: false,
@@ -125,7 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   ),
                 ),
                 Positioned.fill(
-                  top: Dimens.pt50,
+                  top: topPadding,
                   child: Visibility(
                     visible: pageType == PageType.fav,
                     child: FavoritesScreen(
@@ -138,7 +146,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   ),
                 ),
                 Positioned.fill(
-                  top: Dimens.pt50,
+                  top: topPadding,
                   child: Visibility(
                     visible: pageType == PageType.search,
                     maintainState: true,
@@ -146,7 +154,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   ),
                 ),
                 Positioned.fill(
-                  top: Dimens.pt50,
+                  top: topPadding,
                   child: Visibility(
                     visible: pageType == PageType.notification,
                     child: notificationState.comments.isEmpty
@@ -189,27 +197,96 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ),
                 Align(
                   alignment: Alignment.topLeft,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    controller: scrollController,
-                    child: Row(
-                      children: <Widget>[
-                        const SizedBox(
-                          width: Dimens.pt12,
-                        ),
-                        if (authState.isLoggedIn) ...<Widget>[
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      top: context
+                              .read<PreferenceCubit>()
+                              .state
+                              .isHackerNewsThemeEnabled
+                          ? Dimens.pt12
+                          : Dimens.zero,
+                    ),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      controller: scrollController,
+                      child: Row(
+                        children: <Widget>[
+                          const SizedBox(
+                            width: Dimens.pt12,
+                          ),
+                          if (authState.isLoggedIn) ...<Widget>[
+                            CustomChip(
+                              label: 'Submit',
+                              selected: false,
+                              onSelected: (bool val) {
+                                if (authState.isLoggedIn) {
+                                  context.push(Paths.item.submit);
+                                } else {
+                                  showSnackBar(
+                                    content: 'You need to log in first.',
+                                    label: 'Log in',
+                                    action: onLoginTapped,
+                                  );
+                                }
+                              },
+                            ),
+                            const SizedBox(
+                              width: Dimens.pt12,
+                            ),
+                            CustomChip(
+                              label:
+                                  '''Inbox : ${notificationState.unreadCommentsIds.length}''',
+                              selected: pageType == PageType.notification,
+                              onSelected: (bool val) {
+                                if (val) {
+                                  setState(() {
+                                    pageType = PageType.notification;
+                                  });
+                                }
+                              },
+                            ),
+                            const SizedBox(
+                              width: Dimens.pt12,
+                            ),
+                          ],
                           CustomChip(
-                            label: 'Submit',
-                            selected: false,
+                            label: 'Favorite',
+                            selected: pageType == PageType.fav,
                             onSelected: (bool val) {
-                              if (authState.isLoggedIn) {
-                                context.push(Paths.item.submit);
-                              } else {
-                                showSnackBar(
-                                  content: 'You need to log in first.',
-                                  label: 'Log in',
-                                  action: onLoginTapped,
-                                );
+                              if (val) {
+                                setState(() {
+                                  pageType = PageType.fav;
+                                });
+                              }
+                            },
+                          ),
+                          const SizedBox(
+                            width: Dimens.pt12,
+                          ),
+                          if (authState.isLoggedIn) ...<Widget>[
+                            CustomChip(
+                              label: 'Submitted',
+                              selected: pageType == PageType.history,
+                              onSelected: (bool val) {
+                                if (val) {
+                                  setState(() {
+                                    pageType = PageType.history;
+                                  });
+                                }
+                              },
+                            ),
+                            const SizedBox(
+                              width: Dimens.pt12,
+                            ),
+                          ],
+                          CustomChip(
+                            label: 'Search',
+                            selected: pageType == PageType.search,
+                            onSelected: (bool val) {
+                              if (val) {
+                                setState(() {
+                                  pageType = PageType.search;
+                                });
                               }
                             },
                           ),
@@ -217,13 +294,12 @@ class _ProfileScreenState extends State<ProfileScreen>
                             width: Dimens.pt12,
                           ),
                           CustomChip(
-                            label:
-                                '''Inbox : ${notificationState.unreadCommentsIds.length}''',
-                            selected: pageType == PageType.notification,
+                            label: 'Settings',
+                            selected: pageType == PageType.settings,
                             onSelected: (bool val) {
                               if (val) {
                                 setState(() {
-                                  pageType = PageType.notification;
+                                  pageType = PageType.settings;
                                 });
                               }
                             },
@@ -232,65 +308,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             width: Dimens.pt12,
                           ),
                         ],
-                        CustomChip(
-                          label: 'Favorite',
-                          selected: pageType == PageType.fav,
-                          onSelected: (bool val) {
-                            if (val) {
-                              setState(() {
-                                pageType = PageType.fav;
-                              });
-                            }
-                          },
-                        ),
-                        const SizedBox(
-                          width: Dimens.pt12,
-                        ),
-                        if (authState.isLoggedIn) ...<Widget>[
-                          CustomChip(
-                            label: 'Submitted',
-                            selected: pageType == PageType.history,
-                            onSelected: (bool val) {
-                              if (val) {
-                                setState(() {
-                                  pageType = PageType.history;
-                                });
-                              }
-                            },
-                          ),
-                          const SizedBox(
-                            width: Dimens.pt12,
-                          ),
-                        ],
-                        CustomChip(
-                          label: 'Search',
-                          selected: pageType == PageType.search,
-                          onSelected: (bool val) {
-                            if (val) {
-                              setState(() {
-                                pageType = PageType.search;
-                              });
-                            }
-                          },
-                        ),
-                        const SizedBox(
-                          width: Dimens.pt12,
-                        ),
-                        CustomChip(
-                          label: 'Settings',
-                          selected: pageType == PageType.settings,
-                          onSelected: (bool val) {
-                            if (val) {
-                              setState(() {
-                                pageType = PageType.settings;
-                              });
-                            }
-                          },
-                        ),
-                        const SizedBox(
-                          width: Dimens.pt12,
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),

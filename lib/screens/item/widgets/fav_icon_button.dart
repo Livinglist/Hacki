@@ -1,3 +1,4 @@
+import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/cubits/cubits.dart';
@@ -26,6 +27,7 @@ class FavIconButton extends StatelessWidget {
               color: Theme.of(context).colorScheme.onPrimary,
             ),
             feature: DiscoverableFeature.addStoryToFavList,
+            contentLocation: ContentLocation.below,
             child: Icon(
               isFav ? Icons.favorite : Icons.favorite_border,
               color: isFav
