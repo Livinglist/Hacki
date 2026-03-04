@@ -49,19 +49,24 @@ class HackerNewsTheme {
           // Story title
           titleMedium: TextStyle(
             color: hnText,
-            fontSize: 14,
+            fontSize: 16,
             fontFamily: Font.courier.name,
           ),
           // Points, time, username
           bodySmall: TextStyle(
             color: hnSubtext,
-            fontSize: 12,
+            fontSize: 14,
             fontFamily: Font.courier.name,
           ),
           // Body
           bodyMedium: TextStyle(
             color: hnText,
-            fontSize: 13,
+            fontSize: 15,
+            fontFamily: Font.courier.name,
+          ),
+          labelSmall: TextStyle(
+            color: hnLink, // for links/points
+            fontSize: 14,
             fontFamily: Font.courier.name,
           ),
         ),
@@ -85,7 +90,7 @@ class HackerNewsTheme {
           style: TextButton.styleFrom(
             foregroundColor: hnSubtext,
             textStyle: TextStyle(
-              fontSize: 12,
+              fontSize: 14,
               fontFamily: Font.courier.name,
             ),
           ),
@@ -156,22 +161,22 @@ class HackerNewsDarkTheme {
         textTheme: TextTheme(
           titleMedium: TextStyle(
             color: hnText,
-            fontSize: 14,
+            fontSize: 16,
             fontFamily: Font.courier.name,
           ),
           bodySmall: TextStyle(
             color: hnSubtext,
-            fontSize: 12,
+            fontSize: 14,
             fontFamily: Font.courier.name,
           ),
           bodyMedium: TextStyle(
             color: hnText,
-            fontSize: 13,
+            fontSize: 15,
             fontFamily: Font.courier.name,
           ),
           labelSmall: TextStyle(
             color: hnLink, // for links/points
-            fontSize: 12,
+            fontSize: 14,
             fontFamily: Font.courier.name,
           ),
         ),
@@ -195,7 +200,7 @@ class HackerNewsDarkTheme {
           style: TextButton.styleFrom(
             foregroundColor: hnOrange,
             textStyle: TextStyle(
-              fontSize: 12,
+              fontSize: 14,
               fontFamily: Font.courier.name,
             ),
           ),
