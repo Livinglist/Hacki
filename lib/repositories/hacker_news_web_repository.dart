@@ -254,8 +254,7 @@ class HackerNewsWebRepository with Loggable {
 
   static const String _favoritesBaseUrl =
       'https://news.ycombinator.com/favorites?id=';
-  static const String _aThingSelector =
-      '#hnmain > tbody > tr:nth-child(3) > td > table > tbody > .athing';
+  static const String _aThingSelector = '#hnmain .athing';
 
   Future<Iterable<int>> fetchFavorites({required String of}) async {
     final bool isOnWifi = await _isOnWifi;

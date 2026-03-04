@@ -187,10 +187,9 @@ class FavCubit extends Cubit<FavState> with Loggable {
     if (_authBloc.state.isLoggedIn) {
       emit(state.copyWith(mergeStatus: Status.inProgress));
       try {
-        final Iterable<int> ids =
-            await _hackerNewsWebRepository.fetchFavorites(of: 'raihankr'
-                //of: _authBloc.state.username,
-                );
+        final Iterable<int> ids = await _hackerNewsWebRepository.fetchFavorites(
+          of: _authBloc.state.username,
+        );
         logDebug('fetched ${ids.length} favorite items from HN.');
         final List<int> combinedIds = <int>[...ids, ...state.favIds];
         final LinkedHashSet<int> mergedIds =
