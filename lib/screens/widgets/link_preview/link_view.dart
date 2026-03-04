@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/screens/widgets/tap_down_wrapper.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/link_util.dart';
@@ -103,6 +104,10 @@ class LinkView extends StatelessWidget {
                         url,
                         context,
                         useHackiForHnLink: false,
+                        useReader: context
+                            .read<PreferenceCubit>()
+                            .state
+                            .isReaderEnabled,
                         offlineReading:
                             context.read<StoriesBloc>().state.isOfflineReading,
                       );
