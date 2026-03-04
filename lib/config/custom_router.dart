@@ -9,7 +9,10 @@ import 'package:hacki/repositories/hacker_news_repository.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/styles/dimens.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 final GoRouter router = GoRouter(
+  navigatorKey: navigatorKey,
   observers: <NavigatorObserver>[
     locator.get<RouteObserver<ModalRoute<dynamic>>>(),
   ],
