@@ -70,55 +70,145 @@ class ItemsListView<T extends Item> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ListView child = ListView(
-      controller: scrollController,
-      children: <Widget>[
-        if (showOfflineBanner)
-          const OfflineBanner(
-            showExitButton: true,
-          ),
-        if (header != null) header!,
-        ...List<int>.generate(items.length, (_) => _).map((int index) {
-          final T e = items.elementAt(index);
-          if (e is Story) {
-            final bool hasRead = context.read<StoriesBloc>().hasRead(e);
-            final bool swipeGestureEnabled =
-                context.read<PreferenceCubit>().state.isSwipeGestureEnabled;
-            return <Widget>[
-              if (showDivider && items.first.id != e.id)
-                Padding(
-                  padding: EdgeInsetsGeometry.only(
-                    bottom:
-                        showWebPreviewOnStoryTile ? Dimens.pt8 : Dimens.zero,
-                  ),
-                  child: const Divider(
-                    height: Dimens.zero,
-                  ),
-                )
-              else if (context.read<SplitViewCubit>().state.enabled)
-                const Divider(
-                  height: Dimens.pt6,
-                  color: Palette.transparent,
+    final List<Widget> children = <Widget>[
+      if (showOfflineBanner)
+        const OfflineBanner(
+          showExitButton: true,
+        ),
+      if (header != null) header!,
+      ...List<int>.generate(items.length, (_) => _).map((int index) {
+        final T e = items.elementAt(index);
+        if (e is Story) {
+          final bool hasRead = context.read<StoriesBloc>().hasRead(e);
+          final bool swipeGestureEnabled =
+              context.read<PreferenceCubit>().state.isSwipeGestureEnabled;
+          return <Widget>[
+            if (showDivider && items.first.id != e.id)
+              Padding(
+                padding: EdgeInsetsGeometry.only(
+                  bottom: showWebPreviewOnStoryTile ? Dimens.pt8 : Dimens.zero,
                 ),
-              if (useSimpleTileForStory)
-                FadeIn(
-                  child: InkWell(
-                    onTap: () => onTap(e),
+                child: const Divider(
+                  height: Dimens.zero,
+                ),
+              )
+            else if (context.read<SplitViewCubit>().state.enabled)
+              const Divider(
+                height: Dimens.pt6,
+                color: Palette.transparent,
+              ),
+            if (useSimpleTileForStory)
+              FadeIn(
+                child: InkWell(
+                  onTap: () => onTap(e),
 
-                    /// If swipe gesture is enabled on home screen, use
-                    /// long press instead of slide action to trigger
-                    /// the action menu.
-                    onLongPress: swipeGestureEnabled
-                        ? () => onMoreTapped?.call(e, context.rect)
-                        : null,
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: Dimens.pt8,
-                        bottom: Dimens.pt8,
-                        left: Dimens.pt12,
-                        right: Dimens.pt6,
-                      ),
-                      child: Column(
+                  /// If swipe gesture is enabled on home screen, use
+                  /// long press instead of slide action to trigger
+                  /// the action menu.
+                  onLongPress: swipeGestureEnabled
+                      ? () => onMoreTapped?.call(e, context.rect)
+                      : null,
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      top: Dimens.pt8,
+                      bottom: Dimens.pt8,
+                      left: Dimens.pt12,
+                      right: Dimens.pt6,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Text(
+                              showAuthor
+                                  ? '''${e.timeAgo} by ${e.by}'''
+                                  : e.timeAgo,
+                              style: TextStyle(
+                                color: Theme.of(context).metadataColor,
+                              ),
+                            ),
+                            const SizedBox(
+                              width: Dimens.pt12,
+                            ),
+                          ],
+                        ),
+                        Linkify(
+                          text: e.title,
+                          maxLines: 4,
+                          style: const TextStyle(
+                            fontSize: TextDimens.pt16,
+                          ),
+                          linkStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          onOpen: (LinkableElement link) => LinkUtil.launch(
+                            link.url,
+                            context,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            else ...<Widget>[
+              GestureDetector(
+                /// If swipe gesture is enabled on home screen, use long press
+                /// instead of slide action to trigger the action menu.
+                onLongPress: swipeGestureEnabled
+                    ? () => onMoreTapped?.call(e, context.rect)
+                    : null,
+                child: FadeIn(
+                  child: StoryTile(
+                    key: ValueKey<int>(e.id),
+                    story: e,
+                    onTap: () => onTap(e),
+                    showWebPreview: showWebPreviewOnStoryTile,
+                    showMetadata: showMetadataOnStoryTile,
+                    showUrl: showUrl,
+                    showFavicon: showFavicon,
+                    showPreviewImage: showPreviewImage,
+                    isExpandedTileEnabled: isExpandedTileEnabled,
+                    hasRead: markReadStories && hasRead,
+                  ),
+                ),
+              ),
+              if (showDivider && showWebPreviewOnStoryTile)
+                const SizedBox(
+                  height: Dimens.pt8,
+                ),
+            ],
+          ];
+        } else if (e is Comment) {
+          return <Widget>[
+            FadeIn(
+              child: InkWell(
+                onTap: () => onTap(e),
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    top: Dimens.pt8,
+                    bottom: Dimens.pt8,
+                    left: Dimens.pt12,
+                    right: Dimens.pt6,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      if (e.deleted)
+                        const Center(
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              top: Dimens.pt6,
+                            ),
+                            child: Text(
+                              'deleted',
+                              style: TextStyle(color: Palette.grey),
+                            ),
+                          ),
+                        ),
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
@@ -138,7 +228,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                             ],
                           ),
                           Linkify(
-                            text: e.title,
+                            text: e.text,
                             maxLines: 4,
                             style: const TextStyle(
                               fontSize: TextDimens.pt16,
@@ -153,122 +243,28 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                )
-              else ...<Widget>[
-                GestureDetector(
-                  /// If swipe gesture is enabled on home screen, use long press
-                  /// instead of slide action to trigger the action menu.
-                  onLongPress: swipeGestureEnabled
-                      ? () => onMoreTapped?.call(e, context.rect)
-                      : null,
-                  child: FadeIn(
-                    child: StoryTile(
-                      key: ValueKey<int>(e.id),
-                      story: e,
-                      onTap: () => onTap(e),
-                      showWebPreview: showWebPreviewOnStoryTile,
-                      showMetadata: showMetadataOnStoryTile,
-                      showUrl: showUrl,
-                      showFavicon: showFavicon,
-                      showPreviewImage: showPreviewImage,
-                      isExpandedTileEnabled: isExpandedTileEnabled,
-                      hasRead: markReadStories && hasRead,
-                    ),
-                  ),
-                ),
-                if (showDivider && showWebPreviewOnStoryTile)
-                  const SizedBox(
-                    height: Dimens.pt8,
-                  ),
-              ],
-            ];
-          } else if (e is Comment) {
-            return <Widget>[
-              FadeIn(
-                child: InkWell(
-                  onTap: () => onTap(e),
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      top: Dimens.pt8,
-                      bottom: Dimens.pt8,
-                      left: Dimens.pt12,
-                      right: Dimens.pt6,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        if (e.deleted)
-                          const Center(
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                top: Dimens.pt6,
-                              ),
-                              child: Text(
-                                'deleted',
-                                style: TextStyle(color: Palette.grey),
-                              ),
-                            ),
-                          ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Text(
-                                  showAuthor
-                                      ? '''${e.timeAgo} by ${e.by}'''
-                                      : e.timeAgo,
-                                  style: TextStyle(
-                                    color: Theme.of(context).metadataColor,
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: Dimens.pt12,
-                                ),
-                              ],
-                            ),
-                            Linkify(
-                              text: e.text,
-                              maxLines: 4,
-                              style: const TextStyle(
-                                fontSize: TextDimens.pt16,
-                              ),
-                              linkStyle: TextStyle(
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                              onOpen: (LinkableElement link) => LinkUtil.launch(
-                                link.url,
-                                context,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                    ],
                   ),
                 ),
               ),
-              const Divider(
-                height: Dimens.zero,
-              ),
-            ];
-          }
+            ),
+            const Divider(
+              height: Dimens.zero,
+            ),
+          ];
+        }
 
-          return <Widget>[Container()];
-        }).mapIndexed(
-          (int index, List<Widget> e) => itemBuilder == null
-              ? Column(children: e)
-              : itemBuilder!(Column(children: e), items.elementAt(index)),
-        ),
-        if (footer != null) footer!,
-        const SizedBox(
-          height: Dimens.pt40,
-        ),
-      ],
-    );
+        return <Widget>[Container()];
+      }).mapIndexed(
+        (int index, List<Widget> e) => itemBuilder == null
+            ? Column(children: e)
+            : itemBuilder!(Column(children: e), items.elementAt(index)),
+      ),
+      if (footer != null) footer!,
+      const SizedBox(
+        height: Dimens.pt40,
+      ),
+    ];
 
     return SmartRefresher(
       enablePullUp: true,
@@ -301,7 +297,14 @@ class ItemsListView<T extends Item> extends StatelessWidget {
       controller: refreshController,
       onRefresh: onRefresh,
       onLoading: onLoadMore,
-      child: child,
+      child: context.read<PreferenceCubit>().state.isHackerNewsThemeEnabled
+          ? Column(
+              children: children,
+            )
+          : ListView(
+              controller: scrollController,
+              children: children,
+            ),
     );
   }
 }
