@@ -108,7 +108,16 @@ class _StoriesListViewState extends State<StoriesListView>
               },
               onTap: onStoryTapped,
               onPinned: context.read<PinCubit>().pinStory,
-              header: state.isOfflineReading ? null : header,
+              header: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  if (state.isOfflineReading)
+                    const SizedBox.shrink()
+                  else
+                    header,
+                  if (preferenceState.isHackerNewsThemeEnabled) SizedBoxes.pt12,
+                ],
+              ),
               loadStyle: LoadStyle.HideAlways,
               footer: preferenceState.isManualPaginationEnabled &&
                       state.statusByType[widget.storyType] == Status.success

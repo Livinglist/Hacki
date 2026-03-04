@@ -56,7 +56,9 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
     return BlocBuilder<PreferenceCubit, PreferenceState>(
       builder: (BuildContext context, PreferenceState preferenceState) {
         return Positioned.fill(
-          top: Dimens.pt50,
+          top: preferenceState.isHackerNewsThemeEnabled
+              ? Dimens.pt64
+              : Dimens.pt50,
           child: Visibility(
             visible: widget.pageType == PageType.settings,
             child: SingleChildScrollView(
