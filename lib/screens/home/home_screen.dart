@@ -120,7 +120,8 @@ class _HomeScreenState extends State<HomeScreen>
           previous.isSwipeGestureEnabled != current.isSwipeGestureEnabled ||
           previous.isDividerEnabled != current.isDividerEnabled ||
           previous.isStoryTilePreviewImageEnabled !=
-              current.isStoryTilePreviewImageEnabled,
+              current.isStoryTilePreviewImageEnabled ||
+          previous.isHackerNewsThemeEnabled != current.isHackerNewsThemeEnabled,
       builder: (BuildContext context, PreferenceState preferenceState) {
         return DefaultTabController(
           length: tabLength,
@@ -134,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen>
               child: OptionalWrapper(
                 enabled: preferenceState.isHackerNewsThemeEnabled,
                 wrapper: (Widget c) => ColoredBox(
-                  color: Theme.of(context).primaryColor,
+                  color: HackerNewsTheme.hnOrange,
                   child: c,
                 ),
                 child: Column(
