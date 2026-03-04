@@ -201,7 +201,9 @@ class HackiApp extends StatelessWidget {
         ),
         BlocProvider<SplitViewCubit>(
           lazy: false,
-          create: (BuildContext context) => SplitViewCubit(),
+          create: (BuildContext context) => SplitViewCubit(
+            preferenceCubit: context.read<PreferenceCubit>(),
+          ),
         ),
         BlocProvider<ReminderCubit>(
           lazy: false,

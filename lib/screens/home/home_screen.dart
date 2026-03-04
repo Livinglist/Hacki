@@ -178,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen>
       },
     );
 
-    if (context.read<PreferenceCubit>().state.isSplitViewEnabled) {
+    if (context.watch<SplitViewCubit>().state.enabled) {
       return ScreenTypeLayout.builder(
         mobile: (BuildContext context) {
           context.read<SplitViewCubit>().disableSplitView();
@@ -186,9 +186,12 @@ class _HomeScreenState extends State<HomeScreen>
             homeScreen: homeScreen,
           );
         },
-        tablet: (BuildContext context) => TabletHomeScreen(
-          homeScreen: homeScreen,
-        ),
+        tablet: (BuildContext context) {
+          context.read<SplitViewCubit>().enableSplitView();
+          return TabletHomeScreen(
+            homeScreen: homeScreen,
+          );
+        },
       );
     } else {
       context.read<SplitViewCubit>().disableSplitView();

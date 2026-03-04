@@ -2,10 +2,13 @@ import 'dart:collection';
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
+import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/models/displayable.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/styles/palette.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 
 abstract final class Preference<T> extends Equatable with SettingsDisplayable {
   const Preference({required this.val});
@@ -53,11 +56,11 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       const CollapseModePreference(),
       const ReaderModePreference(),
       const CustomTabPreference(),
+      const SplitViewPreference(),
       const ManualPaginationPreference(),
       const SwipeGesturePreference(),
       const HapticFeedbackPreference(),
       const TrueDarkModePreference(),
-      const SplitViewPreference(),
       const EyeCandyPreference(),
       const HackerNewsThemePreference(),
       const DevMode(),
@@ -124,6 +127,27 @@ final class SplitViewPreference extends BooleanPreference {
   @override
   String get subtitle =>
       '''enable split view on large screen. Relaunch the app to see effect.''';
+
+  static bool? _cachedDisplayableResult;
+
+  @override
+  bool get isDisplayable {
+    if (_cachedDisplayableResult == null) {
+      final BuildContext? context = navigatorKey.currentContext;
+      if (context != null) {
+        final Size size = MediaQuery.of(context).size;
+        final DeviceScreenType deviceType = getDeviceType(size);
+        if (deviceType == DeviceScreenType.mobile) {
+          _cachedDisplayableResult = false;
+          return false;
+        }
+      }
+      _cachedDisplayableResult = true;
+      return true;
+    }
+
+    return _cachedDisplayableResult!;
+  }
 }
 
 final class EyeCandyPreference extends BooleanPreference {

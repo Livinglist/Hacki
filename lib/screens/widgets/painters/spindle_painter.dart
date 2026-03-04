@@ -8,10 +8,12 @@ class SpindlePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final Paint fillPaint = Paint()
+      ..isAntiAlias = true
       ..color = color
       ..style = PaintingStyle.fill;
 
     final Paint strokePaint = Paint()
+      ..isAntiAlias = true
       ..color = color
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;

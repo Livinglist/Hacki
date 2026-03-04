@@ -82,8 +82,8 @@ class _CountDownReminderState extends State<CountdownReminder>
 
   @override
   void dispose() {
-    super.dispose();
     animationController.dispose();
+    super.dispose();
   }
 
   @override

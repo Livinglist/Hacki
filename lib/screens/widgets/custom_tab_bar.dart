@@ -31,11 +31,15 @@ class _CustomTabBarState extends State<CustomTabBar> {
   void initState() {
     super.initState();
 
-    widget.tabController.addListener(() {
+    widget.tabController.addListener(_tabControllerListener);
+  }
+
+  void _tabControllerListener() {
+    if (context.mounted) {
       setState(() {
         currentIndex = widget.tabController.index;
       });
-    });
+    }
   }
 
   @override
@@ -178,5 +182,11 @@ class _CustomTabBarState extends State<CustomTabBar> {
         fullscreenDialog: true,
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    widget.tabController.removeListener(_tabControllerListener);
+    super.dispose();
   }
 }
