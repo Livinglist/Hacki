@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/services/services.dart';
@@ -10,11 +13,29 @@ part 'split_view_state.dart';
 
 class SplitViewCubit extends HydratedCubit<SplitViewState> with Loggable {
   SplitViewCubit({
+    required PreferenceCubit preferenceCubit,
     CommentCache? commentCache,
   })  : _commentCache = commentCache ?? locator.get<CommentCache>(),
-        super(const SplitViewState.init());
+        _preferenceCubit = preferenceCubit,
+        super(const SplitViewState.init()) {
+    init();
+  }
 
   final CommentCache _commentCache;
+  final PreferenceCubit _preferenceCubit;
+  late final StreamSubscription<bool> _preferenceStateSubscription;
+
+  void init() {
+    _preferenceStateSubscription = _preferenceCubit.stream
+        .distinct(
+          (PreferenceState previous, PreferenceState current) =>
+              previous.isSplitViewEnabled == current.isSplitViewEnabled,
+        )
+        .map((PreferenceState prefState) => prefState.isSplitViewEnabled)
+        .listen((bool isSplitViewEnabled) {
+      isSplitViewEnabled ? enableSplitView() : disableSplitView();
+    });
+  }
 
   void updateItemScreenArgs(ItemScreenArgs args) {
     logInfo('resetting comments in CommentCache');
@@ -57,5 +78,11 @@ class SplitViewCubit extends HydratedCubit<SplitViewState> with Loggable {
     return <String, dynamic>{
       _submissionPanelWidthKey: state.submissionPanelWidth,
     };
+  }
+
+  @override
+  Future<void> close() {
+    _preferenceStateSubscription.cancel();
+    return super.close();
   }
 }
