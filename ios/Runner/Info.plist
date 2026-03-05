@@ -2,27 +2,27 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>UIApplicationSceneManifest</key>
-    <dict>
-     <key>UIApplicationSupportsMultipleScenes</key>
-     <false/>
-     <key>UISceneConfigurations</key>
-     <dict>
-     <key>UIWindowSceneSessionRoleApplication</key>
-       <array>
-         <dict>
-           <key>UISceneClassName</key>
-           <string>UIWindowScene</string>
-           <key>UISceneDelegateClassName</key>
-           <string>FlutterSceneDelegate</string>
-           <key>UISceneConfigurationName</key>
-           <string>flutter</string>
-           <key>UISceneStoryboardFile</key>
-           <string>Main</string>
-         </dict>
-       </array>
-      </dict>
-    </dict>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneClassName</key>
+					<string>UIWindowScene</string>
+					<key>UISceneDelegateClassName</key>
+					<string>FlutterSceneDelegate</string>
+					<key>UISceneConfigurationName</key>
+					<string>flutter</string>
+					<key>UISceneStoryboardFile</key>
+					<string>Main</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>workmanager.background.task</string>
@@ -54,7 +54,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>ShareMedia-$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+				<string>hacki</string>
 			</array>
 		</dict>
 	</array>

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hacki/styles/palette.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class QrCodeViewScreen extends StatelessWidget {
@@ -16,7 +16,7 @@ class QrCodeViewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
+        elevation: Dimens.zero,
         backgroundColor: Palette.transparent,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
       ),

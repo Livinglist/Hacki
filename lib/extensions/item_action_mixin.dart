@@ -9,7 +9,8 @@ import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/item/models/models.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
-import 'package:hacki/screens/screens.dart' show ItemScreenArgs;
+import 'package:hacki/screens/screens.dart'
+    show ItemScreenArgs, ShareScreenArgs;
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:share_plus/share_plus.dart';
@@ -101,34 +102,40 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
 
   Future<void> onShareTapped(Item item, Rect? rect) async {
     late final String? linkToShare;
-    if (item.url.isNotEmpty) {
-      linkToShare = await showModalBottomSheet<String>(
-        context: context,
-        builder: (BuildContext context) {
-          return SafeArea(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
+    linkToShare = await showModalBottomSheet<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                onTap: () => context.pop('image'),
+                title: const Text('Share as image'),
+              ),
+              if (item.url.isNotEmpty)
                 ListTile(
                   onTap: () => context.pop(item.url),
                   title: const Text('Link to article'),
                 ),
-                ListTile(
-                  onTap: () => context.pop(
-                    '${Constants.hackerNewsItemLinkPrefix}${item.id}',
-                  ),
-                  title: const Text('Link to HN'),
+              ListTile(
+                onTap: () => context.pop(
+                  '${Constants.hackerNewsItemLinkPrefix}${item.id}',
                 ),
-              ],
-            ),
-          );
-        },
-      );
-    } else {
-      linkToShare = '${Constants.hackerNewsItemLinkPrefix}${item.id}';
-    }
+                title: const Text('Link to HN'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
 
-    if (linkToShare != null) {
+    if (linkToShare == 'image' && mounted) {
+      await context.push(
+        Paths.share.landing,
+        extra: ShareScreenArgs(item: item),
+      );
+    } else if (linkToShare != null) {
       await SharePlus.instance.share(
         ShareParams(
           uri: Uri.parse(linkToShare),

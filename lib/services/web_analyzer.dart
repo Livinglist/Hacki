@@ -325,8 +325,16 @@ ${info.toJson()}
       if (kids.isEmpty) return null;
     }
 
-    final Comment? comment =
-        await hackerNewsRepository.fetchComment(id: kids.first);
+    Comment? comment;
+    for (final int kidId in kids) {
+      comment = await hackerNewsRepository.fetchComment(id: kidId);
+      if (<String>['[delayed]', '[deleted]', '[flagged]']
+          .contains(comment?.text)) {
+        continue;
+      } else {
+        break;
+      }
+    }
 
     return comment != null ? '${comment.by}: ${comment.text}' : null;
   }

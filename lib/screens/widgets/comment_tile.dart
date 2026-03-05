@@ -29,6 +29,7 @@ class CommentTile extends StatelessWidget {
     this.isResponse = false,
     this.isNew = false,
     this.isEyeCandyEnabled = false,
+    this.shouldShowDivider = true,
     this.level = 0,
     this.index,
     this.onTap,
@@ -44,6 +45,7 @@ class CommentTile extends StatelessWidget {
   final bool isResponse;
   final bool isNew;
   final bool isEyeCandyEnabled;
+  final bool shouldShowDivider;
   final FetchMode fetchMode;
 
   final void Function(Comment)? onReplyTapped;
@@ -309,9 +311,10 @@ class CommentTile extends StatelessWidget {
                               ),
                             ),
                           ),
-                        const Divider(
-                          height: Dimens.zero,
-                        ),
+                        if (shouldShowDivider)
+                          const Divider(
+                            height: Dimens.zero,
+                          ),
                       ],
                     ),
                   ),

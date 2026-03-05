@@ -4,6 +4,7 @@ abstract class Paths {
   static const LogPaths log = LogPaths._();
   static const HomePaths home = HomePaths._();
   static const ItemPaths item = ItemPaths._();
+  static const SharePaths share = SharePaths._();
   static const QrCodePaths qrCode = QrCodePaths._();
   static const WebViewPaths webView = WebViewPaths._();
 }
@@ -20,6 +21,12 @@ class ItemPaths with RootPaths {
   String get landing => rootPath(ItemScreen.routeName);
 
   String get submit => rootPath(SubmitScreen.routeName);
+}
+
+class SharePaths with RootPaths {
+  const SharePaths._();
+
+  String get landing => rootPath(ShareScreen.routeName);
 }
 
 class LogPaths with RootPaths {

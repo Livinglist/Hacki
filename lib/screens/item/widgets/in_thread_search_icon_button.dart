@@ -18,8 +18,8 @@ class InThreadSearchIconButton extends StatelessWidget {
       closedColor: Palette.transparent,
       openColor: Theme.of(context).canvasColor,
       closedShape: const CircleBorder(),
-      closedElevation: 0,
-      openElevation: 0,
+      closedElevation: Dimens.zero,
+      openElevation: Dimens.zero,
       transitionType: ContainerTransitionType.fadeThrough,
       closedBuilder: (BuildContext context, void Function() action) {
         return CustomDescribedFeatureOverlay(
@@ -101,8 +101,8 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
             resizeToAvoidBottomInset: true,
             appBar: AppBar(
               backgroundColor: Theme.of(context).canvasColor,
-              elevation: 0,
-              leadingWidth: 0,
+              elevation: Dimens.zero,
+              leadingWidth: Dimens.zero,
               leading: const SizedBox.shrink(),
               title: Padding(
                 padding: const EdgeInsets.only(bottom: Dimens.pt8),

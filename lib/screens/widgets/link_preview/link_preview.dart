@@ -137,6 +137,7 @@ class _LinkPreviewState extends State<LinkPreview> {
       story: widget.story,
       cache: widget.cache,
       offlineReading: widget.isOfflineReading,
+      multimedia: false,
     );
 
     if (mounted) {

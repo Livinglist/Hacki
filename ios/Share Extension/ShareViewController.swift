@@ -64,7 +64,6 @@ public enum SharedMediaType: String, Codable, CaseIterable {
     }
 }
 
-let kSchemePrefix = "ShareMedia"
 let kUserDefaultsKey = "ShareKey"
 let kUserDefaultsMessageKey = "ShareMessageKey"
 let kAppGroupIdKey = "AppGroupId"
@@ -250,7 +249,7 @@ class ShareViewController: SLComposeServiceViewController {
     private func redirectToHostApp(itemId: String) {
         // ids may not loaded yet so we need loadIds here too
         loadIds()
-        let url = URL(string: "\(kSchemePrefix)-\(hostAppBundleIdentifier):///item/\(itemId)")
+        let url = URL(string: "hacki:///item/\(itemId)")
         var responder = self as UIResponder?
         
         if #available(iOS 18.0, *) {

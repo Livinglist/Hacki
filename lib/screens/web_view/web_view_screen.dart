@@ -63,7 +63,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
           ),
         ),
         centerTitle: true,
-        elevation: 0,
+        elevation: Dimens.zero,
       ),
       body: WebViewWidget(
         controller: controller,
