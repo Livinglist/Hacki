@@ -131,8 +131,8 @@ class FavoritesScreen extends StatelessWidget {
             PreferenceState previous,
             PreferenceState current,
           ) =>
-              previous.isComplexStoryTileEnabled !=
-                  current.isComplexStoryTileEnabled ||
+              previous.isRichStoryTileEnabled !=
+                  current.isRichStoryTileEnabled ||
               previous.isMetadataEnabled != current.isMetadataEnabled ||
               previous.isUrlEnabled != current.isUrlEnabled,
           builder: (
@@ -140,7 +140,7 @@ class FavoritesScreen extends StatelessWidget {
             PreferenceState prefState,
           ) {
             return ItemsListView<Item>(
-              showWebPreviewOnStoryTile: prefState.isComplexStoryTileEnabled,
+              showWebPreviewOnStoryTile: prefState.isRichStoryTileEnabled,
               showMetadataOnStoryTile: prefState.isMetadataEnabled,
               showPreviewImage: prefState.isStoryTilePreviewImageEnabled,
               showFavicon: prefState.isFaviconEnabled,

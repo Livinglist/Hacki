@@ -48,8 +48,7 @@ class _StoriesListViewState extends State<StoriesListView>
 
     return BlocBuilder<PreferenceCubit, PreferenceState>(
       buildWhen: (PreferenceState previous, PreferenceState current) =>
-          previous.isComplexStoryTileEnabled !=
-              current.isComplexStoryTileEnabled ||
+          previous.isRichStoryTileEnabled != current.isRichStoryTileEnabled ||
           previous.isMetadataEnabled != current.isMetadataEnabled ||
           previous.isManualPaginationEnabled !=
               current.isManualPaginationEnabled ||
@@ -80,8 +79,7 @@ class _StoriesListViewState extends State<StoriesListView>
               showDivider: preferenceState.isDividerEnabled,
               showOfflineBanner: true,
               markReadStories: preferenceState.isMarkReadStoriesEnabled,
-              showWebPreviewOnStoryTile:
-                  preferenceState.isComplexStoryTileEnabled,
+              showWebPreviewOnStoryTile: preferenceState.isRichStoryTileEnabled,
               showMetadataOnStoryTile: preferenceState.isMetadataEnabled,
               showPreviewImage: preferenceState.isStoryTilePreviewImageEnabled,
               showFavicon: preferenceState.isFaviconEnabled,
@@ -165,12 +163,12 @@ class _StoriesListViewState extends State<StoriesListView>
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            if (preferenceState.isComplexStoryTileEnabled)
+                            if (preferenceState.isRichStoryTileEnabled)
                               const Icon(
                                 Icons.push_pin_outlined,
                                 size: Dimens.pt24,
                               ),
-                            if (!preferenceState.isComplexStoryTileEnabled)
+                            if (!preferenceState.isRichStoryTileEnabled)
                               const Text(
                                 'Pin',
                               ),
@@ -185,12 +183,12 @@ class _StoriesListViewState extends State<StoriesListView>
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            if (preferenceState.isComplexStoryTileEnabled)
+                            if (preferenceState.isRichStoryTileEnabled)
                               const Icon(
                                 Icons.more_horiz,
                                 size: Dimens.pt24,
                               ),
-                            if (!preferenceState.isComplexStoryTileEnabled)
+                            if (!preferenceState.isRichStoryTileEnabled)
                               const Text(
                                 'More',
                               ),

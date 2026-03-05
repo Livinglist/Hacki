@@ -114,8 +114,7 @@ class _HomeScreenState extends State<HomeScreen>
     final BlocBuilder<PreferenceCubit, PreferenceState> homeScreen =
         BlocBuilder<PreferenceCubit, PreferenceState>(
       buildWhen: (PreferenceState previous, PreferenceState current) =>
-          previous.isComplexStoryTileEnabled !=
-              current.isComplexStoryTileEnabled ||
+          previous.isRichStoryTileEnabled != current.isRichStoryTileEnabled ||
           previous.isMetadataEnabled != current.isMetadataEnabled ||
           previous.isSwipeGestureEnabled != current.isSwipeGestureEnabled ||
           previous.isDividerEnabled != current.isDividerEnabled ||

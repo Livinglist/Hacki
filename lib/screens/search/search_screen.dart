@@ -361,7 +361,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                     FadeIn(
                                       child: StoryTile(
                                         showWebPreview:
-                                            prefState.isComplexStoryTileEnabled,
+                                            prefState.isRichStoryTileEnabled,
                                         showMetadata:
                                             prefState.isMetadataEnabled,
                                         showUrl: prefState.isUrlEnabled,
@@ -391,10 +391,9 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                     ),
                                   if (e is Story)
                                     Divider(
-                                      height:
-                                          prefState.isComplexStoryTileEnabled
-                                              ? Dimens.pt6
-                                              : Dimens.zero,
+                                      height: prefState.isRichStoryTileEnabled
+                                          ? Dimens.pt6
+                                          : Dimens.zero,
                                     ),
                                 ],
                               )
