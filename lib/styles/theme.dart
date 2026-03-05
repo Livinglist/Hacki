@@ -79,10 +79,20 @@ class HackerNewsTheme {
         ),
 
         // List tiles (story rows)
-        listTileTheme: const ListTileThemeData(
+        listTileTheme: ListTileThemeData(
           tileColor: hnBackground,
-          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-          dense: true,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          titleTextStyle: TextStyle(
+            color: hnText,
+            fontSize: 16,
+            fontFamily: Font.courier.name,
+          ),
+          subtitleTextStyle: TextStyle(
+            color: hnSubtext,
+            fontSize: 14,
+            fontFamily: Font.courier.name,
+          ),
         ),
 
         // Buttons
@@ -189,10 +199,20 @@ class HackerNewsDarkTheme {
         ),
 
         // List tiles
-        listTileTheme: const ListTileThemeData(
+        listTileTheme: ListTileThemeData(
           tileColor: hnSurface,
-          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-          dense: true,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          titleTextStyle: TextStyle(
+            color: hnText,
+            fontSize: 16,
+            fontFamily: Font.courier.name,
+          ),
+          subtitleTextStyle: TextStyle(
+            color: hnSubtext,
+            fontSize: 14,
+            fontFamily: Font.courier.name,
+          ),
         ),
 
         // Buttons

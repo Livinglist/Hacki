@@ -323,7 +323,7 @@ final class ExpandTileForLongerTextPreference extends BooleanPreference {
   String get title => 'Expand Tile for Longer Text';
 
   @override
-  String get subtitle => '''more space for more text.''';
+  String get subtitle => '''more space for more text in rich story tile.''';
 }
 
 final class LargeStoryTileImageDisplayPreference extends BooleanPreference {

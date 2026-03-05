@@ -163,6 +163,7 @@ class _LinkPreviewState extends State<LinkPreview> {
                   : Constants.hackerNewsHomepageLink,
             );
         return FutureBuilder<double>(
+          key: ValueKey<int>(widget.story.id),
           future: ImageRatioProvider.getImageRatio(imageUrl),
           builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
             return ImageWrapText(
@@ -192,6 +193,7 @@ class _LinkPreviewState extends State<LinkPreview> {
         );
       } else {
         return LayoutBuilder(
+          key: ValueKey<int>(widget.story.id),
           builder: (BuildContext context, BoxConstraints constraints) {
             final double availableWidth = constraints.maxWidth;
 
@@ -287,6 +289,10 @@ class _LinkPreviewState extends State<LinkPreview> {
             imageUri: widget.showMultimedia ? info.image : null,
             iconUri: widget.showMultimedia ? info.icon : null,
           );
+
+    if (widget.isExpandedTileEnabled && widget.showMultimedia) {
+      return loadedWidget;
+    }
 
     return AnimatedCrossFade(
       firstChild: loadingWidget,
