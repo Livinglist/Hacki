@@ -5,7 +5,7 @@ publish_to: none
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
-  flutter: "3.41.3"
+  flutter: "3.41.4"
 
 dependencies:
   adaptive_theme: ^3.2.0
@@ -31,7 +31,7 @@ dependencies:
   flutter_fadein: ^2.0.0
   flutter_feather_icons: 2.0.0+1
   flutter_inappwebview: ^6.1.5
-  flutter_local_notifications: ^20.1.0
+  flutter_local_notifications: ^21.0.0
   flutter_material_color_picker: ^1.2.0
   flutter_native_splash: ^2.4.4
   flutter_secure_storage: ^10.0.0
