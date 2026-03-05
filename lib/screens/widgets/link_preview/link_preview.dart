@@ -174,6 +174,7 @@ class _LinkPreviewState extends State<LinkPreview> {
               imageUrl: imageUrl,
               fit: BoxFit.scaleDown,
               cacheKey: imageUrl,
+              filterQuality: FilterQuality.none,
               errorWidget: (_, __, ___) {
                 return const FadeIn(
                   child: Icon(
@@ -284,10 +285,6 @@ class _LinkPreviewState extends State<LinkPreview> {
             imageUri: widget.showMultimedia ? info.image : null,
             iconUri: widget.showMultimedia ? info.icon : null,
           );
-
-    if (widget.isExpandedTileEnabled && widget.showMultimedia) {
-      return loadedWidget;
-    }
 
     return AnimatedCrossFade(
       firstChild: loadingWidget,

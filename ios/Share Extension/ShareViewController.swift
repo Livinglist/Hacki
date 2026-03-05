@@ -220,17 +220,7 @@ class ShareViewController: SLComposeServiceViewController {
             // The path should be decoded because Flutter is not expecting url encoded file names
             let newPathDecoded = newPath.absoluteString.removingPercentEncoding!;
             if type == .video {
-                // Get video thumbnail and duration
-                if let videoInfo = getVideoInfo(from: url) {
-                    let thumbnailPathDecoded = videoInfo.thumbnail?.removingPercentEncoding;
-                    sharedMedia.append(SharedMediaFile(
-                        path: newPathDecoded,
-                        mimeType: url.mimeType(),
-                        thumbnail: thumbnailPathDecoded,
-                        duration: videoInfo.duration,
-                        type: type
-                    ))
-                }
+                return
             } else {
                 sharedMedia.append(SharedMediaFile(
                     path: newPathDecoded,
@@ -339,31 +329,6 @@ class ShareViewController: SLComposeServiceViewController {
             return false
         }
         return true
-    }
-    
-    private func getVideoInfo(from url: URL) -> (thumbnail: String?, duration: Double)? {
-        let asset = AVAsset(url: url)
-        let duration = (CMTimeGetSeconds(asset.duration) * 1000).rounded()
-        let thumbnailPath = getThumbnailPath(for: url)
-        
-        if FileManager.default.fileExists(atPath: thumbnailPath.path) {
-            return (thumbnail: thumbnailPath.absoluteString, duration: duration)
-        }
-        
-        var saved = false
-        let assetImgGenerate = AVAssetImageGenerator(asset: asset)
-        assetImgGenerate.appliesPreferredTrackTransform = true
-        //        let scale = UIScreen.main.scale
-        assetImgGenerate.maximumSize =  CGSize(width: 360, height: 360)
-        do {
-            let img = try assetImgGenerate.copyCGImage(at: CMTimeMakeWithSeconds(600, preferredTimescale: 1), actualTime: nil)
-            try UIImage(cgImage: img).pngData()?.write(to: thumbnailPath)
-            saved = true
-        } catch {
-            saved = false
-        }
-        
-        return saved ? (thumbnail: thumbnailPath.absoluteString, duration: duration): nil
     }
     
     private func getThumbnailPath(for url: URL) -> URL {
