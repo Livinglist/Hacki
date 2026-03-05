@@ -31,7 +31,7 @@ class LinkIconButton extends StatelessWidget {
       onPressed: () => LinkUtil.launch(
         '${Constants.hackerNewsItemLinkPrefix}$storyId',
         context,
-        useHackiForHnLink: false,
+        shouldUseHackiForHnLink: false,
       ),
     );
   }

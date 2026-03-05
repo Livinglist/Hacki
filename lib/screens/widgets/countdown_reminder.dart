@@ -73,10 +73,12 @@ class _CountDownReminderState extends State<CountdownReminder>
     super.initState();
 
     Future<void>.delayed(visibilityCountdownDuration, () {
-      setState(() {
-        isVisible = true;
-      });
-      animationController.forward();
+      if (context.mounted) {
+        setState(() {
+          isVisible = true;
+        });
+        animationController.forward();
+      }
     });
   }
 

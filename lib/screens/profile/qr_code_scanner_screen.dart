@@ -21,7 +21,7 @@ class _QrCodeScannerScreenState extends State<QrCodeScannerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
+        elevation: Dimens.zero,
         backgroundColor: Palette.transparent,
         actions: <Widget>[
           IconButton(

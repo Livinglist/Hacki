@@ -81,9 +81,10 @@ extension ContextExtension on BuildContext {
       _screenWidth = screenWidth;
     }
 
-    final bool showSmallerPreviewPic = screenWidth > _screenWidthLowerBound &&
-        screenWidth < _screenWidthUpperBound;
-    final double height = showSmallerPreviewPic
+    final bool shouldShowSmallerPreviewPic =
+        screenWidth > _screenWidthLowerBound &&
+            screenWidth < _screenWidthUpperBound;
+    final double height = shouldShowSmallerPreviewPic
         ? _smallPicHeight
         : (screenWidth * _picHeightFactor)
             .clamp(_picHeightLowerBound, _picHeightUpperBound);

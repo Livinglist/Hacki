@@ -360,13 +360,14 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                   if (e is Story)
                                     FadeIn(
                                       child: StoryTile(
-                                        showWebPreview:
-                                            prefState.isComplexStoryTileEnabled,
-                                        showMetadata:
+                                        shouldShowWebPreview:
+                                            prefState.isRichStoryTileEnabled,
+                                        shouldShowMetadata:
                                             prefState.isMetadataEnabled,
-                                        showUrl: prefState.isUrlEnabled,
-                                        showFavicon: prefState.isFaviconEnabled,
-                                        showPreviewImage: true,
+                                        shouldShowUrl: prefState.isUrlEnabled,
+                                        shouldShowFavicon:
+                                            prefState.isFaviconEnabled,
+                                        shouldShowPreviewImage: true,
                                         isExpandedTileEnabled: false,
                                         story: e,
                                         onTap: () => goToItemScreen(
@@ -378,9 +379,9 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                   else if (e is Comment)
                                     FadeIn(
                                       child: CommentTile(
-                                        actionable: false,
-                                        collapsable: false,
-                                        selectable: false,
+                                        isActionable: false,
+                                        isCollapsable: false,
+                                        isSelectable: false,
                                         comment: e,
                                         fetchMode: FetchMode.eager,
                                         onTap: () => goToItemScreen(
@@ -391,10 +392,9 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                     ),
                                   if (e is Story)
                                     Divider(
-                                      height:
-                                          prefState.isComplexStoryTileEnabled
-                                              ? Dimens.pt6
-                                              : Dimens.zero,
+                                      height: prefState.isRichStoryTileEnabled
+                                          ? Dimens.pt6
+                                          : Dimens.zero,
                                     ),
                                 ],
                               )

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hacki/models/font.dart';
+import 'package:hacki/styles/dimens.dart';
 
 extension ThemeDataExtension on ThemeData {
   Color get readGrey => colorScheme.onSurface.withValues(alpha: 0.6);
@@ -34,10 +35,10 @@ class HackerNewsTheme {
         appBarTheme: AppBarTheme(
           backgroundColor: hnOrange,
           foregroundColor: hnWhite,
-          elevation: 0,
+          elevation: Dimens.zero,
           titleTextStyle: TextStyle(
             color: hnWhite,
-            fontSize: 14,
+            fontSize: TextDimens.pt14,
             fontWeight: FontWeight.bold,
             fontFamily: Font.courier.name,
           ),
@@ -49,19 +50,24 @@ class HackerNewsTheme {
           // Story title
           titleMedium: TextStyle(
             color: hnText,
-            fontSize: 14,
+            fontSize: TextDimens.pt16,
             fontFamily: Font.courier.name,
           ),
           // Points, time, username
           bodySmall: TextStyle(
             color: hnSubtext,
-            fontSize: 12,
+            fontSize: TextDimens.pt14,
             fontFamily: Font.courier.name,
           ),
           // Body
           bodyMedium: TextStyle(
             color: hnText,
-            fontSize: 13,
+            fontSize: TextDimens.pt15,
+            fontFamily: Font.courier.name,
+          ),
+          labelSmall: TextStyle(
+            color: hnLink, // for links/points
+            fontSize: TextDimens.pt14,
             fontFamily: Font.courier.name,
           ),
         ),
@@ -74,10 +80,22 @@ class HackerNewsTheme {
         ),
 
         // List tiles (story rows)
-        listTileTheme: const ListTileThemeData(
+        listTileTheme: ListTileThemeData(
           tileColor: hnBackground,
-          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-          dense: true,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: Dimens.pt8,
+            vertical: Dimens.pt2,
+          ),
+          titleTextStyle: TextStyle(
+            color: hnText,
+            fontSize: TextDimens.pt16,
+            fontFamily: Font.courier.name,
+          ),
+          subtitleTextStyle: TextStyle(
+            color: hnSubtext,
+            fontSize: TextDimens.pt14,
+            fontFamily: Font.courier.name,
+          ),
         ),
 
         // Buttons
@@ -85,14 +103,17 @@ class HackerNewsTheme {
           style: TextButton.styleFrom(
             foregroundColor: hnSubtext,
             textStyle: TextStyle(
-              fontSize: 12,
+              fontSize: TextDimens.pt14,
               fontFamily: Font.courier.name,
             ),
           ),
         ),
 
         inputDecorationTheme: InputDecorationTheme(
-          hintStyle: const TextStyle(color: hnSubtext, fontSize: 13),
+          hintStyle: const TextStyle(
+            color: hnSubtext,
+            fontSize: TextDimens.pt13,
+          ),
           border: const UnderlineInputBorder(
             borderSide: BorderSide(
               color: hnDivider,
@@ -142,10 +163,10 @@ class HackerNewsDarkTheme {
         appBarTheme: AppBarTheme(
           backgroundColor: hnNavBar,
           foregroundColor: hnWhite,
-          elevation: 0,
+          elevation: Dimens.zero,
           titleTextStyle: TextStyle(
             color: hnOrange,
-            fontSize: 14,
+            fontSize: TextDimens.pt14,
             fontWeight: FontWeight.bold,
             fontFamily: Font.courier.name,
           ),
@@ -156,22 +177,22 @@ class HackerNewsDarkTheme {
         textTheme: TextTheme(
           titleMedium: TextStyle(
             color: hnText,
-            fontSize: 14,
+            fontSize: TextDimens.pt16,
             fontFamily: Font.courier.name,
           ),
           bodySmall: TextStyle(
             color: hnSubtext,
-            fontSize: 12,
+            fontSize: TextDimens.pt14,
             fontFamily: Font.courier.name,
           ),
           bodyMedium: TextStyle(
             color: hnText,
-            fontSize: 13,
+            fontSize: TextDimens.pt15,
             fontFamily: Font.courier.name,
           ),
           labelSmall: TextStyle(
             color: hnLink, // for links/points
-            fontSize: 12,
+            fontSize: TextDimens.pt14,
             fontFamily: Font.courier.name,
           ),
         ),
@@ -184,10 +205,22 @@ class HackerNewsDarkTheme {
         ),
 
         // List tiles
-        listTileTheme: const ListTileThemeData(
+        listTileTheme: ListTileThemeData(
           tileColor: hnSurface,
-          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-          dense: true,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: Dimens.pt8,
+            vertical: Dimens.pt2,
+          ),
+          titleTextStyle: TextStyle(
+            color: hnText,
+            fontSize: TextDimens.pt16,
+            fontFamily: Font.courier.name,
+          ),
+          subtitleTextStyle: TextStyle(
+            color: hnSubtext,
+            fontSize: TextDimens.pt14,
+            fontFamily: Font.courier.name,
+          ),
         ),
 
         // Buttons
@@ -195,14 +228,17 @@ class HackerNewsDarkTheme {
           style: TextButton.styleFrom(
             foregroundColor: hnOrange,
             textStyle: TextStyle(
-              fontSize: 12,
+              fontSize: TextDimens.pt14,
               fontFamily: Font.courier.name,
             ),
           ),
         ),
 
         inputDecorationTheme: InputDecorationTheme(
-          hintStyle: const TextStyle(color: hnSubtext, fontSize: 13),
+          hintStyle: const TextStyle(
+            color: hnSubtext,
+            fontSize: TextDimens.pt13,
+          ),
           border: const UnderlineInputBorder(
             borderSide: BorderSide(
               color: hnDivider,

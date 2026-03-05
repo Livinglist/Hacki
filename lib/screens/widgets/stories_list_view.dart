@@ -48,8 +48,7 @@ class _StoriesListViewState extends State<StoriesListView>
 
     return BlocBuilder<PreferenceCubit, PreferenceState>(
       buildWhen: (PreferenceState previous, PreferenceState current) =>
-          previous.isComplexStoryTileEnabled !=
-              current.isComplexStoryTileEnabled ||
+          previous.isRichStoryTileEnabled != current.isRichStoryTileEnabled ||
           previous.isMetadataEnabled != current.isMetadataEnabled ||
           previous.isManualPaginationEnabled !=
               current.isManualPaginationEnabled ||
@@ -77,15 +76,16 @@ class _StoriesListViewState extends State<StoriesListView>
                   current.statusByType[widget.storyType]),
           builder: (BuildContext context, StoriesState state) {
             return ItemsListView<Story>(
-              showDivider: preferenceState.isDividerEnabled,
-              showOfflineBanner: true,
-              markReadStories: preferenceState.isMarkReadStoriesEnabled,
-              showWebPreviewOnStoryTile:
-                  preferenceState.isComplexStoryTileEnabled,
-              showMetadataOnStoryTile: preferenceState.isMetadataEnabled,
-              showPreviewImage: preferenceState.isStoryTilePreviewImageEnabled,
-              showFavicon: preferenceState.isFaviconEnabled,
-              showUrl: preferenceState.isUrlEnabled,
+              shouldShowDivider: preferenceState.isDividerEnabled,
+              shouldShowOfflineBanner: true,
+              shouldMarkReadStories: preferenceState.isMarkReadStoriesEnabled,
+              shouldShowWebPreviewOnStoryTile:
+                  preferenceState.isRichStoryTileEnabled,
+              shouldShowMetadataOnStoryTile: preferenceState.isMetadataEnabled,
+              shouldShowPreviewImage:
+                  preferenceState.isStoryTilePreviewImageEnabled,
+              shouldShowFavicon: preferenceState.isFaviconEnabled,
+              shouldShowUrl: preferenceState.isUrlEnabled,
               isExpandedTileEnabled: preferenceState.isExpandedTileEnabled,
               refreshController: refreshController,
               scrollController: scrollController,
@@ -165,12 +165,12 @@ class _StoriesListViewState extends State<StoriesListView>
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            if (preferenceState.isComplexStoryTileEnabled)
+                            if (preferenceState.isRichStoryTileEnabled)
                               const Icon(
                                 Icons.push_pin_outlined,
                                 size: Dimens.pt24,
                               ),
-                            if (!preferenceState.isComplexStoryTileEnabled)
+                            if (!preferenceState.isRichStoryTileEnabled)
                               const Text(
                                 'Pin',
                               ),
@@ -185,12 +185,12 @@ class _StoriesListViewState extends State<StoriesListView>
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            if (preferenceState.isComplexStoryTileEnabled)
+                            if (preferenceState.isRichStoryTileEnabled)
                               const Icon(
                                 Icons.more_horiz,
                                 size: Dimens.pt24,
                               ),
-                            if (!preferenceState.isComplexStoryTileEnabled)
+                            if (!preferenceState.isRichStoryTileEnabled)
                               const Text(
                                 'More',
                               ),

@@ -61,6 +61,16 @@ final GoRouter router = GoRouter(
           },
         ),
         GoRoute(
+          path: ShareScreen.routeName,
+          builder: (_, GoRouterState state) {
+            final ShareScreenArgs? args = state.extra as ShareScreenArgs?;
+            if (args == null) {
+              throw GoError("args can't be null");
+            }
+            return ShareScreen(args);
+          },
+        ),
+        GoRoute(
           path: LogScreen.routeName,
           builder: (_, __) => const LogScreen(),
         ),

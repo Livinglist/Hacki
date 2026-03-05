@@ -69,8 +69,8 @@ class TimeMachineDialog extends StatelessWidget {
                                 in state.ancestors) ...<Widget>[
                               CommentTile(
                                 comment: c,
-                                actionable: false,
-                                collapsable: false,
+                                isActionable: false,
+                                isCollapsable: false,
                                 fetchMode: FetchMode.eager,
                               ),
                               const Divider(

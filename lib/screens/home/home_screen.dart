@@ -114,8 +114,7 @@ class _HomeScreenState extends State<HomeScreen>
     final BlocBuilder<PreferenceCubit, PreferenceState> homeScreen =
         BlocBuilder<PreferenceCubit, PreferenceState>(
       buildWhen: (PreferenceState previous, PreferenceState current) =>
-          previous.isComplexStoryTileEnabled !=
-              current.isComplexStoryTileEnabled ||
+          previous.isRichStoryTileEnabled != current.isRichStoryTileEnabled ||
           previous.isMetadataEnabled != current.isMetadataEnabled ||
           previous.isSwipeGestureEnabled != current.isSwipeGestureEnabled ||
           previous.isDividerEnabled != current.isDividerEnabled ||
@@ -203,12 +202,13 @@ class _HomeScreenState extends State<HomeScreen>
 
   void onStoryTapped(Story story) {
     final PreferenceState prefState = context.read<PreferenceCubit>().state;
-    final bool useReader = prefState.isReaderEnabled;
+    final bool shouldUseReader = prefState.isReaderEnabled;
     final StoryMarkingMode storyMarkingMode = prefState.storyMarkingMode;
-    final bool offlineReading =
+    final bool isOfflineReading =
         context.read<StoriesBloc>().state.isOfflineReading;
-    final bool splitViewEnabled = context.read<SplitViewCubit>().state.enabled;
-    final bool markReadStoriesEnabled = prefState.isMarkReadStoriesEnabled;
+    final bool isSplitViewEnabled =
+        context.read<SplitViewCubit>().state.enabled;
+    final bool isMarkReadStoriesEnabled = prefState.isMarkReadStoriesEnabled;
 
     // If a story is a job story and it has a link to the job posting,
     // it would be better to just navigate to the web page.
@@ -217,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen>
     if (isJobWithLink) {
       context.read<ReminderCubit>().removeLastReadStoryId();
     } else {
-      final bool shouldMarkNewComment = markReadStoriesEnabled &&
+      final bool shouldMarkNewComment = isMarkReadStoriesEnabled &&
           context.read<StoriesBloc>().state.readStoriesIds.contains(story.id);
       final ItemScreenArgs args = ItemScreenArgs(
         item: story,
@@ -226,7 +226,7 @@ class _HomeScreenState extends State<HomeScreen>
 
       context.read<ReminderCubit>().updateLastReadStoryId(story.id);
 
-      if (splitViewEnabled) {
+      if (isSplitViewEnabled) {
         context.read<SplitViewCubit>().updateItemScreenArgs(args);
       } else {
         context.push(Paths.item.landing, extra: args);
@@ -237,12 +237,12 @@ class _HomeScreenState extends State<HomeScreen>
       LinkUtil.launch(
         story.url,
         context,
-        useReader: useReader,
-        offlineReading: offlineReading,
+        shouldUseReader: shouldUseReader,
+        isOfflineReading: isOfflineReading,
       );
     }
 
-    if (markReadStoriesEnabled && storyMarkingMode.shouldDetectTapping) {
+    if (isMarkReadStoriesEnabled && storyMarkingMode.shouldDetectTapping) {
       context.read<StoriesBloc>().add(StoryRead(story: story));
     }
   }

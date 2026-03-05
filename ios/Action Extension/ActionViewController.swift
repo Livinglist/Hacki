@@ -63,7 +63,6 @@ public enum SharedMediaType: String, Codable, CaseIterable {
     }
 }
 
-let kSchemePrefix = "ShareMedia"
 let kUserDefaultsKey = "ShareKey"
 let kUserDefaultsMessageKey = "ShareMessageKey"
 let kAppGroupIdKey = "AppGroupId"
@@ -102,6 +101,18 @@ class ActionViewController: UIViewController {
                     this.sharedMedia.removeAll()
                     this.sharedMedia.append(.init(path: item.absoluteString, type: .url))
                     print(this.sharedText)
+                    
+                    if let url = URL(string: item.absoluteString),
+                       let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+                       let queryItems = components.queryItems {
+                        for item in queryItems {
+                            if item.name == "id" {
+                                this.saveAndRedirect(message: item.value)
+                                return
+                            }
+                        }
+                    }
+                    
                     this.saveAndRedirect()
                 }
             } else {
@@ -125,11 +136,11 @@ class ActionViewController: UIViewController {
     
     // Save shared media and redirect to host app
     private func saveAndRedirect(message: String? = nil) {
-        let userDefaults = UserDefaults(suiteName: appGroupId)
-        userDefaults?.set(toData(data: sharedMedia), forKey: kUserDefaultsKey)
-        userDefaults?.set(message, forKey: kUserDefaultsMessageKey)
-        userDefaults?.synchronize()
-        redirectToHostApp()
+//        let userDefaults = UserDefaults(suiteName: appGroupId)
+//        userDefaults?.set(toData(data: sharedMedia), forKey: kUserDefaultsKey)
+//        userDefaults?.set(message, forKey: kUserDefaultsMessageKey)
+//        userDefaults?.synchronize()
+        redirectToHostApp(itemId: message ?? "")
     }
     
     private func toData(data: [SharedMediaFile]) -> Data {
@@ -137,10 +148,10 @@ class ActionViewController: UIViewController {
         return encodedData!
     }
     
-    private func redirectToHostApp() {
+    private func redirectToHostApp(itemId: String) {
         // ids may not loaded yet so we need loadIds here too
         loadIds()
-        let url = URL(string: "\(kSchemePrefix)-\(hostAppBundleIdentifier):share")
+        let url = URL(string: "hacki:///item/\(itemId)")
         var responder = self as UIResponder?
         
         if #available(iOS 18.0, *) {

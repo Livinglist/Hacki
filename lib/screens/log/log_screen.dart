@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hacki/extensions/context_extension.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/haptic_feedback_util.dart';
 import 'package:hacki/utils/log_util.dart';
 
@@ -20,7 +21,7 @@ class LogScreen extends StatelessWidget {
             backgroundColor: Theme.of(context).canvasColor.withValues(
                   alpha: 0.6,
                 ),
-            elevation: 0,
+            elevation: Dimens.zero,
             actions: <Widget>[
               if (snapshot.data != null)
                 IconButton(

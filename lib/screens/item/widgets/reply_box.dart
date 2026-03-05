@@ -333,7 +333,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                           goToItemScreen(
                             args: ItemScreenArgs(
                               item: replyingTo,
-                              useCommentCache: true,
+                              shouldUseCommentCache: true,
                             ),
                             forceNewScreen: true,
                           );

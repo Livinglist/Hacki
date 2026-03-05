@@ -64,7 +64,6 @@ public enum SharedMediaType: String, Codable, CaseIterable {
     }
 }
 
-let kSchemePrefix = "ShareMedia"
 let kUserDefaultsKey = "ShareKey"
 let kUserDefaultsMessageKey = "ShareMessageKey"
 let kAppGroupIdKey = "AppGroupId"
@@ -181,7 +180,16 @@ class ShareViewController: SLComposeServiceViewController {
         ))
         if index == (content.attachments?.count ?? 0) - 1 {
             if shouldAutoRedirect() {
-                saveAndRedirect()
+                if let url = URL(string: item),
+                   let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+                   let queryItems = components.queryItems {
+                    for item in queryItems {
+                        if item.name == "id" {
+                            saveAndRedirect(message: item.value)
+                            return
+                        }
+                    }
+                }
             }
         }
     }
@@ -211,17 +219,7 @@ class ShareViewController: SLComposeServiceViewController {
             // The path should be decoded because Flutter is not expecting url encoded file names
             let newPathDecoded = newPath.absoluteString.removingPercentEncoding!;
             if type == .video {
-                // Get video thumbnail and duration
-                if let videoInfo = getVideoInfo(from: url) {
-                    let thumbnailPathDecoded = videoInfo.thumbnail?.removingPercentEncoding;
-                    sharedMedia.append(SharedMediaFile(
-                        path: newPathDecoded,
-                        mimeType: url.mimeType(),
-                        thumbnail: thumbnailPathDecoded,
-                        duration: videoInfo.duration,
-                        type: type
-                    ))
-                }
+                return
             } else {
                 sharedMedia.append(SharedMediaFile(
                     path: newPathDecoded,
@@ -241,17 +239,17 @@ class ShareViewController: SLComposeServiceViewController {
     
     // Save shared media and redirect to host app
     private func saveAndRedirect(message: String? = nil) {
-        let userDefaults = UserDefaults(suiteName: appGroupId)
-        userDefaults?.set(toData(data: sharedMedia), forKey: kUserDefaultsKey)
-        userDefaults?.set(message, forKey: kUserDefaultsMessageKey)
-        userDefaults?.synchronize()
-        redirectToHostApp()
+//        let userDefaults = UserDefaults(suiteName: appGroupId)
+//        userDefaults?.set(toData(data: sharedMedia), forKey: kUserDefaultsKey)
+//        userDefaults?.set(message, forKey: kUserDefaultsMessageKey)
+//        userDefaults?.synchronize()
+        redirectToHostApp(itemId: message ?? "")
     }
     
-    private func redirectToHostApp() {
+    private func redirectToHostApp(itemId: String) {
         // ids may not loaded yet so we need loadIds here too
         loadIds()
-        let url = URL(string: "\(kSchemePrefix)-\(hostAppBundleIdentifier):share")
+        let url = URL(string: "hacki:///item/\(itemId)")
         var responder = self as UIResponder?
         
         if #available(iOS 18.0, *) {
@@ -330,31 +328,6 @@ class ShareViewController: SLComposeServiceViewController {
             return false
         }
         return true
-    }
-    
-    private func getVideoInfo(from url: URL) -> (thumbnail: String?, duration: Double)? {
-        let asset = AVAsset(url: url)
-        let duration = (CMTimeGetSeconds(asset.duration) * 1000).rounded()
-        let thumbnailPath = getThumbnailPath(for: url)
-        
-        if FileManager.default.fileExists(atPath: thumbnailPath.path) {
-            return (thumbnail: thumbnailPath.absoluteString, duration: duration)
-        }
-        
-        var saved = false
-        let assetImgGenerate = AVAssetImageGenerator(asset: asset)
-        assetImgGenerate.appliesPreferredTrackTransform = true
-        //        let scale = UIScreen.main.scale
-        assetImgGenerate.maximumSize =  CGSize(width: 360, height: 360)
-        do {
-            let img = try assetImgGenerate.copyCGImage(at: CMTimeMakeWithSeconds(600, preferredTimescale: 1), actualTime: nil)
-            try UIImage(cgImage: img).pngData()?.write(to: thumbnailPath)
-            saved = true
-        } catch {
-            saved = false
-        }
-        
-        return saved ? (thumbnail: thumbnailPath.absoluteString, duration: duration): nil
     }
     
     private func getThumbnailPath(for url: URL) -> URL {

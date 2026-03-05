@@ -40,7 +40,7 @@ class PinnedStories extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            if (preferenceState.isComplexStoryTileEnabled)
+                            if (preferenceState.isRichStoryTileEnabled)
                               const Icon(
                                 Icons.close,
                                 size: Dimens.pt24,
@@ -59,11 +59,12 @@ class PinnedStories extends StatelessWidget {
                       key: ValueKey<String>('${story.id}-PinnedStoryTile'),
                       story: story,
                       onTap: () => onStoryTapped(story),
-                      showWebPreview: preferenceState.isComplexStoryTileEnabled,
-                      showMetadata: preferenceState.isMetadataEnabled,
-                      showUrl: preferenceState.isUrlEnabled,
-                      showFavicon: preferenceState.isFaviconEnabled,
-                      showPreviewImage:
+                      shouldShowWebPreview:
+                          preferenceState.isRichStoryTileEnabled,
+                      shouldShowMetadata: preferenceState.isMetadataEnabled,
+                      shouldShowUrl: preferenceState.isUrlEnabled,
+                      shouldShowFavicon: preferenceState.isFaviconEnabled,
+                      shouldShowPreviewImage:
                           preferenceState.isStoryTilePreviewImageEnabled,
                       isExpandedTileEnabled: false,
                     ),

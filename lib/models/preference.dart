@@ -42,7 +42,7 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       const DisplayModePreference(),
       const ExpandTileForLongerTextPreference(),
       const FaviconModePreference(),
-      const LargeStoryTileImageDisplayPreference(),
+      const RichStoryTileImageDisplayPreference(),
       const MetadataModePreference(),
       const StoryUrlModePreference(),
       const DividerPreference(),
@@ -323,18 +323,18 @@ final class ExpandTileForLongerTextPreference extends BooleanPreference {
   String get title => 'Expand Tile for Longer Text';
 
   @override
-  String get subtitle => '''more space for more text.''';
+  String get subtitle => '''more space for more text in rich story tile.''';
 }
 
-final class LargeStoryTileImageDisplayPreference extends BooleanPreference {
-  const LargeStoryTileImageDisplayPreference({bool? val})
-      : super(val: val ?? _storyTileImageDisplayPreferenceDefaultValue);
+final class RichStoryTileImageDisplayPreference extends BooleanPreference {
+  const RichStoryTileImageDisplayPreference({bool? val})
+      : super(val: val ?? _richStoryTileImageDisplayPreferenceDefaultValue);
 
-  static const bool _storyTileImageDisplayPreferenceDefaultValue = true;
+  static const bool _richStoryTileImageDisplayPreferenceDefaultValue = true;
 
   @override
-  LargeStoryTileImageDisplayPreference copyWith({required bool? val}) {
-    return LargeStoryTileImageDisplayPreference(val: val);
+  RichStoryTileImageDisplayPreference copyWith({required bool? val}) {
+    return RichStoryTileImageDisplayPreference(val: val);
   }
 
   @override

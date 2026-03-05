@@ -52,7 +52,7 @@ class MainView extends StatelessWidget {
                 previous.status != current.status,
             builder: (BuildContext context, CommentsState state) {
               return RefreshIndicator(
-                displacement: 100,
+                displacement: 400,
                 onRefresh: () async {
                   HapticFeedbackUtil.light();
 
@@ -296,11 +296,11 @@ class _ParentItemSection extends StatelessWidget {
                               onTap: () => LinkUtil.launch(
                                 item.url,
                                 context,
-                                useReader: context
+                                shouldUseReader: context
                                     .read<PreferenceCubit>()
                                     .state
                                     .isReaderEnabled,
-                                offlineReading: context
+                                isOfflineReading: context
                                     .read<StoriesBloc>()
                                     .state
                                     .isOfflineReading,
