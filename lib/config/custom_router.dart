@@ -41,7 +41,6 @@ final GoRouter router = GoRouter(
               throw GoError("item id can't be null");
             }
             return FutureBuilder<Item?>(
-              key: ValueKey<int>(itemId),
               future: locator.get<HackerNewsRepository>().fetchItem(id: itemId),
               builder: (BuildContext context, AsyncSnapshot<Item?> snapshot) {
                 if (snapshot.hasData) {

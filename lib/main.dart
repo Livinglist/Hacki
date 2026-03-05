@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:app_links/app_links.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:equatable/equatable.dart';
 import 'package:feature_discovery/feature_discovery.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/custom_router.dart';
@@ -36,6 +38,7 @@ final BehaviorSubject<String?> selectNotificationSubject =
 final BehaviorSubject<String?> siriSuggestionSubject =
     BehaviorSubject<String?>();
 
+final AppLinks appLinks = AppLinks();
 late final bool isTesting;
 
 void notificationReceiver(NotificationResponse details) =>
@@ -43,6 +46,12 @@ void notificationReceiver(NotificationResponse details) =>
 
 Future<void> main({bool testing = false}) async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  /// Handle deeplink:
+  appLinks.uriLinkStream.listen((Uri uri) {
+    locator.get<Logger>().i('deeplink uri received: ${uri.path}');
+    navigatorKey.currentContext?.push(uri.path);
+  });
 
   await initializeDateFormatting(Platform.localeName);
 
