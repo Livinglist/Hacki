@@ -109,6 +109,34 @@ final GoRouter router = GoRouter(
             );
           },
         ),
+        GoRoute(
+          path: '${ItemScreen.routeName}/:itemId',
+          builder: (BuildContext context, GoRouterState state) {
+            final String? itemIdStr = state.pathParameters['itemId'];
+            final int? itemId = itemIdStr?.itemId;
+            if (itemId == null) {
+              throw GoError("item id can't be null");
+            }
+            return FutureBuilder<Item?>(
+              future: locator.get<HackerNewsRepository>().fetchItem(id: itemId),
+              builder: (BuildContext context, AsyncSnapshot<Item?> snapshot) {
+                if (snapshot.hasData) {
+                  final ItemScreenArgs args =
+                      ItemScreenArgs(item: snapshot.data!);
+                  return ItemScreen.phone(args);
+                } else {
+                  return const Scaffold(
+                    body: Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: Dimens.pt2,
+                      ),
+                    ),
+                  );
+                }
+              },
+            );
+          },
+        ),
       ],
     ),
   ],
