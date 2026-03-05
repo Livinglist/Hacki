@@ -23,7 +23,7 @@ struct StoryWidgetView : View {
             .containerBackground(for: .widget) {
                 Color(UIColor.secondarySystemBackground)
             }
-            .widgetURL(URL(string: "hacki:////item/\(story.id)"))
+            .widgetURL(URL(string: "hacki:///item/\(story.id)"))
         default:
             HStack {
                 VStack {
