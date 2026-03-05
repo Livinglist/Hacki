@@ -85,7 +85,7 @@ class _ShareScreenState extends State<ShareScreen> {
                   child: Screenshot(
                     controller: _screenshotController,
                     child: Material(
-                      elevation: 8,
+                      elevation: Dimens.pt8,
                       child: ColoredBox(
                         color: Theme.of(context).colorScheme.surfaceContainer,
                         child: Column(
