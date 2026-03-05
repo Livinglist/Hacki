@@ -14,11 +14,11 @@ import 'package:shimmer/shimmer.dart';
 
 class StoryTile extends StatelessWidget {
   const StoryTile({
-    required this.showWebPreview,
-    required this.showPreviewImage,
-    required this.showMetadata,
-    required this.showFavicon,
-    required this.showUrl,
+    required this.shouldShowWebPreview,
+    required this.shouldShowPreviewImage,
+    required this.shouldShowMetadata,
+    required this.shouldShowFavicon,
+    required this.shouldShowUrl,
     required this.isExpandedTileEnabled,
     required this.story,
     required this.onTap,
@@ -27,11 +27,11 @@ class StoryTile extends StatelessWidget {
     this.simpleTileFontSize = 16,
   });
 
-  final bool showWebPreview;
-  final bool showPreviewImage;
-  final bool showMetadata;
-  final bool showFavicon;
-  final bool showUrl;
+  final bool shouldShowWebPreview;
+  final bool shouldShowPreviewImage;
+  final bool shouldShowMetadata;
+  final bool shouldShowFavicon;
+  final bool shouldShowUrl;
   final bool hasRead;
   final bool isExpandedTileEnabled;
   final Story story;
@@ -41,7 +41,7 @@ class StoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (story.hidden) return const SizedBox.shrink();
-    if (showWebPreview) {
+    if (shouldShowWebPreview) {
       final double height = context.storyTileHeight;
       return Semantics(
         label: story.screenReaderLabel,
@@ -73,7 +73,7 @@ class StoryTile extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                 ),
                           ),
-                          if (showUrl && story.readableUrl.isNotEmpty)
+                          if (shouldShowUrl && story.readableUrl.isNotEmpty)
                             TextSpan(
                               text: ' (${story.readableUrl})',
                               style: Theme.of(context)
@@ -88,7 +88,7 @@ class StoryTile extends StatelessWidget {
                         ],
                       ),
                     ),
-                    if (showMetadata)
+                    if (shouldShowMetadata)
                       Text(
                         story.metadata,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -111,7 +111,7 @@ class StoryTile extends StatelessWidget {
                 isExpandedTileEnabled: isExpandedTileEnabled,
                 placeholderWidget: _LinkPreviewPlaceholder(
                   height: height,
-                  showPreviewImage: showPreviewImage,
+                  shouldShowPreviewImage: shouldShowPreviewImage,
                 ),
                 errorImage: Constants.hackerNewsLogoLink,
                 backgroundColor: Palette.transparent,
@@ -120,9 +120,9 @@ class StoryTile extends StatelessWidget {
                 bodyMaxLines: context.storyTileMaxLines,
                 errorTitle: story.title,
                 hasRead: hasRead,
-                showMetadata: showMetadata,
-                showMultimedia: showPreviewImage,
-                showUrl: showUrl,
+                shouldShowMetadata: shouldShowMetadata,
+                shouldShowMultimedia: shouldShowPreviewImage,
+                shouldShowUrl: shouldShowUrl,
                 onTap: onTap,
               ),
             ],
@@ -140,9 +140,9 @@ class StoryTile extends StatelessWidget {
               LinkUtil.launch(
                 story.url,
                 context,
-                useReader:
+                shouldUseReader:
                     context.read<PreferenceCubit>().state.isReaderEnabled,
-                offlineReading:
+                isOfflineReading:
                     context.read<StoriesBloc>().state.isOfflineReading,
               );
             }
@@ -152,7 +152,7 @@ class StoryTile extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                if (showFavicon) ...<Widget>[
+                if (shouldShowFavicon) ...<Widget>[
                   if (story.url.isNotEmpty)
                     SizedBox(
                       height: Dimens.pt20,
@@ -213,7 +213,7 @@ class StoryTile extends StatelessWidget {
                                               hasRead ? null : FontWeight.bold,
                                         ),
                                   ),
-                                  if (showUrl && story.url.isNotEmpty)
+                                  if (shouldShowUrl && story.url.isNotEmpty)
                                     TextSpan(
                                       text: ' (${story.readableUrl})',
                                       style: Theme.of(context)
@@ -232,7 +232,7 @@ class StoryTile extends StatelessWidget {
                           ),
                         ],
                       ),
-                      if (showMetadata)
+                      if (shouldShowMetadata)
                         Row(
                           children: <Widget>[
                             Expanded(
@@ -269,17 +269,17 @@ class StoryTile extends StatelessWidget {
 class _LinkPreviewPlaceholder extends StatelessWidget {
   const _LinkPreviewPlaceholder({
     required this.height,
-    required this.showPreviewImage,
+    required this.shouldShowPreviewImage,
   });
 
   final double height;
-  final bool showPreviewImage;
+  final bool shouldShowPreviewImage;
 
   @override
   Widget build(BuildContext context) {
     return FadeIn(
       child: SizedBox(
-        height: showPreviewImage ? height : null,
+        height: shouldShowPreviewImage ? height : null,
         child: Shimmer.fromColors(
           baseColor: Theme.of(context).colorScheme.primary,
           highlightColor:
@@ -287,7 +287,7 @@ class _LinkPreviewPlaceholder extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              if (showPreviewImage)
+              if (shouldShowPreviewImage)
                 Padding(
                   padding: const EdgeInsets.only(
                     right: Dimens.pt5,
@@ -304,7 +304,7 @@ class _LinkPreviewPlaceholder extends StatelessWidget {
                 flex: 4,
                 child: Padding(
                   padding: EdgeInsets.only(
-                    left: showPreviewImage ? Dimens.pt4 : Dimens.zero,
+                    left: shouldShowPreviewImage ? Dimens.pt4 : Dimens.zero,
                     top: Dimens.pt6,
                   ),
                   child: Column(

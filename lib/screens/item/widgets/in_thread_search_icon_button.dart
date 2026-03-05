@@ -196,8 +196,8 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                     index: i,
                     comment: state.comments.elementAt(i),
                     fetchMode: FetchMode.lazy,
-                    actionable: false,
-                    collapsable: false,
+                    isActionable: false,
+                    isCollapsable: false,
                     onTap: () {
                       widget.action();
                       widget.commentsCubit.scrollTo(

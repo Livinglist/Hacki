@@ -76,14 +76,16 @@ class _StoriesListViewState extends State<StoriesListView>
                   current.statusByType[widget.storyType]),
           builder: (BuildContext context, StoriesState state) {
             return ItemsListView<Story>(
-              showDivider: preferenceState.isDividerEnabled,
-              showOfflineBanner: true,
-              markReadStories: preferenceState.isMarkReadStoriesEnabled,
-              showWebPreviewOnStoryTile: preferenceState.isRichStoryTileEnabled,
-              showMetadataOnStoryTile: preferenceState.isMetadataEnabled,
-              showPreviewImage: preferenceState.isStoryTilePreviewImageEnabled,
-              showFavicon: preferenceState.isFaviconEnabled,
-              showUrl: preferenceState.isUrlEnabled,
+              shouldShowDivider: preferenceState.isDividerEnabled,
+              shouldShowOfflineBanner: true,
+              shouldMarkReadStories: preferenceState.isMarkReadStoriesEnabled,
+              shouldShowWebPreviewOnStoryTile:
+                  preferenceState.isRichStoryTileEnabled,
+              shouldShowMetadataOnStoryTile: preferenceState.isMetadataEnabled,
+              shouldShowPreviewImage:
+                  preferenceState.isStoryTilePreviewImageEnabled,
+              shouldShowFavicon: preferenceState.isFaviconEnabled,
+              shouldShowUrl: preferenceState.isUrlEnabled,
               isExpandedTileEnabled: preferenceState.isExpandedTileEnabled,
               refreshController: refreshController,
               scrollController: scrollController,

@@ -9,10 +9,10 @@ import 'package:hacki/styles/styles.dart';
 class OfflineBanner extends StatelessWidget {
   const OfflineBanner({
     super.key,
-    this.showExitButton = false,
+    this.shouldShowExitButton = false,
   });
 
-  final bool showExitButton;
+  final bool shouldShowExitButton;
 
   @override
   Widget build(BuildContext context) {
@@ -25,13 +25,14 @@ class OfflineBanner extends StatelessWidget {
             dividerColor: Palette.transparent,
             content: Text(
               'You are currently in offline mode. '
-              '${showExitButton ? 'Exit to fetch latest stories.' : ''}',
-              textAlign: showExitButton ? TextAlign.left : TextAlign.center,
+              '${shouldShowExitButton ? 'Exit to fetch latest stories.' : ''}',
+              textAlign:
+                  shouldShowExitButton ? TextAlign.left : TextAlign.center,
             ),
             backgroundColor:
                 Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
             actions: <Widget>[
-              if (showExitButton)
+              if (shouldShowExitButton)
                 TextButton(
                   onPressed: () {
                     showDialog<bool>(

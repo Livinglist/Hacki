@@ -13,21 +13,21 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class ItemsListView<T extends Item> extends StatelessWidget {
   const ItemsListView({
-    required this.showWebPreviewOnStoryTile,
-    required this.showMetadataOnStoryTile,
-    required this.showPreviewImage,
-    required this.showFavicon,
-    required this.showUrl,
+    required this.shouldShowWebPreviewOnStoryTile,
+    required this.shouldShowMetadataOnStoryTile,
+    required this.shouldShowPreviewImage,
+    required this.shouldShowFavicon,
+    required this.shouldShowUrl,
     required this.items,
     required this.onTap,
     required this.refreshController,
-    this.showDivider = false,
+    this.shouldShowDivider = false,
     super.key,
-    this.showAuthor = true,
-    this.useSimpleTileForStory = false,
-    this.enablePullDown = true,
-    this.markReadStories = false,
-    this.showOfflineBanner = false,
+    this.shouldShowAuthor = true,
+    this.shouldUseSimpleTileForStory = false,
+    this.shouldEnablePullDown = true,
+    this.shouldMarkReadStories = false,
+    this.shouldShowOfflineBanner = false,
     this.isExpandedTileEnabled = false,
     this.loadStyle = LoadStyle.ShowWhenLoading,
     this.onRefresh,
@@ -40,17 +40,17 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.itemBuilder,
   });
 
-  final bool showAuthor;
-  final bool showDivider;
-  final bool useSimpleTileForStory;
-  final bool showWebPreviewOnStoryTile;
-  final bool showMetadataOnStoryTile;
-  final bool showFavicon;
-  final bool showPreviewImage;
-  final bool showUrl;
-  final bool enablePullDown;
-  final bool markReadStories;
-  final bool showOfflineBanner;
+  final bool shouldShowAuthor;
+  final bool shouldShowDivider;
+  final bool shouldUseSimpleTileForStory;
+  final bool shouldShowWebPreviewOnStoryTile;
+  final bool shouldShowMetadataOnStoryTile;
+  final bool shouldShowFavicon;
+  final bool shouldShowPreviewImage;
+  final bool shouldShowUrl;
+  final bool shouldEnablePullDown;
+  final bool shouldMarkReadStories;
+  final bool shouldShowOfflineBanner;
   final bool isExpandedTileEnabled;
 
   final LoadStyle loadStyle;
@@ -73,9 +73,9 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     final ListView child = ListView(
       controller: scrollController,
       children: <Widget>[
-        if (showOfflineBanner)
+        if (shouldShowOfflineBanner)
           const OfflineBanner(
-            showExitButton: true,
+            shouldShowExitButton: true,
           ),
         if (header != null) header!,
         ...List<int>.generate(items.length, (_) => _).map((int index) {
@@ -85,11 +85,12 @@ class ItemsListView<T extends Item> extends StatelessWidget {
             final bool swipeGestureEnabled =
                 context.read<PreferenceCubit>().state.isSwipeGestureEnabled;
             return <Widget>[
-              if (showDivider && items.first.id != e.id)
+              if (shouldShowDivider && items.first.id != e.id)
                 Padding(
                   padding: EdgeInsetsGeometry.only(
-                    bottom:
-                        showWebPreviewOnStoryTile ? Dimens.pt8 : Dimens.zero,
+                    bottom: shouldShowWebPreviewOnStoryTile
+                        ? Dimens.pt8
+                        : Dimens.zero,
                   ),
                   child: const Divider(
                     height: Dimens.zero,
@@ -100,7 +101,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                   height: Dimens.pt6,
                   color: Palette.transparent,
                 ),
-              if (useSimpleTileForStory)
+              if (shouldUseSimpleTileForStory)
                 FadeIn(
                   child: InkWell(
                     onTap: () => onTap(e),
@@ -125,7 +126,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                           Row(
                             children: <Widget>[
                               Text(
-                                showAuthor
+                                shouldShowAuthor
                                     ? '''${e.timeAgo} by ${e.by}'''
                                     : e.timeAgo,
                                 style: TextStyle(
@@ -168,17 +169,17 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                       key: ValueKey<int>(e.id),
                       story: e,
                       onTap: () => onTap(e),
-                      showWebPreview: showWebPreviewOnStoryTile,
-                      showMetadata: showMetadataOnStoryTile,
-                      showUrl: showUrl,
-                      showFavicon: showFavicon,
-                      showPreviewImage: showPreviewImage,
+                      shouldShowWebPreview: shouldShowWebPreviewOnStoryTile,
+                      shouldShowMetadata: shouldShowMetadataOnStoryTile,
+                      shouldShowUrl: shouldShowUrl,
+                      shouldShowFavicon: shouldShowFavicon,
+                      shouldShowPreviewImage: shouldShowPreviewImage,
                       isExpandedTileEnabled: isExpandedTileEnabled,
-                      hasRead: markReadStories && hasRead,
+                      hasRead: shouldMarkReadStories && hasRead,
                     ),
                   ),
                 ),
-                if (showDivider && showWebPreviewOnStoryTile)
+                if (shouldShowDivider && shouldShowWebPreviewOnStoryTile)
                   const SizedBox(
                     height: Dimens.pt8,
                   ),
@@ -218,7 +219,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                             Row(
                               children: <Widget>[
                                 Text(
-                                  showAuthor
+                                  shouldShowAuthor
                                       ? '''${e.timeAgo} by ${e.by}'''
                                       : e.timeAgo,
                                   style: TextStyle(
@@ -272,7 +273,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
 
     return SmartRefresher(
       enablePullUp: true,
-      enablePullDown: enablePullDown,
+      enablePullDown: shouldEnablePullDown,
       header: WaterDropMaterialHeader(
         backgroundColor: Theme.of(context).colorScheme.primary,
         color: Theme.of(context).colorScheme.onPrimary,

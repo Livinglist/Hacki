@@ -113,13 +113,13 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   }
 
   Future<void> init({
-    bool onlyShowTargetComment = false,
-    bool useCommentCache = false,
+    bool shouldOnlyShowTargetComment = false,
+    bool shouldUseCommentCache = false,
     List<Comment>? targetAncestors,
     AppExceptionHandler? onError,
     bool fetchFromWeb = true,
   }) async {
-    if (onlyShowTargetComment && (targetAncestors?.isNotEmpty ?? false)) {
+    if (shouldOnlyShowTargetComment && (targetAncestors?.isNotEmpty ?? false)) {
       emit(
         state.copyWith(
           comments: targetAncestors,
@@ -172,7 +172,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         case FetchMode.lazy:
           commentStream = _hackerNewsRepository.fetchCommentsStream(
             ids: kids,
-            getFromCache: useCommentCache ? _commentCache.getComment : null,
+            getFromCache:
+                shouldUseCommentCache ? _commentCache.getComment : null,
           );
         case FetchMode.eager:
           switch (state.order) {
@@ -207,7 +208,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                     _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
                   ids: kids,
                   getFromCache:
-                      useCommentCache ? _commentCache.getComment : null,
+                      shouldUseCommentCache ? _commentCache.getComment : null,
                 );
               }
             case CommentsOrder.oldestFirst:
@@ -215,7 +216,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
               commentStream =
                   _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
                 ids: kids,
-                getFromCache: useCommentCache ? _commentCache.getComment : null,
+                getFromCache:
+                    shouldUseCommentCache ? _commentCache.getComment : null,
               );
           }
       }
@@ -456,7 +458,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     }
     _streamSubscriptions.clear();
     emit(state.copyWith(order: order));
-    init(useCommentCache: true);
+    init(shouldUseCommentCache: true);
   }
 
   void updateFetchMode(FetchMode? fetchMode) {
@@ -470,7 +472,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     }
     _streamSubscriptions.clear();
     emit(state.copyWith(fetchMode: fetchMode));
-    init(useCommentCache: true);
+    init(shouldUseCommentCache: true);
   }
 
   void scrollTo({

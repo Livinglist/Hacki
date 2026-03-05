@@ -21,22 +21,22 @@ class LinkView extends StatelessWidget {
     required this.title,
     required this.description,
     required this.onTap,
-    required bool showUrl,
+    required bool shouldShowUrl,
     required this.bodyMaxLines,
     super.key,
     this.imageUri,
     this.iconUri,
     this.imagePath,
-    this.showMultiMedia = true,
+    this.shouldShowMultiMedia = true,
     this.bodyTextOverflow,
     this.isIcon = false,
     this.hasRead = false,
     this.bgColor,
     this.radius = 0,
-  })  : showUrl = showUrl && url.isNotEmpty,
+  })  : shouldShowUrl = shouldShowUrl && url.isNotEmpty,
         assert(
-          !showMultiMedia ||
-              (showMultiMedia && (imageUri != null || imagePath != null)),
+          !shouldShowMultiMedia ||
+              (shouldShowMultiMedia && (imageUri != null || imagePath != null)),
           'imageUri or imagePath cannot be null when showMultiMedia is true',
         );
 
@@ -48,15 +48,15 @@ class LinkView extends StatelessWidget {
   final String? imageUri;
   final String? iconUri;
   final String? imagePath;
-  final VoidCallback onTap;
-  final bool showMultiMedia;
+  final bool shouldShowMultiMedia;
+  final bool shouldShowUrl;
   final bool hasRead;
+  final bool isIcon;
+  final VoidCallback onTap;
   final TextOverflow? bodyTextOverflow;
   final int bodyMaxLines;
-  final bool isIcon;
   final double radius;
   final Color? bgColor;
-  final bool showUrl;
 
   static final Func3<TextScaler, TextStyle?, double, int> _computeMaxLines =
       memo3((TextScaler textScaler, TextStyle? style, double layoutHeight) {
@@ -90,7 +90,7 @@ class LinkView extends StatelessWidget {
 
         return Row(
           children: <Widget>[
-            if (showMultiMedia)
+            if (shouldShowMultiMedia)
               Padding(
                 padding: const EdgeInsets.only(
                   right: 8,
@@ -103,12 +103,12 @@ class LinkView extends StatelessWidget {
                       LinkUtil.launch(
                         url,
                         context,
-                        useHackiForHnLink: false,
-                        useReader: context
+                        shouldUseHackiForHnLink: false,
+                        shouldUseReader: context
                             .read<PreferenceCubit>()
                             .state
                             .isReaderEnabled,
-                        offlineReading:
+                        isOfflineReading:
                             context.read<StoriesBloc>().state.isOfflineReading,
                       );
                     } else {
@@ -194,8 +194,8 @@ class LinkView extends StatelessWidget {
             TapDownWrapper(
               onTap: onTap,
               child: SizedBox(
-                height: showMultiMedia ? layoutHeight : null,
-                width: showMultiMedia
+                height: shouldShowMultiMedia ? layoutHeight : null,
+                width: shouldShowMultiMedia
                     ? layoutWidth - layoutHeight - 8
                     : layoutWidth,
                 child: Text(

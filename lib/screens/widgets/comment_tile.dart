@@ -23,9 +23,9 @@ class CommentTile extends StatelessWidget {
     this.onEditTapped,
     this.onRightMoreTapped,
     this.opUsername,
-    this.actionable = true,
-    this.collapsable = true,
-    this.selectable = true,
+    this.isActionable = true,
+    this.isCollapsable = true,
+    this.isSelectable = true,
     this.isResponse = false,
     this.isNew = false,
     this.isEyeCandyEnabled = false,
@@ -39,9 +39,9 @@ class CommentTile extends StatelessWidget {
   final Comment comment;
   final int level;
   final int? index;
-  final bool actionable;
-  final bool collapsable;
-  final bool selectable;
+  final bool isActionable;
+  final bool isCollapsable;
+  final bool isSelectable;
   final bool isResponse;
   final bool isNew;
   final bool isEyeCandyEnabled;
@@ -76,7 +76,7 @@ class CommentTile extends StatelessWidget {
           PreferenceState prefState,
           BlocklistState blocklistState,
         ) {
-          if (actionable && state.hidden) return const SizedBox.shrink();
+          if (isActionable && state.hidden) return const SizedBox.shrink();
 
           final Color primaryColor = Theme.of(context).colorScheme.primary;
           final Brightness brightness = Theme.of(context).brightness;
@@ -92,7 +92,7 @@ class CommentTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Slidable(
-                  startActionPane: actionable
+                  startActionPane: isActionable
                       ? ActionPane(
                           motion: const StretchMotion(),
                           children: <Widget>[
@@ -135,7 +135,7 @@ class CommentTile extends StatelessWidget {
                           ],
                         )
                       : null,
-                  endActionPane: actionable
+                  endActionPane: isActionable
                       ? ActionPane(
                           motion: const StretchMotion(),
                           children: <Widget>[
@@ -157,7 +157,7 @@ class CommentTile extends StatelessWidget {
                   child: InkWell(
                     splashFactory: NoSplash.splashFactory,
                     onTap: () {
-                      if (collapsable) {
+                      if (isCollapsable) {
                         _collapse(context);
                       } else {
                         onTap?.call();
@@ -232,7 +232,7 @@ class CommentTile extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              if (actionable && state.collapsed)
+                              if (isActionable && state.collapsed)
                                 CenteredText(
                                   text:
                                       '''collapsed (${state.collapsedCount + 1})''',
@@ -265,7 +265,7 @@ class CommentTile extends StatelessWidget {
                                       child: ItemText(
                                         key: ValueKey<int>(comment.id),
                                         item: comment,
-                                        selectable: selectable,
+                                        selectable: isSelectable,
                                         textScaler:
                                             MediaQuery.of(context).textScaler,
                                         onTap: () {
@@ -465,7 +465,7 @@ class CommentTile extends StatelessWidget {
     final CollapseState collapseState = context.read<CollapseCubit>().state;
     final CommentsState? commentsState =
         context.tryRead<CommentsCubit>()?.state;
-    return actionable &&
+    return isActionable &&
         fetchMode == FetchMode.lazy &&
         comment.kids.isNotEmpty &&
         collapseState.collapsed == false &&

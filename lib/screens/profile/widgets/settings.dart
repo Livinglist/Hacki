@@ -267,11 +267,12 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                   const TextScaleFactorSettings(),
                   const Divider(),
                   StoryTile(
-                    showWebPreview: preferenceState.isRichStoryTileEnabled,
-                    showMetadata: preferenceState.isMetadataEnabled,
-                    showUrl: preferenceState.isUrlEnabled,
-                    showFavicon: preferenceState.isFaviconEnabled,
-                    showPreviewImage:
+                    shouldShowWebPreview:
+                        preferenceState.isRichStoryTileEnabled,
+                    shouldShowMetadata: preferenceState.isMetadataEnabled,
+                    shouldShowUrl: preferenceState.isUrlEnabled,
+                    shouldShowFavicon: preferenceState.isFaviconEnabled,
+                    shouldShowPreviewImage:
                         preferenceState.isStoryTilePreviewImageEnabled,
                     isExpandedTileEnabled:
                         preferenceState.isExpandedTileEnabled,

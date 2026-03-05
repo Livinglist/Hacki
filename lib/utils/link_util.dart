@@ -29,11 +29,11 @@ abstract class LinkUtil {
   static void launch(
     String link,
     BuildContext context, {
-    bool useReader = false,
-    bool offlineReading = false,
-    bool useHackiForHnLink = true,
+    bool isOfflineReading = false,
+    bool shouldUseReader = false,
+    bool shouldUseHackiForHnLink = true,
   }) {
-    if (offlineReading) {
+    if (isOfflineReading) {
       locator
           .get<OfflineRepository>()
           .hasCachedWebPage(url: link)
@@ -49,7 +49,7 @@ abstract class LinkUtil {
       return;
     }
 
-    if (useHackiForHnLink && link.isStoryLink) {
+    if (shouldUseHackiForHnLink && link.isStoryLink) {
       final int? id = link.itemId;
       if (id != null) {
         locator
@@ -86,7 +86,7 @@ abstract class LinkUtil {
                           toolbarBackgroundColor: primaryColor,
                         )
                       : ChromeSafariBrowserSettings(
-                          entersReaderIfAvailable: useReader,
+                          entersReaderIfAvailable: shouldUseReader,
                           preferredControlTintColor: primaryColor,
                         ),
                 )

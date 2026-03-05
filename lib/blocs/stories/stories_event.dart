@@ -9,22 +9,26 @@ class LoadStories extends StoriesEvent {
   LoadStories({
     required this.type,
     this.isRefreshing = false,
-    this.useApi = false,
+    this.shouldUseApi = false,
   });
 
   final StoryType type;
   final bool isRefreshing;
-  final bool useApi;
+  final bool shouldUseApi;
 
-  LoadStories copyWith({required bool useApi}) {
-    return LoadStories(type: type, isRefreshing: isRefreshing, useApi: useApi);
+  LoadStories copyWith({required bool shouldUseApi}) {
+    return LoadStories(
+      type: type,
+      isRefreshing: isRefreshing,
+      shouldUseApi: shouldUseApi,
+    );
   }
 
   @override
   List<Object?> get props => <Object?>[
         type,
         isRefreshing,
-        useApi,
+        shouldUseApi,
       ];
 }
 
@@ -51,21 +55,21 @@ class StoriesRefresh extends StoriesEvent {
 class StoriesLoadMore extends StoriesEvent {
   StoriesLoadMore({
     required this.type,
-    this.useApi = false,
+    this.shouldUseApi = false,
   });
 
   final StoryType type;
 
-  final bool useApi;
+  final bool shouldUseApi;
 
-  StoriesLoadMore copyWith({required bool useApi}) {
-    return StoriesLoadMore(type: type, useApi: useApi);
+  StoriesLoadMore copyWith({required bool shouldUseApi}) {
+    return StoriesLoadMore(type: type, shouldUseApi: shouldUseApi);
   }
 
   @override
   List<Object?> get props => <Object?>[
         type,
-        useApi,
+        shouldUseApi,
       ];
 }
 

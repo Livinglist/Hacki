@@ -296,11 +296,11 @@ class _ParentItemSection extends StatelessWidget {
                               onTap: () => LinkUtil.launch(
                                 item.url,
                                 context,
-                                useReader: context
+                                shouldUseReader: context
                                     .read<PreferenceCubit>()
                                     .state
                                     .isReaderEnabled,
-                                offlineReading: context
+                                isOfflineReading: context
                                     .read<StoriesBloc>()
                                     .state
                                     .isOfflineReading,

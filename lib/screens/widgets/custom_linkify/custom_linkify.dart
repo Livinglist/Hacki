@@ -113,7 +113,7 @@ class Linkify extends StatelessWidget {
         primaryColor: context.read<PreferenceCubit>().state.appColor,
         style: Theme.of(context).textTheme.bodyMedium?.merge(style),
         onOpen: onOpen,
-        useMouseRegion: true,
+        shouldUseMouseRegion: true,
         linkStyle: Theme.of(context)
             .textTheme
             .bodyMedium
@@ -172,7 +172,7 @@ class SelectableLinkify extends StatelessWidget {
     this.focusNode,
     this.textScaler,
     this.strutStyle,
-    this.showCursor = false,
+    this.shouldShowCursor = false,
     this.autofocus = false,
     this.cursorWidth = 2.0,
     this.cursorRadius,
@@ -240,7 +240,7 @@ class SelectableLinkify extends StatelessWidget {
   final FocusNode? focusNode;
 
   /// Whether to show cursor
-  final bool showCursor;
+  final bool shouldShowCursor;
 
   /// Whether this text field should focus itself if
   /// nothing else is already focused.
@@ -308,7 +308,7 @@ class SelectableLinkify extends StatelessWidget {
       maxLines: maxLines,
       focusNode: focusNode,
       strutStyle: strutStyle,
-      showCursor: showCursor,
+      showCursor: shouldShowCursor,
       textScaler: textScaler,
       autofocus: autofocus,
       cursorWidth: cursorWidth,
@@ -359,13 +359,13 @@ TextSpan buildTextSpan(
   TextStyle? style,
   TextStyle? linkStyle,
   LinkCallback? onOpen,
-  bool useMouseRegion = false,
+  bool shouldUseMouseRegion = false,
 }) {
   return TextSpan(
     children: elements.map<InlineSpan>(
       (LinkifyElement element) {
         if (element is LinkableElement) {
-          if (useMouseRegion) {
+          if (shouldUseMouseRegion) {
             return LinkableSpan(
               mouseCursor: SystemMouseCursors.click,
               inlineSpan: TextSpan(

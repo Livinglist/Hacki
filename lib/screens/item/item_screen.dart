@@ -23,29 +23,29 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 class ItemScreenArgs extends Equatable {
   const ItemScreenArgs({
     required this.item,
-    this.onlyShowTargetComment = false,
+    this.shouldOnlyShowTargetComment = false,
     this.shouldMarkNewComment = false,
-    this.useCommentCache = false,
+    this.shouldUseCommentCache = false,
     this.targetComments,
   });
 
   final Item item;
-  final bool onlyShowTargetComment;
+  final bool shouldOnlyShowTargetComment;
   final bool shouldMarkNewComment;
   final List<Comment>? targetComments;
 
   /// when the user is trying to view a sub-thread from a main thread, we don't
   /// need to fetch comments from [HackerNewsRepository] since we have some,
   /// if not all, comments cached in [CommentCache].
-  final bool useCommentCache;
+  final bool shouldUseCommentCache;
 
   @override
   List<Object?> get props => <Object?>[
         item,
-        onlyShowTargetComment,
+        shouldOnlyShowTargetComment,
         shouldMarkNewComment,
         targetComments,
-        useCommentCache,
+        shouldUseCommentCache,
       ];
 }
 
@@ -77,9 +77,9 @@ class ItemScreen extends StatefulWidget {
               defaultFetchMode: context.read<PreferenceCubit>().state.fetchMode,
               defaultCommentsOrder: context.read<PreferenceCubit>().state.order,
             )..init(
-                onlyShowTargetComment: args.onlyShowTargetComment,
+                shouldOnlyShowTargetComment: args.shouldOnlyShowTargetComment,
                 targetAncestors: args.targetComments,
-                useCommentCache: args.useCommentCache,
+                shouldUseCommentCache: args.shouldUseCommentCache,
                 onError: (AppException e) =>
                     context.showErrorSnackBar(e.message),
               ),
@@ -123,7 +123,7 @@ class ItemScreen extends StatefulWidget {
                 defaultCommentsOrder:
                     context.read<PreferenceCubit>().state.order,
               )..init(
-                  onlyShowTargetComment: args.onlyShowTargetComment,
+                  shouldOnlyShowTargetComment: args.shouldOnlyShowTargetComment,
                   targetAncestors: args.targetComments,
                   onError: (AppException e) =>
                       context.showErrorSnackBar(e.message),
@@ -465,7 +465,7 @@ class _ItemScreenState extends State<ItemScreen>
                   goToItemScreen(
                     args: ItemScreenArgs(
                       item: comment,
-                      useCommentCache: true,
+                      shouldUseCommentCache: true,
                     ),
                     forceNewScreen: true,
                   );

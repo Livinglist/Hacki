@@ -77,12 +77,12 @@ class ImageWrapText extends StatelessWidget {
                         LinkUtil.launch(
                           url,
                           context,
-                          useHackiForHnLink: false,
-                          useReader: context
+                          shouldUseHackiForHnLink: false,
+                          shouldUseReader: context
                               .read<PreferenceCubit>()
                               .state
                               .isReaderEnabled,
-                          offlineReading: context
+                          isOfflineReading: context
                               .read<StoriesBloc>()
                               .state
                               .isOfflineReading,

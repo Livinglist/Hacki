@@ -59,11 +59,12 @@ class PinnedStories extends StatelessWidget {
                       key: ValueKey<String>('${story.id}-PinnedStoryTile'),
                       story: story,
                       onTap: () => onStoryTapped(story),
-                      showWebPreview: preferenceState.isRichStoryTileEnabled,
-                      showMetadata: preferenceState.isMetadataEnabled,
-                      showUrl: preferenceState.isUrlEnabled,
-                      showFavicon: preferenceState.isFaviconEnabled,
-                      showPreviewImage:
+                      shouldShowWebPreview:
+                          preferenceState.isRichStoryTileEnabled,
+                      shouldShowMetadata: preferenceState.isMetadataEnabled,
+                      shouldShowUrl: preferenceState.isUrlEnabled,
+                      shouldShowFavicon: preferenceState.isFaviconEnabled,
+                      shouldShowPreviewImage:
                           preferenceState.isStoryTilePreviewImageEnabled,
                       isExpandedTileEnabled: false,
                     ),

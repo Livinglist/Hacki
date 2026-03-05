@@ -49,11 +49,11 @@ class _ShareScreenState extends State<ShareScreen> {
     final Widget targetWidget = item is Story
         ? StoryTile(
             story: item,
-            showWebPreview: _shouldUseRichStoryTile,
-            showPreviewImage: true,
-            showMetadata: true,
-            showFavicon: true,
-            showUrl: true,
+            shouldShowWebPreview: _shouldUseRichStoryTile,
+            shouldShowPreviewImage: true,
+            shouldShowMetadata: true,
+            shouldShowFavicon: true,
+            shouldShowUrl: true,
             isExpandedTileEnabled: true,
             onTap: () {},
           )

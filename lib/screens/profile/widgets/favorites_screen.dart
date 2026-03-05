@@ -140,12 +140,12 @@ class FavoritesScreen extends StatelessWidget {
             PreferenceState prefState,
           ) {
             return ItemsListView<Item>(
-              showWebPreviewOnStoryTile: prefState.isRichStoryTileEnabled,
-              showMetadataOnStoryTile: prefState.isMetadataEnabled,
-              showPreviewImage: prefState.isStoryTilePreviewImageEnabled,
-              showFavicon: prefState.isFaviconEnabled,
-              showUrl: prefState.isUrlEnabled,
-              useSimpleTileForStory: true,
+              shouldShowWebPreviewOnStoryTile: prefState.isRichStoryTileEnabled,
+              shouldShowMetadataOnStoryTile: prefState.isMetadataEnabled,
+              shouldShowPreviewImage: prefState.isStoryTilePreviewImageEnabled,
+              shouldShowFavicon: prefState.isFaviconEnabled,
+              shouldShowUrl: prefState.isUrlEnabled,
+              shouldUseSimpleTileForStory: true,
               refreshController: refreshController,
               items: favState.isDisplayingStories
                   ? favState.favStories

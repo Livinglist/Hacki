@@ -132,7 +132,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
           )
           .listen((Story story) => add(StoryLoaded(story: story, type: type)))
           .onDone(() => add(StoryLoadingCompleted(type: type)));
-    } else if (event.useApi || state.dataSource == HackerNewsDataSource.api) {
+    } else if (event.shouldUseApi ||
+        state.dataSource == HackerNewsDataSource.api) {
       logInfo('($type) loading stories from API.');
       final List<int> ids =
           await _hackerNewsRepository.fetchStoryIds(type: type);
@@ -169,7 +170,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
           case RateLimitedException:
           case RateLimitedWithFallbackException:
           case PossibleParsingException:
-            add(event.copyWith(useApi: true));
+            add(event.copyWith(shouldUseApi: true));
         }
       }).listen((Story story) {
         add(StoryLoaded(story: story, type: type));
@@ -248,7 +249,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
           .getCachedStoriesStream(ids: idsForCurrentPage)
           .listen((Story story) => add(StoryLoaded(story: story, type: type)))
           .onDone(() => add(StoryLoadingCompleted(type: type)));
-    } else if (event.useApi || state.dataSource == HackerNewsDataSource.api) {
+    } else if (event.shouldUseApi ||
+        state.dataSource == HackerNewsDataSource.api) {
       late final int length;
       List<int>? ids = state.storyIdsByType[type];
 
@@ -284,7 +286,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
               case PossibleParsingException:
 
                 /// Fall back to use API instead.
-                add(event.copyWith(useApi: true));
+                add(event.copyWith(shouldUseApi: true));
                 emit(
                   state.copyWithCurrentPageUpdated(
                     type: type,

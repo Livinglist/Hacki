@@ -20,7 +20,7 @@ class WebViewScreen extends StatefulWidget {
 
 class _WebViewScreenState extends State<WebViewScreen> {
   final WebViewController controller = WebViewController();
-  bool showFullUrl = false;
+  bool shouldShowFullUrl = false;
 
   @override
   void initState() {
@@ -48,11 +48,11 @@ class _WebViewScreenState extends State<WebViewScreen> {
         title: GestureDetector(
           onTap: () {
             setState(() {
-              showFullUrl = !showFullUrl;
+              shouldShowFullUrl = !shouldShowFullUrl;
             });
           },
           child: Text(
-            showFullUrl
+            shouldShowFullUrl
                 ? humanize(widget.url)
                 : Uri.parse(widget.url).authority,
             style: const TextStyle(

@@ -97,16 +97,16 @@ class _ProfileScreenState extends State<ProfileScreen>
                         }
 
                         return ItemsListView<Item>(
-                          showWebPreviewOnStoryTile: false,
-                          showMetadataOnStoryTile: false,
-                          showPreviewImage: context
+                          shouldShowWebPreviewOnStoryTile: false,
+                          shouldShowMetadataOnStoryTile: false,
+                          shouldShowPreviewImage: context
                               .read<PreferenceCubit>()
                               .state
                               .isStoryTilePreviewImageEnabled,
-                          showFavicon: false,
-                          showUrl: false,
-                          showAuthor: false,
-                          useSimpleTileForStory: true,
+                          shouldShowFavicon: false,
+                          shouldShowUrl: false,
+                          shouldShowAuthor: false,
+                          shouldUseSimpleTileForStory: true,
                           refreshController: refreshControllerHistory,
                           items: historyState.submittedItems
                               .where((Item e) => !e.dead && !e.deleted)
@@ -337,7 +337,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                         ...children,
                         comment.copyWith(level: children.length),
                       ],
-                onlyShowTargetComment: true,
+                shouldOnlyShowTargetComment: true,
               ),
             )?.then((_) => then?.call());
           }

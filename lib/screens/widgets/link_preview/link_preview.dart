@@ -17,14 +17,14 @@ class LinkPreview extends StatefulWidget {
     required this.link,
     required this.story,
     required this.onTap,
-    required this.showMetadata,
-    required this.showUrl,
+    required this.shouldShowMetadata,
+    required this.shouldShowUrl,
     required this.isOfflineReading,
     required this.hasRead,
     required this.isExpandedTileEnabled,
     super.key,
     this.cache = const Duration(days: 30),
-    this.showMultimedia = true,
+    this.shouldShowMultimedia = true,
     this.backgroundColor = const Color.fromRGBO(235, 235, 235, 1),
     this.bodyMaxLines = 3,
     this.bodyTextOverflow = TextOverflow.ellipsis,
@@ -90,7 +90,7 @@ class LinkPreview extends StatefulWidget {
   final Duration cache;
 
   /// Show or Hide image if available defaults to `true`
-  final bool showMultimedia;
+  final bool shouldShowMultimedia;
 
   /// BorderRadius for the card. Defaults to `12`
   final double? borderRadius;
@@ -103,8 +103,8 @@ class LinkPreview extends StatefulWidget {
   /// `[BoxShadow(blurRadius: 3, color: Palette.grey)]`
   final List<BoxShadow>? boxShadow;
 
-  final bool showMetadata;
-  final bool showUrl;
+  final bool shouldShowMetadata;
+  final bool shouldShowUrl;
   final bool isOfflineReading;
   final bool isExpandedTileEnabled;
 
@@ -156,7 +156,7 @@ class _LinkPreviewState extends State<LinkPreview> {
     bool isIcon = false,
   }) {
     if (widget.isExpandedTileEnabled) {
-      if (widget.showMultimedia) {
+      if (widget.shouldShowMultimedia) {
         final String imageUrl = imageUri ??
             Constants.favicon(
               widget.story.url.isNotEmpty
@@ -226,7 +226,7 @@ class _LinkPreviewState extends State<LinkPreview> {
                   const BoxShadow(blurRadius: 3, color: Palette.grey),
                 ],
       ),
-      height: widget.showMultimedia ? height : null,
+      height: widget.shouldShowMultimedia ? height : null,
       child: LinkView(
         key: widget.key ?? Key(widget.link),
         metadata: widget.story.simpleMetadata,
@@ -241,11 +241,11 @@ class _LinkPreviewState extends State<LinkPreview> {
         hasRead: widget.hasRead,
         bodyTextOverflow: widget.bodyTextOverflow,
         bodyMaxLines: widget.bodyMaxLines,
-        showMultiMedia: widget.showMultimedia,
+        shouldShowMultiMedia: widget.shouldShowMultimedia,
         isIcon: isIcon,
         bgColor: widget.backgroundColor,
         radius: widget.borderRadius ?? 12,
-        showUrl: widget.showUrl,
+        shouldShowUrl: widget.shouldShowUrl,
       ),
     );
   }
@@ -283,8 +283,8 @@ class _LinkPreviewState extends State<LinkPreview> {
             desc: WebAnalyzer.isNotEmpty(info!.description)
                 ? info.description
                 : _errorBody,
-            imageUri: widget.showMultimedia ? info.image : null,
-            iconUri: widget.showMultimedia ? info.icon : null,
+            imageUri: widget.shouldShowMultimedia ? info.image : null,
+            iconUri: widget.shouldShowMultimedia ? info.icon : null,
           );
 
     return AnimatedCrossFade(
