@@ -162,34 +162,29 @@ class _LinkPreviewState extends State<LinkPreview> {
                   ? widget.story.url
                   : Constants.hackerNewsHomepageLink,
             );
-        return FutureBuilder<double>(
+        return ImageWrapText(
           key: ValueKey<int>(widget.story.id),
-          future: ImageRatioProvider.getImageRatio(imageUrl),
-          builder: (BuildContext context, AsyncSnapshot<double> snapshot) {
-            return ImageWrapText(
-              text: desc ?? '',
-              url: widget.story.url,
-              imageHeight: height,
-              imageWidth: height * (snapshot.data ?? 1),
-              hasRead: widget.hasRead,
-              image: Center(
-                child: CachedNetworkImage(
-                  imageUrl: imageUrl,
-                  fit: BoxFit.scaleDown,
-                  cacheKey: imageUrl,
-                  errorWidget: (_, __, ___) {
-                    return const FadeIn(
-                      child: Icon(
-                        Icons.public,
-                        size: Dimens.pt20,
-                      ),
-                    );
-                  },
-                ),
-              ),
-              onTap: widget.onTap,
-            );
-          },
+          text: desc ?? '',
+          url: widget.story.url,
+          imageHeight: height,
+          imageWidth: height,
+          hasRead: widget.hasRead,
+          image: Center(
+            child: CachedNetworkImage(
+              imageUrl: imageUrl,
+              fit: BoxFit.scaleDown,
+              cacheKey: imageUrl,
+              errorWidget: (_, __, ___) {
+                return const FadeIn(
+                  child: Icon(
+                    Icons.public,
+                    size: Dimens.pt20,
+                  ),
+                );
+              },
+            ),
+          ),
+          onTap: widget.onTap,
         );
       } else {
         return LayoutBuilder(
@@ -198,7 +193,7 @@ class _LinkPreviewState extends State<LinkPreview> {
             final double availableWidth = constraints.maxWidth;
 
             return SizedBox(
-              width: availableWidth - Dimens.pt12,
+              width: availableWidth,
               child: TapDownWrapper(
                 onTap: widget.onTap,
                 child: Text(
