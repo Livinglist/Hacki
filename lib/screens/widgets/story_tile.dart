@@ -237,7 +237,7 @@ class StoryTile extends StatelessWidget {
                           children: <Widget>[
                             Expanded(
                               child: Text(
-                                story.metadata,
+                                story.metadataWithShortTimeAgoString,
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodySmall

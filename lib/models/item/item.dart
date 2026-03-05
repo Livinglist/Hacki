@@ -98,6 +98,16 @@ class Item extends Equatable {
     return DateTime.fromMillisecondsSinceEpoch(time).toTimeAgoString();
   }
 
+  String get shortTimeAgo {
+    int time = this.time;
+    if (time < 9999999999) {
+      time = time * 1000;
+    }
+    return DateTime.fromMillisecondsSinceEpoch(time).toTimeAgoString(
+      shouldUseAbbreviations: true,
+    );
+  }
+
   bool get isPoll => type == 'poll';
 
   bool get isStory => type == 'story';
