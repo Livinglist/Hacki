@@ -32,6 +32,7 @@ Features:
 - Synced favorites and pins across devices. (iOS only)
 - Export or import your favorites. 
 - Launch from system share sheet.
+- Share story or comment as image.
 - And more...
 
 
