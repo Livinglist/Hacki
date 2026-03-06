@@ -4,11 +4,11 @@
 A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
 
 [![App Store](https://img.shields.io/itunes/v/1602043763?label=App%20Store&logo=appstore)](https://apps.apple.com/us/app/hacki/id1602043763?platform=iphone)
-[![Google Play](https://img.shields.io/endpoint?color=green&logo=googleplay&logoColor=green&url=https%3A%2F%2Fplay.cuzi.workers.dev%2Fplay%3Fi%3Dcom.jiaqifeng.hacki%26gl%3DUS%26hl%3Den%26l%3DGoogle%2520Play%26m%3D%24version)](https://img.shields.io/endpoint?color=green&logo=logoColor=green&url=https%3A%2F%2Fplay.cuzi.workers.dev%2Fplay%3Fi%3Dcom.jiaqifeng.hacki%26gl%3DUS%26hl%3Den%26l%3DGoogle%2520Play%26m%3D%24version)
+[![Google Play](https://img.shields.io/endpoint?color=green&logo=googleplay&logoColor=green&url=https%3A%2F%2Fplay.cuzi.workers.dev%2Fplay%3Fi%3Dcom.jiaqifeng.hacki%26gl%3DUS%26hl%3Den%26l%3DGoogle%2520Play%26m%3D%24version)](https://play.google.com/store/apps/details?id=com.jiaqifeng.hacki&hl=en_US&gl=US&pli=1)
 [![Fdroid version](https://img.shields.io/f-droid/v/com.jiaqifeng.hacki?logo=fdroid)](https://f-droid.org/en/packages/com.jiaqifeng.hacki/)
 [![GH version](https://img.shields.io/github/release/livinglist/hacki.svg?logo=github)](https://github.com/Livinglist/Hacki/releases/latest)
 [![style: effective dart](https://img.shields.io/badge/style-effective_dart-40c4ff.svg)](https://pub.dev/packages/effective_dart)
-![GitHub](https://img.shields.io/github/stars/livinglist/hacki)
+[![GitHub](https://img.shields.io/github/stars/livinglist/hacki)](https://github.com/Livinglist/Hacki)
 
 [<img src="assets/images/app_store_badge.png" height="50">](https://apps.apple.com/us/app/hacki/id1602043763?platform=iphone) [<img src="assets/images/google_play_badge.png" height="50">](https://play.google.com/store/apps/details?id=com.jiaqifeng.hacki&hl=en_US&gl=US) [<img src="assets/images/f_droid_badge.png" height="50">](https://f-droid.org/en/packages/com.jiaqifeng.hacki/)
 
