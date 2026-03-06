@@ -62,19 +62,12 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
 
-    appLinks
-      ..getInitialLink().then((Uri? uri) {
-        logInfo('initial deeplink uri received: ${uri?.path}');
-        if (uri != null && mounted) {
-          context.push(uri.path);
-        }
-      })
-      ..uriLinkStream.listen((Uri uri) {
-        logInfo('deeplink uri received: ${uri.path}');
-        if (mounted) {
-          context.push(uri.path);
-        }
-      });
+    appLinks.uriLinkStream.listen((Uri uri) {
+      logInfo('deeplink uri received: ${uri.path}');
+      if (mounted) {
+        context.push(uri.path);
+      }
+    });
 
     ReceiveSharingIntent.instance
         .getInitialMedia()
