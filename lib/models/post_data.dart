@@ -128,7 +128,7 @@ class SubmitPostData with PostDataMixin {
     this.text,
   }) : assert(
           (url != null && text == null) || (url == null && text != null),
-          'url and text cannot be submitted at the same time',
+          'URL and text cannot be submitted at the same time',
         );
 
   final String fnid;

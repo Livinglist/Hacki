@@ -212,7 +212,7 @@ final class SwipeGesturePreference extends BooleanPreference {
 
   @override
   String get subtitle =>
-      '''enable swipe gesture for switching between tabs. If enabled, long press on Story tile to trigger the action menu and double tap to open the url (if rich tile is disabled).''';
+      '''enable swipe gesture for switching between tabs. If enabled, long press on Story tile to trigger the action menu and double tap to open the URL (if rich tile is disabled).''';
 }
 
 final class NotificationModePreference extends BooleanPreference {
@@ -427,10 +427,10 @@ final class StoryUrlModePreference extends BooleanPreference {
   String get key => 'storyUrlMode';
 
   @override
-  String get title => 'Show Url';
+  String get title => 'Show URL';
 
   @override
-  String get subtitle => '''show url in story tile.''';
+  String get subtitle => '''show URL in story tile.''';
 }
 
 final class DividerPreference extends BooleanPreference {
