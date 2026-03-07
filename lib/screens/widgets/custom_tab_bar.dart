@@ -35,7 +35,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
   }
 
   void _tabControllerListener() {
-    if (context.mounted) {
+    if (mounted) {
       setState(() {
         currentIndex = widget.tabController.index;
       });

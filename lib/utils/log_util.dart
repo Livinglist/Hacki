@@ -12,17 +12,20 @@ abstract class LogUtil {
           colors: false,
           printTime: true,
         )
-      : PrettyPrinter(
-          dateTimeFormat: DateTimeFormat.dateAndTime,
-        );
+      : SimplePrinter();
+
+  static LogPrinter get prettyPrinter => PrettyPrinter(
+        dateTimeFormat: DateTimeFormat.dateAndTime,
+      );
 
   static LogOutput logOutput(File outputFile) => MultiOutput(
         <LogOutput>[
           ConsoleOutput(),
-          CustomFileOutput(
-            file: outputFile,
-            overrideExisting: true,
-          ),
+          if (kReleaseMode)
+            CustomFileOutput(
+              file: outputFile,
+              overrideExisting: true,
+            ),
         ],
       );
 

@@ -145,7 +145,7 @@ class FavoritesScreen extends StatelessWidget {
               shouldShowPreviewImage: prefState.isStoryTilePreviewImageEnabled,
               shouldShowFavicon: prefState.isFaviconEnabled,
               shouldShowUrl: prefState.isUrlEnabled,
-              shouldUseSimpleTileForStory: true,
+              shouldUseMinimalTileForStory: true,
               refreshController: refreshController,
               items: favState.isDisplayingStories
                   ? favState.favStories

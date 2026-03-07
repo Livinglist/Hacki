@@ -87,6 +87,8 @@ class _StoriesListViewState extends State<StoriesListView>
               shouldShowFavicon: preferenceState.isFaviconEnabled,
               shouldShowUrl: preferenceState.isUrlEnabled,
               isExpandedTileEnabled: preferenceState.isExpandedTileEnabled,
+              isIndexedStoryTileEnabled:
+                  preferenceState.isIndexedStoryTileEnabled,
               refreshController: refreshController,
               scrollController: scrollController,
               items: state.storiesByType[storyType]!,

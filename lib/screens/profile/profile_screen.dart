@@ -106,7 +106,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                           shouldShowFavicon: false,
                           shouldShowUrl: false,
                           shouldShowAuthor: false,
-                          shouldUseSimpleTileForStory: true,
+                          shouldUseMinimalTileForStory: true,
                           refreshController: refreshControllerHistory,
                           items: historyState.submittedItems
                               .where((Item e) => !e.dead && !e.deleted)

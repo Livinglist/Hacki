@@ -55,11 +55,11 @@ class OfflineListTile extends StatelessWidget {
         return ListTile(
           title: Text(
             downloading
-                ? '''Downloading All Stories (${state.storiesDownloaded}/${state.storiesToBeDownloaded})'''
-                : 'Download All Stories',
+                ? '''Downloading Stories (${state.storiesDownloaded}/${state.storiesToBeDownloaded})'''
+                : 'Download Stories',
           ),
           subtitle: const Text(
-            'download all latest stories that have at least one comment '
+            'download latest stories that have at least one comment '
             'for offline reading. (Please keep Hacki in foreground while '
             'downloading.)',
           ),
