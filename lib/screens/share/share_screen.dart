@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/extensions/context_extension.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
@@ -14,9 +15,11 @@ import 'package:share_plus/share_plus.dart';
 class ShareScreenArgs extends Equatable {
   const ShareScreenArgs({
     required this.item,
+    this.parent,
   });
 
   final Item item;
+  final Item? parent;
 
   @override
   List<Object?> get props => <Object?>[item];
@@ -40,12 +43,14 @@ class _ShareScreenState extends State<ShareScreen> {
   final ScreenshotController _screenshotController = ScreenshotController();
 
   bool _shouldUseRichStoryTile = true;
+  bool _shouldShowParent = true;
   bool _shouldShowHackiBanner = true;
   bool _shouldCopyHnLink = true;
 
   @override
   Widget build(BuildContext context) {
     final Item item = widget.args.item;
+    final Item? parent = widget.args.parent;
     final Widget targetWidget = item is Story
         ? StoryTile(
             story: item,
@@ -57,13 +62,29 @@ class _ShareScreenState extends State<ShareScreen> {
             isExpandedTileEnabled: true,
             onTap: () {},
           )
-        : Padding(
-            padding: const EdgeInsets.symmetric(horizontal: Dimens.pt4),
-            child: CommentTile(
-              comment: item as Comment,
-              fetchMode: FetchMode.lazy,
-              shouldShowDivider: false,
-            ),
+        : Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              if (_shouldShowParent && parent != null && parent is Story)
+                StoryTile(
+                  story: parent,
+                  shouldShowWebPreview: false,
+                  shouldShowPreviewImage: true,
+                  shouldShowMetadata: true,
+                  shouldShowFavicon: true,
+                  shouldShowUrl: true,
+                  isExpandedTileEnabled: true,
+                  onTap: () {},
+                ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: Dimens.pt4),
+                child: CommentTile(
+                  comment: item as Comment,
+                  fetchMode: FetchMode.lazy,
+                  shouldShowDivider: false,
+                ),
+              ),
+            ],
           );
     return Scaffold(
       appBar: AppBar(title: const Text('Share as image')),
@@ -149,6 +170,16 @@ class _ShareScreenState extends State<ShareScreen> {
                       });
                     },
                   ),
+                if (item is Comment)
+                  SwitchListTile(
+                    value: _shouldShowParent,
+                    title: const Text('Show Parent Story'),
+                    onChanged: (_) {
+                      setState(() {
+                        _shouldShowParent = !_shouldShowParent;
+                      });
+                    },
+                  ),
                 SwitchListTile(
                   value: _shouldShowHackiBanner,
                   title: const Text('Show Shared from Hacki Banner'),
@@ -188,6 +219,11 @@ class _ShareScreenState extends State<ShareScreen> {
           await _screenshotController.capture(pixelRatio: 3);
       if (imageBytes == null) return;
 
+      Rect? rect;
+      if (mounted) {
+        rect = context.rect;
+      }
+
       final Directory tempDir = await getTemporaryDirectory();
       final File file = File('${tempDir.path}/story.png');
       await file.writeAsBytes(imageBytes);
@@ -201,7 +237,7 @@ class _ShareScreenState extends State<ShareScreen> {
         ],
         text: itemUrl.toString(),
         sharePositionOrigin:
-            const Rect.fromLTWH(0, 0, 100, 100), // Tablet support
+            rect ?? const Rect.fromLTWH(0, 0, 100, 100), // Tablet support
       );
 
       if (_shouldCopyHnLink) {
