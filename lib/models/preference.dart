@@ -50,13 +50,13 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
 
       /// Divider.
       const HideStoryInsteadOfMarkingGray(),
+      const MarkReadStoriesModePreference(),
 
       /// Divider.
       const NotificationModePreference(),
       const AutoScrollModePreference(),
       const CollapseModePreference(),
       const ReaderModePreference(),
-      const MarkReadStoriesModePreference(),
       const CustomTabPreference(),
       const SplitViewPreference(),
       const ManualPaginationPreference(),

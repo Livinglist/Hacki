@@ -140,7 +140,11 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
       logInfo('($type) loading stories from API.');
       final List<int> ids =
           await _hackerNewsRepository.fetchStoryIds(type: type);
-      ids.removeWhere(_hideCubit.isHidden);
+
+      if (_preferenceCubit.state.isHideInsteadOfMarkingGrayEnabled) {
+        ids.removeWhere(_hideCubit.isHidden);
+      }
+
       emit(
         state
             .copyWithStoryIdsUpdated(type: type, to: ids)
