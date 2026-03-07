@@ -170,7 +170,7 @@ class _ShareScreenState extends State<ShareScreen> {
                       });
                     },
                   ),
-                if (item is Comment)
+                if (item is Comment && parent != null && parent is Story)
                   SwitchListTile(
                     value: _shouldShowParent,
                     title: const Text('Show Parent Story'),
