@@ -20,12 +20,14 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
   StoriesBloc({
     required PreferenceCubit preferenceCubit,
     required FilterCubit filterCubit,
+    required HideCubit hideCubit,
     OfflineRepository? offlineRepository,
     HackerNewsRepository? hackerNewsRepository,
     HackerNewsWebRepository? hackerNewsWebRepository,
     PreferenceRepository? preferenceRepository,
   })  : _preferenceCubit = preferenceCubit,
         _filterCubit = filterCubit,
+        _hideCubit = hideCubit,
         _offlineRepository =
             offlineRepository ?? locator.get<OfflineRepository>(),
         _hackerNewsRepository =
@@ -67,6 +69,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
 
   final PreferenceCubit _preferenceCubit;
   final FilterCubit _filterCubit;
+  final HideCubit _hideCubit;
   final OfflineRepository _offlineRepository;
   final HackerNewsRepository _hackerNewsRepository;
   final HackerNewsWebRepository _hackerNewsWebRepository;
@@ -137,6 +140,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
       logInfo('($type) loading stories from API.');
       final List<int> ids =
           await _hackerNewsRepository.fetchStoryIds(type: type);
+      ids.removeWhere(_hideCubit.isHidden);
       emit(
         state
             .copyWithStoryIdsUpdated(type: type, to: ids)

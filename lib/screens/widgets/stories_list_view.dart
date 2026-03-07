@@ -89,6 +89,8 @@ class _StoriesListViewState extends State<StoriesListView>
               isExpandedTileEnabled: preferenceState.isExpandedTileEnabled,
               isIndexedStoryTileEnabled:
                   preferenceState.isIndexedStoryTileEnabled,
+              isHideInsteadOfMarkingGrayEnabled:
+                  preferenceState.isHideInsteadOfMarkingGrayEnabled,
               refreshController: refreshController,
               scrollController: scrollController,
               items: state.storiesByType[storyType]!,
@@ -265,6 +267,16 @@ class _StoriesListViewState extends State<StoriesListView>
   void mark(Story story) {
     HapticFeedbackUtil.light();
     final StoriesBloc storiesBloc = context.read<StoriesBloc>();
+    final HideCubit hideCubit = context.read<HideCubit>();
+
+    final bool isHideInsteadOfMarkingGrayEnabled =
+        context.read<PreferenceCubit>().state.isHideInsteadOfMarkingGrayEnabled;
+
+    if (isHideInsteadOfMarkingGrayEnabled) {
+      hideCubit.hide(story.id);
+      return;
+    }
+
     final bool markReadStoriesEnabled =
         context.read<PreferenceCubit>().state.isMarkReadStoriesEnabled;
     if (markReadStoriesEnabled) {

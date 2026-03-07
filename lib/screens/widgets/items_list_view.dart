@@ -30,6 +30,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.shouldShowOfflineBanner = false,
     this.isExpandedTileEnabled = false,
     this.isIndexedStoryTileEnabled = false,
+    this.isHideInsteadOfMarkingGrayEnabled = false,
     this.loadStyle = LoadStyle.ShowWhenLoading,
     this.onRefresh,
     this.onLoadMore,
@@ -54,6 +55,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   final bool shouldShowOfflineBanner;
   final bool isExpandedTileEnabled;
   final bool isIndexedStoryTileEnabled;
+  final bool isHideInsteadOfMarkingGrayEnabled;
 
   final LoadStyle loadStyle;
   final List<T> items;
@@ -86,6 +88,10 @@ class ItemsListView<T extends Item> extends StatelessWidget {
             final bool hasRead = context.read<StoriesBloc>().hasRead(e);
             final bool swipeGestureEnabled =
                 context.read<PreferenceCubit>().state.isSwipeGestureEnabled;
+            if (isHideInsteadOfMarkingGrayEnabled &&
+                context.read<HideCubit>().isHidden(e.id)) {
+              return const <Widget>[];
+            }
             return <Widget>[
               if (shouldShowDivider && items.first.id != e.id)
                 Padding(
