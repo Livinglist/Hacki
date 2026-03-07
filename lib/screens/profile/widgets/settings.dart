@@ -355,6 +355,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                           expandedInsets: EdgeInsets.zero,
                         ),
                       ),
+                      SizedBoxes.pt12,
                       const Divider(),
                     ],
                     if (preference is DividerPreference) const Divider(),

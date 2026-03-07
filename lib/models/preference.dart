@@ -501,7 +501,7 @@ final class MarkReadStoriesModePreference extends BooleanPreference {
   String get subtitle => 'grey out stories you have read.';
 }
 
-/// Left swipe on home screen story tiles to hide the story instead of
+/// Swipe left on home screen story tiles to hide the story instead of
 /// marking it gray.
 final class HideStoryInsteadOfMarkingGray extends BooleanPreference {
   const HideStoryInsteadOfMarkingGray({bool? val})
@@ -522,7 +522,7 @@ final class HideStoryInsteadOfMarkingGray extends BooleanPreference {
 
   @override
   String get subtitle =>
-      '''left swipe on story tile or tap on the eye icon to hide the story instead of marking it gray.''';
+      '''swipe left on story tile or tap on the trash can icon to hide the story instead of marking it gray.''';
 }
 
 final class ManualPaginationPreference extends BooleanPreference {

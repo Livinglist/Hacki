@@ -181,7 +181,11 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
             add(event.copyWith(shouldUseApi: true));
         }
       }).listen((Story story) {
-        add(StoryLoaded(story: story, type: type));
+        if (_hideCubit.isHidden(story.id)) {
+          return;
+        } else {
+          add(StoryLoaded(story: story, type: type));
+        }
       }).asFuture<void>();
       add(StoryLoadingCompleted(type: type));
     }
@@ -286,27 +290,31 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
       _hackerNewsWebRepository
           .fetchStoriesStream(type, page: currentPage)
           .handleError((dynamic e) {
-            logError('error loading more stories $e');
+        logError('error loading more stories $e');
 
-            switch (e.runtimeType) {
-              case RateLimitedException:
-              case RateLimitedWithFallbackException:
-              case PossibleParsingException:
+        switch (e.runtimeType) {
+          case RateLimitedException:
+          case RateLimitedWithFallbackException:
+          case PossibleParsingException:
 
-                /// Fall back to use API instead.
-                add(event.copyWith(shouldUseApi: true));
-                emit(
-                  state.copyWithCurrentPageUpdated(
-                    type: type,
-                    to: currentPage - 1,
-                  ),
-                );
-            }
-          })
-          .listen(
-            (Story story) => add(StoryLoaded(story: story, type: type)),
-          )
-          .onDone(() => add(StoryLoadingCompleted(type: type)));
+            /// Fall back to use API instead.
+            add(event.copyWith(shouldUseApi: true));
+            emit(
+              state.copyWithCurrentPageUpdated(
+                type: type,
+                to: currentPage - 1,
+              ),
+            );
+        }
+      }).listen(
+        (Story story) {
+          if (_hideCubit.isHidden(story.id)) {
+            return;
+          } else {
+            add(StoryLoaded(story: story, type: type));
+          }
+        },
+      ).onDone(() => add(StoryLoadingCompleted(type: type)));
     }
   }
 

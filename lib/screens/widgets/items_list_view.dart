@@ -89,7 +89,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
             final bool swipeGestureEnabled =
                 context.read<PreferenceCubit>().state.isSwipeGestureEnabled;
             if (isHideInsteadOfMarkingGrayEnabled &&
-                context.read<HideCubit>().isHidden(e.id)) {
+                context.watch<HideCubit>().isHidden(e.id)) {
               return const <Widget>[];
             }
             return <Widget>[

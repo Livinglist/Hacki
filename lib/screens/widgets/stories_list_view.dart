@@ -222,12 +222,17 @@ class _StoriesListViewState extends State<StoriesListView>
                                 : Palette.grey,
                         foregroundColor:
                             Theme.of(context).colorScheme.onPrimary,
-                        child: Icon(
-                          state.readStoriesIds.contains(story.id)
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          size: Dimens.pt24,
-                        ),
+                        child: preferenceState.isHideInsteadOfMarkingGrayEnabled
+                            ? const Icon(
+                                Icons.delete_sweep,
+                                size: Dimens.pt24,
+                              )
+                            : Icon(
+                                state.readStoriesIds.contains(story.id)
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                size: Dimens.pt24,
+                              ),
                       ),
                     ],
                   ),
