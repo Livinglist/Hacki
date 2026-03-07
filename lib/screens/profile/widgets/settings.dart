@@ -276,6 +276,9 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                         preferenceState.isStoryTilePreviewImageEnabled,
                     isExpandedTileEnabled:
                         preferenceState.isExpandedTileEnabled,
+                    isIndexedStoryTileEnabled:
+                        preferenceState.isIndexedStoryTileEnabled,
+                    index: 0,
                     story: Story.placeholder(),
                     onTap: () => LinkUtil.launch(
                       Constants.guidelineLink,

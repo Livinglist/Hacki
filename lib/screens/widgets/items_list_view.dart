@@ -24,11 +24,12 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.shouldShowDivider = false,
     super.key,
     this.shouldShowAuthor = true,
-    this.shouldUseSimpleTileForStory = false,
+    this.shouldUseMinimalTileForStory = false,
     this.shouldEnablePullDown = true,
     this.shouldMarkReadStories = false,
     this.shouldShowOfflineBanner = false,
     this.isExpandedTileEnabled = false,
+    this.isIndexedStoryTileEnabled = false,
     this.loadStyle = LoadStyle.ShowWhenLoading,
     this.onRefresh,
     this.onLoadMore,
@@ -42,7 +43,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
 
   final bool shouldShowAuthor;
   final bool shouldShowDivider;
-  final bool shouldUseSimpleTileForStory;
+  final bool shouldUseMinimalTileForStory;
   final bool shouldShowWebPreviewOnStoryTile;
   final bool shouldShowMetadataOnStoryTile;
   final bool shouldShowFavicon;
@@ -52,6 +53,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   final bool shouldMarkReadStories;
   final bool shouldShowOfflineBanner;
   final bool isExpandedTileEnabled;
+  final bool isIndexedStoryTileEnabled;
 
   final LoadStyle loadStyle;
   final List<T> items;
@@ -101,7 +103,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                   height: Dimens.pt6,
                   color: Palette.transparent,
                 ),
-              if (shouldUseSimpleTileForStory)
+              if (shouldUseMinimalTileForStory)
                 FadeIn(
                   child: InkWell(
                     onTap: () => onTap(e),
@@ -169,12 +171,14 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                       key: ValueKey<int>(e.id),
                       story: e,
                       onTap: () => onTap(e),
+                      index: index,
                       shouldShowWebPreview: shouldShowWebPreviewOnStoryTile,
                       shouldShowMetadata: shouldShowMetadataOnStoryTile,
                       shouldShowUrl: shouldShowUrl,
                       shouldShowFavicon: shouldShowFavicon,
                       shouldShowPreviewImage: shouldShowPreviewImage,
                       isExpandedTileEnabled: isExpandedTileEnabled,
+                      isIndexedStoryTileEnabled: isIndexedStoryTileEnabled,
                       hasRead: shouldMarkReadStories && hasRead,
                     ),
                   ),

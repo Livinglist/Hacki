@@ -39,7 +39,8 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       /// The order of items below matters and
       /// reflects the order on in-app settings screen.
       ///
-      const DisplayModePreference(),
+      const RichStoryTilePreference(),
+      const IndexedStoryTilePreference(),
       const ExpandTileForLongerTextPreference(),
       const FaviconModePreference(),
       const RichStoryTileImageDisplayPreference(),
@@ -280,17 +281,38 @@ final class AutoScrollModePreference extends BooleanPreference {
       '''automatically scroll to next comment when you collapse a comment.''';
 }
 
-/// The value deciding whether or not the story
-/// tile should display link preview. Defaults to true.
-final class DisplayModePreference extends BooleanPreference {
-  const DisplayModePreference({bool? val})
-      : super(val: val ?? _displayModeDefaultValue);
+final class IndexedStoryTilePreference extends BooleanPreference {
+  const IndexedStoryTilePreference({bool? val})
+      : super(val: val ?? _indexedStoryTilePreferenceDefaultValue);
 
-  static const bool _displayModeDefaultValue = true;
+  static const bool _indexedStoryTilePreferenceDefaultValue = false;
 
   @override
-  DisplayModePreference copyWith({required bool? val}) {
-    return DisplayModePreference(val: val);
+  IndexedStoryTilePreference copyWith({required bool? val}) {
+    return IndexedStoryTilePreference(val: val);
+  }
+
+  @override
+  String get key => 'indexedStoryTilePreference';
+
+  @override
+  String get title => 'Indexed Story Tile';
+
+  @override
+  String get subtitle => 'show index on story tile.';
+}
+
+/// The value deciding whether or not the story
+/// tile should display link preview. Defaults to true.
+final class RichStoryTilePreference extends BooleanPreference {
+  const RichStoryTilePreference({bool? val})
+      : super(val: val ?? _richStoryTilePreferenceDefaultValue);
+
+  static const bool _richStoryTilePreferenceDefaultValue = true;
+
+  @override
+  RichStoryTilePreference copyWith({required bool? val}) {
+    return RichStoryTilePreference(val: val);
   }
 
   @override
@@ -323,7 +345,7 @@ final class ExpandTileForLongerTextPreference extends BooleanPreference {
   String get title => 'Expand Tile for Longer Text';
 
   @override
-  String get subtitle => '''more space for more text in rich story tile.''';
+  String get subtitle => '''more space for more text on rich story tile.''';
 }
 
 final class RichStoryTileImageDisplayPreference extends BooleanPreference {
@@ -344,7 +366,7 @@ final class RichStoryTileImageDisplayPreference extends BooleanPreference {
   String get title => 'Show Preview Image';
 
   @override
-  String get subtitle => 'show preview image in rich story tile.';
+  String get subtitle => 'show preview image on rich story tile.';
 }
 
 final class FaviconModePreference extends BooleanPreference {

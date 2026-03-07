@@ -23,9 +23,15 @@ class StoryTile extends StatelessWidget {
     required this.story,
     required this.onTap,
     super.key,
+    this.index,
+    this.isIndexedStoryTileEnabled = false,
     this.hasRead = false,
     this.simpleTileFontSize = 16,
-  });
+  }) : assert(
+          !isIndexedStoryTileEnabled ||
+              (isIndexedStoryTileEnabled && index != null),
+          '`index` cannot be null when `shouldShowIndex` is enabled.',
+        );
 
   final bool shouldShowWebPreview;
   final bool shouldShowPreviewImage;
@@ -34,7 +40,9 @@ class StoryTile extends StatelessWidget {
   final bool shouldShowUrl;
   final bool hasRead;
   final bool isExpandedTileEnabled;
+  final bool isIndexedStoryTileEnabled;
   final Story story;
+  final int? index;
   final VoidCallback onTap;
   final double simpleTileFontSize;
 
@@ -61,6 +69,18 @@ class StoryTile extends StatelessWidget {
                     Text.rich(
                       TextSpan(
                         children: <TextSpan>[
+                          if (isIndexedStoryTileEnabled && index != null)
+                            TextSpan(
+                              text: '#${index! + 1} ',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                    color:
+                                        Theme.of(context).colorScheme.onSurface,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
                           TextSpan(
                             text: story.title,
                             style: Theme.of(context)
@@ -200,6 +220,20 @@ class StoryTile extends StatelessWidget {
                             child: Text.rich(
                               TextSpan(
                                 children: <TextSpan>[
+                                  if (isIndexedStoryTileEnabled &&
+                                      index != null)
+                                    TextSpan(
+                                      text: '#${index! + 1} ',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
                                   TextSpan(
                                     text: story.title,
                                     style: Theme.of(context)
