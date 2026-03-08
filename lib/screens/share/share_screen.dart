@@ -145,7 +145,7 @@ class _ShareScreenState extends State<ShareScreen> {
                               ),
                               SizedBoxes.pt8,
                               Text(
-                                '''Shared from Hacki, a third-party open source Hacker News reader.''',
+                                '''Shared from Hacki, an open-source Hacker News reader.''',
                                 style: TextStyle(
                                   fontSize: TextDimens.pt12,
                                   color: Theme.of(context)
@@ -153,6 +153,8 @@ class _ShareScreenState extends State<ShareScreen> {
                                       .onSurface
                                       .withAlpha(150),
                                 ),
+                                textScaler: TextScaler.noScaling,
+                                textAlign: TextAlign.center,
                               ),
                               SizedBoxes.pt8,
                             ],
