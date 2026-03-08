@@ -8,6 +8,7 @@ import 'package:hacki/extensions/context_extension.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/utils/image_saver.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
@@ -160,7 +161,25 @@ class _ShareScreenState extends State<ShareScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: Dimens.pt30),
+                SizedBoxes.pt24,
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    ElevatedButton.icon(
+                      onPressed: _save,
+                      icon: const Icon(Icons.save),
+                      label: const Text('Save to album'),
+                    ),
+                    SizedBoxes.pt24,
+                    ElevatedButton.icon(
+                      onPressed: _share,
+                      icon: const Icon(Icons.share),
+                      label: const Text('Share'),
+                    ),
+                  ],
+                ),
+                SizedBoxes.pt24,
                 if (item is Story)
                   SwitchListTile(
                     value: _shouldUseRichStoryTile,
@@ -199,11 +218,6 @@ class _ShareScreenState extends State<ShareScreen> {
                     });
                   },
                 ),
-                ElevatedButton.icon(
-                  onPressed: _shareToInstagramStory,
-                  icon: const Icon(Icons.share),
-                  label: const Text('Share as image'),
-                ),
                 SizedBoxes.pt48,
                 SizedBoxes.pt48,
               ],
@@ -214,7 +228,18 @@ class _ShareScreenState extends State<ShareScreen> {
     );
   }
 
-  Future<void> _shareToInstagramStory() async {
+  Future<void> _save() async {
+    final Uint8List? imageBytes =
+        await _screenshotController.capture(pixelRatio: 3);
+    if (imageBytes == null) return;
+
+    await ImageSaver.saveImage(
+      imageBytes,
+      name: '${widget.args.item.id}_sharing',
+    );
+  }
+
+  Future<void> _share() async {
     try {
       final Uint8List? imageBytes =
           await _screenshotController.capture(pixelRatio: 3);
