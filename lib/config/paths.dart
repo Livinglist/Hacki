@@ -32,7 +32,7 @@ class SharePaths with RootPaths {
 class LogsPaths with RootPaths {
   const LogsPaths._();
 
-  String get landing => rootPath(LogScreen.routeName);
+  String get landing => rootPath(LogsScreen.routeName);
 }
 
 class QrCodePaths with RootPaths {
