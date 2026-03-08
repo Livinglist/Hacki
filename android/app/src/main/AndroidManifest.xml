@@ -2,6 +2,7 @@
     package="com.jiaqifeng.hacki">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <!-- Provide required visibility configuration for API level 30 and above -->
     <queries>
