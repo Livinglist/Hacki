@@ -226,9 +226,12 @@ class NotificationCubit extends Cubit<NotificationState> with Loggable {
         }
       }
     }).whenComplete(
-      () => emit(
-        state.copyWith(status: Status.success),
-      ),
+      () {
+        logInfo('${state.allCommentsIds.length} replies were fetched.');
+        emit(
+          state.copyWith(status: Status.success),
+        );
+      },
     );
   }
 

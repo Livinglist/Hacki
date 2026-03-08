@@ -71,8 +71,8 @@ final GoRouter router = GoRouter(
           },
         ),
         GoRoute(
-          path: LogScreen.routeName,
-          builder: (_, __) => const LogScreen(),
+          path: LogsScreen.routeName,
+          builder: (_, __) => const LogsScreen(),
         ),
         GoRoute(
           path: WebViewScreen.routeName,

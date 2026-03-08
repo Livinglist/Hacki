@@ -6,10 +6,10 @@ import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/haptic_feedback_util.dart';
 import 'package:hacki/utils/log_util.dart';
 
-class LogScreen extends StatelessWidget {
-  const LogScreen({super.key});
+class LogsScreen extends StatelessWidget {
+  const LogsScreen({super.key});
 
-  static const String routeName = 'log';
+  static const String routeName = 'logs';
 
   @override
   Widget build(BuildContext context) {
@@ -51,8 +51,8 @@ class LogScreen extends StatelessWidget {
                     '''Logs won't show up here in debug mode.\nYou can modify `LogUtil.logOutput()` to enable it.''',
                     textAlign: TextAlign.center,
                   ),
-                ],
-                ...?snapshot.data?.map(Text.new),
+                ] else
+                  ...?snapshot.data?.map(Text.new),
               ],
             ),
           ),

@@ -416,7 +416,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                         'Logs',
                       ),
                       onTap: () {
-                        context.go(Paths.log.landing);
+                        context.go(Paths.logs.landing);
                       },
                     ),
                     ListTile(
@@ -445,7 +445,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                       if (updatedDevMode.val) {
                         showSnackBar(content: 'You are a dev now.');
                       } else {
-                        showSnackBar(content: 'Dev mode disabled');
+                        showSnackBar(content: 'Dev mode disabled.');
                       }
                     },
                   ),
