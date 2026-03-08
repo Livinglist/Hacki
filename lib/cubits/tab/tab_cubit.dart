@@ -44,5 +44,5 @@ class TabCubit extends Cubit<TabState> with Loggable {
   }
 
   @override
-  String get logIdentifier => '[TabCubit]';
+  String get logIdentifier => 'TabCubit';
 }

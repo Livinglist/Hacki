@@ -62,7 +62,7 @@ class SplitViewCubit extends HydratedCubit<SplitViewState> with Loggable {
       );
 
   @override
-  String get logIdentifier => '[SplitViewCubit]';
+  String get logIdentifier => 'SplitViewCubit';
 
   static const String _submissionPanelWidthKey = 'submissionPanelWidth';
 

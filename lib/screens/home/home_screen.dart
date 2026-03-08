@@ -331,5 +331,5 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   @override
-  String get logIdentifier => '[HomeScreen]';
+  String get logIdentifier => 'HomeScreen';
 }

@@ -227,7 +227,7 @@ class FavCubit extends Cubit<FavState> with Loggable {
   }
 
   @override
-  String get logIdentifier => '[FavCubit]';
+  String get logIdentifier => 'FavCubit';
 }
 
 extension on FavCubit {

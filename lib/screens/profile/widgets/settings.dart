@@ -1094,5 +1094,5 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
   }
 
   @override
-  String get logIdentifier => '[Settings]';
+  String get logIdentifier => 'Settings';
 }

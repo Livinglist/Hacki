@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:hacki/config/constants.dart';
-import 'package:hacki/config/file_output.dart';
+import 'package:hacki/config/logger/file_output.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 

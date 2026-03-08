@@ -130,5 +130,5 @@ class AuthRepository extends PostableRepository with Loggable {
   }
 
   @override
-  String get logIdentifier => '[AuthRepository]';
+  String get logIdentifier => 'AuthRepository';
 }

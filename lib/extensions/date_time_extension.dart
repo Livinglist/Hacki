@@ -25,7 +25,7 @@ extension DateTimeExtension on DateTime {
     } else if (diff.inMinutes >= 1) {
       return '''${diff.inMinutes} $minuteStr${diff.inMinutes == 1 ? '' : 's'} ago''';
     } else if (diff.inSeconds >= 1) {
-      return ''''${diff.inSeconds} $secondStr${diff.inSeconds == 1 ? '' : 's'} ago''';
+      return '''${diff.inSeconds} $secondStr${diff.inSeconds == 1 ? '' : 's'} ago''';
     }
     return 'just now';
   }

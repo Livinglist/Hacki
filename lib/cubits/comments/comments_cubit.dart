@@ -735,5 +735,5 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   }
 
   @override
-  String get logIdentifier => '[CommentsCubit]';
+  String get logIdentifier => 'CommentsCubit';
 }

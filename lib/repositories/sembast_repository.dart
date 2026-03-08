@@ -289,5 +289,5 @@ class SembastRepository with Loggable {
   }
 
   @override
-  String get logIdentifier => '[SembastRepository]';
+  String get logIdentifier => 'SembastRepository';
 }

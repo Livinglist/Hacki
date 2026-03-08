@@ -259,5 +259,5 @@ class NotificationCubit extends Cubit<NotificationState> with Loggable {
   }
 
   @override
-  String get logIdentifier => '[NotificationCubit]';
+  String get logIdentifier => 'NotificationCubit';
 }
