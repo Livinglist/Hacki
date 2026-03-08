@@ -1,17 +1,12 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hacki/blocs/blocs.dart';
+import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/models.dart';
-import 'package:hacki/repositories/repositories.dart';
+import 'package:logger/logger.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockAuthRepository extends Mock implements AuthRepository {}
-
-class MockPreferenceRepository extends Mock implements PreferenceRepository {}
-
-class MockHackerNewsRepository extends Mock implements HackerNewsRepository {}
-
-class MockSembastRepository extends Mock implements SembastRepository {}
+import '../../mocks/mocks.dart';
 
 void main() {
   final MockAuthRepository mockAuthRepository = MockAuthRepository();
@@ -20,6 +15,8 @@ void main() {
   final MockHackerNewsRepository mockHackerNewsRepository =
       MockHackerNewsRepository();
   final MockSembastRepository mockSembastRepository = MockSembastRepository();
+  final MockLogger mockLogger = MockLogger();
+  locator.registerSingleton<Logger>(mockLogger);
 
   const int created = 0;
   const int delay = 1;
