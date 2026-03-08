@@ -8,6 +8,7 @@ import 'package:hacki/extensions/context_extension.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/utils/haptic_feedback_util.dart';
 import 'package:hacki/utils/image_saver.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -179,7 +180,7 @@ class _ShareScreenState extends State<ShareScreen> {
                     ),
                   ],
                 ),
-                SizedBoxes.pt24,
+                SizedBoxes.pt12,
                 if (item is Story)
                   SwitchListTile(
                     value: _shouldUseRichStoryTile,
@@ -233,10 +234,19 @@ class _ShareScreenState extends State<ShareScreen> {
         await _screenshotController.capture(pixelRatio: 3);
     if (imageBytes == null) return;
 
-    await ImageSaver.saveImage(
+    final bool result = await ImageSaver.saveImage(
       imageBytes,
       name: '${widget.args.item.id}_sharing',
     );
+
+    if (mounted) {
+      HapticFeedbackUtil.light();
+      if (result) {
+        context.showSnackBar(content: 'Image saved.');
+      } else {
+        context.showErrorSnackBar('Failed to save image.');
+      }
+    }
   }
 
   Future<void> _share() async {
