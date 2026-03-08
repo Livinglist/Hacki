@@ -2,6 +2,7 @@ export 'debouncer.dart';
 export 'dio_interceptors/interceptors.dart';
 export 'haptic_feedback_util.dart';
 export 'html_util.dart';
+export 'image_saver.dart';
 export 'link_util.dart';
 export 'linkifier_util.dart';
 export 'log_util.dart';
