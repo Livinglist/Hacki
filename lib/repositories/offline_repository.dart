@@ -285,5 +285,5 @@ class OfflineRepository with Loggable {
   }
 
   @override
-  String get logIdentifier => '[OfflineRepository]';
+  String get logIdentifier => 'OfflineRepository';
 }

@@ -95,5 +95,5 @@ class PreferenceCubit extends Cubit<PreferenceState> with Loggable {
   }
 
   @override
-  String get logIdentifier => '[PreferenceCubit]';
+  String get logIdentifier => 'PreferenceCubit';
 }

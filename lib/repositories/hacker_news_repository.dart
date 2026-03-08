@@ -432,7 +432,7 @@ class HackerNewsRepository with Loggable {
   }
 
   @override
-  String get logIdentifier => '[HackerNewsRepository]';
+  String get logIdentifier => 'HackerNewsRepository';
 }
 
 extension on Map<String, dynamic> {

@@ -14,7 +14,7 @@ mixin Loggable {
     StackTrace? stackTrace,
   }) {
     _logger.t(
-      '$logIdentifier $message',
+      '[$logIdentifier] $message',
       time: time,
       error: error,
       stackTrace: stackTrace,
@@ -29,7 +29,7 @@ mixin Loggable {
     StackTrace? stackTrace,
   }) {
     _logger.d(
-      '$logIdentifier $message',
+      '[$logIdentifier] $message',
       time: time,
       error: error,
       stackTrace: stackTrace,
@@ -44,7 +44,7 @@ mixin Loggable {
     StackTrace? stackTrace,
   }) {
     _logger.i(
-      '$logIdentifier $message',
+      '[$logIdentifier] $message',
       time: time,
       error: error,
       stackTrace: stackTrace,
@@ -59,7 +59,7 @@ mixin Loggable {
     StackTrace? stackTrace,
   }) {
     _logger.w(
-      '$logIdentifier $message',
+      '[$logIdentifier] $message',
       time: time,
       error: error,
       stackTrace: stackTrace,
@@ -74,7 +74,7 @@ mixin Loggable {
     StackTrace? stackTrace,
   }) {
     _logger.e(
-      '$logIdentifier $message',
+      '[$logIdentifier] $message',
       time: time,
       error: error,
       stackTrace: stackTrace,
@@ -89,7 +89,7 @@ mixin Loggable {
     StackTrace? stackTrace,
   }) {
     _logger.f(
-      '$logIdentifier $message',
+      '[$logIdentifier] $message',
       time: time,
       error: error,
       stackTrace: stackTrace,

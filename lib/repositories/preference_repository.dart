@@ -458,5 +458,5 @@ class PreferenceRepository with Loggable {
   static String _getHasReadKey(int storyId) => 'hasRead_$storyId';
 
   @override
-  String get logIdentifier => '[PreferenceRepository]';
+  String get logIdentifier => 'PreferenceRepository';
 }

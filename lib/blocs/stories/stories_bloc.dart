@@ -653,5 +653,5 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
   }
 
   @override
-  String get logIdentifier => '[StoriesBloc]';
+  String get logIdentifier => 'StoriesBloc';
 }

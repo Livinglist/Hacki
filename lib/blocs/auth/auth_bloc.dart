@@ -1,13 +1,14 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
 
-class AuthBloc extends Bloc<AuthEvent, AuthState> {
+class AuthBloc extends Bloc<AuthEvent, AuthState> with Loggable {
   AuthBloc({
     AuthRepository? authRepository,
     PreferenceRepository? preferenceRepository,
@@ -48,6 +49,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         /// then it will not be available from the API.
         user ??= User.emptyWithId(username);
 
+        logInfo('silently logged in as ${user.id}.');
         emit(
           state.copyWith(
             isLoggedIn: true,
@@ -56,6 +58,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           ),
         );
       } else {
+        logInfo('no previous session found.');
         emit(
           state.copyWith(
             isLoggedIn: false,
@@ -91,6 +94,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (successful) {
       final User? user =
           await _hackerNewsRepository.fetchUser(id: event.username);
+      logInfo('user logged in as ${user?.id}.');
       emit(
         state.copyWith(
           user: user ?? User.emptyWithId(event.username),
@@ -111,9 +115,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         agreedToEULA: false,
       ),
     );
-
     await _authRepository.logout();
     await _preferenceRepository.updateUnreadCommentsIds(<int>[]);
     await _sembastRepository.deleteCachedComments();
+    logInfo('user logged out');
   }
+
+  @override
+  String get logIdentifier => 'AuthBloc';
 }
