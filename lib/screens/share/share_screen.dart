@@ -48,6 +48,7 @@ class _ShareScreenState extends State<ShareScreen> {
   bool _shouldShowParent = true;
   bool _shouldShowHackiBanner = true;
   bool _shouldCopyHnLink = true;
+  bool _shouldScaleText = true;
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +117,6 @@ class _ShareScreenState extends State<ShareScreen> {
                           children: <Widget>[
                             SizedBoxes.pt8,
                             Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 SizedBoxes.pt12,
                                 Image.asset(
@@ -133,11 +133,19 @@ class _ShareScreenState extends State<ShareScreen> {
                                     color:
                                         Theme.of(context).colorScheme.onSurface,
                                   ),
+                                  textScaler: TextScaler.noScaling,
                                 ),
                               ],
                             ),
                             SizedBoxes.pt8,
-                            targetWidget,
+                            MediaQuery(
+                              data: MediaQuery.of(context).copyWith(
+                                textScaler: _shouldScaleText
+                                    ? null
+                                    : TextScaler.noScaling,
+                              ),
+                              child: targetWidget,
+                            ),
                             SizedBoxes.pt8,
                             if (_shouldShowHackiBanner) ...<Widget>[
                               const Divider(
@@ -218,6 +226,15 @@ class _ShareScreenState extends State<ShareScreen> {
                   onChanged: (_) {
                     setState(() {
                       _shouldCopyHnLink = !_shouldCopyHnLink;
+                    });
+                  },
+                ),
+                SwitchListTile(
+                  value: _shouldScaleText,
+                  title: const Text('Text Scaling'),
+                  onChanged: (_) {
+                    setState(() {
+                      _shouldScaleText = !_shouldScaleText;
                     });
                   },
                 ),
