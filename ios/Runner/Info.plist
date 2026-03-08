@@ -108,6 +108,6 @@
 	<key>FlutterDeepLinkingEnabled</key>
 	<false/>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-    <string>We need access to save images to your photo library.</string>
+    <string>Hacki needs access to save images to your photo library.</string>
 </dict>
 </plist>
