@@ -82,6 +82,7 @@ class _ShareScreenState extends State<ShareScreen> {
                   comment: item as Comment,
                   fetchMode: FetchMode.lazy,
                   shouldShowDivider: false,
+                  isActionable: false,
                 ),
               ),
             ],
