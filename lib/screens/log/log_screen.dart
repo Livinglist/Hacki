@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hacki/extensions/context_extension.dart';
@@ -44,6 +45,13 @@ class LogScreen extends StatelessWidget {
           body: Scrollbar(
             child: ListView(
               children: <Widget>[
+                if (kDebugMode) ...<Widget>[
+                  SizedBoxes.pt48,
+                  const Text(
+                    '''Logs won't show up here in debug mode.\nYou can modify `LogUtil.logOutput()` to enable it.''',
+                    textAlign: TextAlign.center,
+                  ),
+                ],
                 ...?snapshot.data?.map(Text.new),
               ],
             ),

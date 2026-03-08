@@ -65,6 +65,9 @@ class PreferenceState extends Equatable {
 
   bool get isReaderEnabled => _isOn<ReaderModePreference>();
 
+  bool get isHideInsteadOfMarkingGrayEnabled =>
+      _isOn<HideStoryInsteadOfMarkingGray>();
+
   bool get isMarkReadStoriesEnabled => _isOn<MarkReadStoriesModePreference>();
 
   bool get isMetadataEnabled => _isOn<MetadataModePreference>();

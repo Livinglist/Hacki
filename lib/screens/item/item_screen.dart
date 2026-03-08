@@ -286,7 +286,12 @@ class _ItemScreenState extends State<ItemScreen>
                             authState: authState,
                             topPadding: context.topPadding,
                             splitViewEnabled: widget.splitViewEnabled,
-                            onMoreTapped: onMoreTapped,
+                            onMoreTapped: (Item item, Rect? rect) =>
+                                onMoreTapped(
+                              item,
+                              rect,
+                              parent: item,
+                            ),
                             onRightMoreTapped: onRightMoreTapped,
                             shouldMarkNewComment: widget.shouldMarkNewComment,
                           ),
@@ -363,7 +368,11 @@ class _ItemScreenState extends State<ItemScreen>
                       authState: authState,
                       topPadding: context.topPadding,
                       splitViewEnabled: widget.splitViewEnabled,
-                      onMoreTapped: onMoreTapped,
+                      onMoreTapped: (Item context, Rect? rect) => onMoreTapped(
+                        context,
+                        rect,
+                        parent: widget.item,
+                      ),
                       onRightMoreTapped: onRightMoreTapped,
                       shouldMarkNewComment: widget.shouldMarkNewComment,
                     ),

@@ -14,6 +14,7 @@ abstract class Constants {
   static const String googlePlayLink =
       'https://play.google.com/store/apps/details?id=com.jiaqifeng.hacki&hl=en_US&gl=US';
   static const String sponsorLink = 'https://github.com/sponsors/Livinglist';
+  static const String spotifyLink = 'https://open.spotify.com/user/livinglist';
   static const String guidelineLink =
       'https://news.ycombinator.com/newsguidelines.html';
   static const String githubIssueLink =

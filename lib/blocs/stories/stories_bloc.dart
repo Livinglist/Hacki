@@ -20,12 +20,14 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
   StoriesBloc({
     required PreferenceCubit preferenceCubit,
     required FilterCubit filterCubit,
+    required HideCubit hideCubit,
     OfflineRepository? offlineRepository,
     HackerNewsRepository? hackerNewsRepository,
     HackerNewsWebRepository? hackerNewsWebRepository,
     PreferenceRepository? preferenceRepository,
   })  : _preferenceCubit = preferenceCubit,
         _filterCubit = filterCubit,
+        _hideCubit = hideCubit,
         _offlineRepository =
             offlineRepository ?? locator.get<OfflineRepository>(),
         _hackerNewsRepository =
@@ -67,6 +69,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
 
   final PreferenceCubit _preferenceCubit;
   final FilterCubit _filterCubit;
+  final HideCubit _hideCubit;
   final OfflineRepository _offlineRepository;
   final HackerNewsRepository _hackerNewsRepository;
   final HackerNewsWebRepository _hackerNewsWebRepository;
@@ -137,6 +140,11 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
       logInfo('($type) loading stories from API.');
       final List<int> ids =
           await _hackerNewsRepository.fetchStoryIds(type: type);
+
+      if (_preferenceCubit.state.isHideInsteadOfMarkingGrayEnabled) {
+        ids.removeWhere(_hideCubit.isHidden);
+      }
+
       emit(
         state
             .copyWithStoryIdsUpdated(type: type, to: ids)
@@ -173,7 +181,11 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
             add(event.copyWith(shouldUseApi: true));
         }
       }).listen((Story story) {
-        add(StoryLoaded(story: story, type: type));
+        if (_hideCubit.isHidden(story.id)) {
+          return;
+        } else {
+          add(StoryLoaded(story: story, type: type));
+        }
       }).asFuture<void>();
       add(StoryLoadingCompleted(type: type));
     }
@@ -278,27 +290,31 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
       _hackerNewsWebRepository
           .fetchStoriesStream(type, page: currentPage)
           .handleError((dynamic e) {
-            logError('error loading more stories $e');
+        logError('error loading more stories $e');
 
-            switch (e.runtimeType) {
-              case RateLimitedException:
-              case RateLimitedWithFallbackException:
-              case PossibleParsingException:
+        switch (e.runtimeType) {
+          case RateLimitedException:
+          case RateLimitedWithFallbackException:
+          case PossibleParsingException:
 
-                /// Fall back to use API instead.
-                add(event.copyWith(shouldUseApi: true));
-                emit(
-                  state.copyWithCurrentPageUpdated(
-                    type: type,
-                    to: currentPage - 1,
-                  ),
-                );
-            }
-          })
-          .listen(
-            (Story story) => add(StoryLoaded(story: story, type: type)),
-          )
-          .onDone(() => add(StoryLoadingCompleted(type: type)));
+            /// Fall back to use API instead.
+            add(event.copyWith(shouldUseApi: true));
+            emit(
+              state.copyWithCurrentPageUpdated(
+                type: type,
+                to: currentPage - 1,
+              ),
+            );
+        }
+      }).listen(
+        (Story story) {
+          if (_hideCubit.isHidden(story.id)) {
+            return;
+          } else {
+            add(StoryLoaded(story: story, type: type));
+          }
+        },
+      ).onDone(() => add(StoryLoadingCompleted(type: type)));
     }
   }
 

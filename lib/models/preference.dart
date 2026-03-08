@@ -49,6 +49,7 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       const DividerPreference(),
 
       /// Divider.
+      const HideStoryInsteadOfMarkingGray(),
       const MarkReadStoriesModePreference(),
 
       /// Divider.
@@ -498,6 +499,30 @@ final class MarkReadStoriesModePreference extends BooleanPreference {
 
   @override
   String get subtitle => 'grey out stories you have read.';
+}
+
+/// Swipe left on home screen story tiles to hide the story instead of
+/// marking it gray.
+final class HideStoryInsteadOfMarkingGray extends BooleanPreference {
+  const HideStoryInsteadOfMarkingGray({bool? val})
+      : super(val: val ?? _hideStoryInsteadOfMarkingGray);
+
+  static const bool _hideStoryInsteadOfMarkingGray = false;
+
+  @override
+  HideStoryInsteadOfMarkingGray copyWith({required bool? val}) {
+    return HideStoryInsteadOfMarkingGray(val: val);
+  }
+
+  @override
+  String get key => 'hideStoryInsteadOfMarkingGray';
+
+  @override
+  String get title => 'Hide Story Instead Of Marking Gray';
+
+  @override
+  String get subtitle =>
+      '''swipe left on story tile or tap on the trash can icon to hide the story instead of marking it gray.''';
 }
 
 final class ManualPaginationPreference extends BooleanPreference {

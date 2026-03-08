@@ -89,6 +89,8 @@ class _StoriesListViewState extends State<StoriesListView>
               isExpandedTileEnabled: preferenceState.isExpandedTileEnabled,
               isIndexedStoryTileEnabled:
                   preferenceState.isIndexedStoryTileEnabled,
+              isHideInsteadOfMarkingGrayEnabled:
+                  preferenceState.isHideInsteadOfMarkingGrayEnabled,
               refreshController: refreshController,
               scrollController: scrollController,
               items: state.storiesByType[storyType]!,
@@ -220,12 +222,17 @@ class _StoriesListViewState extends State<StoriesListView>
                                 : Palette.grey,
                         foregroundColor:
                             Theme.of(context).colorScheme.onPrimary,
-                        child: Icon(
-                          state.readStoriesIds.contains(story.id)
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          size: Dimens.pt24,
-                        ),
+                        child: preferenceState.isHideInsteadOfMarkingGrayEnabled
+                            ? const Icon(
+                                Icons.delete_sweep,
+                                size: Dimens.pt24,
+                              )
+                            : Icon(
+                                state.readStoriesIds.contains(story.id)
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                size: Dimens.pt24,
+                              ),
                       ),
                     ],
                   ),
@@ -265,6 +272,16 @@ class _StoriesListViewState extends State<StoriesListView>
   void mark(Story story) {
     HapticFeedbackUtil.light();
     final StoriesBloc storiesBloc = context.read<StoriesBloc>();
+    final HideCubit hideCubit = context.read<HideCubit>();
+
+    final bool isHideInsteadOfMarkingGrayEnabled =
+        context.read<PreferenceCubit>().state.isHideInsteadOfMarkingGrayEnabled;
+
+    if (isHideInsteadOfMarkingGrayEnabled) {
+      hideCubit.hide(story.id);
+      return;
+    }
+
     final bool markReadStoriesEnabled =
         context.read<PreferenceCubit>().state.isMarkReadStoriesEnabled;
     if (markReadStoriesEnabled) {

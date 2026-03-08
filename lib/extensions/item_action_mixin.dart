@@ -47,7 +47,7 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
     return Future<void>.value();
   }
 
-  void onMoreTapped(Item item, Rect? rect) {
+  void onMoreTapped(Item item, Rect? rect, {Item? parent}) {
     HapticFeedbackUtil.light();
 
     if (item.dead || item.deleted) {
@@ -78,7 +78,11 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
           case MenuAction.fav:
             onFavTapped(item);
           case MenuAction.share:
-            onShareTapped(item, rect);
+            onShareTapped(
+              item,
+              rect,
+              parent: parent,
+            );
           case MenuAction.flag:
             onFlagTapped(item);
           case MenuAction.block:
@@ -100,7 +104,7 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
     }
   }
 
-  Future<void> onShareTapped(Item item, Rect? rect) async {
+  Future<void> onShareTapped(Item item, Rect? rect, {Item? parent}) async {
     late final String? linkToShare;
     linkToShare = await showModalBottomSheet<String>(
       context: context,
@@ -133,7 +137,10 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
     if (linkToShare == 'image' && mounted) {
       await context.push(
         Paths.share.landing,
-        extra: ShareScreenArgs(item: item),
+        extra: ShareScreenArgs(
+          item: item,
+          parent: parent,
+        ),
       );
     } else if (linkToShare != null) {
       await SharePlus.instance.share(
