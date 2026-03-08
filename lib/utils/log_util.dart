@@ -12,7 +12,7 @@ abstract class LogUtil {
           colors: false,
           printTime: true,
         )
-      : SimplePrinter();
+      : prettyPrinter;
 
   static LogPrinter get prettyPrinter => PrettyPrinter(
         dateTimeFormat: DateTimeFormat.dateAndTime,

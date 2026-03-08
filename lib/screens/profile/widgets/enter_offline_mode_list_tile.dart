@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/utils/haptic_feedback_util.dart';
 
 class EnterOfflineModeListTile extends StatelessWidget {
@@ -21,6 +22,11 @@ class EnterOfflineModeListTile extends StatelessWidget {
             context.read<StoriesBloc>().add(
                   value ? StoriesEnterOfflineMode() : StoriesExitOfflineMode(),
                 );
+            if (value) {
+              context.showSnackBar(content: 'Offline mode activated.');
+            } else {
+              context.showSnackBar(content: 'Offline mode deactivated.');
+            }
           },
         );
       },

@@ -20,24 +20,26 @@ extension ContextExtension on BuildContext {
     VoidCallback? action,
     String? label,
   }) {
-    ScaffoldMessenger.of(this).showSnackBar(
-      SnackBar(
-        backgroundColor: Theme.of(this).colorScheme.primary,
-        content: Text(
-          content,
-          style: TextStyle(
-            color: Theme.of(this).colorScheme.onPrimary,
+    ScaffoldMessenger.of(this)
+      ..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(
+          backgroundColor: Theme.of(this).colorScheme.primary,
+          content: Text(
+            content,
+            style: TextStyle(
+              color: Theme.of(this).colorScheme.onPrimary,
+            ),
           ),
+          action: action != null && label != null
+              ? SnackBarAction(
+                  label: label,
+                  onPressed: action,
+                  textColor: Theme.of(this).colorScheme.onPrimary,
+                )
+              : null,
         ),
-        action: action != null && label != null
-            ? SnackBarAction(
-                label: label,
-                onPressed: action,
-                textColor: Theme.of(this).colorScheme.onPrimary,
-              )
-            : null,
-      ),
-    );
+      );
   }
 
   void showErrorSnackBar([String? message]) {

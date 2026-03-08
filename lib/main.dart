@@ -14,7 +14,9 @@ import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/config/paths.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/fetcher.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/haptic_feedback_util.dart';
@@ -241,7 +243,8 @@ class HackiApp extends StatelessWidget {
             previous.textScaleFactor != current.textScaleFactor ||
             previous.isTrueDarkModeEnabled != current.isTrueDarkModeEnabled ||
             previous.isHackerNewsThemeEnabled !=
-                current.isHackerNewsThemeEnabled,
+                current.isHackerNewsThemeEnabled ||
+            previous.isDevModeEnabled != current.isDevModeEnabled,
         builder: (BuildContext context, PreferenceState state) {
           return AdaptiveTheme(
             key: ValueKey<String>(
@@ -382,6 +385,24 @@ class HackiApp extends StatelessWidget {
                                 ),
                               ),
                         routerConfig: router,
+                        builder: state.isDevModeEnabled
+                            ? (BuildContext context, Widget? child) => Stack(
+                                  children: <Widget>[
+                                    Positioned.fill(child: child!),
+                                    DraggableFloatingButton(
+                                      onTap: () {
+                                        router.push(Paths.log.landing);
+                                      },
+                                      child: Icon(
+                                        Icons.bug_report,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                            : null,
                       ),
                     ),
                   );

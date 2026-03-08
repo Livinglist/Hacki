@@ -445,7 +445,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                       if (updatedDevMode.val) {
                         showSnackBar(content: 'You are a dev now.');
                       } else {
-                        showSnackBar(content: 'Dev mode disabled');
+                        showSnackBar(content: 'Dev mode disabled.');
                       }
                     },
                   ),
