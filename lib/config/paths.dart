@@ -1,7 +1,7 @@
 import 'package:hacki/screens/screens.dart';
 
 abstract class Paths {
-  static const LogPaths log = LogPaths._();
+  static const LogsPaths logs = LogsPaths._();
   static const HomePaths home = HomePaths._();
   static const ItemPaths item = ItemPaths._();
   static const SharePaths share = SharePaths._();
@@ -29,8 +29,8 @@ class SharePaths with RootPaths {
   String get landing => rootPath(ShareScreen.routeName);
 }
 
-class LogPaths with RootPaths {
-  const LogPaths._();
+class LogsPaths with RootPaths {
+  const LogsPaths._();
 
   String get landing => rootPath(LogScreen.routeName);
 }

@@ -416,7 +416,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                         'Logs',
                       ),
                       onTap: () {
-                        context.go(Paths.log.landing);
+                        context.go(Paths.logs.landing);
                       },
                     ),
                     ListTile(

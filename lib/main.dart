@@ -391,7 +391,7 @@ class HackiApp extends StatelessWidget {
                                     Positioned.fill(child: child!),
                                     DraggableFloatingButton(
                                       onTap: () {
-                                        router.push(Paths.log.landing);
+                                        router.push(Paths.logs.landing);
                                       },
                                       child: Icon(
                                         Icons.bug_report,
