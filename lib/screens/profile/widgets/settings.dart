@@ -725,37 +725,6 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
           ),
           ElevatedButton(
             onPressed: () => LinkUtil.launch(
-              Constants.privacyPolicyLink,
-              context,
-            ),
-            child: const Row(
-              children: <Widget>[
-                Icon(
-                  Icons.privacy_tip_outlined,
-                ),
-                SizedBox(
-                  width: Dimens.pt12,
-                ),
-                Text('Privacy policy'),
-              ],
-            ),
-          ),
-          ElevatedButton(
-            onPressed: onReportIssueTapped,
-            child: const Row(
-              children: <Widget>[
-                Icon(
-                  Icons.bug_report_outlined,
-                ),
-                SizedBox(
-                  width: Dimens.pt12,
-                ),
-                Text('Report issue'),
-              ],
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () => LinkUtil.launch(
               Constants.githubLink,
               context,
             ),
@@ -792,18 +761,49 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
           ),
           ElevatedButton(
             onPressed: () => LinkUtil.launch(
-              Constants.sponsorLink,
+              Constants.spotifyLink,
               context,
             ),
             child: const Row(
               children: <Widget>[
                 Icon(
-                  FeatherIcons.coffee,
+                  FeatherIcons.music,
                 ),
                 SizedBox(
                   width: Dimens.pt12,
                 ),
-                Text('Buy me a coffee'),
+                Text('Music I listen to'),
+              ],
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => LinkUtil.launch(
+              Constants.privacyPolicyLink,
+              context,
+            ),
+            child: const Row(
+              children: <Widget>[
+                Icon(
+                  Icons.privacy_tip_outlined,
+                ),
+                SizedBox(
+                  width: Dimens.pt12,
+                ),
+                Text('Privacy policy'),
+              ],
+            ),
+          ),
+          ElevatedButton(
+            onPressed: onReportIssueTapped,
+            child: const Row(
+              children: <Widget>[
+                Icon(
+                  Icons.bug_report_outlined,
+                ),
+                SizedBox(
+                  width: Dimens.pt12,
+                ),
+                Text('Report issue'),
               ],
             ),
           ),
