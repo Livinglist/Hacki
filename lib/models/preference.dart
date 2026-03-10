@@ -323,7 +323,7 @@ final class RichStoryTilePreference extends BooleanPreference {
   String get title => 'Rich Story Tile';
 
   @override
-  String get subtitle => 'show web preview in story tile.';
+  String get subtitle => 'show web preview on story tile.';
 }
 
 /// When enabled, text on rich story tile will have the same height as
@@ -388,7 +388,7 @@ final class FaviconModePreference extends BooleanPreference {
   String get title => 'Show Favicon';
 
   @override
-  String get subtitle => 'show favicon in simple story tile.';
+  String get subtitle => 'show favicon on simple story tile.';
 }
 
 final class MetadataModePreference extends BooleanPreference {
@@ -410,7 +410,7 @@ final class MetadataModePreference extends BooleanPreference {
 
   @override
   String get subtitle =>
-      '''show number of comments and post date in story tile.''';
+      '''show number of comments and post date on story tile.''';
 }
 
 final class StoryUrlModePreference extends BooleanPreference {
@@ -431,7 +431,7 @@ final class StoryUrlModePreference extends BooleanPreference {
   String get title => 'Show URL';
 
   @override
-  String get subtitle => '''show URL in story tile.''';
+  String get subtitle => '''show URL on story tile.''';
 }
 
 final class DividerPreference extends BooleanPreference {
