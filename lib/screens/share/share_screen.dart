@@ -222,7 +222,7 @@ class _ShareScreenState extends State<ShareScreen> {
                 ),
                 SwitchListTile(
                   value: _shouldCopyHnLink,
-                  title: const Text('Copy link to HN on sharing'),
+                  title: const Text('Copy Link to HN on Sharing'),
                   onChanged: (_) {
                     setState(() {
                       _shouldCopyHnLink = !_shouldCopyHnLink;
