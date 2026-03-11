@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:isolate';
 import 'dart:math';
 
 import 'package:bloc/bloc.dart';
@@ -15,9 +16,9 @@ import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart';
+import 'package:hacki/screens/widgets/custom_linkify/custom_linkify.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
-import 'package:linkify/linkify.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -74,6 +75,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   /// The [StreamSubscription] for stream (both lazy or eager)
   /// fetching comments posted directly to the story.
   StreamSubscription<Comment>? _streamSubscription;
+  StreamSubscription<Comment?>? _searchStreamSubscription;
 
   /// The map of [StreamSubscription] for streams
   /// fetching comments lazily. [int] is the id of parent comment.
@@ -145,7 +147,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       state.copyWith(
         status: CommentsStatus.inProgress,
         comments: <Comment>[],
-        matchedComments: <int>[],
+        matchedComments: <Comment>[],
         inThreadSearchQuery: '',
         currentPage: 0,
       ),
@@ -334,7 +336,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       state.copyWith(
         onlyShowTargetComment: false,
         item: story,
-        matchedComments: <int>[],
+        matchedComments: <Comment>[],
       ),
     );
     init();
@@ -582,45 +584,57 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     }
   }
 
-  void search(String query, {String author = ''}) {
+  Future<void> search(String query, {String author = ''}) async {
+    await _searchStreamSubscription?.cancel();
     resetSearch();
-
-    late final bool Function(Comment cmt) conditionSatisfied;
-    final String lowercaseQuery = query.toLowerCase();
-    if (query.isEmpty && author.isEmpty) {
-      return;
-    } else if (author.isEmpty) {
-      conditionSatisfied =
-          (Comment cmt) => cmt.text.toLowerCase().contains(lowercaseQuery);
-    } else if (query.isEmpty) {
-      conditionSatisfied = (Comment cmt) => cmt.by == author;
-    } else {
-      conditionSatisfied = (Comment cmt) =>
-          cmt.text.toLowerCase().contains(lowercaseQuery) && cmt.by == author;
-    }
-
     emit(
       state.copyWith(
         inThreadSearchQuery: query,
         inThreadSearchAuthor: author,
       ),
     );
+    _searchStreamSubscription =
+        _searchStream(query, author: author).listen((Comment? comment) {
+      emit(
+        state.copyWith(
+          matchedComments: <Comment>[
+            ...state.matchedComments,
+            if (comment != null) comment,
+          ],
+        ),
+      );
+    });
+  }
 
+  Stream<Comment?> _searchStream(String query, {String author = ''}) async* {
+    late final bool Function(Comment cmt) conditionSatisfied;
+    final String lowercaseQuery = query.toLowerCase();
+    if (query.isEmpty && author.isEmpty) {
+      return;
+    } else if (author.isEmpty) {
+      conditionSatisfied = (Comment cmt) =>
+          cmt.by.toLowerCase().contains(lowercaseQuery) ||
+          cmt.text.toLowerCase().contains(lowercaseQuery);
+    } else if (query.isEmpty) {
+      conditionSatisfied = (Comment cmt) => cmt.by == author;
+    } else {
+      conditionSatisfied = (Comment cmt) =>
+          cmt.text.toLowerCase().contains(lowercaseQuery) && cmt.by == author;
+    }
     for (final int i in 0.to(state.comments.length, inclusive: false)) {
       final Comment cmt = state.comments.elementAt(i);
       if (conditionSatisfied(cmt)) {
-        emit(
-          state.copyWith(
-            matchedComments: <int>[...state.matchedComments, i],
-          ),
-        );
+        final Comment comment = state.comments.elementAt(i);
+        final BuildableComment? buildableComment =
+            await _toBuildableComment(comment, withHighlightedText: query);
+        yield buildableComment;
       }
     }
   }
 
   void resetSearch() => emit(
         state.copyWith(
-          matchedComments: <int>[],
+          matchedComments: <Comment>[],
           inThreadSearchQuery: '',
           inThreadSearchAuthor: '',
         ),
@@ -691,13 +705,20 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     return null;
   }
 
-  static Future<BuildableComment?> _toBuildableComment(Comment? comment) async {
+  static Future<BuildableComment?> _toBuildableComment(
+    Comment? comment, {
+    String? withHighlightedText,
+  }) async {
     if (comment == null) return null;
 
-    final List<LinkifyElement> elements =
-        await compute<String, List<LinkifyElement>>(
-      LinkifierUtil.linkify,
-      comment.text,
+    final List<LinkifyElement> elements = await Isolate.run(
+      () => LinkifierUtil.linkify(
+        comment.text,
+        extraLinkifiers: <Linkifier>[
+          if (withHighlightedText != null && withHighlightedText.isNotEmpty)
+            HighlightLinkifier(highlightedText: withHighlightedText),
+        ],
+      ),
     );
 
     final BuildableComment buildableComment =
@@ -731,6 +752,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     for (final StreamSubscription<Comment> s in _streamSubscriptions.values) {
       await s.cancel();
     }
+    await _searchStreamSubscription?.cancel();
     await super.close();
   }
 

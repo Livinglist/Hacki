@@ -1,6 +1,6 @@
 name: hacki
 description: A Hacker News reader.
-version: 3.1.2+312
+version: 3.2.0+320
 publish_to: none
 
 environment:
@@ -23,6 +23,7 @@ dependencies:
   equatable: ^2.0.5
   fast_gbk: ^1.0.0
   feature_discovery: ^0.14.2
+  file_picker: ^8.0.0
   flutter:
     sdk: flutter
   flutter_bloc: ^9.0.0
@@ -37,7 +38,6 @@ dependencies:
   flutter_secure_storage: ^10.0.0
   flutter_slidable: ^4.0.3
   font_awesome_flutter: ^10.3.0
-  file_picker: ^8.0.0
   get_it: ^9.2.1
   go_router: ^17.1.0
   hive: ^2.2.3

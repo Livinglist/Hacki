@@ -18,4 +18,6 @@ abstract class Palette {
   static const MaterialColor red = Colors.red;
 
   static const Color transparent = Colors.transparent;
+
+  static const MaterialColor yellow = Colors.yellow;
 }

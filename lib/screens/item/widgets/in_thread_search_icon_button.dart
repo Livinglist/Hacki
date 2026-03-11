@@ -8,6 +8,7 @@ import 'package:hacki/cubits/comments/comments_cubit.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/utils/debouncer.dart';
 
 class InThreadSearchIconButton extends StatelessWidget {
   const InThreadSearchIconButton({super.key});
@@ -62,6 +63,9 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
   final ScrollController scrollController = ScrollController();
   final FocusNode focusNode = FocusNode();
   final TextEditingController textEditingController = TextEditingController();
+  final Debouncer debouncer = Debouncer(
+    delay: AppDurations.oneSecond,
+  );
 
   @override
   void initState() {
@@ -126,9 +130,11 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                             ),
                           ),
                         ),
-                        onChanged: (String text) => widget.commentsCubit.search(
-                          text,
-                          author: state.inThreadSearchAuthor,
+                        onChanged: (String text) => debouncer.run(
+                          () => widget.commentsCubit.search(
+                            text,
+                            author: state.inThreadSearchAuthor,
+                          ),
                         ),
                       ),
                     ),
@@ -191,19 +197,25 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                       ),
                   ],
                 ),
-                for (final int i in state.matchedComments)
+                for (final Comment comment in state.matchedComments)
                   CommentTile(
-                    index: i,
-                    comment: state.comments.elementAt(i),
+                    comment: comment,
                     fetchMode: FetchMode.lazy,
                     isActionable: false,
                     isCollapsable: false,
                     onTap: () {
                       widget.action();
-                      widget.commentsCubit.scrollTo(
-                        index: i + 1,
-                        alignment: 0.2,
+
+                      final int index = state.comments.indexWhere(
+                        (Comment cmt) => cmt.id == comment.id,
                       );
+
+                      if (index != -1) {
+                        widget.commentsCubit.scrollTo(
+                          index: index + 1,
+                          alignment: 0.2,
+                        );
+                      }
                     },
                   ),
               ],

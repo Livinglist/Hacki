@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/custom_linkify/linkifiers/linkifiers.dart';
+import 'package:hacki/styles/palette.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:linkify/linkify.dart' hide UrlLinkifier;
 
@@ -386,7 +387,14 @@ TextSpan buildTextSpan(
             );
           }
         } else {
-          if (element is QuoteElement) {
+          if (element is HighlightElement) {
+            return TextSpan(
+              text: element.text,
+              style: style?.copyWith(
+                backgroundColor: Palette.yellow.withAlpha(120),
+              ),
+            );
+          } else if (element is QuoteElement) {
             return TextSpan(
               text: element.text,
               style: style?.copyWith(

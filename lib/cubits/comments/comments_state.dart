@@ -32,7 +32,7 @@ class CommentsState extends Equatable {
     required this.fetchMode,
     required this.order,
   })  : comments = <Comment>[],
-        matchedComments = <int>[],
+        matchedComments = <Comment>[],
         idToCommentMap = <int, Comment>{},
         status = CommentsStatus.idle,
         fetchParentStatus = CommentsStatus.idle,
@@ -57,12 +57,12 @@ class CommentsState extends Equatable {
   final String inThreadSearchAuthor;
 
   /// Indexes of comments that matches the query for in-thread search.
-  final List<int> matchedComments;
+  final List<Comment> matchedComments;
 
   CommentsState copyWith({
     Item? item,
     List<Comment>? comments,
-    List<int>? matchedComments,
+    List<Comment>? matchedComments,
     Map<int, Comment>? idToCommentMap,
     CommentsStatus? status,
     CommentsStatus? fetchParentStatus,
