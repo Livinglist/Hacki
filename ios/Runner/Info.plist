@@ -110,6 +110,6 @@
 	<key>NSPhotoLibraryAddUsageDescription</key>
     <string>Hacki needs access to save images to your photo library.</string>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>Hacki needs access to get images to your photo library.</string>
+    <string>Hacki needs access to get images from your photo library.</string>
 </dict>
 </plist>
