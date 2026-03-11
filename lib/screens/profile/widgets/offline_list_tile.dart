@@ -26,7 +26,8 @@ class OfflineListTile extends StatelessWidget {
       buildWhen: (StoriesState previous, StoriesState current) =>
           previous.downloadStatus != current.downloadStatus ||
           previous.storiesDownloaded != current.storiesDownloaded ||
-          previous.storiesToBeDownloaded != current.storiesToBeDownloaded,
+          previous.storiesToBeDownloaded != current.storiesToBeDownloaded ||
+          previous.downloadTimestamp != current.downloadTimestamp,
       builder: (BuildContext context, StoriesState state) {
         final bool downloading =
             state.downloadStatus == StoriesDownloadStatus.downloading;
@@ -63,10 +64,26 @@ class OfflineListTile extends StatelessWidget {
               return 'Download Stories';
             }(),
           ),
-          subtitle: const Text(
-            'download latest stories that have at least one comment '
-            'for offline reading. (Please keep Hacki in foreground while '
-            'downloading.)',
+          subtitle: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Text(
+                'download latest stories that have at least one comment '
+                'for offline reading. (Please keep Hacki in foreground while '
+                'downloading.)',
+              ),
+              if (state.downloadStatus != StoriesDownloadStatus.downloading &&
+                  state.downloadTimestamp != null)
+                Text(
+                  'Last downloaded at ${state.downloadDateTime}',
+                  style: TextStyle(
+                    fontSize: TextDimens.pt12,
+                    color:
+                        Theme.of(context).colorScheme.onSurface.withAlpha(160),
+                  ),
+                ),
+            ],
           ),
           trailing: trailingWidget,
           isThreeLine: true,
