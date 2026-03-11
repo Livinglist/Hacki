@@ -54,9 +54,14 @@ class OfflineListTile extends StatelessWidget {
 
         return ListTile(
           title: Text(
-            downloading
-                ? '''Downloading Stories (${state.storiesDownloaded}/${state.storiesToBeDownloaded})'''
-                : 'Download Stories',
+            () {
+              if (downloading) {
+                return '''Downloading Stories (${state.storiesDownloaded}/${state.storiesToBeDownloaded})''';
+              } else if (state.storiesDownloaded != 0) {
+                return '''${state.storiesDownloaded} stories downloaded.''';
+              }
+              return 'Download Stories';
+            }(),
           ),
           subtitle: const Text(
             'download latest stories that have at least one comment '
