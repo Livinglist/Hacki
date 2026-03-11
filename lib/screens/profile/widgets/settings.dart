@@ -1045,9 +1045,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
 
     if (useFile) {
       final FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.any,
-        withData:
-            true, // loads bytes into memory no storage permission required
+        withData: true,
       );
       if (result == null) return;
       final List<int>? bytes = result.files.first.bytes;
