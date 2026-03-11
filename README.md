@@ -1,3 +1,25 @@
+# !!! [Keep Android Open↗](https://keepandroidopen.org) !!!
+
+In August 2025, Google [announced↗](https://developer.android.com/developer-verification) that as of September 2026, it will no longer be possible to develop apps for the Android platform without first registering centrally with Google. This registration will involve:
+
+- Paying a fee to Google
+- Agreeing to Google’s Terms and Conditions
+- Providing government identification
+- Uploading evidence of the developer’s private signing key
+- Listing all current and future application identifiers
+
+# How you can help
+
+### Developers: Resist and refuse
+
+If you are an app developer, do not sign up for the early access program, perform identity verification, or accept an invitation to the Android Developer Console. Respond (politely) to any invitation with a list of your concerns and objections.
+
+—— It is only through developer acquiescence and capitulation that their takeover plan can possibly succeed. ——
+
+Discourage fellow app developers and organizations from signing up to the program. Use community forums, social media, and blog posts to spread the message. Include the [FreeDroidWarn library↗](https://github.com/woheller69/FreeDroidWarn) in your code to inform your app users. If you manage a web site, consider [adding the countdown banner↗](https://keepandroidopen.org/banner/) to the top of your page.
+
+If you are a Google employee or contractor of good conscience and have additional insight about the program, including planned technical implementation details or additional rationales for the program, please reach out to tips@keepandroidopen.org from a non-work machine and a non-gmail account. Your information will be kept in strict confidence.
+
 
 # <img width="64" src="https://user-images.githubusercontent.com/7277662/167775086-0b234f28-dee4-44f6-aae4-14a28ed4bbb6.png"> Hacki for Hacker News
 
