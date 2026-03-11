@@ -182,7 +182,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
             case CommentsOrder.natural:
               final bool shouldFetchFromWeb = await _shouldFetchFromWeb;
               if (fetchFromWeb && shouldFetchFromWeb) {
-                logDebug('fetching comments of ${item.id} from web.');
+                logInfo('fetching comments of ${item.id} from web.');
                 commentStream = _hackerNewsWebRepository
                     .fetchCommentsStream(state.item)
                     .handleError((dynamic e) {
@@ -206,7 +206,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                   refresh(onError: onError, fetchFromWeb: false);
                 });
               } else {
-                logDebug('fetching comments of ${item.id} from API.');
+                logInfo('fetching comments of ${item.id} from API.');
                 commentStream =
                     _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
                   ids: kids,
@@ -282,7 +282,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
           case CommentsOrder.natural:
             final bool shouldFetchFromWeb = await _shouldFetchFromWeb;
             if (fetchFromWeb && shouldFetchFromWeb) {
-              logDebug(
+              logInfo(
                 'fetching comments of ${item.id} from web.',
               );
               commentStream = _hackerNewsWebRepository
@@ -306,7 +306,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                 refresh(onError: onError, fetchFromWeb: false);
               });
             } else {
-              logDebug('fetching comments of ${item.id} from API.');
+              logInfo('fetching comments of ${item.id} from API.');
               commentStream = _hackerNewsRepository
                   .fetchAllCommentsRecursivelyStream(ids: kids);
             }
