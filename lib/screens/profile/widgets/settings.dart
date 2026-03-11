@@ -1014,7 +1014,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
 
   Future<void> onImportFavoritesTapped(FavCubit favCubit) async {
     // Let the user pick the source QR camera or a plain text file
-    final bool? useFile = await showModalBottomSheet<bool>(
+    final ImportSource? importSource = await showModalBottomSheet<ImportSource>(
       context: context,
       builder: (BuildContext context) {
         return SafeArea(
@@ -1024,12 +1024,12 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
               ListTile(
                 leading: const Icon(Icons.qr_code_scanner),
                 title: const Text('QR Code'),
-                onTap: () => context.pop(false),
+                onTap: () => context.pop(ImportSource.qrCode),
               ),
               ListTile(
                 leading: const Icon(Icons.file_open_outlined),
                 title: const Text('From File'),
-                onTap: () => context.pop(true),
+                onTap: () => context.pop(ImportSource.file),
               ),
             ],
           ),
@@ -1037,23 +1037,24 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
       },
     );
 
-    if (useFile == null) return; // user dismissed
+    if (importSource == null) return; // user dismissed
 
     String? data;
 
-    if (useFile) {
-      final FilePickerResult? result = await FilePicker.platform.pickFiles(
-        withData: true,
-      );
-      if (result == null) return;
-      final List<int>? bytes = result.files.first.bytes;
-      if (bytes == null) {
-        showSnackBar(content: 'Could not read file.');
-        return;
-      }
-      data = String.fromCharCodes(bytes).trim();
-    } else {
-      data = await router.push(Paths.qrCode.scanner) as String?;
+    switch (importSource) {
+      case ImportSource.qrCode:
+        data = await router.push(Paths.qrCode.scanner) as String?;
+      case ImportSource.file:
+        final FilePickerResult? result = await FilePicker.platform.pickFiles(
+          withData: true,
+        );
+        if (result == null) return;
+        final List<int>? bytes = result.files.first.bytes;
+        if (bytes == null) {
+          showSnackBar(content: 'Could not read file.');
+          return;
+        }
+        data = String.fromCharCodes(bytes).trim();
     }
 
     // Identical parsing to QR path, one integer ID per line
