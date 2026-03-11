@@ -8,7 +8,7 @@ In August 2025, Google [announced↗](https://developer.android.com/developer-ve
 - Uploading evidence of the developer’s private signing key
 - Listing all current and future application identifiers
 
-# How you can help
+# !!! [How you can help↗](https://keepandroidopen.org) !!!
 
 ### Developers: Resist and refuse
 
@@ -20,6 +20,8 @@ Discourage fellow app developers and organizations from signing up to the progra
 
 If you are a Google employee or contractor of good conscience and have additional insight about the program, including planned technical implementation details or additional rationales for the program, please reach out to tips@keepandroidopen.org from a non-work machine and a non-gmail account. Your information will be kept in strict confidence.
 
+- See more on how you can resist on: https://keepandroidopen.org
+- What people are saying on Hacker News: https://news.ycombinator.com/item?id=47091419
 
 # <img width="64" src="https://user-images.githubusercontent.com/7277662/167775086-0b234f28-dee4-44f6-aae4-14a28ed4bbb6.png"> Hacki for Hacker News
 
