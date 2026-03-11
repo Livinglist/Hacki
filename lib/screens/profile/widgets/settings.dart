@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:feature_discovery/feature_discovery.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -33,7 +34,6 @@ import 'package:hacki/utils/utils.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:file_picker/file_picker.dart';
 
 class Settings extends StatefulWidget {
   const Settings({
@@ -1015,58 +1015,59 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
   }
 
   Future<void> onImportFavoritesTapped(FavCubit favCubit) async {
-  // Let the user pick the source QR camera or a plain text file
-  final bool? useFile = await showModalBottomSheet<bool>(
-    context: context,
-    builder: (BuildContext context) {
-      return SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            ListTile(
-              leading: const Icon(Icons.qr_code_scanner),
-              title: const Text('QR Code'),
-              onTap: () => context.pop(false),
-            ),
-            ListTile(
-              leading: const Icon(Icons.file_open_outlined),
-              title: const Text('From File'),
-              onTap: () => context.pop(true),
-            ),
-          ],
-        ),
-      );
-    },
-  );
-
-  if (useFile == null) return; // user dismissed
-
-  String? data;
-
-  if (useFile) {
-    final FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.any,
-      withData: true, // loads bytes into memory no storage permission required
+    // Let the user pick the source QR camera or a plain text file
+    final bool? useFile = await showModalBottomSheet<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.qr_code_scanner),
+                title: const Text('QR Code'),
+                onTap: () => context.pop(false),
+              ),
+              ListTile(
+                leading: const Icon(Icons.file_open_outlined),
+                title: const Text('From File'),
+                onTap: () => context.pop(true),
+              ),
+            ],
+          ),
+        );
+      },
     );
-    if (result == null) return;
-    final List<int>? bytes = result.files.first.bytes;
-    if (bytes == null) {
-      showSnackBar(content: 'Could not read file.');
-      return;
-    }
-    data = String.fromCharCodes(bytes).trim();
-  } else {
-    data = await router.push(Paths.qrCode.scanner) as String?;
-  }
 
-  // Identical parsing to QR path, one integer ID per line
-  final List<int>? ids =
-      data?.split('\n').map(int.tryParse).whereType<int>().toList();
-  if (ids == null || ids.isEmpty) return;
-  for (final int id in ids) {
-    await favCubit.addFav(id);
-  }
-  showSnackBar(content: 'Favorites imported successfully.');
+    if (useFile == null) return; // user dismissed
+
+    String? data;
+
+    if (useFile) {
+      final FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.any,
+        withData:
+            true, // loads bytes into memory no storage permission required
+      );
+      if (result == null) return;
+      final List<int>? bytes = result.files.first.bytes;
+      if (bytes == null) {
+        showSnackBar(content: 'Could not read file.');
+        return;
+      }
+      data = String.fromCharCodes(bytes).trim();
+    } else {
+      data = await router.push(Paths.qrCode.scanner) as String?;
+    }
+
+    // Identical parsing to QR path, one integer ID per line
+    final List<int>? ids =
+        data?.split('\n').map(int.tryParse).whereType<int>().toList();
+    if (ids == null || ids.isEmpty) return;
+    for (final int id in ids) {
+      await favCubit.addFav(id);
+    }
+    showSnackBar(content: 'Favorites imported successfully.');
   }
 
   Future<void> exportFavorites({required ExportDestination? to}) async {
