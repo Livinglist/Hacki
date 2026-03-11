@@ -1,1 +1,1 @@
-Hacki is a simple noiseless Hacker News client that is just enough.
+An open-source Hacker News client.
