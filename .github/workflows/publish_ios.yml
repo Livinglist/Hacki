@@ -12,6 +12,8 @@ on:
       - pubspec.lock
       - pubspec.yaml
       - submodules/**
+      - ios/**
+      - .github/workflows/publish_ios.yml
 
 jobs:
   build_and_publish:
