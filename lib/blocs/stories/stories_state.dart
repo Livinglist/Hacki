@@ -8,6 +8,19 @@ enum StoriesDownloadStatus {
   canceled,
 }
 
+extension StoriesStateExtension on StoriesState {
+  static final DateFormat _dateTimeFormatter = DateFormat()
+    ..add_yMd()
+    ..add_Hm();
+
+  String? get downloadDateTime {
+    if (downloadTimestamp == null) return null;
+    final DateTime datetime =
+        DateTime.fromMillisecondsSinceEpoch(downloadTimestamp!);
+    return _dateTimeFormatter.format(datetime);
+  }
+}
+
 class StoriesState extends Equatable {
   const StoriesState({
     required this.storiesByType,
@@ -19,6 +32,7 @@ class StoriesState extends Equatable {
     required this.downloadStatus,
     required this.storiesDownloaded,
     required this.storiesToBeDownloaded,
+    required this.downloadTimestamp,
     required this.maxOfflineStoriesCount,
     required this.dataSource,
   });
@@ -57,6 +71,7 @@ class StoriesState extends Equatable {
         readStoriesIds = const <int>{},
         storiesDownloaded = 0,
         storiesToBeDownloaded = 0,
+        downloadTimestamp = null,
         maxOfflineStoriesCount = null,
         dataSource = null;
 
@@ -69,6 +84,7 @@ class StoriesState extends Equatable {
   final bool isOfflineReading;
   final int storiesDownloaded;
   final int storiesToBeDownloaded;
+  final int? downloadTimestamp;
   final MaxOfflineStoriesCount? maxOfflineStoriesCount;
   final HackerNewsDataSource? dataSource;
 
@@ -82,6 +98,7 @@ class StoriesState extends Equatable {
     bool? isOfflineReading,
     int? storiesDownloaded,
     int? storiesToBeDownloaded,
+    int? downloadTimestamp,
     MaxOfflineStoriesCount? maxOfflineStoriesCount,
     HackerNewsDataSource? dataSource,
   }) {
@@ -96,6 +113,7 @@ class StoriesState extends Equatable {
       storiesDownloaded: storiesDownloaded ?? this.storiesDownloaded,
       storiesToBeDownloaded:
           storiesToBeDownloaded ?? this.storiesToBeDownloaded,
+      downloadTimestamp: downloadTimestamp ?? this.downloadTimestamp,
       dataSource: dataSource ?? this.dataSource,
       maxOfflineStoriesCount:
           maxOfflineStoriesCount ?? this.maxOfflineStoriesCount,
@@ -113,6 +131,7 @@ class StoriesState extends Equatable {
       downloadStatus: downloadStatus,
       storiesDownloaded: storiesDownloaded,
       storiesToBeDownloaded: storiesToBeDownloaded,
+      downloadTimestamp: downloadTimestamp,
       dataSource: dataSource,
       maxOfflineStoriesCount: null,
     );
@@ -203,6 +222,7 @@ class StoriesState extends Equatable {
         downloadStatus,
         storiesDownloaded,
         storiesToBeDownloaded,
+        downloadTimestamp,
         dataSource,
         maxOfflineStoriesCount,
       ];

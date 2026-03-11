@@ -25,6 +25,7 @@ class PreferenceRepository with Loggable {
   static const String _pinnedStoriesIdsKey = 'pinnedStoriesIds';
   static const String _unreadCommentsIdsKey = 'unreadCommentsIds';
   static const String _lastReadStoryIdKey = 'lastReadStoryId';
+  static const String _downloadTimestampKey = 'downloadTimestamp';
 
   final SyncedSharedPreferences _syncedPrefs;
   final Future<SharedPreferences> _prefs;
@@ -84,6 +85,28 @@ class PreferenceRepository with Loggable {
         return true;
       });
     }
+  }
+
+  Future<int?> getDownloadTimestamp() async {
+    return _prefs.then(
+      (SharedPreferences prefs) => prefs.getInt(
+        _downloadTimestampKey,
+      ),
+    );
+  }
+
+  Future<void> setDownloadTimestamp({
+    required int timestamp,
+  }) async {
+    return _prefs.then((SharedPreferences prefs) async {
+      await prefs.setInt(_downloadTimestampKey, timestamp);
+    });
+  }
+
+  Future<void> removeDownloadTimestamp() async {
+    return _prefs.then((SharedPreferences prefs) async {
+      await prefs.remove(_downloadTimestampKey);
+    });
   }
 
   Future<void> setAuth({

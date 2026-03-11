@@ -10,6 +10,7 @@ import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
+import 'package:intl/intl.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -85,6 +86,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     final HackerNewsDataSource dataSource = _preferenceCubit.state.dataSource;
     logInfo('data source: $dataSource');
 
+    final int? downloadTimestamp = await _getDownloadTimestamp();
+
     emit(
       const StoriesState.init().copyWith(
         downloadStatus: state.downloadStatus,
@@ -92,6 +95,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         storiesToBeDownloaded: state.storiesToBeDownloaded,
         isOfflineReading: state.isOfflineReading,
         dataSource: dataSource,
+        downloadTimestamp: downloadTimestamp,
       ),
     );
 
@@ -410,6 +414,10 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         isPrioritized: true,
       );
 
+      final int timestamp = DateTime.now().millisecondsSinceEpoch;
+      emit(state.copyWith(downloadTimestamp: timestamp));
+      await _saveDownloadTimestamp(timestamp);
+
       final Set<int> latestIds = <int>{};
       final List<int> ids = await _hackerNewsRepository.fetchStoryIds(
         type: StoryType.latest,
@@ -656,4 +664,15 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
 
   @override
   String get logIdentifier => 'StoriesBloc';
+}
+
+extension on StoriesBloc {
+  Future<void> _saveDownloadTimestamp(int timestamp) async {
+    await _preferenceRepository.setDownloadTimestamp(timestamp: timestamp);
+  }
+
+  Future<int?> _getDownloadTimestamp() async {
+    final int? timestamp = await _preferenceRepository.getDownloadTimestamp();
+    return timestamp;
+  }
 }
