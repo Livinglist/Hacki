@@ -198,11 +198,12 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                         onError?.call(e as AppException);
                       }
 
-                      /// If fetching from web failed, fetch using API instead.
-                      refresh(onError: onError, fetchFromWeb: false);
                     default:
-                      onError?.call(GenericException());
+                      onError?.call(GenericException(error: e));
                   }
+
+                  /// If fetching from web failed, fetch using API instead.
+                  refresh(onError: onError, fetchFromWeb: false);
                 });
               } else {
                 logDebug('fetching comments of ${item.id} from API.');
@@ -297,11 +298,12 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                       onError?.call(e as AppException);
                     }
 
-                    /// If fetching from web failed, fetch using API instead.
-                    refresh(onError: onError, fetchFromWeb: false);
                   default:
-                    onError?.call(GenericException());
+                    onError?.call(GenericException(error: e));
                 }
+
+                /// If fetching from web failed, fetch using API instead.
+                refresh(onError: onError, fetchFromWeb: false);
               });
             } else {
               logDebug('fetching comments of ${item.id} from API.');
