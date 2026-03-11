@@ -62,7 +62,10 @@ class MainView extends StatelessWidget {
                     unawaited(
                       context.read<CommentsCubit>().refresh(
                             onError: (AppException e) =>
-                                context.showErrorSnackBar(e.message),
+                                context.showErrorSnackBar(
+                              e.message,
+                              e.error,
+                            ),
                           ),
                     );
 

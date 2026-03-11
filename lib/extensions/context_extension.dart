@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/styles/dimens.dart';
 
 extension ContextExtension on BuildContext {
   T? tryRead<T>() {
@@ -42,15 +43,34 @@ extension ContextExtension on BuildContext {
       );
   }
 
-  void showErrorSnackBar([String? message]) {
+  void showErrorSnackBar([
+    String? message,
+    dynamic error,
+  ]) {
     ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
         backgroundColor: Theme.of(this).colorScheme.errorContainer,
-        content: Text(
-          message ?? Constants.errorMessage,
-          style: TextStyle(
-            color: Theme.of(this).colorScheme.onErrorContainer,
-          ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              message ?? Constants.errorMessage,
+              style: TextStyle(
+                color: Theme.of(this).colorScheme.onErrorContainer,
+              ),
+            ),
+            if (error != null)
+              Text(
+                error.toString(),
+                style: TextStyle(
+                  color: Theme.of(this).colorScheme.onErrorContainer.withAlpha(
+                        150,
+                      ),
+                  fontSize: TextDimens.pt10,
+                ),
+              ),
+          ],
         ),
       ),
     );
