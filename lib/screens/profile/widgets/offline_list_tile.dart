@@ -80,7 +80,7 @@ class OfflineListTile extends StatelessWidget {
                   style: TextStyle(
                     fontSize: TextDimens.pt12,
                     color:
-                        Theme.of(context).colorScheme.onSurface.withAlpha(120),
+                        Theme.of(context).colorScheme.onSurface.withAlpha(160),
                   ),
                 ),
             ],
