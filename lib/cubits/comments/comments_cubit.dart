@@ -585,14 +585,14 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   }
 
   Future<void> search(String query, {String author = ''}) async {
+    await _searchStreamSubscription?.cancel();
+    resetSearch();
     emit(
       state.copyWith(
         inThreadSearchQuery: query,
         inThreadSearchAuthor: author,
       ),
     );
-    await _searchStreamSubscription?.cancel();
-    resetSearch();
     _searchStreamSubscription =
         _searchStream(query, author: author).listen((Comment? comment) {
       emit(
