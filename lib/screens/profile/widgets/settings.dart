@@ -37,13 +37,11 @@ import 'package:share_plus/share_plus.dart';
 class Settings extends StatefulWidget {
   const Settings({
     required this.authState,
-    required this.magicWord,
     required this.pageType,
     super.key,
   });
 
   final AuthState authState;
-  final String magicWord;
   final PageType? pageType;
 
   @override
@@ -74,11 +72,9 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                     title: Text(
                       widget.authState.isLoggedIn ? 'Log Out' : 'Log In',
                     ),
-                    subtitle: Text(
-                      widget.authState.isLoggedIn
-                          ? widget.authState.username
-                          : widget.magicWord,
-                    ),
+                    subtitle: widget.authState.isLoggedIn
+                        ? Text(widget.authState.username)
+                        : null,
                     onTap: () {
                       if (widget.authState.isLoggedIn) {
                         onLogoutTapped();
@@ -435,7 +431,9 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                   ],
                   ListTile(
                     title: const Text('About'),
-                    subtitle: const Text('nothing interesting here.'),
+                    subtitle: Text(
+                      Constants.magicWord,
+                    ),
                     onTap: showAboutHackiDialog,
                     onLongPress: () {
                       final DevMode updatedDevMode =
@@ -450,7 +448,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                     },
                   ),
                   const SizedBox(
-                    height: Dimens.pt48,
+                    height: Dimens.pt200,
                   ),
                 ],
               ),

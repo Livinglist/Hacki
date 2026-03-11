@@ -192,7 +192,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ),
                 Settings(
                   authState: authState,
-                  magicWord: Constants.magicWord,
                   pageType: pageType,
                 ),
                 Align(
