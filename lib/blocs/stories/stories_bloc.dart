@@ -548,6 +548,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         state.copyWith(
           storiesToBeDownloaded: updatedStoriesToBeDownloaded,
           downloadStatus: updatedStoriesToBeDownloaded == 0 ||
+                  updatedStoriesToBeDownloaded == state.storiesDownloaded ||
                   state.storiesDownloaded >=
                       (state.maxOfflineStoriesCount?.count ?? 1000)
               ? StoriesDownloadStatus.finished
@@ -566,6 +567,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
           storiesDownloaded: updatedStoriesDownloaded,
           storiesToBeDownloaded: updatedStoriesToBeDownloaded,
           downloadStatus: updatedStoriesToBeDownloaded == 0 ||
+                  updatedStoriesToBeDownloaded == updatedStoriesDownloaded ||
                   updatedStoriesDownloaded >=
                       (state.maxOfflineStoriesCount?.count ?? 1000)
               ? StoriesDownloadStatus.finished
