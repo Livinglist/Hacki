@@ -149,7 +149,7 @@ class HackerNewsWebRepository with Loggable {
         if (_rateLimitedStatusCode.contains(e.response?.statusCode)) {
           throw RateLimitedWithFallbackException(e.response?.statusCode);
         }
-        throw GenericException();
+        rethrow;
       }
     }
 
@@ -285,7 +285,7 @@ class HackerNewsWebRepository with Loggable {
           logError('error fetching favorites on page $page: $e');
           throw RateLimitedException(e.response?.statusCode);
         }
-        throw GenericException();
+        rethrow;
       }
     }
 
@@ -364,7 +364,7 @@ class HackerNewsWebRepository with Loggable {
           logError('error fetching comments on page $page: $e');
           throw RateLimitedWithFallbackException(e.response?.statusCode);
         }
-        throw GenericException();
+        rethrow;
       }
     }
 
