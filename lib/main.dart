@@ -356,7 +356,7 @@ class HackiApp extends StatelessWidget {
                                   style: ButtonStyle(
                                     foregroundColor:
                                         WidgetStateProperty.resolveWith(
-                                      (_) => colorScheme.primaryContainer,
+                                      (_) => colorScheme.primary,
                                     ),
                                   ),
                                 ),
