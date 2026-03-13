@@ -461,7 +461,7 @@ class _ParentItemSection extends StatelessWidget {
                                       ?.copyWith(
                                         color: Theme.of(context)
                                             .colorScheme
-                                            .primaryContainer,
+                                            .primary,
                                       ),
                                   textScaler:
                                       MediaQuery.of(context).clampedTextScaler,
@@ -491,7 +491,7 @@ class _ParentItemSection extends StatelessWidget {
                                       ?.copyWith(
                                         color: Theme.of(context)
                                             .colorScheme
-                                            .primaryContainer,
+                                            .primary,
                                       ),
                                   textScaler:
                                       MediaQuery.of(context).clampedTextScaler,

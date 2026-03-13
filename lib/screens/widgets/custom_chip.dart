@@ -16,6 +16,9 @@ class CustomChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FilterChip(
+      color: WidgetStateProperty.resolveWith(
+        (_) => Theme.of(context).colorScheme.primaryContainer,
+      ),
       shadowColor: Palette.transparent,
       selectedShadowColor: Palette.transparent,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
