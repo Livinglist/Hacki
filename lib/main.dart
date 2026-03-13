@@ -329,6 +329,12 @@ class HackiApp extends StatelessWidget {
                                         state.isTrueDarkModeEnabled
                                     ? Palette.black
                                     : null,
+                                appBarTheme: AppBarTheme(
+                                  foregroundColor: colorScheme.onSurface,
+                                  iconTheme: IconThemeData(
+                                    color: colorScheme.onSurface,
+                                  ),
+                                ),
                                 dividerTheme: DividerThemeData(
                                   color: Palette.grey.withValues(alpha: 0.2),
                                 ),
@@ -337,13 +343,21 @@ class HackiApp extends StatelessWidget {
                                     (Set<WidgetState> states) {
                                       if (states
                                           .contains(WidgetState.selected)) {
-                                        return colorScheme.primary
+                                        return colorScheme.primaryContainer
                                             .withValues(alpha: 0.6);
                                       } else {
                                         return Palette.grey
                                             .withValues(alpha: 0.2);
                                       }
                                     },
+                                  ),
+                                ),
+                                textButtonTheme: TextButtonThemeData(
+                                  style: ButtonStyle(
+                                    foregroundColor:
+                                        WidgetStateProperty.resolveWith(
+                                      (_) => colorScheme.primary,
+                                    ),
                                   ),
                                 ),
                                 bottomSheetTheme: const BottomSheetThemeData(
@@ -357,6 +371,11 @@ class HackiApp extends StatelessWidget {
                                       color: isDarkModeEnabled
                                           ? Palette.white
                                           : Palette.black,
+                                    ),
+                                  ),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: colorScheme.primaryContainer,
                                     ),
                                   ),
                                   disabledBorder: UnderlineInputBorder(
@@ -397,7 +416,7 @@ class HackiApp extends StatelessWidget {
                                         Icons.bug_report,
                                         color: Theme.of(context)
                                             .colorScheme
-                                            .onPrimary,
+                                            .onPrimaryContainer,
                                       ),
                                     ),
                                   ],

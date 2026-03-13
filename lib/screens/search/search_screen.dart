@@ -78,8 +78,9 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                       enablePullDown: false,
                       enablePullUp: true,
                       header: WaterDropMaterialHeader(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        color: Theme.of(context).colorScheme.onPrimary,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.primaryContainer,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
                       ),
                       footer: CustomFooter(
                         loadStyle: LoadStyle.ShowWhenLoading,
@@ -126,15 +127,8 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                   cursorColor:
                                       Theme.of(context).colorScheme.primary,
                                   autocorrect: false,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     hintText: 'Search Hacker News',
-                                    focusedBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ),
-                                    ),
                                   ),
                                   onChanged: (String val) {
                                     if (val.isNotEmpty) {

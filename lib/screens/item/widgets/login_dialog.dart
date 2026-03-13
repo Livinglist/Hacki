@@ -54,13 +54,8 @@ class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
                   cursorColor: Theme.of(context).colorScheme.primary,
                   autocorrect: false,
                   autofillHints: const <String>[AutofillHints.username],
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Username',
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
                   ),
                 ),
               ),
@@ -77,13 +72,8 @@ class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
                   obscureText: true,
                   autocorrect: false,
                   autofillHints: const <String>[AutofillHints.password],
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Password',
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
                   ),
                 ),
               ),
@@ -120,35 +110,38 @@ class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
                     onPressed: () =>
                         context.read<AuthBloc>().add(AuthToggleAgreeToEULA()),
                   ),
-                  Text.rich(
-                    TextSpan(
-                      children: <InlineSpan>[
-                        const TextSpan(
-                          text: 'I agree to ',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
+                  Expanded(
+                    child: Text.rich(
+                      TextSpan(
+                        children: <InlineSpan>[
+                          const TextSpan(
+                            text: 'I agree to ',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                        ),
-                        WidgetSpan(
-                          child: Transform.translate(
-                            offset: const Offset(0, 1),
-                            child: TapDownWrapper(
-                              onTap: () => LinkUtil.launch(
-                                Constants.endUserAgreementLink,
-                                context,
-                              ),
-                              child: Text(
-                                'End User Agreement',
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  decoration: TextDecoration.underline,
-                                  fontWeight: FontWeight.w600,
+                          WidgetSpan(
+                            child: Transform.translate(
+                              offset: const Offset(0, 1),
+                              child: TapDownWrapper(
+                                onTap: () => LinkUtil.launch(
+                                  Constants.endUserAgreementLink,
+                                  context,
+                                ),
+                                child: Text(
+                                  'End User Agreement',
+                                  style: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    decoration: TextDecoration.underline,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],

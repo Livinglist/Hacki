@@ -40,8 +40,11 @@ class CustomFloatingActionButton extends StatelessWidget {
                 child: InkWell(
                   onLongPress: () =>
                       context.read<CommentsCubit>().scrollTo(index: 0),
-                  child: FloatingActionButton.small(
-                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                  child: FloatingActionButton(
+                    backgroundColor: Theme.of(context)
+                        .colorScheme
+                        .primaryContainer
+                        .withAlpha(200),
 
                     /// Randomly generated string as heroTag to prevent
                     /// default [FloatingActionButton] animation.
@@ -50,13 +53,15 @@ class CustomFloatingActionButton extends StatelessWidget {
                       HapticFeedbackUtil.selection();
                       context.read<CommentsCubit>().scrollToPreviousRoot();
                     },
+                    materialTapTargetSize: MaterialTapTargetSize.padded,
                     child: Icon(
                       Icons.keyboard_arrow_up,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
                     ),
                   ),
                 ),
               ),
+              SizedBoxes.pt12,
               CustomDescribedFeatureOverlay(
                 feature: DiscoverableFeature.jumpDownButton,
                 tapTarget: Icon(
@@ -68,8 +73,11 @@ class CustomFloatingActionButton extends StatelessWidget {
                     final CommentsCubit cubit = context.read<CommentsCubit>();
                     cubit.scrollTo(index: cubit.state.comments.length);
                   },
-                  child: FloatingActionButton.small(
-                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                  child: FloatingActionButton(
+                    backgroundColor: Theme.of(context)
+                        .colorScheme
+                        .primaryContainer
+                        .withAlpha(200),
 
                     /// Same as above.
                     heroTag: UniqueKey().hashCode,
@@ -83,7 +91,7 @@ class CustomFloatingActionButton extends StatelessWidget {
                     },
                     child: Icon(
                       Icons.keyboard_arrow_down,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
                     ),
                   ),
                 ),

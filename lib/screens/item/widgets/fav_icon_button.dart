@@ -24,15 +24,15 @@ class FavIconButton extends StatelessWidget {
           icon: CustomDescribedFeatureOverlay(
             tapTarget: Icon(
               isFav ? Icons.favorite : Icons.favorite_border,
-              color: Theme.of(context).colorScheme.onPrimary,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
             ),
             feature: DiscoverableFeature.addStoryToFavList,
             contentLocation: ContentLocation.below,
             child: Icon(
               isFav ? Icons.favorite : Icons.favorite_border,
               color: isFav
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.onSurfaceVariant,
+                  ? Theme.of(context).colorScheme.primaryContainer
+                  : Theme.of(context).colorScheme.onSurface,
             ),
           ),
           onPressed: () {

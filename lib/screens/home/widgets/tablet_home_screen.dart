@@ -96,7 +96,7 @@ class TabletHomeScreen extends StatelessWidget {
                             );
                       },
                       child: ColoredBox(
-                        color: Theme.of(context).colorScheme.primary,
+                        color: Theme.of(context).colorScheme.primaryContainer,
                         child: const SizedBox.shrink(),
                       ),
                     ),
@@ -121,7 +121,9 @@ class TabletHomeScreen extends StatelessWidget {
                         child: SizedBox(
                           child: CustomPaint(
                             painter: SpindlePainter(
-                              color: Theme.of(context).colorScheme.primary,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
                             ),
                             child: Center(
                               child: Padding(
@@ -130,8 +132,9 @@ class TabletHomeScreen extends StatelessWidget {
                                 ),
                                 child: FaIcon(
                                   FontAwesomeIcons.gripLinesVertical,
-                                  color:
-                                      Theme.of(context).colorScheme.onPrimary,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onPrimaryContainer,
                                   size: TextDimens.pt18,
                                 ),
                               ),

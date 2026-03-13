@@ -420,6 +420,7 @@ class _ItemScreenState extends State<ItemScreen>
     showMenu<FontSize>(
       context: context,
       position: position,
+      color: Theme.of(context).colorScheme.surfaceContainer,
       items: <PopupMenuItem<FontSize>>[
         for (final FontSize fontSize in FontSize.values)
           PopupMenuItem<FontSize>(
@@ -430,8 +431,8 @@ class _ItemScreenState extends State<ItemScreen>
                 fontSize: fontSize.fontSize,
                 color:
                     context.read<PreferenceCubit>().state.fontSize == fontSize
-                        ? Theme.of(context).colorScheme.primary
-                        : null,
+                        ? Theme.of(context).colorScheme.primaryContainer
+                        : Theme.of(context).colorScheme.onSurface,
               ),
             ),
             onTap: () {
