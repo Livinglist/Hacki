@@ -43,8 +43,8 @@ class InboxView extends StatelessWidget {
           child: SmartRefresher(
             enablePullUp: true,
             header: WaterDropMaterialHeader(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              color: Theme.of(context).colorScheme.onPrimary,
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
             ),
             footer: CustomFooter(
               loadStyle: LoadStyle.ShowWhenLoading,

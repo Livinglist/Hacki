@@ -30,14 +30,14 @@ class PinIconButton extends StatelessWidget {
               icon: CustomDescribedFeatureOverlay(
                 tapTarget: Icon(
                   pinned ? Icons.push_pin : Icons.push_pin_outlined,
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
                 ),
                 feature: DiscoverableFeature.pinToTop,
                 child: Icon(
                   pinned ? Icons.push_pin : Icons.push_pin_outlined,
                   color: pinned
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.onSurfaceVariant,
+                      ? Theme.of(context).colorScheme.primaryContainer
+                      : Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               onPressed: () {

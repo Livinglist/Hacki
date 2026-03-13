@@ -26,16 +26,14 @@ class _OnboardingViewState extends State<OnboardingView> {
         surfaceTintColor: Palette.transparent,
         elevation: Dimens.zero,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.close,
-            color: Palette.white,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
           onPressed: context.pop,
         ),
       ),
-      backgroundColor: Theme.of(context).brightness == Brightness.light
-          ? Theme.of(context).colorScheme.primary
-          : null,
+      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       body: Stack(
         children: <Widget>[
           Positioned(
@@ -68,7 +66,7 @@ class _OnboardingViewState extends State<OnboardingView> {
             ),
           ),
           Positioned(
-            bottom: MediaQuery.of(context).viewPadding.bottom,
+            bottom: MediaQuery.of(context).viewPadding.bottom + Dimens.pt24,
             left: Dimens.zero,
             right: Dimens.zero,
             child: ElevatedButton(
@@ -87,15 +85,16 @@ class _OnboardingViewState extends State<OnboardingView> {
               },
               style: ElevatedButton.styleFrom(
                 shape: const CircleBorder(),
-                backgroundColor: Theme.of(context).colorScheme.primary,
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                 padding: const EdgeInsets.all(
                   Dimens.pt18,
                 ),
+                elevation: Dimens.pt12,
               ),
               child: Icon(
                 Icons.arrow_drop_down_outlined,
-                size: TextDimens.pt36,
-                color: Theme.of(context).colorScheme.onPrimary,
+                size: Dimens.pt48,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
               ),
             ),
           ),
@@ -133,9 +132,9 @@ class _PageViewChild extends StatelessWidget {
           child: Text(
             description,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: TextDimens.pt16,
-              color: Palette.white,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),

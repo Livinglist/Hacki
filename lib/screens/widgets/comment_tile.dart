@@ -57,7 +57,8 @@ class CommentTile extends StatelessWidget {
   final VoidCallback? onTap;
 
   static final Map<int, Color> levelToBorderColors = <int, Color>{};
-  static final Map<int, Color> levelToRainbowBorderColors = <int, Color>{};
+  static final Map<int, (Color, Color)> levelToRainbowBorderColors =
+      <int, (Color, Color)>{};
 
   @override
   Widget build(BuildContext context) {
@@ -78,14 +79,19 @@ class CommentTile extends StatelessWidget {
         ) {
           if (isActionable && state.hidden) return const SizedBox.shrink();
 
-          final Color primaryColor = Theme.of(context).colorScheme.primary;
+          final Color primaryColor =
+              Theme.of(context).colorScheme.primaryContainer;
           final Brightness brightness = Theme.of(context).brightness;
-          final Color slidableBackgroundColor = isEyeCandyEnabled && level > 0
-              ? _getRainbowColor(
-                  level,
-                  Theme.of(context).colorScheme.surface,
-                )
-              : Theme.of(context).colorScheme.primary;
+          final (Color, Color) slidableBackgroundColor =
+              isEyeCandyEnabled && level > 0
+                  ? _getRainbowColor(
+                      level,
+                      Theme.of(context).colorScheme.surface,
+                    )
+                  : (
+                      Theme.of(context).colorScheme.primaryContainer,
+                      Theme.of(context).colorScheme.onPrimaryContainer,
+                    );
 
           final Widget child = DeviceGestureWrapper(
             child: Column(
@@ -98,9 +104,8 @@ class CommentTile extends StatelessWidget {
                           children: <Widget>[
                             CustomSlidableAction(
                               onPressed: (_) => onReplyTapped?.call(comment),
-                              backgroundColor: slidableBackgroundColor,
-                              foregroundColor:
-                                  Theme.of(context).colorScheme.onPrimary,
+                              backgroundColor: slidableBackgroundColor.$1,
+                              foregroundColor: slidableBackgroundColor.$2,
                               child: const Icon(
                                 Icons.message,
                                 size: Dimens.pt24,
@@ -110,9 +115,8 @@ class CommentTile extends StatelessWidget {
                                 comment.by)
                               CustomSlidableAction(
                                 onPressed: (_) => onEditTapped?.call(comment),
-                                backgroundColor: slidableBackgroundColor,
-                                foregroundColor:
-                                    Theme.of(context).colorScheme.onPrimary,
+                                backgroundColor: slidableBackgroundColor.$1,
+                                foregroundColor: slidableBackgroundColor.$2,
                                 child: const Icon(
                                   Icons.edit,
                                   size: Dimens.pt24,
@@ -124,9 +128,8 @@ class CommentTile extends StatelessWidget {
                                 comment,
                                 context.rect,
                               ),
-                              backgroundColor: slidableBackgroundColor,
-                              foregroundColor:
-                                  Theme.of(context).colorScheme.onPrimary,
+                              backgroundColor: slidableBackgroundColor.$1,
+                              foregroundColor: slidableBackgroundColor.$2,
                               child: const Icon(
                                 Icons.more_horiz,
                                 size: Dimens.pt24,
@@ -142,10 +145,8 @@ class CommentTile extends StatelessWidget {
                             CustomSlidableAction(
                               onPressed: (_) =>
                                   onRightMoreTapped?.call(comment),
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.primary,
-                              foregroundColor:
-                                  Theme.of(context).colorScheme.onPrimary,
+                              backgroundColor: slidableBackgroundColor.$1,
+                              foregroundColor: slidableBackgroundColor.$2,
                               child: const Icon(
                                 Icons.av_timer,
                                 size: Dimens.pt24,
@@ -177,17 +178,26 @@ class CommentTile extends StatelessWidget {
                               Text(
                                 comment.by,
                                 style: TextStyle(
-                                  color: primaryColor,
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
                                 textScaler: MediaQuery.of(context).textScaler,
                               ),
-                              if (comment.by == opUsername)
+                              if (comment.by == opUsername) ...<Widget>[
+                                SizedBoxes.pt6,
+                                const Icon(
+                                  Icons.arrow_back_sharp,
+                                  size: TextDimens.pt12,
+                                ),
+                                SizedBoxes.pt6,
                                 Text(
-                                  ' - OP',
+                                  'OP',
                                   style: TextStyle(
-                                    color: primaryColor,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
+                              ],
                               if (index != null)
                                 Text(
                                   ' #${index! + 1}',
@@ -346,7 +356,7 @@ class CommentTile extends StatelessWidget {
                 ? _getRainbowColor(
                     i,
                     Theme.of(context).colorScheme.surface,
-                  )
+                  ).$1
                 : _getColor(
                     i,
                     primaryColor: primaryColor,
@@ -397,7 +407,7 @@ class CommentTile extends StatelessWidget {
     );
   }
 
-  Color _getColor(
+  static Color _getColor(
     int level, {
     required Color primaryColor,
     required Brightness brightness,
@@ -428,13 +438,14 @@ class CommentTile extends StatelessWidget {
     return color;
   }
 
-  static Color _getRainbowColor(int level, Color background) {
+  static (Color, Color) _getRainbowColor(int level, Color background) {
     const int colorCount = 6;
 
     // If id is larger than 6, take modulo
     int index = level % colorCount;
+    final int key = index + background.hashCode;
 
-    final Color? cachedColor = levelToRainbowBorderColors[index];
+    final (Color, Color)? cachedColor = levelToRainbowBorderColors[key];
 
     if (cachedColor != null) return cachedColor;
 
@@ -443,12 +454,11 @@ class CommentTile extends StatelessWidget {
       index += colorCount;
     }
 
-    // Evenly distribute hue across 20 colors
+    // Evenly distribute hue across 6 colors
     final double hue = (index / colorCount) * 360.0;
 
     // Adjust saturation & lightness based on background brightness
     final bool isDarkBg = background.computeLuminance() < 0.5;
-
     const double saturation = 0.85;
     final double lightness = isDarkBg ? 0.60 : 0.45;
     final Color color = HSLColor.fromAHSL(
@@ -457,8 +467,11 @@ class CommentTile extends StatelessWidget {
       saturation,
       lightness,
     ).toColor();
-    levelToRainbowBorderColors[index] = color;
-    return color;
+
+    final bool isDarkColor = color.computeLuminance() < 0.5;
+    final Color foregroundColor = isDarkColor ? Palette.white : Palette.black;
+    levelToRainbowBorderColors[key] = (color, foregroundColor);
+    return (color, foregroundColor);
   }
 
   bool _shouldShowLoadButton(BuildContext context) {

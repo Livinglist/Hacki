@@ -634,18 +634,15 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
       context: context,
       builder: (_) {
         return AlertDialog(
-          title: const Text('Clear Cache?'),
+          title: const Text('Clear cache?'),
           content: const Text(
             'Clear all cached images, stories and comments.',
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () => context.pop(),
-              child: Text(
+              child: const Text(
                 'Cancel',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
               ),
             ),
             TextButton(
@@ -675,6 +672,9 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
               },
               child: const Text(
                 'Yes',
+                style: TextStyle(
+                  color: Palette.red,
+                ),
               ),
             ),
           ],
@@ -860,7 +860,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
     final String previousLogPath =
         '${tempDir.path}/${Constants.previousLogFileName}';
 
-    await LogUtil.exportLog();
+    await LogUtil.exportLogs();
 
     final Email email = Email(
       body:
@@ -876,7 +876,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
   /// Open an issue on GitHub.
   Future<void> onGithubTapped(Rect? rect) async {
     try {
-      final File originalFile = await LogUtil.exportLog();
+      final File originalFile = await LogUtil.exportLogs();
       final XFile file = XFile(originalFile.path);
       final ShareResult result = await SharePlus.instance.share(
         ShareParams(

@@ -50,13 +50,8 @@ class PostedByFilterChip extends StatelessWidget {
                 controller: usernameController,
                 cursorColor: Theme.of(context).colorScheme.primary,
                 autocorrect: false,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Username',
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
                 ),
               ),
             ),
@@ -89,14 +84,14 @@ class PostedByFilterChip extends StatelessWidget {
                     },
                     style: ButtonStyle(
                       backgroundColor: WidgetStateProperty.all(
-                        Theme.of(context).colorScheme.primary,
+                        Theme.of(context).colorScheme.primaryContainer,
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Confirm',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Palette.white,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
                       ),
                     ),
                   ),

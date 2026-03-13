@@ -43,7 +43,7 @@ class _DraggableFloatingButtonState extends State<DraggableFloatingButton> {
             scale: _isDragging ? 1.1 : 1.0,
             duration: const Duration(milliseconds: 150),
             child: FloatingActionButton(
-              backgroundColor: Theme.of(context).colorScheme.primary,
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
               onPressed: null,
               child: widget.child,
             ),

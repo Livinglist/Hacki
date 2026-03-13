@@ -20,12 +20,13 @@ class LinkIconButton extends StatelessWidget {
       icon: CustomDescribedFeatureOverlay(
         tapTarget: Icon(
           Icons.stream,
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: Theme.of(context).colorScheme.onPrimaryContainer,
         ),
         feature: DiscoverableFeature.openStoryInWebView,
         contentLocation: ContentLocation.below,
-        child: const Icon(
+        child: Icon(
           Icons.stream,
+          color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
       onPressed: () => LinkUtil.launch(

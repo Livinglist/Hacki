@@ -38,7 +38,7 @@ class _DownloadProgressReminderState extends State<DownloadProgressReminder>
           visible: isVisible,
           child: FadeIn(
             child: Material(
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.primaryContainer,
               clipBehavior: Clip.hardEdge,
               borderRadius: const BorderRadius.all(
                 Radius.circular(
@@ -58,7 +58,9 @@ class _DownloadProgressReminderState extends State<DownloadProgressReminder>
                         Text(
                           'Downloading all stories ($storiesDownloaded/$storiesToBeDownloaded)',
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimary,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer,
                             fontSize: TextDimens.pt12,
                           ),
                         ),
@@ -69,7 +71,10 @@ class _DownloadProgressReminderState extends State<DownloadProgressReminder>
                   const Spacer(),
                   LinearProgressIndicator(
                     value: progress,
-                    color: Theme.of(context).colorScheme.primary.withValues(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .primaryContainer
+                        .withValues(
                           alpha: 0.5,
                         ),
                   ),

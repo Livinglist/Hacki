@@ -27,6 +27,7 @@ class CustomAppBar extends AppBar {
                       ? FeatherIcons.minimize2
                       : FeatherIcons.maximize2,
                   size: TextDimens.pt20,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
                 onPressed: () {
                   HapticFeedbackUtil.light();
@@ -45,7 +46,7 @@ class CustomAppBar extends AppBar {
                   fontSize: TextDimens.pt18,
                   fontFamily: FeatherIcons.type.fontFamily,
                   package: FeatherIcons.type.fontPackage,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
                 textScaler: TextScaler.noScaling,
               ),

@@ -163,9 +163,10 @@ class _StoriesListViewState extends State<StoriesListView>
                           HapticFeedbackUtil.light();
                           context.read<PinCubit>().pinStory(story);
                         },
-                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.primaryContainer,
                         foregroundColor:
-                            Theme.of(context).colorScheme.onPrimary,
+                            Theme.of(context).colorScheme.onPrimaryContainer,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
@@ -183,9 +184,10 @@ class _StoriesListViewState extends State<StoriesListView>
                       ),
                       CustomSlidableAction(
                         onPressed: (_) => onMoreTapped(story, context.rect),
-                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.primaryContainer,
                         foregroundColor:
-                            Theme.of(context).colorScheme.onPrimary,
+                            Theme.of(context).colorScheme.onPrimaryContainer,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
@@ -218,10 +220,10 @@ class _StoriesListViewState extends State<StoriesListView>
                         onPressed: (_) => mark(story),
                         backgroundColor:
                             preferenceState.isMarkReadStoriesEnabled
-                                ? Theme.of(context).colorScheme.primary
+                                ? Theme.of(context).colorScheme.primaryContainer
                                 : Palette.grey,
                         foregroundColor:
-                            Theme.of(context).colorScheme.onPrimary,
+                            Theme.of(context).colorScheme.onPrimaryContainer,
                         child: preferenceState.isHideInsteadOfMarkingGrayEnabled
                             ? const Icon(
                                 Icons.delete_sweep,
