@@ -87,15 +87,16 @@ class _OnboardingViewState extends State<OnboardingView> {
               },
               style: ElevatedButton.styleFrom(
                 shape: const CircleBorder(),
-                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 padding: const EdgeInsets.all(
                   Dimens.pt18,
                 ),
+                elevation: Dimens.pt12,
               ),
               child: Icon(
                 Icons.arrow_drop_down_outlined,
                 size: Dimens.pt48,
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
           ),

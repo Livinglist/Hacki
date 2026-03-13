@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart' show ReminderCubit, ReminderState;
 import 'package:hacki/extensions/extensions.dart';
@@ -32,7 +33,7 @@ class _CountDownReminderState extends State<CountdownReminder>
 
   bool isVisible = false;
 
-  static const Duration countdownDuration = Duration(seconds: 8);
+  static const Duration countdownDuration = AppDurations.tenSeconds;
   static const Duration visibilityCountdownDuration = Duration.zero;
 
   @override
@@ -160,10 +161,8 @@ class _CountDownReminderState extends State<CountdownReminder>
                           return LinearProgressIndicator(
                             value: progressAnimation.value,
                             backgroundColor:
-                                Theme.of(context).colorScheme.primaryContainer,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryFixedVariant,
+                                Theme.of(context).colorScheme.onPrimaryFixed,
+                            color: Theme.of(context).colorScheme.primary,
                           );
                         },
                       ),
