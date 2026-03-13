@@ -285,8 +285,8 @@ class ItemsListView<T extends Item> extends StatelessWidget {
       enablePullUp: true,
       enablePullDown: shouldEnablePullDown,
       header: WaterDropMaterialHeader(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        color: Theme.of(context).colorScheme.onPrimary,
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        color: Theme.of(context).colorScheme.onPrimaryContainer,
       ),
       footer: CustomFooter(
         loadStyle: loadStyle,

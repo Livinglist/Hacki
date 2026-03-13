@@ -27,10 +27,8 @@ class CustomDescribedFeatureOverlay extends StatelessWidget {
     return DescribedFeatureOverlay(
       featureId: feature.featureId,
       overflowMode: OverflowMode.extendBackground,
-      targetColor: Theme.of(context).colorScheme.primary,
-      backgroundColor: Theme.of(context).brightness == Brightness.light
-          ? Theme.of(context).colorScheme.surfaceDim
-          : Theme.of(context).colorScheme.surfaceBright,
+      targetColor: Theme.of(context).colorScheme.primaryContainer,
+      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       tapTarget: tapTarget,
       title: Text(
         feature.title,

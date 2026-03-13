@@ -79,7 +79,8 @@ class CommentTile extends StatelessWidget {
         ) {
           if (isActionable && state.hidden) return const SizedBox.shrink();
 
-          final Color primaryColor = Theme.of(context).colorScheme.primary;
+          final Color primaryColor =
+              Theme.of(context).colorScheme.primaryContainer;
           final Brightness brightness = Theme.of(context).brightness;
           final (Color, Color) slidableBackgroundColor =
               isEyeCandyEnabled && level > 0
@@ -88,8 +89,8 @@ class CommentTile extends StatelessWidget {
                       Theme.of(context).colorScheme.surface,
                     )
                   : (
-                      Theme.of(context).colorScheme.primary,
-                      Theme.of(context).colorScheme.onPrimary,
+                      Theme.of(context).colorScheme.primaryContainer,
+                      Theme.of(context).colorScheme.onPrimaryContainer,
                     );
 
           final Widget child = DeviceGestureWrapper(
@@ -144,10 +145,8 @@ class CommentTile extends StatelessWidget {
                             CustomSlidableAction(
                               onPressed: (_) =>
                                   onRightMoreTapped?.call(comment),
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.primary,
-                              foregroundColor:
-                                  Theme.of(context).colorScheme.onPrimary,
+                              backgroundColor: slidableBackgroundColor.$1,
+                              foregroundColor: slidableBackgroundColor.$2,
                               child: const Icon(
                                 Icons.av_timer,
                                 size: Dimens.pt24,
@@ -179,7 +178,7 @@ class CommentTile extends StatelessWidget {
                               Text(
                                 comment.by,
                                 style: TextStyle(
-                                  color: primaryColor,
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
                                 textScaler: MediaQuery.of(context).textScaler,
                               ),

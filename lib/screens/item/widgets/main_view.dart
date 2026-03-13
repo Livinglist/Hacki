@@ -52,7 +52,8 @@ class MainView extends StatelessWidget {
                 previous.status != current.status,
             builder: (BuildContext context, CommentsState state) {
               return RefreshIndicator(
-                displacement: 400,
+                displacement: 300,
+                color: Theme.of(context).colorScheme.primaryContainer,
                 onRefresh: () async {
                   HapticFeedbackUtil.light();
 
@@ -231,8 +232,10 @@ class _ParentItemSection extends StatelessWidget {
                       }
                       context.read<EditCubit>().onReplyTapped(item);
                     },
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    backgroundColor:
+                        Theme.of(context).colorScheme.primaryContainer,
+                    foregroundColor:
+                        Theme.of(context).colorScheme.onPrimaryContainer,
                     child: const Icon(
                       Icons.message,
                       size: Dimens.pt24,
@@ -241,8 +244,10 @@ class _ParentItemSection extends StatelessWidget {
                   CustomSlidableAction(
                     onPressed: (BuildContext context) =>
                         onMoreTapped(item, context.rect),
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    backgroundColor:
+                        Theme.of(context).colorScheme.primaryContainer,
+                    foregroundColor:
+                        Theme.of(context).colorScheme.onPrimaryContainer,
                     child: const Icon(
                       Icons.more_horiz,
                       size: Dimens.pt24,
@@ -456,7 +461,7 @@ class _ParentItemSection extends StatelessWidget {
                                       ?.copyWith(
                                         color: Theme.of(context)
                                             .colorScheme
-                                            .primary,
+                                            .primaryContainer,
                                       ),
                                   textScaler:
                                       MediaQuery.of(context).clampedTextScaler,
@@ -486,7 +491,7 @@ class _ParentItemSection extends StatelessWidget {
                                       ?.copyWith(
                                         color: Theme.of(context)
                                             .colorScheme
-                                            .primary,
+                                            .primaryContainer,
                                       ),
                                   textScaler:
                                       MediaQuery.of(context).clampedTextScaler,

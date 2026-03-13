@@ -44,12 +44,12 @@ class OfflineListTile extends StatelessWidget {
           } else if (downloaded) {
             return Icon(
               Icons.check_circle,
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).colorScheme.primaryContainer,
             );
           }
           return Icon(
             Icons.download,
-            color: Theme.of(context).colorScheme.primary,
+            color: Theme.of(context).colorScheme.primaryContainer,
           );
         }();
 

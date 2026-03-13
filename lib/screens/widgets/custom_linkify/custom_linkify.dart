@@ -356,7 +356,7 @@ class LinkableSpan extends WidgetSpan {
 /// Raw TextSpan builder for more control on the RichText
 TextSpan buildTextSpan(
   List<LinkifyElement> elements, {
-  required MaterialColor primaryColor,
+  required Color primaryColor,
   TextStyle? style,
   TextStyle? linkStyle,
   LinkCallback? onOpen,

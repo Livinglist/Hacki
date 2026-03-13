@@ -26,13 +26,16 @@ class InThreadSearchIconButton extends StatelessWidget {
         return CustomDescribedFeatureOverlay(
           tapTarget: Icon(
             Icons.search,
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: Theme.of(context).colorScheme.onPrimaryContainer,
           ),
           feature: DiscoverableFeature.searchInThread,
           contentLocation: ContentLocation.below,
           child: IconButton(
             tooltip: 'Search in thread',
-            icon: const Icon(Icons.search),
+            icon: Icon(
+              Icons.search,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
             onPressed: action,
           ),
         );
@@ -124,11 +127,6 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                         decoration: InputDecoration(
                           hintText: 'Search in this thread',
                           suffixText: '${state.matchedComments.length} results',
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                          ),
                         ),
                         onChanged: (String text) => debouncer.run(
                           () => widget.commentsCubit.search(

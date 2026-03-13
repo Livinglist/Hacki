@@ -6,58 +6,85 @@ import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/haptic_feedback_util.dart';
 import 'package:hacki/utils/log_util.dart';
 
-class LogsScreen extends StatelessWidget {
+class LogsScreen extends StatefulWidget {
   const LogsScreen({super.key});
 
   static const String routeName = 'logs';
 
   @override
+  State<LogsScreen> createState() => _LogsScreenState();
+}
+
+class _LogsScreenState extends State<LogsScreen> {
+  List<String> _logs = <String>[];
+
+  @override
+  void initState() {
+    super.initState();
+
+    _fetchLogs();
+  }
+
+  Future<void> _fetchLogs() async {
+    final List<String> logs = await LogUtil.exportLogsAsStrings();
+    if (mounted) {
+      setState(() {
+        _logs = logs;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<String>>(
-      future: LogUtil.exportLogAsStrings(),
-      builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
-        return Scaffold(
-          extendBodyBehindAppBar: true,
-          appBar: AppBar(
-            backgroundColor: Theme.of(context).canvasColor.withValues(
-                  alpha: 0.6,
-                ),
-            elevation: Dimens.zero,
-            actions: <Widget>[
-              if (snapshot.data != null)
-                IconButton(
-                  onPressed: () {
-                    final String data = snapshot.data!.reduce(
-                      (
-                        String lhs,
-                        String rhs,
-                      ) =>
-                          lhs + rhs,
-                    );
-                    Clipboard.setData(ClipboardData(text: data))
-                        .whenComplete(HapticFeedbackUtil.selection);
-                    context.showSnackBar(content: 'Log copied.');
-                  },
-                  icon: const Icon(Icons.copy),
-                ),
-            ],
-          ),
-          body: Scrollbar(
-            child: ListView(
-              children: <Widget>[
-                if (kDebugMode) ...<Widget>[
-                  SizedBoxes.pt48,
-                  const Text(
-                    '''Logs won't show up here in debug mode.\nYou can modify `LogUtil.logOutput()` to enable it.''',
-                    textAlign: TextAlign.center,
-                  ),
-                ] else
-                  ...?snapshot.data?.map(Text.new),
-              ],
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        elevation: Dimens.zero,
+        actions: <Widget>[
+          IconButton(
+            onPressed: _fetchLogs,
+            icon: Icon(
+              Icons.refresh,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
-        );
-      },
+          IconButton(
+            onPressed: () {
+              if (_logs.isEmpty) return;
+              final String data = _logs.reduce(
+                (
+                  String lhs,
+                  String rhs,
+                ) =>
+                    lhs + rhs,
+              );
+              Clipboard.setData(ClipboardData(text: data))
+                  .whenComplete(HapticFeedbackUtil.selection);
+              context.showSnackBar(content: 'Logs copied.');
+            },
+            icon: Icon(
+              Icons.copy,
+              color: _logs.isEmpty
+                  ? Palette.grey
+                  : Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+        ],
+      ),
+      body: Scrollbar(
+        child: ListView(
+          children: <Widget>[
+            if (kDebugMode) ...<Widget>[
+              SizedBoxes.pt48,
+              const Text(
+                '''Logs won't show up here in debug mode.\nYou can modify `LogUtil.logOutput()` to enable it.''',
+                textAlign: TextAlign.center,
+              ),
+            ] else
+              ..._logs.map(Text.new),
+          ],
+        ),
+      ),
     );
   }
 }

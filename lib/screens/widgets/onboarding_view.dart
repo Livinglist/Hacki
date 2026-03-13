@@ -33,9 +33,7 @@ class _OnboardingViewState extends State<OnboardingView> {
           onPressed: context.pop,
         ),
       ),
-      backgroundColor: Theme.of(context).brightness == Brightness.light
-          ? Theme.of(context).colorScheme.surfaceDim
-          : Theme.of(context).colorScheme.surfaceBright,
+      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       body: Stack(
         children: <Widget>[
           Positioned(
@@ -87,7 +85,7 @@ class _OnboardingViewState extends State<OnboardingView> {
               },
               style: ElevatedButton.styleFrom(
                 shape: const CircleBorder(),
-                backgroundColor: Theme.of(context).colorScheme.primary,
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                 padding: const EdgeInsets.all(
                   Dimens.pt18,
                 ),
@@ -96,7 +94,7 @@ class _OnboardingViewState extends State<OnboardingView> {
               child: Icon(
                 Icons.arrow_drop_down_outlined,
                 size: Dimens.pt48,
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
               ),
             ),
           ),

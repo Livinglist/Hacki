@@ -38,7 +38,7 @@ abstract class LogUtil {
     return logFile;
   }
 
-  static Future<File> exportLog() async {
+  static Future<File> exportLogs() async {
     final Directory tempDir = await getTemporaryDirectory();
     final String logPath = '${tempDir.path}/${Constants.logFilename}';
     final String previousLogPath =
@@ -57,7 +57,7 @@ abstract class LogUtil {
     );
   }
 
-  static Future<List<String>> exportLogAsStrings() async {
+  static Future<List<String>> exportLogsAsStrings() async {
     final Directory tempDir = await getTemporaryDirectory();
     final String logPath = '${tempDir.path}/${Constants.logFilename}';
     final String previousLogPath =

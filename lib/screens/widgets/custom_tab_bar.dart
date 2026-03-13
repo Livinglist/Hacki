@@ -52,9 +52,9 @@ class _CustomTabBarState extends State<CustomTabBar> {
           controller: widget.tabController,
           dividerHeight: 0,
           isScrollable: true,
-          indicatorColor: Theme.of(context).colorScheme.primary,
+          indicatorColor: Theme.of(context).colorScheme.primaryContainer,
           indicator: CircleTabIndicator(
-            color: Theme.of(context).colorScheme.primary,
+            color: Theme.of(context).colorScheme.primaryContainer,
             radius: Dimens.pt2,
           ),
           splashFactory: NoSplash.splashFactory,
@@ -81,7 +81,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
                             : TextDimens.pt12;
                       } else {
                         return currentIndex == i
-                            ? TextDimens.pt12
+                            ? TextDimens.pt14
                             : TextDimens.pt10;
                       }
                     }(),
@@ -92,7 +92,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
                             : Palette.black;
                       } else {
                         return currentIndex == i
-                            ? Theme.of(context).colorScheme.primary
+                            ? Theme.of(context).colorScheme.primaryContainer
                             : Palette.grey;
                       }
                     }(),
@@ -114,7 +114,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
                 tapTarget: Icon(
                   Icons.person,
                   size: TextDimens.pt16,
-                  color: Theme.of(context).colorScheme.onPrimary,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
                 ),
                 feature: DiscoverableFeature.login,
                 child: BlocBuilder<NotificationCubit, NotificationState>(
@@ -147,8 +147,8 @@ class _CustomTabBarState extends State<CustomTabBar> {
                                 : TextDimens.pt14;
                           } else {
                             return currentIndex == _profileTabIndex
-                                ? TextDimens.pt16
-                                : TextDimens.pt12;
+                                ? TextDimens.pt18
+                                : TextDimens.pt14;
                           }
                         }(),
                         color: () {
@@ -158,7 +158,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
                                 : Palette.black;
                           } else {
                             return currentIndex == _profileTabIndex
-                                ? Theme.of(context).colorScheme.primary
+                                ? Theme.of(context).colorScheme.primaryContainer
                                 : Palette.grey;
                           }
                         }(),

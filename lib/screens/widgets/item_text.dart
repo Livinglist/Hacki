@@ -49,7 +49,7 @@ class ItemText extends StatelessWidget {
       return SelectableText.rich(
         buildTextSpan(
           (item as Buildable).elements,
-          primaryColor: context.read<PreferenceCubit>().state.appColor,
+          primaryColor: Theme.of(context).colorScheme.primaryContainer,
           style: style,
           linkStyle: linkStyle,
           onOpen: (LinkableElement link) => LinkUtil.launch(
@@ -57,6 +57,8 @@ class ItemText extends StatelessWidget {
             context,
           ),
         ),
+        selectionColor:
+            Theme.of(context).colorScheme.primaryContainer.withAlpha(180),
         onTap: onTap,
         textScaler: textScaler,
         onSelectionChanged: onSelectionChanged,
@@ -77,7 +79,7 @@ class ItemText extends StatelessWidget {
           child: Text.rich(
             buildTextSpan(
               (item as Buildable).elements,
-              primaryColor: context.read<PreferenceCubit>().state.appColor,
+              primaryColor: Theme.of(context).colorScheme.primaryContainer,
               style: style,
               linkStyle: linkStyle,
               onOpen: (LinkableElement link) => LinkUtil.launch(
