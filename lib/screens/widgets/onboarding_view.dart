@@ -68,7 +68,7 @@ class _OnboardingViewState extends State<OnboardingView> {
             ),
           ),
           Positioned(
-            bottom: MediaQuery.of(context).viewPadding.bottom,
+            bottom: MediaQuery.of(context).viewPadding.bottom + Dimens.pt24,
             left: Dimens.zero,
             right: Dimens.zero,
             child: ElevatedButton(
@@ -87,14 +87,14 @@ class _OnboardingViewState extends State<OnboardingView> {
               },
               style: ElevatedButton.styleFrom(
                 shape: const CircleBorder(),
-                backgroundColor: Theme.of(context).colorScheme.primary,
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                 padding: const EdgeInsets.all(
                   Dimens.pt18,
                 ),
               ),
               child: Icon(
                 Icons.arrow_drop_down_outlined,
-                size: TextDimens.pt36,
+                size: Dimens.pt48,
                 color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
