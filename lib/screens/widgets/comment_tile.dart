@@ -186,7 +186,9 @@ class CommentTile extends StatelessWidget {
                                 Text(
                                   ' - OP',
                                   style: TextStyle(
-                                    color: primaryColor,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               if (index != null)
