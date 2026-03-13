@@ -72,18 +72,20 @@ class _LogsScreenState extends State<LogsScreen> {
         ],
       ),
       body: Scrollbar(
-        child: ListView(
-          children: <Widget>[
-            if (kDebugMode) ...<Widget>[
-              SizedBoxes.pt48,
-              const Text(
-                '''Logs won't show up here in debug mode.\nYou can modify `LogUtil.logOutput()` to enable it.''',
-                textAlign: TextAlign.center,
+        child: kDebugMode
+            ? const Column(
+                children: <Widget>[
+                  SizedBoxes.pt48,
+                  Text(
+                    '''Logs won't show up here in debug mode.\nYou can modify `LogUtil.logOutput()` to enable it.''',
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              )
+            : ListView(
+                reverse: true,
+                children: _logs.reversed.map(Text.new).toList(),
               ),
-            ] else
-              ..._logs.map(Text.new),
-          ],
-        ),
       ),
     );
   }
