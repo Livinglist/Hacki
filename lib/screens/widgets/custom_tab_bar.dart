@@ -92,7 +92,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
                             : Palette.black;
                       } else {
                         return currentIndex == i
-                            ? Theme.of(context).colorScheme.primaryContainer
+                            ? Theme.of(context).colorScheme.primary
                             : Palette.grey;
                       }
                     }(),
