@@ -58,6 +58,7 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       const CollapseModePreference(),
       const ReaderModePreference(),
       const CustomTabPreference(),
+      const SkipButtonsPreference(),
       const SplitViewPreference(),
       const ManualPaginationPreference(),
       const SwipeGesturePreference(),
@@ -106,6 +107,28 @@ final class DevMode extends BooleanPreference {
 
   @override
   bool get isDisplayable => false;
+}
+
+final class SkipButtonsPreference extends BooleanPreference {
+  const SkipButtonsPreference({bool? val})
+      : super(val: val ?? _skipButtonsPreferenceDefaultValue);
+
+  static const bool _skipButtonsPreferenceDefaultValue = true;
+
+  @override
+  SkipButtonsPreference copyWith({required bool? val}) {
+    return SkipButtonsPreference(val: val);
+  }
+
+  @override
+  String get key => 'skipButtonsPreference';
+
+  @override
+  String get title => 'Skip Buttons';
+
+  @override
+  String get subtitle =>
+      '''display floating buttons on the thread screen that let you jump to the previous or next root comment.''';
 }
 
 final class SplitViewPreference extends BooleanPreference {

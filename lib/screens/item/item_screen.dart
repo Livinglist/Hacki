@@ -327,11 +327,15 @@ class _ItemScreenState extends State<ItemScreen>
                             );
                           },
                         ),
-                        const Positioned(
-                          right: Dimens.pt12,
-                          bottom: Dimens.pt36,
-                          child: CustomFloatingActionButton(),
-                        ),
+                        if (context
+                            .read<PreferenceCubit>()
+                            .state
+                            .areSkipButtonsEnabled)
+                          const Positioned(
+                            right: Dimens.pt12,
+                            bottom: Dimens.pt36,
+                            child: CustomFloatingActionButton(),
+                          ),
                         Positioned(
                           bottom: Dimens.zero,
                           left: Dimens.zero,
@@ -376,7 +380,12 @@ class _ItemScreenState extends State<ItemScreen>
                       onRightMoreTapped: onRightMoreTapped,
                       shouldMarkNewComment: widget.shouldMarkNewComment,
                     ),
-                    floatingActionButton: const CustomFloatingActionButton(),
+                    floatingActionButton: context
+                            .read<PreferenceCubit>()
+                            .state
+                            .areSkipButtonsEnabled
+                        ? const CustomFloatingActionButton()
+                        : null,
                     bottomSheet: ReplyBox(
                       textEditingController: commentEditingController,
                       focusNode: focusNode,
