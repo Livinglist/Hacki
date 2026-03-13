@@ -20,19 +20,18 @@ class CustomChip extends StatelessWidget {
       selectedShadowColor: Palette.transparent,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       side: selected
-          ? BorderSide(color: Theme.of(context).colorScheme.primaryContainer)
+          ? BorderSide(color: Theme.of(context).colorScheme.primary)
           : BorderSide(color: Theme.of(context).colorScheme.onSurface),
       label: Text(label),
       labelStyle: TextStyle(
         color: selected
-            ? Theme.of(context).colorScheme.onPrimaryContainer
+            ? Theme.of(context).colorScheme.onPrimary
             : Theme.of(context).colorScheme.onSurface,
       ),
-      checkmarkColor:
-          selected ? Theme.of(context).colorScheme.onPrimaryContainer : null,
+      checkmarkColor: selected ? Theme.of(context).colorScheme.onPrimary : null,
       selected: selected,
       onSelected: onSelected,
-      selectedColor: Theme.of(context).colorScheme.primaryContainer,
+      selectedColor: Theme.of(context).colorScheme.primary,
     );
   }
 }

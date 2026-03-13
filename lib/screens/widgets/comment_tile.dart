@@ -182,15 +182,22 @@ class CommentTile extends StatelessWidget {
                                 ),
                                 textScaler: MediaQuery.of(context).textScaler,
                               ),
-                              if (comment.by == opUsername)
+                              if (comment.by == opUsername) ...<Widget>[
+                                SizedBoxes.pt6,
+                                const Icon(
+                                  Icons.arrow_back_sharp,
+                                  size: TextDimens.pt12,
+                                ),
+                                SizedBoxes.pt6,
                                 Text(
-                                  ' - OP',
+                                  'OP',
                                   style: TextStyle(
                                     color:
                                         Theme.of(context).colorScheme.primary,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
+                              ],
                               if (index != null)
                                 Text(
                                   ' #${index! + 1}',

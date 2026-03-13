@@ -388,12 +388,10 @@ class HackiApp extends StatelessWidget {
                                   ),
                                 ),
                                 sliderTheme: SliderThemeData(
-                                  inactiveTrackColor: colorScheme
-                                      .primaryContainer
+                                  inactiveTrackColor: colorScheme.primary
                                       .withValues(alpha: 0.5),
-                                  activeTrackColor:
-                                      colorScheme.primaryContainer,
-                                  thumbColor: colorScheme.primaryContainer,
+                                  activeTrackColor: colorScheme.primary,
+                                  thumbColor: colorScheme.primary,
                                 ),
                                 outlinedButtonTheme: OutlinedButtonThemeData(
                                   style: ButtonStyle(
