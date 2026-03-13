@@ -26,16 +26,16 @@ class _OnboardingViewState extends State<OnboardingView> {
         surfaceTintColor: Palette.transparent,
         elevation: Dimens.zero,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.close,
-            color: Palette.white,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
           onPressed: context.pop,
         ),
       ),
       backgroundColor: Theme.of(context).brightness == Brightness.light
-          ? Theme.of(context).colorScheme.primary
-          : null,
+          ? Theme.of(context).colorScheme.surfaceDim
+          : Theme.of(context).colorScheme.surfaceBright,
       body: Stack(
         children: <Widget>[
           Positioned(
@@ -95,7 +95,7 @@ class _OnboardingViewState extends State<OnboardingView> {
               child: Icon(
                 Icons.arrow_drop_down_outlined,
                 size: Dimens.pt48,
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
               ),
             ),
           ),
@@ -133,9 +133,9 @@ class _PageViewChild extends StatelessWidget {
           child: Text(
             description,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: TextDimens.pt16,
-              color: Palette.white,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),
