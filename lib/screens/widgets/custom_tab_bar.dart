@@ -52,9 +52,9 @@ class _CustomTabBarState extends State<CustomTabBar> {
           controller: widget.tabController,
           dividerHeight: 0,
           isScrollable: true,
-          indicatorColor: Theme.of(context).colorScheme.primaryContainer,
+          indicatorColor: Theme.of(context).colorScheme.primary,
           indicator: CircleTabIndicator(
-            color: Theme.of(context).colorScheme.primaryContainer,
+            color: Theme.of(context).colorScheme.primary,
             radius: Dimens.pt2,
           ),
           splashFactory: NoSplash.splashFactory,
@@ -158,7 +158,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
                                 : Palette.black;
                           } else {
                             return currentIndex == _profileTabIndex
-                                ? Theme.of(context).colorScheme.primaryContainer
+                                ? Theme.of(context).colorScheme.primary
                                 : Palette.grey;
                           }
                         }(),
