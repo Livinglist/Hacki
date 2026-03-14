@@ -141,9 +141,7 @@ class _CountDownReminderState extends State<CountdownReminder>
                             Text(
                               'Pick up where you left off',
                               style: TextStyle(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onPrimary,
+                                color: Theme.of(context).colorScheme.onPrimary,
                                 fontSize: TextDimens.pt12,
                               ),
                             ),
@@ -151,9 +149,7 @@ class _CountDownReminderState extends State<CountdownReminder>
                             Icon(
                               Icons.arrow_forward_ios,
                               size: TextDimens.pt12,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimary,
+                              color: Theme.of(context).colorScheme.onPrimary,
                             ),
                           ],
                         ),
