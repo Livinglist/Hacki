@@ -58,9 +58,7 @@ class _DownloadProgressReminderState extends State<DownloadProgressReminder>
                         Text(
                           'Downloading all stories ($storiesDownloaded/$storiesToBeDownloaded)',
                           style: TextStyle(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimary,
+                            color: Theme.of(context).colorScheme.onPrimary,
                             fontSize: TextDimens.pt12,
                           ),
                         ),
@@ -71,10 +69,7 @@ class _DownloadProgressReminderState extends State<DownloadProgressReminder>
                   const Spacer(),
                   LinearProgressIndicator(
                     value: progress,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .primar
-                        .withValues(
+                    color: Theme.of(context).colorScheme.primary.withValues(
                           alpha: 0.5,
                         ),
                   ),
