@@ -80,7 +80,7 @@ class CommentTile extends StatelessWidget {
           if (isActionable && state.hidden) return const SizedBox.shrink();
 
           final Color primaryColor =
-              Theme.of(context).colorScheme.primaryContainer;
+              Theme.of(context).colorScheme.primary;
           final Brightness brightness = Theme.of(context).brightness;
           final (Color, Color) slidableBackgroundColor =
               isEyeCandyEnabled && level > 0
@@ -89,8 +89,8 @@ class CommentTile extends StatelessWidget {
                       Theme.of(context).colorScheme.surface,
                     )
                   : (
-                      Theme.of(context).colorScheme.primary,
-                      Theme.of(context).colorScheme.onPrimary,
+                      Theme.of(context).colorScheme.primaryContainer,
+                      Theme.of(context).colorScheme.onPrimaryContainer,
                     );
 
           final Widget child = DeviceGestureWrapper(
