@@ -53,25 +53,43 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       const MarkReadStoriesModePreference(),
 
       /// Divider.
-      const NotificationModePreference(),
       const AutoScrollModePreference(),
-      const CollapseModePreference(),
+      const ManualPaginationPreference(),
+      const NotificationModePreference(),
       const ReaderModePreference(),
-      const CustomTabPreference(),
       const SkipButtonsPreference(),
       const SplitViewPreference(),
-      const ManualPaginationPreference(),
       const SwipeGesturePreference(),
-      const HapticFeedbackPreference(),
-      const TrueDarkModePreference(),
+      const CollapseModePreference(),
+      const CustomTabPreference(),
+      const DividerPlaceholder(label: 'Look And Feel'),
       const EyeCandyPreference(),
       const HackerNewsThemePreference(),
+      const HapticFeedbackPreference(),
+      const TrueDarkModePreference(),
       const DevMode(),
     ],
   );
 
   @override
   List<Object?> get props => <Object?>[key];
+}
+
+final class DividerPlaceholder extends Preference<void> {
+  const DividerPlaceholder({required this.label}) : super(val: null);
+
+  final String label;
+
+  @override
+  Preference<void> copyWith({required void val}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  String get key => '';
+
+  @override
+  String get title => throw UnimplementedError();
 }
 
 abstract final class BooleanPreference extends Preference<bool> {
@@ -493,7 +511,7 @@ final class ReaderModePreference extends BooleanPreference {
   String get key => 'readerMode';
 
   @override
-  String get title => 'Use Reader';
+  String get title => 'Safari Reader';
 
   @override
   String get subtitle =>

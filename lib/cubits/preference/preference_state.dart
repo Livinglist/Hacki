@@ -10,6 +10,12 @@ class PreferenceState extends Equatable {
 
   final Set<Preference<dynamic>> preferences;
 
+  Iterable<Preference<dynamic>> get settingsPreferences => preferences.where(
+        (Preference<dynamic> p) =>
+            p.isDisplayable &&
+            (p is BooleanPreference || p is DividerPlaceholder),
+      );
+
   PreferenceState copyWith({
     Set<Preference<dynamic>>? preferences,
   }) {

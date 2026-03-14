@@ -283,36 +283,54 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                     ),
                   ),
                   const Divider(),
-                  for (final Preference<dynamic> preference in preferenceState
-                      .preferences
-                      .whereType<BooleanPreference>()
-                      .where(
-                        (Preference<dynamic> e) => e.isDisplayable,
-                      )) ...<Widget>[
-                    SwitchListTile(
-                      title: Text(preference.title),
-                      subtitle: preference.subtitle.isNotEmpty
-                          ? Text(preference.subtitle)
-                          : null,
-                      value: preferenceState.isOn(
-                        preference as BooleanPreference,
-                      ),
-                      onChanged: (bool val) {
-                        HapticFeedbackUtil.light();
+                  for (final Preference<dynamic> preference
+                      in preferenceState.settingsPreferences) ...<Widget>[
+                    if (preference is DividerPlaceholder)
+                      SizedBox(
+                        height: Dimens.pt36,
+                        child: Flex(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          direction: Axis.horizontal,
+                          children: <Widget>[
+                            SizedBoxes.pt12,
+                            const Flexible(
+                              child: Divider(),
+                            ),
+                            SizedBoxes.pt12,
+                            Text(preference.label),
+                            SizedBoxes.pt12,
+                            const Flexible(
+                              child: Divider(),
+                            ),
+                            SizedBoxes.pt12,
+                          ],
+                        ),
+                      )
+                    else
+                      SwitchListTile(
+                        title: Text(preference.title),
+                        subtitle: preference.subtitle.isNotEmpty
+                            ? Text(preference.subtitle)
+                            : null,
+                        value: preferenceState.isOn(
+                          preference as BooleanPreference,
+                        ),
+                        onChanged: (bool val) {
+                          HapticFeedbackUtil.light();
 
-                        context
-                            .read<PreferenceCubit>()
-                            .update(preference.copyWith(val: val));
-
-                        if (preference is MarkReadStoriesModePreference &&
-                            val == false) {
                           context
-                              .read<StoriesBloc>()
-                              .add(ClearAllReadStories());
-                        }
-                      },
-                      activeThumbColor: Theme.of(context).colorScheme.primary,
-                    ),
+                              .read<PreferenceCubit>()
+                              .update(preference.copyWith(val: val));
+
+                          if (preference is MarkReadStoriesModePreference &&
+                              val == false) {
+                            context
+                                .read<StoriesBloc>()
+                                .add(ClearAllReadStories());
+                          }
+                        },
+                        activeThumbColor: Theme.of(context).colorScheme.primary,
+                      ),
                     if (preference
                         is MarkReadStoriesModePreference) ...<Widget>[
                       Padding(
@@ -359,6 +377,12 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                   ],
                   ListTile(
                     title: const Text(
+                      'Accent Color',
+                    ),
+                    onTap: showColorPicker,
+                  ),
+                  ListTile(
+                    title: const Text(
                       'Font',
                     ),
                     onTap: showFontSettingDialog,
@@ -368,12 +392,6 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                       'Theme',
                     ),
                     onTap: showThemeSettingDialog,
-                  ),
-                  ListTile(
-                    title: const Text(
-                      'Accent Color',
-                    ),
-                    onTap: showColorPicker,
                   ),
                   const Divider(),
                   ListTile(
