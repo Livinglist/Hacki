@@ -79,8 +79,7 @@ class CommentTile extends StatelessWidget {
         ) {
           if (isActionable && state.hidden) return const SizedBox.shrink();
 
-          final Color primaryColor =
-              Theme.of(context).colorScheme.primaryContainer;
+          final Color primaryColor = Theme.of(context).colorScheme.primary;
           final Brightness brightness = Theme.of(context).brightness;
           final (Color, Color) slidableBackgroundColor =
               isEyeCandyEnabled && level > 0

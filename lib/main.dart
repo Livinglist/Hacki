@@ -375,7 +375,7 @@ class HackiApp extends StatelessWidget {
                                   ),
                                   focusedBorder: UnderlineInputBorder(
                                     borderSide: BorderSide(
-                                      color: colorScheme.primaryContainer,
+                                      color: colorScheme.primary,
                                     ),
                                   ),
                                   disabledBorder: UnderlineInputBorder(
