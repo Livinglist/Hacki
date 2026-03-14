@@ -25,18 +25,18 @@ extension ContextExtension on BuildContext {
       ..clearSnackBars()
       ..showSnackBar(
         SnackBar(
-          backgroundColor: Theme.of(this).colorScheme.surfaceInverse,
+          backgroundColor: Theme.of(this).colorScheme.inverseSurface,
           content: Text(
             content,
             style: TextStyle(
-              color: Theme.of(this).colorScheme.onSurfaceInverse,
+              color: Theme.of(this).colorScheme.onInverseSurface,
             ),
           ),
           action: action != null && label != null
               ? SnackBarAction(
                   label: label,
                   onPressed: action,
-                  textColor: Theme.of(this).colorScheme.onSurfaceInverse,
+                  textColor: Theme.of(this).colorScheme.onInverseSurface,
                 )
               : null,
         ),
