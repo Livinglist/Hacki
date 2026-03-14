@@ -99,7 +99,7 @@ class _CountDownReminderState extends State<CountdownReminder>
             animation: animationController,
             child: FadeIn(
               child: Material(
-                color: Theme.of(context).colorScheme.primaryContainer,
+                color: Theme.of(context).colorScheme.primary,
                 clipBehavior: Clip.hardEdge,
                 borderRadius: const BorderRadius.all(
                   Radius.circular(
@@ -143,7 +143,7 @@ class _CountDownReminderState extends State<CountdownReminder>
                               style: TextStyle(
                                 color: Theme.of(context)
                                     .colorScheme
-                                    .onPrimaryContainer,
+                                    .onPrimary,
                                 fontSize: TextDimens.pt12,
                               ),
                             ),
@@ -153,7 +153,7 @@ class _CountDownReminderState extends State<CountdownReminder>
                               size: TextDimens.pt12,
                               color: Theme.of(context)
                                   .colorScheme
-                                  .onPrimaryContainer,
+                                  .onPrimary,
                             ),
                           ],
                         ),
@@ -169,7 +169,7 @@ class _CountDownReminderState extends State<CountdownReminder>
                                 Theme.of(context).colorScheme.onPrimaryFixed,
                             color: Theme.of(context)
                                 .colorScheme
-                                .primaryContainer
+                                .primary
                                 .withAlpha(180),
                           );
                         },
