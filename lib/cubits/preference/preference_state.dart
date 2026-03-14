@@ -48,6 +48,8 @@ class PreferenceState extends Equatable {
         .val;
   }
 
+  bool get areSkipButtonsEnabled => _isOn<SkipButtonsPreference>();
+
   bool get isNotificationEnabled => _isOn<NotificationModePreference>();
 
   bool get isRichStoryTileEnabled => _isOn<RichStoryTilePreference>();
