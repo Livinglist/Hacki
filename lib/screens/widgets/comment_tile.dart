@@ -89,8 +89,8 @@ class CommentTile extends StatelessWidget {
                       Theme.of(context).colorScheme.surface,
                     )
                   : (
-                      Theme.of(context).colorScheme.primaryContainer,
-                      Theme.of(context).colorScheme.onPrimaryContainer,
+                      Theme.of(context).colorScheme.primary,
+                      Theme.of(context).colorScheme.onPrimary,
                     );
 
           final Widget child = DeviceGestureWrapper(
