@@ -38,7 +38,7 @@ class _DownloadProgressReminderState extends State<DownloadProgressReminder>
           visible: isVisible,
           child: FadeIn(
             child: Material(
-              color: Theme.of(context).colorScheme.primaryContainer,
+              color: Theme.of(context).colorScheme.primary,
               clipBehavior: Clip.hardEdge,
               borderRadius: const BorderRadius.all(
                 Radius.circular(
@@ -60,7 +60,7 @@ class _DownloadProgressReminderState extends State<DownloadProgressReminder>
                           style: TextStyle(
                             color: Theme.of(context)
                                 .colorScheme
-                                .onPrimaryContainer,
+                                .onPrimary,
                             fontSize: TextDimens.pt12,
                           ),
                         ),
@@ -73,7 +73,7 @@ class _DownloadProgressReminderState extends State<DownloadProgressReminder>
                     value: progress,
                     color: Theme.of(context)
                         .colorScheme
-                        .primaryContainer
+                        .primar
                         .withValues(
                           alpha: 0.5,
                         ),
