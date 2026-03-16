@@ -65,7 +65,7 @@ Again, if the only thing a reporter had to do was read the report to find the fa
     print('Expected:\n$text\n');
     print('Actual:\n$parsedText\n');
 
-    if (parsedText != text) {
+    if (parsedText == text) {
       print('Diff detected, creating issue...');
 
       await createGithubIssue(
@@ -107,7 +107,7 @@ Future<void> createGithubIssue({
       'body': '''
 | Expected  | Actual |
 | ------------- | ------------- |
-| $expectedText | $resultText |''',
+| ${expectedText.replaceAll('\n', '<br>')} | ${resultText.replaceAll('\n', '<br>')} |''',
     };
     await dio.postUri<String>(
       url,
