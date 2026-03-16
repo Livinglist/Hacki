@@ -62,15 +62,17 @@ Again, if the only thing a reporter had to do was read the report to find the fa
       cmtTextElement?.innerHtml ?? '',
     );
 
-    if (parsedText != text) {
+    print('Expected:\n$text\n');
+    print('Actual:\n$parsedText\n');
+
+    if (parsedText != text || true) {
+      print('Diff detected, creating issue...');
+
       await createGithubIssue(
         token: token,
         expectedText: text,
         resultText: parsedText,
       );
-    } else {
-      print('Expected:\n$text\n');
-      print('Actual:\n$parsedText\n');
     }
   } else {
     throw Exception('No comment from Hacker News.');
@@ -93,8 +95,6 @@ Future<void> createGithubIssue({
     print('Issue already exists.');
     return;
   } else {
-    print('Diff detected, creating issue...');
-
     /// Create the issue if one does not exist.
     final Map<String, String> githubHeaders = <String, String>{
       'Authorization': 'Bearer $token',
