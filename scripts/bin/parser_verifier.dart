@@ -60,7 +60,7 @@ Again, if the only thing a reporter had to do was read the report to find the fa
     final Element? cmtTextElement = e.querySelector(commentTextSelector);
     final String parsedText = await parseCommentTextHtml(
       cmtTextElement?.innerHtml ?? '',
-    ).replaceAll('\n', '<br>');
+    );
 
     if (parsedText != text) {
       await createGithubIssue(
