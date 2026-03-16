@@ -7,6 +7,8 @@ import 'package:html/dom.dart' hide Comment;
 import 'package:html/parser.dart';
 import 'package:html_unescape/html_unescape.dart';
 
+final Dio dio = Dio(BaseOptions(validateStatus: (_) => true));
+
 Future<void> main(List<String> arguments) async {
   /// Get the GitHub token from args for so that we can create issues if
   /// anything doesn't go as expected.
@@ -31,7 +33,6 @@ Again, if the only thing a reporter had to do was read the report to find the fa
         'Mozilla/5.0 (iPhone; CPU iPhone OS 17_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1',
   };
   const int itemId = 11536543;
-  final Dio dio = Dio(BaseOptions(validateStatus: (_) => true));
   final Uri url = Uri.parse('$itemBaseUrl$itemId');
   final Options option = Options(headers: headers, persistentConnection: true);
   final Response<String> response = await dio.getUri<String>(
@@ -61,47 +62,60 @@ Again, if the only thing a reporter had to do was read the report to find the fa
       cmtTextElement?.innerHtml ?? '',
     );
 
+    print('Expected:\n$text\n');
+    print('Actual:\n$parsedText\n');
+
     if (parsedText != text) {
-      final Uri url = Uri.parse(
-        'https://api.github.com/repos/livinglist/hacki/issues',
+      print('Diff detected, creating issue...');
+
+      await createGithubIssue(
+        token: token,
+        expectedText: text,
+        resultText: parsedText,
       );
-      const String issueTitle = 'Parser check failed.';
-
-      /// Check if an issue with same title already exists.
-      final Response<String> response = await dio.getUri<String>(url);
-      if (response.data?.contains(issueTitle) ?? false) {
-        print('Issue already exists.');
-        return;
-      } else {
-        print('Diff detected, creating issue...');
-
-        /// Create the issue if one does not exist.
-        final Map<String, String> githubHeaders = <String, String>{
-          'Authorization': 'Bearer $token',
-          'X-GitHub-Api-Version': '2022-11-28',
-          'Content-Type': 'application/json',
-        };
-        final Map<String, dynamic> githubIssuePayload = <String, dynamic>{
-          'assignees': <String>['livinglist'],
-          'title': issueTitle,
-          'body': '''
-| Expected  | Actual |
-| ------------- | ------------- |
-| ${text.replaceAll('\n', '<br>')} | ${parsedText.replaceAll('\n', '<br>')} |''',
-        };
-        await dio.postUri<String>(
-          url,
-          data: githubIssuePayload,
-          options: Options(headers: githubHeaders),
-        );
-        print('Issue created.');
-      }
-    } else {
-      print('Expected:\n$text\n');
-      print('Actual:\n$parsedText\n');
     }
   } else {
     throw Exception('No comment from Hacker News.');
+  }
+}
+
+Future<void> createGithubIssue({
+  required String token,
+  required String expectedText,
+  required String resultText,
+}) async {
+  final Uri url = Uri.parse(
+    'https://api.github.com/repos/livinglist/hacki/issues',
+  );
+  const String issueTitle = 'Parser check failed.';
+
+  /// Check if an issue with same title already exists.
+  final Response<String> response = await dio.getUri<String>(url);
+  if (response.data?.contains(issueTitle) ?? false) {
+    print('Issue already exists.');
+    return;
+  } else {
+    /// Create the issue if one does not exist.
+    final Map<String, String> githubHeaders = <String, String>{
+      'Authorization': 'Bearer $token',
+      'X-GitHub-Api-Version': '2022-11-28',
+      'Content-Type': 'application/json',
+    };
+    final Map<String, dynamic> githubIssuePayload = <String, dynamic>{
+      'assignees': <String>['livinglist'],
+      'title': issueTitle,
+      'body': '''
+| Expected  | Actual |
+| ------------- | ------------- |
+| ${expectedText.replaceAll('\n', '<br>')} | ${resultText.replaceAll('\n', '<br>')} |''',
+    };
+    await dio.postUri<String>(
+      url,
+      data: githubIssuePayload,
+      options: Options(headers: githubHeaders),
+    );
+
+    print('Issue created.');
   }
 }
 
