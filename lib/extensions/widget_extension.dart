@@ -31,30 +31,33 @@ extension ContextMenuBuilder on Widget {
           .map((LinkifyElement e) => e.text)
           .reduce((String value, String e) => '$value$e');
       final String selectedText = text.substring(start, end);
-
-      items.addAll(<ContextMenuButtonItem>[
-        ContextMenuButtonItem(
-          onPressed: () => _showHackerNewsSearchBottomSheet(
-            context,
-            selectedText,
+      items
+        ..insert(
+          0,
+          ContextMenuButtonItem(
+            onPressed: () => _showHackerNewsSearchBottomSheet(
+              context,
+              selectedText,
+            ),
+            label: 'Search HN',
           ),
-          label: 'Hacker News',
-        ),
-        ContextMenuButtonItem(
-          onPressed: () => LinkUtil.launch(
-            '''${Constants.wikipediaLink}$selectedText''',
-            context,
+        )
+        ..addAll(<ContextMenuButtonItem>[
+          ContextMenuButtonItem(
+            onPressed: () => LinkUtil.launch(
+              '''${Constants.wikipediaLink}$selectedText''',
+              context,
+            ),
+            label: 'Wikipedia',
           ),
-          label: 'Wikipedia',
-        ),
-        ContextMenuButtonItem(
-          onPressed: () => LinkUtil.launch(
-            '''${Constants.wiktionaryLink}$selectedText''',
-            context,
+          ContextMenuButtonItem(
+            onPressed: () => LinkUtil.launch(
+              '''${Constants.wiktionaryLink}$selectedText''',
+              context,
+            ),
+            label: 'Wiktionary',
           ),
-          label: 'Wiktionary',
-        ),
-      ]);
+        ]);
     }
 
     return AdaptiveTextSelectionToolbar.buttonItems(
