@@ -36,7 +36,7 @@ extension ContextMenuBuilder on Widget {
         ContextMenuButtonItem(
           onPressed: () => _showHackerNewsSearchBottomSheet(
             context,
-            text,
+            selectedText,
           ),
           label: 'Hacker News',
         ),

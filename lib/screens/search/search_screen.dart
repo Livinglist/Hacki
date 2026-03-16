@@ -30,7 +30,6 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
   final RefreshController refreshController = RefreshController();
   final ScrollController scrollController = ScrollController();
-  final TextEditingController textEditingController = TextEditingController();
   final FocusNode focusNode = FocusNode();
   final Debouncer debouncer = Debouncer(delay: AppDurations.oneSecond);
 
@@ -49,7 +48,6 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
     focusNode
       ..unfocus()
       ..dispose();
-    textEditingController.dispose();
     super.dispose();
   }
 
@@ -122,7 +120,9 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                   horizontal: Dimens.pt12,
                                 ),
                                 child: TextField(
-                                  controller: textEditingController,
+                                  controller: context
+                                      .read<SearchCubit>()
+                                      .textEditingController,
                                   focusNode: focusNode,
                                   cursorColor:
                                       Theme.of(context).colorScheme.primary,
