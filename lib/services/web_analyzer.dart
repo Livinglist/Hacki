@@ -329,9 +329,7 @@ ${info.toJson()}
     for (final int kidId in kids) {
       comment = await hackerNewsRepository.fetchComment(id: kidId);
       final String text = comment?.text.trim() ?? '';
-      if (text.isNotEmpty &&
-          !<String>['[delayed]', '[deleted]', '[flagged]', '[dead]']
-              .contains(text)) {
+      if (text.isNotEmpty && text.isValidCommentText) {
         return comment != null ? '${comment.by}: ${comment.text}' : null;
       } else {
         continue;

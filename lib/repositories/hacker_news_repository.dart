@@ -409,9 +409,7 @@ class HackerNewsRepository with Loggable {
     }
 
     bool isValid(String? text) {
-      return cachedText != null &&
-          cachedText != '[delayed]' &&
-          cachedText != '[flagged]';
+      return text != null && text.isValidCommentText;
     }
 
     if (isValid(cachedText)) {

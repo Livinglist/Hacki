@@ -18,6 +18,17 @@ extension StringExtension on String {
   }
 }
 
+extension CommentTextStringExtension on String {
+  static const List<String> _invalidTexts = <String>[
+    '[delayed]',
+    '[deleted]',
+    '[flagged]',
+    '[dead]',
+  ];
+
+  bool get isValidCommentText => _invalidTexts.contains(trim());
+}
+
 extension OptionalStringExtension on String? {
   bool get isNullOrEmpty {
     if (this == null) return true;
