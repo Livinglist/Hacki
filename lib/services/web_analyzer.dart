@@ -328,15 +328,17 @@ ${info.toJson()}
     Comment? comment;
     for (final int kidId in kids) {
       comment = await hackerNewsRepository.fetchComment(id: kidId);
-      if (<String>['[delayed]', '[deleted]', '[flagged]']
-          .contains(comment?.text)) {
-        continue;
+      final String text = comment?.text.trim() ?? '';
+      if (text.isNotEmpty &&
+          !<String>['[delayed]', '[deleted]', '[flagged]', '[dead]']
+              .contains(text)) {
+        return comment != null ? '${comment.by}: ${comment.text}' : null;
       } else {
-        break;
+        continue;
       }
     }
 
-    return comment != null ? '${comment.by}: ${comment.text}' : null;
+    return null;
   }
 
   static bool _certificateCheck(X509Certificate cert, String host, int port) =>
@@ -507,31 +509,73 @@ ${info.toJson()}
   }
 
   static String? _analyzeDescription(Document document, String html) {
-    final String? desc =
+    // Helper to validate extracted text
+    bool isUsable(String? text) =>
+        text != null &&
+        text.trim().isNotEmpty &&
+        !text.contains('JavaScript is disabled') &&
+        !text.contains('Please enable JavaScript') &&
+        !text.contains('You need to enable JavaScript');
+
+    // 1. Try og:description first
+    final String? ogDesc =
         _getMetaContent(document, 'property', 'og:description');
-    if (desc != null &&
-        !desc.contains('JavaScript is disabled in your browser')) {
-      return desc;
-    }
+    if (isUsable(ogDesc)) return ogDesc!.trim();
 
-    final String? description =
-        _getMetaContent(document, 'name', 'description') ??
-            _getMetaContent(document, 'name', 'Description');
+    // 2. Try twitter:description as additional fallback
+    final String? twitterDesc =
+        _getMetaContent(document, 'property', 'twitter:description') ??
+            _getMetaContent(document, 'name', 'twitter:description');
+    if (isUsable(twitterDesc)) return twitterDesc!.trim();
 
-    if (isEmpty(description)) {
-      String body = html.replaceAll(_htmlReg, '');
-      body = body.trim().replaceAll(_lineReg, ' ').replaceAll(_spaceReg, ' ');
-      if (body.length > 300) {
-        body = body.substring(0, 300);
+    // 3. Try standard meta description (case variations)
+    final String? metaDesc = _getMetaContent(document, 'name', 'description') ??
+        _getMetaContent(document, 'name', 'Description');
+    if (isUsable(metaDesc)) return metaDesc!.trim();
+
+    // 4. Try article:section or other semantic meta tags
+    final String? articleDesc =
+        _getMetaContent(document, 'property', 'article:section') ??
+            _getMetaContent(document, 'name', 'abstract') ??
+            _getMetaContent(document, 'name', 'summary');
+    if (isUsable(articleDesc)) return articleDesc!.trim();
+
+    // 5. Try extracting from semantic HTML elements
+    final String? semanticText = _extractSemanticText(document);
+    if (isUsable(semanticText)) return semanticText!.trim();
+
+    // 6. Last resort: strip HTML tags from raw html
+    String body = html.replaceAll(_htmlReg, '');
+    body = body.trim().replaceAll(_lineReg, ' ').replaceAll(_spaceReg, ' ');
+    if (!isUsable(body)) return null; // return null instead of empty string
+    return body.length > 300 ? body.substring(0, 300) : body;
+  }
+
+  static String? _extractSemanticText(Document document) {
+    // Priority-ordered list of semantic selectors to try
+    const List<String> selectors = <String>[
+      'article p',
+      'main p',
+      '[role="main"] p',
+      '.post-content p',
+      '.article-body p',
+      '.entry-content p',
+      '.content p',
+      'p', // any paragraph as last resort
+    ];
+
+    for (final String selector in selectors) {
+      final List<Element> elements = document.querySelectorAll(selector);
+      // Find the first paragraph with meaningful content
+      for (final Element el in elements) {
+        final String text = el.text.trim();
+        if (text.length >= 50) {
+          // skip short/nav paragraphs
+          return text.length > 300 ? text.substring(0, 300) : text;
+        }
       }
-      if (body.contains('JavaScript is disabled in your browser')) return '';
-      return body;
     }
-
-    if (description!.contains('JavaScript is disabled in your browser')) {
-      return '';
-    }
-    return description;
+    return null;
   }
 
   static Future<String?> _analyzeIcon(Document document, Uri uri) async {
