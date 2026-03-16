@@ -65,7 +65,7 @@ Again, if the only thing a reporter had to do was read the report to find the fa
     print('Expected:\n$text\n');
     print('Actual:\n$parsedText\n');
 
-    if (parsedText != text || true) {
+    if (parsedText != text) {
       print('Diff detected, creating issue...');
 
       await createGithubIssue(
