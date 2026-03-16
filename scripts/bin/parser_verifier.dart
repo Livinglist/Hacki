@@ -61,7 +61,7 @@ Again, if the only thing a reporter had to do was read the report to find the fa
       cmtTextElement?.innerHtml ?? '',
     );
 
-    if (parsedText != text) {
+    if (true || parsedText != text) {
       final Uri url = Uri.parse(
         'https://api.github.com/repos/livinglist/hacki/issues',
       );
