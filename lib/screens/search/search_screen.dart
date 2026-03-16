@@ -15,13 +15,13 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 class SearchScreen extends StatefulWidget {
   const SearchScreen({
     super.key,
-    this.fromUserDialog = false,
+    this.isInBottomSheet = false,
   });
 
-  /// If user gets to [SearchScreen] from user dialog on Tablet,
+  /// If user is viewing [SearchScreen] in bottom sheet,
   /// we navigate to [ItemScreen] directly instead of injecting the
   /// item into [SplitViewCubit].
-  final bool fromUserDialog;
+  final bool isInBottomSheet;
 
   @override
   _SearchScreenState createState() => _SearchScreenState();
@@ -30,7 +30,6 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
   final RefreshController refreshController = RefreshController();
   final ScrollController scrollController = ScrollController();
-  final TextEditingController textEditingController = TextEditingController();
   final FocusNode focusNode = FocusNode();
   final Debouncer debouncer = Debouncer(delay: AppDurations.oneSecond);
 
@@ -49,7 +48,6 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
     focusNode
       ..unfocus()
       ..dispose();
-    textEditingController.dispose();
     super.dispose();
   }
 
@@ -122,7 +120,9 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                   horizontal: Dimens.pt12,
                                 ),
                                 child: TextField(
-                                  controller: textEditingController,
+                                  controller: context
+                                      .read<SearchCubit>()
+                                      .textEditingController,
                                   focusNode: focusNode,
                                   cursorColor:
                                       Theme.of(context).colorScheme.primary,
@@ -366,7 +366,8 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                         story: e,
                                         onTap: () => goToItemScreen(
                                           args: ItemScreenArgs(item: e),
-                                          forceNewScreen: widget.fromUserDialog,
+                                          forceNewScreen:
+                                              widget.isInBottomSheet,
                                         ),
                                       ),
                                     )
@@ -380,7 +381,8 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                         fetchMode: FetchMode.eager,
                                         onTap: () => goToItemScreen(
                                           args: ItemScreenArgs(item: e),
-                                          forceNewScreen: widget.fromUserDialog,
+                                          forceNewScreen:
+                                              widget.isInBottomSheet,
                                         ),
                                       ),
                                     ),

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart' show TextEditingController;
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
@@ -9,16 +10,22 @@ import 'package:hacki/repositories/repositories.dart';
 part 'search_state.dart';
 
 class SearchCubit extends Cubit<SearchState> {
-  SearchCubit({SearchRepository? searchRepository})
-      : _searchRepository = searchRepository ?? locator.get<SearchRepository>(),
+  SearchCubit({
+    SearchRepository? searchRepository,
+    TextEditingController? textEditingController,
+  })  : _searchRepository = searchRepository ?? locator.get<SearchRepository>(),
+        textEditingController =
+            textEditingController ?? TextEditingController(),
         super(SearchState.init());
 
   final SearchRepository _searchRepository;
+  final TextEditingController textEditingController;
 
   StreamSubscription<Item>? streamSubscription;
 
   void search(String query) {
     streamSubscription?.cancel();
+    textEditingController.text = query;
     emit(
       state.copyWith(
         results: <Item>[],
@@ -159,6 +166,7 @@ class SearchCubit extends Cubit<SearchState> {
   @override
   Future<void> close() async {
     await streamSubscription?.cancel();
+    textEditingController.dispose();
     await super.close();
   }
 }
