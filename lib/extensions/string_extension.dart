@@ -26,7 +26,7 @@ extension CommentTextStringExtension on String {
     '[dead]',
   ];
 
-  bool get isValidCommentText => _invalidTexts.contains(trim());
+  bool get isValidCommentText => !_invalidTexts.contains(trim());
 }
 
 extension OptionalStringExtension on String? {
