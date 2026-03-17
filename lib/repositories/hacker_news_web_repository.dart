@@ -84,6 +84,7 @@ class HackerNewsWebRepository with Loggable {
   static const List<int> _rateLimitedStatusCode = <int>[
     HttpStatus.forbidden,
     HttpStatus.serviceUnavailable,
+    HttpStatus.tooManyRequests,
   ];
 
   Stream<Story> fetchStoriesStream(
