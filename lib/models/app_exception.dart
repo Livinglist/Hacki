@@ -45,7 +45,7 @@ class ParsingException extends AppException {
   ParsingException({
     required this.itemId,
     super.error,
-  }) : super(message: 'Possible parsing failure...');
+  }) : super(message: 'Possible parsing failure for item with id $itemId...');
 
   final int itemId;
 }
