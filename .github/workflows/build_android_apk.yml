@@ -2,7 +2,7 @@ name: Build Android APK
 
 on:
   # Allow manual builds of this workflow.
-  workflow_dispatch: {}
+  workflow_dispatch: { }
   push:
     branches:
       - master
@@ -54,12 +54,21 @@ jobs:
           EOF
 
       - name: Build signed release APK
-        run: submodules/flutter/bin/flutter build apk --release
+        run: submodules/flutter/bin/flutter build apk --release --split-per-abi
 
       - name: Upload signed APK
         uses: actions/upload-artifact@v4
         with:
           name: signed-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/*.apk
           retention-days: 30
 
+      - name: Build signed release app bundle
+        run: submodules/flutter/bin/flutter build appbundle --release
+
+      - name: Upload signed AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: signed-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+          retention-days: 30
