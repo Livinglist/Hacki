@@ -17,7 +17,7 @@ class DraggableFloatingButton extends StatefulWidget {
 }
 
 class _DraggableFloatingButtonState extends State<DraggableFloatingButton> {
-  Offset _offset = const Offset(20, 100);
+  Offset _offset = const Offset(16, 180);
   bool _isDragging = false;
 
   @override
