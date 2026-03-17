@@ -363,9 +363,10 @@ class HackerNewsWebRepository with Loggable {
             document.querySelectorAll(_athingComtrSelector);
         return elements;
       } on DioException catch (e) {
-        logError('error fetching comments on page $page: $e');
-
         final int statusCode = e.response?.statusCode ?? 0;
+
+        logError('error($statusCode) fetching comments on page $page: $e');
+
         if (statusCode == HttpStatus.tooManyRequests) {
           final String retryAfter =
               e.response?.headers[HttpHeaders.retryAfterHeader] as String? ??
@@ -380,8 +381,8 @@ class HackerNewsWebRepository with Loggable {
           }
         }
 
-        if (_rateLimitedStatusCode.contains(e.response?.statusCode)) {
-          throw RateLimitedWithFallbackException(e.response?.statusCode);
+        if (_rateLimitedStatusCode.contains(statusCode)) {
+          throw RateLimitedWithFallbackException(statusCode);
         }
 
         rethrow;
