@@ -34,7 +34,7 @@ class TooManyRequestsException extends AppException {
     super.error,
   }) : super(
           message:
-              '''Too many request (429), retry after ${retryAfter.toIso8601String()}, fetching from API instead...''',
+              '''Too many requests (429), retry after ${retryAfter.toIso8601String()}, fetching from API instead...''',
         );
 
   /// The time after which app can keep sending in requests.
