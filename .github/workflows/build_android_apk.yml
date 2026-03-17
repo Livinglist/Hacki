@@ -55,6 +55,8 @@ jobs:
 
       - name: Build signed release APK
         run: submodules/flutter/bin/flutter build apk --release --split-per-abi
+        env:
+          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=512m"
 
       - name: Upload signed APK
         uses: actions/upload-artifact@v4
