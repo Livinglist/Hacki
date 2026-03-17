@@ -181,7 +181,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         switch (e.runtimeType) {
           case RateLimitedException:
           case RateLimitedWithFallbackException:
-          case PossibleParsingException:
+          case ParsingException:
             add(event.copyWith(shouldUseApi: true));
         }
       }).listen((Story story) {
@@ -299,7 +299,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         switch (e.runtimeType) {
           case RateLimitedException:
           case RateLimitedWithFallbackException:
-          case PossibleParsingException:
+          case ParsingException:
 
             /// Fall back to use API instead.
             add(event.copyWith(shouldUseApi: true));

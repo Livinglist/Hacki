@@ -83,10 +83,14 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       <int, StreamSubscription<Comment>>{};
 
   static const int _webFetchingCmtCountLowerLimit = 5;
+  static DateTime? _hackerNewsWebRetryAfterDateTime;
 
   Future<bool> get _shouldFetchFromWeb async {
     final bool isOnWifi = await _isOnWifi;
-    if (isOnWifi) {
+    final bool isPastRetryAfterDateTime =
+        _hackerNewsWebRetryAfterDateTime == null ||
+            DateTime.now().isAfter(_hackerNewsWebRetryAfterDateTime!);
+    if (isOnWifi && isPastRetryAfterDateTime) {
       return switch (state.item) {
         Story(descendants: final int descendants)
             when descendants > _webFetchingCmtCountLowerLimit =>
@@ -97,7 +101,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         _ => false,
       };
     } else {
-      return true;
+      return isPastRetryAfterDateTime;
     }
   }
 
@@ -119,7 +123,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     bool shouldUseCommentCache = false,
     List<Comment>? targetAncestors,
     AppExceptionHandler? onError,
-    bool fetchFromWeb = true,
+    bool isFetchingFromWebAllowed = true,
   }) async {
     if (shouldOnlyShowTargetComment && (targetAncestors?.isNotEmpty ?? false)) {
       emit(
@@ -181,7 +185,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
           switch (state.order) {
             case CommentsOrder.natural:
               final bool shouldFetchFromWeb = await _shouldFetchFromWeb;
-              if (fetchFromWeb && shouldFetchFromWeb) {
+              if (isFetchingFromWebAllowed && shouldFetchFromWeb) {
                 logInfo('fetching comments of ${item.id} from web.');
                 commentStream = _hackerNewsWebRepository
                     .fetchCommentsStream(state.item)
@@ -193,11 +197,16 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                   switch (e.runtimeType) {
                     case RateLimitedException:
                     case RateLimitedWithFallbackException:
-                    case PossibleParsingException:
+                    case ParsingException:
                       if (_preferenceCubit.state.isDevModeEnabled) {
                         onError?.call(e as AppException);
                       }
-
+                    case TooManyRequestsException:
+                      _hackerNewsWebRetryAfterDateTime =
+                          (e as TooManyRequestsException).retryAfter;
+                      if (_preferenceCubit.state.isDevModeEnabled) {
+                        onError?.call(e);
+                      }
                     default:
                       onError?.call(GenericException(error: e));
                   }
@@ -293,11 +302,16 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                 switch (e.runtimeType) {
                   case RateLimitedException:
                   case RateLimitedWithFallbackException:
-                  case PossibleParsingException:
+                  case ParsingException:
                     if (_preferenceCubit.state.isDevModeEnabled) {
                       onError?.call(e as AppException);
                     }
-
+                  case TooManyRequestsException:
+                    _hackerNewsWebRetryAfterDateTime =
+                        (e as TooManyRequestsException).retryAfter;
+                    if (_preferenceCubit.state.isDevModeEnabled) {
+                      onError?.call(e);
+                    }
                   default:
                     onError?.call(GenericException(error: e));
                 }

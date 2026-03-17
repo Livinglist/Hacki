@@ -147,9 +147,11 @@ class HackerNewsWebRepository with Loggable {
         );
       } on DioException catch (e) {
         logError('error fetching stories on page $page: $e');
+
         if (_rateLimitedStatusCode.contains(e.response?.statusCode)) {
           throw RateLimitedWithFallbackException(e.response?.statusCode);
         }
+
         rethrow;
       }
     }
@@ -361,10 +363,27 @@ class HackerNewsWebRepository with Loggable {
             document.querySelectorAll(_athingComtrSelector);
         return elements;
       } on DioException catch (e) {
+        logError('error fetching comments on page $page: $e');
+
+        final int statusCode = e.response?.statusCode ?? 0;
+        if (statusCode == HttpStatus.tooManyRequests) {
+          final String retryAfter =
+              e.response?.headers[HttpHeaders.retryAfterHeader] as String? ??
+                  '';
+          final int retryAfterInSeconds = int.tryParse(retryAfter) ?? 0;
+          final DateTime retryAfterDate =
+              DateTime.now().add(Duration(seconds: retryAfterInSeconds));
+          if (retryAfterInSeconds > 0) {
+            throw TooManyRequestsException(
+              retryAfter: retryAfterDate,
+            );
+          }
+        }
+
         if (_rateLimitedStatusCode.contains(e.response?.statusCode)) {
-          logError('error fetching comments on page $page: $e');
           throw RateLimitedWithFallbackException(e.response?.statusCode);
         }
+
         rethrow;
       }
     }
@@ -377,7 +396,7 @@ class HackerNewsWebRepository with Loggable {
     final Map<int, int> indentToParentId = <int, int>{};
 
     if (item is Story && item.descendants > 0 && elements.isEmpty) {
-      throw PossibleParsingException(itemId: itemId);
+      throw ParsingException(itemId: itemId);
     }
 
     while (elements.isNotEmpty) {
@@ -454,7 +473,7 @@ class HackerNewsWebRepository with Loggable {
       /// caused by HN changing their HTML structure, therefore here we
       /// throw an error so that we can fallback to use API instead.
       if (page == 1 && parentTextCount > 0 && fetchedCommentIds.isEmpty) {
-        throw PossibleParsingException(itemId: itemId);
+        throw ParsingException(itemId: itemId);
       }
 
       if (descendants != null && fetchedCommentIds.length >= descendants) {

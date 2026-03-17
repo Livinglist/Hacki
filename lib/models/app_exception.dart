@@ -28,8 +28,21 @@ class RateLimitedWithFallbackException extends AppException {
   final int? statusCode;
 }
 
-class PossibleParsingException extends AppException {
-  PossibleParsingException({
+class TooManyRequestsException extends AppException {
+  TooManyRequestsException({
+    required this.retryAfter,
+    super.error,
+  }) : super(
+          message:
+              '''Too many request (429), retry after ${retryAfter.toIso8601String()}, fetching from API instead...''',
+        );
+
+  /// The time after which app can keep sending in requests.
+  final DateTime retryAfter;
+}
+
+class ParsingException extends AppException {
+  ParsingException({
     required this.itemId,
     super.error,
   }) : super(message: 'Possible parsing failure...');
