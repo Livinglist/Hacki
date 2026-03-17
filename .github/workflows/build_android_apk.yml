@@ -1,0 +1,65 @@
+name: Build Android APK
+
+on:
+  # Allow manual builds of this workflow.
+  workflow_dispatch: {}
+  push:
+    branches:
+      - master
+    # Only build when any of these directories has been modified.
+    paths:
+      - lib/**
+      - pubspec.lock
+      - pubspec.yaml
+      - submodules/**
+      - android/**
+      - .github/workflows/build_android_apk.yml
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '18'
+
+      - name: Check out from git
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - run: submodules/flutter/bin/flutter doctor
+      - run: submodules/flutter/bin/flutter pub get
+      - run: submodules/flutter/bin/dart format --set-exit-if-changed lib test integration_test
+      - run: submodules/flutter/bin/flutter analyze lib test integration_test
+      - run: submodules/flutter/bin/flutter test
+
+      - name: Decode keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/keystore.jks
+
+      - name: Create key.properties
+        run: |
+          cat <<EOF > android/key.properties
+          storePassword=${{ secrets.STORE_PASSWORD }}
+          keyPassword=${{ secrets.KEY_PASSWORD }}
+          keyAlias=${{ secrets.KEY_ALIAS }}
+          storeFile=keystore.jks
+          EOF
+
+      - name: Build signed release APK
+        run: submodules/flutter/bin/flutter build apk --release
+
+      - name: Upload signed APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: signed-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+
