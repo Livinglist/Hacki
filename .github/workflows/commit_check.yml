@@ -23,7 +23,7 @@ jobs:
       # Check if commit contains any changes under /lib, /test or /integration_test dir.
       - name: Detect Flutter code changes
         id: changes
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         with:
           filters: |
             flutter:
