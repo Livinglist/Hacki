@@ -37,7 +37,7 @@ dependencies:
   flutter_native_splash: ^2.4.4
   flutter_secure_storage: ^10.0.0
   flutter_slidable: ^4.0.3
-  font_awesome_flutter: ^10.3.0
+  font_awesome_flutter: ^11.0.0
   get_it: ^9.2.1
   go_router: ^17.1.0
   hive: ^2.2.3
@@ -79,7 +79,7 @@ dependencies:
   universal_platform: ^1.1.0
   url_launcher: ^6.2.6
   visibility_detector: ^0.4.0+2
-  wakelock_plus: ^1.2.5
+  wakelock_plus: ^1.5.1
   webview_flutter: ^4.8.0
   workmanager: ^0.9.0+3
 
