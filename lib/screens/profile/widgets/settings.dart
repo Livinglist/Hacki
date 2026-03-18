@@ -730,7 +730,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
             ),
             child: const Row(
               children: <Widget>[
-                Icon(
+                FaIcon(
                   FontAwesomeIcons.addressCard,
                 ),
                 SizedBox(
@@ -747,7 +747,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
             ),
             child: const Row(
               children: <Widget>[
-                Icon(
+                FaIcon(
                   FontAwesomeIcons.github,
                 ),
                 SizedBox(
