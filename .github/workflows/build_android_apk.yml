@@ -59,7 +59,7 @@ jobs:
           GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=512m"
 
       - name: Upload signed APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: signed-release-apk
           path: build/app/outputs/flutter-apk/*.apk
@@ -69,7 +69,7 @@ jobs:
         run: submodules/flutter/bin/flutter build appbundle --release
 
       - name: Upload signed AAB
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: signed-release-aab
           path: build/app/outputs/bundle/release/app-release.aab
