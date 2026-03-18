@@ -49,7 +49,7 @@ dependencies:
     path: components/in_app_review
   intl: ^0.20.1
   linkify: ^5.0.0
-  logger: ^2.4.0
+  logger: ^2.7.0
   memoize: ^3.0.0
   package_info_plus: ^9.0.0
   path: ^1.9.1
