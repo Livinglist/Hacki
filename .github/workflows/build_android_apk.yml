@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -30,7 +30,7 @@ jobs:
           java-version: '18'
 
       - name: Check out from git
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           submodules: recursive
           fetch-depth: 0

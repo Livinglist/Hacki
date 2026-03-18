@@ -32,7 +32,7 @@ jobs:
           xcode-version: 'latest-stable'
 
       - name: Check out from git
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
         with:
           submodules: recursive
           fetch-depth: 0
