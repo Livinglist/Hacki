@@ -75,7 +75,7 @@ class OfflineRepository with Loggable {
     try {
       box = await _webPageBox;
     } catch (e) {
-      logError(e);
+      logError('failed to open box: $e');
       await Hive.deleteBoxFromDisk(_webPageBoxName);
       box = await _webPageBox;
     }
@@ -83,10 +83,16 @@ class OfflineRepository with Loggable {
     final String html = await compute(_downloadWebPage, url).timeout(
       AppDurations.tenSeconds,
       onTimeout: () {
-        logInfo('failed to download $url');
+        logInfo('failed to download URL due to timeout $url');
         return 'download timeout.';
       },
+    ).catchError(
+      (dynamic e) {
+        logError('failed to download URL $url: $e');
+        return 'failed to download URL $url: $e';
+      },
     );
+
     return box.put(url, html);
   }
 

@@ -6,6 +6,7 @@ import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/custom_router.dart';
@@ -15,7 +16,9 @@ import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
-import 'package:hacki/screens/screens.dart';
+import 'package:hacki/screens/item/widgets/in_thread_search_icon_button.dart'
+    show InThreadSearchIconButton;
+import 'package:hacki/screens/screens.dart' show ItemScreen, ItemScreenArgs;
 import 'package:hacki/screens/widgets/custom_linkify/custom_linkify.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
@@ -58,6 +61,11 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
             order: defaultCommentsOrder,
           ),
         );
+
+  /// Global keys mapped to comment ids, this is used primarily in
+  /// [InThreadSearchIconButton] to uncollapse the search target
+  /// that user tapped on on [ItemScreen].
+  final Map<int, GlobalKey> globalKeys = <int, GlobalKey>{};
 
   final FilterCubit _filterCubit;
   final PreferenceCubit _preferenceCubit;
@@ -382,6 +390,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                 .asyncMap(_toBuildableComment)
                 .whereNotNull()
                 .listen((Comment cmt) {
+          globalKeys[cmt.id] = GlobalKey();
           _collapseCache.addKid(cmt.id, to: cmt.parent);
           _commentCache.cacheComment(cmt);
 
@@ -679,6 +688,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
   void _onCommentFetched(BuildableComment? comment) {
     if (comment != null) {
+      globalKeys[comment.id] = GlobalKey();
       _collapseCache.addKid(comment.id, to: comment.parent);
       _commentCache.cacheComment(comment);
 

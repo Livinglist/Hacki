@@ -34,19 +34,8 @@ class CollapseCubit extends Cubit<CollapseState> {
     );
   }
 
-  void collapse({required VoidCallback onStateChanged}) {
-    if (state.collapsed) {
-      _collapseCache.uncollapse(_commentId);
-
-      emit(
-        state.copyWith(
-          collapsed: false,
-          collapsedCount: 0,
-        ),
-      );
-
-      onStateChanged();
-    } else {
+  void collapse({VoidCallback? onStateChanged}) {
+    if (!state.collapsed) {
       if (state.locked) {
         emit(state.copyWith(locked: false));
         return;
@@ -61,7 +50,22 @@ class CollapseCubit extends Cubit<CollapseState> {
         ),
       );
 
-      onStateChanged();
+      onStateChanged?.call();
+    }
+  }
+
+  void uncollapse({VoidCallback? onStateChanged}) {
+    if (state.collapsed) {
+      _collapseCache.uncollapse(_commentId);
+
+      emit(
+        state.copyWith(
+          collapsed: false,
+          collapsedCount: 0,
+        ),
+      );
+
+      onStateChanged?.call();
     }
   }
 

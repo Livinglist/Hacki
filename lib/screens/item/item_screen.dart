@@ -14,6 +14,7 @@ import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
+import 'package:hacki/screens/widgets/download_progress_reminder.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
@@ -85,10 +86,25 @@ class ItemScreen extends StatefulWidget {
               ),
           ),
         ],
-        child: ItemScreen(
-          item: args.item,
-          parentComments: args.targetComments ?? <Comment>[],
-          shouldMarkNewComment: args.shouldMarkNewComment,
+        child: Stack(
+          children: <Widget>[
+            Positioned.fill(
+              child: ItemScreen(
+                item: args.item,
+                parentComments: args.targetComments ?? <Comment>[],
+                shouldMarkNewComment: args.shouldMarkNewComment,
+              ),
+            ),
+            const Positioned(
+              left: Dimens.zero,
+              right: Dimens.zero,
+              bottom: Dimens.zero,
+              height: Dimens.pt40,
+              child: DownloadProgressReminder(
+                isDockedAtBottom: true,
+              ),
+            ),
+          ],
         ),
       ),
     );

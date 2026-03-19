@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/auth/auth_bloc.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/cubits/collapse/collapse_cubit.dart';
 import 'package:hacki/cubits/comments/comments_cubit.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
@@ -204,15 +205,58 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                     onTap: () {
                       widget.action();
 
-                      final int index = state.comments.indexWhere(
-                        (Comment cmt) => cmt.id == comment.id,
-                      );
+                      // Find out the context of the target comment and also
+                      // all of its ancestors, uncollapse them if they
+                      // are collapsed.
+                      BuildContext? cmtContext = widget
+                          .commentsCubit.globalKeys[comment.id]?.currentContext;
+                      bool isCollapsed =
+                          cmtContext?.read<CollapseCubit>().state.collapsed ??
+                              false;
+                      Comment? curComment = comment;
+                      final BuildContext? targetCommentContext = cmtContext;
 
-                      if (index != -1) {
-                        widget.commentsCubit.scrollTo(
-                          index: index + 1,
-                          alignment: 0.2,
+                      while (curComment != null && cmtContext != null) {
+                        if (isCollapsed) {
+                          cmtContext.read<CollapseCubit>().uncollapse();
+                        }
+                        curComment = widget.commentsCubit.state
+                            .idToCommentMap[curComment.parent];
+                        if (curComment == null) break;
+                        cmtContext = widget.commentsCubit
+                            .globalKeys[curComment.id]?.currentContext;
+                        isCollapsed =
+                            cmtContext?.read<CollapseCubit>().state.collapsed ??
+                                false;
+                      }
+
+                      if (cmtContext == null) {
+                        // If no comment context can be found, try to find out
+                        // the index of the target comment in the thread.
+                        final int index = state.comments.indexWhere(
+                          (Comment cmt) => cmt.id == comment.id,
                         );
+
+                        // If index if found, scroll to the comment.
+                        if (index != -1) {
+                          widget.commentsCubit.scrollTo(
+                            index: index + 1,
+                            alignment: 0.2,
+                          );
+                        }
+                      } else {
+                        // If there is a comment context, then use the
+                        // `ensureVisible` to bring it into view.
+                        Future<void>.delayed(AppDurations.ms500, () {
+                          if (targetCommentContext != null &&
+                              targetCommentContext.mounted) {
+                            Scrollable.ensureVisible(
+                              targetCommentContext,
+                              alignment: 0.2,
+                              duration: AppDurations.ms300,
+                            );
+                          }
+                        });
                       }
                     },
                   ),

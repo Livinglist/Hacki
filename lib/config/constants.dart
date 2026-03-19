@@ -97,3 +97,10 @@ abstract class AppDurations {
   static const Duration oneMinute = Duration(minutes: 1);
   static const Duration twoMinutes = Duration(minutes: 2);
 }
+
+abstract class HeroTags {
+  static const String progressReminderHeroTag =
+      'mobile_download_progress_reminder';
+  static const String progressReminderTextHeroTag =
+      'mobile_download_progress_reminder_text';
+}
