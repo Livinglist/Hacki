@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:hacki/services/dialog_proxy.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/haptic_feedback_util.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -89,34 +90,7 @@ class OfflineListTile extends StatelessWidget {
           isThreeLine: true,
           onTap: () {
             if (state.downloadStatus == StoriesDownloadStatus.downloading) {
-              showDialog<bool>(
-                context: context,
-                builder: (BuildContext context) => AlertDialog(
-                  title: const Text('Abort downloading?'),
-                  actions: <Widget>[
-                    TextButton(
-                      onPressed: () => context.pop(),
-                      child: const Text('Cancel'),
-                    ),
-                    TextButton(
-                      onPressed: () => context.pop(false),
-                      child: const Text('No'),
-                    ),
-                    TextButton(
-                      onPressed: () => context.pop(true),
-                      child: const Text('Yes'),
-                    ),
-                  ],
-                ),
-              ).then((bool? abortDownloading) {
-                if (abortDownloading ?? false) {
-                  WakelockPlus.enable();
-
-                  if (context.mounted) {
-                    context.read<StoriesBloc>().add(StoriesCancelDownload());
-                  }
-                }
-              });
+              DialogProxy.showAbortDownloadDialog(context);
             } else {
               context.read<StoriesBloc>().add(ClearMaxOfflineStoriesCount());
               Connectivity()
