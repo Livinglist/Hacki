@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
+import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -275,6 +276,8 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                         preferenceState.isExpandedTileEnabled,
                     isIndexedStoryTileEnabled:
                         preferenceState.isIndexedStoryTileEnabled,
+                    isImageLeftAligned:
+                        preferenceState.isPreviewImageLeftAligned,
                     index: 0,
                     story: Story.placeholder(),
                     onTap: () => LinkUtil.launch(
@@ -304,6 +307,36 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                             ),
                             SizedBoxes.pt12,
                           ],
+                        ),
+                      )
+                    else if (preference is PreviewImageAlignmentPreference)
+                      FadeIn(
+                        child: ListTile(
+                          title: Text(preference.title),
+                          trailing: SegmentedButton<bool>(
+                            showSelectedIcon: false,
+                            segments: const <ButtonSegment<bool>>[
+                              ButtonSegment<bool>(
+                                value: true,
+                                label: Text('Left'),
+                              ),
+                              ButtonSegment<bool>(
+                                value: false,
+                                label: Text('Right'),
+                              ),
+                            ],
+                            selected: <bool>{
+                              preferenceState.isOn(
+                                preference as BooleanPreference,
+                              ),
+                            },
+                            onSelectionChanged: (Set<bool> val) {
+                              HapticFeedbackUtil.light();
+                              context
+                                  .read<PreferenceCubit>()
+                                  .update(preference.copyWith(val: val.single));
+                            },
+                          ),
                         ),
                       )
                     else

@@ -48,11 +48,20 @@ class _StoriesListViewState extends State<StoriesListView>
 
     return BlocBuilder<PreferenceCubit, PreferenceState>(
       buildWhen: (PreferenceState previous, PreferenceState current) =>
-          previous.isRichStoryTileEnabled != current.isRichStoryTileEnabled ||
-          previous.isMetadataEnabled != current.isMetadataEnabled ||
-          previous.isManualPaginationEnabled !=
-              current.isManualPaginationEnabled ||
-          previous.isDividerEnabled != current.isDividerEnabled,
+          (
+            previous.isRichStoryTileEnabled,
+            previous.isMetadataEnabled,
+            previous.isManualPaginationEnabled,
+            previous.isDividerEnabled,
+            previous.isPreviewImageLeftAligned,
+          ) !=
+          (
+            current.isRichStoryTileEnabled,
+            current.isMetadataEnabled,
+            current.isManualPaginationEnabled,
+            current.isDividerEnabled,
+            current.isPreviewImageLeftAligned,
+          ),
       builder: (BuildContext context, PreferenceState preferenceState) {
         return BlocConsumer<StoriesBloc, StoriesState>(
           listenWhen: (StoriesState previous, StoriesState current) =>
@@ -91,6 +100,8 @@ class _StoriesListViewState extends State<StoriesListView>
                   preferenceState.isIndexedStoryTileEnabled,
               isHideInsteadOfMarkingGrayEnabled:
                   preferenceState.isHideInsteadOfMarkingGrayEnabled,
+              isPreviewImageLeftAligned:
+                  preferenceState.isPreviewImageLeftAligned,
               refreshController: refreshController,
               scrollController: scrollController,
               items: state.storiesByType[storyType]!,

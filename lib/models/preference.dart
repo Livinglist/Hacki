@@ -1,6 +1,6 @@
-import 'dart:collection';
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
@@ -10,12 +10,29 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/styles/palette.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
+extension PreferenceDependenciesExtension on Set<Preference<dynamic>> {
+  bool satisfy(Iterable<Preference<dynamic>> preferences) {
+    for (final Preference<dynamic> dependency in this) {
+      final Preference<dynamic>? concreteDependency =
+          preferences.singleWhereOrNull(
+        (Preference<dynamic> pref) => pref.key == dependency.key,
+      );
+      if (concreteDependency?.val != dependency.val) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
+
 abstract final class Preference<T> extends Equatable with SettingsDisplayable {
   const Preference({required this.val});
 
   final T val;
 
   String get key;
+
+  Set<Preference<dynamic>> get dependencies => <Preference<dynamic>>{};
 
   Preference<T> copyWith({required T? val});
 
@@ -40,10 +57,11 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       /// reflects the order on in-app settings screen.
       ///
       const RichStoryTilePreference(),
-      const IndexedStoryTilePreference(),
-      const ExpandTileForLongerTextPreference(),
-      const FaviconModePreference(),
       const RichStoryTileImageDisplayPreference(),
+      const PreviewImageAlignmentPreference(),
+      const ExpandTileForLongerTextPreference(),
+      const IndexedStoryTilePreference(),
+      const FaviconModePreference(),
       const MetadataModePreference(),
       const StoryUrlModePreference(),
       const DividerPreference(),
@@ -367,6 +385,34 @@ final class RichStoryTilePreference extends BooleanPreference {
   String get subtitle => 'show web preview on story tile.';
 }
 
+final class PreviewImageAlignmentPreference extends BooleanPreference {
+  const PreviewImageAlignmentPreference({bool? val})
+      : super(val: val ?? _imageAlignmentPreferenceDefaultValue);
+
+  /// true for left, false for right.
+  static const bool _imageAlignmentPreferenceDefaultValue = true;
+
+  @override
+  PreviewImageAlignmentPreference copyWith({required bool? val}) {
+    return PreviewImageAlignmentPreference(val: val);
+  }
+
+  @override
+  Set<Preference<dynamic>> get dependencies => <Preference<dynamic>>{
+        const RichStoryTilePreference(val: true),
+        const RichStoryTileImageDisplayPreference(val: true),
+      };
+
+  @override
+  String get key => 'previewImageAlignmentPreference';
+
+  @override
+  String get title => 'Image Alignment';
+
+  @override
+  String get subtitle => '';
+}
+
 /// When enabled, text on rich story tile will have the same height as
 /// the preview image.
 final class ExpandTileForLongerTextPreference extends BooleanPreference {
@@ -379,6 +425,11 @@ final class ExpandTileForLongerTextPreference extends BooleanPreference {
   ExpandTileForLongerTextPreference copyWith({required bool? val}) {
     return ExpandTileForLongerTextPreference(val: val);
   }
+
+  @override
+  Set<Preference<dynamic>> get dependencies => <Preference<dynamic>>{
+        const RichStoryTilePreference(val: true),
+      };
 
   @override
   String get key => 'expandTileForLongerTextPreference';
@@ -402,6 +453,11 @@ final class RichStoryTileImageDisplayPreference extends BooleanPreference {
   }
 
   @override
+  Set<Preference<dynamic>> get dependencies => <Preference<dynamic>>{
+        const RichStoryTilePreference(val: true),
+      };
+
+  @override
   String get key => 'largeStoryTileImageDisplayPreference';
 
   @override
@@ -421,6 +477,11 @@ final class FaviconModePreference extends BooleanPreference {
   FaviconModePreference copyWith({required bool? val}) {
     return FaviconModePreference(val: val);
   }
+
+  @override
+  Set<Preference<dynamic>> get dependencies => <Preference<dynamic>>{
+        const RichStoryTilePreference(val: false),
+      };
 
   @override
   String get key => 'faviconMode';

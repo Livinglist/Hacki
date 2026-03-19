@@ -22,6 +22,7 @@ class LinkPreview extends StatefulWidget {
     required this.isOfflineReading,
     required this.hasRead,
     required this.isExpandedTileEnabled,
+    required this.isImageLeftAligned,
     super.key,
     this.cache = const Duration(days: 30),
     this.shouldShowMultimedia = true,
@@ -41,6 +42,7 @@ class LinkPreview extends StatefulWidget {
   final Story story;
   final VoidCallback onTap;
   final bool hasRead;
+  final bool isImageLeftAligned;
 
   /// Web address (Url that need to be parsed)
   /// For IOS & Web, only HTTP and HTTPS are support
@@ -170,6 +172,7 @@ class _LinkPreviewState extends State<LinkPreview> {
           imageHeight: height,
           imageWidth: height,
           hasRead: widget.hasRead,
+          isImageLeftAligned: widget.isImageLeftAligned,
           image: Center(
             child: CachedNetworkImage(
               imageUrl: imageUrl,
@@ -246,6 +249,7 @@ class _LinkPreviewState extends State<LinkPreview> {
         bgColor: widget.backgroundColor,
         radius: widget.borderRadius ?? 12,
         shouldShowUrl: widget.shouldShowUrl,
+        isImageLeftAligned: widget.isImageLeftAligned,
       ),
     );
   }

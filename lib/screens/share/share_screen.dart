@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/context_extension.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
@@ -56,6 +58,8 @@ class _ShareScreenState extends State<ShareScreen> {
   Widget build(BuildContext context) {
     final Item item = widget.args.item;
     final Item? parent = widget.args.parent;
+    final bool isPreviewImageLeftAligned =
+        context.read<PreferenceCubit>().state.isPreviewImageLeftAligned;
     final Widget targetWidget = item is Story
         ? StoryTile(
             story: item,
@@ -65,6 +69,7 @@ class _ShareScreenState extends State<ShareScreen> {
             shouldShowFavicon: true,
             shouldShowUrl: true,
             isExpandedTileEnabled: true,
+            isImageLeftAligned: isPreviewImageLeftAligned,
             onTap: () {},
           )
         : Column(
@@ -79,6 +84,7 @@ class _ShareScreenState extends State<ShareScreen> {
                   shouldShowFavicon: true,
                   shouldShowUrl: true,
                   isExpandedTileEnabled: true,
+                  isImageLeftAligned: isPreviewImageLeftAligned,
                   onTap: () {},
                 ),
               Padding(

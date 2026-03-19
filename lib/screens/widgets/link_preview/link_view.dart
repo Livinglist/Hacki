@@ -23,6 +23,7 @@ class LinkView extends StatelessWidget {
     required this.onTap,
     required bool shouldShowUrl,
     required this.bodyMaxLines,
+    required this.isImageLeftAligned,
     super.key,
     this.imageUri,
     this.iconUri,
@@ -52,6 +53,7 @@ class LinkView extends StatelessWidget {
   final bool shouldShowUrl;
   final bool hasRead;
   final bool isIcon;
+  final bool isImageLeftAligned;
   final VoidCallback onTap;
   final TextOverflow? bodyTextOverflow;
   final int bodyMaxLines;
@@ -88,128 +90,134 @@ class LinkView extends StatelessWidget {
           layoutHeight,
         );
 
-        return Row(
-          children: <Widget>[
-            if (shouldShowMultiMedia)
-              Padding(
-                padding: const EdgeInsets.only(
-                  right: 8,
-                  top: 5,
-                  bottom: 5,
-                ),
-                child: TapDownWrapper(
-                  onTap: () {
-                    if (url.isNotEmpty) {
-                      LinkUtil.launch(
-                        url,
-                        context,
-                        shouldUseHackiForHnLink: false,
-                        shouldUseReader: context
-                            .read<PreferenceCubit>()
-                            .state
-                            .isReaderEnabled,
-                        isOfflineReading:
-                            context.read<StoriesBloc>().state.isOfflineReading,
-                      );
-                    } else {
-                      onTap();
-                    }
-                  },
-                  child: SizedBox(
-                    height: layoutHeight,
-                    width: layoutHeight,
-                    child: imageUri == null && url.isEmpty
-                        ? FadeIn(
-                            child: Center(
-                              child: _HackerNewsImage(
-                                height: layoutHeight,
-                              ),
+        final List<Widget> children = <Widget>[
+          if (shouldShowMultiMedia)
+            Padding(
+              padding: isImageLeftAligned
+                  ? const EdgeInsets.only(
+                      right: 8,
+                      top: 5,
+                      bottom: 5,
+                    )
+                  : const EdgeInsets.only(
+                      left: 8,
+                      top: 5,
+                      bottom: 5,
+                    ),
+              child: TapDownWrapper(
+                onTap: () {
+                  if (url.isNotEmpty) {
+                    LinkUtil.launch(
+                      url,
+                      context,
+                      shouldUseHackiForHnLink: false,
+                      shouldUseReader:
+                          context.read<PreferenceCubit>().state.isReaderEnabled,
+                      isOfflineReading:
+                          context.read<StoriesBloc>().state.isOfflineReading,
+                    );
+                  } else {
+                    onTap();
+                  }
+                },
+                child: Container(
+                  color: Theme.of(context).colorScheme.surfaceContainerLow,
+                  height: layoutHeight,
+                  width: layoutHeight,
+                  child: imageUri == null && url.isEmpty
+                      ? FadeIn(
+                          child: Center(
+                            child: _HackerNewsImage(
+                              height: layoutHeight,
                             ),
-                          )
-                        : () {
-                            if (imageUri?.isNotEmpty ?? false) {
-                              return CachedNetworkImage(
-                                imageUrl: imageUri!,
-                                fit:
-                                    isIcon ? BoxFit.scaleDown : BoxFit.fitWidth,
-                                cacheKey: imageUri,
-                                errorWidget: (_, __, ___) {
-                                  if (url.isEmpty) {
-                                    return FadeIn(
-                                      child: Center(
-                                        child: _HackerNewsImage(
-                                          height: layoutHeight,
-                                        ),
+                          ),
+                        )
+                      : () {
+                          if (imageUri?.isNotEmpty ?? false) {
+                            return CachedNetworkImage(
+                              imageUrl: imageUri!,
+                              fit: isIcon ? BoxFit.scaleDown : BoxFit.scaleDown,
+                              cacheKey: imageUri,
+                              errorWidget: (_, __, ___) {
+                                if (url.isEmpty) {
+                                  return FadeIn(
+                                    child: Center(
+                                      child: _HackerNewsImage(
+                                        height: layoutHeight,
                                       ),
-                                    );
-                                  }
-                                  return Center(
-                                    child: CachedNetworkImage(
-                                      imageUrl: Constants.favicon(url),
-                                      fit: BoxFit.scaleDown,
-                                      cacheKey: iconUri,
-                                      errorWidget: (_, __, ___) {
-                                        return const FadeIn(
-                                          child: Icon(
-                                            Icons.public,
-                                            size: Dimens.pt20,
-                                          ),
-                                        );
-                                      },
+                                    ),
+                                  );
+                                }
+                                return Center(
+                                  child: CachedNetworkImage(
+                                    imageUrl: Constants.favicon(url),
+                                    fit: BoxFit.scaleDown,
+                                    cacheKey: iconUri,
+                                    errorWidget: (_, __, ___) {
+                                      return const FadeIn(
+                                        child: Icon(
+                                          Icons.public,
+                                          size: Dimens.pt20,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                            );
+                          } else if (url.isNotEmpty) {
+                            return Center(
+                              child: CachedNetworkImage(
+                                imageUrl: Constants.favicon(url),
+                                fit: BoxFit.scaleDown,
+                                cacheKey: iconUri,
+                                errorWidget: (_, __, ___) {
+                                  return const FadeIn(
+                                    child: Icon(
+                                      Icons.public,
+                                      size: Dimens.pt20,
                                     ),
                                   );
                                 },
-                              );
-                            } else if (url.isNotEmpty) {
-                              return Center(
-                                child: CachedNetworkImage(
-                                  imageUrl: Constants.favicon(url),
-                                  fit: BoxFit.scaleDown,
-                                  cacheKey: iconUri,
-                                  errorWidget: (_, __, ___) {
-                                    return const FadeIn(
-                                      child: Icon(
-                                        Icons.public,
-                                        size: Dimens.pt20,
-                                      ),
-                                    );
-                                  },
+                              ),
+                            );
+                          } else {
+                            return FadeIn(
+                              child: Center(
+                                child: _HackerNewsImage(
+                                  height: layoutHeight,
                                 ),
-                              );
-                            } else {
-                              return FadeIn(
-                                child: Center(
-                                  child: _HackerNewsImage(
-                                    height: layoutHeight,
-                                  ),
-                                ),
-                              );
-                            }
-                          }(),
-                  ),
-                ),
-              )
-            else
-              const SizedBox(width: Dimens.zero),
-            TapDownWrapper(
-              onTap: onTap,
-              child: SizedBox(
-                height: shouldShowMultiMedia ? layoutHeight : null,
-                width: shouldShowMultiMedia
-                    ? layoutWidth - layoutHeight - 8
-                    : layoutWidth,
-                child: Text(
-                  description,
-                  textAlign: TextAlign.left,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: hasRead ? Theme.of(context).readGrey : null,
-                      ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: maxLines,
+                              ),
+                            );
+                          }
+                        }(),
                 ),
               ),
+            )
+          else
+            const SizedBox(width: Dimens.zero),
+          TapDownWrapper(
+            onTap: onTap,
+            child: SizedBox(
+              height: shouldShowMultiMedia ? layoutHeight : null,
+              width: shouldShowMultiMedia
+                  ? layoutWidth - layoutHeight - 8
+                  : layoutWidth,
+              child: Text(
+                description,
+                textAlign: TextAlign.left,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: hasRead ? Theme.of(context).readGrey : null,
+                    ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: maxLines,
+              ),
             ),
-          ],
+          ),
+        ];
+
+        return Row(
+          children: isImageLeftAligned ? children : children.reversed.toList(),
         );
       },
     );

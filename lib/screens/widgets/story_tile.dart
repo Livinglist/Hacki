@@ -20,6 +20,7 @@ class StoryTile extends StatelessWidget {
     required this.shouldShowFavicon,
     required this.shouldShowUrl,
     required this.isExpandedTileEnabled,
+    required this.isImageLeftAligned,
     required this.story,
     required this.onTap,
     super.key,
@@ -41,6 +42,7 @@ class StoryTile extends StatelessWidget {
   final bool hasRead;
   final bool isExpandedTileEnabled;
   final bool isIndexedStoryTileEnabled;
+  final bool isImageLeftAligned;
   final Story story;
   final int? index;
   final VoidCallback onTap;
@@ -126,12 +128,14 @@ class StoryTile extends StatelessWidget {
               LinkPreview(
                 story: story,
                 link: story.url,
+                isImageLeftAligned: isImageLeftAligned,
                 isOfflineReading:
                     context.read<StoriesBloc>().state.isOfflineReading,
                 isExpandedTileEnabled: isExpandedTileEnabled,
                 placeholderWidget: _LinkPreviewPlaceholder(
                   height: height,
                   shouldShowPreviewImage: shouldShowPreviewImage,
+                  isImageLeftAligned: isImageLeftAligned,
                 ),
                 errorImage: Constants.hackerNewsLogoLink,
                 backgroundColor: Palette.transparent,
@@ -304,10 +308,12 @@ class _LinkPreviewPlaceholder extends StatelessWidget {
   const _LinkPreviewPlaceholder({
     required this.height,
     required this.shouldShowPreviewImage,
+    required this.isImageLeftAligned,
   });
 
   final double height;
   final bool shouldShowPreviewImage;
+  final bool isImageLeftAligned;
 
   @override
   Widget build(BuildContext context) {
@@ -323,7 +329,7 @@ class _LinkPreviewPlaceholder extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              if (shouldShowPreviewImage)
+              if (shouldShowPreviewImage && isImageLeftAligned)
                 Padding(
                   padding: const EdgeInsets.only(
                     right: Dimens.pt5,
@@ -339,10 +345,17 @@ class _LinkPreviewPlaceholder extends StatelessWidget {
               Expanded(
                 flex: 4,
                 child: Padding(
-                  padding: EdgeInsets.only(
-                    left: shouldShowPreviewImage ? Dimens.pt4 : Dimens.zero,
-                    top: Dimens.pt6,
-                  ),
+                  padding: isImageLeftAligned
+                      ? EdgeInsets.only(
+                          left:
+                              shouldShowPreviewImage ? Dimens.pt4 : Dimens.zero,
+                          top: Dimens.pt6,
+                        )
+                      : EdgeInsets.only(
+                          right:
+                              shouldShowPreviewImage ? Dimens.pt4 : Dimens.zero,
+                          top: Dimens.pt6,
+                        ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -395,6 +408,19 @@ class _LinkPreviewPlaceholder extends StatelessWidget {
                   ),
                 ),
               ),
+              if (shouldShowPreviewImage && !isImageLeftAligned)
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: Dimens.pt5,
+                    bottom: Dimens.pt5,
+                    top: Dimens.pt5,
+                  ),
+                  child: Container(
+                    height: height,
+                    width: height,
+                    color: Palette.white,
+                  ),
+                ),
             ],
           ),
         ),

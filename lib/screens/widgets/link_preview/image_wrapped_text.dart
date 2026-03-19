@@ -15,10 +15,11 @@ class ImageWrapText extends StatelessWidget {
     required this.onTap,
     required this.url,
     required this.hasRead,
+    required this.isImageLeftAligned,
     super.key,
     this.imageHeight = 200,
     this.imageWidth = 200,
-    this.gap = 12,
+    this.gap = 8,
     this.style,
   });
 
@@ -31,6 +32,7 @@ class ImageWrapText extends StatelessWidget {
   final String url;
   final VoidCallback onTap;
   final bool hasRead;
+  final bool isImageLeftAligned;
 
   @override
   Widget build(BuildContext context) {
@@ -42,14 +44,15 @@ class ImageWrapText extends StatelessWidget {
         final double maxWidth = constraints.maxWidth;
         final double rightWidth = math.max(0, maxWidth - imageWidth - gap);
 
-        // 先测出行高（用一小段字符即可）
+        /// Measure the line height.
         final double lineHeight = _measureLineHeight(effectiveStyle, context);
 
-        // 图片高度能放下多少行文字（至少 1 行）
+        /// Check how many lines can be fit in the image height.
         final int linesBesideImage =
             math.max(1, (imageHeight / lineHeight).floor());
 
-        // 计算 text 在右侧区域、限定行数下能放多少字符，得到切分点
+        /// Get the index of text where the upper and
+        /// lower part should be split.
         final int splitIndex = _findSplitIndex(
           text: text,
           style: effectiveStyle,
@@ -60,6 +63,34 @@ class ImageWrapText extends StatelessWidget {
 
         final String firstPart = text.substring(0, splitIndex).trimRight();
         final String secondPart = text.substring(splitIndex).trimLeft();
+        final Widget imageWidget = Padding(
+          padding: const EdgeInsets.only(
+            top: Dimens.pt5,
+          ),
+          child: TapDownWrapper(
+            onTap: () {
+              if (url.isNotEmpty) {
+                LinkUtil.launch(
+                  url,
+                  context,
+                  shouldUseHackiForHnLink: false,
+                  shouldUseReader:
+                      context.read<PreferenceCubit>().state.isReaderEnabled,
+                  isOfflineReading:
+                      context.read<StoriesBloc>().state.isOfflineReading,
+                );
+              } else {
+                onTap();
+              }
+            },
+            child: Container(
+              color: Theme.of(context).colorScheme.surfaceContainerLow,
+              width: imageWidth,
+              height: imageHeight - 8,
+              child: image,
+            ),
+          ),
+        );
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,38 +98,10 @@ class ImageWrapText extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: Dimens.pt6,
-                  ),
-                  child: TapDownWrapper(
-                    onTap: () {
-                      if (url.isNotEmpty) {
-                        LinkUtil.launch(
-                          url,
-                          context,
-                          shouldUseHackiForHnLink: false,
-                          shouldUseReader: context
-                              .read<PreferenceCubit>()
-                              .state
-                              .isReaderEnabled,
-                          isOfflineReading: context
-                              .read<StoriesBloc>()
-                              .state
-                              .isOfflineReading,
-                        );
-                      } else {
-                        onTap();
-                      }
-                    },
-                    child: SizedBox(
-                      width: imageWidth,
-                      height: imageHeight,
-                      child: image,
-                    ),
-                  ),
-                ),
-                SizedBox(width: gap),
+                if (isImageLeftAligned) ...<Widget>[
+                  imageWidget,
+                  SizedBox(width: gap),
+                ],
                 Expanded(
                   child: TapDownWrapper(
                     onTap: onTap,
@@ -110,10 +113,13 @@ class ImageWrapText extends StatelessWidget {
                     ),
                   ),
                 ),
+                if (!isImageLeftAligned) ...<Widget>[
+                  SizedBox(width: gap),
+                  imageWidget,
+                ],
               ],
             ),
             if (secondPart.isNotEmpty) ...<Widget>[
-              SizedBoxes.pt8,
               TapDownWrapper(
                 onTap: onTap,
                 child: Text(
@@ -137,7 +143,7 @@ class ImageWrapText extends StatelessWidget {
       textDirection: Directionality.of(context),
       maxLines: 1,
     )..layout();
-    return tp.height; // 单行高度
+    return tp.height;
   }
 
   static int _findSplitIndex({
@@ -161,11 +167,9 @@ class ImageWrapText extends StatelessWidget {
         ellipsis: '\u2026',
       )..layout(maxWidth: width);
 
-      // didExceedMaxLines 为 true 表示放不下
       return !tp.didExceedMaxLines;
     }
 
-    // 二分找最大可放下的字符数
     while (lo < hi) {
       final int mid = (lo + hi + 1) >> 1;
       if (fits(mid)) {

@@ -361,6 +361,8 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                         shouldShowUrl: prefState.isUrlEnabled,
                                         shouldShowFavicon:
                                             prefState.isFaviconEnabled,
+                                        isImageLeftAligned:
+                                            prefState.isPreviewImageLeftAligned,
                                         shouldShowPreviewImage: true,
                                         isExpandedTileEnabled: false,
                                         story: e,

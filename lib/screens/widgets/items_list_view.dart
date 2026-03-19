@@ -31,6 +31,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.isExpandedTileEnabled = false,
     this.isIndexedStoryTileEnabled = false,
     this.isHideInsteadOfMarkingGrayEnabled = false,
+    this.isPreviewImageLeftAligned = false,
     this.loadStyle = LoadStyle.ShowWhenLoading,
     this.onRefresh,
     this.onLoadMore,
@@ -55,6 +56,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   final bool shouldShowOfflineBanner;
   final bool isExpandedTileEnabled;
   final bool isIndexedStoryTileEnabled;
+  final bool isPreviewImageLeftAligned;
   final bool isHideInsteadOfMarkingGrayEnabled;
 
   final LoadStyle loadStyle;
@@ -185,6 +187,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                       shouldShowPreviewImage: shouldShowPreviewImage,
                       isExpandedTileEnabled: isExpandedTileEnabled,
                       isIndexedStoryTileEnabled: isIndexedStoryTileEnabled,
+                      isImageLeftAligned: isPreviewImageLeftAligned,
                       hasRead: shouldMarkReadStories && hasRead,
                     ),
                   ),

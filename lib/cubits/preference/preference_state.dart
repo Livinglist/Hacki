@@ -13,7 +13,8 @@ class PreferenceState extends Equatable {
   Iterable<Preference<dynamic>> get settingsPreferences => preferences.where(
         (Preference<dynamic> p) =>
             p.isDisplayable &&
-            (p is BooleanPreference || p is DividerPlaceholder),
+            (p is BooleanPreference || p is DividerPlaceholder) &&
+            p.dependencies.satisfy(preferences),
       );
 
   PreferenceState copyWith({
@@ -103,6 +104,9 @@ class PreferenceState extends Equatable {
   bool get isDevModeEnabled => _isOn<DevMode>();
 
   bool get isHackerNewsThemeEnabled => _isOn<HackerNewsThemePreference>();
+
+  bool get isPreviewImageLeftAligned =>
+      _isOn<PreviewImageAlignmentPreference>();
 
   double get textScaleFactor =>
       preferences.singleWhereType<TextScaleFactorPreference>().val;
