@@ -211,7 +211,7 @@ class _DownloadProgressReminderState extends State<DownloadProgressReminder>
                           child: Material(
                             color: Palette.transparent,
                             child: Text(
-                              '''Downloading all stories ($storiesDownloaded/$storiesToBeDownloaded)''',
+                              '''Downloading stories ($storiesDownloaded/$storiesToBeDownloaded)''',
                               style: TextStyle(
                                 color: Theme.of(context).colorScheme.onPrimary,
                                 fontSize: TextDimens.pt12,
