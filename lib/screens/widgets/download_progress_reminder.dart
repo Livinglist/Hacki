@@ -69,9 +69,10 @@ class _DownloadProgressReminderState extends State<DownloadProgressReminder>
                   const Spacer(),
                   LinearProgressIndicator(
                     value: progress,
-                    color: Theme.of(context).colorScheme.primary.withValues(
-                          alpha: 0.5,
-                        ),
+                    minHeight: Dimens.pt6,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    color:
+                        Theme.of(context).colorScheme.onPrimary.withAlpha(140),
                   ),
                 ],
               ),

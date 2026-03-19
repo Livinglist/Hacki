@@ -296,6 +296,8 @@ class CommentTile extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: Dimens.pt12,
+                              ).copyWith(
+                                bottom: Dimens.pt6,
                               ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -308,11 +310,21 @@ class CommentTile extends StatelessWidget {
                                               comment: comment,
                                             );
                                       },
-                                      child: Text(
-                                        '''Load ${comment.kids.length} ${comment.kids.length > 1 ? 'replies' : 'reply'}''',
-                                        style: const TextStyle(
-                                          fontSize: TextDimens.pt12,
-                                        ),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          SizedBoxes.pt6,
+                                          Text(
+                                            '''${comment.kids.length} ${comment.kids.length > 1 ? 'replies' : 'reply'}''',
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          const Icon(
+                                            Icons.keyboard_arrow_down_rounded,
+                                            size: Dimens.pt28,
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
