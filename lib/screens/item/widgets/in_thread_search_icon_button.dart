@@ -206,6 +206,10 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                       onSelected: (_) {
                         HapticFeedbackUtil.selection();
                         textEditingController.clear();
+                        widget.commentsCubit.search(
+                          '',
+                          author: state.inThreadSearchAuthor,
+                        );
                       },
                     ),
                   ],
