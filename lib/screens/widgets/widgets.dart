@@ -18,6 +18,7 @@ export 'link_preview/link_preview.dart';
 export 'offline_banner.dart';
 export 'onboarding_view.dart';
 export 'optional_wrapper.dart';
+export 'painters/shine_painter.dart';
 export 'painters/spindle_painter.dart';
 export 'spring_curve.dart';
 export 'stories_list_view.dart';
