@@ -19,6 +19,7 @@ import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/home/widgets/widgets.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:hacki/services/dialog_proxy.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
@@ -41,6 +42,8 @@ class _HomeScreenState extends State<HomeScreen>
       intentDataStreamSubscription;
   late final StreamSubscription<String?> notificationStreamSubscription;
   late final StreamSubscription<String?> siriSuggestionStreamSubscription;
+  late final StreamSubscription<StoriesDownloadStatus>
+      downloadStreamSubscription;
   final AppLinks appLinks = AppLinks();
 
   static final int tabLength = StoryType.values.length + 1;
@@ -61,6 +64,17 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
+
+    downloadStreamSubscription = context
+        .read<StoriesBloc>()
+        .stream
+        .map((StoriesState state) => state.downloadStatus)
+        .distinct()
+        .listen((StoriesDownloadStatus status) {
+      if (status == StoriesDownloadStatus.finished) {
+        DialogProxy.showDownloadCompletedDialog();
+      }
+    });
 
     appLinks.uriLinkStream.listen((Uri uri) {
       logInfo('deeplink uri received: ${uri.path}');
@@ -115,6 +129,7 @@ class _HomeScreenState extends State<HomeScreen>
     intentDataStreamSubscription.cancel();
     notificationStreamSubscription.cancel();
     siriSuggestionStreamSubscription.cancel();
+    downloadStreamSubscription.cancel();
     super.dispose();
   }
 

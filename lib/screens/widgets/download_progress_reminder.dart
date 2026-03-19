@@ -1,8 +1,5 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/extensions/extensions.dart';
@@ -28,8 +25,6 @@ class _DownloadProgressReminderState extends State<DownloadProgressReminder>
     begin: 0,
     end: 1,
   );
-  late final StreamSubscription<StoriesDownloadStatus>
-      downloadStreamSubscription;
 
   @override
   void initState() {
@@ -56,20 +51,11 @@ class _DownloadProgressReminderState extends State<DownloadProgressReminder>
         ? 0
         : storiesDownloaded / storiesToBeDownloaded;
     animationController.value = progressValue;
-    downloadStreamSubscription = storiesBloc.stream
-        .map((StoriesState state) => state.downloadStatus)
-        .distinct()
-        .listen((StoriesDownloadStatus status) {
-      if (status == StoriesDownloadStatus.finished) {
-        showDownloadCompletedDialog();
-      }
-    });
   }
 
   @override
   void dispose() {
     animationController.dispose();
-    downloadStreamSubscription.cancel();
     super.dispose();
   }
 
@@ -229,21 +215,6 @@ class _DownloadProgressReminderState extends State<DownloadProgressReminder>
           ),
         );
       },
-    );
-  }
-
-  void showDownloadCompletedDialog() {
-    showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: const Text('Download completed'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: context.pop,
-            child: const Text('Noooice!'),
-          ),
-        ],
-      ),
     );
   }
 }
