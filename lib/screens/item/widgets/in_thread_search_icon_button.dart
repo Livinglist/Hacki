@@ -252,7 +252,7 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                               targetCommentContext.mounted) {
                             Scrollable.ensureVisible(
                               targetCommentContext,
-                              alignment: 0.2,
+                              alignment: 0.3,
                               duration: AppDurations.ms300,
                             );
                           }
