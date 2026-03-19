@@ -230,7 +230,7 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                                 false;
                       }
 
-                      if (cmtContext == null) {
+                      if (targetCommentContext == null) {
                         // If no comment context can be found, try to find out
                         // the index of the target comment in the thread.
                         final int index = state.comments.indexWhere(
@@ -248,8 +248,7 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                         // If there is a comment context, then use the
                         // `ensureVisible` to bring it into view.
                         Future<void>.delayed(AppDurations.ms500, () {
-                          if (targetCommentContext != null &&
-                              targetCommentContext.mounted) {
+                          if (targetCommentContext.mounted) {
                             Scrollable.ensureVisible(
                               targetCommentContext,
                               alignment: 0.3,
