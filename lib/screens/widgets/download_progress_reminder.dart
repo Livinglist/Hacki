@@ -39,7 +39,7 @@ class _DownloadProgressReminderState extends State<DownloadProgressReminder>
         return Visibility(
           visible: isVisible,
           child: Stack(
-            children: [
+            children: <Widget>[
               Positioned.fill(
                 child: Hero(
                   tag: HeroTags.progressReminderHeroTag,
