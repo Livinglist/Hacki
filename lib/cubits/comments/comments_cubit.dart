@@ -688,7 +688,9 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
   void _onCommentFetched(BuildableComment? comment) {
     if (comment != null) {
-      globalKeys[comment.id] = GlobalKey();
+      globalKeys[comment.id] = GlobalKey(
+        debugLabel: 'comment_tile_key_${comment.id}_under_${state.item.id}',
+      );
       _collapseCache.addKid(comment.id, to: comment.parent);
       _commentCache.cacheComment(comment);
 

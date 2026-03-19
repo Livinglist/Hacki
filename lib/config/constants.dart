@@ -60,10 +60,14 @@ abstract class Constants {
   ].randomlyPicked!;
 
   static final String magicWord = <String>[
-    'seek the light.',
-    '1577712900.',
-    '1 Corinthians 13:4-8.',
-    'get everybody moving.',
+    'Seek The Light',
+    '1577712900',
+    '37.83195° N, 122.47774° W',
+    '1 Corinthians 13:4-8',
+    'Get Everybody Moving',
+    'WALK ON WATER',
+    '天空沒有極限',
+    '''就算一刻洩氣別要捨棄 人若沒有夢這生似死''',
   ].randomlyPicked!;
 
   static final String errorMessage = 'Something went wrong...$sadFace';

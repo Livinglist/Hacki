@@ -382,26 +382,36 @@ class _ItemScreenState extends State<ItemScreen>
                       onFontSizeTap: onFontSizeTapped,
                       fontSizeIconButtonKey: fontSizeIconButtonKey,
                     ),
-                    body: MainView(
-                      scrollOffsetListener: scrollOffsetListener,
-                      commentEditingController: commentEditingController,
-                      authState: authState,
-                      topPadding: context.topPadding,
-                      splitViewEnabled: widget.splitViewEnabled,
-                      onMoreTapped: (Item context, Rect? rect) => onMoreTapped(
-                        context,
-                        rect,
-                        parent: widget.item,
-                      ),
-                      onRightMoreTapped: onRightMoreTapped,
-                      shouldMarkNewComment: widget.shouldMarkNewComment,
-                    ),
-                    floatingActionButton: context
+                    body: Stack(
+                      children: <Widget>[
+                        Positioned.fill(
+                          child: MainView(
+                            scrollOffsetListener: scrollOffsetListener,
+                            commentEditingController: commentEditingController,
+                            authState: authState,
+                            topPadding: context.topPadding,
+                            splitViewEnabled: widget.splitViewEnabled,
+                            onMoreTapped: (Item context, Rect? rect) =>
+                                onMoreTapped(
+                              context,
+                              rect,
+                              parent: widget.item,
+                            ),
+                            onRightMoreTapped: onRightMoreTapped,
+                            shouldMarkNewComment: widget.shouldMarkNewComment,
+                          ),
+                        ),
+                        if (context
                             .read<PreferenceCubit>()
                             .state
-                            .areSkipButtonsEnabled
-                        ? const CustomFloatingActionButton()
-                        : null,
+                            .areSkipButtonsEnabled)
+                          const Positioned(
+                            right: Dimens.pt12,
+                            bottom: Dimens.pt48,
+                            child: CustomFloatingActionButton(),
+                          ),
+                      ],
+                    ),
                     bottomSheet: ReplyBox(
                       textEditingController: commentEditingController,
                       focusNode: focusNode,
