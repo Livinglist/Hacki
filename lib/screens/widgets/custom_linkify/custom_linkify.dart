@@ -1,7 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/context_extension.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/custom_linkify/linkifiers/linkifiers.dart';
 import 'package:hacki/styles/palette.dart';
@@ -378,12 +381,29 @@ TextSpan buildTextSpan(
               ),
             );
           } else {
-            return TextSpan(
-              text: element.text,
-              style: linkStyle,
-              recognizer: onOpen != null
-                  ? (TapGestureRecognizer()..onTap = () => onOpen(element))
-                  : null,
+            return WidgetSpan(
+              child: InkWell(
+                onLongPress: () {
+                  final String url = element.url;
+                  if (url.isNotEmpty) {
+                    Clipboard.setData(
+                      ClipboardData(text: url),
+                    ).whenComplete(() {
+                      HapticFeedbackUtil.selection();
+                      navigatorKey.currentContext?.showSnackBar(
+                        content: 'Link copied.',
+                      );
+                    });
+                  }
+                },
+                onTap: () {
+                  onOpen?.call(element);
+                },
+                child: Text(
+                  element.text,
+                  style: linkStyle,
+                ),
+              ),
             );
           }
         } else {
