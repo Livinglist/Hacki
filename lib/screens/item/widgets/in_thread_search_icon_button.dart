@@ -7,9 +7,11 @@ import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/collapse/collapse_cubit.dart';
 import 'package:hacki/cubits/comments/comments_cubit.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/screens/widgets/shine_overlay.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/debouncer.dart';
+import 'package:hacki/utils/haptic_feedback_util.dart';
 
 class InThreadSearchIconButton extends StatelessWidget {
   const InThreadSearchIconButton({super.key});
@@ -173,10 +175,10 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                         }
                       },
                     ),
-                    const SizedBox(
-                      width: Dimens.pt12,
-                    ),
-                    if (authState.isLoggedIn)
+                    if (authState.isLoggedIn) ...<Widget>[
+                      const SizedBox(
+                        width: Dimens.pt12,
+                      ),
                       CustomChip(
                         selected:
                             state.inThreadSearchAuthor == authState.username,
@@ -194,6 +196,18 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                           }
                         },
                       ),
+                    ],
+                    const SizedBox(
+                      width: Dimens.pt12,
+                    ),
+                    CustomChip(
+                      selected: false,
+                      label: 'clear',
+                      onSelected: (_) {
+                        HapticFeedbackUtil.selection();
+                        textEditingController.clear();
+                      },
+                    ),
                   ],
                 ),
                 for (final Comment comment in state.matchedComments)
@@ -202,14 +216,30 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                     fetchMode: FetchMode.lazy,
                     isActionable: false,
                     isCollapsable: false,
-                    onTap: () {
+                    onTap: () async {
                       widget.action();
 
-                      // Find out the context of the target comment and also
-                      // all of its ancestors, uncollapse them if they
-                      // are collapsed.
-                      BuildContext? cmtContext = widget
-                          .commentsCubit.globalKeys[comment.id]?.currentContext;
+                      /// Find out the index of the comment in the thread.
+                      final int index = state.comments.indexWhere(
+                        (Comment cmt) => cmt.id == comment.id,
+                      );
+
+                      /// If index if found, scroll to the comment.
+                      if (index != -1) {
+                        await widget.commentsCubit.scrollTo(
+                          index: index + 1,
+                          alignment: 0.2,
+                        );
+                      }
+
+                      /// Then find out the context of the target comment and
+                      /// also all of its ancestors, uncollapse them if they
+                      /// are collapsed.
+                      final GlobalKey<State<StatefulWidget>>?
+                          targetCommentGlobalKey =
+                          widget.commentsCubit.globalKeys[comment.id];
+                      BuildContext? cmtContext =
+                          targetCommentGlobalKey?.currentContext;
                       bool isCollapsed =
                           cmtContext?.read<CollapseCubit>().state.collapsed ??
                               false;
@@ -217,7 +247,7 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                       final BuildContext? targetCommentContext = cmtContext;
 
                       while (curComment != null && cmtContext != null) {
-                        if (isCollapsed) {
+                        if (isCollapsed && cmtContext.mounted) {
                           cmtContext.read<CollapseCubit>().uncollapse();
                         }
                         curComment = widget.commentsCubit.state
@@ -230,32 +260,30 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                                 false;
                       }
 
-                      if (targetCommentContext == null) {
-                        // If no comment context can be found, try to find out
-                        // the index of the target comment in the thread.
-                        final int index = state.comments.indexWhere(
-                          (Comment cmt) => cmt.id == comment.id,
-                        );
-
-                        // If index if found, scroll to the comment.
-                        if (index != -1) {
-                          widget.commentsCubit.scrollTo(
-                            index: index + 1,
-                            alignment: 0.2,
+                      /// After uncollapsing all the ancestors,
+                      /// once again, ensure the target comment is visible.
+                      /// Then create a shine effect on the widget to
+                      /// briefly highlight the target comment tile.
+                      if (targetCommentContext != null) {
+                        /// If there is a comment context, then use the
+                        /// `ensureVisible` to bring it into view.
+                        if (targetCommentContext.mounted) {
+                          await Scrollable.ensureVisible(
+                            targetCommentContext,
+                            alignment: 0.3,
+                            duration: AppDurations.ms300,
                           );
+
+                          Future<void>.delayed(AppDurations.ms100, () {
+                            if (targetCommentGlobalKey != null &&
+                                targetCommentContext.mounted) {
+                              _startShine(
+                                targetCommentContext,
+                                targetCommentGlobalKey,
+                              );
+                            }
+                          });
                         }
-                      } else {
-                        // If there is a comment context, then use the
-                        // `ensureVisible` to bring it into view.
-                        Future<void>.delayed(AppDurations.ms500, () {
-                          if (targetCommentContext.mounted) {
-                            Scrollable.ensureVisible(
-                              targetCommentContext,
-                              alignment: 0.3,
-                              duration: AppDurations.ms300,
-                            );
-                          }
-                        });
                       }
                     },
                   ),
@@ -265,5 +293,33 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
         },
       ),
     );
+  }
+
+  static Rect? _getWidgetRect(GlobalKey targetGlobalKey) {
+    final RenderBox? renderBox =
+        targetGlobalKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null) return null;
+
+    final Offset offset = renderBox.localToGlobal(Offset.zero);
+    final Size size = renderBox.size;
+    return offset & size;
+  }
+
+  static void _startShine(
+    BuildContext targetContext,
+    GlobalKey targetGlobalKey,
+  ) {
+    final Rect? rect = _getWidgetRect(targetGlobalKey);
+    if (rect == null) return;
+
+    late OverlayEntry entry;
+    entry = OverlayEntry(
+      builder: (_) => ShineOverlay(
+        rect: rect,
+        onDone: () => entry.remove(),
+      ),
+    );
+
+    Overlay.of(targetContext).insert(entry);
   }
 }

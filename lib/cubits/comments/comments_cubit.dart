@@ -502,12 +502,12 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     init(shouldUseCommentCache: true);
   }
 
-  void scrollTo({
+  Future<void> scrollTo({
     required int index,
     double alignment = 0.0,
-  }) {
+  }) async {
     debugPrint('Scrolling to: $index, alignment: $alignment');
-    itemScrollController.scrollTo(
+    await itemScrollController.scrollTo(
       index: index,
       alignment: alignment,
       duration: AppDurations.ms400,
