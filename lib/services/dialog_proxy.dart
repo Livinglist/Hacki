@@ -44,6 +44,7 @@ abstract class DialogProxy {
     if (context == null) return;
     showDialog<bool>(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) => AlertDialog(
         title: const Text('Download completed'),
         actions: <Widget>[
