@@ -205,11 +205,13 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                       label: 'clear',
                       onSelected: (_) {
                         HapticFeedbackUtil.selection();
-                        textEditingController.clear();
-                        widget.commentsCubit.search(
-                          '',
-                          author: state.inThreadSearchAuthor,
-                        );
+                        if (textEditingController.text.isNotEmpty) {
+                          textEditingController.clear();
+                          widget.commentsCubit.search(
+                            '',
+                            author: state.inThreadSearchAuthor,
+                          );
+                        }
                       },
                     ),
                   ],
