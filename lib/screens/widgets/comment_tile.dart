@@ -262,7 +262,7 @@ class CommentTile extends StatelessWidget {
                                   const CenteredText.blocked()
                                 else
                                   AnimatedCrossFade(
-                                    duration: AppDurations.ms400,
+                                    duration: AppDurations.ms300,
                                     crossFadeState:
                                         isActionable && state.collapsed
                                             ? CrossFadeState.showFirst
@@ -340,7 +340,7 @@ class CommentTile extends StatelessWidget {
                               crossFadeState: _shouldShowLoadButton(context)
                                   ? CrossFadeState.showFirst
                                   : CrossFadeState.showSecond,
-                              duration: AppDurations.ms400,
+                              duration: AppDurations.ms300,
                             ),
                             if (shouldShowDivider)
                               const Divider(
@@ -429,7 +429,7 @@ class CommentTile extends StatelessWidget {
                 : CrossFadeState.showSecond,
             firstCurve: Curves.easeOutCubic,
             secondCurve: Curves.easeOutCubic,
-            duration: AppDurations.ms400,
+            duration: AppDurations.ms300,
           );
         },
       ),
