@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -9,6 +10,7 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/item/widgets/lazy_fetch_load_button.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/utils/haptic_feedback_util.dart';
 
 class CommentTile extends StatelessWidget {
   const CommentTile({
@@ -151,6 +153,7 @@ class CommentTile extends StatelessWidget {
                       splashFactory: NoSplash.splashFactory,
                       onTap: () {
                         if (isCollapsable) {
+                          HapticFeedbackUtil.selection();
                           if (comment.isCollapsedByUser) {
                             context.read<CommentsCubit>().uncollapse(comment);
                           } else {
@@ -198,6 +201,15 @@ class CommentTile extends StatelessWidget {
                                 if (index != null)
                                   Text(
                                     ' #${index! + 1}',
+                                    style: const TextStyle(
+                                      color: Palette.grey,
+                                    ),
+                                    textScaler:
+                                        MediaQuery.of(context).textScaler,
+                                  ),
+                                if (kDebugMode)
+                                  Text(
+                                    ' ${comment.id}',
                                     style: const TextStyle(
                                       color: Palette.grey,
                                     ),
@@ -312,7 +324,8 @@ class CommentTile extends StatelessWidget {
                                           textScaler:
                                               MediaQuery.of(context).textScaler,
                                           onTap: () {
-                                            if (onTap == null) {
+                                            if (isCollapsable) {
+                                              HapticFeedbackUtil.selection();
                                               if (comment.isCollapsedByUser) {
                                                 context
                                                     .read<CommentsCubit>()
@@ -323,7 +336,7 @@ class CommentTile extends StatelessWidget {
                                                     .collapse(comment);
                                               }
                                             } else {
-                                              onTap!.call();
+                                              onTap?.call();
                                             }
                                           },
                                         ),

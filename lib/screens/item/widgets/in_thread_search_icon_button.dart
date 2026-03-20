@@ -1,4 +1,5 @@
 import 'package:animations/animations.dart';
+import 'package:collection/collection.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -225,9 +226,11 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                       widget.action();
 
                       /// Find out the index of the comment in the thread.
-                      final int index = state.comments.indexWhere(
-                        (Comment cmt) => cmt.id == comment.id,
-                      );
+
+                      final Comment? matchedComment = state.comments
+                          .singleWhereOrNull((Comment c) => c.id == comment.id);
+                      if (matchedComment == null) return;
+                      final int index = state.comments.indexOf(matchedComment);
 
                       /// If index if found, scroll to the comment.
                       if (index != -1) {
@@ -242,17 +245,17 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                       /// are collapsed.
                       final GlobalKey<State<StatefulWidget>>?
                           targetCommentGlobalKey =
-                          widget.commentsCubit.globalKeys[comment.id];
-                      bool isCollapsed = comment.isCollapsedByUser;
-                      Comment? curComment = comment;
+                          widget.commentsCubit.globalKeys[matchedComment.id];
+                      Comment? curComment = matchedComment;
                       while (curComment != null) {
-                        if (isCollapsed) {
+                        if (curComment.isCollapsedByUser) {
                           widget.commentsCubit.uncollapse(curComment);
                         }
-                        curComment = widget.commentsCubit.state
-                            .idToCommentMap[curComment.parent];
+                        curComment = state.comments.singleWhereOrNull(
+                          (Comment c) => c.id == curComment?.parent,
+                        );
+
                         if (curComment == null) break;
-                        isCollapsed = curComment.isCollapsedByUser;
                       }
 
                       final BuildContext? targetCommentContext =

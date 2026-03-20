@@ -431,20 +431,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     final List<Comment> updatedComments = <Comment>[...state.comments];
     final int commentIndex =
         state.comments.indexWhere((Comment c) => c.id == comment.id);
-    final Comment updatedComment = comment.copyWith(isLocked: true);
-    updatedComments.replaceRange(
-      commentIndex,
-      commentIndex + 1,
-      <Comment>[updatedComment],
-    );
-    emit(state.copyWith(comments: updatedComments));
-  }
-
-  void unlock(Comment comment) {
-    final List<Comment> updatedComments = <Comment>[...state.comments];
-    final int commentIndex =
-        state.comments.indexWhere((Comment c) => c.id == comment.id);
-    final Comment updatedComment = comment.copyWith(isLocked: false);
+    final Comment updatedComment =
+        comment.copyWith(isLocked: !comment.isLocked);
     updatedComments.replaceRange(
       commentIndex,
       commentIndex + 1,
@@ -454,6 +442,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   }
 
   void collapse(Comment comment) {
+    if (comment.isLocked) return;
     final List<Comment> comments = <Comment>[...state.comments];
     final int commentIndex =
         state.comments.indexWhere((Comment c) => c.id == comment.id);
@@ -461,6 +450,13 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     final Comment updatedComment = comment.copyWith(isCollapsedByUser: true);
     final List<Comment> updatedComments = <Comment>[updatedComment];
     int endIndex = commentIndex + 1;
+
+    if (endIndex >= comments.length) {
+      comments.replaceRange(commentIndex, comments.length, updatedComments);
+      emit(state.copyWith(comments: comments));
+      return;
+    }
+
     for (int i = commentIndex + 1; i < comments.length; i++) {
       Comment cmt = comments.elementAt(i);
       if (cmt.level > commentLevel) {
@@ -473,9 +469,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         return;
       }
     }
-
-    comments.replaceRange(commentIndex, endIndex, updatedComments);
-    emit(state.copyWith(comments: comments));
   }
 
   void uncollapse(Comment comment) {
@@ -486,6 +479,13 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     final Comment updatedComment = comment.copyWith(isCollapsedByUser: false);
     final List<Comment> updatedComments = <Comment>[updatedComment];
     int endIndex = commentIndex + 1;
+
+    if (endIndex >= comments.length) {
+      comments.replaceRange(commentIndex, comments.length, updatedComments);
+      emit(state.copyWith(comments: comments));
+      return;
+    }
+
     for (int i = commentIndex + 1; i < comments.length; i++) {
       Comment cmt = comments.elementAt(i);
       if (cmt.level > commentLevel) {
