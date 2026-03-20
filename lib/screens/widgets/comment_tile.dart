@@ -7,6 +7,7 @@ import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/screens/item/widgets/lazy_fetch_load_button.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
@@ -250,112 +251,97 @@ class CommentTile extends StatelessWidget {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                AnimatedCrossFade(
-                                  firstChild: <Widget>[
-                                        if (isActionable && state.collapsed)
+                                if (comment.hidden)
+                                  const CenteredText.hidden()
+                                else if (comment.deleted)
+                                  const CenteredText.deleted()
+                                else if (comment.dead)
+                                  const CenteredText.dead()
+                                else if (blocklistState.blocklist
+                                    .contains(comment.by))
+                                  const CenteredText.blocked()
+                                else
+                                  AnimatedCrossFade(
+                                    duration: AppDurations.ms400,
+                                    crossFadeState:
+                                        isActionable && state.collapsed
+                                            ? CrossFadeState.showFirst
+                                            : CrossFadeState.showSecond,
+                                    firstChild: Padding(
+                                      padding: const EdgeInsets.only(
+                                        left: Dimens.pt8,
+                                        right: Dimens.pt2,
+                                        top: Dimens.pt6,
+                                      ),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          Text(
+                                            comment.text,
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .disabledColor,
+                                              fontSize:
+                                                  prefState.fontSize.fontSize,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            maxLines: 1,
+                                          ),
+                                          SizedBoxes.pt6,
                                           CenteredText(
                                             text:
-                                                '''collapsed (${state.collapsedCount + 1})''',
+                                                '''collapsed (${state.collapsedCount})''',
                                             color: Theme.of(context)
                                                 .colorScheme
                                                 .primary
                                                 .withValues(alpha: 0.8),
-                                          )
-                                        else if (comment.hidden)
-                                          const CenteredText.hidden()
-                                        else if (comment.deleted)
-                                          const CenteredText.deleted()
-                                        else if (comment.dead)
-                                          const CenteredText.dead()
-                                        else if (blocklistState.blocklist
-                                            .contains(comment.by))
-                                          const CenteredText.blocked()
-                                      ].firstOrNull ??
-                                      const SizedBox.shrink(),
-                                  secondChild: Padding(
-                                    padding: const EdgeInsets.only(
-                                      left: Dimens.pt8,
-                                      right: Dimens.pt2,
-                                      top: Dimens.pt6,
-                                      bottom: Dimens.pt12,
-                                    ),
-                                    child: SizedBox(
-                                      width: double.infinity,
-                                      child: Semantics(
-                                        label: '''At level ${comment.level}.''',
-                                        child: ItemText(
-                                          key: ValueKey<int>(comment.id),
-                                          item: comment,
-                                          selectable: isSelectable,
-                                          textScaler:
-                                              MediaQuery.of(context).textScaler,
-                                          onTap: () {
-                                            if (onTap == null) {
-                                              _onTextTapped(context);
-                                            } else {
-                                              onTap!.call();
-                                            }
-                                          },
-                                        ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                  crossFadeState:
-                                      (isActionable && state.collapsed) ||
-                                              comment.hidden ||
-                                              comment.deleted ||
-                                              comment.dead ||
-                                              blocklistState.blocklist
-                                                  .contains(comment.by)
-                                          ? CrossFadeState.showFirst
-                                          : CrossFadeState.showSecond,
-                                  duration: AppDurations.ms400,
-                                ),
-                              ],
-                            ),
-                            if (_shouldShowLoadButton(context))
-                              Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: Dimens.pt12,
-                                  ).copyWith(
-                                    bottom: Dimens.pt6,
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      Expanded(
-                                        child: TextButton(
-                                          onPressed: () {
-                                            HapticFeedbackUtil.selection();
-                                            context
-                                                .read<CommentsCubit>()
-                                                .loadMore(
-                                                  comment: comment,
-                                                );
-                                          },
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: <Widget>[
-                                              const Icon(
-                                                Icons
-                                                    .keyboard_arrow_down_rounded,
-                                                size: Dimens.pt28,
-                                              ),
-                                              Text(
-                                                '''${comment.kids.length} ${comment.kids.length > 1 ? 'replies' : 'reply'}''',
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            ],
+                                    secondChild: Padding(
+                                      padding: const EdgeInsets.only(
+                                        left: Dimens.pt8,
+                                        right: Dimens.pt2,
+                                        top: Dimens.pt6,
+                                        bottom: Dimens.pt12,
+                                      ),
+                                      child: SizedBox(
+                                        width: double.infinity,
+                                        child: Semantics(
+                                          label:
+                                              '''At level ${comment.level}.''',
+                                          child: ItemText(
+                                            key: ValueKey<int>(comment.id),
+                                            item: comment,
+                                            selectable: isSelectable,
+                                            textScaler: MediaQuery.of(context)
+                                                .textScaler,
+                                            onTap: () {
+                                              if (onTap == null) {
+                                                _onTextTapped(context);
+                                              } else {
+                                                onTap!.call();
+                                              }
+                                            },
                                           ),
                                         ),
                                       ),
-                                    ],
+                                    ),
                                   ),
-                                ),
+                              ],
+                            ),
+                            AnimatedCrossFade(
+                              firstChild: LazyFetchLoadButton(comment: comment),
+                              secondChild: const SizedBox(
+                                height: 0,
+                                width: double.infinity,
                               ),
+                              crossFadeState: _shouldShowLoadButton(context)
+                                  ? CrossFadeState.showFirst
+                                  : CrossFadeState.showSecond,
+                              duration: AppDurations.ms400,
+                            ),
                             if (shouldShowDivider)
                               const Divider(
                                 height: Dimens.zero,
@@ -441,6 +427,8 @@ class CommentTile extends StatelessWidget {
             crossFadeState: isActionable && state.hidden
                 ? CrossFadeState.showFirst
                 : CrossFadeState.showSecond,
+            firstCurve: Curves.easeOutCubic,
+            secondCurve: Curves.easeOutCubic,
             duration: AppDurations.ms400,
           );
         },
