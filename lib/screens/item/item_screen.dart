@@ -62,50 +62,45 @@ class ItemScreen extends StatefulWidget {
   static const String routeName = 'item';
 
   static Widget phone(ItemScreenArgs args) {
-    return RepositoryProvider<CollapseCache>(
-      create: (_) => CollapseCache(),
-      lazy: false,
-      child: MultiBlocProvider(
-        providers: <BlocProvider<dynamic>>[
-          BlocProvider<CommentsCubit>(
-            create: (BuildContext context) => CommentsCubit(
-              filterCubit: context.read<FilterCubit>(),
-              preferenceCubit: context.read<PreferenceCubit>(),
-              isOfflineReading:
-                  context.read<StoriesBloc>().state.isOfflineReading,
+    return MultiBlocProvider(
+      providers: <BlocProvider<dynamic>>[
+        BlocProvider<CommentsCubit>(
+          create: (BuildContext context) => CommentsCubit(
+            filterCubit: context.read<FilterCubit>(),
+            preferenceCubit: context.read<PreferenceCubit>(),
+            isOfflineReading:
+                context.read<StoriesBloc>().state.isOfflineReading,
+            item: args.item,
+            defaultFetchMode: context.read<PreferenceCubit>().state.fetchMode,
+            defaultCommentsOrder: context.read<PreferenceCubit>().state.order,
+          )..init(
+              shouldOnlyShowTargetComment: args.shouldOnlyShowTargetComment,
+              targetAncestors: args.targetComments,
+              shouldUseCommentCache: args.shouldUseCommentCache,
+              onError: (AppException e) =>
+                  context.showErrorSnackBar(e.message, e.error),
+            ),
+        ),
+      ],
+      child: Stack(
+        children: <Widget>[
+          Positioned.fill(
+            child: ItemScreen(
               item: args.item,
-              collapseCache: context.read<CollapseCache>(),
-              defaultFetchMode: context.read<PreferenceCubit>().state.fetchMode,
-              defaultCommentsOrder: context.read<PreferenceCubit>().state.order,
-            )..init(
-                shouldOnlyShowTargetComment: args.shouldOnlyShowTargetComment,
-                targetAncestors: args.targetComments,
-                shouldUseCommentCache: args.shouldUseCommentCache,
-                onError: (AppException e) =>
-                    context.showErrorSnackBar(e.message, e.error),
-              ),
+              parentComments: args.targetComments ?? <Comment>[],
+              shouldMarkNewComment: args.shouldMarkNewComment,
+            ),
+          ),
+          const Positioned(
+            left: Dimens.zero,
+            right: Dimens.zero,
+            bottom: Dimens.zero,
+            height: Dimens.pt40,
+            child: DownloadProgressReminder(
+              isDockedAtBottom: true,
+            ),
           ),
         ],
-        child: Stack(
-          children: <Widget>[
-            Positioned.fill(
-              child: ItemScreen(
-                item: args.item,
-                parentComments: args.targetComments ?? <Comment>[],
-                shouldMarkNewComment: args.shouldMarkNewComment,
-              ),
-            ),
-            const Positioned(
-              left: Dimens.zero,
-              right: Dimens.zero,
-              bottom: Dimens.zero,
-              height: Dimens.pt40,
-              child: DownloadProgressReminder(
-                isDockedAtBottom: true,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -120,38 +115,31 @@ class ItemScreen extends StatefulWidget {
           return true;
         }
       }(),
-      child: RepositoryProvider<CollapseCache>(
-        create: (_) => CollapseCache(),
-        lazy: false,
-        child: MultiBlocProvider(
-          key: ValueKey<ItemScreenArgs>(args),
-          providers: <BlocProvider<dynamic>>[
-            BlocProvider<CommentsCubit>(
-              create: (BuildContext context) => CommentsCubit(
-                filterCubit: context.read<FilterCubit>(),
-                preferenceCubit: context.read<PreferenceCubit>(),
-                isOfflineReading:
-                    context.read<StoriesBloc>().state.isOfflineReading,
-                item: args.item,
-                collapseCache: context.read<CollapseCache>(),
-                defaultFetchMode:
-                    context.read<PreferenceCubit>().state.fetchMode,
-                defaultCommentsOrder:
-                    context.read<PreferenceCubit>().state.order,
-              )..init(
-                  shouldOnlyShowTargetComment: args.shouldOnlyShowTargetComment,
-                  targetAncestors: args.targetComments,
-                  onError: (AppException e) =>
-                      context.showErrorSnackBar(e.message, e.error),
-                ),
-            ),
-          ],
-          child: ItemScreen(
-            item: args.item,
-            parentComments: args.targetComments ?? <Comment>[],
-            splitViewEnabled: true,
-            shouldMarkNewComment: args.shouldMarkNewComment,
+      child: MultiBlocProvider(
+        key: ValueKey<ItemScreenArgs>(args),
+        providers: <BlocProvider<dynamic>>[
+          BlocProvider<CommentsCubit>(
+            create: (BuildContext context) => CommentsCubit(
+              filterCubit: context.read<FilterCubit>(),
+              preferenceCubit: context.read<PreferenceCubit>(),
+              isOfflineReading:
+                  context.read<StoriesBloc>().state.isOfflineReading,
+              item: args.item,
+              defaultFetchMode: context.read<PreferenceCubit>().state.fetchMode,
+              defaultCommentsOrder: context.read<PreferenceCubit>().state.order,
+            )..init(
+                shouldOnlyShowTargetComment: args.shouldOnlyShowTargetComment,
+                targetAncestors: args.targetComments,
+                onError: (AppException e) =>
+                    context.showErrorSnackBar(e.message, e.error),
+              ),
           ),
+        ],
+        child: ItemScreen(
+          item: args.item,
+          parentComments: args.targetComments ?? <Comment>[],
+          splitViewEnabled: true,
+          shouldMarkNewComment: args.shouldMarkNewComment,
         ),
       ),
     );

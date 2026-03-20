@@ -18,6 +18,9 @@ class BuildableComment extends Comment with Buildable {
     required super.hidden,
     required super.level,
     required super.isFromCache,
+    required super.isCollapsedByUser,
+    required super.isHiddenByUser,
+    required super.isLocked,
     required this.elements,
   });
 
@@ -35,13 +38,19 @@ class BuildableComment extends Comment with Buildable {
           level: comment.level,
           hidden: comment.hidden,
           isFromCache: comment.isFromCache,
+          isHiddenByUser: comment.isHiddenByUser,
+          isCollapsedByUser: comment.isCollapsedByUser,
+          isLocked: comment.isLocked,
         );
 
   @override
   BuildableComment copyWith({
     int? level,
-    bool? hidden,
     int? kid,
+    bool? hidden,
+    bool? isHiddenByUser,
+    bool? isCollapsedByUser,
+    bool? isLocked,
   }) {
     return BuildableComment(
       id: id,
@@ -57,6 +66,9 @@ class BuildableComment extends Comment with Buildable {
       level: level ?? this.level,
       elements: elements,
       isFromCache: isFromCache,
+      isHiddenByUser: isHiddenByUser ?? this.isHiddenByUser,
+      isCollapsedByUser: isCollapsedByUser ?? this.isCollapsedByUser,
+      isLocked: isLocked ?? this.isLocked,
     );
   }
 

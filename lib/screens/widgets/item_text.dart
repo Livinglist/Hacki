@@ -40,8 +40,9 @@ class ItemText extends StatelessWidget {
       SelectionChangedCause? cause,
     ) {
       if (cause == SelectionChangedCause.longPress &&
-          selection.baseOffset != selection.extentOffset) {
-        context.tryRead<CollapseCubit>()?.lock();
+          selection.baseOffset != selection.extentOffset &&
+          item is Comment) {
+        context.tryRead<CommentsCubit>()?.lock(item as Comment);
       }
     }
 

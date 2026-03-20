@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/auth/auth_bloc.dart';
 import 'package:hacki/config/constants.dart';
-import 'package:hacki/cubits/collapse/collapse_cubit.dart';
 import 'package:hacki/cubits/comments/comments_cubit.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/shine_overlay.dart';
@@ -244,27 +243,20 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                       final GlobalKey<State<StatefulWidget>>?
                           targetCommentGlobalKey =
                           widget.commentsCubit.globalKeys[comment.id];
-                      BuildContext? cmtContext =
-                          targetCommentGlobalKey?.currentContext;
-                      bool isCollapsed =
-                          cmtContext?.read<CollapseCubit>().state.collapsed ??
-                              false;
+                      bool isCollapsed = comment.isCollapsedByUser;
                       Comment? curComment = comment;
-                      final BuildContext? targetCommentContext = cmtContext;
-
-                      while (curComment != null && cmtContext != null) {
-                        if (isCollapsed && cmtContext.mounted) {
-                          cmtContext.read<CollapseCubit>().uncollapse();
+                      while (curComment != null) {
+                        if (isCollapsed) {
+                          widget.commentsCubit.uncollapse(curComment);
                         }
                         curComment = widget.commentsCubit.state
                             .idToCommentMap[curComment.parent];
                         if (curComment == null) break;
-                        cmtContext = widget.commentsCubit
-                            .globalKeys[curComment.id]?.currentContext;
-                        isCollapsed =
-                            cmtContext?.read<CollapseCubit>().state.collapsed ??
-                                false;
+                        isCollapsed = curComment.isCollapsedByUser;
                       }
+
+                      final BuildContext? targetCommentContext =
+                          targetCommentGlobalKey?.currentContext;
 
                       /// After uncollapsing all the ancestors,
                       /// once again, ensure the target comment is visible.

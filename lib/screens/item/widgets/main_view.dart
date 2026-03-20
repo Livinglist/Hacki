@@ -48,7 +48,7 @@ class MainView extends StatelessWidget {
         Positioned.fill(
           child: BlocBuilder<CommentsCubit, CommentsState>(
             buildWhen: (CommentsState previous, CommentsState current) =>
-                previous.comments.length != current.comments.length ||
+                previous.comments != current.comments ||
                 previous.status != current.status,
             builder: (BuildContext context, CommentsState state) {
               return RefreshIndicator(
@@ -116,6 +116,9 @@ class MainView extends StatelessWidget {
                     return FadeIn(
                       key: ValueKey<String>('${comment.id}-FadeIn'),
                       child: CommentTile(
+                        key: context
+                            .read<CommentsCubit>()
+                            .globalKeys[comment.id],
                         comment: comment,
                         index: index,
                         level: comment.level,

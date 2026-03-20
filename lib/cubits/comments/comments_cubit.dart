@@ -31,7 +31,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   CommentsCubit({
     required FilterCubit filterCubit,
     required PreferenceCubit preferenceCubit,
-    required CollapseCache collapseCache,
     required bool isOfflineReading,
     required Item item,
     required FetchMode defaultFetchMode,
@@ -43,7 +42,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     HackerNewsWebRepository? hackerNewsWebRepository,
   })  : _filterCubit = filterCubit,
         _preferenceCubit = preferenceCubit,
-        _collapseCache = collapseCache,
         _commentCache = commentCache ?? locator.get<CommentCache>(),
         _offlineRepository =
             offlineRepository ?? locator.get<OfflineRepository>(),
@@ -69,7 +67,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
   final FilterCubit _filterCubit;
   final PreferenceCubit _preferenceCubit;
-  final CollapseCache _collapseCache;
   final CommentCache _commentCache;
   final OfflineRepository _offlineRepository;
   final SembastRepository _sembastRepository;
@@ -269,7 +266,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       return;
     }
 
-    _collapseCache.resetCollapsedComments();
+    // TODO(me): an option to keep the collapse state after refresh.
+    // _collapseCache.resetCollapsedComments();
 
     await _streamSubscription?.cancel();
     for (final int id in _streamSubscriptions.keys) {
@@ -391,7 +389,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                 .whereNotNull()
                 .listen((Comment cmt) {
           globalKeys[cmt.id] = GlobalKey();
-          _collapseCache.addKid(cmt.id, to: cmt.parent);
           _commentCache.cacheComment(cmt);
 
           final Map<int, Comment> updatedIdToCommentMap =
@@ -428,6 +425,96 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
             ..onData(onCommentFetched);
         }
     }
+  }
+
+  void lock(Comment comment) {
+    final List<Comment> updatedComments = <Comment>[...state.comments];
+    final int commentIndex =
+        state.comments.indexWhere((Comment c) => c.id == comment.id);
+    final Comment updatedComment = comment.copyWith(isLocked: true);
+    updatedComments.replaceRange(
+      commentIndex,
+      commentIndex + 1,
+      <Comment>[updatedComment],
+    );
+    emit(state.copyWith(comments: updatedComments));
+  }
+
+  void unlock(Comment comment) {
+    final List<Comment> updatedComments = <Comment>[...state.comments];
+    final int commentIndex =
+        state.comments.indexWhere((Comment c) => c.id == comment.id);
+    final Comment updatedComment = comment.copyWith(isLocked: false);
+    updatedComments.replaceRange(
+      commentIndex,
+      commentIndex + 1,
+      <Comment>[updatedComment],
+    );
+    emit(state.copyWith(comments: updatedComments));
+  }
+
+  void collapse(Comment comment) {
+    final List<Comment> comments = <Comment>[...state.comments];
+    final int commentIndex =
+        state.comments.indexWhere((Comment c) => c.id == comment.id);
+    final int commentLevel = comment.level;
+    final Comment updatedComment = comment.copyWith(isCollapsedByUser: true);
+    final List<Comment> updatedComments = <Comment>[updatedComment];
+    int endIndex = commentIndex + 1;
+    for (int i = commentIndex + 1; i < comments.length; i++) {
+      Comment cmt = comments.elementAt(i);
+      if (cmt.level > commentLevel) {
+        cmt = cmt.copyWith(isHiddenByUser: true);
+        updatedComments.add(cmt);
+      } else {
+        endIndex = i;
+        comments.replaceRange(commentIndex, endIndex, updatedComments);
+        emit(state.copyWith(comments: comments));
+        return;
+      }
+    }
+
+    comments.replaceRange(commentIndex, endIndex, updatedComments);
+    emit(state.copyWith(comments: comments));
+  }
+
+  void uncollapse(Comment comment) {
+    final List<Comment> comments = <Comment>[...state.comments];
+    final int commentIndex =
+        state.comments.indexWhere((Comment c) => c.id == comment.id);
+    final int commentLevel = comment.level;
+    final Comment updatedComment = comment.copyWith(isCollapsedByUser: false);
+    final List<Comment> updatedComments = <Comment>[updatedComment];
+    int endIndex = commentIndex + 1;
+    for (int i = commentIndex + 1; i < comments.length; i++) {
+      Comment cmt = comments.elementAt(i);
+      if (cmt.level > commentLevel) {
+        cmt = cmt.copyWith(isHiddenByUser: false);
+        updatedComments.add(cmt);
+      } else {
+        endIndex = i;
+        comments.replaceRange(commentIndex, endIndex, updatedComments);
+        emit(state.copyWith(comments: comments));
+        return;
+      }
+    }
+  }
+
+  int collapsedCount(Comment comment) {
+    final List<Comment> comments = state.comments;
+    final int commentIndex =
+        state.comments.indexWhere((Comment c) => c.id == comment.id);
+    final int commentLevel = comment.level;
+    int count = 0;
+    for (int i = commentIndex + 1; i < comments.length; i++) {
+      final Comment cmt = comments.elementAt(i);
+      if (cmt.level > commentLevel) {
+        count++;
+      } else {
+        break;
+      }
+    }
+    return count;
   }
 
   Future<void> loadParentThread() async {
@@ -491,7 +578,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   void updateFetchMode(FetchMode? fetchMode) {
     if (fetchMode == null) return;
     if (state.fetchMode == fetchMode) return;
-    _collapseCache.resetCollapsedComments();
     HapticFeedbackUtil.selection();
     _streamSubscription?.cancel();
     for (final StreamSubscription<Comment> s in _streamSubscriptions.values) {
@@ -691,7 +777,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       globalKeys[comment.id] = GlobalKey(
         debugLabel: 'comment_tile_key_${comment.id}_under_${state.item.id}',
       );
-      _collapseCache.addKid(comment.id, to: comment.parent);
       _commentCache.cacheComment(comment);
 
       if (state.isOfflineReading) {

@@ -7,10 +7,6 @@ import 'package:logger/logger.dart';
 class CustomBlocObserver extends BlocObserver {
   @override
   void onCreate(BlocBase<dynamic> bloc) {
-    if (bloc is! CollapseCubit) {
-      locator.get<Logger>().d('$bloc created');
-    }
-
     super.onCreate(bloc);
   }
 

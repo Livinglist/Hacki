@@ -41,6 +41,7 @@ class CustomFloatingActionButton extends StatelessWidget {
                   onLongPress: () =>
                       context.read<CommentsCubit>().scrollTo(index: 0),
                   child: FloatingActionButton(
+                    enableFeedback: false,
                     backgroundColor: Theme.of(context)
                         .colorScheme
                         .primaryContainer
@@ -74,6 +75,7 @@ class CustomFloatingActionButton extends StatelessWidget {
                     cubit.scrollTo(index: cubit.state.comments.length);
                   },
                   child: FloatingActionButton(
+                    enableFeedback: false,
                     backgroundColor: Theme.of(context)
                         .colorScheme
                         .primaryContainer
