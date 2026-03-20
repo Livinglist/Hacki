@@ -158,21 +158,6 @@ class MainView extends StatelessWidget {
             },
           ),
         ),
-        Positioned(
-          top: Dimens.zero,
-          left: Dimens.zero,
-          right: Dimens.zero,
-          height: MediaQuery.of(context).padding.top,
-          child: GestureDetector(
-            excludeFromSemantics: true,
-            onTap: () {
-              context.read<CommentsCubit>().itemScrollController.scrollTo(
-                    index: -1,
-                    duration: AppDurations.ms500,
-                  );
-            },
-          ),
-        ),
         if (context.read<PreferenceCubit>().state.isDevModeEnabled)
           Positioned(
             height: Dimens.pt4,
