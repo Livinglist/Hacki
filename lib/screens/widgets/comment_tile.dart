@@ -80,341 +80,369 @@ class CommentTile extends StatelessWidget {
           PreferenceState prefState,
           BlocklistState blocklistState,
         ) {
-          if (isActionable && state.hidden) return const SizedBox.shrink();
-
-          final Color primaryColor = Theme.of(context).colorScheme.primary;
-          final Brightness brightness = Theme.of(context).brightness;
-          final (Color, Color) slidableBackgroundColor =
-              isEyeCandyEnabled && level > 0
-                  ? _getRainbowColor(
-                      level,
-                      Theme.of(context).colorScheme.surface,
-                    )
-                  : (
-                      Theme.of(context).colorScheme.primaryContainer,
-                      Theme.of(context).colorScheme.onPrimaryContainer,
-                    );
-
-          final Widget child = DeviceGestureWrapper(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Slidable(
-                  startActionPane: isActionable
-                      ? ActionPane(
-                          motion: const StretchMotion(),
-                          children: <Widget>[
-                            CustomSlidableAction(
-                              onPressed: (_) => onReplyTapped?.call(comment),
-                              backgroundColor: slidableBackgroundColor.$1,
-                              foregroundColor: slidableBackgroundColor.$2,
-                              child: const Icon(
-                                Icons.message,
-                                size: Dimens.pt24,
-                              ),
-                            ),
-                            if (context.read<AuthBloc>().state.user.id ==
-                                comment.by)
-                              CustomSlidableAction(
-                                onPressed: (_) => onEditTapped?.call(comment),
-                                backgroundColor: slidableBackgroundColor.$1,
-                                foregroundColor: slidableBackgroundColor.$2,
-                                child: const Icon(
-                                  Icons.edit,
-                                  size: Dimens.pt24,
-                                ),
-                              ),
-                            CustomSlidableAction(
-                              onPressed: (BuildContext context) =>
-                                  onMoreTapped?.call(
-                                comment,
-                                context.rect,
-                              ),
-                              backgroundColor: slidableBackgroundColor.$1,
-                              foregroundColor: slidableBackgroundColor.$2,
-                              child: const Icon(
-                                Icons.more_horiz,
-                                size: Dimens.pt24,
-                              ),
-                            ),
-                          ],
+          return AnimatedCrossFade(
+            firstChild: const SizedBox.shrink(),
+            secondChild: () {
+              final Color primaryColor = Theme.of(context).colorScheme.primary;
+              final Brightness brightness = Theme.of(context).brightness;
+              final (Color, Color) slidableBackgroundColor =
+                  isEyeCandyEnabled && level > 0
+                      ? _getRainbowColor(
+                          level,
+                          Theme.of(context).colorScheme.surface,
                         )
-                      : null,
-                  endActionPane: isActionable
-                      ? ActionPane(
-                          motion: const StretchMotion(),
-                          children: <Widget>[
-                            CustomSlidableAction(
-                              onPressed: (_) =>
-                                  onRightMoreTapped?.call(comment),
-                              backgroundColor: slidableBackgroundColor.$1,
-                              foregroundColor: slidableBackgroundColor.$2,
-                              child: const Icon(
-                                Icons.av_timer,
-                                size: Dimens.pt24,
-                              ),
-                            ),
-                          ],
-                        )
-                      : null,
-                  child: InkWell(
-                    splashFactory: NoSplash.splashFactory,
-                    onTap: () {
-                      if (isCollapsable) {
-                        _collapse(context);
-                      } else {
-                        onTap?.call();
-                      }
-                    },
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: Dimens.pt6,
-                            right: Dimens.pt6,
-                            top: Dimens.pt6,
-                          ),
-                          child: Row(
-                            children: <Widget>[
-                              Text(
-                                comment.by,
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.primary,
+                      : (
+                          Theme.of(context).colorScheme.primaryContainer,
+                          Theme.of(context).colorScheme.onPrimaryContainer,
+                        );
+
+              final Widget child = DeviceGestureWrapper(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Slidable(
+                      startActionPane: isActionable
+                          ? ActionPane(
+                              motion: const StretchMotion(),
+                              children: <Widget>[
+                                CustomSlidableAction(
+                                  onPressed: (_) =>
+                                      onReplyTapped?.call(comment),
+                                  backgroundColor: slidableBackgroundColor.$1,
+                                  foregroundColor: slidableBackgroundColor.$2,
+                                  child: const Icon(
+                                    Icons.message,
+                                    size: Dimens.pt24,
+                                  ),
                                 ),
-                                textScaler: MediaQuery.of(context).textScaler,
-                              ),
-                              if (comment.by == opUsername) ...<Widget>[
-                                SizedBoxes.pt6,
-                                const Icon(
-                                  Icons.arrow_back_sharp,
-                                  size: TextDimens.pt12,
-                                ),
-                                SizedBoxes.pt6,
-                                Text(
-                                  'OP',
-                                  style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    fontWeight: FontWeight.bold,
+                                if (context.read<AuthBloc>().state.user.id ==
+                                    comment.by)
+                                  CustomSlidableAction(
+                                    onPressed: (_) =>
+                                        onEditTapped?.call(comment),
+                                    backgroundColor: slidableBackgroundColor.$1,
+                                    foregroundColor: slidableBackgroundColor.$2,
+                                    child: const Icon(
+                                      Icons.edit,
+                                      size: Dimens.pt24,
+                                    ),
+                                  ),
+                                CustomSlidableAction(
+                                  onPressed: (BuildContext context) =>
+                                      onMoreTapped?.call(
+                                    comment,
+                                    context.rect,
+                                  ),
+                                  backgroundColor: slidableBackgroundColor.$1,
+                                  foregroundColor: slidableBackgroundColor.$2,
+                                  child: const Icon(
+                                    Icons.more_horiz,
+                                    size: Dimens.pt24,
                                   ),
                                 ),
                               ],
-                              if (index != null)
-                                Text(
-                                  ' #${index! + 1}',
-                                  style: const TextStyle(
-                                    color: Palette.grey,
-                                  ),
-                                  textScaler: MediaQuery.of(context).textScaler,
-                                ),
-                              if (isResponse)
-                                const Padding(
-                                  padding: EdgeInsets.only(left: 4),
-                                  child: Icon(
-                                    Icons.reply,
-                                    size: 16,
-                                    color: Palette.grey,
-                                  ),
-                                ),
-                              // Commented out for now, maybe review later.
-                              // if (!comment.dead && isNew)
-                              //   const Padding(
-                              //     padding: EdgeInsets.only(left: 4),
-                              //     child: Icon(
-                              //       Icons.sunny_snowing,
-                              //       size: 16,
-                              //       color: Palette.grey,
-                              //     ),
-                              //   ),
-                              const Spacer(),
-                              Text(
-                                prefState.displayDateFormat
-                                    .convertToString(comment.time),
-                                style: TextStyle(
-                                  color: Theme.of(context).metadataColor,
-                                ),
-                                textScaler: MediaQuery.of(context).textScaler,
-                              ),
-                            ],
-                          ),
-                        ),
-                        AnimatedSize(
-                          duration: AppDurations.ms200,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              if (isActionable && state.collapsed)
-                                CenteredText(
-                                  text:
-                                      '''collapsed (${state.collapsedCount + 1})''',
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .primary
-                                      .withValues(alpha: 0.8),
-                                )
-                              else if (comment.hidden)
-                                const CenteredText.hidden()
-                              else if (comment.deleted)
-                                const CenteredText.deleted()
-                              else if (comment.dead)
-                                const CenteredText.dead()
-                              else if (blocklistState.blocklist
-                                  .contains(comment.by))
-                                const CenteredText.blocked()
-                              else
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    left: Dimens.pt8,
-                                    right: Dimens.pt2,
-                                    top: Dimens.pt6,
-                                    bottom: Dimens.pt12,
-                                  ),
-                                  child: SizedBox(
-                                    width: double.infinity,
-                                    child: Semantics(
-                                      label: '''At level ${comment.level}.''',
-                                      child: ItemText(
-                                        key: ValueKey<int>(comment.id),
-                                        item: comment,
-                                        selectable: isSelectable,
-                                        textScaler:
-                                            MediaQuery.of(context).textScaler,
-                                        onTap: () {
-                                          if (onTap == null) {
-                                            _onTextTapped(context);
-                                          } else {
-                                            onTap!.call();
-                                          }
-                                        },
-                                      ),
-                                    ),
+                            )
+                          : null,
+                      endActionPane: isActionable
+                          ? ActionPane(
+                              motion: const StretchMotion(),
+                              children: <Widget>[
+                                CustomSlidableAction(
+                                  onPressed: (_) =>
+                                      onRightMoreTapped?.call(comment),
+                                  backgroundColor: slidableBackgroundColor.$1,
+                                  foregroundColor: slidableBackgroundColor.$2,
+                                  child: const Icon(
+                                    Icons.av_timer,
+                                    size: Dimens.pt24,
                                   ),
                                 ),
-                            ],
-                          ),
-                        ),
-                        if (_shouldShowLoadButton(context))
-                          Center(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: Dimens.pt12,
-                              ).copyWith(
-                                bottom: Dimens.pt6,
+                              ],
+                            )
+                          : null,
+                      child: InkWell(
+                        splashFactory: NoSplash.splashFactory,
+                        onTap: () {
+                          if (isCollapsable) {
+                            _collapse(context);
+                          } else {
+                            onTap?.call();
+                          }
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                left: Dimens.pt6,
+                                right: Dimens.pt6,
+                                top: Dimens.pt6,
                               ),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
-                                  Expanded(
-                                    child: TextButton(
-                                      onPressed: () {
-                                        HapticFeedbackUtil.selection();
-                                        context.read<CommentsCubit>().loadMore(
-                                              comment: comment,
-                                            );
-                                      },
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          const Icon(
-                                            Icons.keyboard_arrow_down_rounded,
-                                            size: Dimens.pt28,
-                                          ),
-                                          Text(
-                                            '''${comment.kids.length} ${comment.kids.length > 1 ? 'replies' : 'reply'}''',
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ],
+                                  Text(
+                                    comment.by,
+                                    style: TextStyle(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                    textScaler:
+                                        MediaQuery.of(context).textScaler,
+                                  ),
+                                  if (comment.by == opUsername) ...<Widget>[
+                                    SizedBoxes.pt6,
+                                    const Icon(
+                                      Icons.arrow_back_sharp,
+                                      size: TextDimens.pt12,
+                                    ),
+                                    SizedBoxes.pt6,
+                                    Text(
+                                      'OP',
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
+                                  ],
+                                  if (index != null)
+                                    Text(
+                                      ' #${index! + 1}',
+                                      style: const TextStyle(
+                                        color: Palette.grey,
+                                      ),
+                                      textScaler:
+                                          MediaQuery.of(context).textScaler,
+                                    ),
+                                  if (isResponse)
+                                    const Padding(
+                                      padding: EdgeInsets.only(left: 4),
+                                      child: Icon(
+                                        Icons.reply,
+                                        size: 16,
+                                        color: Palette.grey,
+                                      ),
+                                    ),
+                                  // Commented out for now, maybe review later.
+                                  // if (!comment.dead && isNew)
+                                  //   const Padding(
+                                  //     padding: EdgeInsets.only(left: 4),
+                                  //     child: Icon(
+                                  //       Icons.sunny_snowing,
+                                  //       size: 16,
+                                  //       color: Palette.grey,
+                                  //     ),
+                                  //   ),
+                                  const Spacer(),
+                                  Text(
+                                    prefState.displayDateFormat
+                                        .convertToString(comment.time),
+                                    style: TextStyle(
+                                      color: Theme.of(context).metadataColor,
+                                    ),
+                                    textScaler:
+                                        MediaQuery.of(context).textScaler,
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-                        if (shouldShowDivider)
-                          const Divider(
-                            height: Dimens.zero,
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-
-          const Color commentColor = Palette.transparent;
-          final bool isMyComment = comment.deleted == false &&
-              context.read<AuthBloc>().state.username == comment.by;
-
-          Widget wrapper = child;
-
-          if (isMyComment && level == 0) {
-            return Container(
-              clipBehavior: Clip.hardEdge,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withValues(
-                      alpha: 0.2,
-                    ),
-              ),
-              child: wrapper,
-            );
-          }
-
-          for (final int i in level.to(0, inclusive: false)) {
-            final Color wrapperBorderColor = isEyeCandyEnabled
-                ? _getRainbowColor(
-                    i,
-                    Theme.of(context).colorScheme.surface,
-                  ).$1
-                : _getColor(
-                    i,
-                    primaryColor: primaryColor,
-                    brightness: brightness,
-                  );
-            final bool shouldHighlight = isMyComment && i == level;
-            wrapper = Container(
-              clipBehavior: Clip.hardEdge,
-              margin: const EdgeInsets.only(
-                left: Dimens.pt8,
-              ),
-              decoration: BoxDecoration(
-                border: i != 0
-                    ? Border(
-                        left: BorderSide(
-                          color: wrapperBorderColor,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                AnimatedCrossFade(
+                                  firstChild: <Widget>[
+                                        if (isActionable && state.collapsed)
+                                          CenteredText(
+                                            text:
+                                                '''collapsed (${state.collapsedCount + 1})''',
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary
+                                                .withValues(alpha: 0.8),
+                                          )
+                                        else if (comment.hidden)
+                                          const CenteredText.hidden()
+                                        else if (comment.deleted)
+                                          const CenteredText.deleted()
+                                        else if (comment.dead)
+                                          const CenteredText.dead()
+                                        else if (blocklistState.blocklist
+                                            .contains(comment.by))
+                                          const CenteredText.blocked()
+                                      ].firstOrNull ??
+                                      const SizedBox.shrink(),
+                                  secondChild: Padding(
+                                    padding: const EdgeInsets.only(
+                                      left: Dimens.pt8,
+                                      right: Dimens.pt2,
+                                      top: Dimens.pt6,
+                                      bottom: Dimens.pt12,
+                                    ),
+                                    child: SizedBox(
+                                      width: double.infinity,
+                                      child: Semantics(
+                                        label: '''At level ${comment.level}.''',
+                                        child: ItemText(
+                                          key: ValueKey<int>(comment.id),
+                                          item: comment,
+                                          selectable: isSelectable,
+                                          textScaler:
+                                              MediaQuery.of(context).textScaler,
+                                          onTap: () {
+                                            if (onTap == null) {
+                                              _onTextTapped(context);
+                                            } else {
+                                              onTap!.call();
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  crossFadeState:
+                                      (isActionable && state.collapsed) ||
+                                              comment.hidden ||
+                                              comment.deleted ||
+                                              comment.dead ||
+                                              blocklistState.blocklist
+                                                  .contains(comment.by)
+                                          ? CrossFadeState.showFirst
+                                          : CrossFadeState.showSecond,
+                                  duration: AppDurations.ms400,
+                                ),
+                              ],
+                            ),
+                            if (_shouldShowLoadButton(context))
+                              Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: Dimens.pt12,
+                                  ).copyWith(
+                                    bottom: Dimens.pt6,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: TextButton(
+                                          onPressed: () {
+                                            HapticFeedbackUtil.selection();
+                                            context
+                                                .read<CommentsCubit>()
+                                                .loadMore(
+                                                  comment: comment,
+                                                );
+                                          },
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              const Icon(
+                                                Icons
+                                                    .keyboard_arrow_down_rounded,
+                                                size: Dimens.pt28,
+                                              ),
+                                              Text(
+                                                '''${comment.kids.length} ${comment.kids.length > 1 ? 'replies' : 'reply'}''',
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            if (shouldShowDivider)
+                              const Divider(
+                                height: Dimens.zero,
+                              ),
+                          ],
                         ),
-                      )
-                    : null,
-                color: shouldHighlight
-                    ? primaryColor.withValues(alpha: 0.2)
-                    : commentColor,
-              ),
-              child: wrapper,
-            );
-          }
-
-          if (<int>[0, 1, 2, 3].contains(level)) {
-            wrapper = Stack(
-              children: <Widget>[
-                wrapper,
-                Positioned(
-                  left: Dimens.zero,
-                  top: Dimens.zero,
-                  bottom: Dimens.zero,
-                  width: Dimens.pt24,
-                  child: Container(
-                    color: Colors.transparent,
-                  ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            );
-          }
+              );
 
-          return wrapper;
+              const Color commentColor = Palette.transparent;
+              final bool isMyComment = comment.deleted == false &&
+                  context.read<AuthBloc>().state.username == comment.by;
+
+              Widget wrapper = child;
+
+              if (isMyComment && level == 0) {
+                return Container(
+                  clipBehavior: Clip.hardEdge,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary.withValues(
+                          alpha: 0.2,
+                        ),
+                  ),
+                  child: wrapper,
+                );
+              }
+
+              for (final int i in level.to(0, inclusive: false)) {
+                final Color wrapperBorderColor = isEyeCandyEnabled
+                    ? _getRainbowColor(
+                        i,
+                        Theme.of(context).colorScheme.surface,
+                      ).$1
+                    : _getColor(
+                        i,
+                        primaryColor: primaryColor,
+                        brightness: brightness,
+                      );
+                final bool shouldHighlight = isMyComment && i == level;
+                wrapper = Container(
+                  clipBehavior: Clip.hardEdge,
+                  margin: const EdgeInsets.only(
+                    left: Dimens.pt8,
+                  ),
+                  decoration: BoxDecoration(
+                    border: i != 0
+                        ? Border(
+                            left: BorderSide(
+                              color: wrapperBorderColor,
+                            ),
+                          )
+                        : null,
+                    color: shouldHighlight
+                        ? primaryColor.withValues(alpha: 0.2)
+                        : commentColor,
+                  ),
+                  child: wrapper,
+                );
+              }
+
+              if (<int>[0, 1, 2, 3].contains(level)) {
+                wrapper = Stack(
+                  children: <Widget>[
+                    wrapper,
+                    Positioned(
+                      left: Dimens.zero,
+                      top: Dimens.zero,
+                      bottom: Dimens.zero,
+                      width: Dimens.pt24,
+                      child: Container(
+                        color: Colors.transparent,
+                      ),
+                    ),
+                  ],
+                );
+              }
+
+              return wrapper;
+            }(),
+            crossFadeState: isActionable && state.hidden
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond,
+            duration: AppDurations.ms400,
+          );
         },
       ),
     );
