@@ -280,7 +280,7 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                             duration: AppDurations.ms300,
                           );
 
-                          Future<void>.delayed(AppDurations.ms100, () {
+                          Future<void>.delayed(AppDurations.ms400, () {
                             if (targetCommentGlobalKey != null &&
                                 targetCommentContext.mounted) {
                               _startShine(
