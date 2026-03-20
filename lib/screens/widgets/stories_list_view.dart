@@ -31,13 +31,11 @@ class StoriesListView extends StatefulWidget {
 class _StoriesListViewState extends State<StoriesListView>
     with ItemActionMixin {
   final RefreshController refreshController = RefreshController();
-  final ScrollController scrollController = ScrollController();
 
   @override
   void dispose() {
     super.dispose();
     refreshController.dispose();
-    scrollController.dispose();
   }
 
   @override
@@ -103,7 +101,6 @@ class _StoriesListViewState extends State<StoriesListView>
               isPreviewImageLeftAligned:
                   preferenceState.isPreviewImageLeftAligned,
               refreshController: refreshController,
-              scrollController: scrollController,
               items: state.storiesByType[storyType]!,
               onRefresh: () {
                 HapticFeedbackUtil.light();
@@ -261,7 +258,7 @@ class _StoriesListViewState extends State<StoriesListView>
                       onVisibilityChanged: (VisibilityInfo info) {
                         if (info.visibleFraction == 0 &&
                             mounted &&
-                            scrollController.position.userScrollDirection ==
+                            refreshController.position?.userScrollDirection ==
                                 ScrollDirection.reverse &&
                             !state.readStoriesIds.contains(story.id)) {
                           context
