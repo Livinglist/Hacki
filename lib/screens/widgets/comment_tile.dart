@@ -205,19 +205,19 @@ class CommentTile extends StatelessWidget {
                               ),
                             if (isResponse)
                               const Padding(
-                                padding: EdgeInsets.only(left: 4),
+                                padding: EdgeInsets.only(left: Dimens.pt4),
                                 child: Icon(
                                   Icons.reply,
-                                  size: 16,
+                                  size: Dimens.pt16,
                                   color: Palette.grey,
                                 ),
                               ),
                             if (comment.isNew)
                               const Padding(
-                                padding: EdgeInsets.only(left: 4),
+                                padding: EdgeInsets.only(left: Dimens.pt4),
                                 child: Icon(
-                                  Icons.fiber_new_outlined,
-                                  size: 16,
+                                  Icons.fiber_new,
+                                  size: Dimens.pt16,
                                   color: Palette.grey,
                                 ),
                               ),
