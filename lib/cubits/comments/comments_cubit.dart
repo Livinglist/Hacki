@@ -92,6 +92,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
   /// The id of the comment of which the text selection menu is active.
   static int _lockedCommentId = 0;
+  final Map<int, Comment> _previousCommentStates = <int, Comment>{};
 
   Future<bool> get _shouldFetchFromWeb async {
     final bool isOnWifi = await _isOnWifi;
@@ -275,8 +276,10 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       return;
     }
 
-    // TODO(me): an option to keep the collapse state after refresh.
-    // _collapseCache.resetCollapsedComments();
+    /// Preserve collapse state.
+    for (final Comment e in state.comments) {
+      _previousCommentStates[e.id] = e;
+    }
 
     await _streamSubscription?.cancel();
     for (final int id in _streamSubscriptions.keys) {
@@ -459,7 +462,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
     if (endIndex >= comments.length) {
       comments.replaceRange(commentIndex, comments.length, updatedComments);
-      updatedComments.forEach(_commentCache.cacheComment);
       emit(state.copyWith(comments: comments));
       return;
     }
@@ -479,7 +481,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     }
 
     comments.replaceRange(commentIndex, endIndex, updatedComments);
-    updatedComments.forEach(_commentCache.cacheComment);
     emit(state.copyWith(comments: comments));
   }
 
@@ -494,7 +495,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
     if (endIndex >= comments.length) {
       comments.replaceRange(commentIndex, comments.length, updatedComments);
-      updatedComments.forEach(_commentCache.cacheComment);
       emit(state.copyWith(comments: comments));
       return;
     }
@@ -514,7 +514,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     }
 
     comments.replaceRange(commentIndex, endIndex, updatedComments);
-    updatedComments.forEach(_commentCache.cacheComment);
     emit(state.copyWith(comments: comments));
   }
 
@@ -590,6 +589,11 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     }
     _streamSubscriptions.clear();
 
+    /// Preserve collapse state.
+    for (final Comment e in state.comments) {
+      _previousCommentStates[e.id] = e;
+    }
+
     emit(
       state.copyWith(
         order: order,
@@ -609,6 +613,11 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   }
 
   void updateFetchMode(FetchMode? fetchMode) {
+    /// Preserve collapse state.
+    for (final Comment e in state.comments) {
+      _previousCommentStates[e.id] = e;
+    }
+
     if (fetchMode == null) return;
     if (state.fetchMode == fetchMode) return;
     HapticFeedbackUtil.selection();
@@ -816,6 +825,12 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
   void _onCommentFetched(BuildableComment? comment) {
     if (comment != null) {
+      final Comment? prevState = _previousCommentStates[comment.id];
+      comment = comment.copyWith(
+        isCollapsedByUser: prevState?.isCollapsedByUser,
+        isHiddenByUser: prevState?.isHiddenByUser,
+      );
+
       globalKeys[comment.id] = GlobalKey(
         debugLabel: 'comment_tile_key_${comment.id}_under_${state.item.id}',
       );
@@ -827,7 +842,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
       // Hide comment that matches any of the filter keywords.
       final bool hidden = _filterCubit.state.keywords.any(
-        (String keyword) => comment.text.toLowerCase().contains(keyword),
+        (String keyword) => comment!.text.toLowerCase().contains(keyword),
       );
       final List<Comment> updatedComments = <Comment>[
         ...state.comments,

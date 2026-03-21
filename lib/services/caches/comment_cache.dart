@@ -26,7 +26,7 @@ class CommentCache {
       final Comment? comment = getComment(id);
 
       if (comment != null) {
-        yield comment;
+        yield comment.copyWith(level: level);
         yield* getCommentsStream(ids: comment.kids, level: level + 1);
       }
     }
