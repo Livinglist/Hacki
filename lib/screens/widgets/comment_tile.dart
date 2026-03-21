@@ -429,18 +429,17 @@ class CommentTile extends StatelessWidget {
   void _collapse(BuildContext context) {
     final PreferenceCubit preferenceCubit = context.read<PreferenceCubit>();
     final CommentsCubit commentsCubit = context.read<CommentsCubit>();
+
     if (comment.isCollapsedByUser) {
       commentsCubit.uncollapse(comment);
     } else {
       commentsCubit.collapse(comment);
     }
+
     if (preferenceCubit.state.isAutoScrollEnabled) {
       final List<Comment> comments = commentsCubit.state.comments;
       final int indexOfComment =
           comments.indexWhere((Comment c) => c.id == comment.id);
-      print('indexOfComment: $indexOfComment');
-      print(
-          'indexOfComment < comments.length ${indexOfComment < comments.length}');
       if (indexOfComment < comments.length) {
         final double? leadingEdge =
             commentsCubit.itemPositionsListener.itemPositions.value
@@ -448,12 +447,8 @@ class CommentTile extends StatelessWidget {
                   (ItemPosition e) => e.index - 1 == indexOfComment,
                 )
                 ?.itemLeadingEdge;
-        print('leadingEdge $leadingEdge}');
-
         final bool willBeOutsideOfScreen =
             leadingEdge != null && leadingEdge < 0.1;
-
-        print('willBeOutsideOfScreen $willBeOutsideOfScreen}');
 
         if (willBeOutsideOfScreen) {
           Future<void>.delayed(
