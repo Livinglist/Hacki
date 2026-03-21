@@ -113,49 +113,51 @@ class MainView extends StatelessWidget {
                     index = index - 1;
                     final Comment comment = state.comments.elementAt(index);
 
-                    if (comment.isHiddenByUser) return const SizedBox.shrink();
-
                     return FadeIn(
-                      key: ValueKey<String>('${comment.id}-FadeIn'),
-                      child: CommentTile(
-                        key: context
-                            .read<CommentsCubit>()
-                            .globalKeys[comment.id],
-                        comment: comment,
-                        index: index,
-                        level: comment.level,
-                        opUsername: state.item.by,
-                        fetchMode: state.fetchMode,
-                        isResponse: state.isResponse(comment),
-                        isNew: shouldMarkNewComment && !comment.isFromCache,
-                        isEyeCandyEnabled: context
-                            .read<PreferenceCubit>()
-                            .state
-                            .isEyeCandyEnabled,
-                        onReplyTapped: (Comment cmt) {
-                          HapticFeedbackUtil.light();
-                          if (cmt.deleted || cmt.dead) {
-                            return;
-                          }
+                      key: context.read<CommentsCubit>().globalKeys[comment.id],
+                      child: comment.isHiddenByUser
+                          ? const SizedBox.shrink()
+                          : CommentTile(
+                              comment: comment,
+                              index: index,
+                              level: comment.level,
+                              opUsername: state.item.by,
+                              fetchMode: state.fetchMode,
+                              isResponse: state.isResponse(comment),
+                              isNew:
+                                  shouldMarkNewComment && !comment.isFromCache,
+                              isEyeCandyEnabled: context
+                                  .read<PreferenceCubit>()
+                                  .state
+                                  .isEyeCandyEnabled,
+                              onReplyTapped: (Comment cmt) {
+                                HapticFeedbackUtil.light();
+                                if (cmt.deleted || cmt.dead) {
+                                  return;
+                                }
 
-                          if (cmt.id !=
-                              context.read<EditCubit>().state.replyingTo?.id) {
-                            commentEditingController.clear();
-                          }
+                                if (cmt.id !=
+                                    context
+                                        .read<EditCubit>()
+                                        .state
+                                        .replyingTo
+                                        ?.id) {
+                                  commentEditingController.clear();
+                                }
 
-                          context.read<EditCubit>().onReplyTapped(cmt);
-                        },
-                        onEditTapped: (Comment cmt) {
-                          HapticFeedbackUtil.light();
-                          if (cmt.deleted || cmt.dead) {
-                            return;
-                          }
-                          commentEditingController.clear();
-                          context.read<EditCubit>().onEditTapped(cmt);
-                        },
-                        onMoreTapped: onMoreTapped,
-                        onRightMoreTapped: onRightMoreTapped,
-                      ),
+                                context.read<EditCubit>().onReplyTapped(cmt);
+                              },
+                              onEditTapped: (Comment cmt) {
+                                HapticFeedbackUtil.light();
+                                if (cmt.deleted || cmt.dead) {
+                                  return;
+                                }
+                                commentEditingController.clear();
+                                context.read<EditCubit>().onEditTapped(cmt);
+                              },
+                              onMoreTapped: onMoreTapped,
+                              onRightMoreTapped: onRightMoreTapped,
+                            ),
                     );
                   },
                 ),

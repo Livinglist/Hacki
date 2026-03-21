@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +12,7 @@ import 'package:hacki/screens/item/widgets/lazy_fetch_load_button.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/haptic_feedback_util.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class CommentTile extends StatelessWidget {
   const CommentTile({
@@ -147,11 +149,7 @@ class CommentTile extends StatelessWidget {
                   onTap: () {
                     if (isCollapsable) {
                       HapticFeedbackUtil.selection();
-                      if (comment.isCollapsedByUser) {
-                        context.read<CommentsCubit>().uncollapse(comment);
-                      } else {
-                        context.read<CommentsCubit>().collapse(comment);
-                      }
+                      _collapse(context);
                     } else {
                       onTap?.call();
                     }
@@ -314,15 +312,7 @@ class CommentTile extends StatelessWidget {
                                       onTap: () {
                                         if (isCollapsable) {
                                           HapticFeedbackUtil.selection();
-                                          if (comment.isCollapsedByUser) {
-                                            context
-                                                .read<CommentsCubit>()
-                                                .uncollapse(comment);
-                                          } else {
-                                            context
-                                                .read<CommentsCubit>()
-                                                .collapse(comment);
-                                          }
+                                          _onTextTapped(context);
                                         } else {
                                           onTap?.call();
                                         }
@@ -428,6 +418,50 @@ class CommentTile extends StatelessWidget {
         return wrapper;
       },
     );
+  }
+
+  void _onTextTapped(BuildContext context) {
+    if (context.read<PreferenceCubit>().state.isTapAnywhereToCollapseEnabled) {
+      _collapse(context);
+    }
+  }
+
+  void _collapse(BuildContext context) {
+    final PreferenceCubit preferenceCubit = context.read<PreferenceCubit>();
+    final CommentsCubit commentsCubit = context.read<CommentsCubit>();
+    if (comment.isCollapsedByUser) {
+      commentsCubit.uncollapse(comment);
+    } else {
+      commentsCubit.collapse(comment);
+    }
+    if (comment.isCollapsedByUser &&
+        preferenceCubit.state.isAutoScrollEnabled) {
+      final CommentsCubit commentsCubit = context.read<CommentsCubit>();
+      final List<Comment> comments = commentsCubit.state.comments;
+      final int indexOfComment = comments.indexOf(comment);
+      if (indexOfComment < comments.length) {
+        final double? leadingEdge =
+            commentsCubit.itemPositionsListener.itemPositions.value
+                .singleWhereOrNull(
+                  (ItemPosition e) => e.index - 1 == indexOfComment,
+                )
+                ?.itemLeadingEdge;
+        final bool willBeOutsideOfScreen =
+            leadingEdge != null && leadingEdge < 0.1;
+        if (willBeOutsideOfScreen) {
+          Future<void>.delayed(
+            AppDurations.ms200,
+            () {
+              commentsCubit.itemScrollController.scrollTo(
+                index: indexOfComment + 1,
+                alignment: 0.15,
+                duration: AppDurations.ms300,
+              );
+            },
+          );
+        }
+      }
+    }
   }
 
   static Color _getColor(
