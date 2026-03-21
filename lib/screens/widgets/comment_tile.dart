@@ -297,7 +297,7 @@ class CommentTile extends StatelessWidget {
                                         SizedBoxes.pt6,
                                         CenteredText(
                                           text:
-                                              '''collapsed (${context.read<CommentsCubit>().collapsedCount(comment)})''',
+                                              '''collapsed (${context.tryRead<CommentsCubit>()?.collapsedCount(comment)})''',
                                           color: Theme.of(context)
                                               .colorScheme
                                               .primary
