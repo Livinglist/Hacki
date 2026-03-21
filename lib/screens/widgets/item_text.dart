@@ -58,6 +58,7 @@ class ItemText extends StatelessWidget {
             context,
           ),
         ),
+        scrollPhysics: const NeverScrollableScrollPhysics(),
         selectionColor:
             Theme.of(context).colorScheme.primaryContainer.withAlpha(180),
         onTap: onTap,

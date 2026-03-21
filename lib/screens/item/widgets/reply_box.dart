@@ -37,7 +37,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
   bool expanded = false;
   double? expandedHeight;
 
-  static const double collapsedHeight = 140;
+  static const double collapsedHeight = Dimens.replyBoxCollapsedHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +97,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                           height: Dimens.zero,
                         ),
                       AnimatedContainer(
-                        height: expanded ? Dimens.pt40 : Dimens.zero,
+                        height: expanded ? Dimens.pt64 : Dimens.zero,
                         duration: AppDurations.ms300,
                       ),
                       Row(
