@@ -821,6 +821,19 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         status: CommentsStatus.allLoaded,
       ),
     );
+
+    final int newCommentsCount =
+        state.comments.where((Comment c) => c.isNew).length;
+    if (newCommentsCount > 0) {
+      navigatorKey.currentContext?.showSnackBar(
+        content:
+            '''$newCommentsCount new comment${newCommentsCount > 1 ? 's' : ''} fetched.''',
+      );
+    } else {
+      navigatorKey.currentContext?.showSnackBar(
+        content: 'No new comments.',
+      );
+    }
   }
 
   void _onCommentFetched(BuildableComment? comment) {
