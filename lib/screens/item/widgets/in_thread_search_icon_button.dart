@@ -297,6 +297,13 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                               duration: AppDurations.ms300,
                             );
 
+                            if (index != -1) {
+                              await widget.commentsCubit.scrollTo(
+                                index: index,
+                                alignment: 0.2,
+                              );
+                            }
+
                             Future<void>.delayed(AppDurations.ms500, () {
                               final BuildContext? newTargetCommentContext =
                                   targetCommentGlobalKey?.currentContext;

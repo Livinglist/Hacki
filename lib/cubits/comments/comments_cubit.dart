@@ -456,16 +456,21 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
     for (int i = commentIndex + 1; i < comments.length; i++) {
       Comment cmt = comments.elementAt(i);
+      endIndex = i;
       if (cmt.level > commentLevel) {
         cmt = cmt.copyWith(isHiddenByUser: true);
         updatedComments.add(cmt);
+
+        if (i == comments.length - 1) {
+          endIndex = comments.length;
+        }
       } else {
-        endIndex = i;
-        comments.replaceRange(commentIndex, endIndex, updatedComments);
-        emit(state.copyWith(comments: comments));
-        return;
+        break;
       }
     }
+
+    comments.replaceRange(commentIndex, endIndex, updatedComments);
+    emit(state.copyWith(comments: comments));
   }
 
   void uncollapse(Comment comment) {
@@ -485,16 +490,21 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
     for (int i = commentIndex + 1; i < comments.length; i++) {
       Comment cmt = comments.elementAt(i);
+      endIndex = i;
       if (cmt.level > commentLevel) {
         cmt = cmt.copyWith(isHiddenByUser: false);
         updatedComments.add(cmt);
+
+        if (i == comments.length - 1) {
+          endIndex = comments.length;
+        }
       } else {
-        endIndex = i;
-        comments.replaceRange(commentIndex, endIndex, updatedComments);
-        emit(state.copyWith(comments: comments));
-        return;
+        break;
       }
     }
+
+    comments.replaceRange(commentIndex, endIndex, updatedComments);
+    emit(state.copyWith(comments: comments));
   }
 
   int collapsedCount(Comment comment) {
