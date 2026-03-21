@@ -113,6 +113,8 @@ class MainView extends StatelessWidget {
                     index = index - 1;
                     final Comment comment = state.comments.elementAt(index);
 
+                    if (comment.isHiddenByUser) return const SizedBox.shrink();
+
                     return FadeIn(
                       key: ValueKey<String>('${comment.id}-FadeIn'),
                       child: CommentTile(
