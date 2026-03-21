@@ -355,7 +355,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         .asyncMap(_toBuildableComment)
         .whereNotNull()
         .listen(_onCommentFetched)
-      ..onDone(_onDone);
+      ..onDone(() => _onDone(isRefresh: true));
 
     emit(
       state.copyWith(
@@ -813,7 +813,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     }
   }
 
-  void _onDone() {
+  void _onDone({bool isRefresh = false}) {
     _streamSubscription?.cancel();
     _streamSubscription = null;
     emit(
@@ -822,17 +822,19 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       ),
     );
 
-    final int newCommentsCount =
-        state.comments.where((Comment c) => c.isNew).length;
-    if (newCommentsCount > 0) {
-      navigatorKey.currentContext?.showSnackBar(
-        content:
-            '''$newCommentsCount new comment${newCommentsCount > 1 ? 's' : ''} fetched.''',
-      );
-    } else {
-      navigatorKey.currentContext?.showSnackBar(
-        content: 'No new comments.',
-      );
+    if (isRefresh) {
+      final int newCommentsCount =
+          state.comments.where((Comment c) => c.isNew).length;
+      if (newCommentsCount > 0) {
+        navigatorKey.currentContext?.showSnackBar(
+          content:
+              '''$newCommentsCount new comment${newCommentsCount > 1 ? 's' : ''} fetched.''',
+        );
+      } else {
+        navigatorKey.currentContext?.showSnackBar(
+          content: 'No new comments.',
+        );
+      }
     }
   }
 
