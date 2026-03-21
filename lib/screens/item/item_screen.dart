@@ -76,7 +76,7 @@ class ItemScreen extends StatefulWidget {
           )..init(
               shouldOnlyShowTargetComment: args.shouldOnlyShowTargetComment,
               targetAncestors: args.targetComments,
-              shouldUseCommentCacheInMemory: true,
+              shouldUseCommentCacheInMemory: args.shouldUseCommentCache,
               onError: (AppException e) =>
                   context.showErrorSnackBar(e.message, e.error),
             ),
