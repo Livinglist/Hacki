@@ -246,10 +246,10 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                         widget.action();
 
                         /// Find out the index of the comment in the thread.
-
-                        final Comment? matchedComment = state.comments
-                            .singleWhereOrNull(
-                                (Comment c) => c.id == comment.id);
+                        final Comment? matchedComment =
+                            state.comments.singleWhereOrNull(
+                          (Comment c) => c.id == comment.id,
+                        );
                         if (matchedComment == null) return;
                         final int index =
                             state.comments.indexOf(matchedComment);
