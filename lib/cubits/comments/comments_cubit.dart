@@ -699,6 +699,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       state.copyWith(
         inThreadSearchQuery: query,
         inThreadSearchAuthor: author,
+        inThreadSearchStatus: Status.inProgress,
       ),
     );
     _searchStreamSubscription =
@@ -711,7 +712,14 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
           ],
         ),
       );
-    });
+    })
+          ..onDone(() {
+            emit(
+              state.copyWith(
+                inThreadSearchStatus: Status.success,
+              ),
+            );
+          });
   }
 
   Stream<Comment?> _searchStream(String query, {String author = ''}) async* {
@@ -745,6 +753,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
           matchedComments: <Comment>[],
           inThreadSearchQuery: '',
           inThreadSearchAuthor: '',
+          inThreadSearchStatus: Status.idle,
         ),
       );
 
