@@ -16,6 +16,7 @@ class Comment extends Item {
     required this.isFromCache,
     this.isHiddenByUser = false,
     this.isCollapsedByUser = false,
+    this.isNew = false,
   }) : super(
           descendants: 0,
           parts: <int>[],
@@ -28,12 +29,14 @@ class Comment extends Item {
       : isFromCache = json['fromCache'] == true,
         isHiddenByUser = false,
         isCollapsedByUser = false,
+        isNew = false,
         super.fromJson();
 
   final int level;
   final bool isHiddenByUser;
   final bool isCollapsedByUser;
   final bool isFromCache;
+  final bool isNew;
 
   String get metadata => '''by $by $timeAgo''';
 
@@ -45,6 +48,7 @@ class Comment extends Item {
     bool? hidden,
     bool? isHiddenByUser,
     bool? isCollapsedByUser,
+    bool? isNew,
   }) {
     return Comment(
       id: id,
@@ -61,6 +65,7 @@ class Comment extends Item {
       isFromCache: isFromCache,
       isHiddenByUser: isHiddenByUser ?? this.isHiddenByUser,
       isCollapsedByUser: isCollapsedByUser ?? this.isCollapsedByUser,
+      isNew: isNew ?? this.isNew,
     );
   }
 
@@ -72,5 +77,6 @@ class Comment extends Item {
         ...super.props,
         isHiddenByUser,
         isCollapsedByUser,
+        isNew,
       ];
 }

@@ -212,16 +212,15 @@ class CommentTile extends StatelessWidget {
                                   color: Palette.grey,
                                 ),
                               ),
-                            // Commented out for now, maybe review later.
-                            // if (!comment.dead && isNew)
-                            //   const Padding(
-                            //     padding: EdgeInsets.only(left: 4),
-                            //     child: Icon(
-                            //       Icons.sunny_snowing,
-                            //       size: 16,
-                            //       color: Palette.grey,
-                            //     ),
-                            //   ),
+                            if (comment.isNew)
+                              const Padding(
+                                padding: EdgeInsets.only(left: 4),
+                                child: Icon(
+                                  Icons.fiber_new_outlined,
+                                  size: 16,
+                                  color: Palette.grey,
+                                ),
+                              ),
                             const Spacer(),
                             Text(
                               prefState.displayDateFormat
@@ -353,7 +352,7 @@ class CommentTile extends StatelessWidget {
 
         Widget wrapper = child;
 
-        if (isMyComment && level == 0) {
+        if ((isMyComment || comment.isNew) && level == 0) {
           return Container(
             clipBehavior: Clip.hardEdge,
             decoration: BoxDecoration(
@@ -376,7 +375,8 @@ class CommentTile extends StatelessWidget {
                   primaryColor: primaryColor,
                   brightness: brightness,
                 );
-          final bool shouldHighlight = isMyComment && i == level;
+          final bool shouldHighlight =
+              (comment.isNew || isMyComment) && i == level;
           wrapper = Container(
             clipBehavior: Clip.hardEdge,
             margin: const EdgeInsets.only(

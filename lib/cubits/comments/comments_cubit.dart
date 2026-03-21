@@ -826,10 +826,30 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   void _onCommentFetched(BuildableComment? comment) {
     if (comment != null) {
       final Comment? prevState = _previousCommentStates[comment.id];
-      comment = comment.copyWith(
-        isCollapsedByUser: prevState?.isCollapsedByUser,
-        isHiddenByUser: prevState?.isHiddenByUser,
-      );
+      if (_previousCommentStates.isNotEmpty &&
+          prevState == null &&
+          !comment.dead &&
+          !comment.deleted &&
+          !comment.hidden) {
+        final Comment? parent = _previousCommentStates[comment.parent];
+        if (parent == null) {
+          comment = comment.copyWith(
+            isNew: true,
+          );
+        } else {
+          comment = comment.copyWith(
+            isHiddenByUser: parent.isCollapsedByUser || parent.isHiddenByUser,
+            isNew: true,
+          );
+        }
+        _previousCommentStates[comment.id] = comment;
+      } else {
+        comment = comment.copyWith(
+          isCollapsedByUser: prevState?.isCollapsedByUser,
+          isHiddenByUser: prevState?.isHiddenByUser,
+          isNew: false,
+        );
+      }
 
       globalKeys[comment.id] = GlobalKey(
         debugLabel: 'comment_tile_key_${comment.id}_under_${state.item.id}',
