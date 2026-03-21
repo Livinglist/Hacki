@@ -90,6 +90,9 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   static const int _webFetchingCmtCountLowerLimit = 5;
   static DateTime? _hackerNewsWebRetryAfterDateTime;
 
+  /// The id of the comment of which the text selection menu is active.
+  static int _lockedCommentId = 0;
+
   Future<bool> get _shouldFetchFromWeb async {
     final bool isOnWifi = await _isOnWifi;
     final bool isPastRetryAfterDateTime =
@@ -125,7 +128,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
   Future<void> init({
     bool shouldOnlyShowTargetComment = false,
-    bool shouldUseCommentCache = false,
+    bool shouldUseCommentCacheInMemory = false,
     List<Comment>? targetAncestors,
     AppExceptionHandler? onError,
     bool isFetchingFromWebAllowed = true,
@@ -177,14 +180,16 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     late final Stream<Comment> commentStream;
 
     if (state.isOfflineReading) {
-      commentStream = _offlineRepository.getCachedCommentsStream(ids: kids);
+      commentStream = _offlineRepository.getCachedCommentsStream(
+        ids: kids,
+      );
     } else {
       switch (state.fetchMode) {
         case FetchMode.lazy:
           commentStream = _hackerNewsRepository.fetchCommentsStream(
             ids: kids,
             getFromCache:
-                shouldUseCommentCache ? _commentCache.getComment : null,
+                shouldUseCommentCacheInMemory ? _commentCache.getComment : null,
           );
         case FetchMode.eager:
           switch (state.order) {
@@ -193,7 +198,9 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
               if (isFetchingFromWebAllowed && shouldFetchFromWeb) {
                 logInfo('fetching comments of ${item.id} from web.');
                 commentStream = _hackerNewsWebRepository
-                    .fetchCommentsStream(state.item)
+                    .fetchCommentsStream(
+                  state.item,
+                )
                     .handleError((dynamic e) {
                   _streamSubscription?.cancel();
 
@@ -224,8 +231,9 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                 commentStream =
                     _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
                   ids: kids,
-                  getFromCache:
-                      shouldUseCommentCache ? _commentCache.getComment : null,
+                  getFromCache: shouldUseCommentCacheInMemory
+                      ? _commentCache.getComment
+                      : null,
                 );
               }
             case CommentsOrder.oldestFirst:
@@ -233,8 +241,9 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
               commentStream =
                   _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
                 ids: kids,
-                getFromCache:
-                    shouldUseCommentCache ? _commentCache.getComment : null,
+                getFromCache: shouldUseCommentCacheInMemory
+                    ? _commentCache.getComment
+                    : null,
               );
           }
       }
@@ -427,8 +436,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     }
   }
 
-  static int _lockedCommentId = 0;
-
   void lock(Comment comment) {
     _lockedCommentId = comment.id;
   }
@@ -436,6 +443,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   bool isCommentLocked(Comment comment) => _lockedCommentId == comment.id;
 
   void collapse(Comment comment) {
+    /// When text selection context menu is being displayed,
+    /// ignore the collapse request.
     if (isCommentLocked(comment)) {
       _lockedCommentId = 0;
       return;
@@ -450,6 +459,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
     if (endIndex >= comments.length) {
       comments.replaceRange(commentIndex, comments.length, updatedComments);
+      updatedComments.forEach(_commentCache.cacheComment);
       emit(state.copyWith(comments: comments));
       return;
     }
@@ -460,7 +470,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       if (cmt.level > commentLevel) {
         cmt = cmt.copyWith(isHiddenByUser: true);
         updatedComments.add(cmt);
-
         if (i == comments.length - 1) {
           endIndex = comments.length;
         }
@@ -470,6 +479,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     }
 
     comments.replaceRange(commentIndex, endIndex, updatedComments);
+    updatedComments.forEach(_commentCache.cacheComment);
     emit(state.copyWith(comments: comments));
   }
 
@@ -484,6 +494,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
     if (endIndex >= comments.length) {
       comments.replaceRange(commentIndex, comments.length, updatedComments);
+      updatedComments.forEach(_commentCache.cacheComment);
       emit(state.copyWith(comments: comments));
       return;
     }
@@ -494,7 +505,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       if (cmt.level > commentLevel) {
         cmt = cmt.copyWith(isHiddenByUser: false);
         updatedComments.add(cmt);
-
         if (i == comments.length - 1) {
           endIndex = comments.length;
         }
@@ -504,6 +514,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     }
 
     comments.replaceRange(commentIndex, endIndex, updatedComments);
+    updatedComments.forEach(_commentCache.cacheComment);
     emit(state.copyWith(comments: comments));
   }
 
@@ -578,8 +589,23 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       s.cancel();
     }
     _streamSubscriptions.clear();
-    emit(state.copyWith(order: order));
-    init(shouldUseCommentCache: true);
+
+    emit(
+      state.copyWith(
+        order: order,
+        comments: <Comment>[],
+      ),
+    );
+
+    final Item item = state.item;
+    final List<int> kids = _sortKids(item.kids);
+    final Stream<Comment> commentStream =
+        _commentCache.getCommentsStream(ids: kids);
+    _streamSubscription = commentStream
+        .asyncMap(_toBuildableComment)
+        .whereNotNull()
+        .listen(_onCommentFetched)
+      ..onDone(_onDone);
   }
 
   void updateFetchMode(FetchMode? fetchMode) {
@@ -592,7 +618,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     }
     _streamSubscriptions.clear();
     emit(state.copyWith(fetchMode: fetchMode));
-    init(shouldUseCommentCache: true);
+    init();
   }
 
   Future<void> scrollTo({

@@ -213,6 +213,7 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                             '',
                             author: state.inThreadSearchAuthor,
                           );
+                          focusNode.requestFocus();
                         }
                       },
                     ),

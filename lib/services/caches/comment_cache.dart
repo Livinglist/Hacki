@@ -18,6 +18,20 @@ class CommentCache {
 
   Comment? getComment(int id) => _comments[id];
 
+  Stream<Comment> getCommentsStream({
+    required List<int> ids,
+    int level = 0,
+  }) async* {
+    for (final int id in ids) {
+      final Comment? comment = getComment(id);
+
+      if (comment != null) {
+        yield comment;
+        yield* getCommentsStream(ids: comment.kids, level: level + 1);
+      }
+    }
+  }
+
   void resetComments() {
     _comments.clear();
   }
