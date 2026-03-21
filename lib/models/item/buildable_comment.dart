@@ -20,7 +20,6 @@ class BuildableComment extends Comment with Buildable {
     required super.isFromCache,
     required super.isCollapsedByUser,
     required super.isHiddenByUser,
-    required super.isLocked,
     required this.elements,
   });
 
@@ -40,7 +39,6 @@ class BuildableComment extends Comment with Buildable {
           isFromCache: comment.isFromCache,
           isHiddenByUser: comment.isHiddenByUser,
           isCollapsedByUser: comment.isCollapsedByUser,
-          isLocked: comment.isLocked,
         );
 
   @override
@@ -68,7 +66,6 @@ class BuildableComment extends Comment with Buildable {
       isFromCache: isFromCache,
       isHiddenByUser: isHiddenByUser ?? this.isHiddenByUser,
       isCollapsedByUser: isCollapsedByUser ?? this.isCollapsedByUser,
-      isLocked: isLocked ?? this.isLocked,
     );
   }
 

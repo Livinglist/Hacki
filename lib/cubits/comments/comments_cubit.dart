@@ -427,22 +427,19 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     }
   }
 
+  static int _lockedCommentId = 0;
+
   void lock(Comment comment) {
-    final List<Comment> updatedComments = <Comment>[...state.comments];
-    final int commentIndex =
-        state.comments.indexWhere((Comment c) => c.id == comment.id);
-    final Comment updatedComment =
-        comment.copyWith(isLocked: !comment.isLocked);
-    updatedComments.replaceRange(
-      commentIndex,
-      commentIndex + 1,
-      <Comment>[updatedComment],
-    );
-    emit(state.copyWith(comments: updatedComments));
+    _lockedCommentId = comment.id;
   }
 
+  bool isCommentLocked(Comment comment) => _lockedCommentId == comment.id;
+
   void collapse(Comment comment) {
-    if (comment.isLocked) return;
+    if (isCommentLocked(comment)) {
+      _lockedCommentId = 0;
+      return;
+    }
     final List<Comment> comments = <Comment>[...state.comments];
     final int commentIndex =
         state.comments.indexWhere((Comment c) => c.id == comment.id);

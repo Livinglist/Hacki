@@ -16,7 +16,6 @@ class Comment extends Item {
     required this.isFromCache,
     this.isHiddenByUser = false,
     this.isCollapsedByUser = false,
-    this.isLocked = false,
   }) : super(
           descendants: 0,
           parts: <int>[],
@@ -29,11 +28,9 @@ class Comment extends Item {
       : isFromCache = json['fromCache'] == true,
         isHiddenByUser = false,
         isCollapsedByUser = false,
-        isLocked = false,
         super.fromJson();
 
   final int level;
-  final bool isLocked;
   final bool isHiddenByUser;
   final bool isCollapsedByUser;
   final bool isFromCache;
@@ -46,7 +43,6 @@ class Comment extends Item {
     int? level,
     int? kid,
     bool? hidden,
-    bool? isLocked,
     bool? isHiddenByUser,
     bool? isCollapsedByUser,
   }) {
@@ -65,7 +61,6 @@ class Comment extends Item {
       isFromCache: isFromCache,
       isHiddenByUser: isHiddenByUser ?? this.isHiddenByUser,
       isCollapsedByUser: isCollapsedByUser ?? this.isCollapsedByUser,
-      isLocked: isLocked ?? this.isLocked,
     );
   }
 
@@ -77,6 +72,5 @@ class Comment extends Item {
         ...super.props,
         isHiddenByUser,
         isCollapsedByUser,
-        isLocked,
       ];
 }
