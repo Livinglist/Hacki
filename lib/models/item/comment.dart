@@ -95,14 +95,11 @@ class Comment extends Item {
     );
   }
 
-  @override
-  Map<String, dynamic> toJson({bool withCollapseState = false}) {
+  Map<String, dynamic> toJsonWithOnlyCollapseState() {
     return <String, dynamic>{
-      ...super.toJson(),
-      if (withCollapseState) ...<String, dynamic>{
-        'isHiddenByUser': isHiddenByUser,
-        'isCollapsedByUser': isCollapsedByUser,
-      },
+      ...super.toJson(full: false),
+      'isHiddenByUser': isHiddenByUser,
+      'isCollapsedByUser': isCollapsedByUser,
     };
   }
 

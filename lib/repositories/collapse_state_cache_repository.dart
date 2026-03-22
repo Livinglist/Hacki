@@ -57,7 +57,7 @@ class CollapseStateCacheRepository with Loggable {
     final Map<String, String> entries = commentMap.map(
       (int commentId, Comment comment) => MapEntry<String, String>(
         '${storyId}_$commentId',
-        jsonEncode(comment.toJson(withCollapseState: true)),
+        jsonEncode(comment.toJsonWithOnlyCollapseState()),
       ),
     );
     await box.putAll(entries);
@@ -74,7 +74,7 @@ class CollapseStateCacheRepository with Loggable {
           .where((String k) => k.startsWith(prefix))
           .map((String k) {
         final int commentId = int.parse(k.split('_').last);
-        final Comment comment = Comment.fromJson(
+        final Comment comment = Comment.fromJsonWithCollapsedStateOnly(
           jsonDecode(box.get(k)!) as Map<String, dynamic>,
         );
         return MapEntry<int, Comment>(commentId, comment);

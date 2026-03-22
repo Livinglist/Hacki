@@ -51,9 +51,9 @@ class PollOption extends Item {
   }
 
   @override
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson({bool full = true}) {
     return <String, dynamic>{
-      ...super.toJson(),
+      ...super.toJson(full: full),
       'ratio': ratio,
     };
   }

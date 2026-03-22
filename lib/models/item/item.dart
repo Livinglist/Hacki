@@ -116,17 +116,19 @@ class Item extends Equatable {
 
   bool get isComment => type == 'comment';
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson({bool full = true}) {
     return <String, dynamic>{
+      if (full) ...<String, dynamic>{
+        'title': title,
+        'url': url,
+        'text': text,
+      },
       'descendants': descendants,
       'id': id,
       'score': score,
       'time': time,
       'by': by,
-      'title': title,
-      'url': url,
       'kids': kids,
-      'text': text,
       'dead': dead,
       'deleted': deleted,
       'type': type,
