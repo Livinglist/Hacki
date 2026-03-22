@@ -213,12 +213,15 @@ class CommentTile extends StatelessWidget {
                                 ),
                               ),
                             if (comment.isNew)
-                              const Padding(
-                                padding: EdgeInsets.only(left: Dimens.pt4),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(left: Dimens.pt4),
                                 child: Icon(
                                   Icons.fiber_new,
                                   size: Dimens.pt16,
-                                  color: Palette.grey,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .primaryContainer,
                                 ),
                               ),
                             const Spacer(),
@@ -352,13 +355,19 @@ class CommentTile extends StatelessWidget {
 
         Widget wrapper = child;
 
-        if ((isMyComment || comment.isNew) && level == 0) {
+        if (level == 0) {
           return Container(
             clipBehavior: Clip.hardEdge,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withValues(
-                    alpha: 0.2,
-                  ),
+              color: () {
+                if (isMyComment) {
+                  return primaryColor.withValues(alpha: 0.2);
+                } else if (comment.isNew) {
+                  return Theme.of(context).highlightColor;
+                }
+
+                return commentColor;
+              }(),
             ),
             child: wrapper,
           );
@@ -375,8 +384,6 @@ class CommentTile extends StatelessWidget {
                   primaryColor: primaryColor,
                   brightness: brightness,
                 );
-          final bool shouldHighlight =
-              (comment.isNew || isMyComment) && i == level;
           wrapper = Container(
             clipBehavior: Clip.hardEdge,
             margin: const EdgeInsets.only(
@@ -390,9 +397,17 @@ class CommentTile extends StatelessWidget {
                       ),
                     )
                   : null,
-              color: shouldHighlight
-                  ? primaryColor.withValues(alpha: 0.2)
-                  : commentColor,
+              color: () {
+                if (i == level) {
+                  if (isMyComment && i == level) {
+                    return primaryColor.withValues(alpha: 0.2);
+                  } else if (comment.isNew) {
+                    return Theme.of(context).highlightColor;
+                  }
+                }
+
+                return commentColor;
+              }(),
             ),
             child: wrapper,
           );
