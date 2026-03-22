@@ -295,9 +295,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
             horizontal: Dimens.pt12,
             vertical: Dimens.pt24,
           ),
-          contentPadding: const EdgeInsets.only(
-            bottom: Dimens.pt12,
-          ),
+          contentPadding: EdgeInsets.zero,
           content: ConstrainedBox(
             constraints: const BoxConstraints(
               maxWidth: 500,

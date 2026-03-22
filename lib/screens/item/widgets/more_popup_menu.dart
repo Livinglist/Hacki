@@ -61,8 +61,11 @@ class MorePopupMenu extends StatelessWidget {
               content: 'No voting on your own post! (;｀O´)o',
             );
           }
+
+          context.pop(MenuAction.upvote);
         },
         builder: (BuildContext context, VoteState voteState) {
+          final bool upvoted = voteState.vote == Vote.up;
           final bool downvoted = voteState.vote == Vote.down;
           return Column(
             mainAxisSize: MainAxisSize.min,
@@ -178,27 +181,19 @@ class MorePopupMenu extends StatelessWidget {
                   },
                 ),
               ),
-              if (context.read<AuthBloc>().state.user.id == item.by)
-                ListTile(
-                  leading: const Icon(
-                    Icons.edit,
-                  ),
-                  title: const Text(
-                    'Edit',
-                  ),
-                  onTap: () => context.read<EditCubit>().onEditTapped(item),
-                ),
               ListTile(
-                leading: const Icon(
-                  Icons.message,
+                leading: Icon(
+                  FeatherIcons.chevronUp,
+                  color: upvoted ? Theme.of(context).colorScheme.primary : null,
                 ),
-                title: const Text(
-                  'Reply',
+                title: Text(
+                  upvoted ? 'Upvoted' : 'Upvote',
+                  style: upvoted
+                      ? TextStyle(color: Theme.of(context).colorScheme.primary)
+                      : null,
                 ),
-                onTap: () {
-                  context.pop();
-                  context.read<EditCubit>().onReplyTapped(item);
-                },
+                subtitle: item is Story ? Text(item.score.toString()) : null,
+                onTap: context.read<VoteCubit>().upvote,
               ),
               ListTile(
                 leading: Icon(
