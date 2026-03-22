@@ -355,7 +355,7 @@ class CommentTile extends StatelessWidget {
 
         Widget wrapper = child;
 
-        if (level == 0) {
+        if ((isMyComment || comment.isNew) && level == 0) {
           return Container(
             clipBehavior: Clip.hardEdge,
             decoration: BoxDecoration(
@@ -399,7 +399,7 @@ class CommentTile extends StatelessWidget {
                   : null,
               color: () {
                 if (i == level) {
-                  if (isMyComment && i == level) {
+                  if (isMyComment) {
                     return primaryColor.withValues(alpha: 0.2);
                   } else if (comment.isNew) {
                     return Theme.of(context).highlightColor;
@@ -413,6 +413,8 @@ class CommentTile extends StatelessWidget {
           );
         }
 
+        /// This makes the left part of the thread that doesn't contain
+        /// any text able to recognize for back gesture.
         if (<int>[0, 1, 2, 3].contains(level)) {
           wrapper = Stack(
             children: <Widget>[
