@@ -916,11 +916,14 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   void _onCommentFetched(BuildableComment? comment) {
     if (comment != null) {
       final Comment? prevState = _previousCommentStates[comment.id];
-      if (_previousCommentStates.isNotEmpty &&
-          prevState == null &&
-          !comment.dead &&
-          !comment.deleted &&
-          !comment.hidden) {
+      final int parentIndex =
+          state.comments.indexWhere((Comment c) => c.id == comment?.parent);
+      if (parentIndex > -1) {
+        final Comment parent = state.comments.elementAt(parentIndex);
+        comment = comment.copyWith(
+          isHiddenByUser: parent.isHiddenByUser || parent.isCollapsedByUser,
+        );
+      } else if (_previousCommentStates.isNotEmpty && prevState == null) {
         final Comment? parent = _previousCommentStates[comment.parent];
         if (parent == null) {
           comment = comment.copyWith(
