@@ -1008,8 +1008,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
           state.comments.where((Comment c) => c.isNew).length;
       if (newCommentsCount > 0) {
         navigatorKey.currentContext?.showSnackBar(
-          content: '''
-          $newCommentsCount new comment${newCommentsCount > 1 ? 's' : ''} fetched.''',
+          content:
+              '''$newCommentsCount new comment${newCommentsCount > 1 ? 's' : ''} fetched.''',
         );
       } else {
         navigatorKey.currentContext?.showSnackBar(

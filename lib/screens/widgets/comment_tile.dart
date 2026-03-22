@@ -385,7 +385,7 @@ class CommentTile extends StatelessWidget {
                 if (isMyComment) {
                   return primaryColor.withValues(alpha: 0.2);
                 } else if (comment.isNew) {
-                  return Theme.of(context).colorScheme.surfaceContainer;
+                  return Theme.of(context).colorScheme.surfaceContainerLow;
                 }
 
                 return commentColor;
@@ -424,7 +424,7 @@ class CommentTile extends StatelessWidget {
                   if (isMyComment) {
                     return primaryColor.withValues(alpha: 0.2);
                   } else if (comment.isNew) {
-                    return Theme.of(context).colorScheme.surfaceContainer;
+                    return Theme.of(context).colorScheme.surfaceContainerLow;
                   }
                 }
 

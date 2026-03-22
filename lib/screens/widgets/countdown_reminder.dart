@@ -160,7 +160,7 @@ class _CountDownReminderState extends State<CountdownReminder>
                         builder: (BuildContext context, Widget? child) {
                           return LinearProgressIndicator(
                             value: progressAnimation.value,
-                            minHeight: Dimens.pt6,
+                            minHeight: Dimens.pt4,
                             backgroundColor:
                                 Theme.of(context).colorScheme.primary,
                             color: Theme.of(context)
