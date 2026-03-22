@@ -636,7 +636,7 @@ final class PersistCollapseStateAcrossSessions extends BooleanPreference {
   const PersistCollapseStateAcrossSessions({bool? val})
       : super(val: val ?? _defaultValue);
 
-  static const bool _defaultValue = false;
+  static const bool _defaultValue = true;
 
   @override
   PersistCollapseStateAcrossSessions copyWith({required bool? val}) {
