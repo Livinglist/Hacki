@@ -249,8 +249,10 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                         onError?.call(e as AppException);
                       }
                     case TooManyRequestsException:
-                      _hackerNewsWebRetryAfterDateTime =
+                      final DateTime retryAfter =
                           (e as TooManyRequestsException).retryAfter;
+                      _hackerNewsWebRetryAfterDateTime = retryAfter;
+                      logInfo('retry after $retryAfter');
                       if (_preferenceCubit.state.isDevModeEnabled) {
                         onError?.call(e);
                       }
@@ -273,6 +275,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
               }
             case CommentsOrder.oldestFirst:
             case CommentsOrder.newestFirst:
+              logInfo('fetching comments of ${item.id} from API.');
               commentStream =
                   _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
                 ids: kids,
@@ -357,8 +360,10 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                       onError?.call(e as AppException);
                     }
                   case TooManyRequestsException:
-                    _hackerNewsWebRetryAfterDateTime =
+                    final DateTime retryAfter =
                         (e as TooManyRequestsException).retryAfter;
+                    _hackerNewsWebRetryAfterDateTime = retryAfter;
+                    logInfo('retry after $retryAfter');
                     if (_preferenceCubit.state.isDevModeEnabled) {
                       onError?.call(e);
                     }
@@ -376,6 +381,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
             }
           case CommentsOrder.oldestFirst:
           case CommentsOrder.newestFirst:
+            logInfo('fetching comments of ${item.id} from API.');
             commentStream =
                 _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
               ids: kids,

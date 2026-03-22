@@ -15,7 +15,7 @@ class CollapseStateCacheRepository with Loggable {
   }
 
   static const String _boxName = 'persistedCollapseStates';
-  static const int _maxLength = 100;
+  static const int _maxLength = 5000;
   final Future<Box<String>> _box;
 
   Map<int, Map<int, Comment>> _itemIdToPreviousStates =
@@ -103,10 +103,11 @@ class CollapseStateCacheRepository with Loggable {
       }
     }
 
+    logInfo(
+      '${box.length} keys detected in preserved collapse states',
+    );
+
     if (box.length > _maxLength) {
-      logDebug(
-        'more than $_maxLength keys detected in preserved collapse states',
-      );
       final Set<String> seenStories = <String>{};
       final List<String> orderedStoryIds = box.keys
           .cast<String>()
