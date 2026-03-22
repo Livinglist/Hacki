@@ -93,7 +93,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
   /// The id of the comment of which the text selection menu is active.
   static int _lockedCommentId = 0;
-  final Map<int, Comment> _previousCommentStates = <int, Comment>{};
+  Map<int, Comment>? _previousCommentStates;
   double inThreadSearchOffset = 0;
 
   Future<bool> get _shouldFetchFromWeb async {
@@ -279,9 +279,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     }
 
     /// Preserve collapse state.
-    for (final Comment e in state.comments) {
-      _previousCommentStates[e.id] = e;
-    }
+    _preserveCollapseState();
 
     await _streamSubscription?.cancel();
     for (final int id in _streamSubscriptions.keys) {
@@ -519,21 +517,24 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     emit(state.copyWith(comments: comments));
   }
 
-  int collapsedCount(Comment comment) {
+  /// Hidden and new comments count.
+  (int, int) collapsedCount(Comment comment) {
     final List<Comment> comments = state.comments;
     final int commentIndex =
         state.comments.indexWhere((Comment c) => c.id == comment.id);
     final int commentLevel = comment.level;
     int count = 0;
+    int newCommentsCount = 0;
     for (int i = commentIndex + 1; i < comments.length; i++) {
       final Comment cmt = comments.elementAt(i);
       if (cmt.level > commentLevel) {
+        if (cmt.isNew) newCommentsCount++;
         count++;
       } else {
         break;
       }
     }
-    return count;
+    return (count, newCommentsCount);
   }
 
   Future<void> loadParentThread() async {
@@ -592,9 +593,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     _streamSubscriptions.clear();
 
     /// Preserve collapse state.
-    for (final Comment e in state.comments) {
-      _previousCommentStates[e.id] = e;
-    }
+    _preserveCollapseState();
 
     emit(
       state.copyWith(
@@ -616,9 +615,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
   void updateFetchMode(FetchMode? fetchMode) {
     /// Preserve collapse state.
-    for (final Comment e in state.comments) {
-      _previousCommentStates[e.id] = e;
-    }
+    _preserveCollapseState();
 
     if (fetchMode == null) return;
     if (state.fetchMode == fetchMode) return;
@@ -643,8 +640,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     /// If index if found, scroll to the comment.
     if (index != -1) {
       await scrollTo(
-        index: index + 1,
-        alignment: 0.2,
+        index: index,
+        duration: AppDurations.ms300,
       );
     }
 
@@ -673,47 +670,95 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     /// Then create a shine effect on the widget to
     /// briefly highlight the target comment tile.
     if (targetCommentContext != null) {
-      /// If there is a comment context, then use the
-      /// `ensureVisible` to bring it into view.
-      if (targetCommentContext.mounted) {
-        await Scrollable.ensureVisible(
-          targetCommentContext,
-          alignment: 0.3,
-          duration: AppDurations.ms300,
-        );
+      /// Delay here so `itemPositionsListener` can be up to date.
+      await Future<void>.delayed(AppDurations.ms300, () async {
+        /// Make sure the comment tile's leading edge is within an
+        /// acceptable view point.
+        final Iterable<Comment> onScreenComments = itemPositionsListener
+            .itemPositions.value
+            // The header is also a part of the list view,
+            // thus ignoring it here.
+            .where(
+              (ItemPosition e) =>
+                  e.index >= 1 &&
+                      (e.itemLeadingEdge > 0.12 && e.itemLeadingEdge < 0.48) ||
+                  (e.itemLeadingEdge >= 0.48 && e.itemTrailingEdge < 1),
+            )
+            .map(
+              (ItemPosition e) => e.index <= state.comments.length
+                  ? state.comments.elementAt(e.index - 1)
+                  : null,
+            )
+            .nonNulls;
 
-        if (index != -1) {
-          await scrollTo(
-            index: index,
-            alignment: 0.2,
+        final bool isTargetCommentInRange = onScreenComments
+            .where((Comment c) => c.id == comment.id)
+            .isNotEmpty;
+
+        debugPrint(
+          'on screen comments are ${onScreenComments.map((Comment e) => e.id)}',
+        );
+        debugPrint('target comment is ${comment.id}');
+        debugPrint('target comment is in range? $isTargetCommentInRange');
+        debugPrint('index is $index');
+        debugPrint('comments length is ${state.comments.length}');
+
+        if (!isTargetCommentInRange) {
+          if (index != -1) {
+            debugPrint('scrolling another time to ${index + 1}');
+            await itemScrollController.scrollTo(
+              index: index + 1,
+              alignment: 0.2,
+              duration: AppDurations.ms300,
+            );
+          } else {
+            debugPrint('attempting to ensure visible');
+            final BuildContext? newTargetCommentContext =
+                targetCommentGlobalKey?.currentContext;
+            if (newTargetCommentContext != null &&
+                newTargetCommentContext.mounted) {
+              debugPrint('ensure visible');
+              await Scrollable.ensureVisible(
+                newTargetCommentContext,
+                alignment: 0.15,
+                duration: AppDurations.ms300,
+                alignmentPolicy:
+                    ScrollPositionAlignmentPolicy.keepVisibleAtStart,
+              );
+            }
+          }
+        }
+      });
+
+      await Future<void>.delayed(AppDurations.ms400, () {
+        final BuildContext? newTargetCommentContext =
+            targetCommentGlobalKey?.currentContext;
+        if (targetCommentGlobalKey != null &&
+            newTargetCommentContext != null &&
+            newTargetCommentContext.mounted) {
+          _startShine(
+            newTargetCommentContext,
+            targetCommentGlobalKey,
           );
         }
-
-        Future<void>.delayed(AppDurations.ms500, () {
-          final BuildContext? newTargetCommentContext =
-              targetCommentGlobalKey?.currentContext;
-          if (targetCommentGlobalKey != null &&
-              newTargetCommentContext != null &&
-              newTargetCommentContext.mounted) {
-            _startShine(
-              newTargetCommentContext,
-              targetCommentGlobalKey,
-            );
-          }
-        });
-      }
+      });
     }
   }
 
   Future<void> scrollTo({
     required int index,
     double alignment = 0.0,
+    Duration? duration,
+    Curve curve = Curves.linear,
+    List<double> opacityAnimationWeights = const <double>[40, 20, 40],
   }) async {
-    debugPrint('Scrolling to: $index, alignment: $alignment');
+    debugPrint('scrolling to: $index, alignment: $alignment');
     await itemScrollController.scrollTo(
       index: index,
       alignment: alignment,
-      duration: AppDurations.ms400,
+      duration: duration ?? AppDurations.ms400,
+      curve: curve,
+      opacityAnimationWeights: opacityAnimationWeights,
     );
   }
 
@@ -877,6 +922,13 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         ),
       );
 
+  void _preserveCollapseState() {
+    _previousCommentStates = <int, Comment>{};
+    for (final Comment e in state.comments) {
+      _previousCommentStates?[e.id] = e;
+    }
+  }
+
   List<int> _sortKids(List<int> kids) {
     switch (state.order) {
       case CommentsOrder.natural:
@@ -902,8 +954,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
           state.comments.where((Comment c) => c.isNew).length;
       if (newCommentsCount > 0) {
         navigatorKey.currentContext?.showSnackBar(
-          content:
-              '''$newCommentsCount new comment${newCommentsCount > 1 ? 's' : ''} fetched.''',
+          content: '''
+          $newCommentsCount new comment${newCommentsCount > 1 ? 's' : ''} fetched.''',
         );
       } else {
         navigatorKey.currentContext?.showSnackBar(
@@ -915,16 +967,18 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
   void _onCommentFetched(BuildableComment? comment) {
     if (comment != null) {
-      final Comment? prevState = _previousCommentStates[comment.id];
+      final Comment? prevState = _previousCommentStates?[comment.id];
       final int parentIndex =
           state.comments.indexWhere((Comment c) => c.id == comment?.parent);
       if (parentIndex > -1) {
         final Comment parent = state.comments.elementAt(parentIndex);
         comment = comment.copyWith(
           isHiddenByUser: parent.isHiddenByUser || parent.isCollapsedByUser,
+          isNew: _previousCommentStates != null && prevState == null,
         );
-      } else if (_previousCommentStates.isNotEmpty && prevState == null) {
-        final Comment? parent = _previousCommentStates[comment.parent];
+      } else if ((_previousCommentStates?.isNotEmpty ?? false) &&
+          prevState == null) {
+        final Comment? parent = _previousCommentStates?[comment.parent];
         if (parent == null) {
           comment = comment.copyWith(
             isNew: true,
@@ -935,7 +989,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
             isNew: true,
           );
         }
-        _previousCommentStates[comment.id] = comment;
+        _previousCommentStates?[comment.id] = comment;
       } else {
         comment = comment.copyWith(
           isCollapsedByUser: prevState?.isCollapsedByUser,

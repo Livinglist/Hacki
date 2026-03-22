@@ -83,6 +83,19 @@ class CommentTile extends StatelessWidget {
                     Theme.of(context).colorScheme.onPrimaryContainer,
                   );
 
+        int newCommentsCount = 0;
+        int hiddenCommentsCount = 0;
+        bool hasNewReplies = false;
+
+        if (isActionable) {
+          final (int, int)? hiddenAndNewCommentsCount =
+              context.tryRead<CommentsCubit>()?.collapsedCount(comment);
+          newCommentsCount = hiddenAndNewCommentsCount?.$2 ?? 0;
+          hiddenCommentsCount =
+              (hiddenAndNewCommentsCount?.$1 ?? 0) - newCommentsCount;
+          hasNewReplies = newCommentsCount > 0;
+        }
+
         final Widget child = DeviceGestureWrapper(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -195,7 +208,7 @@ class CommentTile extends StatelessWidget {
                                 ),
                                 textScaler: MediaQuery.of(context).textScaler,
                               ),
-                            if (kDebugMode)
+                            if (kDebugMode || kProfileMode)
                               Text(
                                 ' ${comment.id}',
                                 style: const TextStyle(
@@ -218,6 +231,18 @@ class CommentTile extends StatelessWidget {
                                     const EdgeInsets.only(left: Dimens.pt4),
                                 child: Icon(
                                   Icons.fiber_new,
+                                  size: Dimens.pt16,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .primaryContainer,
+                                ),
+                              )
+                            else if (hasNewReplies)
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(left: Dimens.pt4),
+                                child: Icon(
+                                  Icons.mark_unread_chat_alt,
                                   size: Dimens.pt16,
                                   color: Theme.of(context)
                                       .colorScheme
@@ -285,7 +310,7 @@ class CommentTile extends StatelessWidget {
                                     SizedBoxes.pt6,
                                     CenteredText(
                                       text:
-                                          '''collapsed (${context.tryRead<CommentsCubit>()?.collapsedCount(comment)})''',
+                                          '''collapsed ($hiddenCommentsCount${newCommentsCount == 0 ? '' : ' + $newCommentsCount new'})''',
                                       color: Theme.of(context)
                                           .colorScheme
                                           .primary
@@ -355,7 +380,7 @@ class CommentTile extends StatelessWidget {
 
         Widget wrapper = child;
 
-        if ((isMyComment || comment.isNew) && level == 0) {
+        if (level == 0) {
           return Container(
             clipBehavior: Clip.hardEdge,
             decoration: BoxDecoration(
@@ -363,7 +388,7 @@ class CommentTile extends StatelessWidget {
                 if (isMyComment) {
                   return primaryColor.withValues(alpha: 0.2);
                 } else if (comment.isNew) {
-                  return Theme.of(context).highlightColor;
+                  return Theme.of(context).colorScheme.surfaceContainer;
                 }
 
                 return commentColor;
@@ -402,7 +427,7 @@ class CommentTile extends StatelessWidget {
                   if (isMyComment) {
                     return primaryColor.withValues(alpha: 0.2);
                   } else if (comment.isNew) {
-                    return Theme.of(context).highlightColor;
+                    return Theme.of(context).colorScheme.surfaceContainer;
                   }
                 }
 
