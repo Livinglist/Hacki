@@ -137,7 +137,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   }
 
   Future<void> _initializeCollapseStateCache() async {
-    if (_preferenceCubit.state.shouldPreserveCollapseStateAcrossSessions &&
+    if (_preferenceCubit.state.shouldPersistCollapseStateAcrossSessions &&
         _itemIdToPreviousStates.isEmpty) {
       _itemIdToPreviousStates.addAll(
         _collapseStateCacheRepository.cachedItemIdToPreviousStates,
@@ -966,9 +966,11 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     if (_previousCommentStates != null && state.item is Story) {
       if (_preferenceCubit.state.shouldPreserveCollapseStateAfterScreenExit) {
         _itemIdToPreviousStates[state.item.id] = _previousCommentStates!;
+      } else {
+        _itemIdToPreviousStates.clear();
       }
 
-      if (_preferenceCubit.state.shouldPreserveCollapseStateAcrossSessions) {
+      if (_preferenceCubit.state.shouldPersistCollapseStateAcrossSessions) {
         _collapseStateCacheRepository.saveAll(_itemIdToPreviousStates);
       }
     }

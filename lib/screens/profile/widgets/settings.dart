@@ -699,27 +699,18 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
             TextButton(
               onPressed: () {
                 context.pop();
-                locator
-                    .get<SembastRepository>()
-                    .deleteAllCachedItems()
-                    .whenComplete(
-                      locator.get<OfflineRepository>().deleteAll,
-                    )
-                    .whenComplete(
-                      locator.get<PreferenceRepository>().clearAllReadStories,
-                    )
-                    .whenComplete(
-                      DefaultCacheManager().emptyCache,
-                    )
-                    .whenComplete(
-                      locator.get<SembastRepository>().deleteCachedComments,
-                    )
-                    .whenComplete(
-                      locator.get<SembastRepository>().deleteCachedMetadata,
-                    )
-                    .whenComplete(() {
-                  showSnackBar(content: 'Cache cleared!');
-                });
+                locator.get<OfflineRepository>().deleteAll();
+                locator.get<PreferenceRepository>().clearAllReadStories();
+                DefaultCacheManager().emptyCache();
+                locator.get<SembastRepository>()
+                  ..deleteAllCachedItems()
+                  ..deleteCachedComments()
+                  ..deleteCachedMetadata()
+                  ..deleteCachedMetadata();
+                locator.get<CollapseStateCacheRepository>().clear();
+
+                HapticFeedbackUtil.success();
+                showSnackBar(content: 'Cache cleared!');
               },
               child: const Text(
                 'Yes',
