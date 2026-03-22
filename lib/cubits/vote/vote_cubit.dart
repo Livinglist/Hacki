@@ -6,6 +6,7 @@ import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
+import 'package:hacki/utils/haptic_feedback_util.dart';
 
 part 'vote_state.dart';
 
@@ -65,6 +66,7 @@ class VoteCubit extends Cubit<VoteState> {
       );
 
       if (success) {
+        HapticFeedbackUtil.success();
         emit(
           state.copyWith(
             vote: Vote.up,
@@ -80,6 +82,8 @@ class VoteCubit extends Cubit<VoteState> {
           ),
         );
       } else {
+        HapticFeedbackUtil.error();
+
         emit(
           state.copyWith(
             status: VoteStatus.failure,
@@ -93,6 +97,7 @@ class VoteCubit extends Cubit<VoteState> {
         id: state.item.id,
       );
 
+      HapticFeedbackUtil.success();
       emit(
         state.copyWithVoteRemoved(
           status: VoteStatus.canceled,
@@ -124,6 +129,7 @@ class VoteCubit extends Cubit<VoteState> {
             vote: false,
           );
 
+          HapticFeedbackUtil.success();
           emit(
             state.copyWith(
               vote: Vote.down,
@@ -138,6 +144,7 @@ class VoteCubit extends Cubit<VoteState> {
           id: state.item.id,
         );
 
+        HapticFeedbackUtil.success();
         emit(
           state.copyWithVoteRemoved(
             status: VoteStatus.canceled,
@@ -145,6 +152,7 @@ class VoteCubit extends Cubit<VoteState> {
         );
       }
     } else {
+      HapticFeedbackUtil.error();
       emit(state.copyWith(status: VoteStatus.failureKarmaBelowThreshold));
     }
   }
