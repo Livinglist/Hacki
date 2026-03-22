@@ -2,6 +2,7 @@ export 'app_exception.dart';
 export 'comments_order.dart';
 export 'date_display_format.dart';
 export 'discoverable_feature.dart';
+export 'displayable.dart';
 export 'export_destination.dart';
 export 'fetch_mode.dart';
 export 'font.dart';
