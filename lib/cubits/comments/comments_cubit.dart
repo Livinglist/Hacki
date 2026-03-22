@@ -93,6 +93,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   /// The id of the comment of which the text selection menu is active.
   static int _lockedCommentId = 0;
   final Map<int, Comment> _previousCommentStates = <int, Comment>{};
+  double inThreadSearchOffset = 0;
 
   Future<bool> get _shouldFetchFromWeb async {
     final bool isOnWifi = await _isOnWifi;

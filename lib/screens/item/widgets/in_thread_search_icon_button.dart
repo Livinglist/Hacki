@@ -83,6 +83,14 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
       if (textEditingController.text.isEmpty) {
         focusNode.requestFocus();
       }
+
+      if (widget.commentsCubit.state.matchedComments.isNotEmpty) {
+        scrollController.animateTo(
+          widget.commentsCubit.inThreadSearchOffset,
+          duration: AppDurations.ms300,
+          curve: Curves.easeOutCubic,
+        );
+      }
     });
   }
 
@@ -96,7 +104,10 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
     super.dispose();
   }
 
-  void onScroll() => focusNode.unfocus();
+  void onScroll() {
+    focusNode.unfocus();
+    widget.commentsCubit.inThreadSearchOffset = scrollController.offset;
+  }
 
   @override
   Widget build(BuildContext context) {
