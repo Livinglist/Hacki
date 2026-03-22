@@ -469,7 +469,6 @@ class CommentTile extends StatelessWidget {
   }
 
   void _collapse(BuildContext context) {
-    final PreferenceCubit preferenceCubit = context.read<PreferenceCubit>();
     final CommentsCubit commentsCubit = context.read<CommentsCubit>();
 
     if (comment.isCollapsedByUser) {
@@ -478,32 +477,30 @@ class CommentTile extends StatelessWidget {
       commentsCubit.collapse(comment);
     }
 
-    if (preferenceCubit.state.isAutoScrollEnabled) {
-      final List<Comment> comments = commentsCubit.state.comments;
-      final int indexOfComment =
-          comments.indexWhere((Comment c) => c.id == comment.id);
-      if (indexOfComment < comments.length) {
-        final double? leadingEdge =
-            commentsCubit.itemPositionsListener.itemPositions.value
-                .singleWhereOrNull(
-                  (ItemPosition e) => e.index - 1 == indexOfComment,
-                )
-                ?.itemLeadingEdge;
-        final bool willBeOutsideOfScreen =
-            leadingEdge != null && leadingEdge < 0.1;
+    final List<Comment> comments = commentsCubit.state.comments;
+    final int indexOfComment =
+        comments.indexWhere((Comment c) => c.id == comment.id);
+    if (indexOfComment < comments.length) {
+      final double? leadingEdge =
+          commentsCubit.itemPositionsListener.itemPositions.value
+              .singleWhereOrNull(
+                (ItemPosition e) => e.index - 1 == indexOfComment,
+              )
+              ?.itemLeadingEdge;
+      final bool willBeOutsideOfScreen =
+          leadingEdge != null && leadingEdge < 0.1;
 
-        if (willBeOutsideOfScreen) {
-          Future<void>.delayed(
-            AppDurations.ms200,
-            () {
-              commentsCubit.itemScrollController.scrollTo(
-                index: indexOfComment + 1,
-                alignment: 0.15,
-                duration: AppDurations.ms300,
-              );
-            },
-          );
-        }
+      if (willBeOutsideOfScreen) {
+        Future<void>.delayed(
+          AppDurations.ms200,
+          () {
+            commentsCubit.itemScrollController.scrollTo(
+              index: indexOfComment + 1,
+              alignment: 0.15,
+              duration: AppDurations.ms300,
+            );
+          },
+        );
       }
     }
   }

@@ -144,7 +144,11 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       );
     }
 
-    _previousCommentStates = _itemIdToPreviousStates[state.item.id];
+    if (_preferenceCubit.state.shouldPreserveCollapseStateAfterScreenExit) {
+      _previousCommentStates = _itemIdToPreviousStates[state.item.id];
+    } else {
+      _itemIdToPreviousStates.clear();
+    }
   }
 
   Future<void> init({

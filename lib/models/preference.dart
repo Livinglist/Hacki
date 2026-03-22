@@ -71,15 +71,15 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       const MarkReadStoriesModePreference(),
 
       /// Divider.
-      const AutoScrollModePreference(),
       const ManualPaginationPreference(),
       const NotificationModePreference(),
+      const SwipeGesturePreference(),
+      const DividerPlaceholder(label: 'Thread'),
       const PersistCollapseStateAcrossSessions(),
       const PreserveCollapseStateAfterScreenExit(),
       const ReaderModePreference(),
       const SkipButtonsPreference(),
       const SplitViewPreference(),
-      const SwipeGesturePreference(),
       const CollapseModePreference(),
       const CustomTabPreference(),
       const DividerPlaceholder(label: 'Look And Feel'),
@@ -110,6 +110,9 @@ final class DividerPlaceholder extends Preference<void> {
 
   @override
   String get title => throw UnimplementedError();
+
+  @override
+  List<Object?> get props => <Object?>[label];
 }
 
 abstract final class BooleanPreference extends Preference<bool> {
@@ -319,28 +322,6 @@ final class CollapseModePreference extends BooleanPreference {
   @override
   String get subtitle =>
       '''if disabled, tap on the top of comment tile to collapse.''';
-}
-
-final class AutoScrollModePreference extends BooleanPreference {
-  const AutoScrollModePreference({bool? val})
-      : super(val: val ?? _autoScrollModeDefaultValue);
-
-  static const bool _autoScrollModeDefaultValue = true;
-
-  @override
-  AutoScrollModePreference copyWith({required bool? val}) {
-    return AutoScrollModePreference(val: val);
-  }
-
-  @override
-  String get key => 'autoScrollMode';
-
-  @override
-  String get title => 'Auto-scroll on Collapsing';
-
-  @override
-  String get subtitle =>
-      '''automatically scroll to next comment when you collapse a comment.''';
 }
 
 final class IndexedStoryTilePreference extends BooleanPreference {
@@ -563,7 +544,7 @@ final class ReaderModePreference extends BooleanPreference {
   const ReaderModePreference({bool? val})
       : super(val: val ?? _readerModeDefaultValue);
 
-  static const bool _readerModeDefaultValue = true;
+  static const bool _readerModeDefaultValue = false;
 
   @override
   ReaderModePreference copyWith({required bool? val}) {

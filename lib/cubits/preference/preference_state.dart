@@ -13,8 +13,7 @@ class PreferenceState extends Equatable {
   Iterable<Preference<dynamic>> get settingsPreferences => preferences.where(
         (Preference<dynamic> p) =>
             p.isDisplayable &&
-            (p is BooleanPreference || p is DividerPlaceholder) &&
-            p.dependencies.satisfy(preferences),
+            (p is BooleanPreference || p is DividerPlaceholder),
       );
 
   PreferenceState copyWith({
@@ -39,11 +38,12 @@ class PreferenceState extends Equatable {
 
   bool isOn<T extends BooleanPreference>(T preference) {
     return preferences
-        .whereType<BooleanPreference>()
-        .singleWhere(
-          (BooleanPreference e) => e.runtimeType == preference.runtimeType,
-        )
-        .val;
+            .whereType<BooleanPreference>()
+            .singleWhere(
+              (BooleanPreference e) => e.runtimeType == preference.runtimeType,
+            )
+            .val &&
+        preference.dependencies.satisfy(preferences);
   }
 
   bool _isOn<T extends BooleanPreference>() {
@@ -88,8 +88,6 @@ class PreferenceState extends Equatable {
   bool get isSwipeGestureEnabled => _isOn<SwipeGesturePreference>();
 
   bool get isSplitViewEnabled => _isOn<SplitViewPreference>();
-
-  bool get isAutoScrollEnabled => _isOn<AutoScrollModePreference>();
 
   bool get isCustomTabEnabled => _isOn<CustomTabPreference>();
 
