@@ -147,6 +147,7 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                           () => widget.commentsCubit.search(
                             text,
                             author: state.inThreadSearchAuthor,
+                            isNewSelected: state.isNewInSearchSelected,
                           ),
                         ),
                       ),
@@ -179,10 +180,12 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                           widget.commentsCubit.search(
                             state.inThreadSearchQuery,
                             author: state.item.by,
+                            isNewSelected: state.isNewInSearchSelected,
                           );
                         } else {
                           widget.commentsCubit.search(
                             state.inThreadSearchQuery,
+                            isNewSelected: state.isNewInSearchSelected,
                           );
                         }
                       },
@@ -200,10 +203,12 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                             widget.commentsCubit.search(
                               state.inThreadSearchQuery,
                               author: authState.username,
+                              isNewSelected: state.isNewInSearchSelected,
                             );
                           } else {
                             widget.commentsCubit.search(
                               state.inThreadSearchQuery,
+                              isNewSelected: state.isNewInSearchSelected,
                             );
                           }
                         },
@@ -246,6 +251,7 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                           widget.commentsCubit.search(
                             '',
                             author: state.inThreadSearchAuthor,
+                            isNewSelected: state.isNewInSearchSelected,
                           );
                         }
                         focusNode.requestFocus();
