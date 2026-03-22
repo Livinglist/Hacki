@@ -34,6 +34,9 @@ Future<void> setUpLocator() async {
     ..registerSingleton<AuthRepository>(AuthRepository())
     ..registerSingleton<PostRepository>(PostRepository())
     ..registerSingleton<OfflineRepository>(OfflineRepository())
+    ..registerSingleton<CollapseStateCacheRepository>(
+      CollapseStateCacheRepository(),
+    )
     ..registerSingleton<DraftCache>(DraftCache())
     ..registerSingleton<CommentCache>(CommentCache())
     ..registerSingleton<LocalNotificationService>(LocalNotificationService())

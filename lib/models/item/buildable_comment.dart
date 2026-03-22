@@ -74,5 +74,27 @@ class BuildableComment extends Comment with Buildable {
   }
 
   @override
+  Comment copyWithOnlyCollapseState() {
+    return BuildableComment(
+      id: id,
+      time: time,
+      parent: parent,
+      score: score,
+      by: by,
+      text: '',
+      kids: kids,
+      dead: dead,
+      deleted: deleted,
+      hidden: hidden,
+      level: level,
+      elements: const <LinkifyElement>[],
+      isFromCache: isFromCache,
+      isHiddenByUser: isHiddenByUser,
+      isCollapsedByUser: isCollapsedByUser,
+      isNew: false,
+    );
+  }
+
+  @override
   final List<LinkifyElement> elements;
 }

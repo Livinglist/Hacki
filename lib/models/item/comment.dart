@@ -32,6 +32,13 @@ class Comment extends Item {
         isNew = false,
         super.fromJson();
 
+  Comment.fromJsonWithCollapsedStateOnly(super.json, {this.level = 0})
+      : isFromCache = json['fromCache'] == true,
+        isHiddenByUser = json['isHiddenByUser'] == true,
+        isCollapsedByUser = json['isCollapsedByUser'] == true,
+        isNew = false,
+        super.fromJson();
+
   final int level;
   final bool isHiddenByUser;
   final bool isCollapsedByUser;
@@ -67,6 +74,36 @@ class Comment extends Item {
       isCollapsedByUser: isCollapsedByUser ?? this.isCollapsedByUser,
       isNew: isNew ?? this.isNew,
     );
+  }
+
+  Comment copyWithOnlyCollapseState() {
+    return Comment(
+      id: id,
+      time: time,
+      parent: parent,
+      score: score,
+      by: by,
+      text: '',
+      kids: kids,
+      dead: dead,
+      deleted: deleted,
+      hidden: hidden,
+      level: level,
+      isFromCache: isFromCache,
+      isHiddenByUser: isHiddenByUser,
+      isCollapsedByUser: isCollapsedByUser,
+    );
+  }
+
+  @override
+  Map<String, dynamic> toJson({bool withCollapseState = false}) {
+    return <String, dynamic>{
+      ...super.toJson(),
+      if (withCollapseState) ...<String, dynamic>{
+        'isHiddenByUser': isHiddenByUser,
+        'isCollapsedByUser': isCollapsedByUser,
+      },
+    };
   }
 
   @override

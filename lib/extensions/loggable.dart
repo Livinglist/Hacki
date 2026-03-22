@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:logger/logger.dart';
 
@@ -28,12 +29,14 @@ mixin Loggable {
     Object? error,
     StackTrace? stackTrace,
   }) {
-    _logger.d(
-      '[$logIdentifier] $message',
-      time: time,
-      error: error,
-      stackTrace: stackTrace,
-    );
+    if (kDebugMode) {
+      _logger.d(
+        '[$logIdentifier] $message',
+        time: time,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
   }
 
   /// Log a message at level [Level.info].

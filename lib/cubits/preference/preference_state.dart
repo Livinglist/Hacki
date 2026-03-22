@@ -108,6 +108,12 @@ class PreferenceState extends Equatable {
   bool get isPreviewImageLeftAligned =>
       _isOn<PreviewImageAlignmentPreference>();
 
+  bool get shouldPreserveCollapseStateAfterScreenExit =>
+      _isOn<PreserveCollapseStateAfterScreenExit>();
+
+  bool get shouldPreserveCollapseStateAcrossSessions =>
+      _isOn<PreserveCollapseStateAcrossSessions>();
+
   double get textScaleFactor =>
       preferences.singleWhereType<TextScaleFactorPreference>().val;
 

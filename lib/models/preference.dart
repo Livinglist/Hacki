@@ -74,6 +74,8 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       const AutoScrollModePreference(),
       const ManualPaginationPreference(),
       const NotificationModePreference(),
+      const PreserveCollapseStateAfterScreenExit(),
+      const PreserveCollapseStateAcrossSessions(),
       const ReaderModePreference(),
       const SkipButtonsPreference(),
       const SplitViewPreference(),
@@ -646,6 +648,50 @@ final class ManualPaginationPreference extends BooleanPreference {
 
   @override
   String get subtitle => '''so you can get stuff done.''';
+}
+
+final class PreserveCollapseStateAfterScreenExit extends BooleanPreference {
+  const PreserveCollapseStateAfterScreenExit({bool? val})
+      : super(val: val ?? _defaultValue);
+
+  static const bool _defaultValue = true;
+
+  @override
+  PreserveCollapseStateAfterScreenExit copyWith({required bool? val}) {
+    return PreserveCollapseStateAfterScreenExit(val: val);
+  }
+
+  @override
+  String get key => 'preserveCollapseStateAfterScreenExit';
+
+  @override
+  String get title => 'Preserve Collapse State';
+
+  @override
+  String get subtitle =>
+      '''preserve collapse state of comments upon leaving a thread.''';
+}
+
+final class PreserveCollapseStateAcrossSessions extends BooleanPreference {
+  const PreserveCollapseStateAcrossSessions({bool? val})
+      : super(val: val ?? _defaultValue);
+
+  static const bool _defaultValue = false;
+
+  @override
+  PreserveCollapseStateAcrossSessions copyWith({required bool? val}) {
+    return PreserveCollapseStateAcrossSessions(val: val);
+  }
+
+  @override
+  String get key => 'preserveCollapseStateAcrossSessions';
+
+  @override
+  String get title => 'Preserve Collapse State Across Sessions';
+
+  @override
+  String get subtitle =>
+      '''preserve collapse state of comments upon leaving the app.''';
 }
 
 /// Whether or not to use Custom Tabs for launching URLs.
