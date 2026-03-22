@@ -5,7 +5,7 @@ import 'package:hacki/extensions/loggable.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hive/hive.dart';
 
-/// [CollapseStateCacheRepository] is for preserving collapse or hidden states
+/// [CollapseStateCacheRepository] is for persisting collapse or hidden states
 /// of comments across sessions.
 class CollapseStateCacheRepository with Loggable {
   CollapseStateCacheRepository({
@@ -14,7 +14,7 @@ class CollapseStateCacheRepository with Loggable {
     initialize();
   }
 
-  static const String _boxName = 'preservedCollapseStates';
+  static const String _boxName = 'persistedCollapseStates';
 
   final Future<Box<String>> _box;
 
@@ -27,13 +27,9 @@ class CollapseStateCacheRepository with Loggable {
   Future<void> initialize() async {
     final Map<int, Map<int, Comment>> itemIdToPreviousStates = await loadAll();
     _itemIdToPreviousStates = itemIdToPreviousStates;
-    logInfo(
+    logDebug(
       '''retrieved collapse state for stories: ${_itemIdToPreviousStates.keys}''',
     );
-    for (final key in _itemIdToPreviousStates.keys) {
-      logDebug('kids of $key:');
-      logDebug('${_itemIdToPreviousStates[key]?.keys}');
-    }
   }
 
   Future<void> saveAll(
@@ -108,7 +104,7 @@ class CollapseStateCacheRepository with Loggable {
     }
 
     if (box.length > 50) {
-      logInfo('more than 50 keys detected in preserved collapse states');
+      logDebug('more than 50 keys detected in preserved collapse states');
       final Set<String> seenStories = <String>{};
       final List<String> orderedStoryIds = box.keys
           .cast<String>()
@@ -125,7 +121,7 @@ class CollapseStateCacheRepository with Loggable {
             .where((String k) => k.startsWith('${oldStoryId}_'))
             .toList();
 
-        logInfo('deleting $keysToDelete');
+        logDebug('deleting $keysToDelete');
         await box.deleteAll(keysToDelete);
       }
     }

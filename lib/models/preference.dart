@@ -74,8 +74,8 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       const AutoScrollModePreference(),
       const ManualPaginationPreference(),
       const NotificationModePreference(),
+      const PersistCollapseStateAcrossSessions(),
       const PreserveCollapseStateAfterScreenExit(),
-      const PreserveCollapseStateAcrossSessions(),
       const ReaderModePreference(),
       const SkipButtonsPreference(),
       const SplitViewPreference(),
@@ -650,6 +650,30 @@ final class ManualPaginationPreference extends BooleanPreference {
   String get subtitle => '''so you can get stuff done.''';
 }
 
+/// Option to keep collapse state in local persistence.
+final class PersistCollapseStateAcrossSessions extends BooleanPreference {
+  const PersistCollapseStateAcrossSessions({bool? val})
+      : super(val: val ?? _defaultValue);
+
+  static const bool _defaultValue = false;
+
+  @override
+  PersistCollapseStateAcrossSessions copyWith({required bool? val}) {
+    return PersistCollapseStateAcrossSessions(val: val);
+  }
+
+  @override
+  String get key => 'persistCollapseStateAcrossSessions';
+
+  @override
+  String get title => 'Persist Collapse State';
+
+  @override
+  String get subtitle =>
+      '''persist collapse state of comments upon leaving the app.''';
+}
+
+/// Option to keep collapse state in memory.
 final class PreserveCollapseStateAfterScreenExit extends BooleanPreference {
   const PreserveCollapseStateAfterScreenExit({bool? val})
       : super(val: val ?? _defaultValue);
@@ -670,28 +694,6 @@ final class PreserveCollapseStateAfterScreenExit extends BooleanPreference {
   @override
   String get subtitle =>
       '''preserve collapse state of comments upon leaving a thread.''';
-}
-
-final class PreserveCollapseStateAcrossSessions extends BooleanPreference {
-  const PreserveCollapseStateAcrossSessions({bool? val})
-      : super(val: val ?? _defaultValue);
-
-  static const bool _defaultValue = false;
-
-  @override
-  PreserveCollapseStateAcrossSessions copyWith({required bool? val}) {
-    return PreserveCollapseStateAcrossSessions(val: val);
-  }
-
-  @override
-  String get key => 'preserveCollapseStateAcrossSessions';
-
-  @override
-  String get title => 'Preserve Collapse State Across Sessions';
-
-  @override
-  String get subtitle =>
-      '''preserve collapse state of comments upon leaving the app.''';
 }
 
 /// Whether or not to use Custom Tabs for launching URLs.
