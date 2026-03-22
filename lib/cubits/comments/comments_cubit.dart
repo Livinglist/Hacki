@@ -103,6 +103,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   Map<int, Comment>? _previousCommentStates;
   double inThreadSearchOffset = 0;
 
+  bool get hasNewComment => state.comments.any((Comment c) => c.isNew);
+
   Future<bool> get _shouldFetchFromWeb async {
     final bool isOnWifi = await _isOnWifi;
     final bool isPastRetryAfterDateTime =
@@ -895,7 +897,11 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     }
   }
 
-  Future<void> search(String query, {String author = ''}) async {
+  Future<void> search(
+    String query, {
+    String author = '',
+    bool isNewSelected = false,
+  }) async {
     await _searchStreamSubscription?.cancel();
     resetSearch();
     emit(
@@ -903,10 +909,14 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         inThreadSearchQuery: query,
         inThreadSearchAuthor: author,
         inThreadSearchStatus: Status.inProgress,
+        isNewInSearchSelected: isNewSelected,
       ),
     );
-    _searchStreamSubscription =
-        _searchStream(query, author: author).listen((Comment? comment) {
+    _searchStreamSubscription = _searchStream(
+      query,
+      author: author,
+      isNewSelected: isNewSelected,
+    ).listen((Comment? comment) {
       emit(
         state.copyWith(
           matchedComments: <Comment>[
@@ -916,30 +926,44 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         ),
       );
     })
-          ..onDone(() {
-            emit(
-              state.copyWith(
-                inThreadSearchStatus: Status.success,
-              ),
-            );
-          });
+      ..onDone(() {
+        emit(
+          state.copyWith(
+            inThreadSearchStatus: Status.success,
+          ),
+        );
+      });
   }
 
-  Stream<Comment?> _searchStream(String query, {String author = ''}) async* {
-    late final bool Function(Comment cmt) conditionSatisfied;
+  Stream<Comment?> _searchStream(
+    String query, {
+    String author = '',
+    bool isNewSelected = false,
+  }) async* {
+    late bool Function(Comment cmt) conditionSatisfied;
     final String lowercaseQuery = query.toLowerCase();
+    bool newCommentsSelector(Comment cmt) => !isNewSelected || cmt.isNew;
     if (query.isEmpty && author.isEmpty) {
-      return;
+      if (isNewSelected) {
+        conditionSatisfied = newCommentsSelector;
+      } else {
+        return;
+      }
     } else if (author.isEmpty) {
       conditionSatisfied = (Comment cmt) =>
-          cmt.by.toLowerCase().contains(lowercaseQuery) ||
-          cmt.text.toLowerCase().contains(lowercaseQuery);
+          newCommentsSelector(cmt) &&
+          (cmt.by.toLowerCase().contains(lowercaseQuery) ||
+              cmt.text.toLowerCase().contains(lowercaseQuery));
     } else if (query.isEmpty) {
-      conditionSatisfied = (Comment cmt) => cmt.by == author;
+      conditionSatisfied =
+          (Comment cmt) => newCommentsSelector(cmt) && cmt.by == author;
     } else {
       conditionSatisfied = (Comment cmt) =>
-          cmt.text.toLowerCase().contains(lowercaseQuery) && cmt.by == author;
+          newCommentsSelector(cmt) &&
+          cmt.text.toLowerCase().contains(lowercaseQuery) &&
+          cmt.by == author;
     }
+
     for (final int i in 0.to(state.comments.length, inclusive: false)) {
       final Comment cmt = state.comments.elementAt(i);
       if (conditionSatisfied(cmt)) {

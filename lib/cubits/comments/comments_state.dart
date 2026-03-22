@@ -25,6 +25,7 @@ class CommentsState extends Equatable {
     required this.inThreadSearchQuery,
     required this.inThreadSearchAuthor,
     required this.inThreadSearchStatus,
+    required this.isNewInSearchSelected,
   });
 
   CommentsState.init({
@@ -42,7 +43,8 @@ class CommentsState extends Equatable {
         currentPage = 0,
         inThreadSearchQuery = '',
         inThreadSearchAuthor = '',
-        inThreadSearchStatus = Status.idle;
+        inThreadSearchStatus = Status.idle,
+        isNewInSearchSelected = false;
 
   final Item item;
   final List<Comment> comments;
@@ -58,6 +60,7 @@ class CommentsState extends Equatable {
   final String inThreadSearchQuery;
   final String inThreadSearchAuthor;
   final Status inThreadSearchStatus;
+  final bool isNewInSearchSelected;
 
   /// Indexes of comments that matches the query for in-thread search.
   final List<Comment> matchedComments;
@@ -78,6 +81,7 @@ class CommentsState extends Equatable {
     String? inThreadSearchQuery,
     String? inThreadSearchAuthor,
     Status? inThreadSearchStatus,
+    bool? isNewInSearchSelected,
   }) {
     return CommentsState(
       item: item ?? this.item,
@@ -96,6 +100,8 @@ class CommentsState extends Equatable {
       inThreadSearchAuthor: inThreadSearchAuthor ?? this.inThreadSearchAuthor,
       inThreadSearchStatus: inThreadSearchStatus ?? this.inThreadSearchStatus,
       idToCommentMap: idToCommentMap ?? this.idToCommentMap,
+      isNewInSearchSelected:
+          isNewInSearchSelected ?? this.isNewInSearchSelected,
     );
   }
 
@@ -145,5 +151,6 @@ class CommentsState extends Equatable {
         inThreadSearchAuthor,
         inThreadSearchStatus,
         idToCommentMap,
+        isNewInSearchSelected,
       ];
 }

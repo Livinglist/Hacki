@@ -245,12 +245,13 @@ class _ItemScreenState extends State<ItemScreen>
                           ? 'updated'
                           : 'submitted';
                   final String msg = 'Comment $verb! ${Constants.happyFace}';
-                  HapticFeedbackUtil.light();
+                  HapticFeedbackUtil.success();
                   showSnackBar(content: msg);
                   context.read<EditCubit>().onReplySubmittedSuccessfully();
                   context.read<PostCubit>().reset();
                 } else if (postState.status == Status.failure) {
                   showErrorSnackBar();
+                  HapticFeedbackUtil.error();
                   context.read<PostCubit>().reset();
                 }
               },
