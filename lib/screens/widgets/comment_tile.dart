@@ -244,9 +244,7 @@ class CommentTile extends StatelessWidget {
                                 child: Icon(
                                   Icons.mark_unread_chat_alt,
                                   size: Dimens.pt16,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .primaryContainer,
+                                  color: Palette.grey,
                                 ),
                               ),
                             const Spacer(),
