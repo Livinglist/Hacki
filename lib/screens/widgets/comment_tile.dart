@@ -238,9 +238,8 @@ class CommentTile extends StatelessWidget {
                                 ),
                               )
                             else if (hasNewReplies)
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(left: Dimens.pt4),
+                              const Padding(
+                                padding: EdgeInsets.only(left: Dimens.pt4),
                                 child: Icon(
                                   Icons.mark_unread_chat_alt,
                                   size: Dimens.pt16,
