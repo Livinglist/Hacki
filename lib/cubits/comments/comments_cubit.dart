@@ -967,7 +967,10 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       _itemIdToPreviousStates[state.item.id] = _previousCommentStates!;
 
       if (_preferenceCubit.state.shouldPersistCollapseStateAcrossSessions) {
-        _collapseStateCacheRepository.saveAll(_itemIdToPreviousStates);
+        _collapseStateCacheRepository.saveStoryStates(
+          state.item.id,
+          _previousCommentStates!,
+        );
       }
 
       if (!_preferenceCubit.state.shouldPreserveCollapseStateAfterScreenExit) {
