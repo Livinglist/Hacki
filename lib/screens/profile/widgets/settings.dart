@@ -337,7 +337,8 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                                 ? (Set<bool> val) {
                                     HapticFeedbackUtil.light();
                                     context.read<PreferenceCubit>().update(
-                                        preference.copyWith(val: val.single));
+                                          preference.copyWith(val: val.single),
+                                        );
                                   }
                                 : null,
                           ),
