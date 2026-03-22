@@ -112,6 +112,7 @@ class PreferenceState extends Equatable {
       _isOn<PreserveCollapseStateAfterScreenExit>();
 
   bool get shouldPersistCollapseStateAcrossSessions =>
+      shouldPreserveCollapseStateAfterScreenExit &&
       _isOn<PersistCollapseStateAcrossSessions>();
 
   double get textScaleFactor =>

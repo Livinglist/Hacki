@@ -663,6 +663,11 @@ final class PersistCollapseStateAcrossSessions extends BooleanPreference {
   }
 
   @override
+  Set<Preference<dynamic>> get dependencies => <Preference<dynamic>>{
+        const PreserveCollapseStateAfterScreenExit(val: true),
+      };
+
+  @override
   String get key => 'persistCollapseStateAcrossSessions';
 
   @override
