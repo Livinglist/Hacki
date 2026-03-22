@@ -15,7 +15,7 @@ class CollapseStateCacheRepository with Loggable {
   }
 
   static const String _boxName = 'persistedCollapseStates';
-
+  static const int _maxLength = 100;
   final Future<Box<String>> _box;
 
   Map<int, Map<int, Comment>> _itemIdToPreviousStates =
@@ -103,8 +103,10 @@ class CollapseStateCacheRepository with Loggable {
       }
     }
 
-    if (box.length > 50) {
-      logDebug('more than 50 keys detected in preserved collapse states');
+    if (box.length > _maxLength) {
+      logDebug(
+        'more than $_maxLength keys detected in preserved collapse states',
+      );
       final Set<String> seenStories = <String>{};
       final List<String> orderedStoryIds = box.keys
           .cast<String>()
@@ -114,7 +116,7 @@ class CollapseStateCacheRepository with Loggable {
         ..sort((String a, String b) => int.parse(a).compareTo(int.parse(b)));
 
       int i = 0;
-      while (box.length > 50 && i < orderedStoryIds.length) {
+      while (box.length > _maxLength && i < orderedStoryIds.length) {
         final String oldStoryId = orderedStoryIds[i++];
         final List<String> keysToDelete = box.keys
             .cast<String>()
