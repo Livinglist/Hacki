@@ -695,29 +695,37 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
             .where((Comment c) => c.id == comment.id)
             .isNotEmpty;
 
-        debugPrint(
-          'on screen comments are ${onScreenComments.map((Comment e) => e.id)}',
-        );
-        debugPrint('target comment is ${comment.id}');
-        debugPrint('target comment is in range? $isTargetCommentInRange');
-        debugPrint('index is $index');
-        debugPrint('comments length is ${state.comments.length}');
+        if (kDebugMode) {
+          debugPrint(
+            '''on screen comments are ${onScreenComments.map((Comment e) => e.id)}''',
+          );
+          debugPrint('target comment is ${comment.id}');
+          debugPrint('target comment is in range? $isTargetCommentInRange');
+          debugPrint('index is $index');
+          debugPrint('comments length is ${state.comments.length}');
+        }
 
         if (!isTargetCommentInRange) {
           if (index != -1) {
-            debugPrint('scrolling another time to ${index + 1}');
+            if (kDebugMode) {
+              debugPrint('scrolling another time to ${index + 1}');
+            }
             await itemScrollController.scrollTo(
               index: index + 1,
               alignment: 0.2,
               duration: AppDurations.ms300,
             );
           } else {
-            debugPrint('attempting to ensure visible');
+            if (kDebugMode) {
+              debugPrint('attempting to ensure visible');
+            }
             final BuildContext? newTargetCommentContext =
                 targetCommentGlobalKey?.currentContext;
             if (newTargetCommentContext != null &&
                 newTargetCommentContext.mounted) {
-              debugPrint('ensure visible');
+              if (kDebugMode) {
+                debugPrint('ensure visible');
+              }
               await Scrollable.ensureVisible(
                 newTargetCommentContext,
                 alignment: 0.15,
