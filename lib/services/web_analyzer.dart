@@ -178,7 +178,7 @@ ${info.toJson()}
 
       /// [6] Try to analyze the web for metadata.
       info = await _getInfoByIsolate(
-        url: 'https://rz01.org/eu-migration/',
+        url: url,
         multimedia: multimedia,
         story: story,
       );
