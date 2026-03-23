@@ -208,7 +208,7 @@ class CommentTile extends StatelessWidget {
                                 ),
                                 textScaler: MediaQuery.of(context).textScaler,
                               ),
-                            if (kDebugMode && false)
+                            if (kDebugMode)
                               Text(
                                 ' ${comment.id}',
                                 style: const TextStyle(
