@@ -261,34 +261,34 @@ class CommentTile extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          if (comment.hidden)
-                            const CenteredText.hidden()
-                          else if (comment.deleted)
-                            const CenteredText.deleted()
-                          else if (comment.dead)
-                            const CenteredText.dead()
-                          else if (blocklistState.blocklist
-                              .contains(comment.by))
-                            const CenteredText.blocked()
-                          else
-                            AnimatedCrossFade(
-                              duration: AppDurations.ms300,
-                              crossFadeState:
-                                  isActionable && comment.isCollapsedByUser
-                                      ? CrossFadeState.showFirst
-                                      : CrossFadeState.showSecond,
-                              firstChild: Padding(
-                                padding: const EdgeInsets.only(
-                                  left: Dimens.pt8,
-                                  right: Dimens.pt2,
-                                  top: Dimens.pt6,
-                                ),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
+                          AnimatedCrossFade(
+                            duration: AppDurations.ms300,
+                            crossFadeState:
+                                isActionable && comment.isCollapsedByUser
+                                    ? CrossFadeState.showFirst
+                                    : CrossFadeState.showSecond,
+                            firstChild: Padding(
+                              padding: const EdgeInsets.only(
+                                left: Dimens.pt8,
+                                right: Dimens.pt2,
+                                top: Dimens.pt6,
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      if (comment.hidden)
+                                        const CenteredText.hidden()
+                                      else if (comment.deleted)
+                                        const CenteredText.deleted()
+                                      else if (comment.dead)
+                                        const CenteredText.dead()
+                                      else if (blocklistState.blocklist
+                                          .contains(comment.by))
+                                        const CenteredText.blocked()
+                                      else
                                         Expanded(
                                           child: Text(
                                             comment.text,
@@ -302,50 +302,63 @@ class CommentTile extends StatelessWidget {
                                             maxLines: 1,
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                    SizedBoxes.pt6,
-                                    CenteredText(
-                                      text:
-                                          '''collapsed ($hiddenCommentsCount${newCommentsCount == 0 ? '' : ' + $newCommentsCount new'})''',
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary
-                                          .withValues(alpha: 0.8),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              secondChild: Padding(
-                                padding: const EdgeInsets.only(
-                                  left: Dimens.pt8,
-                                  right: Dimens.pt2,
-                                  top: Dimens.pt6,
-                                  bottom: Dimens.pt12,
-                                ),
-                                child: SizedBox(
-                                  width: double.infinity,
-                                  child: Semantics(
-                                    label: '''At level ${comment.level}.''',
-                                    child: ItemText(
-                                      key: ValueKey<int>(comment.id),
-                                      item: comment,
-                                      selectable: isSelectable,
-                                      textScaler:
-                                          MediaQuery.of(context).textScaler,
-                                      onTap: () {
-                                        if (isCollapsable) {
-                                          HapticFeedbackUtil.selection();
-                                          _onTextTapped(context);
-                                        } else {
-                                          onTap?.call();
-                                        }
-                                      },
-                                    ),
+                                    ],
                                   ),
+                                  SizedBoxes.pt6,
+                                  CenteredText(
+                                    text:
+                                        '''collapsed ($hiddenCommentsCount${newCommentsCount == 0 ? '' : ' + $newCommentsCount new'})''',
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .primary
+                                        .withValues(alpha: 0.8),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            secondChild: Padding(
+                              padding: const EdgeInsets.only(
+                                left: Dimens.pt8,
+                                right: Dimens.pt2,
+                                top: Dimens.pt6,
+                                bottom: Dimens.pt12,
+                              ),
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: Semantics(
+                                  label: '''At level ${comment.level}.''',
+                                  child: () {
+                                    if (comment.hidden) {
+                                      return const CenteredText.hidden();
+                                    } else if (comment.deleted) {
+                                      return const CenteredText.deleted();
+                                    } else if (comment.dead) {
+                                      return const CenteredText.dead();
+                                    } else if (blocklistState.blocklist
+                                        .contains(comment.by)) {
+                                      return const CenteredText.blocked();
+                                    } else {
+                                      return ItemText(
+                                        key: ValueKey<int>(comment.id),
+                                        item: comment,
+                                        selectable: isSelectable,
+                                        textScaler:
+                                            MediaQuery.of(context).textScaler,
+                                        onTap: () {
+                                          if (isCollapsable) {
+                                            HapticFeedbackUtil.selection();
+                                            _onTextTapped(context);
+                                          } else {
+                                            onTap?.call();
+                                          }
+                                        },
+                                      );
+                                    }
+                                  }(),
                                 ),
                               ),
                             ),
+                          ),
                         ],
                       ),
                       AnimatedCrossFade(

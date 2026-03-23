@@ -1,4 +1,5 @@
 export 'debouncer.dart';
+export 'debug_http_overrides.dart';
 export 'dio_interceptors/interceptors.dart';
 export 'haptic_feedback_util.dart';
 export 'html_util.dart';

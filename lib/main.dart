@@ -5,6 +5,7 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:equatable/equatable.dart';
 import 'package:feature_discovery/feature_discovery.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -19,6 +20,7 @@ import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/fetcher.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/utils/debug_http_overrides.dart';
 import 'package:hacki/utils/haptic_feedback_util.dart';
 import 'package:hacki/utils/theme_util.dart';
 import 'package:hive/hive.dart';
@@ -44,6 +46,10 @@ void notificationReceiver(NotificationResponse details) =>
     selectNotificationSubject.add(details.payload);
 
 Future<void> main({bool testing = false}) async {
+  if (kDebugMode) {
+    HttpOverrides.global = DebugHttpOverrides();
+  }
+
   WidgetsFlutterBinding.ensureInitialized();
 
   await initializeDateFormatting(Platform.localeName);
