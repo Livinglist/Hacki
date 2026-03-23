@@ -242,7 +242,7 @@ ${info.toJson()}
     late final bool shouldRetry;
     InfoBase? info;
     String? fallbackDescription;
-    final String description = (res?[2] as String?)?.removeAllEmojis() ?? '';
+    final String description = (res?[2] as String?)?.removeAllEmojis().trim() ?? '';
 
     // If description is empty, use one of the comments under the story.
     if (res == null || description.isEmpty) {
