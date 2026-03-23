@@ -71,6 +71,8 @@ Features:
     <img width="400" alt="09" src="assets/screenshots/selected/08_hacki.png"> 
     <img width="400" alt="05" src="assets/screenshots/selected/09_hacki.png">
     <img width="400" alt="10" src="assets/screenshots/selected/10_hacki.png"> 
+    <img width="400" alt="10" src="assets/screenshots/selected/11_hacki.png"> 
+    <img width="400" alt="10" src="assets/screenshots/selected/12_hacki.png">
    
    <img width="400" alt="ipad-01" src="assets/screenshots/selected/hacki_tablet_01.png"> 
    <img width="400" alt="ipad-02" src="assets/screenshots/selected/hacki_tablet_02.png"> 
