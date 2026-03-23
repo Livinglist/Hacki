@@ -44,7 +44,7 @@ dependencies:
   html: ^0.15.1
   html_unescape: ^2.0.0
   http: ^1.1.0
-  hydrated_bloc: ^10.0.0
+  hydrated_bloc: ^11.0.0
   in_app_review:
     path: components/in_app_review
   intl: ^0.20.1
