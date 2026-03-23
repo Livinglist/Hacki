@@ -61,16 +61,16 @@ Features:
 
 
 <p align="center">
-    <img width="400" alt="01" src="assets/screenshots/light-1.png"> 
-    <img width="400" alt="06" src="assets/screenshots/dark-1.png"> 
-    <img width="400" alt="02" src="assets/screenshots/light-2.png">
-    <img width="400" alt="07" src="assets/screenshots/dark-2.png">
-    <img width="400" alt="03" src="assets/screenshots/light-3.png"> 
-    <img width="400" alt="08" src="assets/screenshots/dark-3.png">
-    <img width="400" alt="04" src="assets/screenshots/light-4.png"> 
-    <img width="400" alt="09" src="assets/screenshots/dark-4.png"> 
-    <img width="400" alt="05" src="assets/screenshots/light-5.png">
-    <img width="400" alt="10" src="assets/screenshots/dark-5.png"> 
+    <img width="400" alt="01" src="assets/screenshots/selected/01_hacki.png"> 
+    <img width="400" alt="06" src="assets/screenshots/selected/02_hacki.png"> 
+    <img width="400" alt="02" src="assets/screenshots/selected/03_hacki.png">
+    <img width="400" alt="07" src="assets/screenshots/selected/04_hacki.png">
+    <img width="400" alt="03" src="assets/screenshots/selected/05_hacki.png"> 
+    <img width="400" alt="08" src="assets/screenshots/selected/06_hacki.png">
+    <img width="400" alt="04" src="assets/screenshots/selected/07_hacki.png"> 
+    <img width="400" alt="09" src="assets/screenshots/selected/08_hacki.png"> 
+    <img width="400" alt="05" src="assets/screenshots/selected/09_hacki.png">
+    <img width="400" alt="10" src="assets/screenshots/selected/10_hacki.png"> 
    
    <img width="400" alt="ipad-01" src="assets/screenshots/tablet-light-1.png"> 
    <img width="400" alt="ipad-02" src="assets/screenshots/tablet-dark-1.png"> 
