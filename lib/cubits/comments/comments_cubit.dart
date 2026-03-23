@@ -692,11 +692,14 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       );
     }
     final bool isTargetCommentInRange =
-        onScreenComments.where((Comment c) => c.id == comment.id).isNotEmpty;
+        onScreenComments.any((Comment c) => c.id == comment.id);
     return isTargetCommentInRange;
   }
 
-  Future<void> scrollToComment(Comment comment) async {
+  Future<void> scrollToComment(
+    Comment comment, {
+    bool isRetrying = false,
+  }) async {
     /// Find out the index of the comment in the thread.
     final Comment? matchedComment = state.comments.singleWhereOrNull(
       (Comment c) => c.id == comment.id,
@@ -712,11 +715,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       );
     }
 
-    /// Then find out the context of the target comment and
-    /// also all of its ancestors, uncollapse them if they
+    /// Find out all of its ancestors, uncollapse them if they
     /// are collapsed.
-    final GlobalKey<State<StatefulWidget>>? targetCommentGlobalKey =
-        globalKeys[matchedComment.id];
     Comment? curComment = matchedComment;
     while (curComment != null) {
       if (curComment.isCollapsedByUser) {
@@ -729,6 +729,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       if (curComment == null) break;
     }
 
+    final GlobalKey<State<StatefulWidget>>? targetCommentGlobalKey =
+        globalKeys[matchedComment.id];
     final BuildContext? targetCommentContext =
         targetCommentGlobalKey?.currentContext;
 
@@ -744,10 +746,14 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         final bool isCommentOnScreen = _isCommentOnScreen(comment);
 
         if (kDebugMode) {
-          debugPrint('target comment is ${comment.id}');
-          debugPrint('target comment is in range? $isCommentOnScreen');
-          debugPrint('index is $index');
-          debugPrint('comments length is ${state.comments.length}');
+          debugPrint(
+            '''
+target comment is ${comment.id}
+target comment is in range? $isCommentOnScreen
+index is $index
+comments length is ${state.comments.length}            
+            ''',
+          );
         }
 
         if (!isCommentOnScreen) {
@@ -762,18 +768,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
             );
 
             final bool isCommentOnScreen = _isCommentOnScreen(comment);
-            final BuildContext? newTargetCommentContext =
-                targetCommentGlobalKey?.currentContext;
-            if (!isCommentOnScreen &&
-                newTargetCommentContext != null &&
-                newTargetCommentContext.mounted) {
-              await Scrollable.ensureVisible(
-                newTargetCommentContext,
-                alignment: 0.15,
-                duration: AppDurations.ms300,
-                alignmentPolicy:
-                    ScrollPositionAlignmentPolicy.keepVisibleAtStart,
-              );
+            if (!isCommentOnScreen && !isRetrying) {
+              await scrollToComment(comment, isRetrying: true);
             }
           } else {
             if (kDebugMode) {
