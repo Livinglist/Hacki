@@ -770,6 +770,7 @@ comments length is ${state.comments.length}
             final bool isCommentOnScreen = _isCommentOnScreen(comment);
             if (!isCommentOnScreen && !isRetrying) {
               await scrollToComment(comment, isRetrying: true);
+              return;
             }
           } else {
             if (kDebugMode) {
