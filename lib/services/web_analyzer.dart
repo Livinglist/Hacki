@@ -178,7 +178,7 @@ ${info.toJson()}
 
       /// [6] Try to analyze the web for metadata.
       info = await _getInfoByIsolate(
-        url: url,
+        url: 'https://rz01.org/eu-migration/',
         multimedia: multimedia,
         story: story,
       );
@@ -242,8 +242,7 @@ ${info.toJson()}
     late final bool shouldRetry;
     InfoBase? info;
     String? fallbackDescription;
-    final String description =
-        (res?[2] as String?)?.removeAllEmojis().trim() ?? '';
+    String description = (res?[2] as String?)?.removeAllEmojis().trim() ?? '';
 
     // If description is empty, use one of the comments under the story.
     if (res == null || description.isEmpty) {
@@ -251,6 +250,7 @@ ${info.toJson()}
       final String? commentText = await _fetchInfoFromStory(ids);
       shouldRetry = commentText == null;
       fallbackDescription = commentText ?? 'no comment yet';
+      description = fallbackDescription;
     } else {
       shouldRetry = false;
     }
@@ -259,7 +259,10 @@ ${info.toJson()}
       if (res[0] == '0') {
         info = WebInfo(
           title: story.title,
-          description: description,
+          description: description.isEmpty
+              ? (fallbackDescription ??
+                  (story.text.isEmpty ? res[1] as String? : story.text))
+              : description,
           icon: res[3] as String?,
           image: res[4] as String?,
         ).._shouldRetry = shouldRetry;
