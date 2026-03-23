@@ -242,9 +242,10 @@ ${info.toJson()}
     late final bool shouldRetry;
     InfoBase? info;
     String? fallbackDescription;
+    final String description = (res?[2] as String?)?.removeAllEmojis() ?? '';
 
     // If description is empty, use one of the comments under the story.
-    if (res == null || isEmpty(res[2] as String?)) {
+    if (res == null || description.isEmpty) {
       final List<int> ids = <int>[story.id, ...story.kids];
       final String? commentText = await _fetchInfoFromStory(ids);
       shouldRetry = commentText == null;
@@ -257,10 +258,7 @@ ${info.toJson()}
       if (res[0] == '0') {
         info = WebInfo(
           title: story.title,
-          description: isEmpty(res[2] as String?)
-              ? (fallbackDescription ??
-                  (story.text.isEmpty ? res[1] as String? : story.text))
-              : (res[2] as String).removeAllEmojis(),
+          description: description,
           icon: res[3] as String?,
           image: res[4] as String?,
         ).._shouldRetry = shouldRetry;

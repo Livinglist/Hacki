@@ -99,8 +99,12 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
     final bool isFav = favCubit.state.favIds.contains(item.id);
     if (isFav) {
       favCubit.removeFav(item.id);
+      showSnackBar(content: 'Removed from favorites.');
+      HapticFeedbackUtil.success();
     } else {
       favCubit.addFav(item.id);
+      showSnackBar(content: 'Added to favorites.');
+      HapticFeedbackUtil.success();
     }
   }
 
@@ -184,6 +188,7 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
       if (mounted && (yesTapped ?? false)) {
         context.read<AuthBloc>().add(AuthFlag(item: item));
         showSnackBar(content: 'Comment flagged!');
+        HapticFeedbackUtil.success();
       }
     });
   }
@@ -227,7 +232,9 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
         } else {
           context.read<BlocklistCubit>().addToBlocklist(item.by);
         }
+
         showSnackBar(content: 'User ${isBlocked ? 'unblocked' : 'blocked'}!');
+        HapticFeedbackUtil.success();
       }
     });
   }

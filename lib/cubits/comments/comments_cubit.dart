@@ -669,6 +669,33 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     init();
   }
 
+  bool _isCommentOnScreen(Comment comment) {
+    final Iterable<Comment> onScreenComments =
+        itemPositionsListener.itemPositions.value
+            // The header is also a part of the list view,
+            // thus ignoring it here.
+            .where(
+              (ItemPosition e) =>
+                  e.index >= 1 &&
+                      (e.itemLeadingEdge > 0.12 && e.itemLeadingEdge < 0.48) ||
+                  (e.itemLeadingEdge >= 0.48 && e.itemTrailingEdge < 1),
+            )
+            .map(
+              (ItemPosition e) => e.index <= state.comments.length
+                  ? state.comments.elementAt(e.index - 1)
+                  : null,
+            )
+            .nonNulls;
+    if (kDebugMode) {
+      debugPrint(
+        '''on screen comments are ${onScreenComments.map((Comment e) => e.id)}''',
+      );
+    }
+    final bool isTargetCommentInRange =
+        onScreenComments.where((Comment c) => c.id == comment.id).isNotEmpty;
+    return isTargetCommentInRange;
+  }
+
   Future<void> scrollToComment(Comment comment) async {
     /// Find out the index of the comment in the thread.
     final Comment? matchedComment = state.comments.singleWhereOrNull(
@@ -714,38 +741,16 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       await Future<void>.delayed(AppDurations.ms300, () async {
         /// Make sure the comment tile's leading edge is within an
         /// acceptable view point.
-        final Iterable<Comment> onScreenComments = itemPositionsListener
-            .itemPositions.value
-            // The header is also a part of the list view,
-            // thus ignoring it here.
-            .where(
-              (ItemPosition e) =>
-                  e.index >= 1 &&
-                      (e.itemLeadingEdge > 0.12 && e.itemLeadingEdge < 0.48) ||
-                  (e.itemLeadingEdge >= 0.48 && e.itemTrailingEdge < 1),
-            )
-            .map(
-              (ItemPosition e) => e.index <= state.comments.length
-                  ? state.comments.elementAt(e.index - 1)
-                  : null,
-            )
-            .nonNulls;
-
-        final bool isTargetCommentInRange = onScreenComments
-            .where((Comment c) => c.id == comment.id)
-            .isNotEmpty;
+        final bool isCommentOnScreen = _isCommentOnScreen(comment);
 
         if (kDebugMode) {
-          debugPrint(
-            '''on screen comments are ${onScreenComments.map((Comment e) => e.id)}''',
-          );
           debugPrint('target comment is ${comment.id}');
-          debugPrint('target comment is in range? $isTargetCommentInRange');
+          debugPrint('target comment is in range? $isCommentOnScreen');
           debugPrint('index is $index');
           debugPrint('comments length is ${state.comments.length}');
         }
 
-        if (!isTargetCommentInRange) {
+        if (!isCommentOnScreen) {
           if (index != -1) {
             if (kDebugMode) {
               debugPrint('scrolling another time to ${index + 1}');
@@ -755,6 +760,17 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
               alignment: 0.2,
               duration: AppDurations.ms300,
             );
+
+            final bool isCommentOnScreen = _isCommentOnScreen(comment);
+            if (isCommentOnScreen && targetCommentContext.mounted) {
+              await Scrollable.ensureVisible(
+                targetCommentContext,
+                alignment: 0.15,
+                duration: AppDurations.ms300,
+                alignmentPolicy:
+                    ScrollPositionAlignmentPolicy.keepVisibleAtStart,
+              );
+            }
           } else {
             if (kDebugMode) {
               debugPrint('attempting to ensure visible');

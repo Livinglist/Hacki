@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/stories/stories_bloc.dart';
 import 'package:hacki/config/custom_router.dart';
+import 'package:hacki/utils/haptic_feedback_util.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 abstract class DialogProxy {
@@ -40,6 +41,7 @@ abstract class DialogProxy {
   }
 
   static void showDownloadCompletedDialog([BuildContext? context]) {
+    HapticFeedbackUtil.success();
     context ??= navigatorKey.currentContext;
     if (context == null) return;
     showDialog<bool>(
