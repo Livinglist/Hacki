@@ -762,7 +762,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
             );
 
             final bool isCommentOnScreen = _isCommentOnScreen(comment);
-            if (isCommentOnScreen && targetCommentContext.mounted) {
+            if (!isCommentOnScreen && targetCommentContext.mounted) {
               await Scrollable.ensureVisible(
                 targetCommentContext,
                 alignment: 0.15,
