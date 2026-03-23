@@ -623,6 +623,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   void updateOrder(CommentsOrder? order) {
     if (order == null) return;
     if (state.order == order) return;
+    if (state.status == CommentsStatus.inProgress) return;
     HapticFeedbackUtil.selection();
     _streamSubscription?.cancel();
     for (final StreamSubscription<Comment> s in _streamSubscriptions.values) {
@@ -637,6 +638,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       state.copyWith(
         order: order,
         comments: <Comment>[],
+        status: CommentsStatus.inProgress,
       ),
     );
 
