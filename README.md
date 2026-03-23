@@ -72,9 +72,9 @@ Features:
     <img width="400" alt="05" src="assets/screenshots/selected/09_hacki.png">
     <img width="400" alt="10" src="assets/screenshots/selected/10_hacki.png"> 
    
-   <img width="400" alt="ipad-01" src="assets/screenshots/tablet-light-1.png"> 
-   <img width="400" alt="ipad-02" src="assets/screenshots/tablet-dark-1.png"> 
-   <img width="400" alt="ipad-03" src="assets/screenshots/tablet-light-2.png"> 
-   <img width="400" alt="ipad-04" src="assets/screenshots/tablet-dark-2.png"> 
+   <img width="400" alt="ipad-01" src="assets/screenshots/selected/hacki_tablet_01.png"> 
+   <img width="400" alt="ipad-02" src="assets/screenshots/selected/hacki_tablet_02.png"> 
+   <img width="400" alt="ipad-03" src="assets/screenshots/selected/hacki_tablet_03.png"> 
+   <img width="400" alt="ipad-04" src="assets/screenshots/selected/hacki_tablet_04.png"> 
 </p>
 
