@@ -76,6 +76,23 @@ class Comment extends Item {
     );
   }
 
+  Comment copyWithoutCollapseState() {
+    return Comment(
+      id: id,
+      time: time,
+      parent: parent,
+      score: score,
+      by: by,
+      text: text,
+      kids: kids,
+      dead: dead,
+      deleted: deleted,
+      hidden: hidden,
+      level: level,
+      isFromCache: isFromCache,
+    );
+  }
+
   Comment copyWithOnlyCollapseState() {
     return Comment(
       id: id,
