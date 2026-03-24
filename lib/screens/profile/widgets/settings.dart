@@ -492,6 +492,17 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                     ),
                   ],
                   ListTile(
+                    title: const Text('Rate Hacki : )'),
+                    onTap: () {
+                      LinkUtil.launch(
+                        Platform.isIOS
+                            ? Constants.appStoreLink
+                            : Constants.googlePlayLink,
+                        context,
+                      );
+                    },
+                  ),
+                  ListTile(
                     title: const Text('About'),
                     subtitle: Text(
                       Constants.magicWord,
