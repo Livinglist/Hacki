@@ -21,7 +21,7 @@ abstract class LogUtil {
   static LogOutput logOutput(File outputFile) => MultiOutput(
         <LogOutput>[
           ConsoleOutput(),
-          if (kReleaseMode)
+          if (kReleaseMode || kProfileMode)
             CustomFileOutput(
               file: outputFile,
               overrideExisting: true,

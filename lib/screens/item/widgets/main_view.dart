@@ -124,6 +124,10 @@ class MainView extends StatelessWidget {
                               opUsername: state.item.by,
                               fetchMode: state.fetchMode,
                               isResponse: state.isResponse(comment),
+                              isDev: context
+                                  .read<PreferenceCubit>()
+                                  .state
+                                  .isDevModeEnabled,
                               isNew:
                                   shouldMarkNewComment && !comment.isFromCache,
                               isEyeCandyEnabled: context

@@ -269,6 +269,8 @@ class HackerNewsRepository with Loggable {
     for (final int id in ids) {
       Comment? comment = getFromCache?.call(id)?.copyWith(level: level);
 
+      logInfo('comment from mem cache: $comment');
+
       comment ??=
           await _fetchItemJson(id).then((Map<String, dynamic>? json) async {
         if (json == null) return null;

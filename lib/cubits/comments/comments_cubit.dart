@@ -219,6 +219,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
             item;
     final List<int> kids = _sortKids(updatedItem.kids);
 
+    logInfo('item ${item.id} has ${kids.length} kids.');
+
     emit(state.copyWith(item: updatedItem));
 
     late final Stream<Comment> commentStream;
@@ -240,7 +242,9 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
             case CommentsOrder.natural:
               final bool shouldFetchFromWeb = await _shouldFetchFromWeb;
               if (isFetchingFromWebAllowed && shouldFetchFromWeb) {
-                logInfo('fetching comments of ${item.id} from web.');
+                logInfo(
+                  'fetching ${kids.length} comments of ${item.id} from web.',
+                );
                 commentStream = _hackerNewsWebRepository
                     .fetchCommentsStream(
                   state.item,
@@ -273,7 +277,9 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                   init(onError: onError, isFetchingFromWebAllowed: false);
                 });
               } else {
-                logInfo('fetching comments of ${item.id} from API.');
+                logInfo(
+                  'fetching ${kids.length} comments of ${item.id} from API.',
+                );
                 commentStream =
                     _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
                   ids: kids,
@@ -284,7 +290,9 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
               }
             case CommentsOrder.oldestFirst:
             case CommentsOrder.newestFirst:
-              logInfo('fetching comments of ${item.id} from API.');
+              logInfo(
+                'fetching ${kids.length} comments of ${item.id} from API.',
+              );
               commentStream =
                   _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
                 ids: kids,
@@ -803,18 +811,20 @@ comments length is ${state.comments.length}
           }
         }
 
-        await Future<void>.delayed(AppDurations.ms400, () {
-          final BuildContext? newTargetCommentContext =
-              targetCommentGlobalKey?.currentContext;
-          if (targetCommentGlobalKey != null &&
-              newTargetCommentContext != null &&
-              newTargetCommentContext.mounted) {
-            _startShine(
-              newTargetCommentContext,
-              targetCommentGlobalKey,
-            );
-          }
-        });
+        if (!isRetrying) {
+          await Future<void>.delayed(AppDurations.ms400, () {
+            final BuildContext? newTargetCommentContext =
+                targetCommentGlobalKey?.currentContext;
+            if (targetCommentGlobalKey != null &&
+                newTargetCommentContext != null &&
+                newTargetCommentContext.mounted) {
+              _startShine(
+                newTargetCommentContext,
+                targetCommentGlobalKey,
+              );
+            }
+          });
+        }
       });
     }
   }

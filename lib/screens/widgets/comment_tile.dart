@@ -24,6 +24,7 @@ class CommentTile extends StatelessWidget {
     this.onEditTapped,
     this.onRightMoreTapped,
     this.opUsername,
+    this.isDev = false,
     this.isActionable = true,
     this.isCollapsable = true,
     this.isSelectable = true,
@@ -40,6 +41,7 @@ class CommentTile extends StatelessWidget {
   final Comment comment;
   final int level;
   final int? index;
+  final bool isDev;
   final bool isActionable;
   final bool isCollapsable;
   final bool isSelectable;
@@ -208,7 +210,7 @@ class CommentTile extends StatelessWidget {
                                 ),
                                 textScaler: MediaQuery.of(context).textScaler,
                               ),
-                            if (kDebugMode)
+                            if (kDebugMode || isDev)
                               Text(
                                 ' ${comment.id}',
                                 style: const TextStyle(
