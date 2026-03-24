@@ -45,6 +45,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     HackerNewsRepository? hackerNewsRepository,
     HackerNewsWebRepository? hackerNewsWebRepository,
     CollapseStateCacheRepository? collapseStateCacheRepository,
+    AppLifecycleService? appLifecycleService,
   })  : _filterCubit = filterCubit,
         _preferenceCubit = preferenceCubit,
         _commentCache = commentCache ?? locator.get<CommentCache>(),
@@ -58,6 +59,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
             hackerNewsWebRepository ?? locator.get<HackerNewsWebRepository>(),
         _collapseStateCacheRepository = collapseStateCacheRepository ??
             locator.get<CollapseStateCacheRepository>(),
+        _appLifecycleService =
+            appLifecycleService ?? locator.get<AppLifecycleService>(),
         super(
           CommentsState.init(
             isOfflineReading: isOfflineReading,
@@ -65,7 +68,11 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
             fetchMode: defaultFetchMode,
             order: defaultCommentsOrder,
           ),
-        );
+        ) {
+    _appStateSubscription = _appLifecycleService.stream
+        .where((AppLifecycleState s) => s == AppLifecycleState.hidden)
+        .listen(_onAppHidden);
+  }
 
   /// Global keys mapped to comment ids, this is used primarily in
   /// [InThreadSearchIconButton] to uncollapse the search target
@@ -80,6 +87,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   final HackerNewsRepository _hackerNewsRepository;
   final HackerNewsWebRepository _hackerNewsWebRepository;
   final CollapseStateCacheRepository _collapseStateCacheRepository;
+  final AppLifecycleService _appLifecycleService;
+  late final StreamSubscription<AppLifecycleState> _appStateSubscription;
 
   final ItemScrollController itemScrollController = ItemScrollController();
   final ItemPositionsListener itemPositionsListener =
@@ -1186,6 +1195,8 @@ comments length is ${state.comments.length}
     return buildableStory;
   }
 
+  void _onAppHidden(AppLifecycleState _) => _preserveCollapseState();
+
   @override
   Future<void> close() async {
     await _streamSubscription?.cancel();
@@ -1193,6 +1204,7 @@ comments length is ${state.comments.length}
       await s.cancel();
     }
     await _searchStreamSubscription?.cancel();
+    await _appStateSubscription.cancel();
     _preserveCollapseState();
     await super.close();
   }

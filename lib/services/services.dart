@@ -1,3 +1,4 @@
+export 'app_lifecycle_service.dart';
 export 'app_review_service.dart';
 export 'caches/caches.dart';
 export 'custom_bloc_observer.dart';
