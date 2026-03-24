@@ -70,7 +70,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
           ),
         ) {
     _appStateSubscription = _appLifecycleService.stream
-        .where((AppLifecycleState s) => s == AppLifecycleState.hidden)
+        .where((AppLifecycleState s) => s == AppLifecycleState.inactive)
         .listen(_onAppHidden);
   }
 
