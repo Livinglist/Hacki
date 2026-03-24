@@ -1,5 +1,5 @@
 name: hacki
-description: A Hacker News reader.
+description: A Hacker News client.
 version: 3.4.2+342
 publish_to: none
 
