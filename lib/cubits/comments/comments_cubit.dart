@@ -270,7 +270,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                   }
 
                   /// If fetching from web failed, fetch using API instead.
-                  refresh(onError: onError, fetchFromWeb: false);
+                  init(onError: onError, isFetchingFromWebAllowed: false);
                 });
               } else {
                 logInfo('fetching comments of ${item.id} from API.');
