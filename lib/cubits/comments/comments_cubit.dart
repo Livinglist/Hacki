@@ -490,15 +490,13 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     _lockedCommentId = comment.id;
   }
 
+  void unlock() {
+    _lockedCommentId = 0;
+  }
+
   bool isCommentLocked(Comment comment) => _lockedCommentId == comment.id;
 
   void collapse(Comment comment) {
-    /// When text selection context menu is being displayed,
-    /// ignore the collapse request.
-    if (isCommentLocked(comment)) {
-      _lockedCommentId = 0;
-      return;
-    }
     final List<Comment> comments = <Comment>[...state.comments];
     final int commentIndex =
         state.comments.indexWhere((Comment c) => c.id == comment.id);

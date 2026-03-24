@@ -483,6 +483,13 @@ class CommentTile extends StatelessWidget {
   void _collapse(BuildContext context) {
     final CommentsCubit commentsCubit = context.read<CommentsCubit>();
 
+    /// When text selection context menu is being displayed,
+    /// ignore the collapse request.
+    if (commentsCubit.isCommentLocked(comment)) {
+      commentsCubit.unlock();
+      return;
+    }
+
     if (comment.isCollapsedByUser) {
       commentsCubit.uncollapse(comment);
     } else {
