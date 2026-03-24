@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/stories/stories_bloc.dart';
 import 'package:hacki/config/custom_router.dart';
+import 'package:hacki/config/locator.dart';
+import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/haptic_feedback_util.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -51,7 +53,10 @@ abstract class DialogProxy {
         title: const Text('Download completed'),
         actions: <Widget>[
           TextButton(
-            onPressed: context.pop,
+            onPressed: () {
+              context.pop();
+              locator.get<AppReviewService>().requestReview();
+            },
             child: const Text('Noooice!'),
           ),
         ],
