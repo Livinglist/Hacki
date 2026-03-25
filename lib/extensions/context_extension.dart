@@ -27,6 +27,7 @@ extension ContextExtension on BuildContext {
       ..showSnackBar(
         SnackBar(
           persist: persist,
+          duration: AppDurations.fiveSeconds,
           backgroundColor: Theme.of(this).colorScheme.primary,
           content: Text(
             content,
