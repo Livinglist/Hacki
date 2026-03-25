@@ -1072,10 +1072,6 @@ comments length is ${state.comments.length}
           content:
               '''$newCommentsCount new comment${newCommentsCount > 1 ? 's' : ''} fetched.''',
         );
-      } else {
-        navigatorKey.currentContext?.showSnackBar(
-          content: 'No new comments.',
-        );
       }
     }
   }
