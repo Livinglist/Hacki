@@ -32,6 +32,7 @@ class CommentTile extends StatelessWidget {
     this.isNew = false,
     this.isEyeCandyEnabled = false,
     this.isCompactCollapsedTileEnabled = false,
+    this.shouldHighlightNewComments = false,
     this.shouldShowDivider = true,
     this.level = 0,
     this.index,
@@ -50,6 +51,7 @@ class CommentTile extends StatelessWidget {
   final bool isNew;
   final bool isEyeCandyEnabled;
   final bool isCompactCollapsedTileEnabled;
+  final bool shouldHighlightNewComments;
   final bool shouldShowDivider;
   final FetchMode fetchMode;
 
@@ -93,7 +95,10 @@ class CommentTile extends StatelessWidget {
 
         if (isActionable) {
           final (int, int)? hiddenAndNewCommentsCount =
-              context.tryRead<CommentsCubit>()?.collapsedCount(comment);
+              context.tryRead<CommentsCubit>()?.collapsedCount(
+                    comment,
+                    countNewComments: shouldHighlightNewComments,
+                  );
           newCommentsCount = hiddenAndNewCommentsCount?.$2 ?? 0;
           hiddenCommentsCount =
               (hiddenAndNewCommentsCount?.$1 ?? 0) - newCommentsCount;
@@ -229,7 +234,7 @@ class CommentTile extends StatelessWidget {
                                   color: Palette.grey,
                                 ),
                               ),
-                            if (comment.isNew)
+                            if (shouldHighlightNewComments && comment.isNew)
                               Padding(
                                 padding:
                                     const EdgeInsets.only(left: Dimens.pt4),
@@ -241,7 +246,8 @@ class CommentTile extends StatelessWidget {
                                       .primaryContainer,
                                 ),
                               )
-                            else if (hasNewReplies)
+                            else if (shouldHighlightNewComments &&
+                                hasNewReplies)
                               const Padding(
                                 padding: EdgeInsets.only(left: Dimens.pt4),
                                 child: Icon(
@@ -403,7 +409,7 @@ class CommentTile extends StatelessWidget {
               color: () {
                 if (isMyComment) {
                   return primaryColor.withValues(alpha: 0.2);
-                } else if (comment.isNew) {
+                } else if (shouldHighlightNewComments && comment.isNew) {
                   return Theme.of(context).colorScheme.surfaceContainerLow;
                 }
 
@@ -442,7 +448,7 @@ class CommentTile extends StatelessWidget {
                 if (i == level) {
                   if (isMyComment) {
                     return primaryColor.withValues(alpha: 0.2);
-                  } else if (comment.isNew) {
+                  } else if (shouldHighlightNewComments && comment.isNew) {
                     return Theme.of(context).colorScheme.surfaceContainerLow;
                   }
                 }

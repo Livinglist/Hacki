@@ -108,6 +108,8 @@ class PreferenceState extends Equatable {
 
   bool get isCompactCollapsedTileEnabled => _isOn<CompactCollapsedTile>();
 
+  bool get shouldHighlightNewComments => _isOn<HighlightNewComments>();
+
   bool get shouldPreserveCollapseStateAfterScreenExit =>
       _isOn<PreserveCollapseStateAfterScreenExit>();
 

@@ -75,6 +75,7 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       const SwipeGesturePreference(),
       const DividerPlaceholder(label: 'Thread'),
       const CompactCollapsedTile(),
+      const HighlightNewComments(),
       const PersistCollapseStateAcrossSessions(),
       const PreserveCollapseStateAfterScreenExit(),
       const ReaderModePreference(),
@@ -700,7 +701,27 @@ final class CompactCollapsedTile extends BooleanPreference {
   String get title => 'Hide Preview on Collapse';
 
   @override
-  String get subtitle => '''no preview text for collapsed comments''';
+  String get subtitle => '''no preview text for collapsed comments.''';
+}
+
+final class HighlightNewComments extends BooleanPreference {
+  const HighlightNewComments({bool? val}) : super(val: val ?? _defaultValue);
+
+  static const bool _defaultValue = true;
+
+  @override
+  HighlightNewComments copyWith({required bool? val}) {
+    return HighlightNewComments(val: val);
+  }
+
+  @override
+  String get key => 'highlightNewComments';
+
+  @override
+  String get title => 'Highlight New Comments';
+
+  @override
+  String get subtitle => '''highlight new comments since your last visit.''';
 }
 
 /// Whether or not to use Custom Tabs for launching URLs.

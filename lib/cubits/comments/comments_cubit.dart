@@ -582,7 +582,10 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   }
 
   /// Hidden and new comments count.
-  (int, int) collapsedCount(Comment comment) {
+  (int, int) collapsedCount(
+    Comment comment, {
+    bool countNewComments = false,
+  }) {
     final List<Comment> comments = state.comments;
     final int commentIndex =
         state.comments.indexWhere((Comment c) => c.id == comment.id);
@@ -592,7 +595,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     for (int i = commentIndex + 1; i < comments.length; i++) {
       final Comment cmt = comments.elementAt(i);
       if (cmt.level > commentLevel) {
-        if (cmt.isNew) newCommentsCount++;
+        if (countNewComments && cmt.isNew) newCommentsCount++;
         count++;
       } else {
         break;

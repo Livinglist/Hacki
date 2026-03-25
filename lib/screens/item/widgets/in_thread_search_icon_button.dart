@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/blocs/auth/auth_bloc.dart';
 import 'package:hacki/config/constants.dart';
-import 'package:hacki/cubits/comments/comments_cubit.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/context_extension.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
@@ -286,6 +286,10 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                       fetchMode: FetchMode.lazy,
                       isActionable: false,
                       isCollapsable: false,
+                      shouldHighlightNewComments: context
+                          .read<PreferenceCubit>()
+                          .state
+                          .shouldHighlightNewComments,
                       onTap: () {
                         widget.action();
 

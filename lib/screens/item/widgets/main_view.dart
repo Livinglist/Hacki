@@ -21,6 +21,7 @@ class MainView extends StatelessWidget {
     required this.scrollOffsetListener,
     required this.commentEditingController,
     required this.authState,
+    required this.preferenceState,
     required this.topPadding,
     required this.splitViewEnabled,
     required this.onMoreTapped,
@@ -32,6 +33,7 @@ class MainView extends StatelessWidget {
   final ScrollOffsetListener scrollOffsetListener;
   final TextEditingController commentEditingController;
   final AuthState authState;
+  final PreferenceState preferenceState;
   final double topPadding;
   final bool splitViewEnabled;
   final bool shouldMarkNewComment;
@@ -90,6 +92,7 @@ class MainView extends StatelessWidget {
                         commentEditingController: commentEditingController,
                         state: state,
                         authState: authState,
+                        preferenceState: preferenceState,
                         topPadding: topPadding,
                         splitViewEnabled: splitViewEnabled,
                         onMoreTapped: onMoreTapped,
@@ -124,20 +127,15 @@ class MainView extends StatelessWidget {
                               opUsername: state.item.by,
                               fetchMode: state.fetchMode,
                               isResponse: state.isResponse(comment),
-                              isCompactCollapsedTileEnabled: context
-                                  .read<PreferenceCubit>()
-                                  .state
-                                  .isCompactCollapsedTileEnabled,
-                              isDev: context
-                                  .read<PreferenceCubit>()
-                                  .state
-                                  .isDevModeEnabled,
+                              isCompactCollapsedTileEnabled:
+                                  preferenceState.isCompactCollapsedTileEnabled,
+                              shouldHighlightNewComments:
+                                  preferenceState.shouldHighlightNewComments,
+                              isDev: preferenceState.isDevModeEnabled,
                               isNew:
                                   shouldMarkNewComment && !comment.isFromCache,
-                              isEyeCandyEnabled: context
-                                  .read<PreferenceCubit>()
-                                  .state
-                                  .isEyeCandyEnabled,
+                              isEyeCandyEnabled:
+                                  preferenceState.isEyeCandyEnabled,
                               onReplyTapped: (Comment cmt) {
                                 HapticFeedbackUtil.light();
                                 if (cmt.deleted || cmt.dead) {
@@ -173,7 +171,7 @@ class MainView extends StatelessWidget {
             },
           ),
         ),
-        if (context.read<PreferenceCubit>().state.isDevModeEnabled)
+        if (preferenceState.isDevModeEnabled)
           Positioned(
             height: Dimens.pt4,
             bottom: Dimens.zero,
@@ -205,6 +203,7 @@ class _ParentItemSection extends StatelessWidget {
     required this.commentEditingController,
     required this.state,
     required this.authState,
+    required this.preferenceState,
     required this.topPadding,
     required this.splitViewEnabled,
     required this.onMoreTapped,
@@ -214,6 +213,7 @@ class _ParentItemSection extends StatelessWidget {
   final TextEditingController commentEditingController;
   final CommentsState state;
   final AuthState authState;
+  final PreferenceState preferenceState;
   final double topPadding;
   final bool splitViewEnabled;
   final void Function(Item item, Rect? rect) onMoreTapped;
@@ -288,10 +288,7 @@ class _ParentItemSection extends StatelessWidget {
                         ),
                         const Spacer(),
                         Text(
-                          context
-                              .read<PreferenceCubit>()
-                              .state
-                              .displayDateFormat
+                          preferenceState.displayDateFormat
                               .convertToString(item.time),
                           style: TextStyle(
                             color: Theme.of(context).metadataColor,
@@ -319,10 +316,7 @@ class _ParentItemSection extends StatelessWidget {
                               onTap: () => LinkUtil.launch(
                                 item.url,
                                 context,
-                                shouldUseReader: context
-                                    .read<PreferenceCubit>()
-                                    .state
-                                    .isReaderEnabled,
+                                shouldUseReader: prefState.isReaderEnabled,
                                 isOfflineReading: context
                                     .read<StoriesBloc>()
                                     .state

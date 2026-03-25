@@ -289,6 +289,8 @@ class _ItemScreenState extends State<ItemScreen>
                             scrollOffsetListener: scrollOffsetListener,
                             commentEditingController: commentEditingController,
                             authState: authState,
+                            preferenceState:
+                                context.read<PreferenceCubit>().state,
                             topPadding: context.topPadding,
                             splitViewEnabled: widget.splitViewEnabled,
                             onMoreTapped: (Item item, Rect? rect) =>
@@ -378,6 +380,8 @@ class _ItemScreenState extends State<ItemScreen>
                             scrollOffsetListener: scrollOffsetListener,
                             commentEditingController: commentEditingController,
                             authState: authState,
+                            preferenceState:
+                                context.read<PreferenceCubit>().state,
                             topPadding: context.topPadding,
                             splitViewEnabled: widget.splitViewEnabled,
                             onMoreTapped: (Item context, Rect? rect) =>
