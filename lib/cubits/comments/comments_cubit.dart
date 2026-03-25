@@ -643,9 +643,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     }
     _streamSubscriptions.clear();
 
-    /// Preserve collapse state.
-    _preserveCollapseState();
-
     emit(
       state.copyWith(
         order: order,
@@ -1066,10 +1063,10 @@ comments length is ${state.comments.length}
 
     final bool isFirstTimeReading = !_itemIdToPreviousStates.containsKey(state.item.id);
     if (isCompletionSnackBarEnabled && !isFirstTimeReading) {
-      HapticFeedbackUtil.success();
       final int newCommentsCount =
           state.comments.where((Comment c) => c.isNew).length;
       if (newCommentsCount > 0) {
+        HapticFeedbackUtil.success();
         navigatorKey.currentContext?.showSnackBar(
           content:
               '''$newCommentsCount new comment${newCommentsCount > 1 ? 's' : ''} fetched.''',
