@@ -328,14 +328,14 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       return;
     }
 
+    /// Preserve collapse state.
+    _preserveCollapseState();
+
     emit(
       state.copyWith(
         status: CommentsStatus.inProgress,
       ),
     );
-
-    /// Preserve collapse state.
-    _preserveCollapseState();
 
     final Item item = state.item;
     final Item updatedItem =
