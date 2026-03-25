@@ -366,6 +366,7 @@ class HackerNewsWebRepository with Loggable {
         final int statusCode = e.response?.statusCode ?? 0;
 
         logError('error($statusCode) fetching comments on page $page: $e');
+        logError('error($statusCode) headers: ${e.response?.headers}');
 
         if (statusCode == HttpStatus.tooManyRequests) {
           final String retryAfter =
