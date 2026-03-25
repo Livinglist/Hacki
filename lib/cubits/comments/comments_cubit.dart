@@ -341,29 +341,19 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     final Item updatedItem =
         await _hackerNewsRepository.fetchItem(id: item.id) ?? item;
 
-    /// Compare the kids to decide if we should fetch from remote source.
-    if (item.kids.length == updatedItem.kids.length &&
-        item.kids.toSet() == updatedItem.kids.toSet()) {
-      emit(
-        state.copyWith(
-          status: CommentsStatus.allLoaded,
-        ),
-      );
-      return;
-    } else {
-      await _streamSubscription?.cancel();
-      for (final int id in _streamSubscriptions.keys) {
-        await _streamSubscriptions[id]?.cancel();
-      }
-      _streamSubscriptions.clear();
-
-      emit(
-        state.copyWith(
-          comments: <Comment>[],
-          currentPage: 0,
-        ),
-      );
+    await _streamSubscription?.cancel();
+    for (final int id in _streamSubscriptions.keys) {
+      await _streamSubscriptions[id]?.cancel();
     }
+    _streamSubscriptions.clear();
+
+    emit(
+      state.copyWith(
+        item: updatedItem,
+        comments: <Comment>[],
+        currentPage: 0,
+      ),
+    );
 
     final List<int> kids = _sortKids(updatedItem.kids);
 
@@ -548,6 +538,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   }
 
   void uncollapse(Comment comment) {
+    print('================================');
     final List<Comment> comments = <Comment>[...state.comments];
     final int commentIndex =
         state.comments.indexWhere((Comment c) => c.id == comment.id);
@@ -567,12 +558,23 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       Comment curCmt = comments.elementAt(i);
       endIndex = i;
       if (curCmt.level > commentLevel) {
-        final bool isParentCollapsed =
+        final bool isParentCollapsedOrHidden =
             localCollapseState[curCmt.parent] ?? false;
         final bool shouldBeHidden =
-            curCmt.parent == comment.id || isParentCollapsed;
+            curCmt.parent != comment.id && isParentCollapsedOrHidden;
+
+        print('''
+        root is ${comment.id}
+        curCmr is ${curCmt.id}
+        map is ${localCollapseState}
+        parent is ${curCmt.parent},
+        parent is collapsed? ${isParentCollapsedOrHidden}
+        should be hidden? ${shouldBeHidden}
+        ''');
+
         curCmt = curCmt.copyWith(isHiddenByUser: shouldBeHidden);
-        localCollapseState[curCmt.id] = curCmt.isCollapsedByUser;
+        localCollapseState[curCmt.id] =
+            curCmt.isCollapsedByUser || curCmt.isHiddenByUser;
         updatedComments.add(curCmt);
         if (i == comments.length - 1) {
           endIndex = comments.length;
