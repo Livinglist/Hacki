@@ -1070,7 +1070,11 @@ comments length is ${state.comments.length}
         HapticFeedbackUtil.success();
         navigatorKey.currentContext?.showSnackBar(
           content:
-              '''$newCommentsCount new comment${newCommentsCount > 1 ? 's' : ''} fetched.''',
+              '''$newCommentsCount new comment${newCommentsCount > 1 ? 's' : ''}.''',
+        );
+      } else {
+        navigatorKey.currentContext?.showSnackBar(
+          content: 'No new comments.',
         );
       }
     }
