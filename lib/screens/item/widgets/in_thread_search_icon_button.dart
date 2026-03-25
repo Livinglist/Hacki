@@ -80,7 +80,8 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
     scrollController.addListener(onScroll);
     textEditingController.text = widget.commentsCubit.state.inThreadSearchQuery;
     Future<void>.delayed(AppDurations.ms300, () {
-      if (textEditingController.text.isEmpty) {
+      if (textEditingController.text.isEmpty &&
+          !widget.commentsCubit.state.isNewInSearchSelected) {
         focusNode.requestFocus();
       }
 
