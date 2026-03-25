@@ -149,6 +149,10 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   }
 
   Future<void> _initializeCollapseStateCache() async {
+    if (state.item is Comment) {
+      return;
+    }
+
     if (_preferenceCubit.state.shouldPersistCollapseStateAcrossSessions &&
         _itemIdToPreviousStates.isEmpty) {
       _itemIdToPreviousStates.addAll(
@@ -526,11 +530,11 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     }
 
     for (int i = commentIndex + 1; i < comments.length; i++) {
-      Comment cmt = comments.elementAt(i);
+      Comment curCmt = comments.elementAt(i);
       endIndex = i;
-      if (cmt.level > commentLevel) {
-        cmt = cmt.copyWith(isHiddenByUser: true);
-        updatedComments.add(cmt);
+      if (curCmt.level > commentLevel) {
+        curCmt = curCmt.copyWith(isHiddenByUser: true);
+        updatedComments.add(curCmt);
         if (i == comments.length - 1) {
           endIndex = comments.length;
         }
@@ -558,12 +562,18 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       return;
     }
 
+    final Map<int, bool> localCollapseState = <int, bool>{};
     for (int i = commentIndex + 1; i < comments.length; i++) {
-      Comment cmt = comments.elementAt(i);
+      Comment curCmt = comments.elementAt(i);
       endIndex = i;
-      if (cmt.level > commentLevel) {
-        cmt = cmt.copyWith(isHiddenByUser: false);
-        updatedComments.add(cmt);
+      if (curCmt.level > commentLevel) {
+        final bool isParentCollapsed =
+            localCollapseState[curCmt.parent] ?? false;
+        final bool shouldBeHidden =
+            curCmt.parent == comment.id || isParentCollapsed;
+        curCmt = curCmt.copyWith(isHiddenByUser: shouldBeHidden);
+        localCollapseState[curCmt.id] = curCmt.isCollapsedByUser;
+        updatedComments.add(curCmt);
         if (i == comments.length - 1) {
           endIndex = comments.length;
         }
