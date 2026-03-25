@@ -146,10 +146,10 @@ class _ShareScreenState extends State<ShareScreen> {
                           Card(
                             elevation: Dimens.pt4,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(Dimens.pt12),
+                              borderRadius: BorderRadius.circular(Dimens.pt6),
                             ),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(Dimens.pt12),
+                              borderRadius: BorderRadius.circular(Dimens.pt6),
                               child: Image.asset(
                                 Constants.shareImageHintsFirst,
                                 width: imageWidth,
@@ -166,10 +166,10 @@ class _ShareScreenState extends State<ShareScreen> {
                           Card(
                             elevation: Dimens.pt4,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(Dimens.pt12),
+                              borderRadius: BorderRadius.circular(Dimens.pt6),
                             ),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(Dimens.pt12),
+                              borderRadius: BorderRadius.circular(Dimens.pt6),
                               child: Image.asset(
                                 Constants.shareImageHintsSecond,
                                 width: imageWidth,
