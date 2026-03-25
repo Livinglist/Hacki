@@ -20,11 +20,13 @@ extension ContextExtension on BuildContext {
     required String content,
     VoidCallback? action,
     String? label,
+    bool? persist,
   }) {
     ScaffoldMessenger.of(this)
       ..clearSnackBars()
       ..showSnackBar(
         SnackBar(
+          persist: persist,
           backgroundColor: Theme.of(this).colorScheme.primary,
           content: Text(
             content,
