@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/repositories/repositories.dart';
@@ -10,15 +13,21 @@ class ReminderCubit extends Cubit<ReminderState> {
       : _preferenceRepository =
             preferenceRepository ?? locator.get<PreferenceRepository>(),
         super(const ReminderState.init()) {
-    init();
+    unawaited(init());
   }
 
   final PreferenceRepository _preferenceRepository;
 
-  void init() {
-    _preferenceRepository.lastReadStoryId.then((int? value) {
-      emit(state.copyWith(storyId: value));
-    });
+  Future<void> init() async {
+    final List<ConnectivityResult> status =
+        await Connectivity().checkConnectivity();
+    if (status.contains(ConnectivityResult.none)) {
+      return;
+    } else {
+      await _preferenceRepository.lastReadStoryId.then((int? value) {
+        emit(state.copyWith(storyId: value));
+      });
+    }
   }
 
   void onDismiss() {
