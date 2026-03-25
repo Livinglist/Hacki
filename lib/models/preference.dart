@@ -74,6 +74,7 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       const NotificationModePreference(),
       const SwipeGesturePreference(),
       const DividerPlaceholder(label: 'Thread'),
+      const CompactCollapsedTile(),
       const PersistCollapseStateAcrossSessions(),
       const PreserveCollapseStateAfterScreenExit(),
       const ReaderModePreference(),
@@ -679,6 +680,27 @@ final class PreserveCollapseStateAfterScreenExit extends BooleanPreference {
   @override
   String get subtitle =>
       '''preserve collapse state of comments upon leaving a thread.''';
+}
+
+/// If enabled, collapsed comment tile won't show any comment text preview.
+final class CompactCollapsedTile extends BooleanPreference {
+  const CompactCollapsedTile({bool? val}) : super(val: val ?? _defaultValue);
+
+  static const bool _defaultValue = false;
+
+  @override
+  CompactCollapsedTile copyWith({required bool? val}) {
+    return CompactCollapsedTile(val: val);
+  }
+
+  @override
+  String get key => 'compactCollapsedTile';
+
+  @override
+  String get title => 'Hide Preview on Collapse';
+
+  @override
+  String get subtitle => '''no preview text for collapsed comments''';
 }
 
 /// Whether or not to use Custom Tabs for launching URLs.

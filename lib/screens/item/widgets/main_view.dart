@@ -124,6 +124,10 @@ class MainView extends StatelessWidget {
                               opUsername: state.item.by,
                               fetchMode: state.fetchMode,
                               isResponse: state.isResponse(comment),
+                              isCompactCollapsedTileEnabled: context
+                                  .read<PreferenceCubit>()
+                                  .state
+                                  .isCompactCollapsedTileEnabled,
                               isDev: context
                                   .read<PreferenceCubit>()
                                   .state

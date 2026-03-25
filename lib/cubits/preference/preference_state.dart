@@ -106,6 +106,8 @@ class PreferenceState extends Equatable {
   bool get isPreviewImageLeftAligned =>
       _isOn<PreviewImageAlignmentPreference>();
 
+  bool get isCompactCollapsedTileEnabled => _isOn<CompactCollapsedTile>();
+
   bool get shouldPreserveCollapseStateAfterScreenExit =>
       _isOn<PreserveCollapseStateAfterScreenExit>();
 

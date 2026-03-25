@@ -31,6 +31,7 @@ class CommentTile extends StatelessWidget {
     this.isResponse = false,
     this.isNew = false,
     this.isEyeCandyEnabled = false,
+    this.isCompactCollapsedTileEnabled = false,
     this.shouldShowDivider = true,
     this.level = 0,
     this.index,
@@ -48,6 +49,7 @@ class CommentTile extends StatelessWidget {
   final bool isResponse;
   final bool isNew;
   final bool isEyeCandyEnabled;
+  final bool isCompactCollapsedTileEnabled;
   final bool shouldShowDivider;
   final FetchMode fetchMode;
 
@@ -281,7 +283,9 @@ class CommentTile extends StatelessWidget {
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
-                                      if (comment.hidden)
+                                      if (isCompactCollapsedTileEnabled)
+                                        const SizedBox.shrink()
+                                      else if (comment.hidden)
                                         const CenteredText.hidden()
                                       else if (comment.deleted)
                                         const CenteredText.deleted()
