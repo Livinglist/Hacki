@@ -1036,6 +1036,13 @@ comments length is ${state.comments.length}
       );
 
   void _preserveCollapseState() {
+    if (state.status != CommentsStatus.allLoaded) {
+      logInfo(
+        'comments status is ${state.status}, not preserve collapse state.',
+      );
+      return;
+    }
+
     _previousCommentStates = <int, Comment>{};
 
     for (final Comment e in state.comments) {
