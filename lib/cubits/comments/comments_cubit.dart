@@ -28,7 +28,7 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 part 'comments_state.dart';
 
-final Map<int, Map<int, Comment>> _itemIdToPreviousStates =
+final Map<int, Map<int, Comment>> _globalStoryIdToPreviousCollapseStates =
     <int, Map<int, Comment>>{};
 
 class CommentsCubit extends Cubit<CommentsState> with Loggable {
@@ -155,17 +155,18 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
     /// Make sure the global cache is initialized.
     if (_preferenceCubit.state.shouldPersistCollapseStateAcrossSessions &&
-        _itemIdToPreviousStates.isEmpty) {
-      _itemIdToPreviousStates.addAll(
+        _globalStoryIdToPreviousCollapseStates.isEmpty) {
+      _globalStoryIdToPreviousCollapseStates.addAll(
         _collapseStateCacheRepository.cachedItemIdToPreviousStates,
       );
     }
 
     /// Make sure the local cache is initialized.
     if (_preferenceCubit.state.shouldPreserveCollapseStateAfterScreenExit) {
-      _previousCommentStates = _itemIdToPreviousStates[state.item.id];
+      _previousCommentStates =
+          _globalStoryIdToPreviousCollapseStates[state.item.id];
     } else {
-      _itemIdToPreviousStates.clear();
+      _globalStoryIdToPreviousCollapseStates.clear();
     }
   }
 
@@ -182,7 +183,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
     if (_preferenceCubit.state.shouldPreserveCollapseStateAfterScreenExit &&
         item is Story) {
-      _previousCommentStates = _itemIdToPreviousStates[item.id];
+      _previousCommentStates = _globalStoryIdToPreviousCollapseStates[item.id];
     }
 
     if (shouldOnlyShowTargetComment && (targetAncestors?.isNotEmpty ?? false)) {
@@ -1043,7 +1044,7 @@ comments length is ${state.comments.length}
     }
 
     if (_previousCommentStates != null && state.item is Story) {
-      _itemIdToPreviousStates
+      _globalStoryIdToPreviousCollapseStates
           .putIfAbsent(state.item.id, () => <int, Comment>{})
           .addAll(_previousCommentStates ?? <int, Comment>{});
 
@@ -1055,7 +1056,7 @@ comments length is ${state.comments.length}
       }
 
       if (!_preferenceCubit.state.shouldPreserveCollapseStateAfterScreenExit) {
-        _itemIdToPreviousStates.clear();
+        _globalStoryIdToPreviousCollapseStates.clear();
       }
     }
   }
@@ -1083,7 +1084,7 @@ comments length is ${state.comments.length}
     );
 
     final bool isFirstTimeReading =
-        !_itemIdToPreviousStates.containsKey(state.item.id);
+        !_globalStoryIdToPreviousCollapseStates.containsKey(state.item.id);
     if (isCompletionSnackBarEnabled && !isFirstTimeReading) {
       final int newCommentsCount =
           state.comments.where((Comment c) => c.isNew).length;
