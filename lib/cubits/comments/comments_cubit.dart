@@ -350,10 +350,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         ),
       );
 
-      navigatorKey.currentContext?.showSnackBar(
-        content: 'No new comments.',
-      );
-
       return;
     } else {
       emit(
@@ -1099,10 +1095,6 @@ comments length is ${state.comments.length}
                   search('', isNewSelected: true);
                   openInThreadSearch?.call();
                 },
-        );
-      } else {
-        navigatorKey.currentContext?.showSnackBar(
-          content: 'No new comments.',
         );
       }
     }
