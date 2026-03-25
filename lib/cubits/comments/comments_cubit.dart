@@ -1041,6 +1041,8 @@ comments length is ${state.comments.length}
       );
 
   void _preserveCollapseState() {
+    if (state.status == CommentsStatus.inProgress) return;
+
     _previousCommentStates ??= <int, Comment>{};
 
     for (final Comment e in state.comments) {
