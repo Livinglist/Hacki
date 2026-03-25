@@ -6,6 +6,7 @@ import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/blocs/auth/auth_bloc.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/comments/comments_cubit.dart';
+import 'package:hacki/extensions/context_extension.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
@@ -25,7 +26,7 @@ class InThreadSearchIconButton extends StatelessWidget {
       openElevation: Dimens.zero,
       transitionType: ContainerTransitionType.fadeThrough,
       closedBuilder: (BuildContext context, void Function() action) {
-        context.read<CommentsCubit>().openInThreadSearch = action;
+        context.tryRead<CommentsCubit>()?.openInThreadSearch = action;
         return CustomDescribedFeatureOverlay(
           tapTarget: Icon(
             Icons.search,
