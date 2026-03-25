@@ -1079,6 +1079,8 @@ comments length is ${state.comments.length}
   void _onDone({bool isCompletionSnackBarEnabled = false}) {
     _streamSubscription?.cancel();
     _streamSubscription = null;
+
+    logInfo('loading of ${state.item.id} is complete.');
     emit(
       state.copyWith(
         status: CommentsStatus.allLoaded,
