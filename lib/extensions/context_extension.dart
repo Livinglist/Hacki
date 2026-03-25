@@ -19,6 +19,7 @@ extension ContextExtension on BuildContext {
   void showSnackBar({
     required String content,
     VoidCallback? action,
+    Duration duration = AppDurations.fourSeconds,
     String? label,
     bool? persist,
   }) {
@@ -27,7 +28,7 @@ extension ContextExtension on BuildContext {
       ..showSnackBar(
         SnackBar(
           persist: persist,
-          duration: AppDurations.fiveSeconds,
+          duration: duration,
           backgroundColor: Theme.of(this).colorScheme.primary,
           content: Text(
             content,

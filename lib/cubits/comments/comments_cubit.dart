@@ -1088,6 +1088,7 @@ comments length is ${state.comments.length}
         HapticFeedbackUtil.success();
         navigatorKey.currentContext?.showSnackBar(
           persist: false,
+          duration: AppDurations.fiveSeconds,
           content:
               '''$newCommentsCount new comment${newCommentsCount > 1 ? 's' : ''} fetched.''',
           label: openInThreadSearch == null ? null : 'Search',
