@@ -1064,7 +1064,8 @@ comments length is ${state.comments.length}
       ),
     );
 
-    if (isCompletionSnackBarEnabled) {
+    final bool isFirstTimeReading = !_itemIdToPreviousStates.containsKey(state.item.id);
+    if (isCompletionSnackBarEnabled && !isFirstTimeReading) {
       HapticFeedbackUtil.success();
       final int newCommentsCount =
           state.comments.where((Comment c) => c.isNew).length;
