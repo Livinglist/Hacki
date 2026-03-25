@@ -336,16 +336,28 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     }
     _streamSubscriptions.clear();
 
-    emit(
-      state.copyWith(
-        comments: <Comment>[],
-        currentPage: 0,
-      ),
-    );
-
     final Item item = state.item;
     final Item updatedItem =
         await _hackerNewsRepository.fetchItem(id: item.id) ?? item;
+
+    /// Compare the kids to decide if we should fetch from remote source.
+    if (item.kids.length == updatedItem.kids.length &&
+        item.kids.toSet() == updatedItem.kids.toSet()) {
+      emit(
+        state.copyWith(
+          status: CommentsStatus.allLoaded,
+        ),
+      );
+      return;
+    } else {
+      emit(
+        state.copyWith(
+          comments: <Comment>[],
+          currentPage: 0,
+        ),
+      );
+    }
+
     final List<int> kids = _sortKids(updatedItem.kids);
 
     late final Stream<Comment> commentStream;
