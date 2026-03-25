@@ -30,14 +30,16 @@ class HackerNewsWebRepository with Loggable {
             <Interceptor>[
               if (kDebugMode) LoggerInterceptor(),
             ],
-          ),
+          )
+          ..options.headers[HttpHeaders.userAgentHeader] = Constants.userAgent,
         _dioWithCache = dioWithCache ?? Dio()
           ..interceptors.addAll(
             <Interceptor>[
               if (kDebugMode) LoggerInterceptor(),
               CacheInterceptor(),
             ],
-          ),
+          )
+          ..options.headers[HttpHeaders.userAgentHeader] = Constants.userAgent,
         _remoteConfigCubit =
             remoteConfigCubit ?? locator.get<RemoteConfigCubit>(),
         _hackerNewsRepository =

@@ -43,6 +43,9 @@ abstract class Constants {
   static const String logFilename = 'hacki_log.txt';
   static const String previousLogFileName = 'old_hacki_log.txt';
 
+  static const String userAgent =
+      '''Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.10 Safari/605.1.1''';
+
   static final String happyFace = <String>[
     '(๑•̀ㅂ•́)و✧',
     '( ͡• ͜ʖ ͡•)',
