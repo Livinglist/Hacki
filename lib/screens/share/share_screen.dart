@@ -137,12 +137,9 @@ class _ShareScreenState extends State<ShareScreen> {
                       SizedBox(
                         height: MediaQuery.of(context).padding.top,
                       ),
-                      SizedBoxes.pt24,
-                      SizedBoxes.pt24,
-                      SizedBoxes.pt24,
-                      SizedBoxes.pt24,
-                      SizedBoxes.pt24,
-                      SizedBoxes.pt24,
+                      SizedBoxes.pt48,
+                      SizedBoxes.pt48,
+                      SizedBoxes.pt48,
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
