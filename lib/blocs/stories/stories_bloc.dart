@@ -327,11 +327,10 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     Emitter<StoriesState> emit,
   ) async {
     if (event is StoryLoadingCompleted) {
-      return;
-    } else if (state.statusByType[event.type] == Status.inProgress) {
       emit(
         state.copyWithStatusUpdated(type: event.type, to: Status.success),
       );
+      return;
     }
 
     final Story story = event.story;
