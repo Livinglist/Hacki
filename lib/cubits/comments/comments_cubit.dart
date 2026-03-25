@@ -1061,7 +1061,8 @@ comments length is ${state.comments.length}
       ),
     );
 
-    final bool isFirstTimeReading = !_itemIdToPreviousStates.containsKey(state.item.id);
+    final bool isFirstTimeReading =
+        !_itemIdToPreviousStates.containsKey(state.item.id);
     if (isCompletionSnackBarEnabled && !isFirstTimeReading) {
       final int newCommentsCount =
           state.comments.where((Comment c) => c.isNew).length;
