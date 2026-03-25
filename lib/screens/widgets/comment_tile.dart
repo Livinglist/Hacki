@@ -278,10 +278,12 @@ class CommentTile extends StatelessWidget {
                                     ? CrossFadeState.showFirst
                                     : CrossFadeState.showSecond,
                             firstChild: Padding(
-                              padding: const EdgeInsets.only(
+                              padding: EdgeInsets.only(
                                 left: Dimens.pt8,
                                 right: Dimens.pt2,
-                                top: Dimens.pt6,
+                                top: isCompactCollapsedTileEnabled
+                                    ? Dimens.zero
+                                    : Dimens.pt6,
                               ),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
