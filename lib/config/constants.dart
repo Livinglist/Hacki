@@ -68,6 +68,7 @@ abstract class Constants {
     'WALK ON WATER',
     '天空沒有極限',
     '''就算一刻洩氣別要捨棄 人若沒有夢這生似死''',
+    'Enjoy it while it lasts',
   ].randomlyPicked!;
 
   static final String errorMessage = 'Something went wrong...$sadFace';
