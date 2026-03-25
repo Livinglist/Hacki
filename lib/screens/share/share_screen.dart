@@ -110,17 +110,15 @@ class _ShareScreenState extends State<ShareScreen> {
             closedElevation: Dimens.zero,
             closedColor: Theme.of(context).colorScheme.surface,
             openColor: Theme.of(context).colorScheme.surface,
-            closedBuilder: (context, action) {
+            closedBuilder: (BuildContext context, void Function() action) {
               return IconButton(
                 onPressed: action,
-                icon: Icon(
-                  _isShowingTips
-                      ? Icons.tips_and_updates
-                      : Icons.tips_and_updates_outlined,
+                icon: const Icon(
+                  Icons.tips_and_updates_outlined,
                 ),
               );
             },
-            openBuilder: (BuildContext context, action) {
+            openBuilder: (BuildContext context, void Function() action) {
               final double imageWidth = min(
                 _maxFeatureHintsImageWidth,
                 MediaQuery.of(context).size.width / 2 - Dimens.pt36,
@@ -130,7 +128,7 @@ class _ShareScreenState extends State<ShareScreen> {
                   title: const Text('Tips'),
                 ),
                 body: Padding(
-                  padding: EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: Dimens.pt12,
                   ),
                   child: Column(
