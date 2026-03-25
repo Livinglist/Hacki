@@ -1038,13 +1038,9 @@ comments length is ${state.comments.length}
     }
 
     if (_previousCommentStates != null && state.item is Story) {
-      Map<int, Comment>? existingMap = _itemIdToPreviousStates[state.item.id];
-      if (existingMap == null) {
-        existingMap = <int, Comment>{...?_previousCommentStates};
-        _itemIdToPreviousStates[state.item.id] = existingMap;
-      } else {
-        existingMap.addAll(_previousCommentStates!);
-      }
+      _itemIdToPreviousStates
+          .putIfAbsent(state.item.id, () => <int, Comment>{})
+          .addAll(_previousCommentStates ?? <int, Comment>{});
 
       if (_preferenceCubit.state.shouldPersistCollapseStateAcrossSessions) {
         _collapseStateCacheRepository.saveStoryStates(
