@@ -322,14 +322,14 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       return;
     }
 
-    /// Preserve collapse state.
-    _preserveCollapseState();
-
     emit(
       state.copyWith(
         status: CommentsStatus.inProgress,
       ),
     );
+
+    /// Preserve collapse state.
+    _preserveCollapseState();
 
     final Item item = state.item;
     final Item updatedItem =
@@ -1029,21 +1029,14 @@ comments length is ${state.comments.length}
       );
 
   void _preserveCollapseState() {
-    if (state.status != CommentsStatus.allLoaded) {
-      logInfo(
-        'comments status is ${state.status}, not preserve collapse state.',
-      );
-      return;
-    }
-
-    _previousCommentStates = <int, Comment>{};
+    _previousCommentStates ??= <int, Comment>{};
 
     for (final Comment e in state.comments) {
       _previousCommentStates?[e.id] = e.copyWithOnlyCollapseState();
     }
 
     if (_previousCommentStates != null && state.item is Story) {
-      _itemIdToPreviousStates[state.item.id] = _previousCommentStates!;
+      _itemIdToPreviousStates[state.item.id]?.addAll(_previousCommentStates!);
 
       if (_preferenceCubit.state.shouldPersistCollapseStateAcrossSessions) {
         _collapseStateCacheRepository.saveStoryStates(
