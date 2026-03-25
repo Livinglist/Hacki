@@ -222,6 +222,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     emit(state.copyWith(item: updatedItem));
 
     late final Stream<Comment> commentStream;
+    final bool shouldShowCompletionSnackBar = !state.isOfflineReading;
 
     if (state.isOfflineReading) {
       commentStream = _offlineRepository.getCachedCommentsStream(
@@ -300,7 +301,11 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         .asyncMap(_toBuildableComment)
         .whereNotNull()
         .listen(_onCommentFetched)
-      ..onDone(_onDone);
+      ..onDone(
+        () => _onDone(
+          isCompletionSnackBarEnabled: shouldShowCompletionSnackBar,
+        ),
+      );
   }
 
   Future<void> refresh({
@@ -402,7 +407,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         .asyncMap(_toBuildableComment)
         .whereNotNull()
         .listen(_onCommentFetched)
-      ..onDone(() => _onDone(isRefresh: true));
+      ..onDone(() => _onDone(isCompletionSnackBarEnabled: true));
 
     emit(
       state.copyWith(
@@ -801,20 +806,18 @@ comments length is ${state.comments.length}
           }
         }
 
-        if (!isRetrying) {
-          await Future<void>.delayed(AppDurations.ms400, () {
-            final BuildContext? newTargetCommentContext =
-                targetCommentGlobalKey?.currentContext;
-            if (targetCommentGlobalKey != null &&
-                newTargetCommentContext != null &&
-                newTargetCommentContext.mounted) {
-              _startShine(
-                newTargetCommentContext,
-                targetCommentGlobalKey,
-              );
-            }
-          });
-        }
+        await Future<void>.delayed(AppDurations.ms400, () {
+          final BuildContext? newTargetCommentContext =
+              targetCommentGlobalKey?.currentContext;
+          if (targetCommentGlobalKey != null &&
+              newTargetCommentContext != null &&
+              newTargetCommentContext.mounted) {
+            _startShine(
+              newTargetCommentContext,
+              targetCommentGlobalKey,
+            );
+          }
+        });
       });
     }
   }
@@ -1052,7 +1055,7 @@ comments length is ${state.comments.length}
     }
   }
 
-  void _onDone({bool isRefresh = false}) {
+  void _onDone({bool isCompletionSnackBarEnabled = false}) {
     _streamSubscription?.cancel();
     _streamSubscription = null;
     emit(
@@ -1061,7 +1064,8 @@ comments length is ${state.comments.length}
       ),
     );
 
-    if (isRefresh) {
+    if (isCompletionSnackBarEnabled) {
+      HapticFeedbackUtil.success();
       final int newCommentsCount =
           state.comments.where((Comment c) => c.isNew).length;
       if (newCommentsCount > 0) {
