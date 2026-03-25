@@ -643,9 +643,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     }
     _streamSubscriptions.clear();
 
-    /// Preserve collapse state.
-    _preserveCollapseState();
-
     emit(
       state.copyWith(
         order: order,
