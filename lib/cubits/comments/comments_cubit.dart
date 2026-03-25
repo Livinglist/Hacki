@@ -348,6 +348,11 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
           status: CommentsStatus.allLoaded,
         ),
       );
+
+      navigatorKey.currentContext?.showSnackBar(
+        content: 'No new comments.',
+      );
+
       return;
     } else {
       emit(
