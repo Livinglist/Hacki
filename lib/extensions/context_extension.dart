@@ -36,7 +36,6 @@ extension ContextExtension on BuildContext {
               ? SnackBarAction(
                   label: label,
                   onPressed: action,
-                  textColor: Theme.of(this).colorScheme.onPrimary,
                 )
               : null,
         ),
