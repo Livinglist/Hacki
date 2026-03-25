@@ -313,12 +313,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     required AppExceptionHandler? onError,
     bool fetchFromWeb = true,
   }) async {
-    emit(
-      state.copyWith(
-        status: CommentsStatus.inProgress,
-      ),
-    );
-
     if (state.isOfflineReading) {
       emit(
         state.copyWith(
@@ -331,11 +325,11 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     /// Preserve collapse state.
     _preserveCollapseState();
 
-    await _streamSubscription?.cancel();
-    for (final int id in _streamSubscriptions.keys) {
-      await _streamSubscriptions[id]?.cancel();
-    }
-    _streamSubscriptions.clear();
+    emit(
+      state.copyWith(
+        status: CommentsStatus.inProgress,
+      ),
+    );
 
     final Item item = state.item;
     final Item updatedItem =
@@ -349,9 +343,14 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
           status: CommentsStatus.allLoaded,
         ),
       );
-
       return;
     } else {
+      await _streamSubscription?.cancel();
+      for (final int id in _streamSubscriptions.keys) {
+        await _streamSubscriptions[id]?.cancel();
+      }
+      _streamSubscriptions.clear();
+
       emit(
         state.copyWith(
           comments: <Comment>[],
@@ -445,7 +444,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   /// [comment] is only used for lazy fetching.
   void loadMore({
     Comment? comment,
-    void Function(Comment)? onCommentFetched,
     VoidCallback? onDone,
   }) {
     if (comment == null && state.status == CommentsStatus.inProgress) return;
@@ -496,12 +494,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
         _streamSubscriptions[comment.id] = streamSubscription;
       case FetchMode.eager:
-        if (_streamSubscription != null) {
-          emit(state.copyWith(status: CommentsStatus.inProgress));
-          _streamSubscription
-            ?..resume()
-            ..onData(onCommentFetched);
-        }
+        return;
     }
   }
 
