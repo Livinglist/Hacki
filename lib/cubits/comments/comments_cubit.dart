@@ -320,6 +320,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         ),
       );
       return;
+    } else if (state.status == CommentsStatus.inProgress) {
+      return;
     }
 
     emit(
