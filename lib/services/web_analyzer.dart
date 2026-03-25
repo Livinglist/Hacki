@@ -358,7 +358,7 @@ ${info.toJson()}
       ..headers['accept-encoding'] = 'gzip, deflate'
       ..headers['User-Agent'] = url.contains('twitter.com')
           ? 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
-          : 'Mozilla/5.0'
+          : Constants.iphoneUserAgent
       ..headers['cache-control'] = 'no-cache'
       ..headers['accept'] =
           'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9';

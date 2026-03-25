@@ -31,7 +31,8 @@ class HackerNewsWebRepository with Loggable {
               if (kDebugMode) LoggerInterceptor(),
             ],
           )
-          ..options.headers[HttpHeaders.userAgentHeader] = Constants.userAgent,
+          ..options.headers[HttpHeaders.userAgentHeader] =
+              Constants.iphoneUserAgent,
         _dioWithCache = dioWithCache ?? Dio()
           ..interceptors.addAll(
             <Interceptor>[
@@ -39,7 +40,8 @@ class HackerNewsWebRepository with Loggable {
               CacheInterceptor(),
             ],
           )
-          ..options.headers[HttpHeaders.userAgentHeader] = Constants.userAgent,
+          ..options.headers[HttpHeaders.userAgentHeader] =
+              Constants.iphoneUserAgent,
         _remoteConfigCubit =
             remoteConfigCubit ?? locator.get<RemoteConfigCubit>(),
         _hackerNewsRepository =
@@ -59,9 +61,8 @@ class HackerNewsWebRepository with Loggable {
   final HackerNewsRepository _hackerNewsRepository;
 
   static const Map<String, String> _headers = <String, String>{
-    'accept': '*/*',
-    'user-agent':
-        'Mozilla/5.0 (iPhone; CPU iPhone OS 17_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.1 Mobile/15E148 Safari/604.1',
+    HttpHeaders.acceptHeader: '*/*',
+    HttpHeaders.userAgentHeader: Constants.iphoneUserAgent,
   };
 
   static const String _storiesBaseUrl = 'https://news.ycombinator.com';
