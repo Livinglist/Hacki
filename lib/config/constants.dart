@@ -79,6 +79,7 @@ abstract class Constants {
     '天空沒有極限',
     '''就算一刻洩氣別要捨棄 人若沒有夢這生似死''',
     'Enjoy it while it lasts',
+    'There is no fear in love',
   ].randomlyPicked!;
 
   static final String errorMessage = 'Something went wrong...$sadFace';
