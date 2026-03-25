@@ -35,6 +35,11 @@ abstract class Constants {
       '$_imagePath/comment_tile_right_slide.png';
   static const String commentTileTopTapPath =
       '$_imagePath/comment_tile_top_tap.png';
+  static const String shareImageHintsFirst =
+      '$_imagePath/share_image_hint_1.png';
+  static const String shareImageHintsSecond =
+      '$_imagePath/share_image_hint_2.png';
+
   static const String logFilename = 'hacki_log.txt';
   static const String previousLogFileName = 'old_hacki_log.txt';
 

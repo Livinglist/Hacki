@@ -1,5 +1,8 @@
+import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
+import 'package:animations/animations.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -53,6 +56,7 @@ class _ShareScreenState extends State<ShareScreen> {
   bool _shouldScaleText = true;
 
   static const double _screenshotPixelRatio = 6;
+  static const double _maxFeatureHintsImageWidth = 200;
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +103,136 @@ class _ShareScreenState extends State<ShareScreen> {
             ],
           );
     return Scaffold(
-      appBar: AppBar(title: const Text('Share as image')),
+      appBar: AppBar(
+        title: const Text('Share as image'),
+        actions: <Widget>[
+          OpenContainer(
+            closedElevation: Dimens.zero,
+            closedColor: Theme.of(context).colorScheme.surface,
+            openColor: Theme.of(context).colorScheme.surface,
+            closedBuilder: (context, action) {
+              return IconButton(
+                onPressed: action,
+                icon: Icon(
+                  _isShowingTips
+                      ? Icons.tips_and_updates
+                      : Icons.tips_and_updates_outlined,
+                ),
+              );
+            },
+            openBuilder: (BuildContext context, action) {
+              final double imageWidth = min(
+                _maxFeatureHintsImageWidth,
+                MediaQuery.of(context).size.width / 2 - Dimens.pt36,
+              );
+              return Scaffold(
+                appBar: AppBar(
+                  title: const Text('Tips'),
+                ),
+                body: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: Dimens.pt12,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      SizedBox(
+                        height: MediaQuery.of(context).padding.top,
+                      ),
+                      SizedBoxes.pt24,
+                      SizedBoxes.pt24,
+                      SizedBoxes.pt24,
+                      SizedBoxes.pt24,
+                      SizedBoxes.pt24,
+                      SizedBoxes.pt24,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Card(
+                            elevation: Dimens.pt4,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(Dimens.pt12),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(Dimens.pt12),
+                              child: Image.asset(
+                                Constants.shareImageHintsFirst,
+                                width: imageWidth,
+                                fit: BoxFit.fitWidth,
+                              ),
+                            ),
+                          ),
+                          Icon(
+                            Icons.arrow_forward_rounded,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSecondaryContainer,
+                          ),
+                          Card(
+                            elevation: Dimens.pt4,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(Dimens.pt12),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(Dimens.pt12),
+                              child: Image.asset(
+                                Constants.shareImageHintsSecond,
+                                width: imageWidth,
+                                fit: BoxFit.fitWidth,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBoxes.pt24,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: Dimens.pt12,
+                        ),
+                        child: Text(
+                          '''You can select text in the comment before tapping on Share button and the text will be highlighted in resulted screenshot.''',
+                          style: TextStyle(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSecondaryContainer,
+                            fontSize: TextDimens.pt16,
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      Row(
+                        children: <Widget>[
+                          const Spacer(),
+                          TextButton(
+                            onPressed: action,
+                            child: const Text(
+                              'Interesting',
+                              style: TextStyle(
+                                fontSize: TextDimens.pt16,
+                              ),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: action,
+                            child: const Text(
+                              'Dismiss',
+                              style: TextStyle(
+                                fontSize: TextDimens.pt16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBoxes.pt100,
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Center(
         child: ConstrainedBox(
