@@ -59,13 +59,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     on<ClearAllReadStories>(onClearAllReadStories);
     on<UpdateMaxOfflineStoriesCount>(onUpdateMaxOfflineStoriesCount);
     on<ClearMaxOfflineStoriesCount>(onClearMaxOfflineStoriesCount);
-
-    _preferenceSubscription = _preferenceCubit.stream
-        .distinct((PreferenceState lhs, PreferenceState rhs) {
-      return lhs.dataSource == rhs.dataSource;
-    }).listen((PreferenceState prefState) {
-      add(StoriesInitialize());
-    });
   }
 
   final PreferenceCubit _preferenceCubit;
@@ -112,6 +105,13 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     for (final StoryType type in _preferenceCubit.state.tabs) {
       add(LoadStories(type: type));
     }
+
+    _preferenceSubscription ??= _preferenceCubit.stream
+        .distinct((PreferenceState lhs, PreferenceState rhs) {
+      return lhs.dataSource == rhs.dataSource;
+    }).listen((PreferenceState prefState) {
+      add(StoriesInitialize());
+    });
   }
 
   Future<void> onLoadStories(

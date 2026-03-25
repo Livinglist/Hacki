@@ -153,6 +153,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       return;
     }
 
+    /// Make sure the global cache is initialized.
     if (_preferenceCubit.state.shouldPersistCollapseStateAcrossSessions &&
         _itemIdToPreviousStates.isEmpty) {
       _itemIdToPreviousStates.addAll(
@@ -160,6 +161,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       );
     }
 
+    /// Make sure the local cache is initialized.
     if (_preferenceCubit.state.shouldPreserveCollapseStateAfterScreenExit) {
       _previousCommentStates = _itemIdToPreviousStates[state.item.id];
     } else {
@@ -538,7 +540,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   }
 
   void uncollapse(Comment comment) {
-    print('================================');
     final List<Comment> comments = <Comment>[...state.comments];
     final int commentIndex =
         state.comments.indexWhere((Comment c) => c.id == comment.id);
@@ -562,16 +563,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
             localCollapseState[curCmt.parent] ?? false;
         final bool shouldBeHidden =
             curCmt.parent != comment.id && isParentCollapsedOrHidden;
-
-        print('''
-        root is ${comment.id}
-        curCmr is ${curCmt.id}
-        map is ${localCollapseState}
-        parent is ${curCmt.parent},
-        parent is collapsed? ${isParentCollapsedOrHidden}
-        should be hidden? ${shouldBeHidden}
-        ''');
-
         curCmt = curCmt.copyWith(isHiddenByUser: shouldBeHidden);
         localCollapseState[curCmt.id] =
             curCmt.isCollapsedByUser || curCmt.isHiddenByUser;
@@ -1121,9 +1112,12 @@ comments length is ${state.comments.length}
       final Comment? prevState = _previousCommentStates?[comment.id];
       final int parentIndex =
           state.comments.indexWhere((Comment c) => c.id == comment?.parent);
+
       if (parentIndex > -1) {
         final Comment parent = state.comments.elementAt(parentIndex);
+
         comment = comment.copyWith(
+          isCollapsedByUser: prevState?.isCollapsedByUser,
           isHiddenByUser: parent.isHiddenByUser || parent.isCollapsedByUser,
           isNew: _previousCommentStates != null && prevState == null,
         );
