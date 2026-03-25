@@ -94,6 +94,14 @@ class PreferenceCubit extends Cubit<PreferenceState> with Loggable {
     }
   }
 
+  void restoreDefaultSettings() {
+    for (final Preference<dynamic> p in Preference.allPreferences) {
+      if (p is DividerPlaceholder) continue;
+
+      emit(state.copyWithPreference(p));
+    }
+  }
+
   @override
   String get logIdentifier => 'PreferenceCubit';
 }

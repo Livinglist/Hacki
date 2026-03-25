@@ -492,6 +492,11 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                     ),
                   ],
                   ListTile(
+                    title: const Text('Restore Default Settings'),
+                    onTap: showRestoreDefaultSettingsDialog,
+                  ),
+                  const Divider(),
+                  ListTile(
                     title: const Text('Rate Hacki : )'),
                     onTap: () {
                       LinkUtil.launch(
@@ -696,6 +701,44 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
             },
             onBack: context.pop,
           ),
+        );
+      },
+    );
+  }
+
+  void showRestoreDefaultSettingsDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: const Text('Restore default settings?'),
+          content: const Text(
+            'Your existing settings will be wiped out.',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => context.pop(),
+              child: const Text(
+                'Cancel',
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                context.pop();
+
+                context.read<PreferenceCubit>().restoreDefaultSettings();
+
+                HapticFeedbackUtil.success();
+                showSnackBar(content: 'Default settings restored.');
+              },
+              child: const Text(
+                'Yes',
+                style: TextStyle(
+                  color: Palette.red,
+                ),
+              ),
+            ),
+          ],
         );
       },
     );
