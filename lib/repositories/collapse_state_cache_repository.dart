@@ -15,7 +15,7 @@ class CollapseStateCacheRepository with Loggable {
   }
 
   static const String _boxName = 'persistedCollapseStates';
-  static const int _maxLength = 5000;
+  static const int _maxLength = 10000;
   final Future<Box<String>> _box;
 
   Map<int, Map<int, Comment>> _itemIdToPreviousStates =
