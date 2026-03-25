@@ -1062,10 +1062,10 @@ comments length is ${state.comments.length}
     );
 
     if (isCompletionSnackBarEnabled) {
-      HapticFeedbackUtil.success();
       final int newCommentsCount =
           state.comments.where((Comment c) => c.isNew).length;
       if (newCommentsCount > 0) {
+        HapticFeedbackUtil.success();
         navigatorKey.currentContext?.showSnackBar(
           content:
               '''$newCommentsCount new comment${newCommentsCount > 1 ? 's' : ''} fetched.''',
