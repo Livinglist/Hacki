@@ -281,6 +281,9 @@ class CommentTile extends StatelessWidget {
                               padding: EdgeInsets.only(
                                 left: Dimens.pt8,
                                 right: Dimens.pt2,
+
+                                /// No need for extra top padding if
+                                /// compact collapsed tile is enabled.
                                 top: isCompactCollapsedTileEnabled
                                     ? Dimens.zero
                                     : Dimens.pt6,
