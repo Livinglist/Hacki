@@ -89,6 +89,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   final CollapseStateCacheRepository _collapseStateCacheRepository;
   final AppLifecycleService _appLifecycleService;
   late final StreamSubscription<AppLifecycleState> _appStateSubscription;
+  void Function()? openInThreadSearch;
 
   final ItemScrollController itemScrollController = ItemScrollController();
   final ItemPositionsListener itemPositionsListener =
@@ -1087,7 +1088,15 @@ comments length is ${state.comments.length}
         HapticFeedbackUtil.success();
         navigatorKey.currentContext?.showSnackBar(
           content:
-              '''$newCommentsCount new comment${newCommentsCount > 1 ? 's' : ''}.''',
+              '''$newCommentsCount new comment${newCommentsCount > 1 ? 's' : ''} fetched.''',
+          label: openInThreadSearch == null ? null : 'Search',
+          action: openInThreadSearch == null
+              ? null
+              : () {
+                  resetSearch();
+                  search('', isNewSelected: true);
+                  openInThreadSearch?.call();
+                },
         );
       } else {
         navigatorKey.currentContext?.showSnackBar(

@@ -25,6 +25,7 @@ class InThreadSearchIconButton extends StatelessWidget {
       openElevation: Dimens.zero,
       transitionType: ContainerTransitionType.fadeThrough,
       closedBuilder: (BuildContext context, void Function() action) {
+        context.read<CommentsCubit>().openInThreadSearch = action;
         return CustomDescribedFeatureOverlay(
           tapTarget: Icon(
             Icons.search,
