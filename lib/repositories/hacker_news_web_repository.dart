@@ -28,7 +28,7 @@ class HackerNewsWebRepository with Loggable {
     Dio? dioWithCache,
     Dio? dio,
   })  : _httpClient = httpClient ?? HttpClient()
-          ..idleTimeout = const Duration(seconds: 30)
+          ..idleTimeout = AppDurations.sec30
           ..maxConnectionsPerHost = 2,
         _dio = dio ?? Dio()
           ..interceptors.addAll(

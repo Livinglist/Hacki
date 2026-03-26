@@ -21,14 +21,18 @@ class _ItemScreenTipsState extends State<ItemScreenTips> {
   @override
   void initState() {
     super.initState();
-    _controller =
-        VideoPlayerController.asset(Constants.itemScreenTimeMachineTipsPath)
-          ..setLooping(true)
-          ..initialize().then((_) {
-            /// Ensure the first frame is shown after the video is initialized.
-            setState(() {});
-          })
-          ..play();
+    _controller = VideoPlayerController.asset(
+      Constants.itemScreenTimeMachineTipsPath,
+      videoPlayerOptions: VideoPlayerOptions(
+        mixWithOthers: true,
+      ),
+    )
+      ..setVolume(0)
+      ..setLooping(true)
+      ..initialize().then((_) {
+        /// Ensure the first frame is shown after the video is initialized.
+        setState(() {});
+      });
   }
 
   @override
@@ -46,6 +50,7 @@ class _ItemScreenTipsState extends State<ItemScreenTips> {
         );
       },
       openBuilder: (BuildContext context, void Function() action) {
+        _controller.play();
         context.read<TipsCubit>().completeTips(Tips.itemScreen);
         return Scaffold(
           appBar: AppBar(
