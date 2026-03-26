@@ -104,7 +104,6 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                       ),
                       controller: refreshController,
                       scrollController: scrollController,
-                      primary: true,
                       onRefresh: () {},
                       onLoading: () {
                         context.read<SearchCubit>().loadMore();
@@ -258,20 +257,23 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                     const SizedBox(
                                       width: Dimens.pt8,
                                     ),
-                                    if (state
-                                        .showDateRangeShortcutChips) ...<Widget>[
-                                      CustomChip(
-                                        onSelected: (_) => context
-                                            .read<SearchCubit>()
-                                            .removeFilter<
-                                                DateTimeRangeFilter>(),
-                                        selected: state.params.exactMatch,
-                                        label: '''remove date range''',
+                                    if (state.showDateRangeShortcutChips)
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          CustomChip(
+                                            onSelected: (_) => context
+                                                .read<SearchCubit>()
+                                                .removeFilter<
+                                                    DateTimeRangeFilter>(),
+                                            selected: state.params.exactMatch,
+                                            label: '''remove date range''',
+                                          ),
+                                          const SizedBox(
+                                            width: Dimens.pt8,
+                                          ),
+                                        ],
                                       ),
-                                      const SizedBox(
-                                        width: Dimens.pt8,
-                                      ),
-                                    ],
                                     DateTimeRangeFilterChip(
                                       filter: state.dateFilter,
                                       initialStartDate:
