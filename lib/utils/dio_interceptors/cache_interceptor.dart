@@ -32,7 +32,7 @@ class CacheInterceptor extends InterceptorsWrapper {
                 DateTime.now()
                         .difference(cachedResponse.setDateTime)
                         .inSeconds <
-                    _delay.inSeconds) {
+                    _maxStale.inSeconds) {
               return handler.resolve(cachedResponse);
             }
 
@@ -40,7 +40,7 @@ class CacheInterceptor extends InterceptorsWrapper {
           },
         );
 
-  static const Duration _delay = AppDurations.oneMinute;
+  static const Duration _maxStale = AppDurations.oneMinute;
   static final Map<String, CachedResponse<dynamic>> _cache =
       <String, CachedResponse<dynamic>>{};
 }

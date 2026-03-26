@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 import 'package:dio_smart_retry/dio_smart_retry.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hacki/config/constants.dart';
@@ -23,12 +24,18 @@ class HackerNewsWebRepository with Loggable {
   HackerNewsWebRepository({
     RemoteConfigCubit? remoteConfigCubit,
     HackerNewsRepository? hackerNewsRepository,
+    HttpClient? httpClient,
     Dio? dioWithCache,
     Dio? dio,
-  })  : _dio = dio ?? Dio()
+  })  : _httpClient = httpClient ?? HttpClient()
+          ..idleTimeout = const Duration(seconds: 30)
+          ..maxConnectionsPerHost = 2,
+        _dio = dio ?? Dio()
           ..interceptors.addAll(
             <Interceptor>[
               if (kDebugMode) LoggerInterceptor(),
+              UARotationInterceptor(),
+              RefererInterceptor(),
             ],
           )
           ..options.headers[HttpHeaders.userAgentHeader] =
@@ -38,6 +45,8 @@ class HackerNewsWebRepository with Loggable {
             <Interceptor>[
               if (kDebugMode) LoggerInterceptor(),
               CacheInterceptor(),
+              UARotationInterceptor(),
+              RefererInterceptor(),
             ],
           )
           ..options.headers[HttpHeaders.userAgentHeader] =
@@ -46,7 +55,14 @@ class HackerNewsWebRepository with Loggable {
             remoteConfigCubit ?? locator.get<RemoteConfigCubit>(),
         _hackerNewsRepository =
             hackerNewsRepository ?? locator.get<HackerNewsRepository>() {
-    _dio.interceptors.add(RetryInterceptor(dio: _dio));
+    _dio
+      ..interceptors.add(RetryInterceptor(dio: _dio))
+      ..httpClientAdapter = IOHttpClientAdapter(
+        createHttpClient: () => _httpClient,
+      );
+    _dioWithCache.httpClientAdapter = IOHttpClientAdapter(
+      createHttpClient: () => _httpClient,
+    );
   }
 
   /// The client for fetching comments. We should be careful
@@ -57,12 +73,18 @@ class HackerNewsWebRepository with Loggable {
   /// The client for fetching stories.
   final Dio _dio;
 
+  final HttpClient _httpClient;
+
   final RemoteConfigCubit _remoteConfigCubit;
   final HackerNewsRepository _hackerNewsRepository;
 
   static const Map<String, String> _headers = <String, String>{
-    HttpHeaders.acceptHeader: '*/*',
     HttpHeaders.userAgentHeader: Constants.iphoneUserAgent,
+    HttpHeaders.acceptHeader:
+        'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    HttpHeaders.acceptLanguageHeader: 'en-US,en;q=0.9',
+    HttpHeaders.acceptEncodingHeader: 'gzip, deflate, br',
+    HttpHeaders.connectionHeader: 'keep-alive',
   };
 
   static const String _storiesBaseUrl = 'https://news.ycombinator.com';
