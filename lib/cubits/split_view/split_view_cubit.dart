@@ -2,11 +2,9 @@ import 'dart:async';
 
 import 'package:equatable/equatable.dart';
 import 'package:hacki/config/constants.dart';
-import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/screens/screens.dart';
-import 'package:hacki/services/services.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 part 'split_view_state.dart';
@@ -14,14 +12,11 @@ part 'split_view_state.dart';
 class SplitViewCubit extends HydratedCubit<SplitViewState> with Loggable {
   SplitViewCubit({
     required PreferenceCubit preferenceCubit,
-    CommentCache? commentCache,
-  })  : _commentCache = commentCache ?? locator.get<CommentCache>(),
-        _preferenceCubit = preferenceCubit,
+  })  : _preferenceCubit = preferenceCubit,
         super(const SplitViewState.init()) {
     init();
   }
 
-  final CommentCache _commentCache;
   final PreferenceCubit _preferenceCubit;
   late final StreamSubscription<bool> _preferenceStateSubscription;
 
