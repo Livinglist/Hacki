@@ -6,6 +6,7 @@ import 'package:flutter/material.dart' show TextEditingController;
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
+import 'package:hacki/utils/haptic_feedback_util.dart';
 
 part 'search_state.dart';
 
@@ -58,6 +59,7 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   void addFilter<T extends SearchFilter>(T filter) {
+    HapticFeedbackUtil.selection();
     if (state.params.contains<T>()) {
       emit(
         state.copyWith(
@@ -76,6 +78,7 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   void removeFilter<T extends SearchFilter>() {
+    HapticFeedbackUtil.selection();
     if (state.params.contains<T>() == false) return;
 
     emit(
@@ -88,6 +91,7 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   void onToggled(TypeTagFilter filter) {
+    HapticFeedbackUtil.selection();
     if (state.params.contains<TypeTagFilter>() &&
         state.params.get<TypeTagFilter>() == filter) {
       removeFilter<TypeTagFilter>();
@@ -98,6 +102,7 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   void onSortToggled() {
+    HapticFeedbackUtil.selection();
     emit(
       state.copyWith(
         params: state.params.copyWith(
@@ -110,6 +115,7 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   void onExactMatchToggled() {
+    HapticFeedbackUtil.selection();
     emit(
       state.copyWith(
         params: state.params.copyWith(
@@ -122,6 +128,7 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   void onDateTimeRangeUpdated(DateTime start, DateTime end) {
+    HapticFeedbackUtil.selection();
     final DateTime updatedStart = start.copyWith(
       second: 0,
       millisecond: 0,
@@ -148,6 +155,7 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   void onPostedByChanged(String? username) {
+    HapticFeedbackUtil.selection();
     if (username == null) {
       removeFilter<PostedByFilter>();
     } else {
