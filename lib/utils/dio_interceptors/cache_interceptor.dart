@@ -7,7 +7,7 @@ import 'package:hacki/models/dio/cached_response.dart';
 import 'package:hacki/models/models.dart';
 
 class StoryCacheInterceptor extends CacheInterceptor {
-  StoryCacheInterceptor() : super(maxStale: AppDurations.fiveMinutes);
+  StoryCacheInterceptor() : super(maxStale: AppDurations.threeMinutes);
 
   @override
   Future<void> onRequest(
