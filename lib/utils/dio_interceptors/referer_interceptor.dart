@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 
 class RefererInterceptor extends Interceptor {
@@ -6,7 +8,7 @@ class RefererInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     if (_lastUrl != null) {
-      options.headers['Referer'] = _lastUrl;
+      options.headers[HttpHeaders.refererHeader] = _lastUrl;
     }
     super.onRequest(options, handler);
   }

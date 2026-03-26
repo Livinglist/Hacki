@@ -280,6 +280,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
                   /// If fetching from web failed, fetch using API instead.
                   init(onError: onError, isFetchingFromWebAllowed: false);
+                  return;
                 });
               } else {
                 logInfo('fetching comments of ${item.id} from API.');
@@ -399,6 +400,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
                 /// If fetching from web failed, fetch using API instead.
                 refresh(onError: onError, fetchFromWeb: false);
+                return;
               });
             } else {
               logInfo('fetching comments of ${item.id} from API.');
