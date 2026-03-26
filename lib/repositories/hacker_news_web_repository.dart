@@ -85,6 +85,10 @@ class HackerNewsWebRepository with Loggable {
     HttpHeaders.acceptLanguageHeader: 'en-US,en;q=0.9',
     HttpHeaders.acceptEncodingHeader: 'gzip, deflate, br',
     HttpHeaders.connectionHeader: 'keep-alive',
+    'Sec-Fetch-Dest': 'document',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-Site': 'same-origin',
+    'Sec-Fetch-User': '?1',
   };
 
   static const String _storiesBaseUrl = 'https://news.ycombinator.com';
