@@ -345,6 +345,16 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     final Item updatedItem =
         await _hackerNewsRepository.fetchItem(id: item.id) ?? item;
 
+    /// If descendants has not changed, abort fetching.
+    if (item.descendants == updatedItem.descendants) {
+      emit(
+        state.copyWith(
+          status: CommentsStatus.allLoaded,
+        ),
+      );
+      return;
+    }
+
     await _streamSubscription?.cancel();
     for (final int id in _streamSubscriptions.keys) {
       await _streamSubscriptions[id]?.cancel();
