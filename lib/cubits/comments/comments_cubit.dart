@@ -31,6 +31,8 @@ part 'comments_state.dart';
 final Map<int, Map<int, Comment>> _globalStoryIdToPreviousCollapseStates =
     <int, Map<int, Comment>>{};
 
+final Map<int, Story> _globalIdToStoryCache = <int, Story>{};
+
 class CommentsCubit extends Cubit<CommentsState> with Loggable {
   CommentsCubit({
     required FilterCubit filterCubit,
@@ -225,6 +227,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                 .then(_toBuildable)
                 .onError((_, __) => item) ??
             item;
+
     final List<int> kids = _sortKids(updatedItem.kids);
 
     emit(state.copyWith(item: updatedItem));
@@ -237,18 +240,43 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         ids: kids,
       );
     } else {
+      /// Check if we should keep using the comment cache in memory.
+      final Story? cachedStory =
+          item is Story ? _globalIdToStoryCache[item.id] : null;
+      bool shouldPrioritizeCache = false;
+
+      /// If there is a cached story, then it means the user has seen this story
+      /// before, then we should first try fetching comments from the memory.
+      ///
+      /// But if the difference between previous and current descendants
+      /// is greater than 20, then we should fetch from web or API instead.
+      const int maxDescendantsDiff = 20;
+      final int descendantsDiff = cachedStory == null
+          ? 0
+          : updatedItem.descendants - cachedStory.descendants;
+      if (cachedStory != null && descendantsDiff <= maxDescendantsDiff) {
+        logInfo('difference is $descendantsDiff, prioritizing cache fetching.');
+        shouldPrioritizeCache = true;
+      } else if (updatedItem is Story) {
+        logInfo('first time visiting ${item.id}.');
+        _globalIdToStoryCache[item.id] = updatedItem;
+      }
+
       switch (state.fetchMode) {
         case FetchMode.lazy:
           commentStream = _hackerNewsRepository.fetchCommentsStream(
             ids: kids,
-            getFromCache:
-                shouldUseCommentCacheInMemory ? _commentCache.getComment : null,
+            getFromCache: shouldUseCommentCacheInMemory || shouldPrioritizeCache
+                ? _commentCache.getComment
+                : null,
           );
         case FetchMode.eager:
           switch (state.order) {
             case CommentsOrder.natural:
               final bool shouldFetchFromWeb = await _shouldFetchFromWeb;
-              if (isFetchingFromWebAllowed && shouldFetchFromWeb) {
+              if (isFetchingFromWebAllowed &&
+                  shouldFetchFromWeb &&
+                  !shouldPrioritizeCache) {
                 logInfo('fetching comments of ${item.id} from web.');
                 commentStream = _hackerNewsWebRepository
                     .fetchCommentsStream(
@@ -287,9 +315,10 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                 commentStream =
                     _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
                   ids: kids,
-                  getFromCache: shouldUseCommentCacheInMemory
-                      ? _commentCache.getComment
-                      : null,
+                  getFromCache:
+                      shouldUseCommentCacheInMemory || shouldPrioritizeCache
+                          ? _commentCache.getComment
+                          : null,
                 );
               }
             case CommentsOrder.oldestFirst:
@@ -298,9 +327,10 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
               commentStream =
                   _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
                 ids: kids,
-                getFromCache: shouldUseCommentCacheInMemory
-                    ? _commentCache.getComment
-                    : null,
+                getFromCache:
+                    shouldUseCommentCacheInMemory || shouldPrioritizeCache
+                        ? _commentCache.getComment
+                        : null,
               );
           }
       }

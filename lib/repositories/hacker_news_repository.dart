@@ -231,6 +231,12 @@ class HackerNewsRepository with Loggable {
     for (final int id in ids) {
       Comment? comment = getFromCache?.call(id)?.copyWith(level: level);
 
+      if (comment != null) {
+        logInfo(
+          '''fetchCommentsStream: fetched ${comment.id} from mem cache.''',
+        );
+      }
+
       comment ??=
           await _fetchItemJson(id).then((Map<String, dynamic>? json) async {
         if (json == null) return null;
@@ -268,6 +274,12 @@ class HackerNewsRepository with Loggable {
   }) async* {
     for (final int id in ids) {
       Comment? comment = getFromCache?.call(id)?.copyWith(level: level);
+
+      if (comment != null) {
+        logInfo(
+          '''fetchAllCommentsRecursivelyStream: fetched ${comment.id} from mem cache.''',
+        );
+      }
 
       comment ??=
           await _fetchItemJson(id).then((Map<String, dynamic>? json) async {

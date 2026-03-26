@@ -1,10 +1,15 @@
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart' show Comment;
 
 class CommentCache {
   static final Map<int, Comment> _comments = <int, Comment>{};
 
   void cacheComment(Comment comment) {
-    _comments[comment.id] = comment.copyWithoutCollapseState();
+    if (comment.text.isValidCommentText) {
+      _comments[comment.id] = comment.copyWithoutCollapseState();
+    } else {
+      return;
+    }
 
     /// Comments fetched from `HackerNewsWebRepository` doesn't have populated
     /// `kids` field, this is why we need to update that of the parent
