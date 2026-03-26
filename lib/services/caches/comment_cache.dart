@@ -36,8 +36,4 @@ class CommentCache {
       }
     }
   }
-
-  void resetComments() {
-    _comments.clear();
-  }
 }
