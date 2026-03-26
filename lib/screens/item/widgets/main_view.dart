@@ -136,31 +136,12 @@ class MainView extends StatelessWidget {
                                   shouldMarkNewComment && !comment.isFromCache,
                               isEyeCandyEnabled:
                                   preferenceState.isEyeCandyEnabled,
-                              onReplyTapped: (Comment cmt) {
-                                HapticFeedbackUtil.light();
-                                if (cmt.deleted || cmt.dead) {
-                                  return;
-                                }
-
-                                if (cmt.id !=
-                                    context
-                                        .read<EditCubit>()
-                                        .state
-                                        .replyingTo
-                                        ?.id) {
-                                  commentEditingController.clear();
-                                }
-
-                                context.read<EditCubit>().onReplyTapped(cmt);
-                              },
-                              onEditTapped: (Comment cmt) {
-                                HapticFeedbackUtil.light();
-                                if (cmt.deleted || cmt.dead) {
-                                  return;
-                                }
-                                commentEditingController.clear();
-                                context.read<EditCubit>().onEditTapped(cmt);
-                              },
+                              onUpvoteTapped: (Comment cmt) =>
+                                  onUpvoteTapped(context, cmt),
+                              onReplyTapped: (Comment cmt) =>
+                                  onReplyTapped(context, cmt),
+                              onEditTapped: (Comment cmt) =>
+                                  onEditTapped(context, cmt),
                               onMoreTapped: onMoreTapped,
                               onRightMoreTapped: onRightMoreTapped,
                             ),
@@ -195,6 +176,60 @@ class MainView extends StatelessWidget {
           ),
       ],
     );
+  }
+
+  Future<void> onUpvoteTapped(BuildContext context, Comment cmt) async {
+    final AuthBloc authBloc = context.read<AuthBloc>();
+    if (authBloc.state.isLoggedIn) {
+      final VoteCubit cubit = VoteCubit(
+        item: cmt,
+        authBloc: authBloc,
+        shouldInitialize: false,
+      );
+      final bool res = await cubit.upvote();
+      if (res && context.mounted) {
+        context.showSnackBar(
+          content: 'Vote submitted.',
+        );
+      }
+    } else {
+      HapticFeedbackUtil.error();
+      context.showSnackBar(
+        content: 'Not logged in, no voting! (;｀O´)o',
+        action: () {
+          showDialog<void>(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return const LoginDialog();
+            },
+          );
+        },
+        label: 'Log in',
+      );
+    }
+  }
+
+  void onReplyTapped(BuildContext context, Comment cmt) {
+    HapticFeedbackUtil.light();
+    if (cmt.deleted || cmt.dead) {
+      return;
+    }
+
+    if (cmt.id != context.read<EditCubit>().state.replyingTo?.id) {
+      commentEditingController.clear();
+    }
+
+    context.read<EditCubit>().onReplyTapped(cmt);
+  }
+
+  void onEditTapped(BuildContext context, Comment cmt) {
+    HapticFeedbackUtil.light();
+    if (cmt.deleted || cmt.dead) {
+      return;
+    }
+    commentEditingController.clear();
+    context.read<EditCubit>().onEditTapped(cmt);
   }
 }
 

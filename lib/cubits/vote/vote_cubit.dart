@@ -14,6 +14,7 @@ class VoteCubit extends Cubit<VoteState> {
   VoteCubit({
     required Item item,
     required AuthBloc authBloc,
+    bool shouldInitialize = true,
     AuthRepository? authRepository,
     PreferenceRepository? preferenceRepository,
   })  : _authBloc = authBloc,
@@ -21,7 +22,9 @@ class VoteCubit extends Cubit<VoteState> {
         _preferenceRepository =
             preferenceRepository ?? locator.get<PreferenceRepository>(),
         super(VoteState.init(item: item)) {
-    init();
+    if (shouldInitialize) {
+      unawaited(init());
+    }
   }
 
   final AuthBloc _authBloc;
@@ -48,15 +51,15 @@ class VoteCubit extends Cubit<VoteState> {
     );
   }
 
-  Future<void> upvote() async {
+  Future<bool> upvote({bool cancelIfVoted = true}) async {
     if (!_authBloc.state.isLoggedIn) {
       emit(state.copyWith(status: VoteStatus.failureNotLoggedIn));
-      return;
+      return false;
     }
 
     if (state.item.by == _authBloc.state.username) {
       emit(state.copyWith(status: VoteStatus.failureBeHumble));
-      return;
+      return false;
     }
 
     if (state.vote == null || state.vote == Vote.down) {
@@ -81,6 +84,8 @@ class VoteCubit extends Cubit<VoteState> {
             vote: true,
           ),
         );
+
+        return true;
       } else {
         HapticFeedbackUtil.error();
 
@@ -89,8 +94,10 @@ class VoteCubit extends Cubit<VoteState> {
             status: VoteStatus.failure,
           ),
         );
+
+        return false;
       }
-    } else {
+    } else if (cancelIfVoted) {
       await _authRepository.upvote(id: state.item.id, upvote: false);
       await _preferenceRepository.removeVote(
         username: _authBloc.state.username,
@@ -103,7 +110,11 @@ class VoteCubit extends Cubit<VoteState> {
           status: VoteStatus.canceled,
         ),
       );
+
+      return true;
     }
+
+    return true;
   }
 
   Future<void> downvote() async {

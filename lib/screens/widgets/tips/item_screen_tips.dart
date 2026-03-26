@@ -1,16 +1,33 @@
-import 'dart:math';
-
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:video_player/video_player.dart';
 
-class ItemScreenTips extends StatelessWidget {
+class ItemScreenTips extends StatefulWidget {
   const ItemScreenTips({super.key});
 
-  static const double _maxFeatureHintsImageWidth = 200;
+  @override
+  State<ItemScreenTips> createState() => _ItemScreenTipsState();
+}
+
+class _ItemScreenTipsState extends State<ItemScreenTips> {
+  late VideoPlayerController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller =
+        VideoPlayerController.asset(Constants.itemScreenTimeMachineTipsPath)
+          ..setLooping(true)
+          ..initialize().then((_) {
+            /// Ensure the first frame is shown after the video is initialized.
+            setState(() {});
+          })
+          ..play();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +44,6 @@ class ItemScreenTips extends StatelessWidget {
         );
       },
       openBuilder: (BuildContext context, void Function() action) {
-        final double imageWidth = min(
-          _maxFeatureHintsImageWidth,
-          MediaQuery.of(context).size.width / 2 - Dimens.pt36,
-        );
         context.read<TipsCubit>().completeTips(Tips.itemScreen);
         return Scaffold(
           appBar: AppBar(
@@ -46,41 +59,24 @@ class ItemScreenTips extends StatelessWidget {
                 SizedBox(
                   height: MediaQuery.of(context).padding.top,
                 ),
-                SizedBoxes.pt48,
-                SizedBoxes.pt48,
-                SizedBoxes.pt48,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Card(
-                      elevation: Dimens.pt4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(Dimens.pt6),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(Dimens.pt6),
-                        child: Image.asset(
-                          Constants.shareImageHintsFirst,
-                          width: imageWidth,
-                          fit: BoxFit.fitWidth,
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.6,
+                      child: Card(
+                        elevation: Dimens.pt4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(Dimens.pt6),
                         ),
-                      ),
-                    ),
-                    Icon(
-                      Icons.arrow_forward_rounded,
-                      color: Theme.of(context).colorScheme.onSecondaryContainer,
-                    ),
-                    Card(
-                      elevation: Dimens.pt4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(Dimens.pt6),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(Dimens.pt6),
-                        child: Image.asset(
-                          Constants.shareImageHintsSecond,
-                          width: imageWidth,
-                          fit: BoxFit.fitWidth,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(Dimens.pt6),
+                          child: _controller.value.isInitialized
+                              ? AspectRatio(
+                                  aspectRatio: _controller.value.aspectRatio,
+                                  child: VideoPlayer(_controller),
+                                )
+                              : Container(),
                         ),
                       ),
                     ),
@@ -92,7 +88,7 @@ class ItemScreenTips extends StatelessWidget {
                     horizontal: Dimens.pt12,
                   ),
                   child: Text(
-                    '''You can select text in the comment before tapping on Share button and the text will be highlighted in resulted screenshot.''',
+                    '''When you find yourself too deep in the thread, you can swipe right on comment to see its ancestor including the root story (or comment).''',
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onSecondaryContainer,
                       fontSize: TextDimens.pt16,
@@ -106,7 +102,7 @@ class ItemScreenTips extends StatelessWidget {
                     TextButton(
                       onPressed: action,
                       child: const Text(
-                        'Interesting',
+                        'Dismiss',
                         style: TextStyle(
                           fontSize: TextDimens.pt16,
                         ),
@@ -115,7 +111,7 @@ class ItemScreenTips extends StatelessWidget {
                     TextButton(
                       onPressed: action,
                       child: const Text(
-                        'Dismiss',
+                        'LGTM',
                         style: TextStyle(
                           fontSize: TextDimens.pt16,
                           fontWeight: FontWeight.bold,

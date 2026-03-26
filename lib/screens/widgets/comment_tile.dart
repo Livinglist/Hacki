@@ -24,6 +24,7 @@ class CommentTile extends StatelessWidget {
     this.onMoreTapped,
     this.onEditTapped,
     this.onRightMoreTapped,
+    this.onUpvoteTapped,
     this.opUsername,
     this.isDev = false,
     this.isActionable = true,
@@ -60,6 +61,7 @@ class CommentTile extends StatelessWidget {
   final void Function(Comment, Rect?)? onMoreTapped;
   final void Function(Comment)? onEditTapped;
   final void Function(Comment)? onRightMoreTapped;
+  final void Function(Comment)? onUpvoteTapped;
 
   /// Override for search screen.
   final VoidCallback? onTap;
@@ -115,7 +117,31 @@ class CommentTile extends StatelessWidget {
                 startActionPane: isActionable
                     ? ActionPane(
                         motion: const StretchMotion(),
+                        dismissible: DismissiblePane(
+                          closeOnCancel: true,
+                          confirmDismiss: () async {
+                            if (onUpvoteTapped != null &&
+                                context.read<AuthBloc>().state.user.id !=
+                                    comment.by) {
+                              onUpvoteTapped?.call(comment);
+                            }
+                            return false;
+                          },
+                          onDismissed: () {},
+                        ),
                         children: <Widget>[
+                          if (onUpvoteTapped != null &&
+                              context.read<AuthBloc>().state.user.id !=
+                                  comment.by)
+                            CustomSlidableAction(
+                              onPressed: (_) => onUpvoteTapped?.call(comment),
+                              backgroundColor: slidableBackgroundColor.$1,
+                              foregroundColor: slidableBackgroundColor.$2,
+                              child: const Icon(
+                                Icons.thumb_up,
+                                size: Dimens.pt24,
+                              ),
+                            ),
                           CustomSlidableAction(
                             onPressed: (_) => onReplyTapped?.call(comment),
                             backgroundColor: slidableBackgroundColor.$1,

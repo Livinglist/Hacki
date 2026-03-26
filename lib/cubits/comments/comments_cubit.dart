@@ -1127,12 +1127,12 @@ comments length is ${state.comments.length}
         final Comment? parent = _previousCommentStates?[comment.parent];
         if (parent == null) {
           comment = comment.copyWith(
-            isNew: true,
+            isNew: !(comment.dead || comment.deleted),
           );
         } else {
           comment = comment.copyWith(
             isHiddenByUser: parent.isCollapsedByUser || parent.isHiddenByUser,
-            isNew: true,
+            isNew: !(comment.dead || comment.deleted),
           );
         }
         _previousCommentStates?[comment.id] = comment;

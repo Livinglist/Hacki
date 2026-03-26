@@ -92,7 +92,6 @@ class TimeMachineDialog extends StatelessWidget {
                           },
                           for (final int i in 0.to(
                             state.ancestors.length,
-                            inclusive: false,
                           )) ...<Widget>[
                             Row(
                               mainAxisSize: MainAxisSize.min,
@@ -112,7 +111,9 @@ class TimeMachineDialog extends StatelessWidget {
                                 ),
                                 Expanded(
                                   child: CommentTile(
-                                    comment: state.ancestors.elementAt(i),
+                                    comment: i == state.ancestors.length
+                                        ? comment
+                                        : state.ancestors.elementAt(i),
                                     isActionable: false,
                                     isCollapsable: false,
                                     fetchMode: FetchMode.eager,

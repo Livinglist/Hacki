@@ -57,7 +57,7 @@ class ShareScreenTips extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(Dimens.pt6),
                         child: Image.asset(
-                          Constants.shareImageHintsFirst,
+                          Constants.shareImageHintsFirstPath,
                           width: imageWidth,
                           fit: BoxFit.fitWidth,
                         ),
@@ -75,7 +75,7 @@ class ShareScreenTips extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(Dimens.pt6),
                         child: Image.asset(
-                          Constants.shareImageHintsSecond,
+                          Constants.shareImageHintsSecondPath,
                           width: imageWidth,
                           fit: BoxFit.fitWidth,
                         ),
@@ -103,7 +103,7 @@ class ShareScreenTips extends StatelessWidget {
                     TextButton(
                       onPressed: action,
                       child: const Text(
-                        'Interesting',
+                        'Dismiss',
                         style: TextStyle(
                           fontSize: TextDimens.pt16,
                         ),
@@ -112,7 +112,7 @@ class ShareScreenTips extends StatelessWidget {
                     TextButton(
                       onPressed: action,
                       child: const Text(
-                        'Dismiss',
+                        'Interesting',
                         style: TextStyle(
                           fontSize: TextDimens.pt16,
                           fontWeight: FontWeight.bold,

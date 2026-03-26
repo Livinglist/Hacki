@@ -183,7 +183,9 @@ class MorePopupMenu extends StatelessWidget {
               ),
               ListTile(
                 leading: Icon(
-                  FeatherIcons.chevronUp,
+                  upvoted
+                      ? Icons.thumb_up_rounded
+                      : Icons.thumb_up_off_alt_outlined,
                   color: upvoted ? Theme.of(context).colorScheme.primary : null,
                 ),
                 title: Text(
@@ -197,7 +199,9 @@ class MorePopupMenu extends StatelessWidget {
               ),
               ListTile(
                 leading: Icon(
-                  FeatherIcons.chevronDown,
+                  downvoted
+                      ? Icons.thumb_down_rounded
+                      : Icons.thumb_down_off_alt_outlined,
                   color:
                       downvoted ? Theme.of(context).colorScheme.primary : null,
                 ),
