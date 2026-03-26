@@ -14,7 +14,7 @@ class ItemScreenTips extends StatefulWidget {
 }
 
 class _ItemScreenTipsState extends State<ItemScreenTips> {
-  late VideoPlayerController _controller;
+  late final VideoPlayerController _controller;
 
   static const double _videoHeightFactor = 0.6;
 
