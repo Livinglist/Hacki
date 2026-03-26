@@ -117,18 +117,6 @@ class CommentTile extends StatelessWidget {
                 startActionPane: isActionable
                     ? ActionPane(
                         motion: const StretchMotion(),
-                        dismissible: DismissiblePane(
-                          closeOnCancel: true,
-                          confirmDismiss: () async {
-                            if (onUpvoteTapped != null &&
-                                context.read<AuthBloc>().state.user.id !=
-                                    comment.by) {
-                              onUpvoteTapped?.call(comment);
-                            }
-                            return false;
-                          },
-                          onDismissed: () {},
-                        ),
                         children: <Widget>[
                           if (onUpvoteTapped != null &&
                               context.read<AuthBloc>().state.user.id !=

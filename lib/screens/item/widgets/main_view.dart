@@ -96,7 +96,10 @@ class MainView extends StatelessWidget {
                         topPadding: topPadding,
                         splitViewEnabled: splitViewEnabled,
                         onMoreTapped: onMoreTapped,
-                        onRightMoreTapped: onRightMoreTapped,
+                        onUpvoteTapped: (Item item) => onUpvoteTapped(
+                          context,
+                          item,
+                        ),
                       );
                     } else if (index == state.comments.length + 1) {
                       if ((state.status == CommentsStatus.allLoaded &&
@@ -178,11 +181,11 @@ class MainView extends StatelessWidget {
     );
   }
 
-  Future<void> onUpvoteTapped(BuildContext context, Comment cmt) async {
+  Future<void> onUpvoteTapped(BuildContext context, Item item) async {
     final AuthBloc authBloc = context.read<AuthBloc>();
     if (authBloc.state.isLoggedIn) {
       final VoteCubit cubit = VoteCubit(
-        item: cmt,
+        item: item,
         authBloc: authBloc,
         shouldInitialize: false,
       );
@@ -242,7 +245,7 @@ class _ParentItemSection extends StatelessWidget {
     required this.topPadding,
     required this.splitViewEnabled,
     required this.onMoreTapped,
-    required this.onRightMoreTapped,
+    required this.onUpvoteTapped,
   });
 
   final TextEditingController commentEditingController;
@@ -252,7 +255,7 @@ class _ParentItemSection extends StatelessWidget {
   final double topPadding;
   final bool splitViewEnabled;
   final void Function(Item item, Rect? rect) onMoreTapped;
-  final ValueChanged<Comment> onRightMoreTapped;
+  final void Function(Item) onUpvoteTapped;
 
   @override
   Widget build(BuildContext context) {
@@ -272,6 +275,18 @@ class _ParentItemSection extends StatelessWidget {
               startActionPane: ActionPane(
                 motion: const BehindMotion(),
                 children: <Widget>[
+                  if (context.read<AuthBloc>().state.user.id != item.by)
+                    CustomSlidableAction(
+                      onPressed: (_) => onUpvoteTapped.call(item),
+                      backgroundColor:
+                          Theme.of(context).colorScheme.primaryContainer,
+                      foregroundColor:
+                          Theme.of(context).colorScheme.onPrimaryContainer,
+                      child: const Icon(
+                        Icons.thumb_up,
+                        size: Dimens.pt24,
+                      ),
+                    ),
                   CustomSlidableAction(
                     onPressed: (_) {
                       HapticFeedbackUtil.light();

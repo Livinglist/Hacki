@@ -67,6 +67,23 @@ class DateTimeShortcutChip extends StatelessWidget {
   })  : label = '+ 30 days',
         _calculator = ((DateTime date) => date.add(const Duration(days: 30)));
 
+  DateTimeShortcutChip.yearAfter({
+    required this.onDateTimeRangeUpdated,
+    required this.startDate,
+    required this.endDate,
+    super.key,
+  })  : label = '+ 1 year',
+        _calculator = ((DateTime date) => date.add(const Duration(days: 365)));
+
+  DateTimeShortcutChip.yearBefore({
+    required this.onDateTimeRangeUpdated,
+    required this.startDate,
+    required this.endDate,
+    super.key,
+  })  : label = '- 1 year',
+        _calculator =
+            ((DateTime date) => date.subtract(const Duration(days: 365)));
+
   final void Function(DateTime, DateTime) onDateTimeRangeUpdated;
   final DateTime? startDate;
   final DateTime? endDate;

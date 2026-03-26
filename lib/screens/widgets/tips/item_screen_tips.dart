@@ -58,9 +58,7 @@ class _ItemScreenTipsState extends State<ItemScreenTips> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                SizedBox(
-                  height: MediaQuery.of(context).padding.top,
-                ),
+                SizedBoxes.pt12,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
@@ -91,7 +89,7 @@ class _ItemScreenTipsState extends State<ItemScreenTips> {
                     horizontal: Dimens.pt12,
                   ),
                   child: Text(
-                    '''When you find yourself too deep in the thread, you can swipe right on comment to see its ancestor including the root story (or comment).''',
+                    '''When you find yourself too deep in a thread, you can swipe right on a comment to see its ancestors including the root story (or comment).''',
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onSecondaryContainer,
                       fontSize: TextDimens.pt16,
