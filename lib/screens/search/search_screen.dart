@@ -104,6 +104,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                       ),
                       controller: refreshController,
                       scrollController: scrollController,
+                      primary: true,
                       onRefresh: () {},
                       onLoading: () {
                         context.read<SearchCubit>().loadMore();
@@ -141,6 +142,29 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                               ),
                               const SizedBox(
                                 height: Dimens.pt6,
+                              ),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: <Widget>[
+                                    const SizedBox(
+                                      width: Dimens.pt8,
+                                    ),
+                                    for (final CustomDateTimeRange range
+                                        in CustomDateTimeRange
+                                            .values) ...<Widget>[
+                                      CustomRangeFilterChip(
+                                        range: range,
+                                        onTap: context
+                                            .read<SearchCubit>()
+                                            .onDateTimeRangeUpdated,
+                                      ),
+                                      const SizedBox(
+                                        width: Dimens.pt8,
+                                      ),
+                                    ],
+                                  ],
+                                ),
                               ),
                               AnimatedCrossFade(
                                 duration: chipsAnimationDuration,
@@ -234,6 +258,20 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                     const SizedBox(
                                       width: Dimens.pt8,
                                     ),
+                                    if (state
+                                        .showDateRangeShortcutChips) ...<Widget>[
+                                      CustomChip(
+                                        onSelected: (_) => context
+                                            .read<SearchCubit>()
+                                            .removeFilter<
+                                                DateTimeRangeFilter>(),
+                                        selected: state.params.exactMatch,
+                                        label: '''remove date range''',
+                                      ),
+                                      const SizedBox(
+                                        width: Dimens.pt8,
+                                      ),
+                                    ],
                                     DateTimeRangeFilterChip(
                                       filter: state.dateFilter,
                                       initialStartDate:
@@ -279,19 +317,6 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                     const SizedBox(
                                       width: Dimens.pt8,
                                     ),
-                                    for (final CustomDateTimeRange range
-                                        in CustomDateTimeRange
-                                            .values) ...<Widget>[
-                                      CustomRangeFilterChip(
-                                        range: range,
-                                        onTap: context
-                                            .read<SearchCubit>()
-                                            .onDateTimeRangeUpdated,
-                                      ),
-                                      const SizedBox(
-                                        width: Dimens.pt8,
-                                      ),
-                                    ],
                                   ],
                                 ),
                               ),
