@@ -402,8 +402,10 @@ class CommentTile extends StatelessWidget {
         );
 
         const Color commentColor = Palette.transparent;
-        final bool isMyComment = comment.deleted == false &&
-            context.read<AuthBloc>().state.username == comment.by;
+        final AuthState authState = context.read<AuthBloc>().state;
+        final bool isMyComment = authState.isLoggedIn &&
+            comment.deleted == false &&
+            authState.username == comment.by;
 
         Widget wrapper = child;
 
