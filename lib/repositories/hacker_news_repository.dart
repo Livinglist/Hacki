@@ -232,7 +232,7 @@ class HackerNewsRepository with Loggable {
       Comment? comment = getFromCache?.call(id)?.copyWith(level: level);
 
       if (comment != null) {
-        logInfo(
+        logDebug(
           '''fetchCommentsStream: fetched ${comment.id} from mem cache.''',
         );
       }
@@ -276,7 +276,7 @@ class HackerNewsRepository with Loggable {
       Comment? comment = getFromCache?.call(id)?.copyWith(level: level);
 
       if (comment != null) {
-        logInfo(
+        logDebug(
           '''fetchAllCommentsRecursivelyStream: fetched ${comment.id} from mem cache.''',
         );
       }
