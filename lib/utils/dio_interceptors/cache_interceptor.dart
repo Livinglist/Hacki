@@ -4,11 +4,35 @@ import 'package:dio/dio.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/dio/cached_response.dart';
+import 'package:hacki/models/models.dart';
+
+class StoryCacheInterceptor extends CacheInterceptor {
+  StoryCacheInterceptor() : super(maxStale: AppDurations.fiveMinutes);
+
+  @override
+  Future<void> onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
+    final String key = options.uri.toString();
+    final bool isNewestUrl = key.contains(StoryType.latest.webPathParam);
+    if (isNewestUrl) {
+      handler.next(options);
+    } else {
+      await super.onRequest(options, handler);
+    }
+  }
+}
 
 class CacheInterceptor extends Interceptor with Loggable {
-  static const Duration _maxStale = AppDurations.threeMinutes;
+  CacheInterceptor({Duration? maxStale})
+      : _maxStale = maxStale ?? _defaultMaxStale;
+
+  static const Duration _defaultMaxStale = AppDurations.threeMinutes;
   static final Map<String, CachedResponse<dynamic>> _cache =
       <String, CachedResponse<dynamic>>{};
+
+  final Duration _maxStale;
 
   @override
   Future<void> onRequest(

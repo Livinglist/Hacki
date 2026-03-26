@@ -33,22 +33,17 @@ class HackerNewsWebRepository with Loggable {
         _dio = dio ?? Dio()
           ..interceptors.addAll(
             <Interceptor>[
-              if (kDebugMode) LoggerInterceptor(),
-              UARotationInterceptor(),
-              RefererInterceptor(),
+              ..._interceptors,
+              StoryCacheInterceptor(),
             ],
           )
           ..options.headers[HttpHeaders.userAgentHeader] =
               Constants.iphoneUserAgent,
-        _dioWithCache = dioWithCache ?? Dio()
-          ..interceptors.addAll(
-            <Interceptor>[
-              if (kDebugMode) LoggerInterceptor(),
-              CacheInterceptor(),
-              UARotationInterceptor(),
-              RefererInterceptor(),
-            ],
-          )
+        _dioForComments = dioWithCache ?? Dio()
+          ..interceptors.addAll(<Interceptor>[
+            ..._interceptors,
+            CacheInterceptor(),
+          ])
           ..options.headers[HttpHeaders.userAgentHeader] =
               Constants.iphoneUserAgent,
         _remoteConfigCubit =
@@ -60,15 +55,21 @@ class HackerNewsWebRepository with Loggable {
       ..httpClientAdapter = IOHttpClientAdapter(
         createHttpClient: () => _httpClient,
       );
-    _dioWithCache.httpClientAdapter = IOHttpClientAdapter(
+    _dioForComments.httpClientAdapter = IOHttpClientAdapter(
       createHttpClient: () => _httpClient,
     );
   }
 
+  static final List<Interceptor> _interceptors = <Interceptor>[
+    if (kDebugMode) LoggerInterceptor(),
+    UARotationInterceptor(),
+    RefererInterceptor(),
+  ];
+
   /// The client for fetching comments. We should be careful
   /// while fetching comments because it will easily trigger
   /// 503 from the server.
-  final Dio _dioWithCache;
+  final Dio _dioForComments;
 
   /// The client for fetching stories.
   final Dio _dio;
@@ -301,7 +302,7 @@ class HackerNewsWebRepository with Loggable {
           '''$_favoritesBaseUrl$username${isComment ? '&comments=t' : ''}&p=$page''',
         );
         final Response<String> response =
-            await (isOnWifi ? _dioWithCache : _dio).getUri<String>(url);
+            await (isOnWifi ? _dioForComments : _dio).getUri<String>(url);
 
         /// Due to rate limiting, we have a short break here.
         await Future<void>.delayed(AppDurations.twoSeconds);
@@ -376,7 +377,7 @@ class HackerNewsWebRepository with Loggable {
 
         /// Be more conservative while user is on wifi.
         final Response<String> response =
-            await (isOnWifi ? _dioWithCache : _dio).getUri<String>(
+            await (isOnWifi ? _dioForComments : _dio).getUri<String>(
           url,
           options: option,
         );

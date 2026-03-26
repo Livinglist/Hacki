@@ -92,7 +92,6 @@ class CollapseStateCacheRepository with Loggable {
       final int storyId = int.parse(parts[0]);
       final int commentId = int.parse(parts[1]);
       final String? jsonString = box.get(key);
-      logDebug('$key: $jsonString');
       if (jsonString != null) {
         final Comment comment = Comment.fromJsonWithCollapsedStateOnly(
           jsonDecode(jsonString) as Map<String, dynamic>,
