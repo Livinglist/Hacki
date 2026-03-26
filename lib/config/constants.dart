@@ -134,4 +134,6 @@ abstract class SnackBarMessages {
       '''No voting on your own post! (;｀O´)o''';
   static const String karmalyBroke =
       '''You can't downvote because you are karmaly broke.''';
+  static const String voteSubmitted = 'Vote submitted.';
+  static const String voteCanceled = 'Vote canceled.';
 }

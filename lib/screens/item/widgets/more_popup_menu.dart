@@ -40,9 +40,9 @@ class MorePopupMenu extends StatelessWidget {
         },
         listener: (BuildContext context, VoteState voteState) {
           if (voteState.status == VoteStatus.submitted) {
-            context.showSnackBar(content: 'Vote submitted.');
+            context.showSnackBar(content: SnackBarMessages.voteSubmitted);
           } else if (voteState.status == VoteStatus.canceled) {
-            context.showSnackBar(content: 'Vote canceled.');
+            context.showSnackBar(content: SnackBarMessages.voteCanceled);
           } else if (voteState.status == VoteStatus.failure) {
             context.showErrorSnackBar();
           } else if (voteState.status ==

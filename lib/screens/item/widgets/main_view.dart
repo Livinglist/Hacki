@@ -189,7 +189,7 @@ class MainView extends StatelessWidget {
       final bool res = await cubit.upvote();
       if (res && context.mounted) {
         context.showSnackBar(
-          content: 'Vote submitted.',
+          content: SnackBarMessages.voteSubmitted,
         );
       }
     } else {
