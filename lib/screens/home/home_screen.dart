@@ -8,7 +8,6 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
-import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/config/paths.dart';
 import 'package:hacki/cubits/cubits.dart';
@@ -46,19 +45,6 @@ class _HomeScreenState extends State<HomeScreen>
   final AppLinks appLinks = AppLinks();
 
   static final int tabLength = StoryType.values.length + 1;
-
-  @override
-  void didPopNext() {
-    super.didPopNext();
-    if (context.read<StoriesBloc>().deviceScreenType ==
-        DeviceScreenType.mobile) {
-      logInfo('resetting comments in CommentCache');
-      Future<void>.delayed(
-        AppDurations.ms500,
-        locator.get<CommentCache>().resetComments,
-      );
-    }
-  }
 
   @override
   void initState() {

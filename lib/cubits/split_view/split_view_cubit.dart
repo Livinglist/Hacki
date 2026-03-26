@@ -38,8 +38,6 @@ class SplitViewCubit extends HydratedCubit<SplitViewState> with Loggable {
   }
 
   void updateItemScreenArgs(ItemScreenArgs args) {
-    logInfo('resetting comments in CommentCache');
-    _commentCache.resetComments();
     emit(state.copyWith(itemScreenArgs: args));
   }
 

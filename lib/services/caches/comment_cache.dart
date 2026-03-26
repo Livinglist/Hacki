@@ -1,11 +1,11 @@
-import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart' show Comment;
 
 class CommentCache {
   static final Map<int, Comment> _comments = <int, Comment>{};
 
   void cacheComment(Comment comment) {
-    if (comment.text.isValidCommentText) {
+    final bool isDelayed = comment.text.trim() == '[delayed]';
+    if (!isDelayed) {
       _comments[comment.id] = comment.copyWithoutCollapseState();
     } else {
       return;
