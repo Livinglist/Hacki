@@ -1125,26 +1125,28 @@ comments length is ${state.comments.length}
       final Comment? prevState = _previousCommentStates?[comment.id];
       final int parentIndex =
           state.comments.indexWhere((Comment c) => c.id == comment?.parent);
-
+      final bool isCommentValid = !(comment.dead || comment.deleted);
       if (parentIndex > -1) {
         final Comment parent = state.comments.elementAt(parentIndex);
 
         comment = comment.copyWith(
           isCollapsedByUser: prevState?.isCollapsedByUser,
           isHiddenByUser: parent.isHiddenByUser || parent.isCollapsedByUser,
-          isNew: _previousCommentStates != null && prevState == null,
+          isNew: isCommentValid &&
+              _previousCommentStates != null &&
+              prevState == null,
         );
       } else if ((_previousCommentStates?.isNotEmpty ?? false) &&
           prevState == null) {
         final Comment? parent = _previousCommentStates?[comment.parent];
         if (parent == null) {
           comment = comment.copyWith(
-            isNew: !(comment.dead || comment.deleted),
+            isNew: isCommentValid,
           );
         } else {
           comment = comment.copyWith(
             isHiddenByUser: parent.isCollapsedByUser || parent.isHiddenByUser,
-            isNew: !(comment.dead || comment.deleted),
+            isNew: isCommentValid,
           );
         }
         _previousCommentStates?[comment.id] = comment;
