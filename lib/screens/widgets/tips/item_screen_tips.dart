@@ -16,6 +16,8 @@ class ItemScreenTips extends StatefulWidget {
 class _ItemScreenTipsState extends State<ItemScreenTips> {
   late VideoPlayerController _controller;
 
+  static const double _videoHeightFactor = 0.6;
+
   @override
   void initState() {
     super.initState();
@@ -63,7 +65,8 @@ class _ItemScreenTipsState extends State<ItemScreenTips> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.6,
+                      height: MediaQuery.of(context).size.height *
+                          _videoHeightFactor,
                       child: Card(
                         elevation: Dimens.pt4,
                         shape: RoundedRectangleBorder(
