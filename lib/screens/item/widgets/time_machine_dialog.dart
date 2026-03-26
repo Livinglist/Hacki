@@ -39,7 +39,6 @@ class TimeMachineDialog extends StatelessWidget {
               ),
               child: Padding(
                 padding: const EdgeInsets.only(
-                  left: Dimens.pt4,
                   right: Dimens.pt4,
                 ),
                 child: Column(
@@ -68,12 +67,6 @@ class TimeMachineDialog extends StatelessWidget {
                       child: ListView(
                         children: <Widget>[
                           switch (rootItem) {
-                            Comment() => CommentTile(
-                                comment: rootItem as Comment,
-                                isActionable: false,
-                                isCollapsable: false,
-                                fetchMode: FetchMode.eager,
-                              ),
                             Story() => StoryTile(
                                 shouldShowWebPreview: false,
                                 shouldShowPreviewImage: false,
@@ -88,7 +81,7 @@ class TimeMachineDialog extends StatelessWidget {
                                 story: rootItem as Story,
                                 onTap: () {},
                               ),
-                            Item() => const SizedBox.shrink(),
+                            Comment() || Item() => const SizedBox.shrink(),
                           },
                           for (final int i in 0.to(
                             state.ancestors.length,
@@ -98,16 +91,16 @@ class TimeMachineDialog extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 for (final int _ in 0.to(i, inclusive: false))
-                                  SizedBoxes.pt4,
-                                const Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    SizedBoxes.pt4,
-                                    Icon(
-                                      Icons.subdirectory_arrow_right_rounded,
-                                      size: TextDimens.pt18,
-                                    ),
-                                  ],
+                                  SizedBoxes.pt6,
+                                const Padding(
+                                  padding: EdgeInsets.only(
+                                    top: Dimens.pt6,
+                                    left: Dimens.pt6,
+                                  ),
+                                  child: Icon(
+                                    Icons.subdirectory_arrow_right_rounded,
+                                    size: TextDimens.pt18,
+                                  ),
                                 ),
                                 Expanded(
                                   child: CommentTile(
