@@ -26,3 +26,4 @@ export 'spring_curve.dart';
 export 'stories_list_view.dart';
 export 'story_tile.dart';
 export 'tap_down_wrapper.dart';
+export 'tips/tips.dart';

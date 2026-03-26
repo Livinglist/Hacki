@@ -17,5 +17,6 @@ export 'split_view/split_view_cubit.dart';
 export 'submit/submit_cubit.dart';
 export 'tab/tab_cubit.dart';
 export 'time_machine/time_machine_cubit.dart';
+export 'tips/tips_cubit.dart';
 export 'user/user_cubit.dart';
 export 'vote/vote_cubit.dart';

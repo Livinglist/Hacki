@@ -95,7 +95,7 @@ class ItemText extends StatelessWidget {
         );
       } else {
         return InkWell(
-          child: Linkify(
+          child: SelectableLinkify(
             text: item.text,
             textScaler: textScaler,
             style: style,
@@ -103,6 +103,15 @@ class ItemText extends StatelessWidget {
             onOpen: (LinkableElement link) => LinkUtil.launch(
               link.url,
               context,
+            ),
+            contextMenuBuilder: (
+              BuildContext context,
+              EditableTextState editableTextState,
+            ) =>
+                contextMenuBuilder(
+              context,
+              editableTextState,
+              item: item,
             ),
           ),
         );

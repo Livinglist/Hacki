@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
+import 'package:hacki/screens/widgets/tips/item_screen_tips.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 
@@ -20,6 +23,14 @@ class CustomAppBar extends AppBar {
   }) : super(
           elevation: Dimens.zero,
           actions: <Widget>[
+            BlocBuilder<TipsCubit, TipsState>(
+              builder: (BuildContext context, TipsState state) {
+                if (state.isTipsCompleted(Tips.itemScreen)) {
+                  return const SizedBox.shrink();
+                }
+                return const ItemScreenTips();
+              },
+            ),
             if (splitViewEnabled) ...<Widget>[
               IconButton(
                 icon: Icon(

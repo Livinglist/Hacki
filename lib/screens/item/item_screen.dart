@@ -18,7 +18,6 @@ import 'package:hacki/screens/widgets/download_progress_reminder.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
-import 'package:responsive_builder/responsive_builder.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class ItemScreenArgs extends Equatable {
@@ -299,7 +298,11 @@ class _ItemScreenState extends State<ItemScreen>
                               rect,
                               parent: item,
                             ),
-                            onRightMoreTapped: onRightMoreTapped,
+                            onRightMoreTapped: (Comment cmt) =>
+                                onRightMoreTapped(
+                              cmt,
+                              context.read<CommentsCubit>().state.item,
+                            ),
                             shouldMarkNewComment: widget.shouldMarkNewComment,
                           ),
                         ),
@@ -341,7 +344,7 @@ class _ItemScreenState extends State<ItemScreen>
                           const Positioned(
                             right: Dimens.pt12,
                             bottom: Dimens.pt36,
-                            child: CustomFloatingActionButton(),
+                            child: FloatingSkipButtons(),
                           ),
                         Positioned(
                           bottom: Dimens.zero,
@@ -390,7 +393,11 @@ class _ItemScreenState extends State<ItemScreen>
                               rect,
                               parent: widget.item,
                             ),
-                            onRightMoreTapped: onRightMoreTapped,
+                            onRightMoreTapped: (Comment cmt) =>
+                                onRightMoreTapped(
+                              cmt,
+                              context.read<CommentsCubit>().state.item,
+                            ),
                             shouldMarkNewComment: widget.shouldMarkNewComment,
                           ),
                         ),
@@ -401,7 +408,7 @@ class _ItemScreenState extends State<ItemScreen>
                           const Positioned(
                             right: Dimens.pt12,
                             bottom: Dimens.pt48,
-                            child: CustomFloatingActionButton(),
+                            child: FloatingSkipButtons(),
                           ),
                       ],
                     ),
@@ -475,7 +482,10 @@ class _ItemScreenState extends State<ItemScreen>
     );
   }
 
-  void onRightMoreTapped(Comment comment) {
+  void onRightMoreTapped(
+    Comment comment,
+    Item rootItem,
+  ) {
     HapticFeedbackUtil.light();
     showModalBottomSheet<void>(
       context: context,
@@ -489,7 +499,11 @@ class _ItemScreenState extends State<ItemScreen>
                 title: const Text('View ancestors'),
                 onTap: () {
                   context.pop();
-                  onTimeMachineActivated(comment);
+                  DialogProxy.showTimeMachineDialog(
+                    context,
+                    rootItem: rootItem,
+                    comment: comment,
+                  );
                 },
                 enabled:
                     comment.level > 0 && !(comment.dead || comment.deleted),
@@ -512,24 +526,6 @@ class _ItemScreenState extends State<ItemScreen>
               ),
             ],
           ),
-        );
-      },
-    );
-  }
-
-  void onTimeMachineActivated(Comment comment) {
-    final Size size = MediaQuery.of(context).size;
-    final DeviceScreenType deviceType = getDeviceType(size);
-    final double widthFactor =
-        deviceType != DeviceScreenType.mobile ? 0.6 : 0.9;
-    showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return TimeMachineDialog(
-          comment: comment,
-          size: size,
-          deviceType: deviceType,
-          widthFactor: widthFactor,
         );
       },
     );

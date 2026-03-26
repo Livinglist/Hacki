@@ -2,24 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
-import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:hacki/screens/widgets/comment_tile.dart';
+import 'package:hacki/screens/widgets/story_tile.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 class TimeMachineDialog extends StatelessWidget {
   const TimeMachineDialog({
     required this.comment,
-    required this.size,
+    required this.rootItem,
     required this.deviceType,
-    required this.widthFactor,
     super.key,
   });
 
   final Comment comment;
-  final Size size;
+  final Item rootItem;
   final DeviceScreenType deviceType;
-  final double widthFactor;
 
   @override
   Widget build(BuildContext context) {
@@ -27,61 +27,107 @@ class TimeMachineDialog extends StatelessWidget {
       value: TimeMachineCubit()..activateTimeMachine(comment),
       child: BlocBuilder<TimeMachineCubit, TimeMachineState>(
         builder: (BuildContext context, TimeMachineState state) {
-          return Center(
-            child: Material(
-              color: Theme.of(context).canvasColor,
-              borderRadius: const BorderRadius.all(
-                Radius.circular(
-                  Dimens.pt4,
-                ),
-              ),
-              child: SizedBox(
-                height: size.height * 0.8,
-                width: size.width * widthFactor,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: Dimens.pt8,
-                    vertical: Dimens.pt12,
+          return Material(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(
+                    Dimens.pt4,
                   ),
-                  child: Column(
-                    children: <Widget>[
-                      Row(
+                ),
+                color: Theme.of(context).colorScheme.surfaceContainerHigh,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  left: Dimens.pt4,
+                  right: Dimens.pt4,
+                ),
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        const SizedBox(
+                          width: Dimens.pt8,
+                        ),
+                        Text(
+                          'Ancestors:',
+                          style: TextTheme.of(context).titleMedium,
+                        ),
+                        const Spacer(),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.close,
+                            size: Dimens.pt24,
+                          ),
+                          onPressed: () => context.pop(),
+                          padding: EdgeInsets.zero,
+                        ),
+                      ],
+                    ),
+                    Expanded(
+                      child: ListView(
                         children: <Widget>[
-                          const SizedBox(
-                            width: Dimens.pt8,
-                          ),
-                          const Text('Ancestors:'),
-                          const Spacer(),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.close,
-                              size: Dimens.pt16,
-                            ),
-                            onPressed: () => context.pop(),
-                            padding: EdgeInsets.zero,
-                          ),
-                        ],
-                      ),
-                      Expanded(
-                        child: ListView(
-                          children: <Widget>[
-                            for (final Comment c
-                                in state.ancestors) ...<Widget>[
-                              CommentTile(
-                                comment: c,
+                          switch (rootItem) {
+                            Comment() => CommentTile(
+                                comment: rootItem as Comment,
                                 isActionable: false,
                                 isCollapsable: false,
                                 fetchMode: FetchMode.eager,
                               ),
-                              const Divider(
-                                height: Dimens.zero,
+                            Story() => StoryTile(
+                                shouldShowWebPreview: false,
+                                shouldShowPreviewImage: false,
+                                shouldShowMetadata: true,
+                                shouldShowFavicon: true,
+                                shouldShowUrl: true,
+                                isExpandedTileEnabled: false,
+                                isImageLeftAligned: context
+                                    .read<PreferenceCubit>()
+                                    .state
+                                    .isPreviewImageLeftAligned,
+                                story: rootItem as Story,
+                                onTap: () {},
                               ),
-                            ],
+                            Item() => const SizedBox.shrink(),
+                          },
+                          for (final int i in 0.to(
+                            state.ancestors.length,
+                            inclusive: false,
+                          )) ...<Widget>[
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                for (final int _ in 0.to(i, inclusive: false))
+                                  SizedBoxes.pt4,
+                                const Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    SizedBoxes.pt4,
+                                    Icon(
+                                      Icons.subdirectory_arrow_right_rounded,
+                                      size: TextDimens.pt18,
+                                    ),
+                                  ],
+                                ),
+                                Expanded(
+                                  child: CommentTile(
+                                    comment: state.ancestors.elementAt(i),
+                                    isActionable: false,
+                                    isCollapsable: false,
+                                    fetchMode: FetchMode.eager,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const Divider(
+                              height: Dimens.zero,
+                            ),
                           ],
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),

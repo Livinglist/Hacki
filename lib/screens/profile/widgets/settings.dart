@@ -468,6 +468,10 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                     ),
                     onTap: showClearCacheDialog,
                   ),
+                  ListTile(
+                    title: const Text('Restore Default Settings'),
+                    onTap: showRestoreDefaultSettingsDialog,
+                  ),
                   if (preferenceState.isDevModeEnabled) ...<Widget>[
                     ListTile(
                       title: const Text(
@@ -490,11 +494,16 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                         );
                       },
                     ),
+                    ListTile(
+                      title: const Text(
+                        'Reset Tips',
+                      ),
+                      onTap: () {
+                        HapticFeedbackUtil.light();
+                        context.read<TipsCubit>().reset();
+                      },
+                    ),
                   ],
-                  ListTile(
-                    title: const Text('Restore Default Settings'),
-                    onTap: showRestoreDefaultSettingsDialog,
-                  ),
                   const Divider(),
                   ListTile(
                     title: const Text('Rate Hacki : )'),

@@ -286,6 +286,7 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                       fetchMode: FetchMode.lazy,
                       isActionable: false,
                       isCollapsable: false,
+                      isSelectable: false,
                       shouldHighlightNewComments: context
                           .read<PreferenceCubit>()
                           .state

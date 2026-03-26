@@ -2,6 +2,7 @@ export 'app_lifecycle_service.dart';
 export 'app_review_service.dart';
 export 'caches/caches.dart';
 export 'custom_bloc_observer.dart';
+export 'dialog_proxy.dart';
 export 'fetcher.dart';
 export 'firebase_client.dart';
 export 'image_ratio_provider.dart';

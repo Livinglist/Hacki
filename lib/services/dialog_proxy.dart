@@ -4,11 +4,46 @@ import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/stories/stories_bloc.dart';
 import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/models/item/item.dart';
+import 'package:hacki/screens/item/widgets/time_machine_dialog.dart';
 import 'package:hacki/services/services.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/haptic_feedback_util.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-abstract class DialogProxy {
+abstract final class DialogProxy {
+  static void showTimeMachineDialog(
+    BuildContext context, {
+    required Item rootItem,
+    required Comment comment,
+  }) {
+    final Size size = MediaQuery.of(context).size;
+    final DeviceScreenType deviceType = getDeviceType(size);
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: MediaQuery.of(context).size.height - Dimens.pt120,
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: TimeMachineDialog(
+                  comment: comment,
+                  rootItem: rootItem,
+                  deviceType: deviceType,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   static void showAbortDownloadDialog([BuildContext? context]) {
     context ??= navigatorKey.currentContext;
     if (context == null) return;

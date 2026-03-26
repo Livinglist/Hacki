@@ -19,7 +19,6 @@ import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/home/widgets/widgets.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
-import 'package:hacki/services/dialog_proxy.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';

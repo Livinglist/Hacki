@@ -9,8 +9,8 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 
-class CustomFloatingActionButton extends StatelessWidget {
-  const CustomFloatingActionButton({
+class FloatingSkipButtons extends StatelessWidget {
+  const FloatingSkipButtons({
     super.key,
   });
 

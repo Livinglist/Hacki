@@ -236,6 +236,9 @@ class HackiApp extends StatelessWidget {
             preferenceCubit: context.read<PreferenceCubit>(),
           ),
         ),
+        BlocProvider<TipsCubit>(
+          create: (BuildContext context) => TipsCubit(),
+        ),
       ],
       child: BlocConsumer<PreferenceCubit, PreferenceState>(
         listenWhen: (PreferenceState previous, PreferenceState current) =>

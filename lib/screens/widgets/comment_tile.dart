@@ -10,6 +10,7 @@ import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/item/widgets/lazy_fetch_load_button.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/haptic_feedback_util.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -110,6 +111,7 @@ class CommentTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Slidable(
+                key: ValueKey<String>('comment_tile_slidable_${comment.id}'),
                 startActionPane: isActionable
                     ? ActionPane(
                         motion: const StretchMotion(),
@@ -153,6 +155,20 @@ class CommentTile extends StatelessWidget {
                 endActionPane: isActionable
                     ? ActionPane(
                         motion: const StretchMotion(),
+                        dismissible: DismissiblePane(
+                          closeOnCancel: true,
+                          confirmDismiss: () async {
+                            if (level == 0) return false;
+                            DialogProxy.showTimeMachineDialog(
+                              context,
+                              rootItem:
+                                  context.read<CommentsCubit>().state.item,
+                              comment: comment,
+                            );
+                            return false;
+                          },
+                          onDismissed: () {},
+                        ),
                         children: <Widget>[
                           CustomSlidableAction(
                             onPressed: (_) => onRightMoreTapped?.call(comment),
