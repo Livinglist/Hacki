@@ -8,7 +8,7 @@ import 'package:hacki/styles/styles.dart';
 class ShareScreenTips extends StatelessWidget {
   const ShareScreenTips({super.key});
 
-  static const double _maxFeatureHintsImageWidth = 200;
+  static const double _maxFeatureHintsImageWidth = 300;
 
   @override
   Widget build(BuildContext context) {
