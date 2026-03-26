@@ -23,14 +23,6 @@ class CustomAppBar extends AppBar {
   }) : super(
           elevation: Dimens.zero,
           actions: <Widget>[
-            BlocBuilder<TipsCubit, TipsState>(
-              builder: (BuildContext context, TipsState state) {
-                if (state.isTipsCompleted(Tips.itemScreen)) {
-                  return const SizedBox.shrink();
-                }
-                return const ItemScreenTips();
-              },
-            ),
             if (splitViewEnabled) ...<Widget>[
               IconButton(
                 icon: Icon(
@@ -47,6 +39,14 @@ class CustomAppBar extends AppBar {
               ),
               const Spacer(),
             ],
+            BlocBuilder<TipsCubit, TipsState>(
+              builder: (BuildContext context, TipsState state) {
+                if (state.isTipsCompleted(Tips.itemScreen)) {
+                  return const SizedBox.shrink();
+                }
+                return const ItemScreenTips();
+              },
+            ),
             const InThreadSearchIconButton(),
             IconButton(
               key: fontSizeIconButtonKey,
