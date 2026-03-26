@@ -246,7 +246,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       bool shouldPrioritizeCache = false;
 
       /// If there is a cached story and the descendants is same as that of
-      /// the updated item. Fetch from cache instead.
+      /// the updated item, fetch from cache instead.
       if (cachedStory != null &&
           cachedStory.descendants == updatedItem.descendants) {
         logInfo('no updates in story, prioritizing cache fetching.');
