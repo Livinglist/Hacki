@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/blocs/auth/auth_bloc.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
@@ -72,20 +73,19 @@ class _PollViewState extends State<PollView> with ItemActionMixin {
                       } else if (voteState.status ==
                           VoteStatus.failureKarmaBelowThreshold) {
                         showSnackBar(
-                          content: "You can't downvote because"
-                              ' you are karmaly broke.',
+                          content: SnackBarMessages.karmalyBroke,
                         );
                       } else if (voteState.status ==
                           VoteStatus.failureNotLoggedIn) {
                         showSnackBar(
-                          content: 'Not logged in, no voting! (;｀O´)o',
+                          content: SnackBarMessages.notLoggedInNoVoting,
                           action: onLoginTapped,
                           label: 'Log in',
                         );
                       } else if (voteState.status ==
                           VoteStatus.failureBeHumble) {
                         showSnackBar(
-                          content: 'No voting on your own post! (;｀O´)o',
+                          content: SnackBarMessages.noVotingOnYourOwnComment,
                         );
                       }
                     },

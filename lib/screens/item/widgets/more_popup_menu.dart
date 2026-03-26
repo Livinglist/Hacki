@@ -48,17 +48,17 @@ class MorePopupMenu extends StatelessWidget {
           } else if (voteState.status ==
               VoteStatus.failureKarmaBelowThreshold) {
             context.showSnackBar(
-              content: "You can't downvote because you are karmaly broke.",
+              content: SnackBarMessages.karmalyBroke,
             );
           } else if (voteState.status == VoteStatus.failureNotLoggedIn) {
             context.showSnackBar(
-              content: 'Not logged in, no voting! (;｀O´)o',
+              content: SnackBarMessages.notLoggedInNoVoting,
               action: onLoginTapped,
               label: 'Log in',
             );
           } else if (voteState.status == VoteStatus.failureBeHumble) {
             context.showSnackBar(
-              content: 'No voting on your own post! (;｀O´)o',
+              content: SnackBarMessages.noVotingOnYourOwnComment,
             );
           }
 

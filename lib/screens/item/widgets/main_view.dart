@@ -195,7 +195,7 @@ class MainView extends StatelessWidget {
     } else {
       HapticFeedbackUtil.error();
       context.showSnackBar(
-        content: 'Not logged in, no voting! (;｀O´)o',
+        content: SnackBarMessages.notLoggedInNoVoting,
         action: () {
           showDialog<void>(
             context: context,

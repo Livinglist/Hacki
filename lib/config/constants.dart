@@ -126,3 +126,12 @@ abstract class HeroTags {
   static const String progressReminderTextHeroTag =
       'mobile_download_progress_reminder_text';
 }
+
+abstract class SnackBarMessages {
+  static const String notLoggedInNoVoting =
+      '''Not logged in, no voting! (;｀O´)o''';
+  static const String noVotingOnYourOwnComment =
+      '''No voting on your own post! (;｀O´)o''';
+  static const String karmalyBroke =
+      '''You can't downvote because you are karmaly broke.''';
+}
