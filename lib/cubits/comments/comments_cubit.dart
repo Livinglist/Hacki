@@ -245,20 +245,16 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
           item is Story ? _globalIdToStoryCache[item.id] : null;
       bool shouldPrioritizeCache = false;
 
-      /// If there is a cached story, then it means the user has seen this story
-      /// before, then we should first try fetching comments from the memory.
-      ///
-      /// But if the difference between previous and current descendants
-      /// is greater than 20, then we should fetch from web or API instead.
-      const int maxDescendantsDiff = 20;
-      final int descendantsDiff = cachedStory == null
-          ? 0
-          : updatedItem.descendants - cachedStory.descendants;
-      if (cachedStory != null && descendantsDiff <= maxDescendantsDiff) {
-        logInfo('difference is $descendantsDiff, prioritizing cache fetching.');
+      /// If there is a cached story and the descendants is same as that of
+      /// the updated item. Fetch from cache instead.
+      if (cachedStory != null &&
+          cachedStory.descendants == updatedItem.descendants) {
+        logInfo('no updates in story, prioritizing cache fetching.');
         shouldPrioritizeCache = true;
       } else if (updatedItem is Story) {
-        logInfo('first time visiting ${item.id}.');
+        logInfo(
+          '''first time visiting or updates in story, fetching from remote source.''',
+        );
         _globalIdToStoryCache[item.id] = updatedItem;
       }
 
