@@ -293,10 +293,6 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                                     DateTimeRangeFilter>(),
                                             selected: false,
                                             label: '''reset''',
-                                            widget: const Icon(
-                                              Icons.close,
-                                              size: Dimens.pt18,
-                                            ),
                                           ),
                                           const SizedBox(
                                             width: Dimens.pt8,
