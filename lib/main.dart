@@ -176,7 +176,7 @@ class HackiApp extends StatelessWidget {
             preferenceCubit: context.read<PreferenceCubit>(),
             filterCubit: context.read<FilterCubit>(),
             hideCubit: context.read<HideCubit>(),
-          )..add(StoriesInitialize(startup: true)),
+          ),
         ),
         BlocProvider<AuthBloc>(
           lazy: false,

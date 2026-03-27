@@ -59,6 +59,16 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     on<ClearAllReadStories>(onClearAllReadStories);
     on<UpdateMaxOfflineStoriesCount>(onUpdateMaxOfflineStoriesCount);
     on<ClearMaxOfflineStoriesCount>(onClearMaxOfflineStoriesCount);
+
+    _preferenceStatusSubscription ??= _preferenceCubit.stream
+        .map((PreferenceState s) => s.status)
+        .distinct()
+        .listen((Status status) {
+      if (status.isSuccessful) {
+        add(StoriesInitialize(startup: true));
+        _preferenceStatusSubscription?.cancel();
+      }
+    });
   }
 
   final PreferenceCubit _preferenceCubit;
@@ -70,6 +80,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
   final PreferenceRepository _preferenceRepository;
   DeviceScreenType? deviceScreenType;
   StreamSubscription<PreferenceState>? _preferenceSubscription;
+  StreamSubscription<Status>? _preferenceStatusSubscription;
+
   static const int _pageSize = 30;
 
   Future<void> onInitialize(
@@ -77,7 +89,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     Emitter<StoriesState> emit,
   ) async {
     final HackerNewsDataSource dataSource = _preferenceCubit.state.dataSource;
-    logInfo('data source: $dataSource');
+    logInfo('initializing stories from data source: $dataSource');
+    logInfo('is starting up? ${event.startup}');
 
     final int? downloadTimestamp = await _getDownloadTimestamp();
 

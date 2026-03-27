@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
@@ -22,15 +23,9 @@ class TabCubit extends Cubit<TabState> with Loggable {
   void init() {
     _tabsSubscription = _preferenceCubit.stream
         .map((PreferenceState s) => s.tabs)
-        .distinct(
-          (List<StoryType> previous, List<StoryType> current) =>
-              previous == current,
-        )
+        .distinct(listEquals)
         .listen((List<StoryType> tabs) {
-      final List<StoryType> tabs = _preferenceCubit.state.tabs;
-
       logInfo('updating tabs to $tabs');
-
       emit(state.copyWith(tabs: tabs));
     });
   }
@@ -43,9 +38,6 @@ class TabCubit extends Cubit<TabState> with Loggable {
     final List<StoryType> updatedTabs = List<StoryType>.from(state.tabs)
       ..insert(endIndex, tab)
       ..removeAt(startIndex < endIndex ? startIndex : startIndex + 1);
-
-    logInfo('updating tabs to $updatedTabs');
-    emit(state.copyWith(tabs: updatedTabs));
 
     // Check to make sure there's no duplicate.
     if (updatedTabs.toSet().length == StoryType.values.length) {

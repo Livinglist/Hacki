@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -15,17 +17,18 @@ class PreferenceCubit extends Cubit<PreferenceState> with Loggable {
   })  : _preferenceRepository =
             preferenceRepository ?? locator.get<PreferenceRepository>(),
         super(PreferenceState.init()) {
-    init();
+    unawaited(init());
   }
 
   final PreferenceRepository _preferenceRepository;
 
-  void init() {
+  Future<void> init() async {
+    logInfo('initializing preferences.');
     emit(state.copyWith(status: Status.inProgress));
 
     for (final BooleanPreference p
         in Preference.allPreferences.whereType<BooleanPreference>()) {
-      initPreference<bool>(p).then<bool?>((bool? value) {
+      await initPreference<bool>(p).then<bool?>((bool? value) {
         final Preference<dynamic> updatedPreference = p.copyWith(val: value);
         emit(state.copyWithPreference(updatedPreference));
         return null;
@@ -34,24 +37,23 @@ class PreferenceCubit extends Cubit<PreferenceState> with Loggable {
 
     for (final IntPreference p
         in Preference.allPreferences.whereType<IntPreference>()) {
-      initPreference<int>(p).then<int?>((int? value) {
+      await initPreference<int>(p).then<int?>((int? value) {
         final Preference<dynamic> updatedPreference = p.copyWith(val: value);
         emit(state.copyWithPreference(updatedPreference));
-
         return null;
       });
     }
 
     for (final DoublePreference p
         in Preference.allPreferences.whereType<DoublePreference>()) {
-      initPreference<double>(p).then<double?>((double? value) {
+      await initPreference<double>(p).then<double?>((double? value) {
         final Preference<dynamic> updatedPreference = p.copyWith(val: value);
         emit(state.copyWithPreference(updatedPreference));
-
         return null;
       });
     }
 
+    logInfo('preferences initialization completed.');
     emit(state.copyWith(status: Status.success));
   }
 

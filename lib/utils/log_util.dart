@@ -8,8 +8,7 @@ import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
 abstract class LogUtil {
-  static LogPrinter get logPrinter =>
-      kReleaseMode ? SimpleLogPrinter() : prettyPrinter;
+  static LogPrinter get logPrinter => SimpleLogPrinter();
 
   static LogPrinter get prettyPrinter => PrettyPrinter(
         dateTimeFormat: DateTimeFormat.dateAndTime,
