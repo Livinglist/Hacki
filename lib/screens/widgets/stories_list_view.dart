@@ -104,9 +104,17 @@ class _StoriesListViewState extends State<StoriesListView>
               items: state.storiesByType[storyType]!,
               onRefresh: () {
                 HapticFeedbackUtil.light();
-                context
-                    .read<StoriesBloc>()
-                    .add(StoriesRefresh(type: storyType));
+
+                if (state.statusByType[storyType] != Status.inProgress) {
+                  context
+                      .read<StoriesBloc>()
+                      .add(StoriesRefresh(type: storyType));
+                } else {
+                  refreshController
+                    ..refreshCompleted(resetFooterState: true)
+                    ..loadComplete();
+                }
+
                 context.read<PinCubit>().refresh();
               },
               onLoadMore: () {

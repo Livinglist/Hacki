@@ -156,15 +156,13 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
             .copyWithStatusUpdated(type: type, to: Status.inProgress),
       );
 
-      await _hackerNewsRepository
+      _hackerNewsRepository
           .fetchStoriesStream(
-        ids: ids.sublist(0, min(_pageSize, ids.length)),
-        sequential: true,
-      )
-          .listen((Story story) {
-        add(StoryLoaded(story: story, type: type));
-      }).asFuture<void>();
-      add(StoryLoadingCompleted(type: type));
+            ids: ids.sublist(0, min(_pageSize, ids.length)),
+            sequential: true,
+          )
+          .listen((Story story) => add(StoryLoaded(story: story, type: type)))
+          .onDone(() => add(StoryLoadingCompleted(type: type)));
     } else {
       logInfo('($type) loading stories from web.');
       emit(
@@ -173,7 +171,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
             .copyWithStatusUpdated(type: type, to: Status.inProgress),
       );
 
-      await _hackerNewsWebRepository
+      _hackerNewsWebRepository
           .fetchStoriesStream(event.type, page: 1)
           .handleError((dynamic e) {
         logError('($type) error loading stories from web $e');
@@ -190,8 +188,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         } else {
           add(StoryLoaded(story: story, type: type));
         }
-      }).asFuture<void>();
-      add(StoryLoadingCompleted(type: type));
+      }).onDone(() => add(StoryLoadingCompleted(type: type)));
     }
   }
 
@@ -327,6 +324,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     Emitter<StoriesState> emit,
   ) async {
     if (event is StoryLoadingCompleted) {
+      logInfo('loading of ${event.type} stories completed.');
       emit(
         state.copyWithStatusUpdated(type: event.type, to: Status.success),
       );
