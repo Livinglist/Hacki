@@ -53,12 +53,20 @@ class VoteCubit extends Cubit<VoteState> {
 
   Future<bool> upvote({bool cancelIfVoted = true}) async {
     if (!_authBloc.state.isLoggedIn) {
+      HapticFeedbackUtil.error();
       emit(state.copyWith(status: VoteStatus.failureNotLoggedIn));
       return false;
     }
 
     if (state.item.by == _authBloc.state.username) {
+      HapticFeedbackUtil.error();
       emit(state.copyWith(status: VoteStatus.failureBeHumble));
+      return false;
+    }
+
+    if (state.item.dead || state.item.deleted) {
+      HapticFeedbackUtil.error();
+      emit(state.copyWith(status: VoteStatus.failure));
       return false;
     }
 
