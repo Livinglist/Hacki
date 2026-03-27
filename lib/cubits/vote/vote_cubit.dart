@@ -64,7 +64,7 @@ class VoteCubit extends Cubit<VoteState> {
       return false;
     }
 
-    if (state.item.dead || state.item.deleted) {
+    if (state.item.dead || state.item.deleted || state.item.by.isEmpty) {
       HapticFeedbackUtil.error();
       emit(state.copyWith(status: VoteStatus.failure));
       return false;
