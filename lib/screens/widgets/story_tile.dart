@@ -349,12 +349,12 @@ class _LinkPreviewPlaceholder extends StatelessWidget {
                       ? EdgeInsets.only(
                           left:
                               shouldShowPreviewImage ? Dimens.pt4 : Dimens.zero,
-                          top: Dimens.pt6,
+                          top: Dimens.pt5,
                         )
                       : EdgeInsets.only(
                           right:
                               shouldShowPreviewImage ? Dimens.pt4 : Dimens.zero,
-                          top: Dimens.pt6,
+                          top: Dimens.pt5,
                         ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
