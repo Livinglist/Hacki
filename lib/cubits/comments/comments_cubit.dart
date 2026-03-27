@@ -348,11 +348,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     bool fetchFromWeb = true,
   }) async {
     if (state.isOfflineReading) {
-      emit(
-        state.copyWith(
-          status: CommentsStatus.allLoaded,
-        ),
-      );
+      emit(state.copyWith(status: CommentsStatus.allLoaded));
       return;
     } else if (state.status == CommentsStatus.inProgress) {
       return;
@@ -361,11 +357,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     /// Preserve collapse state.
     _preserveCollapseState();
 
-    emit(
-      state.copyWith(
-        status: CommentsStatus.inProgress,
-      ),
-    );
+    emit(state.copyWith(status: CommentsStatus.inProgress));
 
     final Item item = state.item;
     final Item updatedItem =
@@ -373,11 +365,18 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
     /// If descendants has not changed, abort fetching.
     if (item is Story && item.descendants == updatedItem.descendants) {
-      emit(
-        state.copyWith(
-          status: CommentsStatus.allLoaded,
-        ),
-      );
+      if (hasNewComment) {
+        final List<Comment> updatedComments = <Comment>[];
+        for (final Comment cmt in state.comments) {
+          updatedComments.add(
+            cmt.copyWith(isNew: false),
+          );
+        }
+
+        emit(state.copyWith(comments: updatedComments));
+      }
+
+      emit(state.copyWith(status: CommentsStatus.allLoaded));
       return;
     }
 
