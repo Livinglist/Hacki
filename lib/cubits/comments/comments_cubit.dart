@@ -710,11 +710,11 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     final List<int> kids = _sortKids(item.kids);
     final Stream<Comment> commentStream =
         _commentCache.getCommentsStream(ids: kids);
-    _streamSubscription = commentStream
-        .asyncMap(_toBuildableComment)
-        .whereNotNull()
-        .listen(_onCommentFetched)
-      ..onDone(_onDone);
+    _streamSubscription =
+        commentStream.asyncMap(_toBuildableComment).whereNotNull().listen(
+              (BuildableComment cmt) =>
+                  _onCommentFetched(cmt, persistNewState: true),
+            )..onDone(_onDone);
   }
 
   void updateFetchMode(FetchMode? fetchMode) {
@@ -1147,7 +1147,10 @@ comments length is ${state.comments.length}
     }
   }
 
-  void _onCommentFetched(BuildableComment? comment) {
+  void _onCommentFetched(
+    BuildableComment? comment, {
+    bool persistNewState = false,
+  }) {
     if (comment != null) {
       final Comment? prevState = _previousCommentStates?[comment.id];
       final int parentIndex =
@@ -1181,7 +1184,7 @@ comments length is ${state.comments.length}
         comment = comment.copyWith(
           isCollapsedByUser: prevState?.isCollapsedByUser,
           isHiddenByUser: prevState?.isHiddenByUser,
-          isNew: false,
+          isNew: persistNewState ? prevState?.isNew : false,
         );
       }
 
