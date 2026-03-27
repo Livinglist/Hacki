@@ -94,7 +94,7 @@ class _ItemScreenTipsState extends State<ItemScreenTips> {
                     horizontal: Dimens.pt12,
                   ),
                   child: Text(
-                    '''When you find yourself too deep in a thread, you can swipe right on a comment to see its ancestors including the root story (or comment).''',
+                    '''When you find yourself too deep in a thread, you can swipe left on a comment to see all its ancestors including the root story (or comment).''',
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onSecondaryContainer,
                       fontSize: TextDimens.pt16,
