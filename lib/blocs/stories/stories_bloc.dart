@@ -40,7 +40,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         super(const StoriesState.init()) {
     on<LoadStories>(
       onLoadStories,
-      transformer: concurrent(),
     );
     on<StoriesInitialize>(onInitialize);
     on<StoriesRefresh>(onRefresh);

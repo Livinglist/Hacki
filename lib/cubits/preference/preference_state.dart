@@ -3,12 +3,15 @@ part of 'preference_cubit.dart';
 class PreferenceState extends Equatable {
   const PreferenceState({
     required this.preferences,
+    required this.status,
   });
 
   PreferenceState.init()
-      : preferences = <Preference<dynamic>>{...Preference.allPreferences};
+      : preferences = <Preference<dynamic>>{...Preference.allPreferences},
+        status = Status.idle;
 
   final Set<Preference<dynamic>> preferences;
+  final Status status;
 
   Iterable<Preference<dynamic>> get settingsPreferences => preferences.where(
         (Preference<dynamic> p) =>
@@ -18,9 +21,11 @@ class PreferenceState extends Equatable {
 
   PreferenceState copyWith({
     Set<Preference<dynamic>>? preferences,
+    Status? status,
   }) {
     return PreferenceState(
       preferences: preferences ?? this.preferences,
+      status: status ?? this.status,
     );
   }
 
@@ -33,6 +38,7 @@ class PreferenceState extends Equatable {
           ..remove(preference)
           ..insert(Preference.allPreferences.indexOf(preference), preference),
       },
+      status: status,
     );
   }
 
@@ -170,5 +176,6 @@ class PreferenceState extends Equatable {
   @override
   List<Object?> get props => <Object?>[
         ...preferences.map<dynamic>((Preference<dynamic> e) => e.val),
+        status,
       ];
 }

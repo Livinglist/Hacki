@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hacki/cubits/cubits.dart';
@@ -15,13 +17,22 @@ class TabCubit extends Cubit<TabState> with Loggable {
   }
 
   final PreferenceCubit _preferenceCubit;
+  StreamSubscription<List<StoryType>>? _tabsSubscription;
 
   void init() {
-    final List<StoryType> tabs = _preferenceCubit.state.tabs;
+    _tabsSubscription = _preferenceCubit.stream
+        .map((PreferenceState s) => s.tabs)
+        .distinct(
+          (List<StoryType> previous, List<StoryType> current) =>
+              previous == current,
+        )
+        .listen((List<StoryType> tabs) {
+      final List<StoryType> tabs = _preferenceCubit.state.tabs;
 
-    logInfo('updating tabs to $tabs');
+      logInfo('updating tabs to $tabs');
 
-    emit(state.copyWith(tabs: tabs));
+      emit(state.copyWith(tabs: tabs));
+    });
   }
 
   void update(int startIndex, int endIndex) {
@@ -32,7 +43,8 @@ class TabCubit extends Cubit<TabState> with Loggable {
     final List<StoryType> updatedTabs = List<StoryType>.from(state.tabs)
       ..insert(endIndex, tab)
       ..removeAt(startIndex < endIndex ? startIndex : startIndex + 1);
-    logDebug(updatedTabs);
+
+    logInfo('updating tabs to $updatedTabs');
     emit(state.copyWith(tabs: updatedTabs));
 
     // Check to make sure there's no duplicate.
@@ -41,6 +53,12 @@ class TabCubit extends Cubit<TabState> with Loggable {
         TabOrderPreference(val: StoryType.convertToSettingsValue(updatedTabs)),
       );
     }
+  }
+
+  @override
+  Future<void> close() {
+    _tabsSubscription?.cancel();
+    return super.close();
   }
 
   @override

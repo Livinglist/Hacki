@@ -21,6 +21,8 @@ class PreferenceCubit extends Cubit<PreferenceState> with Loggable {
   final PreferenceRepository _preferenceRepository;
 
   void init() {
+    emit(state.copyWith(status: Status.inProgress));
+
     for (final BooleanPreference p
         in Preference.allPreferences.whereType<BooleanPreference>()) {
       initPreference<bool>(p).then<bool?>((bool? value) {
@@ -49,6 +51,8 @@ class PreferenceCubit extends Cubit<PreferenceState> with Loggable {
         return null;
       });
     }
+
+    emit(state.copyWith(status: Status.success));
   }
 
   Future<T?> initPreference<T>(Preference<T> preference) async {
