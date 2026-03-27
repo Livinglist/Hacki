@@ -93,7 +93,7 @@ class ItemText extends StatelessWidget {
             semanticsLabel: item.text,
           ),
         );
-      } else {
+      } else if (selectable) {
         return InkWell(
           child: SelectableLinkify(
             text: item.text,
@@ -112,6 +112,19 @@ class ItemText extends StatelessWidget {
               context,
               editableTextState,
               item: item,
+            ),
+          ),
+        );
+      } else {
+        return InkWell(
+          child: Linkify(
+            text: item.text,
+            textScaler: textScaler,
+            style: style,
+            linkStyle: linkStyle,
+            onOpen: (LinkableElement link) => LinkUtil.launch(
+              link.url,
+              context,
             ),
           ),
         );
