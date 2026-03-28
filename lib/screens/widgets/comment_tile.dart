@@ -39,6 +39,7 @@ class CommentTile extends StatelessWidget {
     this.level = 0,
     this.index,
     this.onTap,
+    this.backgroundColor = Colors.transparent,
   });
 
   final String? opUsername;
@@ -56,6 +57,7 @@ class CommentTile extends StatelessWidget {
   final bool shouldHighlightNewComments;
   final bool shouldShowDivider;
   final FetchMode fetchMode;
+  final Color backgroundColor;
 
   final void Function(Comment)? onReplyTapped;
   final void Function(Comment, Rect?)? onMoreTapped;
@@ -439,7 +441,7 @@ class CommentTile extends StatelessWidget {
               } else if (shouldHighlightNewComments && comment.isNew) {
                 return Theme.of(context).colorScheme.surfaceContainerLow;
               }
-              return Theme.of(context).canvasColor;
+              return backgroundColor;
             }(),
           ),
           child: child,

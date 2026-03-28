@@ -173,7 +173,7 @@ class _ItemScreenState extends State<ItemScreen>
   static const Duration _featureDiscoveryDismissThrottleDelay =
       AppDurations.oneSecond;
   static const double _indentPadding = 8;
-  static const double _indentLineWidth = 1;
+  static const double _indentLineWidth = 2;
 
   @override
   void didPop() {
@@ -286,7 +286,7 @@ class _ItemScreenState extends State<ItemScreen>
                 ? Material(
                     child: Stack(
                       children: <Widget>[
-                        Positioned.fill(
+                        const Positioned.fill(
                           child: ItemScreenBackground(
                             indentPadding: _indentPadding,
                             indentLineWidth: _indentLineWidth,
@@ -404,7 +404,7 @@ class _ItemScreenState extends State<ItemScreen>
                     ),
                     body: Stack(
                       children: <Widget>[
-                        Positioned.fill(
+                        const Positioned.fill(
                           child: ItemScreenBackground(
                             indentPadding: _indentPadding,
                             indentLineWidth: _indentLineWidth,
