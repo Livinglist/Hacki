@@ -8,9 +8,14 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/utils/utils.dart';
 
 class ItemScreenBackground extends StatefulWidget {
-  const ItemScreenBackground({required this.indentPadding, super.key});
+  const ItemScreenBackground({
+    required this.indentPadding,
+    required this.indentLineWidth,
+    super.key,
+  });
 
   final double indentPadding;
+  final double indentLineWidth;
 
   @override
   State<ItemScreenBackground> createState() => _ItemScreenBackgroundState();
@@ -49,6 +54,18 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
       builder: (BuildContext context, CommentsState state) {
         return Stack(
           children: <Widget>[
+            Padding(
+              padding: EdgeInsets.zero,
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height,
+                width: widget.indentLineWidth,
+                child: Container(
+                  width: widget.indentLineWidth,
+                  height: MediaQuery.of(context).size.height,
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                ),
+              ),
+            ),
             if (state.maxLevel > 0)
               for (final int i in 1.to(
                 state.maxLevel,
@@ -59,18 +76,18 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
                   ),
                   child: SizedBox(
                     height: MediaQuery.of(context).size.height,
-                    width: 2,
+                    width: widget.indentLineWidth,
                     child: isEyeCandyEnabled
                         ? AnimatedIndentLine(
                             color: ColorUtil.getRainbowColor(
                               i,
                               Theme.of(context).canvasColor,
                             ).$1,
-                            width: 2,
+                            width: widget.indentLineWidth,
                             isShining: _shineIndex + 1 == i,
                           )
                         : Container(
-                            width: 2,
+                            width: widget.indentLineWidth,
                             height: MediaQuery.of(context).size.height,
                             color: ColorUtil.getRainbowColor(
                               i,

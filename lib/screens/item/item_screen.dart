@@ -174,6 +174,11 @@ class _ItemScreenState extends State<ItemScreen>
       AppDurations.oneSecond;
   static const double _indentPadding = 8;
 
+  double get _indentLineWidth =>
+      context.read<PreferenceCubit>().state.isEyeCandyEnabled
+          ? Dimens.pt2
+          : Dimens.pt1;
+
   @override
   void didPop() {
     super.didPop();
@@ -285,6 +290,12 @@ class _ItemScreenState extends State<ItemScreen>
                 ? Material(
                     child: Stack(
                       children: <Widget>[
+                        Positioned.fill(
+                          child: ItemScreenBackground(
+                            indentPadding: _indentPadding,
+                            indentLineWidth: _indentLineWidth,
+                          ),
+                        ),
                         Positioned(
                           left: 4,
                           child: Container(
@@ -310,6 +321,7 @@ class _ItemScreenState extends State<ItemScreen>
                             preferenceState:
                                 context.read<PreferenceCubit>().state,
                             splitViewEnabled: widget.splitViewEnabled,
+                            indentLineWidth: _indentLineWidth,
                             onMoreTapped: (Item item, Rect? rect) =>
                                 onMoreTapped(
                               item,
@@ -396,9 +408,10 @@ class _ItemScreenState extends State<ItemScreen>
                     ),
                     body: Stack(
                       children: <Widget>[
-                        const Positioned.fill(
+                        Positioned.fill(
                           child: ItemScreenBackground(
                             indentPadding: _indentPadding,
+                            indentLineWidth: _indentLineWidth,
                           ),
                         ),
                         Positioned.fill(
@@ -410,6 +423,7 @@ class _ItemScreenState extends State<ItemScreen>
                             preferenceState:
                                 context.read<PreferenceCubit>().state,
                             splitViewEnabled: widget.splitViewEnabled,
+                            indentLineWidth: _indentLineWidth,
                             onMoreTapped: (Item context, Rect? rect) =>
                                 onMoreTapped(
                               context,

@@ -27,6 +27,7 @@ class MainView extends StatelessWidget {
     required this.onRightMoreTapped,
     required this.shouldMarkNewComment,
     required this.indentPadding,
+    required this.indentLineWidth,
     super.key,
   });
 
@@ -39,6 +40,7 @@ class MainView extends StatelessWidget {
   final void Function(Item item, Rect? rect) onMoreTapped;
   final ValueChanged<Comment> onRightMoreTapped;
   final double indentPadding;
+  final double indentLineWidth;
 
   static const int _loadingIndicatorOpacityAnimationDuration = 300;
   static const double _trailingBoxHeight = 240;
@@ -112,9 +114,7 @@ class MainView extends StatelessWidget {
                               state.comments.isNotEmpty) ||
                           state.onlyShowTargetComment) {
                         return Container(
-                          color: preferenceState.isEyeCandyEnabled
-                              ? Palette.transparent
-                              : Theme.of(context).canvasColor,
+                          color: Palette.transparent,
                           height: _trailingBoxHeight,
                           child: Center(
                             child: Text(Constants.happyFace),
@@ -134,7 +134,8 @@ class MainView extends StatelessWidget {
                           ? const SizedBox.shrink()
                           : Padding(
                               padding: EdgeInsets.only(
-                                left: comment.level * indentPadding + 2,
+                                left: comment.level * indentPadding +
+                                    indentLineWidth,
                               ),
                               child: CommentTile(
                                 comment: comment,
