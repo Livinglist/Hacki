@@ -28,7 +28,7 @@ class _AnimatedIndentLineState extends State<AnimatedIndentLine>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(seconds: 3),
     );
 
     _shimmerPos = Tween<double>(begin: -0.2, end: 1.2).animate(
@@ -37,15 +37,15 @@ class _AnimatedIndentLineState extends State<AnimatedIndentLine>
 
     _glowOpacity = TweenSequence<double>(<TweenSequenceItem<double>>[
       TweenSequenceItem<double>(
-        tween: Tween<double>(begin: 0, end: 0.9),
+        tween: Tween<double>(begin: 0, end: 0.5),
         weight: 40,
       ),
       TweenSequenceItem<double>(
-        tween: Tween<double>(begin: 0.9, end: 0.9),
+        tween: Tween<double>(begin: 0.5, end: 0.5),
         weight: 40,
       ),
       TweenSequenceItem<double>(
-        tween: Tween<double>(begin: 0.9, end: 0),
+        tween: Tween<double>(begin: 0.5, end: 0),
         weight: 40,
       ),
     ]).animate(_controller);

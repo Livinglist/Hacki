@@ -14,8 +14,7 @@ import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
-import 'package:hacki/screens/widgets/animated_indent_line.dart';
-import 'package:hacki/screens/widgets/download_progress_reminder.dart';
+import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
@@ -173,6 +172,7 @@ class _ItemScreenState extends State<ItemScreen>
   static const Duration _storyLinkTapThrottleDelay = AppDurations.twoSeconds;
   static const Duration _featureDiscoveryDismissThrottleDelay =
       AppDurations.oneSecond;
+  static const double _indentPadding = 8;
 
   @override
   void didPop() {
@@ -187,11 +187,6 @@ class _ItemScreenState extends State<ItemScreen>
     super.didPushNext();
     focusNode.unfocus();
   }
-
-  int _shineIndex = 0;
-  Timer? _timer;
-
-  int indentsLength = 0;
 
   @override
   void initState() {
@@ -234,7 +229,6 @@ class _ItemScreenState extends State<ItemScreen>
     featureDiscoveryDismissThrottle.dispose();
     focusNode.dispose();
     scrollOffsetSubscription?.cancel();
-    _timer?.cancel();
     super.dispose();
   }
 
@@ -309,6 +303,7 @@ class _ItemScreenState extends State<ItemScreen>
                         ),
                         Positioned.fill(
                           child: MainView(
+                            indentPadding: _indentPadding,
                             scrollOffsetListener: scrollOffsetListener,
                             commentEditingController: commentEditingController,
                             authState: authState,
@@ -399,82 +394,46 @@ class _ItemScreenState extends State<ItemScreen>
                       onFontSizeTap: onFontSizeTapped,
                       fontSizeIconButtonKey: fontSizeIconButtonKey,
                     ),
-                    body: BlocConsumer<CommentsCubit, CommentsState>(
-                      listenWhen: (CommentsState prev, CommentsState cur) =>
-                          prev.status != cur.status,
-                      listener: (BuildContext context, CommentsState state) {
-                        if (state.status == CommentsStatus.allLoaded) {
-                          setState(() {
-                            indentsLength = state.maxLevel;
-                          });
-                          _timer?.cancel();
-                          final int interval = (1600 / state.maxLevel).round();
-                          _timer = Timer.periodic(
-                              Duration(milliseconds: interval), (_) {
-                            setState(() {
-                              _shineIndex = (_shineIndex + 1) % state.maxLevel;
-                            });
-                          });
-                        }
-                      },
-                      builder: (BuildContext context, CommentsState state) {
-                        return Stack(
-                          children: <Widget>[
-                            for (final int i in 0.to(
-                              indentsLength,
-                              inclusive: false,
-                            ))
-                              Positioned(
-                                left: 10.0 + 10.0 * i,
-                                child: SizedBox(
-                                  height: MediaQuery.of(context).size.height,
-                                  width: 2,
-                                  child: AnimatedIndentLine(
-                                    color: ColorUtil.getRainbowColor(
-                                      i,
-                                      Theme.of(context).canvasColor,
-                                    ).$1,
-                                    width: 2,
-                                    isShining: _shineIndex == i,
-                                  ),
-                                ),
-                              ),
-                            Positioned.fill(
-                              child: MainView(
-                                scrollOffsetListener: scrollOffsetListener,
-                                commentEditingController:
-                                    commentEditingController,
-                                authState: authState,
-                                preferenceState:
-                                    context.read<PreferenceCubit>().state,
-                                splitViewEnabled: widget.splitViewEnabled,
-                                onMoreTapped: (Item context, Rect? rect) =>
-                                    onMoreTapped(
-                                  context,
-                                  rect,
-                                  parent: widget.item,
-                                ),
-                                onRightMoreTapped: (Comment cmt) =>
-                                    onRightMoreTapped(
-                                  cmt,
-                                  context.read<CommentsCubit>().state.item,
-                                ),
-                                shouldMarkNewComment:
-                                    widget.shouldMarkNewComment,
-                              ),
+                    body: Stack(
+                      children: <Widget>[
+                        const Positioned.fill(
+                          child: ItemScreenBackground(
+                            indentPadding: _indentPadding,
+                          ),
+                        ),
+                        Positioned.fill(
+                          child: MainView(
+                            indentPadding: _indentPadding,
+                            scrollOffsetListener: scrollOffsetListener,
+                            commentEditingController: commentEditingController,
+                            authState: authState,
+                            preferenceState:
+                                context.read<PreferenceCubit>().state,
+                            splitViewEnabled: widget.splitViewEnabled,
+                            onMoreTapped: (Item context, Rect? rect) =>
+                                onMoreTapped(
+                              context,
+                              rect,
+                              parent: widget.item,
                             ),
-                            if (context
-                                .read<PreferenceCubit>()
-                                .state
-                                .areSkipButtonsEnabled)
-                              const Positioned(
-                                right: Dimens.pt12,
-                                bottom: Dimens.pt48,
-                                child: FloatingSkipButtons(),
-                              ),
-                          ],
-                        );
-                      },
+                            onRightMoreTapped: (Comment cmt) =>
+                                onRightMoreTapped(
+                              cmt,
+                              context.read<CommentsCubit>().state.item,
+                            ),
+                            shouldMarkNewComment: widget.shouldMarkNewComment,
+                          ),
+                        ),
+                        if (context
+                            .read<PreferenceCubit>()
+                            .state
+                            .areSkipButtonsEnabled)
+                          const Positioned(
+                            right: Dimens.pt12,
+                            bottom: Dimens.pt48,
+                            child: FloatingSkipButtons(),
+                          ),
+                      ],
                     ),
                     bottomSheet: ReplyBox(
                       textEditingController: commentEditingController,
