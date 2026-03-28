@@ -59,11 +59,17 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
               child: SizedBox(
                 height: MediaQuery.of(context).size.height,
                 width: widget.indentLineWidth,
-                child: Container(
-                  width: widget.indentLineWidth,
-                  height: MediaQuery.of(context).size.height,
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                ),
+                child: isEyeCandyEnabled
+                    ? AnimatedIndentLine(
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                        width: widget.indentLineWidth,
+                        isShining: _shineIndex == 0,
+                      )
+                    : Container(
+                        width: widget.indentLineWidth,
+                        height: MediaQuery.of(context).size.height,
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                      ),
               ),
             ),
             if (state.maxLevel > 0)

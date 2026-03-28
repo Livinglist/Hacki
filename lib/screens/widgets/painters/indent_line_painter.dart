@@ -22,7 +22,7 @@ class IndentLinePainter extends CustomPainter {
     final double cx = size.width / 2;
 
     final Paint basePaint = Paint()
-      ..color = color.withValues(alpha: 0.4)
+      ..color = color.withValues(alpha: 0.6)
       ..strokeWidth = lineWidth
       ..strokeCap = StrokeCap.round;
 
