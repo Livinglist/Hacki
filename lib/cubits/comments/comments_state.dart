@@ -26,6 +26,7 @@ class CommentsState extends Equatable {
     required this.inThreadSearchAuthor,
     required this.inThreadSearchStatus,
     required this.isNewInSearchSelected,
+    required this.maxLevel,
   });
 
   CommentsState.init({
@@ -44,7 +45,8 @@ class CommentsState extends Equatable {
         inThreadSearchQuery = '',
         inThreadSearchAuthor = '',
         inThreadSearchStatus = Status.idle,
-        isNewInSearchSelected = false;
+        isNewInSearchSelected = false,
+        maxLevel = 0;
 
   final Item item;
   final List<Comment> comments;
@@ -61,6 +63,7 @@ class CommentsState extends Equatable {
   final String inThreadSearchAuthor;
   final Status inThreadSearchStatus;
   final bool isNewInSearchSelected;
+  final int maxLevel;
 
   /// Indexes of comments that matches the query for in-thread search.
   final List<Comment> matchedComments;
@@ -82,6 +85,7 @@ class CommentsState extends Equatable {
     String? inThreadSearchAuthor,
     Status? inThreadSearchStatus,
     bool? isNewInSearchSelected,
+    int? maxLevel,
   }) {
     return CommentsState(
       item: item ?? this.item,
@@ -102,6 +106,7 @@ class CommentsState extends Equatable {
       idToCommentMap: idToCommentMap ?? this.idToCommentMap,
       isNewInSearchSelected:
           isNewInSearchSelected ?? this.isNewInSearchSelected,
+      maxLevel: maxLevel ?? this.maxLevel,
     );
   }
 
@@ -152,5 +157,6 @@ class CommentsState extends Equatable {
         inThreadSearchStatus,
         idToCommentMap,
         isNewInSearchSelected,
+        maxLevel,
       ];
 }

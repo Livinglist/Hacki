@@ -1211,6 +1211,7 @@ comments length is ${state.comments.length}
 
       emit(
         state.copyWith(
+          maxLevel: state.maxLevel < comment.level ? comment.level : null,
           comments: updatedComments,
           idToCommentMap: updatedIdToCommentMap,
         ),

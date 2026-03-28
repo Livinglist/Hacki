@@ -12,7 +12,7 @@ import 'package:hacki/screens/item/widgets/lazy_fetch_load_button.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/utils/haptic_feedback_util.dart';
+import 'package:hacki/utils/utils.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class CommentTile extends StatelessWidget {
@@ -66,10 +66,6 @@ class CommentTile extends StatelessWidget {
   /// Override for search screen.
   final VoidCallback? onTap;
 
-  static final Map<int, Color> levelToBorderColors = <int, Color>{};
-  static final Map<int, (Color, Color)> levelToRainbowBorderColors =
-      <int, (Color, Color)>{};
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder2<PreferenceCubit, PreferenceState, BlocklistCubit,
@@ -80,17 +76,15 @@ class CommentTile extends StatelessWidget {
         BlocklistState blocklistState,
       ) {
         final Color primaryColor = Theme.of(context).colorScheme.primary;
-        final Brightness brightness = Theme.of(context).brightness;
-        final (Color, Color) slidableBackgroundColor =
-            isEyeCandyEnabled && level > 0
-                ? _getRainbowColor(
-                    level,
-                    Theme.of(context).colorScheme.surface,
-                  )
-                : (
-                    Theme.of(context).colorScheme.primaryContainer,
-                    Theme.of(context).colorScheme.onPrimaryContainer,
-                  );
+        final (Color, Color) slidableBackgroundColor = level > 0
+            ? ColorUtil.getRainbowColor(
+                level,
+                Theme.of(context).colorScheme.surface,
+              )
+            : (
+                Theme.of(context).colorScheme.primaryContainer,
+                Theme.of(context).colorScheme.onPrimaryContainer,
+              );
 
         int newCommentsCount = 0;
         int hiddenCommentsCount = 0;
@@ -431,71 +425,25 @@ class CommentTile extends StatelessWidget {
           ),
         );
 
-        const Color commentColor = Palette.transparent;
         final AuthState authState = context.read<AuthBloc>().state;
         final bool isMyComment = authState.isLoggedIn &&
             comment.deleted == false &&
             authState.username == comment.by;
 
-        Widget wrapper = child;
-
-        if (level == 0) {
-          return Container(
-            clipBehavior: Clip.hardEdge,
-            decoration: BoxDecoration(
-              color: () {
-                if (isMyComment) {
-                  return primaryColor.withValues(alpha: 0.2);
-                } else if (shouldHighlightNewComments && comment.isNew) {
-                  return Theme.of(context).colorScheme.surfaceContainerLow;
-                }
-
-                return commentColor;
-              }(),
-            ),
-            child: wrapper,
-          );
-        }
-
-        for (final int i in level.to(0, inclusive: false)) {
-          final Color wrapperBorderColor = isEyeCandyEnabled
-              ? _getRainbowColor(
-                  i,
-                  Theme.of(context).colorScheme.surface,
-                ).$1
-              : _getColor(
-                  i,
-                  primaryColor: primaryColor,
-                  brightness: brightness,
-                );
-          wrapper = Container(
-            clipBehavior: Clip.hardEdge,
-            margin: const EdgeInsets.only(
-              left: Dimens.pt8,
-            ),
-            decoration: BoxDecoration(
-              border: i != 0
-                  ? Border(
-                      left: BorderSide(
-                        color: wrapperBorderColor,
-                      ),
-                    )
-                  : null,
-              color: () {
-                if (i == level) {
-                  if (isMyComment) {
-                    return primaryColor.withValues(alpha: 0.2);
-                  } else if (shouldHighlightNewComments && comment.isNew) {
-                    return Theme.of(context).colorScheme.surfaceContainerLow;
-                  }
-                }
-
-                return commentColor;
-              }(),
-            ),
-            child: wrapper,
-          );
-        }
+        Widget wrapper = Container(
+          clipBehavior: Clip.hardEdge,
+          decoration: BoxDecoration(
+            color: () {
+              if (isMyComment) {
+                return primaryColor.withValues(alpha: 0.2);
+              } else if (shouldHighlightNewComments && comment.isNew) {
+                return Theme.of(context).colorScheme.surfaceContainerLow;
+              }
+              return Theme.of(context).canvasColor;
+            }(),
+          ),
+          child: child,
+        );
 
         /// This makes the left part of the thread that doesn't contain
         /// any text able to recognize for back gesture.
@@ -509,7 +457,7 @@ class CommentTile extends StatelessWidget {
                 bottom: Dimens.zero,
                 width: Dimens.pt24,
                 child: Container(
-                  color: Colors.transparent,
+                  color: Palette.transparent,
                 ),
               ),
             ],
@@ -569,73 +517,6 @@ class CommentTile extends StatelessWidget {
         );
       }
     }
-  }
-
-  static Color _getColor(
-    int level, {
-    required Color primaryColor,
-    required Brightness brightness,
-  }) {
-    final int initialLevel = level;
-
-    int convertKeyBasedOnBrightness(int original) {
-      return brightness == Brightness.light ? original : original * 100;
-    }
-
-    final int cacheKey = convertKeyBasedOnBrightness(initialLevel);
-
-    if (levelToBorderColors[cacheKey] != null) {
-      return levelToBorderColors[cacheKey]!;
-    } else if (level == 0) {
-      levelToBorderColors[cacheKey] = primaryColor;
-      return primaryColor;
-    }
-
-    while (level >= 10) {
-      level = level - 10;
-    }
-
-    final double opacity = ((10 - level) / 10).clamp(0.3, 1);
-    final Color color = primaryColor.withValues(alpha: opacity);
-
-    levelToBorderColors[cacheKey] = color;
-    return color;
-  }
-
-  static (Color, Color) _getRainbowColor(int level, Color background) {
-    const int colorCount = 6;
-
-    // If id is larger than 6, take modulo
-    int index = level % colorCount;
-    final int key = index + background.hashCode;
-
-    final (Color, Color)? cachedColor = levelToRainbowBorderColors[key];
-
-    if (cachedColor != null) return cachedColor;
-
-    // Ensure positive index
-    if (index < 0) {
-      index += colorCount;
-    }
-
-    // Evenly distribute hue across 6 colors
-    final double hue = (index / colorCount) * 360.0;
-
-    // Adjust saturation & lightness based on background brightness
-    final bool isDarkBg = background.computeLuminance() < 0.5;
-    const double saturation = 0.85;
-    final double lightness = isDarkBg ? 0.60 : 0.45;
-    final Color color = HSLColor.fromAHSL(
-      1, // Fully opaque
-      hue,
-      saturation,
-      lightness,
-    ).toColor();
-
-    final bool isDarkColor = color.computeLuminance() < 0.5;
-    final Color foregroundColor = isDarkColor ? Palette.white : Palette.black;
-    levelToRainbowBorderColors[key] = (color, foregroundColor);
-    return (color, foregroundColor);
   }
 
   bool _shouldShowLoadButton(BuildContext context) {

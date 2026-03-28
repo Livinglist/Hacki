@@ -699,8 +699,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
             colors: materialColors,
             selectedColor: context.read<PreferenceCubit>().state.appColor,
             onMainColorChange: (ColorSwatch<dynamic>? color) {
-              CommentTile.levelToBorderColors.clear();
-              CommentTile.levelToRainbowBorderColors.clear();
+              ColorUtil.levelToRainbowBorderColors.clear();
               context.read<PreferenceCubit>().update(
                     AppColorPreference(
                       val: materialColors.indexOf(color ?? Palette.deepOrange),
