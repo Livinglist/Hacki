@@ -39,10 +39,9 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
       listenWhen: (CommentsState previous, CommentsState current) =>
           previous.status != current.status,
       listener: (BuildContext context, CommentsState state) {
-        if (state.status == CommentsStatus.allLoaded) {
+        if (state.status == CommentsStatus.allLoaded && isEyeCandyEnabled) {
           _timer?.cancel();
-          final int interval = (3000 / state.maxLevel).round();
-          _timer = Timer.periodic(Duration(milliseconds: interval), (_) {
+          _timer = Timer.periodic(const Duration(milliseconds: 1200), (_) {
             setState(() {
               _shineIndex = (_shineIndex + 1) % state.maxLevel;
             });

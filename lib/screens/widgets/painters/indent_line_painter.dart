@@ -9,6 +9,7 @@ class IndentLinePainter extends CustomPainter {
     required this.shimmerPos,
     required this.glowOpacity,
     required this.isShining,
+    required this.brightness,
   });
 
   final Color color;
@@ -16,13 +17,16 @@ class IndentLinePainter extends CustomPainter {
   final double shimmerPos;
   final double glowOpacity;
   final bool isShining;
+  final Brightness brightness;
 
   @override
   void paint(Canvas canvas, Size size) {
     final double cx = size.width / 2;
 
     final Paint basePaint = Paint()
-      ..color = color.withValues(alpha: 0.6)
+      ..color = color.withValues(
+        alpha: brightness == Brightness.light ? 0.6 : 0.4,
+      )
       ..strokeWidth = lineWidth
       ..strokeCap = StrokeCap.round;
 
@@ -59,7 +63,7 @@ class IndentLinePainter extends CustomPainter {
     canvas.drawLine(Offset(cx, top), Offset(cx, bottom), streakPaint);
 
     // final Paint dotPaint = Paint()
-    //   ..color = Color.lerp(color, Colors.white, 0.6)!.withValues(alpha: 0.9)
+    //   ..color = Color.lerp(color, Colors.white, 0.6)!.withValues(alpha: 0.4)
     //   ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2);
     //
     // canvas.drawCircle(Offset(cx, cy), lineWidth * 1.8, dotPaint);

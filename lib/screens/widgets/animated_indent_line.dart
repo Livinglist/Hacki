@@ -37,16 +37,16 @@ class _AnimatedIndentLineState extends State<AnimatedIndentLine>
 
     _glowOpacity = TweenSequence<double>(<TweenSequenceItem<double>>[
       TweenSequenceItem<double>(
-        tween: Tween<double>(begin: 0, end: 0.5),
+        tween: Tween<double>(begin: 0, end: 1),
+        weight: 30,
+      ),
+      TweenSequenceItem<double>(
+        tween: Tween<double>(begin: 1, end: 1),
         weight: 40,
       ),
       TweenSequenceItem<double>(
-        tween: Tween<double>(begin: 0.5, end: 0.5),
-        weight: 40,
-      ),
-      TweenSequenceItem<double>(
-        tween: Tween<double>(begin: 0.5, end: 0),
-        weight: 40,
+        tween: Tween<double>(begin: 1, end: 0),
+        weight: 30,
       ),
     ]).animate(_controller);
   }
@@ -77,6 +77,7 @@ class _AnimatedIndentLineState extends State<AnimatedIndentLine>
             shimmerPos: _shimmerPos.value,
             glowOpacity: _glowOpacity.value,
             isShining: widget.isShining || _controller.isAnimating,
+            brightness: Theme.of(context).brightness,
           ),
         );
       },

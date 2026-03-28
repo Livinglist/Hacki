@@ -173,11 +173,7 @@ class _ItemScreenState extends State<ItemScreen>
   static const Duration _featureDiscoveryDismissThrottleDelay =
       AppDurations.oneSecond;
   static const double _indentPadding = 8;
-
-  double get _indentLineWidth =>
-      context.read<PreferenceCubit>().state.isEyeCandyEnabled
-          ? Dimens.pt2
-          : Dimens.pt1;
+  static const double _indentLineWidth = 1;
 
   @override
   void didPop() {
