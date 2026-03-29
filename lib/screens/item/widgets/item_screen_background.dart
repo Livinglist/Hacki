@@ -51,8 +51,12 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
         }
       },
       buildWhen: (CommentsState previous, CommentsState current) =>
-          previous.maxLevel != current.maxLevel,
+          previous.maxLevel != current.maxLevel ||
+          previous.status != current.status,
       builder: (BuildContext context, CommentsState state) {
+        if (state.status != CommentsStatus.allLoaded) {
+          return const SizedBox.shrink();
+        }
         return Stack(
           children: <Widget>[
             if (widget.shouldShowRootLevelLine && state.comments.isNotEmpty)
