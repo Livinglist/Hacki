@@ -229,7 +229,7 @@ final class EyeCandyPreference extends BooleanPreference {
   }
 
   @override
-  String get key => 'eyeCandyPreference';
+  String get key => 'eyeCandyPreference_2.0';
 
   @override
   String get title => 'Eye Candy';
