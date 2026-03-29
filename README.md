@@ -62,8 +62,8 @@ Features:
 
 ### New comments notification and lookup
 <p align="center">
-    <img width="200" alt="10" src="assets/new_screenshots/hacki_59.png"> 
-    <img width="200" alt="10" src="assets/new_screenshots/hacki_60.png">
+    <img width="300" alt="10" src="assets/new_screenshots/hacki_59.png"> 
+    <img width="300" alt="10" src="assets/new_screenshots/hacki_60.png">
 </p>
 
 ### In-thread search and other actions
