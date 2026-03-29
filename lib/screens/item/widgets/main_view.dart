@@ -119,14 +119,7 @@ class MainView extends StatelessWidget {
                           color: Theme.of(context).canvasColor,
                           height: _trailingBoxHeight,
                           child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text(Constants.happyFace),
-                                SizedBoxes.pt48,
-                                Text(Constants.tips),
-                              ],
-                            ),
+                            child: Text(Constants.happyFace),
                           ),
                         );
                       } else {
