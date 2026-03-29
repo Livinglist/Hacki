@@ -69,12 +69,12 @@ Features:
 ## In-thread search and other actions
 <p align="center">
     <img width="200" alt="02" src="assets/new_screenshots/hacki_23.png">
-    <img width="200" alt="07" src="assets/new_screenshots/hacki_24.png">
-    <img width="200" alt="03" src="assets/new_screenshots/hacki_25.png"> 
-    <img width="200" alt="08" src="assets/new_screenshots/hacki_26.png">
-    <img width="200" alt="04" src="assets/new_screenshots/hacki_27.png"> 
-    <img width="200" alt="09" src="assets/new_screenshots/hacki_28.png"> 
+    <img width="200" alt="03" src="assets/new_screenshots/hacki_25.png">
+    <img width="200" alt="09" src="assets/new_screenshots/hacki_28.png">
     <img width="200" alt="05" src="assets/new_screenshots/hacki_29.png">
+    <img width="200" alt="07" src="assets/new_screenshots/hacki_24.png">
+    <img width="200" alt="08" src="assets/new_screenshots/hacki_26.png">
+    <img width="200" alt="04" src="assets/new_screenshots/hacki_27.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_30.png">
 </p>
 
