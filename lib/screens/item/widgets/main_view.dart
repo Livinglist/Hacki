@@ -43,7 +43,7 @@ class MainView extends StatelessWidget {
   final double indentLineWidth;
 
   static const int _loadingIndicatorOpacityAnimationDuration = 300;
-  static const double _trailingBoxHeight = 240;
+  static const double _trailingBoxHeight = 300;
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +114,7 @@ class MainView extends StatelessWidget {
                               state.comments.isNotEmpty) ||
                           state.onlyShowTargetComment) {
                         return Container(
-                          color: Palette.transparent,
+                          color: Theme.of(context).canvasColor,
                           height: _trailingBoxHeight,
                           child: Center(
                             child: Text(Constants.happyFace),

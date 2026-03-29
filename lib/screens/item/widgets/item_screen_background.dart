@@ -89,7 +89,7 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
                               Theme.of(context).canvasColor,
                             ).$1,
                             width: widget.indentLineWidth,
-                            isShining: _shineIndex + 1 == i,
+                            isShining: _shineIndex == i,
                           )
                         : Container(
                             width: widget.indentLineWidth,
