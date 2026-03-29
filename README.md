@@ -94,11 +94,9 @@ Features:
 <p align="center">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_37.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_39.png">
-    <img width="200" alt="10" src="assets/new_screenshots/hacki_46.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_47.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_38.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_40.png">
-    <img width="200" alt="10" src="assets/new_screenshots/hacki_45.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_48.png">
 </p>
 
