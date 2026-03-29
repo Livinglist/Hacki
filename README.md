@@ -105,13 +105,17 @@ Features:
 # Settings
 <p align="center">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_71.png">
-    <img width="200" alt="10" src="assets/new_screenshots/hacki_72.png">
-    <img width="200" alt="10" src="assets/new_screenshots/hacki_73.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_74.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_75.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_78.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_72.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_73.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_76.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_77.png">
-    <img width="200" alt="10" src="assets/new_screenshots/hacki_78.png">
+</p>
+
+# Accent color and font customization
+<p align="center">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_79.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_80.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_81.png">
