@@ -99,7 +99,7 @@ Features:
     <img width="200" alt="10" src="assets/new_screenshots/hacki_86.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_87.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_90.png">
-    <img width="200" alt="10" src="assets/new_screenshots/hacki_84.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_83.png">
 </p>
 
 # Login, reply notification, favorites sync and more
