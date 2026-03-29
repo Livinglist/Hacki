@@ -81,13 +81,13 @@ Features:
 ## Ancestor lookup
 <p align="center">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_61.png">
-    <img width="200" alt="10" src="assets/new_screenshots/hacki_62.png">
-    <img width="200" alt="10" src="assets/new_screenshots/hacki_63.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_64.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_65.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_68.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_62.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_63.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_66.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_67.png">
-    <img width="200" alt="10" src="assets/new_screenshots/hacki_68.png">
 </p>
 
 # Login, reply notification, favorites sync and more
