@@ -34,6 +34,7 @@ Features:
 - And more...
 
 
+## Home page and story tile customization
 <p align="center">
     <img width="200" alt="01" src="assets/new_screenshots/hacki_01.png"> 
     <img width="200" alt="06" src="assets/new_screenshots/hacki_02.png"> 
@@ -47,10 +48,38 @@ Features:
     <img width="200" alt="10" src="assets/new_screenshots/hacki_10.png"> 
     <img width="200" alt="10" src="assets/new_screenshots/hacki_11.png"> 
     <img width="200" alt="10" src="assets/new_screenshots/hacki_12.png">
-   
+</p>
+
+## Thread reading experience
+<p align="center">
+    <img width="200" alt="01" src="assets/new_screenshots/hacki_21.png"> 
+    <img width="200" alt="06" src="assets/new_screenshots/hacki_22.png"> 
+    <img width="200" alt="02" src="assets/new_screenshots/hacki_23.png">
+    <img width="200" alt="07" src="assets/new_screenshots/hacki_24.png">
+    <img width="200" alt="03" src="assets/new_screenshots/hacki_25.png"> 
+    <img width="200" alt="08" src="assets/new_screenshots/hacki_26.png">
+    <img width="200" alt="04" src="assets/new_screenshots/hacki_27.png"> 
+    <img width="200" alt="09" src="assets/new_screenshots/hacki_28.png"> 
+    <img width="200" alt="05" src="assets/new_screenshots/hacki_29.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_30.png"> 
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_59.png"> 
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_60.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_61.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_62.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_63.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_64.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_65.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_66.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_67.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_68.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_69.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_70.png">
+</p>
+
+## Tablet support
+<p>
    <img width="400" alt="ipad-01" src="assets/screenshots/selected/hacki_tablet_01.png"> 
    <img width="400" alt="ipad-02" src="assets/screenshots/selected/hacki_tablet_02.png"> 
    <img width="400" alt="ipad-03" src="assets/screenshots/selected/hacki_tablet_03.png"> 
    <img width="400" alt="ipad-04" src="assets/screenshots/selected/hacki_tablet_04.png"> 
 </p>
-
