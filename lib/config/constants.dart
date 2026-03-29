@@ -51,6 +51,17 @@ abstract class Constants {
   static const String iphoneUserAgent =
       '''Mozilla/5.0 (iPhone; CPU iPhone OS 18_3_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3.1 Mobile/15E148 Safari/604.1''';
 
+  static String get tips => <String>[
+        '',
+        '',
+        'Long press any link to copy',
+        '',
+        '',
+        'Long press any text to select and search on HN',
+        '',
+        '',
+      ].randomlyPicked!;
+
   static final String happyFace = <String>[
     '(๑•̀ㅂ•́)و✧',
     '( ͡• ͜ʖ ͡•)',

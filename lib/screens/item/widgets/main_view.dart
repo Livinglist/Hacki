@@ -28,6 +28,7 @@ class MainView extends StatelessWidget {
     required this.shouldMarkNewComment,
     required this.indentPadding,
     required this.indentLineWidth,
+    required this.topPadding,
     super.key,
   });
 
@@ -41,9 +42,10 @@ class MainView extends StatelessWidget {
   final ValueChanged<Comment> onRightMoreTapped;
   final double indentPadding;
   final double indentLineWidth;
+  final double topPadding;
 
   static const int _loadingIndicatorOpacityAnimationDuration = 300;
-  static const double _trailingBoxHeight = 300;
+  static const double _trailingBoxHeight = 400;
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +95,7 @@ class MainView extends StatelessWidget {
                         color: Theme.of(context).canvasColor,
                         child: Padding(
                           padding: EdgeInsets.only(
-                            top: MediaQuery.of(context).padding.top,
+                            top: topPadding,
                           ),
                           child: _ParentItemSection(
                             commentEditingController: commentEditingController,
@@ -117,7 +119,14 @@ class MainView extends StatelessWidget {
                           color: Theme.of(context).canvasColor,
                           height: _trailingBoxHeight,
                           child: Center(
-                            child: Text(Constants.happyFace),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(Constants.happyFace),
+                                SizedBoxes.pt48,
+                                Text(Constants.tips),
+                              ],
+                            ),
                           ),
                         );
                       } else {
@@ -609,8 +618,8 @@ class _ParentItemSection extends StatelessWidget {
                 style: TextStyle(color: Palette.grey),
               ),
             ),
-            const SizedBox(
-              height: 120,
+            SizedBox(
+              height: MediaQuery.of(context).size.height - 240,
             ),
           ],
         ],
