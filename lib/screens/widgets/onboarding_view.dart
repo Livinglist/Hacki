@@ -59,7 +59,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                   _PageViewChild(
                     path: Constants.commentTileTopTapPath,
                     description:
-                        '''Tap on anywhere inside a comment tile to collapse.''',
+                        '''Tap on anywhere inside a comment tile to collapse. Long press any link to copy.''',
                   ),
                 ],
               ),
