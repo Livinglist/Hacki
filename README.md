@@ -52,7 +52,7 @@ Features:
 
 # Thread reading experience
 
-## Thread
+### Thread
 <p align="center">
     <img width="200" alt="01" src="assets/new_screenshots/hacki_21.png"> 
     <img width="200" alt="06" src="assets/new_screenshots/hacki_22.png"> 
@@ -60,13 +60,13 @@ Features:
     <img width="200" alt="10" src="assets/new_screenshots/hacki_70.png">
 </p>
 
-## New comments notification
+### New comments notification and lookup
 <p align="center">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_59.png"> 
     <img width="200" alt="10" src="assets/new_screenshots/hacki_60.png">
 </p>
 
-## In-thread search and other actions
+### In-thread search and other actions
 <p align="center">
     <img width="200" alt="02" src="assets/new_screenshots/hacki_23.png">
     <img width="200" alt="03" src="assets/new_screenshots/hacki_25.png">
@@ -78,7 +78,7 @@ Features:
     <img width="200" alt="10" src="assets/new_screenshots/hacki_30.png">
 </p>
 
-## Ancestor lookup
+### Ancestor lookup
 <p align="center">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_61.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_64.png">
@@ -88,6 +88,18 @@ Features:
     <img width="200" alt="10" src="assets/new_screenshots/hacki_63.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_66.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_67.png">
+</p>
+
+### Story and comment sharing
+<p align="center">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_85.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_88.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_89.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_84.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_86.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_87.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_90.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_84.png">
 </p>
 
 # Login, reply notification, favorites sync and more
