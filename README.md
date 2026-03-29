@@ -114,6 +114,8 @@ Features:
     <img width="200" alt="10" src="assets/new_screenshots/hacki_78.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_79.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_80.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_81.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_82.png">
 </p>
 
 # Tablet support
