@@ -90,10 +90,38 @@ Features:
     <img width="200" alt="10" src="assets/new_screenshots/hacki_68.png">
 </p>
 
+# Login, reply notification, favorites sync and more
+<p align="center">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_37.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_38.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_39.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_40.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_41.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_42.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_45.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_46.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_47.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_48.png">
+</p>
+
+# Settings
+<p align="center">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_71.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_72.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_73.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_74.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_75.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_76.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_77.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_78.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_79.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_80.png">
+</p>
+
 # Tablet support
 <p align="center">
    <img width="400" alt="ipad-01" src="assets/screenshots/selected/hacki_tablet_01.png"> 
    <img width="400" alt="ipad-02" src="assets/screenshots/selected/hacki_tablet_02.png"> 
    <img width="400" alt="ipad-03" src="assets/screenshots/selected/hacki_tablet_03.png"> 
    <img width="400" alt="ipad-04" src="assets/screenshots/selected/hacki_tablet_04.png"> 
-</p>~~
+</p>
