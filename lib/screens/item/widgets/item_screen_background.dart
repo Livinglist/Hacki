@@ -17,6 +17,8 @@ class ItemScreenBackground extends StatefulWidget {
 
   final double indentPadding;
   final double indentLineWidth;
+
+  /// Root level indent line should be hidden on tablet.
   final bool shouldShowRootLevelLine;
 
   @override
