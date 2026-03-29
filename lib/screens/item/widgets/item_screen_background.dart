@@ -45,7 +45,7 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
           _timer?.cancel();
           _timer = Timer.periodic(const Duration(milliseconds: 1200), (_) {
             setState(() {
-              _shineIndex = (_shineIndex + 1) % state.maxLevel;
+              _shineIndex = (_shineIndex + 1) % (state.maxLevel + 1);
             });
           });
         }
