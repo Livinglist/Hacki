@@ -35,18 +35,18 @@ Features:
 
 
 <p align="center">
-    <img width="100" alt="01" src="assets/new_screenshots/hacki_01.png"> 
-    <img width="100" alt="06" src="assets/new_screenshots/hacki_02.png"> 
-    <img width="100" alt="02" src="assets/new_screenshots/hacki_03.png">
-    <img width="100" alt="07" src="assets/new_screenshots/hacki_04.png">
-    <img width="100" alt="03" src="assets/new_screenshots/hacki_05.png"> 
-    <img width="100" alt="08" src="assets/new_screenshots/hacki_06.png">
-    <img width="100" alt="04" src="assets/new_screenshots/hacki_07.png"> 
-    <img width="100" alt="09" src="assets/new_screenshots/hacki_08.png"> 
-    <img width="100" alt="05" src="assets/new_screenshots/hacki_09.png">
-    <img width="100" alt="10" src="assets/new_screenshots/hacki_10.png"> 
-    <img width="100" alt="10" src="assets/new_screenshots/hacki_11.png"> 
-    <img width="100" alt="10" src="assets/new_screenshots/hacki_12.png">
+    <img width="200" alt="01" src="assets/new_screenshots/hacki_01.png"> 
+    <img width="200" alt="06" src="assets/new_screenshots/hacki_02.png"> 
+    <img width="200" alt="02" src="assets/new_screenshots/hacki_03.png">
+    <img width="200" alt="07" src="assets/new_screenshots/hacki_04.png">
+    <img width="200" alt="03" src="assets/new_screenshots/hacki_05.png"> 
+    <img width="200" alt="08" src="assets/new_screenshots/hacki_06.png">
+    <img width="200" alt="04" src="assets/new_screenshots/hacki_07.png"> 
+    <img width="200" alt="09" src="assets/new_screenshots/hacki_08.png"> 
+    <img width="200" alt="05" src="assets/new_screenshots/hacki_09.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_10.png"> 
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_11.png"> 
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_12.png">
    
    <img width="400" alt="ipad-01" src="assets/screenshots/selected/hacki_tablet_01.png"> 
    <img width="400" alt="ipad-02" src="assets/screenshots/selected/hacki_tablet_02.png"> 
