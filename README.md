@@ -1,4 +1,4 @@
-# <img width="64" src="https://user-images.githubusercontent.com/7277662/167775086-0b234f28-dee4-44f6-aae4-14a28ed4bbb6.png"> Hacki for Hacker News
+~~# <img width="64" src="https://user-images.githubusercontent.com/7277662/167775086-0b234f28-dee4-44f6-aae4-14a28ed4bbb6.png"> Hacki for Hacker News
 
 A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
 
@@ -51,9 +51,23 @@ Features:
 </p>
 
 ## Thread reading experience
-<p align="center">
+
+### Thread
+<p>
     <img width="200" alt="01" src="assets/new_screenshots/hacki_21.png"> 
     <img width="200" alt="06" src="assets/new_screenshots/hacki_22.png"> 
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_69.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_70.png">
+</p>
+
+### New comments notification
+<p>
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_59.png"> 
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_60.png">
+</p>
+
+### In-thread search and other actions
+<p align="center">
     <img width="200" alt="02" src="assets/new_screenshots/hacki_23.png">
     <img width="200" alt="07" src="assets/new_screenshots/hacki_24.png">
     <img width="200" alt="03" src="assets/new_screenshots/hacki_25.png"> 
@@ -61,9 +75,7 @@ Features:
     <img width="200" alt="04" src="assets/new_screenshots/hacki_27.png"> 
     <img width="200" alt="09" src="assets/new_screenshots/hacki_28.png"> 
     <img width="200" alt="05" src="assets/new_screenshots/hacki_29.png">
-    <img width="200" alt="10" src="assets/new_screenshots/hacki_30.png"> 
-    <img width="200" alt="10" src="assets/new_screenshots/hacki_59.png"> 
-    <img width="200" alt="10" src="assets/new_screenshots/hacki_60.png">
+    <img width="200" alt="10" src="assets/new_screenshots/hacki_30.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_61.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_62.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_63.png">
@@ -72,8 +84,6 @@ Features:
     <img width="200" alt="10" src="assets/new_screenshots/hacki_66.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_67.png">
     <img width="200" alt="10" src="assets/new_screenshots/hacki_68.png">
-    <img width="200" alt="10" src="assets/new_screenshots/hacki_69.png">
-    <img width="200" alt="10" src="assets/new_screenshots/hacki_70.png">
 </p>
 
 ## Tablet support
@@ -82,4 +92,4 @@ Features:
    <img width="400" alt="ipad-02" src="assets/screenshots/selected/hacki_tablet_02.png"> 
    <img width="400" alt="ipad-03" src="assets/screenshots/selected/hacki_tablet_03.png"> 
    <img width="400" alt="ipad-04" src="assets/screenshots/selected/hacki_tablet_04.png"> 
-</p>
+</p>~~
