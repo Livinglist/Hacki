@@ -439,7 +439,12 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                 }
 
                 /// If fetching from web failed, fetch using API instead.
-                emit(state.copyWith(status: CommentsStatus.error));
+                emit(
+                  state.copyWith(
+                    status: CommentsStatus.error,
+                    item: item,
+                  ),
+                );
                 refresh(onError: onError, fetchFromWeb: false);
                 return;
               });
