@@ -109,8 +109,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
   final String currentTips = Constants.tips;
 
-  static const int _wifiWebFetchingCmtCountLowerLimit = 50;
-  static const int _cellularWebFetchingCmtCountLowerLimit = 20;
+  static const int _wifiWebFetchingCmtCountLowerLimit = 20;
+  static const int _cellularWebFetchingCmtCountLowerLimit = 5;
 
   static DateTime? _hackerNewsWebRetryAfterDateTime;
 
