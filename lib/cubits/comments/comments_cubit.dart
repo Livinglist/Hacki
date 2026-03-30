@@ -271,9 +271,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                   !shouldPrioritizeCache) {
                 logInfo('fetching comments of ${item.id} from web.');
                 commentStream = _hackerNewsWebRepository
-                    .fetchCommentsStream(
-                  state.item,
-                )
+                    .fetchCommentsStream(updatedItem)
                     .handleError((dynamic e) {
                   _streamSubscription?.cancel();
 
@@ -421,7 +419,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                 'fetching comments of ${item.id} from web.',
               );
               commentStream = _hackerNewsWebRepository
-                  .fetchCommentsStream(state.item)
+                  .fetchCommentsStream(updatedItem)
                   .handleError((dynamic e) {
                 logError(e);
 

@@ -420,7 +420,7 @@ class HackerNewsWebRepository with Loggable {
       }
     }
 
-    if (descendants == 0 || item.kids.isEmpty) return;
+    if (descendants == 0 && item.kids.isEmpty) return;
 
     final Set<int> fetchedCommentIds = <int>{};
     int page = 1;
