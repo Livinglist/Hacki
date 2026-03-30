@@ -91,6 +91,35 @@ class SembastRepository with Loggable {
     }
   }
 
+  Stream<Comment> fetchAllCommentsRecursivelyStream({
+    required List<int> ids,
+    int level = 0,
+    Comment? Function(int)? getFromCache,
+  }) async* {
+    for (final int id in ids) {
+      Comment? comment = getFromCache?.call(id)?.copyWith(level: level);
+
+      if (comment != null) {
+        logDebug(
+          '''fetchAllCommentsRecursivelyStream: fetched ${comment.id} from mem cache.''',
+        );
+      }
+
+      comment ??= await getCachedComment(id: id);
+
+      if (comment != null) {
+        yield comment;
+
+        yield* fetchAllCommentsRecursivelyStream(
+          ids: comment.kids,
+          level: level + 1,
+          getFromCache: getFromCache,
+        );
+      }
+    }
+    return;
+  }
+
   Future<Map<String, Object?>> cacheItem(Item item) async {
     final Database db = _database ?? await initializeDatabase();
     final StoreRef<int, Map<String, Object?>> store =

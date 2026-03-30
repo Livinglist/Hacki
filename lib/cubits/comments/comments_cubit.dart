@@ -236,6 +236,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
     late final Stream<Comment> commentStream;
     final bool shouldShowCompletionSnackBar = !state.isOfflineReading;
+    bool shouldUpdateUsingApi = false;
 
     if (state.isOfflineReading) {
       commentStream = _offlineRepository.getCachedCommentsStream(
@@ -311,9 +312,10 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                   return;
                 });
               } else {
-                logInfo('fetching comments of ${item.id} from API.');
+                logInfo('fetching comments of ${item.id} from file cache.');
+                shouldUpdateUsingApi = true;
                 commentStream =
-                    _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
+                    _sembastRepository.fetchAllCommentsRecursivelyStream(
                   ids: kids,
                   getFromCache:
                       shouldUseCommentCacheInMemory || shouldPrioritizeCache
@@ -323,9 +325,10 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
               }
             case CommentsOrder.oldestFirst:
             case CommentsOrder.newestFirst:
-              logInfo('fetching comments of ${item.id} from API.');
+              logInfo('fetching comments of ${item.id} from file cache.');
+              shouldUpdateUsingApi = true;
               commentStream =
-                  _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
+                  _sembastRepository.fetchAllCommentsRecursivelyStream(
                 ids: kids,
                 getFromCache:
                     shouldUseCommentCacheInMemory || shouldPrioritizeCache
@@ -343,6 +346,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
       ..onDone(
         () => _onDone(
           isCompletionSnackBarEnabled: shouldShowCompletionSnackBar,
+          shouldUpdateUsingApi: shouldUpdateUsingApi,
         ),
       )
       ..onError((_) => emit(state.copyWith(status: CommentsStatus.error)));
@@ -402,6 +406,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     final List<int> kids = _sortKids(updatedItem.kids);
 
     late final Stream<Comment> commentStream;
+    bool shouldUpdateUsingApi = false;
 
     switch (state.fetchMode) {
       case FetchMode.lazy:
@@ -444,16 +449,22 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                 return;
               });
             } else {
-              logInfo('fetching comments of ${item.id} from API.');
-              commentStream = _hackerNewsRepository
-                  .fetchAllCommentsRecursivelyStream(ids: kids);
+              logInfo('fetching comments of ${item.id} from file cache.');
+              shouldUpdateUsingApi = true;
+              commentStream =
+                  _sembastRepository.fetchAllCommentsRecursivelyStream(
+                ids: kids,
+                getFromCache: _commentCache.getComment,
+              );
             }
           case CommentsOrder.oldestFirst:
           case CommentsOrder.newestFirst:
-            logInfo('fetching comments of ${item.id} from API.');
+            logInfo('fetching comments of ${item.id} from file cache.');
+            shouldUpdateUsingApi = true;
             commentStream =
-                _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
+                _sembastRepository.fetchAllCommentsRecursivelyStream(
               ids: kids,
+              getFromCache: _commentCache.getComment,
             );
         }
     }
@@ -462,7 +473,12 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         .asyncMap(_toBuildableComment)
         .whereNotNull()
         .listen(_onCommentFetched)
-      ..onDone(() => _onDone(isCompletionSnackBarEnabled: true))
+      ..onDone(
+        () => _onDone(
+          isCompletionSnackBarEnabled: true,
+          shouldUpdateUsingApi: shouldUpdateUsingApi,
+        ),
+      )
       ..onError((_) => emit(state.copyWith(status: CommentsStatus.error)));
 
     emit(
@@ -1116,38 +1132,53 @@ comments length is ${state.comments.length}
     }
   }
 
-  void _onDone({bool isCompletionSnackBarEnabled = false}) {
+  void _onDone({
+    bool isCompletionSnackBarEnabled = false,
+    bool shouldUpdateUsingApi = false,
+  }) {
     _streamSubscription?.cancel();
     _streamSubscription = null;
 
     logInfo('loading of ${state.item.id} is complete.');
-    emit(
-      state.copyWith(
-        status: CommentsStatus.allLoaded,
-      ),
-    );
 
-    final bool isFirstTimeReading =
-        !_globalStoryIdToPreviousCollapseStates.containsKey(state.item.id);
-    if (isCompletionSnackBarEnabled && !isFirstTimeReading) {
-      final int newCommentsCount =
-          state.comments.where((Comment c) => c.isNew).length;
-      if (newCommentsCount > 0) {
-        HapticFeedbackUtil.success();
-        navigatorKey.currentContext?.showSnackBar(
-          persist: false,
-          duration: AppDurations.fiveSeconds,
-          content:
-              '''$newCommentsCount new comment${newCommentsCount > 1 ? 's' : ''} fetched.''',
-          label: openInThreadSearch == null ? null : 'Search',
-          action: openInThreadSearch == null
-              ? null
-              : () {
-                  resetSearch();
-                  search('', isNewSelected: true);
-                  openInThreadSearch?.call();
-                },
-        );
+    if (shouldUpdateUsingApi) {
+      final List<int> kids = _sortKids(state.item.kids);
+      _streamSubscription = _hackerNewsRepository
+          .fetchAllCommentsRecursivelyStream(ids: kids)
+          .asyncMap(_toBuildableComment)
+          .whereNotNull()
+          .listen(_onCommentFetched)
+        ..onDone(() => _onDone(shouldUpdateUsingApi: true))
+        ..onError((_) => emit(state.copyWith(status: CommentsStatus.error)));
+    } else {
+      emit(
+        state.copyWith(
+          status: CommentsStatus.allLoaded,
+        ),
+      );
+
+      final bool isFirstTimeReading =
+          !_globalStoryIdToPreviousCollapseStates.containsKey(state.item.id);
+      if (isCompletionSnackBarEnabled && !isFirstTimeReading) {
+        final int newCommentsCount =
+            state.comments.where((Comment c) => c.isNew).length;
+        if (newCommentsCount > 0) {
+          HapticFeedbackUtil.success();
+          navigatorKey.currentContext?.showSnackBar(
+            persist: false,
+            duration: AppDurations.fiveSeconds,
+            content:
+                '''$newCommentsCount new comment${newCommentsCount > 1 ? 's' : ''} fetched.''',
+            label: openInThreadSearch == null ? null : 'Search',
+            action: openInThreadSearch == null
+                ? null
+                : () {
+                    resetSearch();
+                    search('', isNewSelected: true);
+                    openInThreadSearch?.call();
+                  },
+          );
+        }
       }
     }
   }
@@ -1155,6 +1186,7 @@ comments length is ${state.comments.length}
   void _onCommentFetched(
     BuildableComment? comment, {
     bool persistNewState = false,
+    bool shouldInsertInsteadOfAppending = false,
   }) {
     if (comment != null) {
       final Comment? prevState = _previousCommentStates?[comment.id];
@@ -1193,6 +1225,11 @@ comments length is ${state.comments.length}
         );
       }
 
+      if (shouldInsertInsteadOfAppending &&
+          state.idToCommentMap[comment.id]?.kids == comment.kids) {
+        return;
+      }
+
       globalKeys[comment.id] = GlobalKey(
         debugLabel: 'comment_tile_key_${comment.id}_under_${state.item.id}',
       );
@@ -1206,10 +1243,26 @@ comments length is ${state.comments.length}
       final bool hidden = _filterCubit.state.keywords.any(
         (String keyword) => comment!.text.toLowerCase().contains(keyword),
       );
-      final List<Comment> updatedComments = <Comment>[
-        ...state.comments,
-        comment.copyWith(hidden: hidden),
-      ];
+
+      late final List<Comment> updatedComments;
+      if (shouldInsertInsteadOfAppending) {
+        final int index =
+            state.comments.indexWhere((Comment c) => c.id == comment?.id);
+        if (index >= 0) {
+          updatedComments = <Comment>[...state.comments]..replaceRange(
+              index,
+              index + 1,
+              <Comment>[comment],
+            );
+        } else {
+          return;
+        }
+      } else {
+        updatedComments = <Comment>[
+          ...state.comments,
+          comment.copyWith(hidden: hidden),
+        ];
+      }
 
       final Map<int, Comment> updatedIdToCommentMap =
           Map<int, Comment>.from(state.idToCommentMap);
