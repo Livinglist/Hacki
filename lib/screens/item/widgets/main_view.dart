@@ -81,7 +81,7 @@ class MainView extends StatelessWidget {
                   }
                 },
                 child: ScrollablePositionedList.builder(
-                  physics: const AlwaysScrollableScrollPhysics(),
+                  physics: const ClampingScrollPhysics(),
                   itemScrollController:
                       context.read<CommentsCubit>().itemScrollController,
                   itemPositionsListener:
