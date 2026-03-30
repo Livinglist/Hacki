@@ -112,9 +112,9 @@ class MainView extends StatelessWidget {
                         ),
                       );
                     } else if (index == state.comments.length + 1) {
-                      if (state.status == CommentsStatus.allLoaded &&
-                          (state.comments.isNotEmpty ||
-                              state.onlyShowTargetComment)) {
+                      if ((state.status == CommentsStatus.allLoaded &&
+                              state.comments.isNotEmpty) ||
+                          state.onlyShowTargetComment) {
                         return Container(
                           color: Theme.of(context).canvasColor,
                           height: _trailingBoxHeight,
