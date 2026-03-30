@@ -304,6 +304,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                       onError?.call(GenericException(error: e));
                   }
 
+                  emit(state.copyWith(status: CommentsStatus.error));
+
                   /// If fetching from web failed, fetch using API instead.
                   init(onError: onError, isFetchingFromWebAllowed: false);
                   return;
@@ -342,7 +344,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         () => _onDone(
           isCompletionSnackBarEnabled: shouldShowCompletionSnackBar,
         ),
-      );
+      )
+      ..onError((_) => emit(state.copyWith(status: CommentsStatus.error)));
   }
 
   Future<void> refresh({
@@ -436,7 +439,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
                 }
 
                 /// If fetching from web failed, fetch using API instead.
-                emit(state.copyWith(status: CommentsStatus.allLoaded));
+                emit(state.copyWith(status: CommentsStatus.error));
                 refresh(onError: onError, fetchFromWeb: false);
                 return;
               });
@@ -459,7 +462,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         .asyncMap(_toBuildableComment)
         .whereNotNull()
         .listen(_onCommentFetched)
-      ..onDone(() => _onDone(isCompletionSnackBarEnabled: true));
+      ..onDone(() => _onDone(isCompletionSnackBarEnabled: true))
+      ..onError((_) => emit(state.copyWith(status: CommentsStatus.error)));
 
     emit(
       state.copyWith(
