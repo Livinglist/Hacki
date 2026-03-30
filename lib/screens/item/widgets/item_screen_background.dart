@@ -108,7 +108,9 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
                 ))
                   Padding(
                     padding: EdgeInsets.only(
-                      left: widget.indentPadding * i,
+                      left: widget.shouldShowRootLevelLine
+                          ? widget.indentPadding * i
+                          : widget.indentPadding * i - widget.indentLineWidth,
                     ),
                     child: SizedBox(
                       height: MediaQuery.of(context).size.height,
