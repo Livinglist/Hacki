@@ -238,6 +238,7 @@ class HackiApp extends StatelessWidget {
           ),
         ),
         BlocProvider<TipsCubit>(
+          lazy: false,
           create: (BuildContext context) => TipsCubit(),
         ),
       ],

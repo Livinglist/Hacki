@@ -107,6 +107,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   final Map<int, StreamSubscription<Comment>> _streamSubscriptions =
       <int, StreamSubscription<Comment>>{};
 
+  final String currentTips = Constants.tips;
+
   static const int _webFetchingCmtCountLowerLimit = 5;
   static DateTime? _hackerNewsWebRetryAfterDateTime;
 

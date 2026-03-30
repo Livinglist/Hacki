@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fadein/flutter_fadein.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
@@ -28,6 +30,25 @@ class ItemScreenBackground extends StatefulWidget {
 class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
   int _shineIndex = 0;
   Timer? _timer;
+  bool isVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    unawaited(
+      Future<void>.delayed(
+        AppDurations.ms500,
+        () {
+          if (mounted) {
+            setState(() {
+              isVisible = true;
+            });
+          }
+        },
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -56,61 +77,63 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
           previous.maxLevel != current.maxLevel ||
           previous.status != current.status,
       builder: (BuildContext context, CommentsState state) {
-        if (state.status != CommentsStatus.allLoaded) {
-          return const SizedBox.shrink();
-        }
-        return Stack(
-          children: <Widget>[
-            if (widget.shouldShowRootLevelLine && state.comments.isNotEmpty)
-              Padding(
-                padding: EdgeInsets.zero,
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  width: widget.indentLineWidth,
-                  child: isEyeCandyEnabled
-                      ? AnimatedIndentLine(
-                          color: Theme.of(context).colorScheme.primaryContainer,
-                          width: widget.indentLineWidth,
-                          isShining: _shineIndex == 0,
-                        )
-                      : Container(
-                          width: widget.indentLineWidth,
-                          height: MediaQuery.of(context).size.height,
-                          color: Theme.of(context).colorScheme.primaryContainer,
-                        ),
-                ),
-              ),
-            if (state.maxLevel > 0)
-              for (final int i in 1.to(
-                state.maxLevel,
-              ))
+        if (!isVisible) return const SizedBox.shrink();
+        return FadeIn(
+          child: Stack(
+            children: <Widget>[
+              if (widget.shouldShowRootLevelLine && state.comments.isNotEmpty)
                 Padding(
-                  padding: EdgeInsets.only(
-                    left: widget.indentPadding * i,
-                  ),
+                  padding: EdgeInsets.zero,
                   child: SizedBox(
                     height: MediaQuery.of(context).size.height,
                     width: widget.indentLineWidth,
                     child: isEyeCandyEnabled
                         ? AnimatedIndentLine(
-                            color: ColorUtil.getRainbowColor(
-                              i,
-                              Theme.of(context).canvasColor,
-                            ).$1,
+                            color:
+                                Theme.of(context).colorScheme.primaryContainer,
                             width: widget.indentLineWidth,
-                            isShining: _shineIndex == i,
+                            isShining: _shineIndex == 0,
                           )
                         : Container(
                             width: widget.indentLineWidth,
                             height: MediaQuery.of(context).size.height,
-                            color: ColorUtil.getRainbowColor(
-                              i,
-                              Theme.of(context).canvasColor,
-                            ).$1,
+                            color:
+                                Theme.of(context).colorScheme.primaryContainer,
                           ),
                   ),
                 ),
-          ],
+              if (state.maxLevel > 0)
+                for (final int i in 1.to(
+                  state.maxLevel,
+                ))
+                  Padding(
+                    padding: EdgeInsets.only(
+                      left: widget.indentPadding * i,
+                    ),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height,
+                      width: widget.indentLineWidth,
+                      child: isEyeCandyEnabled
+                          ? AnimatedIndentLine(
+                              color: ColorUtil.getRainbowColor(
+                                i,
+                                Theme.of(context).canvasColor,
+                              ).$1,
+                              width: widget.indentLineWidth,
+                              isShining: _shineIndex == i,
+                            )
+                          : Container(
+                              width: widget.indentLineWidth,
+                              height: MediaQuery.of(context).size.height,
+                              color: ColorUtil.getRainbowColor(
+                                i,
+                                Theme.of(context).canvasColor,
+                              ).$1,
+                            ),
+                    ),
+                  ),
+            ],
+          ),
         );
       },
     );

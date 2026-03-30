@@ -112,14 +112,26 @@ class MainView extends StatelessWidget {
                         ),
                       );
                     } else if (index == state.comments.length + 1) {
-                      if ((state.status == CommentsStatus.allLoaded &&
-                              state.comments.isNotEmpty) ||
-                          state.onlyShowTargetComment) {
+                      if (state.status == CommentsStatus.allLoaded &&
+                          (state.comments.isNotEmpty ||
+                              state.onlyShowTargetComment)) {
                         return Container(
                           color: Theme.of(context).canvasColor,
                           height: _trailingBoxHeight,
-                          child: Center(
-                            child: Text(Constants.happyFace),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(Constants.happyFace),
+                              SizedBoxes.pt36,
+                              Text(
+                                context.read<CommentsCubit>().currentTips,
+                                style: TextStyle(
+                                  fontSize: TextDimens.pt10,
+                                  color: Theme.of(context).hintColor,
+                                ),
+                                textScaler: TextScaler.noScaling,
+                              ),
+                            ],
                           ),
                         );
                       } else {

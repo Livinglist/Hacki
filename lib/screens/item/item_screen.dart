@@ -311,7 +311,7 @@ class _ItemScreenState extends State<ItemScreen>
                         ),
                         Positioned.fill(
                           child: MainView(
-                            topPadding: Dimens.pt100,
+                            topPadding: context.topPadding,
                             indentPadding: _indentPadding,
                             scrollOffsetListener: scrollOffsetListener,
                             commentEditingController: commentEditingController,
@@ -414,7 +414,7 @@ class _ItemScreenState extends State<ItemScreen>
                         ),
                         Positioned.fill(
                           child: MainView(
-                            topPadding: Dimens.pt120,
+                            topPadding: context.topPadding,
                             indentPadding: _indentPadding,
                             scrollOffsetListener: scrollOffsetListener,
                             commentEditingController: commentEditingController,
