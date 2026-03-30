@@ -116,7 +116,8 @@ class MainView extends StatelessWidget {
                           state.onlyShowTargetComment) {
                         return Container(
                           color: Theme.of(context).canvasColor,
-                          height: MediaQuery.of(context).size.height,
+                          height: MediaQuery.of(context).size.height -
+                              MediaQuery.of(context).padding.top,
                           child: Column(
                             children: <Widget>[
                               SizedBoxes.pt100,
