@@ -121,7 +121,12 @@ class MainView extends StatelessWidget {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              Text(Constants.happyFace),
+                              Text(
+                                Constants.happyFace,
+                                style: TextStyle(
+                                  color: Theme.of(context).hintColor,
+                                ),
+                              ),
                               SizedBoxes.pt36,
                               Text(
                                 context.read<CommentsCubit>().currentTips,
