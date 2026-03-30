@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/comment_tile.dart';
 import 'package:hacki/screens/widgets/story_tile.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:hacki/utils/link_util.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 class TimeMachineDialog extends StatelessWidget {
@@ -79,9 +81,24 @@ class TimeMachineDialog extends StatelessWidget {
                                     .state
                                     .isPreviewImageLeftAligned,
                                 story: rootItem as Story,
-                                onTap: () {},
+                                onTap: () {
+                                  final String url = rootItem.url.isNotEmpty
+                                      ? rootItem.url
+                                      : '''${Constants.hackerNewsItemLinkPrefix}${rootItem.id}''';
+                                  LinkUtil.launch(
+                                    url,
+                                    context,
+                                    shouldUseHackiForHnLink: false,
+                                  );
+                                },
                               ),
-                            Comment() || Item() => const SizedBox.shrink(),
+                            Comment() => CommentTile(
+                                comment: rootItem as Comment,
+                                isActionable: false,
+                                isCollapsable: false,
+                                fetchMode: FetchMode.eager,
+                              ),
+                            Item() => const SizedBox.shrink(),
                           },
                           for (final int i in 0.to(
                             state.ancestors.length,
@@ -92,14 +109,17 @@ class TimeMachineDialog extends StatelessWidget {
                               children: <Widget>[
                                 for (final int _ in 0.to(i, inclusive: false))
                                   SizedBoxes.pt6,
-                                const Padding(
-                                  padding: EdgeInsets.only(
+                                Padding(
+                                  padding: const EdgeInsets.only(
                                     top: Dimens.pt6,
                                     left: Dimens.pt6,
                                   ),
                                   child: Icon(
                                     Icons.subdirectory_arrow_right_rounded,
                                     size: TextDimens.pt18,
+                                    color: i == state.ancestors.length
+                                        ? Theme.of(context).colorScheme.primary
+                                        : null,
                                   ),
                                 ),
                                 Expanded(

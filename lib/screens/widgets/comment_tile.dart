@@ -175,7 +175,6 @@ class CommentTile extends StatelessWidget {
                         dismissible: DismissiblePane(
                           closeOnCancel: true,
                           confirmDismiss: () async {
-                            if (level == 0) return false;
                             DialogProxy.showTimeMachineDialog(
                               context,
                               rootItem:
