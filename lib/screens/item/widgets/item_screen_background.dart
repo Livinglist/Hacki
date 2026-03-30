@@ -130,7 +130,12 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
                               color: ColorUtil.getRainbowColor(
                                 i,
                                 Theme.of(context).canvasColor,
-                              ).$1,
+                              ).$1.withValues(
+                                    alpha: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? 0.6
+                                        : 1,
+                                  ),
                             ),
                     ),
                   ),
