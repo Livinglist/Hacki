@@ -94,6 +94,10 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     logInfo('initializing stories from data source: $dataSource');
     logInfo('is starting up? ${event.startup}');
 
+    for (final StreamSubscription<Story> s in _storySubscriptions.values) {
+      await s.cancel();
+    }
+
     final int? downloadTimestamp = await _getDownloadTimestamp();
 
     emit(
@@ -115,10 +119,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         logInfo('no network connection, entering offline mode.');
         add(StoriesEnterOfflineMode());
       }
-    }
-
-    for (final StreamSubscription<Story> s in _storySubscriptions.values) {
-      await s.cancel();
     }
 
     for (final StoryType type in _preferenceCubit.state.tabs) {
