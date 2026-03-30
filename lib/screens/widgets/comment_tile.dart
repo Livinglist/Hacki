@@ -88,7 +88,9 @@ class CommentTile extends StatelessWidget {
                 Theme.of(context).colorScheme.onPrimaryContainer,
               );
         final double backgroundColorAlpha =
-            Theme.of(context).brightness == Brightness.dark ? 0.6 : 1;
+            Theme.of(context).brightness == Brightness.dark && level > 0
+                ? 0.6
+                : 1;
         final Color backgroundColor =
             slidableColors.$1.withValues(alpha: backgroundColorAlpha);
         final Color foregroundColor = slidableColors.$2;
