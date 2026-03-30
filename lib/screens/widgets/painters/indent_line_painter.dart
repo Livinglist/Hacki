@@ -46,15 +46,19 @@ class IndentLinePainter extends CustomPainter {
     final double cy = size.height * shimmerPos.clamp(0.0, 1.0);
     final double top = max(0, cy - streakHeight / 2);
     final double bottom = min(size.height, cy + streakHeight / 2);
+    final Color streakColor =
+        brightness == Brightness.dark ? color : Colors.black26;
+    final double streakAlpha =
+        brightness == Brightness.dark ? 0.95 * glowOpacity : 0.2;
 
     final Paint streakPaint = Paint()
       ..shader = LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: <Color>[
-          color.withValues(alpha: 0),
-          color.withValues(alpha: 0.95 * glowOpacity),
-          color.withValues(alpha: 0),
+          streakColor.withValues(alpha: 0),
+          streakColor.withValues(alpha: streakAlpha),
+          streakColor.withValues(alpha: 0),
         ],
       ).createShader(Rect.fromLTWH(0, top, size.width, bottom - top))
       ..strokeWidth = lineWidth
@@ -62,11 +66,13 @@ class IndentLinePainter extends CustomPainter {
 
     canvas.drawLine(Offset(cx, top), Offset(cx, bottom), streakPaint);
 
-    // final Paint dotPaint = Paint()
-    //   ..color = Color.lerp(color, Colors.white, 0.6)!.withValues(alpha: 0.4)
-    //   ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2);
-    //
-    // canvas.drawCircle(Offset(cx, cy), lineWidth * 1.8, dotPaint);
+    final Color dotColor =
+        brightness == Brightness.dark ? Colors.white : Colors.black26;
+    final Paint dotPaint = Paint()
+      ..color = Color.lerp(color, dotColor, 0.6)!.withValues(alpha: 0.3)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2);
+
+    canvas.drawCircle(Offset(cx, cy), lineWidth * 1.8, dotPaint);
   }
 
   @override
