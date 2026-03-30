@@ -153,8 +153,10 @@ class MainView extends StatelessWidget {
                           ? const SizedBox.shrink()
                           : Padding(
                               padding: EdgeInsets.only(
-                                left: comment.level * indentPadding +
-                                    indentLineWidth,
+                                left: splitViewEnabled
+                                    ? comment.level * indentPadding
+                                    : comment.level * indentPadding +
+                                        indentLineWidth,
                               ),
                               child: CommentTile(
                                 comment: comment,
