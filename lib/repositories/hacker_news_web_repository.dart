@@ -51,7 +51,17 @@ class HackerNewsWebRepository with Loggable {
         _hackerNewsRepository =
             hackerNewsRepository ?? locator.get<HackerNewsRepository>() {
     _dio
-      ..interceptors.add(RetryInterceptor(dio: _dio))
+      ..interceptors.add(
+        RetryInterceptor(
+          dio: _dio,
+          retryEvaluator: (DioException error, int attempt) {
+            if (_rateLimitedStatusCode.contains(error.response?.statusCode)) {
+              return false;
+            }
+            return true;
+          },
+        ),
+      )
       ..httpClientAdapter = IOHttpClientAdapter(
         createHttpClient: () => _httpClient,
       );
