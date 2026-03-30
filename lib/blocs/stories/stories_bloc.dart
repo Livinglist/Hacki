@@ -679,6 +679,9 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
   @override
   Future<void> close() async {
     await _preferenceSubscription?.cancel();
+    for (final StreamSubscription<Story> s in _storySubscriptions.values) {
+      await s.cancel();
+    }
     await super.close();
   }
 
