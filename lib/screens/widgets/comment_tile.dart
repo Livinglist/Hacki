@@ -437,18 +437,16 @@ class CommentTile extends StatelessWidget {
             comment.deleted == false &&
             authState.username == comment.by;
 
-        Widget wrapper = Container(
+        Widget wrapper = Material(
           clipBehavior: Clip.hardEdge,
-          decoration: BoxDecoration(
-            color: () {
-              if (isMyComment) {
-                return primaryColor.withValues(alpha: 0.2);
-              } else if (shouldHighlightNewComments && comment.isNew) {
-                return Theme.of(context).colorScheme.surfaceContainerLow;
-              }
-              return commentBackgroundColor;
-            }(),
-          ),
+          color: () {
+            if (isMyComment) {
+              return primaryColor.withValues(alpha: 0.2);
+            } else if (shouldHighlightNewComments && comment.isNew) {
+              return Theme.of(context).colorScheme.surfaceContainerLow;
+            }
+            return commentBackgroundColor;
+          }(),
           child: child,
         );
 

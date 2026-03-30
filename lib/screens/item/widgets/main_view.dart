@@ -90,7 +90,7 @@ class MainView extends StatelessWidget {
                   scrollOffsetListener: scrollOffsetListener,
                   itemBuilder: (BuildContext context, int index) {
                     if (index == 0) {
-                      return ColoredBox(
+                      return Material(
                         color: Theme.of(context).canvasColor,
                         child: Padding(
                           padding: EdgeInsets.only(
