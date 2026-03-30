@@ -129,13 +129,12 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   }
 
   Future<bool> get _shouldFetchFromWeb async {
-    final bool isOnWifi = await _isOnWifi;
     final bool isPastRetryAfterDateTime =
         _hackerNewsWebRetryAfterDateTime == null ||
             DateTime.now().isAfter(_hackerNewsWebRetryAfterDateTime!);
     final int webFetchingCmtCountLowerLimit =
         await _webFetchingCmtCountLowerLimit;
-    if (isOnWifi && isPastRetryAfterDateTime) {
+    if (isPastRetryAfterDateTime) {
       return switch (state.item) {
         Story(descendants: final int descendants)
             when descendants > webFetchingCmtCountLowerLimit =>
@@ -145,9 +144,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
           true,
         _ => false,
       };
-    } else {
-      return isPastRetryAfterDateTime;
     }
+    return false;
   }
 
   static Future<bool> get _isOnWifi async {
