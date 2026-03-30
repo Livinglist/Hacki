@@ -293,22 +293,6 @@ class _ItemScreenState extends State<ItemScreen>
                             shouldShowRootLevelLine: false,
                           ),
                         ),
-                        Positioned(
-                          left: 4,
-                          child: Container(
-                            height: MediaQuery.of(context).size.height,
-                            width: 2,
-                            color: Colors.yellow,
-                          ),
-                        ),
-                        Positioned(
-                          left: 8,
-                          child: Container(
-                            height: MediaQuery.of(context).size.height,
-                            width: 2,
-                            color: Colors.pink,
-                          ),
-                        ),
                         Positioned.fill(
                           child: MainView(
                             topPadding: context.topPadding,
