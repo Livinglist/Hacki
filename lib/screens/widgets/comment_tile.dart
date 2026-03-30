@@ -443,7 +443,7 @@ class CommentTile extends StatelessWidget {
           clipBehavior: Clip.hardEdge,
           color: () {
             if (isMyComment) {
-              return primaryColor.withValues(alpha: 0.2);
+              return Theme.of(context).colorScheme.surfaceContainerHigh;
             } else if (shouldHighlightNewComments && comment.isNew) {
               return Theme.of(context).colorScheme.surfaceContainerLow;
             }

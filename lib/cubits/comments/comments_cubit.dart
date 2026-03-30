@@ -192,6 +192,10 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
           comments: targetAncestors,
           onlyShowTargetComment: true,
           status: CommentsStatus.allLoaded,
+          maxLevel: targetAncestors
+              ?.map((Comment c) => c.level)
+              .sorted((int lhs, int rhs) => lhs.compareTo(rhs))
+              .last,
         ),
       );
 
