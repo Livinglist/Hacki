@@ -109,7 +109,9 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
   final String currentTips = Constants.tips;
 
-  static const int _webFetchingCmtCountLowerLimit = 5;
+  static const int _wifiWebFetchingCmtCountLowerLimit = 50;
+  static const int _cellularWebFetchingCmtCountLowerLimit = 20;
+
   static DateTime? _hackerNewsWebRetryAfterDateTime;
 
   /// The id of the comment of which the text selection menu is active.
@@ -119,18 +121,27 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
   bool get hasNewComment => state.comments.any((Comment c) => c.isNew);
 
+  Future<int> get _webFetchingCmtCountLowerLimit async {
+    final bool isOnWifi = await _isOnWifi;
+    return isOnWifi
+        ? _wifiWebFetchingCmtCountLowerLimit
+        : _cellularWebFetchingCmtCountLowerLimit;
+  }
+
   Future<bool> get _shouldFetchFromWeb async {
     final bool isOnWifi = await _isOnWifi;
     final bool isPastRetryAfterDateTime =
         _hackerNewsWebRetryAfterDateTime == null ||
             DateTime.now().isAfter(_hackerNewsWebRetryAfterDateTime!);
+    final int webFetchingCmtCountLowerLimit =
+        await _webFetchingCmtCountLowerLimit;
     if (isOnWifi && isPastRetryAfterDateTime) {
       return switch (state.item) {
         Story(descendants: final int descendants)
-            when descendants > _webFetchingCmtCountLowerLimit =>
+            when descendants > webFetchingCmtCountLowerLimit =>
           true,
         Comment(kids: final List<int> kids)
-            when kids.length > _webFetchingCmtCountLowerLimit =>
+            when kids.length > webFetchingCmtCountLowerLimit =>
           true,
         _ => false,
       };
