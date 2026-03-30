@@ -45,7 +45,6 @@ class MainView extends StatelessWidget {
   final double topPadding;
 
   static const int _loadingIndicatorOpacityAnimationDuration = 300;
-  static const double _trailingBoxHeight = 400;
 
   @override
   Widget build(BuildContext context) {
@@ -117,10 +116,10 @@ class MainView extends StatelessWidget {
                           state.onlyShowTargetComment) {
                         return Container(
                           color: Theme.of(context).canvasColor,
-                          height: _trailingBoxHeight,
+                          height: MediaQuery.of(context).size.height,
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
+                              SizedBoxes.pt100,
                               Text(
                                 Constants.happyFace,
                                 style: TextStyle(
