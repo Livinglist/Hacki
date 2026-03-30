@@ -72,7 +72,7 @@ class FloatingSkipButtons extends StatelessWidget {
                 child: InkWell(
                   onLongPress: () {
                     final CommentsCubit cubit = context.read<CommentsCubit>();
-                    cubit.scrollTo(index: cubit.state.comments.length);
+                    cubit.scrollTo(index: cubit.state.comments.length - 1);
                   },
                   child: FloatingActionButton(
                     enableFeedback: false,
