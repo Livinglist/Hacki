@@ -64,7 +64,7 @@ class Comment extends Item {
       score: score,
       by: by,
       text: text,
-      kids: kid == null ? kids : <int>[...kids, kid],
+      kids: kid == null || kids.contains(kid) ? kids : <int>[...kids, kid],
       dead: dead,
       deleted: deleted,
       hidden: hidden ?? this.hidden,

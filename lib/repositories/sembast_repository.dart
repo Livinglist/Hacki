@@ -42,6 +42,7 @@ class SembastRepository with Loggable {
   static const String _commentsKey = 'comments';
   static const String _idsOfCommentsRepliedToMeKey = 'idsOfCommentsRepliedToMe';
   static const String _metadataCacheKey = 'metadata';
+  static const String _cachedThreadItemsKey = 'cachedThreadItems';
 
   Future<Database> initializeDatabase() async {
     final Directory dir = await getApplicationCacheDirectory();
@@ -261,6 +262,36 @@ class SembastRepository with Loggable {
     if (snapshot != null) {
       final WebInfo info = WebInfo.fromJson(snapshot.value);
       return info;
+    } else {
+      return null;
+    }
+  }
+
+  //#endregion
+
+  //#region Cached items for thread
+  Future<Map<String, Object?>> cacheThreadItem(Item item) async {
+    final Database db = _database ?? await initializeDatabase();
+    final StoreRef<int, Map<String, Object?>> store =
+        intMapStoreFactory.store(_cachedThreadItemsKey);
+    return store.record(item.id).put(db, item.toJson());
+  }
+
+  Future<Item?> getCachedThreadItem({required int id}) async {
+    final Database db = _database ?? await initializeDatabase();
+    final StoreRef<int, Map<String, Object?>> store =
+        intMapStoreFactory.store(_cachedThreadItemsKey);
+    final RecordSnapshot<int, Map<String, Object?>>? snapshot =
+        await store.record(id).getSnapshot(db);
+    if (snapshot != null) {
+      final bool isStory = snapshot['type'] == 'story';
+      if (isStory) {
+        final Story story = Story.fromJson(snapshot.value);
+        return story;
+      } else {
+        final Comment comment = Comment.fromJson(snapshot.value);
+        return comment;
+      }
     } else {
       return null;
     }

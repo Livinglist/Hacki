@@ -270,6 +270,14 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         _globalIdToStoryCache[item.id] = updatedItem;
       }
 
+      final bool res = await _loadFromFileCache();
+      if (res) {
+        logInfo(
+          'loaded comments from file cache, prioritizing cache fetching.',
+        );
+        shouldPrioritizeCache = true;
+      }
+
       switch (state.fetchMode) {
         case FetchMode.lazy:
           commentStream = _hackerNewsRepository.fetchCommentsStream(
@@ -1152,6 +1160,8 @@ comments length is ${state.comments.length}
       ),
     );
 
+    unawaited(_cacheThread());
+
     final bool isFirstTimeReading =
         !_globalStoryIdToPreviousCollapseStates.containsKey(state.item.id);
     if (isCompletionSnackBarEnabled && !isFirstTimeReading) {
@@ -1173,6 +1183,46 @@ comments length is ${state.comments.length}
                   openInThreadSearch?.call();
                 },
         );
+      }
+    }
+  }
+
+  Future<bool> _loadFromFileCache() async {
+    if (state.item is Comment) return false;
+    logInfo('attempting to load comments from file cache.');
+    final Item? cachedStory =
+        await _sembastRepository.getCachedThreadItem(id: state.item.id);
+
+    Future<void> loadFromFileCache(List<int> kids) async {
+      for (final int i in kids) {
+        if (_commentCache.getComment(i) == null) {
+          final Item? cachedComment =
+              await _sembastRepository.getCachedThreadItem(id: i);
+          if (cachedComment != null && cachedComment is Comment) {
+            _commentCache.cacheComment(cachedComment);
+
+            await loadFromFileCache(cachedComment.kids);
+          }
+        }
+      }
+    }
+
+    if (cachedStory?.descendants == state.item.descendants) {
+      final List<int> kids = state.item.kids;
+      await loadFromFileCache(kids);
+      return true;
+    }
+
+    return false;
+  }
+
+  Future<void> _cacheThread() async {
+    if (state.item is Comment) return;
+    await _sembastRepository.cacheThreadItem(state.item);
+    for (final Comment c in state.comments) {
+      final Comment? cachedComment = _commentCache.getComment(c.id);
+      if (cachedComment != null) {
+        await _sembastRepository.cacheThreadItem(cachedComment);
       }
     }
   }
@@ -1222,10 +1272,6 @@ comments length is ${state.comments.length}
         debugLabel: 'comment_tile_key_${comment.id}_under_${state.item.id}',
       );
       _commentCache.cacheComment(comment);
-
-      if (state.isOfflineReading) {
-        _sembastRepository.cacheComment(comment);
-      }
 
       // Hide comment that matches any of the filter keywords.
       final bool hidden = _filterCubit.state.keywords.any(
