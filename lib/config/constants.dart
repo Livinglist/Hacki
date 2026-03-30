@@ -59,7 +59,7 @@ abstract class Constants {
         'Text preview on collapsed comment can be turned off in settings',
         'Use lazy fetching to fetch only the root level comments',
         'Turn on True Dark Mode in settings to use black background',
-        'Download stories in settings to read stories while offline'
+        'Download stories in settings to read stories while offline',
       ].randomlyPicked!;
 
   static final String happyFace = <String>[
