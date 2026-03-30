@@ -410,6 +410,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
     switch (state.fetchMode) {
       case FetchMode.lazy:
+        logInfo('fetching comments of ${item.id} from API.');
         commentStream = _hackerNewsRepository.fetchCommentsStream(ids: kids);
       case FetchMode.eager:
         switch (state.order) {
@@ -517,6 +518,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
         /// Ignoring because the subscription will be cancelled in close()
         // ignore: cancel_subscriptions
+        logInfo('fetching comments of ${comment.id} from API.');
         final StreamSubscription<Comment> streamSubscription =
             _hackerNewsRepository
                 .fetchCommentsStream(ids: comment.kids)
@@ -1143,6 +1145,7 @@ comments length is ${state.comments.length}
 
     if (shouldUpdateUsingApi) {
       final List<int> kids = _sortKids(state.item.kids);
+      logInfo('updating comments of ${state.item.id} from API.');
       _streamSubscription = _hackerNewsRepository
           .fetchAllCommentsRecursivelyStream(ids: kids)
           .asyncMap(_toBuildableComment)
