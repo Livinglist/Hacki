@@ -28,7 +28,7 @@ class CacheInterceptor extends Interceptor with Loggable {
   CacheInterceptor({Duration? maxStale})
       : _maxStale = maxStale ?? _defaultMaxStale;
 
-  static const Duration _defaultMaxStale = AppDurations.oneMinute;
+  static const Duration _defaultMaxStale = AppDurations.threeMinutes;
   static final Map<String, CachedResponse<dynamic>> _cache =
       <String, CachedResponse<dynamic>>{};
 
