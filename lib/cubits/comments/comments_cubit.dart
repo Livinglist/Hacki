@@ -231,7 +231,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     emit(state.copyWith(item: updatedItem));
 
     late final Stream<Comment> commentStream;
-    final bool shouldShowCompletionSnackBar = !state.isOfflineReading;
+    final bool shouldShowCompletionSnackBar =
+        item is Story && !state.isOfflineReading;
 
     if (state.isOfflineReading) {
       commentStream = _offlineRepository.getCachedCommentsStream(
@@ -253,7 +254,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         logInfo(
           '''first time visiting or updates in story, fetching from remote source.''',
         );
-        _globalIdToStoryCache[item.id] = updatedItem;
       }
 
       switch (state.fetchMode) {
@@ -337,9 +337,21 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         .whereNotNull()
         .listen(_onCommentFetched)
       ..onDone(
-        () => _onDone(
-          isCompletionSnackBarEnabled: shouldShowCompletionSnackBar,
-        ),
+        () {
+          if (item is Story &&
+              state.comments.length >= updatedItem.descendants) {
+            _globalIdToStoryCache[item.id] = updatedItem as Story;
+            emit(
+              state.copyWith(
+                item: updatedItem,
+              ),
+            );
+          }
+
+          _onDone(
+            isCompletionSnackBarEnabled: shouldShowCompletionSnackBar,
+          );
+        },
       )
       ..onError((_) => emit(state.copyWith(status: CommentsStatus.error)));
   }
@@ -365,24 +377,20 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         await _hackerNewsRepository.fetchItem(id: item.id) ?? item;
 
     /// If descendants has not changed, abort fetching.
-    if (item is Story) {
-      if (item.descendants == updatedItem.descendants) {
-        if (hasNewComment) {
-          final List<Comment> updatedComments = <Comment>[];
-          for (final Comment cmt in state.comments) {
-            updatedComments.add(
-              cmt.copyWith(isNew: false),
-            );
-          }
-
-          emit(state.copyWith(comments: updatedComments));
+    if (item is Story && item.descendants == updatedItem.descendants) {
+      if (hasNewComment) {
+        final List<Comment> updatedComments = <Comment>[];
+        for (final Comment cmt in state.comments) {
+          updatedComments.add(
+            cmt.copyWith(isNew: false),
+          );
         }
 
-        emit(state.copyWith(status: CommentsStatus.allLoaded));
-        return;
-      } else {
-        _globalIdToStoryCache[item.id] = updatedItem as Story;
+        emit(state.copyWith(comments: updatedComments));
       }
+
+      emit(state.copyWith(status: CommentsStatus.allLoaded));
+      return;
     }
 
     await _streamSubscription?.cancel();
@@ -394,7 +402,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
     emit(
       state.copyWith(
-        item: updatedItem,
         comments: <Comment>[],
         currentPage: 0,
       ),
@@ -468,14 +475,19 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         .asyncMap(_toBuildableComment)
         .whereNotNull()
         .listen(_onCommentFetched)
-      ..onDone(() => _onDone(isCompletionSnackBarEnabled: true))
-      ..onError((_) => emit(state.copyWith(status: CommentsStatus.error)));
+      ..onDone(() {
+        if (item is Story && state.comments.length >= updatedItem.descendants) {
+          _globalIdToStoryCache[item.id] = updatedItem as Story;
+          emit(
+            state.copyWith(
+              item: updatedItem,
+            ),
+          );
+        }
 
-    emit(
-      state.copyWith(
-        item: updatedItem,
-      ),
-    );
+        _onDone(isCompletionSnackBarEnabled: true);
+      })
+      ..onError((_) => emit(state.copyWith(status: CommentsStatus.error)));
   }
 
   void loadAll(Story story) {
