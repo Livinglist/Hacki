@@ -81,6 +81,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
   DeviceScreenType? deviceScreenType;
   StreamSubscription<PreferenceState>? _preferenceSubscription;
   StreamSubscription<Status>? _preferenceStatusSubscription;
+  final Map<StoryType, StreamSubscription<Story>> _storySubscriptions =
+      <StoryType, StreamSubscription<Story>>{};
 
   static const int _pageSize = 30;
 
@@ -113,6 +115,10 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         logInfo('no network connection, entering offline mode.');
         add(StoriesEnterOfflineMode());
       }
+    }
+
+    for (final StreamSubscription<Story> s in _storySubscriptions.values) {
+      await s.cancel();
     }
 
     for (final StoryType type in _preferenceCubit.state.tabs) {
@@ -169,13 +175,14 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
             .copyWithStatusUpdated(type: type, to: Status.inProgress),
       );
 
-      _hackerNewsRepository
+      await _storySubscriptions[type]?.cancel();
+      _storySubscriptions[type] = _hackerNewsRepository
           .fetchStoriesStream(
             ids: ids.sublist(0, min(_pageSize, ids.length)),
             sequential: true,
           )
           .listen((Story story) => add(StoryLoaded(story: story, type: type)))
-          .onDone(() => add(StoryLoadingCompleted(type: type)));
+        ..onDone(() => add(StoryLoadingCompleted(type: type)));
     } else {
       logInfo('($type) loading stories from web.');
       emit(
@@ -184,7 +191,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
             .copyWithStatusUpdated(type: type, to: Status.inProgress),
       );
 
-      _hackerNewsWebRepository
+      await _storySubscriptions[type]?.cancel();
+      _storySubscriptions[type] = _hackerNewsWebRepository
           .fetchStoriesStream(event.type, page: 1)
           .handleError((dynamic e) {
         logError('($type) error loading stories from web $e');
@@ -201,7 +209,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         } else {
           add(StoryLoaded(story: story, type: type));
         }
-      }).onDone(() => add(StoryLoadingCompleted(type: type)));
+      })
+        ..onDone(() => add(StoryLoadingCompleted(type: type)));
     }
   }
 
