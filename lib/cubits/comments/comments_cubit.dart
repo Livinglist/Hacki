@@ -228,8 +228,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
 
     final List<int> kids = _sortKids(updatedItem.kids);
 
-    emit(state.copyWith(item: updatedItem));
-
     late final Stream<Comment> commentStream;
     final bool shouldShowCompletionSnackBar =
         item is Story && !state.isOfflineReading;
