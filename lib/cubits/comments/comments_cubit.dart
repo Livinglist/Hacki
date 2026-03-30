@@ -43,7 +43,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     required CommentsOrder defaultCommentsOrder,
     CommentCache? commentCache,
     OfflineRepository? offlineRepository,
-    SembastRepository? sembastRepository,
     HackerNewsRepository? hackerNewsRepository,
     HackerNewsWebRepository? hackerNewsWebRepository,
     CollapseStateCacheRepository? collapseStateCacheRepository,
@@ -53,8 +52,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         _commentCache = commentCache ?? locator.get<CommentCache>(),
         _offlineRepository =
             offlineRepository ?? locator.get<OfflineRepository>(),
-        _sembastRepository =
-            sembastRepository ?? locator.get<SembastRepository>(),
         _hackerNewsRepository =
             hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
         _hackerNewsWebRepository =
@@ -85,7 +82,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
   final PreferenceCubit _preferenceCubit;
   final CommentCache _commentCache;
   final OfflineRepository _offlineRepository;
-  final SembastRepository _sembastRepository;
   final HackerNewsRepository _hackerNewsRepository;
   final HackerNewsWebRepository _hackerNewsWebRepository;
   final CollapseStateCacheRepository _collapseStateCacheRepository;
@@ -1202,10 +1198,6 @@ comments length is ${state.comments.length}
         debugLabel: 'comment_tile_key_${comment.id}_under_${state.item.id}',
       );
       _commentCache.cacheComment(comment);
-
-      if (state.isOfflineReading) {
-        _sembastRepository.cacheComment(comment);
-      }
 
       // Hide comment that matches any of the filter keywords.
       final bool hidden = _filterCubit.state.keywords.any(
