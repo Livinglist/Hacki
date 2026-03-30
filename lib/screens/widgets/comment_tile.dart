@@ -77,7 +77,6 @@ class CommentTile extends StatelessWidget {
         PreferenceState prefState,
         BlocklistState blocklistState,
       ) {
-        final Color primaryColor = Theme.of(context).colorScheme.primary;
         final (Color, Color) slidableColors = level > 0
             ? ColorUtil.getRainbowColor(
                 level,
