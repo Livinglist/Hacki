@@ -193,6 +193,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     await _initializeCollapseStateCache();
 
     final Item item = state.item;
+    await _streamSubscription?.cancel();
 
     if (_preferenceCubit.state.shouldPreserveCollapseStateAfterScreenExit &&
         item is Story) {
