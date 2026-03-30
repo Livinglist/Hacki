@@ -57,7 +57,7 @@ class MainView extends StatelessWidget {
                 previous.status != current.status,
             builder: (BuildContext context, CommentsState state) {
               return RefreshIndicator(
-                displacement: 300,
+                displacement: 200,
                 color: Theme.of(context).colorScheme.primaryContainer,
                 onRefresh: () async {
                   HapticFeedbackUtil.light();
