@@ -160,7 +160,8 @@ class MainView extends StatelessWidget {
                               ),
                               child: CommentTile(
                                 comment: comment,
-                                backgroundColor: Theme.of(context).canvasColor,
+                                commentBackgroundColor:
+                                    Theme.of(context).canvasColor,
                                 index: index,
                                 level: comment.level,
                                 opUsername: state.item.by,

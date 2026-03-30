@@ -39,7 +39,7 @@ class CommentTile extends StatelessWidget {
     this.level = 0,
     this.index,
     this.onTap,
-    this.backgroundColor = Colors.transparent,
+    this.commentBackgroundColor = Colors.transparent,
   });
 
   final String? opUsername;
@@ -57,7 +57,7 @@ class CommentTile extends StatelessWidget {
   final bool shouldHighlightNewComments;
   final bool shouldShowDivider;
   final FetchMode fetchMode;
-  final Color backgroundColor;
+  final Color commentBackgroundColor;
 
   final void Function(Comment)? onReplyTapped;
   final void Function(Comment, Rect?)? onMoreTapped;
@@ -78,15 +78,20 @@ class CommentTile extends StatelessWidget {
         BlocklistState blocklistState,
       ) {
         final Color primaryColor = Theme.of(context).colorScheme.primary;
-        final (Color, Color) slidableBackgroundColor = level > 0
+        final (Color, Color) slidableColors = level > 0
             ? ColorUtil.getRainbowColor(
                 level,
-                Theme.of(context).colorScheme.surface,
+                Theme.of(context).canvasColor,
               )
             : (
                 Theme.of(context).colorScheme.primaryContainer,
                 Theme.of(context).colorScheme.onPrimaryContainer,
               );
+        final double backgroundColorAlpha =
+            Theme.of(context).brightness == Brightness.dark ? 0.6 : 1;
+        final Color backgroundColor =
+            slidableColors.$1.withValues(alpha: backgroundColorAlpha);
+        final Color foregroundColor = slidableColors.$2;
 
         int newCommentsCount = 0;
         int hiddenCommentsCount = 0;
@@ -119,8 +124,8 @@ class CommentTile extends StatelessWidget {
                                   comment.by)
                             CustomSlidableAction(
                               onPressed: (_) => onUpvoteTapped?.call(comment),
-                              backgroundColor: slidableBackgroundColor.$1,
-                              foregroundColor: slidableBackgroundColor.$2,
+                              backgroundColor: backgroundColor,
+                              foregroundColor: foregroundColor,
                               child: const Icon(
                                 Icons.thumb_up,
                                 size: Dimens.pt24,
@@ -128,8 +133,8 @@ class CommentTile extends StatelessWidget {
                             ),
                           CustomSlidableAction(
                             onPressed: (_) => onReplyTapped?.call(comment),
-                            backgroundColor: slidableBackgroundColor.$1,
-                            foregroundColor: slidableBackgroundColor.$2,
+                            backgroundColor: backgroundColor,
+                            foregroundColor: foregroundColor,
                             child: const Icon(
                               Icons.message,
                               size: Dimens.pt24,
@@ -139,8 +144,8 @@ class CommentTile extends StatelessWidget {
                               comment.by)
                             CustomSlidableAction(
                               onPressed: (_) => onEditTapped?.call(comment),
-                              backgroundColor: slidableBackgroundColor.$1,
-                              foregroundColor: slidableBackgroundColor.$2,
+                              backgroundColor: backgroundColor,
+                              foregroundColor: foregroundColor,
                               child: const Icon(
                                 Icons.edit,
                                 size: Dimens.pt24,
@@ -152,8 +157,8 @@ class CommentTile extends StatelessWidget {
                               comment,
                               context.rect,
                             ),
-                            backgroundColor: slidableBackgroundColor.$1,
-                            foregroundColor: slidableBackgroundColor.$2,
+                            backgroundColor: backgroundColor,
+                            foregroundColor: foregroundColor,
                             child: const Icon(
                               Icons.more_horiz,
                               size: Dimens.pt24,
@@ -182,8 +187,8 @@ class CommentTile extends StatelessWidget {
                         children: <Widget>[
                           CustomSlidableAction(
                             onPressed: (_) => onRightMoreTapped?.call(comment),
-                            backgroundColor: slidableBackgroundColor.$1,
-                            foregroundColor: slidableBackgroundColor.$2,
+                            backgroundColor: backgroundColor,
+                            foregroundColor: foregroundColor,
                             child: const Icon(
                               Icons.av_timer,
                               size: Dimens.pt24,
@@ -441,7 +446,7 @@ class CommentTile extends StatelessWidget {
               } else if (shouldHighlightNewComments && comment.isNew) {
                 return Theme.of(context).colorScheme.surfaceContainerLow;
               }
-              return backgroundColor;
+              return commentBackgroundColor;
             }(),
           ),
           child: child,
