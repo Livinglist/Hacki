@@ -506,6 +506,13 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                   ],
                   const Divider(),
                   ListTile(
+                    title: const Text('Feature Request'),
+                    onTap: () => LinkUtil.launch(
+                      Constants.githubLink,
+                      context,
+                    ),
+                  ),
+                  ListTile(
                     title: const Text('Rate Hacki : )'),
                     onTap: () {
                       LinkUtil.launch(

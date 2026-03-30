@@ -81,6 +81,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
   DeviceScreenType? deviceScreenType;
   StreamSubscription<PreferenceState>? _preferenceSubscription;
   StreamSubscription<Status>? _preferenceStatusSubscription;
+  final Map<StoryType, StreamSubscription<Story>> _storySubscriptions =
+      <StoryType, StreamSubscription<Story>>{};
 
   static const int _pageSize = 30;
 
@@ -91,6 +93,10 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     final HackerNewsDataSource dataSource = _preferenceCubit.state.dataSource;
     logInfo('initializing stories from data source: $dataSource');
     logInfo('is starting up? ${event.startup}');
+
+    for (final StreamSubscription<Story> s in _storySubscriptions.values) {
+      await s.cancel();
+    }
 
     final int? downloadTimestamp = await _getDownloadTimestamp();
 
@@ -169,13 +175,14 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
             .copyWithStatusUpdated(type: type, to: Status.inProgress),
       );
 
-      _hackerNewsRepository
+      await _storySubscriptions[type]?.cancel();
+      _storySubscriptions[type] = _hackerNewsRepository
           .fetchStoriesStream(
             ids: ids.sublist(0, min(_pageSize, ids.length)),
             sequential: true,
           )
           .listen((Story story) => add(StoryLoaded(story: story, type: type)))
-          .onDone(() => add(StoryLoadingCompleted(type: type)));
+        ..onDone(() => add(StoryLoadingCompleted(type: type)));
     } else {
       logInfo('($type) loading stories from web.');
       emit(
@@ -184,7 +191,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
             .copyWithStatusUpdated(type: type, to: Status.inProgress),
       );
 
-      _hackerNewsWebRepository
+      await _storySubscriptions[type]?.cancel();
+      _storySubscriptions[type] = _hackerNewsWebRepository
           .fetchStoriesStream(event.type, page: 1)
           .handleError((dynamic e) {
         logError('($type) error loading stories from web $e');
@@ -201,7 +209,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         } else {
           add(StoryLoaded(story: story, type: type));
         }
-      }).onDone(() => add(StoryLoadingCompleted(type: type)));
+      })
+        ..onDone(() => add(StoryLoadingCompleted(type: type)));
     }
   }
 
@@ -670,6 +679,9 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
   @override
   Future<void> close() async {
     await _preferenceSubscription?.cancel();
+    for (final StreamSubscription<Story> s in _storySubscriptions.values) {
+      await s.cancel();
+    }
     await super.close();
   }
 

@@ -81,7 +81,7 @@ class MainView extends StatelessWidget {
                   }
                 },
                 child: ScrollablePositionedList.builder(
-                  physics: const AlwaysScrollableScrollPhysics(),
+                  physics: const ClampingScrollPhysics(),
                   itemScrollController:
                       context.read<CommentsCubit>().itemScrollController,
                   itemPositionsListener:
@@ -90,7 +90,7 @@ class MainView extends StatelessWidget {
                   scrollOffsetListener: scrollOffsetListener,
                   itemBuilder: (BuildContext context, int index) {
                     if (index == 0) {
-                      return ColoredBox(
+                      return Material(
                         color: Theme.of(context).canvasColor,
                         child: Padding(
                           padding: EdgeInsets.only(
@@ -116,7 +116,8 @@ class MainView extends StatelessWidget {
                           state.onlyShowTargetComment) {
                         return Container(
                           color: Theme.of(context).canvasColor,
-                          height: MediaQuery.of(context).size.height,
+                          height: MediaQuery.of(context).size.height -
+                              MediaQuery.of(context).padding.top,
                           child: Column(
                             children: <Widget>[
                               SizedBoxes.pt100,
@@ -152,12 +153,15 @@ class MainView extends StatelessWidget {
                           ? const SizedBox.shrink()
                           : Padding(
                               padding: EdgeInsets.only(
-                                left: comment.level * indentPadding +
-                                    indentLineWidth,
+                                left: splitViewEnabled
+                                    ? comment.level * indentPadding
+                                    : comment.level * indentPadding +
+                                        indentLineWidth,
                               ),
                               child: CommentTile(
                                 comment: comment,
-                                backgroundColor: Theme.of(context).canvasColor,
+                                commentBackgroundColor:
+                                    Theme.of(context).canvasColor,
                                 index: index,
                                 level: comment.level,
                                 opUsername: state.item.by,

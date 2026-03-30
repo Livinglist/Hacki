@@ -108,7 +108,9 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
                 ))
                   Padding(
                     padding: EdgeInsets.only(
-                      left: widget.indentPadding * i,
+                      left: widget.shouldShowRootLevelLine
+                          ? widget.indentPadding * i
+                          : widget.indentPadding * i - widget.indentLineWidth,
                     ),
                     child: SizedBox(
                       height: MediaQuery.of(context).size.height,
@@ -128,7 +130,12 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
                               color: ColorUtil.getRainbowColor(
                                 i,
                                 Theme.of(context).canvasColor,
-                              ).$1,
+                              ).$1.withValues(
+                                    alpha: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? 0.6
+                                        : 1,
+                                  ),
                             ),
                     ),
                   ),
