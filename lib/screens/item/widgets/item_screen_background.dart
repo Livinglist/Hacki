@@ -30,7 +30,7 @@ class ItemScreenBackground extends StatefulWidget {
 class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
   int _shineIndex = 0;
   Timer? _timer;
-  bool isVisible = false;
+  bool _isVisible = false;
 
   @override
   void initState() {
@@ -38,11 +38,11 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
 
     unawaited(
       Future<void>.delayed(
-        AppDurations.twoSeconds,
+        AppDurations.oneAndHalfSeconds,
         () {
           if (mounted) {
             setState(() {
-              isVisible = true;
+              _isVisible = true;
             });
           }
         },
@@ -77,7 +77,7 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
           previous.maxLevel != current.maxLevel ||
           previous.status != current.status,
       builder: (BuildContext context, CommentsState state) {
-        if (!isVisible) return const SizedBox.shrink();
+        if (!_isVisible) return const SizedBox.shrink();
         return FadeIn(
           child: Stack(
             children: <Widget>[
