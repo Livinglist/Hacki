@@ -4,13 +4,15 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart' show TextEditingController;
 import 'package:hacki/config/locator.dart';
+import 'package:hacki/extensions/buildable_mixin.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/utils/haptic_feedback_util.dart';
+import 'package:rxdart/rxdart.dart';
 
 part 'search_state.dart';
 
-class SearchCubit extends Cubit<SearchState> {
+class SearchCubit extends Cubit<SearchState> with BuildableMixin {
   SearchCubit({
     SearchRepository? searchRepository,
     TextEditingController? textEditingController,
@@ -34,11 +36,14 @@ class SearchCubit extends Cubit<SearchState> {
         params: state.params.copyWith(query: query, page: 0),
       ),
     );
-    streamSubscription =
-        _searchRepository.search(params: state.params).listen(_onItemFetched)
-          ..onDone(() {
-            emit(state.copyWith(status: SearchStatus.loaded));
-          });
+    streamSubscription = _searchRepository
+        .search(params: state.params)
+        .asyncMap((Item item) => toBuildable(item, withHighlightedText: query))
+        .whereNotNull()
+        .listen(_onItemFetched)
+      ..onDone(() {
+        emit(state.copyWith(status: SearchStatus.loaded));
+      });
   }
 
   void loadMore() {
@@ -50,11 +55,19 @@ class SearchCubit extends Cubit<SearchState> {
           params: state.params.copyWith(page: updatedPage),
         ),
       );
-      streamSubscription =
-          _searchRepository.search(params: state.params).listen(_onItemFetched)
-            ..onDone(() {
-              emit(state.copyWith(status: SearchStatus.loaded));
-            });
+      streamSubscription = _searchRepository
+          .search(params: state.params)
+          .asyncMap(
+            (Item item) => toBuildable(
+              item,
+              withHighlightedText: state.params.query,
+            ),
+          )
+          .whereNotNull()
+          .listen(_onItemFetched)
+        ..onDone(() {
+          emit(state.copyWith(status: SearchStatus.loaded));
+        });
     }
   }
 
@@ -160,6 +173,24 @@ class SearchCubit extends Cubit<SearchState> {
       removeFilter<PostedByFilter>();
     } else {
       addFilter(PostedByFilter(author: username));
+    }
+  }
+
+  void onPointsFilterChanged(PointsFilter? pointsFilter) {
+    HapticFeedbackUtil.selection();
+    if (pointsFilter == null) {
+      removeFilter<PointsFilter>();
+    } else {
+      addFilter(pointsFilter);
+    }
+  }
+
+  void onNumberOfCommentsFilterChanged(CommentsNumberFilter? filter) {
+    HapticFeedbackUtil.selection();
+    if (filter == null) {
+      removeFilter<CommentsNumberFilter>();
+    } else {
+      addFilter(filter);
     }
   }
 

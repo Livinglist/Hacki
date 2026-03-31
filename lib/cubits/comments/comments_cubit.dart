@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:isolate';
 import 'dart:math';
 
 import 'package:bloc/bloc.dart';
@@ -19,7 +18,6 @@ import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/item/widgets/in_thread_search_icon_button.dart'
     show InThreadSearchIconButton;
 import 'package:hacki/screens/screens.dart' show ItemScreen, ItemScreenArgs;
-import 'package:hacki/screens/widgets/custom_linkify/custom_linkify.dart';
 import 'package:hacki/screens/widgets/shine_overlay.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/utils.dart';
@@ -33,7 +31,7 @@ final Map<int, Map<int, Comment>> _globalStoryIdToPreviousCollapseStates =
 
 final Map<int, Story> _globalIdToStoryCache = <int, Story>{};
 
-class CommentsCubit extends Cubit<CommentsState> with Loggable {
+class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   CommentsCubit({
     required FilterCubit filterCubit,
     required PreferenceCubit preferenceCubit,
@@ -204,7 +202,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
             ids: targetAncestors!.last.kids,
             level: targetAncestors.last.level + 1,
           )
-          .asyncMap(_toBuildableComment)
+          .asyncMap(toBuildableComment)
           .whereNotNull()
           .listen(_onCommentFetched)
         ..onDone(_onDone);
@@ -226,7 +224,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         ? item
         : await _hackerNewsRepository
                 .fetchItem(id: item.id)
-                .then(_toBuildable)
+                .then(toBuildable)
                 .onError((_, __) => item) ??
             item;
 
@@ -333,7 +331,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     }
 
     _streamSubscription = commentStream
-        .asyncMap(_toBuildableComment)
+        .asyncMap(toBuildableComment)
         .whereNotNull()
         .listen(_onCommentFetched)
       ..onDone(
@@ -472,7 +470,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     }
 
     _streamSubscription = commentStream
-        .asyncMap(_toBuildableComment)
+        .asyncMap(toBuildableComment)
         .whereNotNull()
         .listen(_onCommentFetched)
       ..onDone(() {
@@ -522,7 +520,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
         final StreamSubscription<Comment> streamSubscription =
             _hackerNewsRepository
                 .fetchCommentsStream(ids: comment.kids)
-                .asyncMap(_toBuildableComment)
+                .asyncMap(toBuildableComment)
                 .whereNotNull()
                 .listen((Comment cmt) {
           globalKeys[cmt.id] = GlobalKey();
@@ -692,7 +690,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     emit(state.copyWith(fetchRootStatus: CommentsStatus.inProgress));
     final Story? parent = await _hackerNewsRepository
         .fetchParentStory(id: state.item.id)
-        .then(_toBuildableStory);
+        .then(toBuildableStory);
 
     if (parent == null) {
       return;
@@ -734,7 +732,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable {
     final Stream<Comment> commentStream =
         _commentCache.getCommentsStream(ids: kids);
     _streamSubscription =
-        commentStream.asyncMap(_toBuildableComment).whereNotNull().listen(
+        commentStream.asyncMap(toBuildableComment).whereNotNull().listen(
               (BuildableComment cmt) =>
                   _onCommentFetched(cmt, persistNewState: true),
             )..onDone(_onDone);
@@ -1081,7 +1079,7 @@ comments length is ${state.comments.length}
       if (conditionSatisfied(cmt)) {
         final Comment comment = state.comments.elementAt(i);
         final BuildableComment? buildableComment =
-            await _toBuildableComment(comment, withHighlightedText: query);
+            await toBuildableComment(comment, withHighlightedText: query);
         yield buildableComment;
       }
     }
@@ -1237,60 +1235,6 @@ comments length is ${state.comments.length}
         ),
       );
     }
-  }
-
-  static Future<Item?> _toBuildable(Item? item) async {
-    if (item == null) return null;
-
-    switch (item.runtimeType) {
-      case Comment:
-        return _toBuildableComment(item as Comment);
-      case Story:
-        return _toBuildableStory(item as Story);
-    }
-
-    return null;
-  }
-
-  static Future<BuildableComment?> _toBuildableComment(
-    Comment? comment, {
-    String? withHighlightedText,
-  }) async {
-    if (comment == null) return null;
-
-    final List<LinkifyElement> elements = await Isolate.run(
-      () => LinkifierUtil.linkify(
-        comment.text,
-        extraLinkifiers: <Linkifier>[
-          if (withHighlightedText != null && withHighlightedText.isNotEmpty)
-            HighlightLinkifier(highlightedText: withHighlightedText),
-        ],
-      ),
-    );
-
-    final BuildableComment buildableComment =
-        BuildableComment.fromComment(comment, elements: elements);
-
-    return buildableComment;
-  }
-
-  static Future<BuildableStory?> _toBuildableStory(Story? story) async {
-    if (story == null) {
-      return null;
-    } else if (story.text.isEmpty) {
-      return BuildableStory.fromTitleOnlyStory(story);
-    }
-
-    final List<LinkifyElement> elements =
-        await compute<String, List<LinkifyElement>>(
-      LinkifierUtil.linkify,
-      story.text,
-    );
-
-    final BuildableStory buildableStory =
-        BuildableStory.fromStory(story, elements: elements);
-
-    return buildableStory;
   }
 
   void _onAppHidden(AppLifecycleState _) => _preserveCollapseState();

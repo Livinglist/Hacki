@@ -1,9 +1,9 @@
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
+import 'package:hacki/extensions/extensions.dart';
+import 'package:hacki/models/search/filters/filters.dart';
 
-part 'search_filter.dart';
-
-class SearchParams extends Equatable {
+class SearchParams extends Equatable with Loggable {
   const SearchParams({
     required this.filters,
     required this.query,
@@ -100,8 +100,11 @@ class SearchParams extends Equatable {
     }
 
     buffer.write('&page=$page');
+    final String resultQuery = buffer.toString();
 
-    return buffer.toString();
+    logInfo('search query: $resultQuery');
+
+    return resultQuery;
   }
 
   bool contains<T extends SearchFilter>() {
@@ -122,4 +125,7 @@ class SearchParams extends Equatable {
         sorted,
         exactMatch,
       ];
+
+  @override
+  String get logIdentifier => 'SearchParams';
 }

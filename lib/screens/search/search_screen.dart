@@ -146,9 +146,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                 scrollDirection: Axis.horizontal,
                                 child: Row(
                                   children: <Widget>[
-                                    const SizedBox(
-                                      width: Dimens.pt8,
-                                    ),
+                                    SizedBoxes.pt8,
                                     for (final CustomDateTimeRange range
                                         in CustomDateTimeRange
                                             .values) ...<Widget>[
@@ -279,9 +277,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                 scrollDirection: Axis.horizontal,
                                 child: Row(
                                   children: <Widget>[
-                                    const SizedBox(
-                                      width: Dimens.pt8,
-                                    ),
+                                    SizedBoxes.pt8,
                                     if (state.showDateRangeShortcutChips)
                                       Row(
                                         mainAxisSize: MainAxisSize.min,
@@ -311,9 +307,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                           .read<SearchCubit>()
                                           .removeFilter<DateTimeRangeFilter>,
                                     ),
-                                    const SizedBox(
-                                      width: Dimens.pt8,
-                                    ),
+                                    SizedBoxes.pt8,
                                     PostedByFilterChip(
                                       filter:
                                           state.params.get<PostedByFilter>(),
@@ -321,9 +315,22 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                           .read<SearchCubit>()
                                           .onPostedByChanged,
                                     ),
-                                    const SizedBox(
-                                      width: Dimens.pt8,
+                                    SizedBoxes.pt8,
+                                    PointsFilterChip(
+                                      filter: state.params.get<PointsFilter>(),
+                                      onChanged: context
+                                          .read<SearchCubit>()
+                                          .onPointsFilterChanged,
                                     ),
+                                    SizedBoxes.pt8,
+                                    NumberOfCommentsFilterChip(
+                                      filter: state.params
+                                          .get<CommentsNumberFilter>(),
+                                      onChanged: context
+                                          .read<SearchCubit>()
+                                          .onNumberOfCommentsFilterChanged,
+                                    ),
+                                    SizedBoxes.pt8,
                                     CustomChip(
                                       onSelected: (_) => context
                                           .read<SearchCubit>()
@@ -331,9 +338,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                       selected: state.params.sorted,
                                       label: '''newest first''',
                                     ),
-                                    const SizedBox(
-                                      width: Dimens.pt8,
-                                    ),
+                                    SizedBoxes.pt8,
                                     CustomChip(
                                       onSelected: (_) => context
                                           .read<SearchCubit>()
@@ -341,9 +346,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                       selected: state.params.exactMatch,
                                       label: '''exact match''',
                                     ),
-                                    const SizedBox(
-                                      width: Dimens.pt8,
-                                    ),
+                                    SizedBoxes.pt8,
                                   ],
                                 ),
                               ),
@@ -369,9 +372,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                         label: filter.query,
                                       ),
                                     ],
-                                    const SizedBox(
-                                      width: Dimens.pt8,
-                                    ),
+                                    SizedBoxes.pt8,
                                   ],
                                 ),
                               ),

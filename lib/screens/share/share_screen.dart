@@ -117,13 +117,13 @@ class _ShareScreenState extends State<ShareScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                SizedBoxes.pt24,
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: Dimens.pt12,
-                  ),
-                  child: Screenshot(
-                    controller: _screenshotController,
+                SizedBoxes.pt12,
+                Screenshot(
+                  controller: _screenshotController,
+                  child: Padding(
+                    padding: const EdgeInsets.all(
+                      Dimens.pt12,
+                    ),
                     child: Material(
                       elevation: Dimens.pt8,
                       child: ColoredBox(
@@ -187,7 +187,7 @@ class _ShareScreenState extends State<ShareScreen> {
                     ),
                   ),
                 ),
-                SizedBoxes.pt24,
+                SizedBoxes.pt12,
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
