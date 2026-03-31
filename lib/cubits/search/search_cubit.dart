@@ -177,6 +177,10 @@ class SearchCubit extends Cubit<SearchState> with BuildableMixin {
   }
 
   void onPointsFilterChanged(PointsFilter? pointsFilter) {
+    final PointsFilter? existingFilter =
+        state.params.filters.whereType<PointsFilter>().singleOrNull;
+    if (pointsFilter == existingFilter) return;
+
     HapticFeedbackUtil.selection();
     if (pointsFilter == null) {
       removeFilter<PointsFilter>();
@@ -186,6 +190,10 @@ class SearchCubit extends Cubit<SearchState> with BuildableMixin {
   }
 
   void onNumberOfCommentsFilterChanged(CommentsNumberFilter? filter) {
+    final CommentsNumberFilter? existingFilter =
+        state.params.filters.whereType<CommentsNumberFilter>().singleOrNull;
+    if (filter == existingFilter) return;
+
     HapticFeedbackUtil.selection();
     if (filter == null) {
       removeFilter<CommentsNumberFilter>();
