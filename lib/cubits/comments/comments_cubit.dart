@@ -1109,9 +1109,11 @@ comments length is ${state.comments.length}
           .addAll(_previousCommentStates ?? <int, Comment>{});
 
       if (_preferenceCubit.state.shouldPersistCollapseStateAcrossSessions) {
-        _collapseStateCacheRepository.saveStoryStates(
-          state.item.id,
-          _previousCommentStates!,
+        unawaited(
+          _collapseStateCacheRepository.saveStoryStates(
+            state.item.id,
+            _previousCommentStates!,
+          ),
         );
       }
 
