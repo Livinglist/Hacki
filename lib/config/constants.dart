@@ -60,6 +60,7 @@ abstract class Constants {
         'Use lazy fetching to fetch only the root level comments',
         'Turn on True Dark Mode in settings to use black background',
         'Download stories in settings to read stories while offline',
+        'Open any Hacker News links in Hacki via the system Share menu',
       ].randomlyPicked!;
 
   static final String happyFace = <String>[
