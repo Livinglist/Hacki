@@ -2,10 +2,13 @@ import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
 import 'package:hacki/models/models.dart';
-import 'package:hacki/screens/widgets/custom_linkify/linkifiers/linkifiers.dart';
+import 'package:hacki/screens/widgets/custom_linkify/custom_linkify.dart';
 import 'package:hacki/utils/utils.dart';
-import 'package:linkify/linkify.dart';
 
+///
+/// Convert [Item] to [Buildable] which contains [LinkifyElement]
+/// that can be rendered in [Linkify] widget.
+///
 mixin BuildableMixin {
   Future<Item?> toBuildable(
     Item? item, {
