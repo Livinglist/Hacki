@@ -38,7 +38,7 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
 
     unawaited(
       Future<void>.delayed(
-        AppDurations.oneSecond,
+        AppDurations.twoSeconds,
         () {
           if (mounted) {
             setState(() {
