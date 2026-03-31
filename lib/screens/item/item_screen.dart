@@ -309,6 +309,11 @@ class _ItemScreenState extends State<ItemScreen>
                               item,
                               rect,
                               parent: item,
+                              onSearchInThreadTapped: () {
+                                context.read<CommentsCubit>()
+                                  ..search(item.by)
+                                  ..openInThreadSearch?.call();
+                              },
                             ),
                             onRightMoreTapped: (Comment cmt) =>
                                 onRightMoreTapped(
@@ -407,11 +412,16 @@ class _ItemScreenState extends State<ItemScreen>
                                 context.read<PreferenceCubit>().state,
                             splitViewEnabled: widget.splitViewEnabled,
                             indentLineWidth: _indentLineWidth,
-                            onMoreTapped: (Item context, Rect? rect) =>
+                            onMoreTapped: (Item item, Rect? rect) =>
                                 onMoreTapped(
-                              context,
+                              item,
                               rect,
                               parent: widget.item,
+                              onSearchInThreadTapped: () {
+                                context.read<CommentsCubit>()
+                                  ..search(item.by)
+                                  ..openInThreadSearch?.call();
+                              },
                             ),
                             onRightMoreTapped: (Comment cmt) =>
                                 onRightMoreTapped(

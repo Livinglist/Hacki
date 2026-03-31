@@ -47,7 +47,12 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
     return Future<void>.value();
   }
 
-  void onMoreTapped(Item item, Rect? rect, {Item? parent}) {
+  void onMoreTapped(
+    Item item,
+    Rect? rect, {
+    Item? parent,
+    VoidCallback? onSearchInThreadTapped,
+  }) {
     HapticFeedbackUtil.light();
 
     if (item.dead || item.deleted) {
@@ -65,6 +70,7 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
             item: item,
             isBlocked: isBlocked,
             onLoginTapped: onLoginTapped,
+            onSearchInThreadTapped: onSearchInThreadTapped,
           ),
         );
       },

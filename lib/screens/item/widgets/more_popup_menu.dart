@@ -20,12 +20,14 @@ class MorePopupMenu extends StatelessWidget {
     required this.item,
     required this.isBlocked,
     required this.onLoginTapped,
+    this.onSearchInThreadTapped,
     super.key,
   });
 
   final Item item;
   final bool isBlocked;
   final VoidCallback onLoginTapped;
+  final VoidCallback? onSearchInThreadTapped;
 
   @override
   Widget build(BuildContext context) {
@@ -181,6 +183,20 @@ class MorePopupMenu extends StatelessWidget {
                   },
                 ),
               ),
+              ListTile(
+                leading: const Icon(Icons.search),
+                title: const Text('Search on HN'),
+                onTap: () {
+                  context.pop();
+                  onSearchUserTapped(context);
+                },
+              ),
+              if (onSearchInThreadTapped != null)
+                ListTile(
+                  leading: const Icon(Icons.manage_search),
+                  title: const Text('Search in thread'),
+                  onTap: onSearchInThreadTapped,
+                ),
               ListTile(
                 leading: Icon(
                   upvoted

@@ -139,6 +139,7 @@ class _NumberOfCommentsDialogState extends State<_NumberOfCommentsDialog> {
                   'Remove',
                 ),
               ),
+              SizedBoxes.pt6,
               ElevatedButton(
                 onPressed: () {
                   final int? commentsNumber =
