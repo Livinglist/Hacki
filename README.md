@@ -169,6 +169,9 @@ A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
     <img width="200" src="assets/new_screenshots/hacki_74.png">
     <img width="200" src="assets/new_screenshots/hacki_75.png">
     <img width="200" src="assets/new_screenshots/hacki_78.png">
+</p>
+
+<p align="center">
     <img width="200" src="assets/new_screenshots/hacki_72.png">
     <img width="200" src="assets/new_screenshots/hacki_73.png">
     <img width="200" src="assets/new_screenshots/hacki_76.png">
