@@ -77,7 +77,9 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
           previous.maxLevel != current.maxLevel ||
           previous.status != current.status,
       builder: (BuildContext context, CommentsState state) {
-        if (!_isVisible) return const SizedBox.shrink();
+        if (!_isVisible || state.status == CommentsStatus.inProgress) {
+          return const SizedBox.shrink();
+        }
         return FadeIn(
           child: Stack(
             children: <Widget>[

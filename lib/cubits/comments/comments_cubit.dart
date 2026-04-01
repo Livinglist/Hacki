@@ -537,6 +537,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
                   cmt.copyWith(level: level),
                 ),
               idToCommentMap: updatedIdToCommentMap,
+              maxLevel: state.maxLevel < level ? level : null,
             ),
           );
           offset++;

@@ -21,11 +21,13 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
     required String content,
     VoidCallback? action,
     String? label,
+    bool? persist,
   }) {
     context.showSnackBar(
       content: content,
       action: action,
       label: label,
+      persist: persist,
     );
   }
 

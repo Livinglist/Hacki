@@ -76,6 +76,7 @@ class _PollViewState extends State<PollView> with ItemActionMixin {
                           VoteStatus.failureNotLoggedIn) {
                         showSnackBar(
                           content: SnackBarMessages.notLoggedInNoVoting,
+                          persist: false,
                           action: onLoginTapped,
                           label: 'Log in',
                         );

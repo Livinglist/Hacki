@@ -55,6 +55,7 @@ class MorePopupMenu extends StatelessWidget {
           } else if (voteState.status == VoteStatus.failureNotLoggedIn) {
             context.showSnackBar(
               content: SnackBarMessages.notLoggedInNoVoting,
+              persist: false,
               action: onLoginTapped,
               label: 'Log in',
             );
