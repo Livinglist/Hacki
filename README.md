@@ -30,7 +30,7 @@ A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
 - [Accent color](#thread) and [font customization](#accent-color-and-font-customization)
 - And more...
 
-# Home page and story tile customization
+## Home page and story tile customization
 <p align="center">
     <img width="200" src="assets/new_screenshots/hacki_01.png">
     <img width="200" src="assets/new_screenshots/hacki_04.png">
