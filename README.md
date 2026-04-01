@@ -91,6 +91,24 @@ Features:
 </p>
 
 ### Story and comment sharing
+
+<table>
+  <tr>
+     <td>test</td>
+     <td>test 2</td>
+     <td>test </td>
+     <td>test</td>
+     <td>test</td>
+  </tr>
+  <tr>
+    <td><img width="16.6%" src="assets/new_screenshots/hacki_103.png"></td>
+    <td><img width="16.6%" src="assets/new_screenshots/hacki_105.png"></td>
+    <td><img width="16.6%" src="assets/new_screenshots/hacki_107.png"></td>
+    <td><img width="16.6%" src="assets/new_screenshots/hacki_109.png"></td>
+    <td><img width="16.6%" src="assets/new_screenshots/hacki_111.png"></td>
+    <td><img width="16.6%" src="assets/new_screenshots/hacki_113.png"></td>
+  </tr>
+ </table>
 <p align="center">
     <img width="16.6%" src="assets/new_screenshots/hacki_103.png">
     <img width="16.6%" src="assets/new_screenshots/hacki_105.png">
