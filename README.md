@@ -26,7 +26,7 @@ Features:
 - [Favorites import and export](#settings)
 - Open Hacker News link in Hacki via system share dialog
 - [Share story or comment as image](#share-story-or-comment-as-image)
-- Reply, vote, filter, block
+- [Reply](#reply-to-comment-or-story), vote, filter, block
 - Polls
 - And more...
 
