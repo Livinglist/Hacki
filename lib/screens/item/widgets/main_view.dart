@@ -474,6 +474,7 @@ class _ParentItemSection extends StatelessWidget {
                                 child: Padding(
                                   padding: const EdgeInsets.only(
                                     left: Dimens.pt8,
+                                    bottom: Dimens.pt8,
                                   ),
                                   child: ItemText(
                                     item: item,
@@ -498,10 +499,6 @@ class _ParentItemSection extends StatelessWidget {
               ),
             ),
           ),
-          if (item.text.isNotEmpty)
-            const SizedBox(
-              height: Dimens.pt8,
-            ),
           const Divider(
             height: Dimens.zero,
           ),
