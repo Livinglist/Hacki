@@ -140,6 +140,18 @@ Features:
     <img width="250" src="assets/new_screenshots/hacki_128.png">
 </p>
 
+# Hacker News search
+<p align="center">
+    <img width="250" src="assets/new_screenshots/hacki_129.png">
+    <img width="250" src="assets/new_screenshots/hacki_131.png">
+    <img width="250" src="assets/new_screenshots/hacki_133.png">
+</p>
+<p align="center">
+    <img width="250" src="assets/new_screenshots/hacki_130.png">
+    <img width="250" src="assets/new_screenshots/hacki_132.png">
+    <img width="250" src="assets/new_screenshots/hacki_134.png">
+</p>
+
 # Login, reply notification, favorites sync and more
 <p align="center">
     <img width="250" src="assets/new_screenshots/hacki_37.png">
