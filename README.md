@@ -99,6 +99,7 @@ Features:
      <td>test </td>
      <td>test</td>
      <td>test</td>
+     <td>test</td>
   </tr>
   <tr>
     <td><img width="200" src="assets/new_screenshots/hacki_103.png"></td>
