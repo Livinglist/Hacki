@@ -310,6 +310,7 @@ class _ItemScreenState extends State<ItemScreen>
                               rect,
                               parent: item,
                               onSearchInThreadTapped: () {
+                                context.pop();
                                 context.read<CommentsCubit>()
                                   ..search(item.by)
                                   ..openInThreadSearch?.call();
@@ -418,6 +419,7 @@ class _ItemScreenState extends State<ItemScreen>
                               rect,
                               parent: widget.item,
                               onSearchInThreadTapped: () {
+                                context.pop();
                                 context.read<CommentsCubit>()
                                   ..search(item.by)
                                   ..openInThreadSearch?.call();
