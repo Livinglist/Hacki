@@ -77,13 +77,13 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
           previous.maxLevel != current.maxLevel ||
           previous.status != current.status,
       builder: (BuildContext context, CommentsState state) {
-        if (!_isVisible || state.status == CommentsStatus.inProgress) {
+        if (!_isVisible || state.comments.isEmpty) {
           return const SizedBox.shrink();
         }
         return FadeIn(
           child: Stack(
             children: <Widget>[
-              if (widget.shouldShowRootLevelLine && state.comments.isNotEmpty)
+              if (widget.shouldShowRootLevelLine)
                 Padding(
                   padding: EdgeInsets.zero,
                   child: SizedBox(
