@@ -131,6 +131,18 @@ Features:
     <img width="200" src="assets/new_screenshots/hacki_122.png">
 </p>
 
+## Open comment in separate thread
+<p align="center">
+    <img width="250" src="assets/new_screenshots/hacki_123.png">
+    <img width="250" src="assets/new_screenshots/hacki_125.png">
+    <img width="250" src="assets/new_screenshots/hacki_127.png">
+</p>
+<p align="center">
+    <img width="250" src="assets/new_screenshots/hacki_124.png">
+    <img width="250" src="assets/new_screenshots/hacki_126.png">
+    <img width="250" src="assets/new_screenshots/hacki_128.png">
+</p>
+
 # Login, reply notification, favorites sync and more
 <p align="center">
     <img width="250" src="assets/new_screenshots/hacki_37.png">
