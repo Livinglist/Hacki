@@ -12,25 +12,20 @@ A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
 
 
 Features:
-- Log in using your Hacker News account.
-- Browse stories from various categories.
-- Search for stories.
-- Submit stories.
-- Pin stories.
-- Mark stories as favorite.
-- Leave comments.
-- Collapse comments.
-- View parent comments without scrolling up.
-- View and participate in polls.
-- Browse comments and stories you have posted.
-- Vote on comments or stories.
-- Get in-app notification when there is new reply to your stories or comments.
-- Download stories and comments for offline reading.
-- Pick up where you left off.
-- Synced favorites and pins across devices. (iOS only)
-- Export or import your favorites.
-- Launch from system share sheet.
-- Share story or comment as image.
+- Hacker News account [login](https://github.com/Livinglist/Hacki/tree/chore/screenshots-update-0331?tab=readme-ov-file#login-reply-notification-favorites-sync-and-more)
+- [Favorites sync](https://github.com/Livinglist/Hacki/tree/chore/screenshots-update-0331?tab=readme-ov-file#login-reply-notification-favorites-sync-and-more)
+- [Hacker News Search]()
+- [In-thread search](https://github.com/Livinglist/Hacki/tree/chore/screenshots-update-0331?tab=readme-ov-file#in-thread-local-and-global-search)
+- Reply, vote, filter, block
+- [Ancestor lookup](https://github.com/Livinglist/Hacki/tree/chore/screenshots-update-0331?tab=readme-ov-file#ancestor-lookup) so you don't have to scroll back up to regain context
+- [In-thread notification for new comments](https://github.com/Livinglist/Hacki/tree/chore/screenshots-update-0331?tab=readme-ov-file#new-comments-notification-and-lookup) since last visit
+- [In-app notification for new replies](https://github.com/Livinglist/Hacki/tree/chore/screenshots-update-0331?tab=readme-ov-file#login-reply-notification-favorites-sync-and-more) to your comments or stories
+- Offline mode
+- Synced settings across devices (iOS only)
+- Favorites import and export
+- Open Hacker News link in Hacki via system share dialog
+- Share story or comment as image
+- Polls
 - And more...
 
 
