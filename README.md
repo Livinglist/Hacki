@@ -68,34 +68,34 @@ Features:
 
 ## In-thread local and global search
 <p align="center">
-    <img width="300" src="assets/new_screenshots/hacki_91.png">
-    <img width="300" src="assets/new_screenshots/hacki_93.png">
-    <img width="300" src="assets/new_screenshots/hacki_95.png">
-    <img width="300" src="assets/new_screenshots/hacki_101.png">
-    <img width="300" src="assets/new_screenshots/hacki_97.png">
-    <img width="300" src="assets/new_screenshots/hacki_99.png">
+    <img width="250" src="assets/new_screenshots/hacki_91.png">
+    <img width="250" src="assets/new_screenshots/hacki_93.png">
+    <img width="250" src="assets/new_screenshots/hacki_95.png">
+    <img width="250" src="assets/new_screenshots/hacki_101.png">
+    <img width="250" src="assets/new_screenshots/hacki_97.png">
+    <img width="250" src="assets/new_screenshots/hacki_99.png">
 </p>
 <p align="center">
-    <img width="300" src="assets/new_screenshots/hacki_92.png">
-    <img width="300" src="assets/new_screenshots/hacki_94.png">
-    <img width="300" src="assets/new_screenshots/hacki_96.png">
-    <img width="300" src="assets/new_screenshots/hacki_102.png">
-    <img width="300" src="assets/new_screenshots/hacki_98.png">
-    <img width="300" src="assets/new_screenshots/hacki_100.png">
+    <img width="250" src="assets/new_screenshots/hacki_92.png">
+    <img width="250" src="assets/new_screenshots/hacki_94.png">
+    <img width="250" src="assets/new_screenshots/hacki_96.png">
+    <img width="250" src="assets/new_screenshots/hacki_102.png">
+    <img width="250" src="assets/new_screenshots/hacki_98.png">
+    <img width="250" src="assets/new_screenshots/hacki_100.png">
 </p>
 
 ## Ancestor lookup
 <p align="center">
-    <img width="220" src="assets/new_screenshots/hacki_61.png">
-    <img width="220" src="assets/new_screenshots/hacki_64.png">
-    <img width="220" src="assets/new_screenshots/hacki_65.png">
-    <img width="220" src="assets/new_screenshots/hacki_68.png">
+    <img width="200" src="assets/new_screenshots/hacki_61.png">
+    <img width="200" src="assets/new_screenshots/hacki_64.png">
+    <img width="200" src="assets/new_screenshots/hacki_65.png">
+    <img width="200" src="assets/new_screenshots/hacki_68.png">
 </p>
 <p align="center">
-    <img width="220" src="assets/new_screenshots/hacki_62.png">
-    <img width="220" src="assets/new_screenshots/hacki_63.png">
-    <img width="220" src="assets/new_screenshots/hacki_66.png">
-    <img width="220" src="assets/new_screenshots/hacki_67.png">
+    <img width="200" src="assets/new_screenshots/hacki_62.png">
+    <img width="200" src="assets/new_screenshots/hacki_63.png">
+    <img width="200" src="assets/new_screenshots/hacki_66.png">
+    <img width="200" src="assets/new_screenshots/hacki_67.png">
 </p>
 
 ## Share story or comment as image
