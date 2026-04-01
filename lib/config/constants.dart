@@ -1,6 +1,8 @@
 import 'package:hacki/extensions/extensions.dart';
 
 abstract class Constants {
+  static const String hackiFirstCommitLink =
+      'https://github.com/Livinglist/Hacki/tree/fe3e343ed9a9ebb4f608384e0aa64d0f1b19685d';
   static const String endUserAgreementLink =
       'https://github.com/Livinglist/Hacki/blob/master/assets/eula.md';
   static const String privacyPolicyLink =
