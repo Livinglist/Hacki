@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 abstract class HapticFeedbackUtil {
   static bool enabled = true;
+  static bool? hasCustomHapticsSupport;
 
   static void success() {
     if (enabled) {
@@ -37,13 +38,16 @@ abstract class HapticFeedbackUtil {
   }
 
   static Future<void> loadAndPlay() async {
-    await stop();
-    if (Platform.isIOS) {
-      await AdvancedHaptics.playAhap('assets/haptics/heartbeats.ahap');
-    } else {
-      final List<int> timings = <int>[0, 60, 50, 100, 50];
-      final List<int> amplitudes = <int>[0, 255, 0, 150, 0];
-      await AdvancedHaptics.playWaveform(timings, amplitudes);
+    hasCustomHapticsSupport ??= await AdvancedHaptics.hasCustomHapticsSupport();
+    if (hasCustomHapticsSupport ?? false) {
+      await stop();
+      if (Platform.isIOS) {
+        await AdvancedHaptics.playAhap('assets/haptics/heartbeats.ahap');
+      } else {
+        final List<int> timings = <int>[0, 60, 50, 100, 50];
+        final List<int> amplitudes = <int>[0, 255, 0, 150, 0];
+        await AdvancedHaptics.playWaveform(timings, amplitudes);
+      }
     }
   }
 
