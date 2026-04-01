@@ -201,7 +201,7 @@ class _ItemScreenState extends State<ItemScreen>
             DiscoverableFeature.searchInThread.featureId,
             DiscoverableFeature.pinToTop.featureId,
             DiscoverableFeature.addStoryToFavList.featureId,
-            DiscoverableFeature.openStoryInWebView.featureId,
+            DiscoverableFeature.settingsShortcutOnItemScreen.featureId,
             DiscoverableFeature.jumpUpButton.featureId,
             DiscoverableFeature.jumpDownButton.featureId,
           },

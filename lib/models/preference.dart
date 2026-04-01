@@ -4,7 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
-import 'package:hacki/config/custom_router.dart';
+import 'package:hacki/config/router.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/styles/palette.dart';
 import 'package:responsive_builder/responsive_builder.dart';

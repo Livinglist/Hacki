@@ -4,10 +4,10 @@ enum DiscoverableFeature {
     title: 'Fav a Story',
     description: '''Add it to your favorites.''',
   ),
-  openStoryInWebView(
-    featureId: 'open_story_in_web_view',
-    title: 'Open in Browser',
-    description: '''You can tap here to open this story in browser.''',
+  settingsShortcutOnItemScreen(
+    featureId: 'settings_shortcut_on_item_screen',
+    title: 'Go to Settings',
+    description: '''You can now go to settings page directly from a thread.''',
   ),
   login(
     featureId: 'log_in',

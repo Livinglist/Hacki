@@ -1,12 +1,13 @@
 import 'package:hacki/screens/screens.dart';
 
-abstract class Paths {
+abstract final class Paths {
   static const LogsPaths logs = LogsPaths._();
   static const HomePaths home = HomePaths._();
   static const ItemPaths item = ItemPaths._();
   static const SharePaths share = SharePaths._();
   static const QrCodePaths qrCode = QrCodePaths._();
   static const WebViewPaths webView = WebViewPaths._();
+  static const SettingsPaths settings = SettingsPaths._();
 }
 
 class HomePaths with RootPaths {
@@ -21,6 +22,16 @@ class ItemPaths with RootPaths {
   String get landing => rootPath(ItemScreen.routeName);
 
   String get submit => rootPath(SubmitScreen.routeName);
+
+  String get settings => '$landing$settingsSegment';
+
+  static const String settingsSegment = '/${SettingsScreen.routeName}';
+}
+
+class SettingsPaths with RootPaths {
+  const SettingsPaths._();
+
+  String get landing => rootPath(SettingsScreen.routeName);
 }
 
 class SharePaths with RootPaths {

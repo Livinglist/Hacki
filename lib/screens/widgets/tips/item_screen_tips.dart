@@ -63,7 +63,6 @@ class _ItemScreenTipsState extends State<ItemScreenTips> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                SizedBoxes.pt12,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[

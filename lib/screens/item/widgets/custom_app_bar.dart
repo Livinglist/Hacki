@@ -70,9 +70,7 @@ class CustomAppBar extends AppBar {
             FavIconButton(
               storyId: item.id,
             ),
-            LinkIconButton(
-              storyId: item.id,
-            ),
+            const SettingsButton(),
           ],
         );
 }

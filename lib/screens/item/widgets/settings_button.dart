@@ -1,39 +1,32 @@
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
-import 'package:hacki/config/constants.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hacki/config/paths.dart';
 import 'package:hacki/models/discoverable_feature.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
-import 'package:hacki/utils/utils.dart';
 
-class LinkIconButton extends StatelessWidget {
-  const LinkIconButton({
-    required this.storyId,
+class SettingsButton extends StatelessWidget {
+  const SettingsButton({
     super.key,
   });
-
-  final int storyId;
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      tooltip: 'Open this story in browser',
+      tooltip: 'Go to settings',
       icon: CustomDescribedFeatureOverlay(
         tapTarget: Icon(
-          Icons.stream,
+          Icons.settings,
           color: Theme.of(context).colorScheme.onPrimaryContainer,
         ),
-        feature: DiscoverableFeature.openStoryInWebView,
+        feature: DiscoverableFeature.settingsShortcutOnItemScreen,
         contentLocation: ContentLocation.below,
         child: Icon(
-          Icons.stream,
+          Icons.settings,
           color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
-      onPressed: () => LinkUtils.launch(
-        '${Constants.hackerNewsItemLinkPrefix}$storyId',
-        context,
-        shouldUseHackiForHnLink: false,
-      ),
+      onPressed: () => context.push(Paths.item.settings),
     );
   }
 }

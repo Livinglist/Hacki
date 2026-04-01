@@ -31,6 +31,12 @@ final GoRouter router = GoRouter(
             }
             return ItemScreen.phone(args);
           },
+          routes: <RouteBase>[
+            GoRoute(
+              path: SettingsScreen.routeName,
+              builder: (_, __) => const SettingsScreen(),
+            ),
+          ],
         ),
         GoRoute(
           path: '${ItemScreen.routeName}/:itemId',

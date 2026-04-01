@@ -190,9 +190,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                           ),
                   ),
                 ),
-                Settings(
-                  authState: authState,
-                  pageType: pageType,
+                Visibility(
+                  visible: pageType == PageType.settings,
+                  child: const SettingsView(),
                 ),
                 Align(
                   alignment: Alignment.topLeft,

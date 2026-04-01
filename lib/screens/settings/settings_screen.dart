@@ -17,18 +17,15 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
-import 'package:hacki/config/custom_router.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/config/paths.dart';
+import 'package:hacki/config/router.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
-import 'package:hacki/screens/profile/models/page_type.dart';
-import 'package:hacki/screens/profile/widgets/enter_offline_mode_list_tile.dart';
-import 'package:hacki/screens/profile/widgets/offline_list_tile.dart';
-import 'package:hacki/screens/profile/widgets/tab_bar_settings.dart';
-import 'package:hacki/screens/profile/widgets/text_scale_factor_settings.dart';
+import 'package:hacki/screens/home/home_screen.dart';
+import 'package:hacki/screens/settings/widgets/widgets.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
@@ -36,516 +33,530 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-class Settings extends StatefulWidget {
-  const Settings({
-    required this.authState,
-    required this.pageType,
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({
     super.key,
   });
 
-  final AuthState authState;
-  final PageType? pageType;
+  static const String routeName = 'settings';
 
   @override
-  State<Settings> createState() => _SettingsState();
+  State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
+class _SettingsScreenState extends State<SettingsScreen> with ItemActionMixin {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Settings'),
+      ),
+      body: const SettingsView(),
+    );
+  }
+}
+
+class SettingsView extends StatefulWidget {
+  const SettingsView({
+    super.key,
+  });
+
+  @override
+  State<SettingsView> createState() => _SettingsViewState();
+}
+
+class _SettingsViewState extends State<SettingsView>
+    with ItemActionMixin, Loggable {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PreferenceCubit, PreferenceState>(
       builder: (BuildContext context, PreferenceState preferenceState) {
+        final AuthState authState = context.read<AuthBloc>().state;
+        final bool isLoggedIn = authState.isLoggedIn;
         return Positioned.fill(
           top: preferenceState.isHackerNewsThemeEnabled
               ? Dimens.pt64
               : Dimens.pt50,
-          child: Visibility(
-            visible: widget.pageType == PageType.settings,
-            child: SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  ListTile(
-                    leading: Icon(
-                      Icons.person,
-                      color: widget.authState.isLoggedIn
-                          ? Theme.of(context).colorScheme.primary
-                          : null,
-                    ),
-                    title: Text(
-                      widget.authState.isLoggedIn ? 'Log Out' : 'Log In',
-                    ),
-                    subtitle: widget.authState.isLoggedIn
-                        ? Text(widget.authState.username)
+          child: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                ListTile(
+                  leading: Icon(
+                    Icons.person,
+                    color: isLoggedIn
+                        ? Theme.of(context).colorScheme.primary
                         : null,
-                    onTap: () {
-                      if (widget.authState.isLoggedIn) {
-                        onLogoutTapped();
-                      } else {
-                        onLoginTapped();
-                      }
-                    },
                   ),
-                  const EnterOfflineModeListTile(),
-                  const OfflineListTile(),
-                  const SizedBox(
-                    height: Dimens.pt8,
+                  title: Text(
+                    isLoggedIn ? 'Log Out' : 'Log In',
                   ),
-                  OverflowBar(
-                    alignment: MainAxisAlignment.spaceBetween,
-                    overflowSpacing: Dimens.pt12,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          left: Dimens.pt16,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            const Text('Default fetch mode'),
-                            DropdownMenu<FetchMode>(
-                              initialSelection: preferenceState.fetchMode,
-                              dropdownMenuEntries: FetchMode.values
-                                  .map(
-                                    (FetchMode val) =>
-                                        DropdownMenuEntry<FetchMode>(
-                                      value: val,
-                                      label: val.description,
-                                    ),
-                                  )
-                                  .toList(),
-                              onSelected: (FetchMode? fetchMode) {
-                                if (fetchMode != null) {
-                                  HapticFeedbackUtils.selection();
-                                  context.read<PreferenceCubit>().update(
-                                        FetchModePreference(
-                                          val: fetchMode.index,
-                                        ),
-                                      );
-                                }
-                              },
-                            ),
-                          ],
-                        ),
+                  subtitle: isLoggedIn
+                      ? Text(
+                          context.read<AuthBloc>().state.username,
+                        )
+                      : null,
+                  onTap: () {
+                    if (isLoggedIn) {
+                      onLogoutTapped();
+                    } else {
+                      onLoginTapped();
+                    }
+                  },
+                ),
+                const EnterOfflineModeListTile(),
+                const OfflineListTile(),
+                const SizedBox(
+                  height: Dimens.pt8,
+                ),
+                OverflowBar(
+                  alignment: MainAxisAlignment.spaceBetween,
+                  overflowSpacing: Dimens.pt12,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: Dimens.pt16,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          left: Dimens.pt16,
-                          right: Dimens.pt16,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            const Text('Default comments order'),
-                            DropdownMenu<CommentsOrder>(
-                              initialSelection: preferenceState.order,
-                              dropdownMenuEntries: CommentsOrder.values
-                                  .map(
-                                    (CommentsOrder val) =>
-                                        DropdownMenuEntry<CommentsOrder>(
-                                      value: val,
-                                      label: val.description,
-                                    ),
-                                  )
-                                  .toList(),
-                              onSelected: (CommentsOrder? order) {
-                                if (order != null) {
-                                  HapticFeedbackUtils.selection();
-                                  context.read<PreferenceCubit>().update(
-                                        CommentsOrderPreference(
-                                          val: order.index,
-                                        ),
-                                      );
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: Dimens.pt12,
-                  ),
-                  OverflowBar(
-                    alignment: MainAxisAlignment.spaceBetween,
-                    overflowSpacing: Dimens.pt12,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          left: Dimens.pt16,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            const Text(
-                              'Date time display of comments',
-                            ),
-                            DropdownMenu<DateDisplayFormat>(
-                              initialSelection:
-                                  preferenceState.displayDateFormat,
-                              dropdownMenuEntries: DateDisplayFormat.values
-                                  .map(
-                                    (DateDisplayFormat val) =>
-                                        DropdownMenuEntry<DateDisplayFormat>(
-                                      value: val,
-                                      label: val.description,
-                                    ),
-                                  )
-                                  .toList(),
-                              onSelected: (DateDisplayFormat? order) {
-                                if (order != null) {
-                                  HapticFeedbackUtils.selection();
-                                  context.read<PreferenceCubit>().update(
-                                        DateFormatPreference(
-                                          val: order.index,
-                                        ),
-                                      );
-                                  DateDisplayFormat.clearCache();
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          left: Dimens.pt16,
-                          right: Dimens.pt16,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            const Text(
-                              'Data source',
-                            ),
-                            BlocSelector<StoriesBloc, StoriesState, bool>(
-                              selector: (StoriesState state) =>
-                                  state.statusByType.values.any(
-                                (Status status) => status == Status.inProgress,
-                              ),
-                              builder: (
-                                BuildContext context,
-                                bool isInProgress,
-                              ) {
-                                return DropdownMenu<HackerNewsDataSource>(
-                                  initialSelection: preferenceState.dataSource,
-                                  dropdownMenuEntries:
-                                      HackerNewsDataSource.values
-                                          .map(
-                                            (HackerNewsDataSource val) =>
-                                                DropdownMenuEntry<
-                                                    HackerNewsDataSource>(
-                                              value: val,
-                                              label: val.description,
-                                            ),
-                                          )
-                                          .toList(),
-                                  onSelected: (HackerNewsDataSource? source) {
-                                    if (source != null) {
-                                      HapticFeedbackUtils.selection();
-                                      context.read<PreferenceCubit>().update(
-                                            HackerNewsDataSourcePreference(
-                                              val: source.index,
-                                            ),
-                                          );
-                                    }
-                                  },
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: Dimens.pt12,
-                  ),
-                  const TabBarSettings(),
-                  const TextScaleFactorSettings(),
-                  const Divider(),
-                  StoryTile(
-                    shouldShowWebPreview:
-                        preferenceState.isRichStoryTileEnabled,
-                    shouldShowMetadata: preferenceState.isMetadataEnabled,
-                    shouldShowUrl: preferenceState.isUrlEnabled,
-                    shouldShowFavicon: preferenceState.isFaviconEnabled,
-                    shouldShowPreviewImage:
-                        preferenceState.isStoryTilePreviewImageEnabled,
-                    isExpandedTileEnabled:
-                        preferenceState.isExpandedTileEnabled,
-                    isIndexedStoryTileEnabled:
-                        preferenceState.isIndexedStoryTileEnabled,
-                    isImageLeftAligned:
-                        preferenceState.isPreviewImageLeftAligned,
-                    index: 0,
-                    story: Story.placeholder(),
-                    onTap: () => LinkUtils.launch(
-                      Constants.guidelineLink,
-                      context,
-                    ),
-                  ),
-                  const Divider(),
-                  for (final Preference<dynamic> preference
-                      in preferenceState.settingsPreferences) ...<Widget>[
-                    if (preference is DividerPlaceholder)
-                      SizedBox(
-                        height: Dimens.pt36,
-                        child: Flex(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          direction: Axis.horizontal,
-                          children: <Widget>[
-                            SizedBoxes.pt12,
-                            const Flexible(
-                              child: Divider(),
-                            ),
-                            SizedBoxes.pt12,
-                            Text(preference.label),
-                            SizedBoxes.pt12,
-                            const Flexible(
-                              child: Divider(),
-                            ),
-                            SizedBoxes.pt12,
-                          ],
-                        ),
-                      )
-                    else if (preference is PreviewImageAlignmentPreference)
-                      FadeIn(
-                        child: ListTile(
-                          enabled: preference.dependencies
-                              .satisfy(preferenceState.preferences),
-                          title: Text(preference.title),
-                          trailing: SegmentedButton<bool>(
-                            showSelectedIcon: false,
-                            segments: const <ButtonSegment<bool>>[
-                              ButtonSegment<bool>(
-                                value: true,
-                                label: Text('Left'),
-                              ),
-                              ButtonSegment<bool>(
-                                value: false,
-                                label: Text('Right'),
-                              ),
-                            ],
-                            selected: <bool>{
-                              preferenceState.isOn(
-                                preference as BooleanPreference,
-                              ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          const Text('Default fetch mode'),
+                          DropdownMenu<FetchMode>(
+                            initialSelection: preferenceState.fetchMode,
+                            dropdownMenuEntries: FetchMode.values
+                                .map(
+                                  (FetchMode val) =>
+                                      DropdownMenuEntry<FetchMode>(
+                                    value: val,
+                                    label: val.description,
+                                  ),
+                                )
+                                .toList(),
+                            onSelected: (FetchMode? fetchMode) {
+                              if (fetchMode != null) {
+                                HapticFeedbackUtils.selection();
+                                context.read<PreferenceCubit>().update(
+                                      FetchModePreference(
+                                        val: fetchMode.index,
+                                      ),
+                                    );
+                              }
                             },
-                            onSelectionChanged: preference.dependencies
-                                    .satisfy(preferenceState.preferences)
-                                ? (Set<bool> val) {
-                                    HapticFeedbackUtils.light();
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: Dimens.pt16,
+                        right: Dimens.pt16,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          const Text('Default comments order'),
+                          DropdownMenu<CommentsOrder>(
+                            initialSelection: preferenceState.order,
+                            dropdownMenuEntries: CommentsOrder.values
+                                .map(
+                                  (CommentsOrder val) =>
+                                      DropdownMenuEntry<CommentsOrder>(
+                                    value: val,
+                                    label: val.description,
+                                  ),
+                                )
+                                .toList(),
+                            onSelected: (CommentsOrder? order) {
+                              if (order != null) {
+                                HapticFeedbackUtils.selection();
+                                context.read<PreferenceCubit>().update(
+                                      CommentsOrderPreference(
+                                        val: order.index,
+                                      ),
+                                    );
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: Dimens.pt12,
+                ),
+                OverflowBar(
+                  alignment: MainAxisAlignment.spaceBetween,
+                  overflowSpacing: Dimens.pt12,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: Dimens.pt16,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          const Text(
+                            'Date time display of comments',
+                          ),
+                          DropdownMenu<DateDisplayFormat>(
+                            initialSelection: preferenceState.displayDateFormat,
+                            dropdownMenuEntries: DateDisplayFormat.values
+                                .map(
+                                  (DateDisplayFormat val) =>
+                                      DropdownMenuEntry<DateDisplayFormat>(
+                                    value: val,
+                                    label: val.description,
+                                  ),
+                                )
+                                .toList(),
+                            onSelected: (DateDisplayFormat? order) {
+                              if (order != null) {
+                                HapticFeedbackUtils.selection();
+                                context.read<PreferenceCubit>().update(
+                                      DateFormatPreference(
+                                        val: order.index,
+                                      ),
+                                    );
+                                DateDisplayFormat.clearCache();
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: Dimens.pt16,
+                        right: Dimens.pt16,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          const Text(
+                            'Data source',
+                          ),
+                          BlocSelector<StoriesBloc, StoriesState, bool>(
+                            selector: (StoriesState state) =>
+                                state.statusByType.values.any(
+                              (Status status) => status == Status.inProgress,
+                            ),
+                            builder: (
+                              BuildContext context,
+                              bool isInProgress,
+                            ) {
+                              return DropdownMenu<HackerNewsDataSource>(
+                                initialSelection: preferenceState.dataSource,
+                                dropdownMenuEntries: HackerNewsDataSource.values
+                                    .map(
+                                      (HackerNewsDataSource val) =>
+                                          DropdownMenuEntry<
+                                              HackerNewsDataSource>(
+                                        value: val,
+                                        label: val.description,
+                                      ),
+                                    )
+                                    .toList(),
+                                onSelected: (HackerNewsDataSource? source) {
+                                  if (source != null) {
+                                    HapticFeedbackUtils.selection();
                                     context.read<PreferenceCubit>().update(
-                                          preference.copyWith(val: val.single),
+                                          HackerNewsDataSourcePreference(
+                                            val: source.index,
+                                          ),
                                         );
                                   }
-                                : null,
+                                },
+                              );
+                            },
                           ),
-                        ),
-                      )
-                    else
-                      SwitchListTile(
-                        key: ValueKey<String>(preference.key),
-                        title: Text(preference.title),
-                        subtitle: preference.subtitle.isNotEmpty
-                            ? Text(preference.subtitle)
-                            : null,
-                        value: preferenceState.isOn(
-                          preference as BooleanPreference,
-                        ),
-                        onChanged: preference.dependencies
-                                .satisfy(preferenceState.preferences)
-                            ? (bool val) {
-                                HapticFeedbackUtils.light();
-
-                                context
-                                    .read<PreferenceCubit>()
-                                    .update(preference.copyWith(val: val));
-
-                                if (preference
-                                        is MarkReadStoriesModePreference &&
-                                    val == false) {
-                                  context
-                                      .read<StoriesBloc>()
-                                      .add(ClearAllReadStories());
-                                }
-                              }
-                            : null,
-                        activeThumbColor: Theme.of(context).colorScheme.primary,
+                        ],
                       ),
-                    if (preference
-                        is MarkReadStoriesModePreference) ...<Widget>[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: Dimens.pt16,
-                        ),
-                        child: DropdownMenu<StoryMarkingMode>(
-                          enabled: preferenceState.isMarkReadStoriesEnabled,
-                          label: Text(StoryMarkingModePreference().title),
-                          initialSelection: preferenceState.storyMarkingMode,
-                          onSelected: (StoryMarkingMode? storyMarkingMode) {
-                            if (storyMarkingMode != null) {
-                              HapticFeedbackUtils.selection();
-                              context.read<PreferenceCubit>().update(
-                                    StoryMarkingModePreference(
-                                      val: storyMarkingMode.index,
-                                    ),
-                                  );
-                            }
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: Dimens.pt12,
+                ),
+                const TabBarSettings(),
+                const TextScaleFactorSettings(),
+                const Divider(),
+                StoryTile(
+                  shouldShowWebPreview: preferenceState.isRichStoryTileEnabled,
+                  shouldShowMetadata: preferenceState.isMetadataEnabled,
+                  shouldShowUrl: preferenceState.isUrlEnabled,
+                  shouldShowFavicon: preferenceState.isFaviconEnabled,
+                  shouldShowPreviewImage:
+                      preferenceState.isStoryTilePreviewImageEnabled,
+                  isExpandedTileEnabled: preferenceState.isExpandedTileEnabled,
+                  isIndexedStoryTileEnabled:
+                      preferenceState.isIndexedStoryTileEnabled,
+                  isImageLeftAligned: preferenceState.isPreviewImageLeftAligned,
+                  index: 0,
+                  story: Story.placeholder(),
+                  onTap: () => LinkUtils.launch(
+                    Constants.guidelineLink,
+                    context,
+                  ),
+                ),
+                const Divider(),
+                for (final Preference<dynamic> preference
+                    in preferenceState.settingsPreferences) ...<Widget>[
+                  if (preference is DividerPlaceholder)
+                    SizedBox(
+                      height: Dimens.pt36,
+                      child: Flex(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        direction: Axis.horizontal,
+                        children: <Widget>[
+                          SizedBoxes.pt12,
+                          const Flexible(
+                            child: Divider(),
+                          ),
+                          SizedBoxes.pt12,
+                          Text(preference.label),
+                          SizedBoxes.pt12,
+                          const Flexible(
+                            child: Divider(),
+                          ),
+                          SizedBoxes.pt12,
+                        ],
+                      ),
+                    )
+                  else if (preference is PreviewImageAlignmentPreference)
+                    FadeIn(
+                      child: ListTile(
+                        enabled: preference.dependencies
+                            .satisfy(preferenceState.preferences),
+                        title: Text(preference.title),
+                        trailing: SegmentedButton<bool>(
+                          showSelectedIcon: false,
+                          segments: const <ButtonSegment<bool>>[
+                            ButtonSegment<bool>(
+                              value: true,
+                              label: Text('Left'),
+                            ),
+                            ButtonSegment<bool>(
+                              value: false,
+                              label: Text('Right'),
+                            ),
+                          ],
+                          selected: <bool>{
+                            preferenceState.isOn(
+                              preference as BooleanPreference,
+                            ),
                           },
-                          dropdownMenuEntries: StoryMarkingMode.values
-                              .map(
-                                (StoryMarkingMode val) =>
-                                    DropdownMenuEntry<StoryMarkingMode>(
-                                  value: val,
-                                  label: val.label,
-                                ),
-                              )
-                              .toList(),
-                          inputDecorationTheme: const InputDecorationTheme(
-                            disabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Palette.grey,
+                          onSelectionChanged: preference.dependencies
+                                  .satisfy(preferenceState.preferences)
+                              ? (Set<bool> val) {
+                                  HapticFeedbackUtils.light();
+                                  context.read<PreferenceCubit>().update(
+                                        preference.copyWith(val: val.single),
+                                      );
+                                }
+                              : null,
+                        ),
+                      ),
+                    )
+                  else
+                    SwitchListTile(
+                      key: ValueKey<String>(preference.key),
+                      title: Text(preference.title),
+                      subtitle: preference.subtitle.isNotEmpty
+                          ? Text(preference.subtitle)
+                          : null,
+                      value: preferenceState.isOn(
+                        preference as BooleanPreference,
+                      ),
+                      onChanged: preference.dependencies
+                              .satisfy(preferenceState.preferences)
+                          ? (bool val) {
+                              HapticFeedbackUtils.light();
+
+                              context
+                                  .read<PreferenceCubit>()
+                                  .update(preference.copyWith(val: val));
+
+                              if (preference is MarkReadStoriesModePreference &&
+                                  val == false) {
+                                context
+                                    .read<StoriesBloc>()
+                                    .add(ClearAllReadStories());
+                              }
+                            }
+                          : null,
+                      activeThumbColor: Theme.of(context).colorScheme.primary,
+                    ),
+                  if (preference is MarkReadStoriesModePreference) ...<Widget>[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Dimens.pt16,
+                      ),
+                      child: DropdownMenu<StoryMarkingMode>(
+                        enabled: preferenceState.isMarkReadStoriesEnabled,
+                        label: Text(StoryMarkingModePreference().title),
+                        initialSelection: preferenceState.storyMarkingMode,
+                        onSelected: (StoryMarkingMode? storyMarkingMode) {
+                          if (storyMarkingMode != null) {
+                            HapticFeedbackUtils.selection();
+                            context.read<PreferenceCubit>().update(
+                                  StoryMarkingModePreference(
+                                    val: storyMarkingMode.index,
+                                  ),
+                                );
+                          }
+                        },
+                        dropdownMenuEntries: StoryMarkingMode.values
+                            .map(
+                              (StoryMarkingMode val) =>
+                                  DropdownMenuEntry<StoryMarkingMode>(
+                                value: val,
+                                label: val.label,
                               ),
+                            )
+                            .toList(),
+                        inputDecorationTheme: const InputDecorationTheme(
+                          disabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Palette.grey,
                             ),
                           ),
-                          expandedInsets: EdgeInsets.zero,
                         ),
+                        expandedInsets: EdgeInsets.zero,
                       ),
-                      SizedBoxes.pt12,
-                      const Divider(),
-                    ],
-                    if (preference is DividerPreference) const Divider(),
+                    ),
+                    SizedBoxes.pt12,
+                    const Divider(),
                   ],
+                  if (preference is DividerPreference) const Divider(),
+                ],
+                ListTile(
+                  title: const Text(
+                    'Accent Color',
+                  ),
+                  onTap: showColorPicker,
+                ),
+                ListTile(
+                  title: const Text(
+                    'Font',
+                  ),
+                  onTap: showFontSettingDialog,
+                ),
+                ListTile(
+                  title: const Text(
+                    'Theme',
+                  ),
+                  onTap: showThemeSettingDialog,
+                ),
+                const Divider(),
+                ListTile(
+                  title: const Text(
+                    'Filter Keywords',
+                  ),
+                  onTap: onFilterKeywordsTapped,
+                ),
+                ListTile(
+                  title: const Text(
+                    'Export Favorites',
+                  ),
+                  onTap: onExportFavoritesTapped,
+                ),
+                ListTile(
+                  title: const Text(
+                    'Import Favorites',
+                  ),
+                  onTap: () =>
+                      onImportFavoritesTapped(context.read<FavCubit>()),
+                ),
+                ListTile(
+                  title: const Text(
+                    'Clear Favorites',
+                  ),
+                  onTap: showClearFavoritesDialog,
+                ),
+                ListTile(
+                  title: const Text(
+                    'Clear Cache',
+                  ),
+                  onTap: showClearCacheDialog,
+                ),
+                ListTile(
+                  title: const Text('Restore Default Settings'),
+                  onTap: showRestoreDefaultSettingsDialog,
+                ),
+                if (preferenceState.isDevModeEnabled) ...<Widget>[
                   ListTile(
                     title: const Text(
-                      'Accent Color',
+                      'Logs',
                     ),
-                    onTap: showColorPicker,
-                  ),
-                  ListTile(
-                    title: const Text(
-                      'Font',
-                    ),
-                    onTap: showFontSettingDialog,
-                  ),
-                  ListTile(
-                    title: const Text(
-                      'Theme',
-                    ),
-                    onTap: showThemeSettingDialog,
-                  ),
-                  const Divider(),
-                  ListTile(
-                    title: const Text(
-                      'Filter Keywords',
-                    ),
-                    onTap: onFilterKeywordsTapped,
-                  ),
-                  ListTile(
-                    title: const Text(
-                      'Export Favorites',
-                    ),
-                    onTap: onExportFavoritesTapped,
-                  ),
-                  ListTile(
-                    title: const Text(
-                      'Import Favorites',
-                    ),
-                    onTap: () =>
-                        onImportFavoritesTapped(context.read<FavCubit>()),
-                  ),
-                  ListTile(
-                    title: const Text(
-                      'Clear Favorites',
-                    ),
-                    onTap: showClearFavoritesDialog,
-                  ),
-                  ListTile(
-                    title: const Text(
-                      'Clear Cache',
-                    ),
-                    onTap: showClearCacheDialog,
-                  ),
-                  ListTile(
-                    title: const Text('Restore Default Settings'),
-                    onTap: showRestoreDefaultSettingsDialog,
-                  ),
-                  if (preferenceState.isDevModeEnabled) ...<Widget>[
-                    ListTile(
-                      title: const Text(
-                        'Logs',
-                      ),
-                      onTap: () {
-                        context.go(Paths.logs.landing);
-                      },
-                    ),
-                    ListTile(
-                      title: const Text(
-                        'Reset Feature Discovery',
-                      ),
-                      onTap: () {
-                        HapticFeedbackUtils.light();
-                        FeatureDiscovery.clearPreferences(
-                          context,
-                          DiscoverableFeature.values
-                              .map((DiscoverableFeature f) => f.featureId),
-                        );
-                      },
-                    ),
-                    ListTile(
-                      title: const Text(
-                        'Reset Tips',
-                      ),
-                      onTap: () {
-                        HapticFeedbackUtils.light();
-                        context.read<TipsCubit>().reset();
-                      },
-                    ),
-                  ],
-                  const Divider(),
-                  ListTile(
-                    title: const Text('Feature Request'),
-                    onTap: () => LinkUtils.launch(
-                      Constants.githubLink,
-                      context,
-                    ),
-                  ),
-                  ListTile(
-                    title: const Text('Rate Hacki : )'),
                     onTap: () {
-                      LinkUtils.launch(
-                        Platform.isIOS
-                            ? Constants.appStoreLink
-                            : Constants.googlePlayLink,
+                      context.go(Paths.logs.landing);
+                    },
+                  ),
+                  ListTile(
+                    title: const Text(
+                      'Reset Feature Discovery',
+                    ),
+                    onTap: () {
+                      HapticFeedbackUtils.light();
+                      FeatureDiscovery.clearPreferences(
                         context,
+                        DiscoverableFeature.values
+                            .map((DiscoverableFeature f) => f.featureId),
                       );
                     },
                   ),
                   ListTile(
-                    title: const Text('About'),
-                    subtitle: Text(
-                      Constants.magicWord,
+                    title: const Text(
+                      'Reset Tips',
                     ),
-                    onTap: showAboutHackiDialog,
-                    onLongPress: () {
-                      final DevMode updatedDevMode =
-                          DevMode(val: !preferenceState.isDevModeEnabled);
-                      context.read<PreferenceCubit>().update(updatedDevMode);
-                      HapticFeedbackUtils.heavy();
-                      if (updatedDevMode.val) {
-                        showSnackBar(content: 'You are a dev now.');
-                      } else {
-                        showSnackBar(content: 'Dev mode disabled.');
-                      }
+                    onTap: () {
+                      HapticFeedbackUtils.light();
+                      context.read<TipsCubit>().reset();
                     },
                   ),
-                  const SizedBox(
-                    height: Dimens.pt200,
-                  ),
                 ],
-              ),
+                const Divider(),
+                ListTile(
+                  title: const Text('Feature Request'),
+                  onTap: () => LinkUtils.launch(
+                    Constants.githubLink,
+                    context,
+                  ),
+                ),
+                ListTile(
+                  title: const Text('Rate Hacki : )'),
+                  onTap: () {
+                    LinkUtils.launch(
+                      Platform.isIOS
+                          ? Constants.appStoreLink
+                          : Constants.googlePlayLink,
+                      context,
+                    );
+                  },
+                ),
+                ListTile(
+                  title: const Text('About'),
+                  subtitle: Text(
+                    Constants.magicWord,
+                  ),
+                  onTap: showAboutHackiDialog,
+                  onLongPress: () {
+                    context.go(HomeScreen.routeName);
+                    final DevMode updatedDevMode =
+                        DevMode(val: !preferenceState.isDevModeEnabled);
+                    context.read<PreferenceCubit>().update(updatedDevMode);
+                    HapticFeedbackUtils.heavy();
+                    if (updatedDevMode.val) {
+                      showSnackBar(content: 'You are a dev now.');
+                    } else {
+                      showSnackBar(content: 'Dev mode disabled.');
+                    }
+                  },
+                ),
+                const SizedBox(
+                  height: Dimens.pt200,
+                ),
+              ],
             ),
           ),
         );

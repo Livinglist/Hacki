@@ -325,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen>
     FeatureDiscovery.clearPreferences(context, <String>[
       DiscoverableFeature.login.featureId,
       DiscoverableFeature.addStoryToFavList.featureId,
-      DiscoverableFeature.openStoryInWebView.featureId,
+      DiscoverableFeature.settingsShortcutOnItemScreen.featureId,
       DiscoverableFeature.pinToTop.featureId,
     ]);
   }
