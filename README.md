@@ -10,9 +10,11 @@ A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
 
 [<img src="assets/images/app_store_badge.png" height="50">](https://apps.apple.com/us/app/hacki/id1602043763?platform=iphone) [<img src="assets/images/google_play_badge.png" height="50">](https://play.google.com/store/apps/details?id=com.jiaqifeng.hacki&hl=en_US&gl=US) [<img src="assets/images/f_droid_badge.png" height="50">](https://f-droid.org/en/packages/com.jiaqifeng.hacki/)
 
+**https://github.com/Livinglist/Hacki#home-page-and-story-tile-customization**
+
 
 Features:
-- Hacker News account [login](https://github.com/Livinglist/Hacki/tree/chore/screenshots-update-0331?tab=readme-ov-file#login-reply-notification-favorites-sync-and-more)
+- Hacker News account [login](#login-reply-notification-favorites-sync-and-more)
 - [Favorites sync](https://github.com/Livinglist/Hacki/tree/chore/screenshots-update-0331?tab=readme-ov-file#login-reply-notification-favorites-sync-and-more)
 - [Hacker News Search]()
 - [In-thread search](https://github.com/Livinglist/Hacki/tree/chore/screenshots-update-0331?tab=readme-ov-file#in-thread-local-and-global-search)
