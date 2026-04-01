@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
@@ -119,14 +120,35 @@ class MainView extends StatelessWidget {
                           height: MediaQuery.of(context).size.height -
                               MediaQuery.of(context).padding.top,
                           child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
                               SizedBoxes.pt100,
-                              Text(
-                                Constants.happyFace,
-                                style: TextStyle(
-                                  color: Theme.of(context).hintColor,
+                              if (preferenceState.isEyeCandyEnabled)
+                                GestureDetector(
+                                  onLongPressDown: (_) => unawaited(
+                                    HapticFeedbackUtil.loadAndPlay(),
+                                  ),
+                                  onLongPressUp: HapticFeedbackUtil.stop,
+                                  child: Center(
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.all(Dimens.pt24),
+                                      child: FaIcon(
+                                        FontAwesomeIcons.heartPulse,
+                                        applyTextScaling: false,
+                                        color: Theme.of(context).hintColor,
+                                        size: Dimens.pt36,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              else
+                                Text(
+                                  Constants.happyFace,
+                                  style: TextStyle(
+                                    color: Theme.of(context).hintColor,
+                                  ),
                                 ),
-                              ),
                               SizedBoxes.pt36,
                               Text(
                                 context.read<CommentsCubit>().currentTips,

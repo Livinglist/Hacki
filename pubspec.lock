@@ -17,6 +17,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.7.2"
+  advanced_haptics:
+    dependency: "direct main"
+    description:
+      name: advanced_haptics
+      sha256: "8537e3f27cb87e7775c29ab2ece12e9cd283b29f668e4d0d3a7e6dbdbb1d1aba"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.8"
   analyzer:
     dependency: transitive
     description:

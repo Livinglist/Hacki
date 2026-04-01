@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:advanced_haptics/advanced_haptics.dart';
 import 'package:flutter/services.dart';
 
 abstract class HapticFeedbackUtil {
@@ -32,4 +35,16 @@ abstract class HapticFeedbackUtil {
       HapticFeedback.heavyImpact();
     }
   }
+
+  static Future<void> loadAndPlay() async {
+    if (Platform.isIOS) {
+      await AdvancedHaptics.playAhap('assets/haptics/heartbeats.ahap');
+    } else {
+      final List<int> timings = <int>[0, 60, 50, 100, 50];
+      final List<int> amplitudes = <int>[0, 255, 0, 150, 0];
+      await AdvancedHaptics.playWaveform(timings, amplitudes);
+    }
+  }
+
+  static Future<void> stop() async => AdvancedHaptics.stop();
 }

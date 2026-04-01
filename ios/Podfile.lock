@@ -1,4 +1,6 @@
 PODS:
+  - advanced_haptics (0.0.1):
+    - Flutter
   - app_links (7.0.0):
     - Flutter
   - connectivity_plus (0.0.1):
@@ -95,6 +97,7 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - advanced_haptics (from `.symlinks/plugins/advanced_haptics/ios`)
   - app_links (from `.symlinks/plugins/app_links/ios`)
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
@@ -129,6 +132,8 @@ SPEC REPOS:
     - SwiftyGif
 
 EXTERNAL SOURCES:
+  advanced_haptics:
+    :path: ".symlinks/plugins/advanced_haptics/ios"
   app_links:
     :path: ".symlinks/plugins/app_links/ios"
   connectivity_plus:
@@ -179,6 +184,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/workmanager_apple/ios"
 
 SPEC CHECKSUMS:
+  advanced_haptics: 6bb54f03d66fe7258ab48130a19ce32bf85c212b
   app_links: 6d01271b3907b0ee7325c5297c75d697c4226c4d
   connectivity_plus: 2a701ffec2c0ae28a48cf7540e279787e77c447d
   device_info_plus: bf2e3232933866d73fe290f2942f2156cdd10342
