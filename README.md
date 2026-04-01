@@ -54,10 +54,10 @@ Features:
 
 ## Thread
 <p align="center">
-    <img width="240" src="assets/new_screenshots/hacki_21.png"> 
-    <img width="240" src="assets/new_screenshots/hacki_22.png"> 
-    <img width="240" src="assets/new_screenshots/hacki_69.png">
-    <img width="240" src="assets/new_screenshots/hacki_70.png">
+    <img width="300" src="assets/new_screenshots/hacki_21.png"> 
+    <img width="300" src="assets/new_screenshots/hacki_70.png">
+    <img width="300" src="assets/new_screenshots/hacki_22.png"> 
+    <img width="300" src="assets/new_screenshots/hacki_69.png">
 </p>
 
 ## New comments notification and lookup
@@ -109,12 +109,12 @@ Features:
 </p>
 
 <p align="center">
-    <img width="300" src="assets/new_screenshots/hacki_104.png">
-    <img width="300" src="assets/new_screenshots/hacki_106.png">
-    <img width="300" src="assets/new_screenshots/hacki_108.png">
-    <img width="300" src="assets/new_screenshots/hacki_110.png">
-    <img width="300" src="assets/new_screenshots/hacki_112.png">
-    <img width="300" src="assets/new_screenshots/hacki_114.png">
+    <img width="250" src="assets/new_screenshots/hacki_104.png">
+    <img width="250" src="assets/new_screenshots/hacki_106.png">
+    <img width="250" src="assets/new_screenshots/hacki_108.png">
+    <img width="250" src="assets/new_screenshots/hacki_110.png">
+    <img width="250" src="assets/new_screenshots/hacki_112.png">
+    <img width="250" src="assets/new_screenshots/hacki_114.png">
 </p>
 
 # Login, reply notification, favorites sync and more
