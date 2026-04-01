@@ -119,6 +119,8 @@ class MainView extends StatelessWidget {
                           color: Theme.of(context).canvasColor,
                           height: MediaQuery.of(context).size.height -
                               MediaQuery.of(context).padding.top,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: Dimens.pt48),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
@@ -156,6 +158,7 @@ class MainView extends StatelessWidget {
                                   color: Theme.of(context).hintColor,
                                 ),
                                 textScaler: TextScaler.noScaling,
+                                textAlign: TextAlign.center,
                               ),
                             ],
                           ),

@@ -47,5 +47,9 @@ abstract class HapticFeedbackUtil {
     }
   }
 
-  static Future<void> stop() => AdvancedHaptics.stop();
+  static Future<void> stop() async {
+    try {
+      await AdvancedHaptics.stop();
+    } catch (_) {}
+  }
 }
