@@ -39,7 +39,6 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.header,
     this.footer,
     this.onMoreTapped,
-    //this.scrollController,
     this.itemBuilder,
   });
 
@@ -65,7 +64,6 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   final Widget? footer;
   final RefreshController refreshController;
 
-  //final ScrollController? scrollController;
   final VoidCallback? onRefresh;
   final VoidCallback? onLoadMore;
   final ValueChanged<Story>? onPinned;

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
-import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
-import 'package:hacki/screens/search/search_screen.dart';
 import 'package:hacki/screens/widgets/custom_linkify/custom_linkify.dart';
+import 'package:hacki/services/dialog_proxy.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 
@@ -37,7 +35,7 @@ extension ContextMenuBuilder on Widget {
         ..insert(
           0,
           ContextMenuButtonItem(
-            onPressed: () => _showHackerNewsSearchBottomSheet(
+            onPressed: () => DialogProxy.showHackerNewsSearchBottomSheet(
               context,
               selectedText,
             ),
@@ -65,34 +63,6 @@ extension ContextMenuBuilder on Widget {
     return AdaptiveTextSelectionToolbar.buttonItems(
       anchors: editableTextState.contextMenuAnchors,
       buttonItems: items,
-    );
-  }
-
-  void _showHackerNewsSearchBottomSheet(
-    BuildContext context,
-    String text,
-  ) {
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      builder: (BuildContext context) {
-        return BlocProvider<SearchCubit>(
-          create: (_) => SearchCubit()..search(text),
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height - Dimens.pt120,
-            child: const Column(
-              children: <Widget>[
-                Expanded(
-                  child: SearchScreen(
-                    isInBottomSheet: true,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }

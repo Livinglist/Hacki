@@ -72,7 +72,7 @@ class _SettingsViewState extends State<SettingsView>
   Widget build(BuildContext context) {
     return BlocBuilder<PreferenceCubit, PreferenceState>(
       builder: (BuildContext context, PreferenceState preferenceState) {
-        final AuthState authState = context.read<AuthBloc>().state;
+        final AuthState authState = context.watch<AuthBloc>().state;
         final bool isLoggedIn = authState.isLoggedIn;
         return SingleChildScrollView(
           child: Column(

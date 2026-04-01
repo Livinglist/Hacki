@@ -4,8 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/stories/stories_bloc.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/config/router.dart';
+import 'package:hacki/cubits/search/search_cubit.dart';
 import 'package:hacki/models/item/item.dart';
 import 'package:hacki/screens/item/widgets/time_machine_dialog.dart';
+import 'package:hacki/screens/screens.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/haptic_feedback_utils.dart';
@@ -13,6 +15,56 @@ import 'package:responsive_builder/responsive_builder.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 abstract final class DialogProxy {
+  static void showSettingsBottomSheet(
+    BuildContext context,
+  ) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: MediaQuery.of(context).size.height - Dimens.pt120,
+          child: const Column(
+            children: <Widget>[
+              Expanded(
+                child: SettingsView(),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  static void showHackerNewsSearchBottomSheet(
+    BuildContext context,
+    String text,
+  ) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (BuildContext context) {
+        return BlocProvider<SearchCubit>(
+          create: (_) => SearchCubit()..search(text),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height - Dimens.pt120,
+            child: const Column(
+              children: <Widget>[
+                Expanded(
+                  child: SearchScreen(
+                    isInBottomSheet: true,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   static void showTimeMachineDialog(
     BuildContext context, {
     required Item rootItem,
