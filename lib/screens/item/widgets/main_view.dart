@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide DateUtils;
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
@@ -120,7 +120,8 @@ class MainView extends StatelessWidget {
                           height: MediaQuery.of(context).size.height -
                               MediaQuery.of(context).padding.top,
                           padding: const EdgeInsets.symmetric(
-                              horizontal: Dimens.pt48),
+                            horizontal: Dimens.pt48,
+                          ),
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
@@ -142,6 +143,26 @@ class MainView extends StatelessWidget {
                                       ),
                                     ),
                                   ),
+                                )
+                              else if (DateUtils.isMidnight)
+                                Text(
+                                  'Time for bed',
+                                  style: TextStyle(
+                                    color: Theme.of(context).hintColor,
+                                    fontSize: TextDimens.pt10,
+                                  ),
+                                  textScaler: TextScaler.noScaling,
+                                  textAlign: TextAlign.center,
+                                )
+                              else if (DateUtils.isTodayAnniversary)
+                                Text(
+                                  '''Hacki turns ${DateUtils.yearsSinceFirstCommit} today!''',
+                                  style: TextStyle(
+                                    color: Theme.of(context).hintColor,
+                                    fontSize: TextDimens.pt10,
+                                  ),
+                                  textScaler: TextScaler.noScaling,
+                                  textAlign: TextAlign.center,
                                 )
                               else
                                 Text(
