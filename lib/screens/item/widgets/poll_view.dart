@@ -23,9 +23,6 @@ class _PollViewState extends State<PollView> with ItemActionMixin {
       builder: (BuildContext context, PollState state) {
         return Column(
           children: <Widget>[
-            const SizedBox(
-              height: Dimens.pt24,
-            ),
             if (state.status == Status.inProgress) ...<Widget>[
               const LinearProgressIndicator(),
               const SizedBox(

@@ -489,12 +489,14 @@ class _ParentItemSection extends StatelessWidget {
                       );
                     },
                   ),
-                  if (item is Story && item.isPoll)
+                  if (item is Story && item.isPoll) ...<Widget>[
                     BlocProvider<PollCubit>(
                       create: (BuildContext context) =>
                           PollCubit(story: item)..init(),
                       child: const PollView(),
                     ),
+                    SizedBoxes.pt6,
+                  ],
                 ],
               ),
             ),

@@ -24,7 +24,9 @@ A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
 - Open Hacker News link in Hacki via system share dialog
 - [Share story or comment as image](#share-story-or-comment-as-image)
 - [Reply](#reply-to-comment-or-story), vote, filter, block
-- Polls
+- [Polls](#polls)
+- [True dark mode](#true-dark-mode)
+- [Tablet support](#tablet-support)
 - And more...
 
 # Home page and story tile customization
@@ -180,6 +182,22 @@ A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
     <img width="200" src="assets/new_screenshots/hacki_80.png">
     <img width="200" src="assets/new_screenshots/hacki_81.png">
     <img width="200" src="assets/new_screenshots/hacki_82.png">
+</p>
+
+# True dark mode
+<p align="center">
+    <img width="200" src="assets/new_screenshots/hacki_143.png">
+    <img width="200" src="assets/new_screenshots/hacki_145.png">
+    <img width="200" src="assets/new_screenshots/hacki_144.png">
+    <img width="200" src="assets/new_screenshots/hacki_146.png">
+</p>
+
+# Polls
+<p align="center">
+    <img width="200" src="assets/new_screenshots/hacki_147.png">
+    <img width="200" src="assets/new_screenshots/hacki_148.png">
+    <img width="200" src="assets/new_screenshots/hacki_149.png">
+    <img width="200" src="assets/new_screenshots/hacki_150.png">
 </p>
 
 # Tablet support
