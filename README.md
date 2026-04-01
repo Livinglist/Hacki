@@ -52,92 +52,79 @@ Features:
 
 # Thread reading experience
 
-### Thread
+## Thread
 <p align="center">
-    <img width="200" alt="01" src="assets/new_screenshots/hacki_21.png"> 
-    <img width="200" alt="06" src="assets/new_screenshots/hacki_22.png"> 
-    <img width="200" src="assets/new_screenshots/hacki_69.png">
-    <img width="200" src="assets/new_screenshots/hacki_70.png">
+    <img width="240" src="assets/new_screenshots/hacki_21.png"> 
+    <img width="240" src="assets/new_screenshots/hacki_22.png"> 
+    <img width="240" src="assets/new_screenshots/hacki_69.png">
+    <img width="240" src="assets/new_screenshots/hacki_70.png">
 </p>
 
-### New comments notification and lookup
+## New comments notification and lookup
 <p align="center">
     <img width="300" src="assets/new_screenshots/hacki_59.png"> 
     <img width="300" src="assets/new_screenshots/hacki_60.png">
 </p>
 
-### In-thread search and other actions
+## In-thread local and global search
 <p align="center">
-    <img width="200" alt="02" src="assets/new_screenshots/hacki_23.png">
-    <img width="200" alt="03" src="assets/new_screenshots/hacki_25.png">
-    <img width="200" alt="09" src="assets/new_screenshots/hacki_28.png">
-    <img width="200" alt="05" src="assets/new_screenshots/hacki_29.png">
-    <img width="200" alt="07" src="assets/new_screenshots/hacki_24.png">
-    <img width="200" alt="08" src="assets/new_screenshots/hacki_26.png">
-    <img width="200" alt="04" src="assets/new_screenshots/hacki_27.png">
-    <img width="200" src="assets/new_screenshots/hacki_30.png">
+    <img width="300" src="assets/new_screenshots/hacki_91.png">
+    <img width="300" src="assets/new_screenshots/hacki_93.png">
+    <img width="300" src="assets/new_screenshots/hacki_95.png">
+    <img width="300" src="assets/new_screenshots/hacki_101.png">
+    <img width="300" src="assets/new_screenshots/hacki_97.png">
+    <img width="300" src="assets/new_screenshots/hacki_99.png">
+</p>
+<p align="center">
+    <img width="300" src="assets/new_screenshots/hacki_92.png">
+    <img width="300" src="assets/new_screenshots/hacki_94.png">
+    <img width="300" src="assets/new_screenshots/hacki_96.png">
+    <img width="300" src="assets/new_screenshots/hacki_102.png">
+    <img width="300" src="assets/new_screenshots/hacki_98.png">
+    <img width="300" src="assets/new_screenshots/hacki_100.png">
 </p>
 
-### Ancestor lookup
+## Ancestor lookup
 <p align="center">
-    <img width="200" src="assets/new_screenshots/hacki_61.png">
-    <img width="200" src="assets/new_screenshots/hacki_64.png">
-    <img width="200" src="assets/new_screenshots/hacki_65.png">
-    <img width="200" src="assets/new_screenshots/hacki_68.png">
-    <img width="200" src="assets/new_screenshots/hacki_62.png">
-    <img width="200" src="assets/new_screenshots/hacki_63.png">
-    <img width="200" src="assets/new_screenshots/hacki_66.png">
-    <img width="200" src="assets/new_screenshots/hacki_67.png">
+    <img width="240" src="assets/new_screenshots/hacki_61.png">
+    <img width="240" src="assets/new_screenshots/hacki_64.png">
+    <img width="240" src="assets/new_screenshots/hacki_65.png">
+    <img width="240" src="assets/new_screenshots/hacki_68.png">
+    <img width="240" src="assets/new_screenshots/hacki_62.png">
+    <img width="240" src="assets/new_screenshots/hacki_63.png">
+    <img width="240" src="assets/new_screenshots/hacki_66.png">
+    <img width="240" src="assets/new_screenshots/hacki_67.png">
 </p>
 
-### Story and comment sharing
-
-<table>
-  <tr>
-     <td>test</td>
-     <td>test 2</td>
-     <td>test </td>
-     <td>test</td>
-     <td>test</td>
-     <td>test</td>
-  </tr>
-  <tr>
-    <td><img width="200" src="assets/new_screenshots/hacki_103.png"></td>
-    <td><img width="200" src="assets/new_screenshots/hacki_105.png"></td>
-    <td><img width="200" src="assets/new_screenshots/hacki_107.png"></td>
-    <td><img width="200" src="assets/new_screenshots/hacki_109.png"></td>
-    <td><img width="200" src="assets/new_screenshots/hacki_111.png"></td>
-    <td><img width="200" src="assets/new_screenshots/hacki_113.png"></td>
-  </tr>
- </table>
+## Share story or comment as image
 <p align="center">
-    <img width="200" src="assets/new_screenshots/hacki_103.png">
-    <img width="200" src="assets/new_screenshots/hacki_105.png">
-    <img width="200" src="assets/new_screenshots/hacki_107.png">
-    <img width="200" src="assets/new_screenshots/hacki_109.png">
-    <img width="200" src="assets/new_screenshots/hacki_111.png">
-    <img width="200" src="assets/new_screenshots/hacki_113.png">
+    <img width="300" src="assets/new_screenshots/hacki_103.png">
+    <img width="300" src="assets/new_screenshots/hacki_105.png">
+    <img width="300" src="assets/new_screenshots/hacki_107.png">
+    <img width="300" src="assets/new_screenshots/hacki_109.png">
+    <img width="300" src="assets/new_screenshots/hacki_111.png">
+    <img width="300" src="assets/new_screenshots/hacki_113.png">
 </p>
 
 <p align="center">
-    <img width="200" src="assets/new_screenshots/hacki_104.png">
-    <img width="200" src="assets/new_screenshots/hacki_106.png">
-    <img width="200" src="assets/new_screenshots/hacki_108.png">
-    <img width="200" src="assets/new_screenshots/hacki_110.png">
-    <img width="200" src="assets/new_screenshots/hacki_112.png">
-    <img width="200" src="assets/new_screenshots/hacki_114.png">
+    <img width="300" src="assets/new_screenshots/hacki_104.png">
+    <img width="300" src="assets/new_screenshots/hacki_106.png">
+    <img width="300" src="assets/new_screenshots/hacki_108.png">
+    <img width="300" src="assets/new_screenshots/hacki_110.png">
+    <img width="300" src="assets/new_screenshots/hacki_112.png">
+    <img width="300" src="assets/new_screenshots/hacki_114.png">
 </p>
 
 # Login, reply notification, favorites sync and more
 <p align="center">
-    <img width="200" src="assets/new_screenshots/hacki_37.png">
-    <img width="200" src="assets/new_screenshots/hacki_39.png">
-    <img width="200" src="assets/new_screenshots/hacki_47.png">
+    <img width="300" src="assets/new_screenshots/hacki_37.png">
+    <img width="300" src="assets/new_screenshots/hacki_39.png">
+    <img width="300" src="assets/new_screenshots/hacki_47.png">
 </p>
 <p align="center">
-    <img width="200" src="assets/new_screenshots/hacki_38.png">
-    <img width="200" src="assets/new_screenshots/hacki_40.png">
-    <img width="200" src="assets/new_screenshots/hacki_48.png">
+    <img width="300" src="assets/new_screenshots/hacki_38.png">
+    <img width="300" src="assets/new_screenshots/hacki_40.png">
+    <img width="300" src="assets/new_screenshots/hacki_48.png">
 </p>
 
 # Settings
