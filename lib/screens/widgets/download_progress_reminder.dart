@@ -5,7 +5,7 @@ import 'package:hacki/config/constants.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/services/dialog_proxy.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/utils/haptic_feedback_util.dart';
+import 'package:hacki/utils/haptic_feedback_utils.dart';
 
 class DownloadProgressReminder extends StatefulWidget {
   const DownloadProgressReminder({this.isDockedAtBottom = false, super.key});
@@ -80,7 +80,7 @@ class _DownloadProgressReminderState extends State<DownloadProgressReminder>
           visible: isVisible,
           child: GestureDetector(
             onTap: () {
-              HapticFeedbackUtil.selection();
+              HapticFeedbackUtils.selection();
               DialogProxy.showAbortDownloadDialog(context);
             },
             child: Stack(

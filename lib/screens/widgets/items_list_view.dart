@@ -157,7 +157,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                             linkStyle: TextStyle(
                               color: Theme.of(context).colorScheme.primary,
                             ),
-                            onOpen: (LinkableElement link) => LinkUtil.launch(
+                            onOpen: (LinkableElement link) => LinkUtils.launch(
                               link.url,
                               context,
                             ),
@@ -253,7 +253,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                               linkStyle: TextStyle(
                                 color: Theme.of(context).colorScheme.primary,
                               ),
-                              onOpen: (LinkableElement link) => LinkUtil.launch(
+                              onOpen: (LinkableElement link) => LinkUtils.launch(
                                 link.url,
                                 context,
                               ),

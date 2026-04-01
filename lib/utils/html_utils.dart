@@ -2,7 +2,7 @@ import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
 import 'package:html_unescape/html_unescape.dart';
 
-abstract class HtmlUtil {
+abstract final class HtmlUtils {
   static String? getTitle(dynamic input) =>
       parser.parse(input).head?.querySelector('title')?.text;
 

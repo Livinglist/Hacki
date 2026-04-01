@@ -29,7 +29,7 @@ class LinkIconButton extends StatelessWidget {
           color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
-      onPressed: () => LinkUtil.launch(
+      onPressed: () => LinkUtils.launch(
         '${Constants.hackerNewsItemLinkPrefix}$storyId',
         context,
         shouldUseHackiForHnLink: false,

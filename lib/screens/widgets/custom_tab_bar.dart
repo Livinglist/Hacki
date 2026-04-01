@@ -6,7 +6,7 @@ import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/utils/haptic_feedback_util.dart';
+import 'package:hacki/utils/haptic_feedback_utils.dart';
 
 class CustomTabBar extends StatefulWidget {
   const CustomTabBar({
@@ -62,7 +62,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
             bottom: Dimens.pt8,
           ),
           onTap: (_) {
-            HapticFeedbackUtil.selection();
+            HapticFeedbackUtils.selection();
           },
           tabAlignment: TabAlignment.center,
           tabs: <Widget>[

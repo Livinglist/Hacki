@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hacki/models/models.dart' show NumericCondition, PointsFilter;
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/utils/haptic_feedback_util.dart';
+import 'package:hacki/utils/haptic_feedback_utils.dart';
 
 class PointsFilterChip extends StatelessWidget {
   const PointsFilterChip({
@@ -90,7 +90,7 @@ class _PointsDialogState extends State<_PointsDialog> {
               _selectedCondition,
             },
             onSelectionChanged: (Set<NumericCondition> val) {
-              HapticFeedbackUtil.light();
+              HapticFeedbackUtils.light();
               setState(() {
                 _selectedCondition = val.single;
               });

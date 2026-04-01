@@ -61,7 +61,7 @@ class MainView extends StatelessWidget {
                 displacement: 200,
                 color: Theme.of(context).colorScheme.primaryContainer,
                 onRefresh: () async {
-                  HapticFeedbackUtil.light();
+                  HapticFeedbackUtils.light();
 
                   if (context.read<StoriesBloc>().state.isOfflineReading ==
                           false &&
@@ -128,7 +128,7 @@ class MainView extends StatelessWidget {
                               if (preferenceState.isEyeCandyEnabled)
                                 GestureDetector(
                                   onTap: () => unawaited(
-                                    HapticFeedbackUtil.loadAndPlay(),
+                                    HapticFeedbackUtils.loadAndPlay(),
                                   ),
                                   child: Center(
                                     child: Padding(
@@ -258,7 +258,7 @@ class MainView extends StatelessWidget {
         );
       }
     } else {
-      HapticFeedbackUtil.error();
+      HapticFeedbackUtils.error();
       context.showSnackBar(
         content: SnackBarMessages.notLoggedInNoVoting,
         action: () {
@@ -276,7 +276,7 @@ class MainView extends StatelessWidget {
   }
 
   void onReplyTapped(BuildContext context, Comment cmt) {
-    HapticFeedbackUtil.light();
+    HapticFeedbackUtils.light();
     if (cmt.deleted || cmt.dead) {
       return;
     }
@@ -289,7 +289,7 @@ class MainView extends StatelessWidget {
   }
 
   void onEditTapped(BuildContext context, Comment cmt) {
-    HapticFeedbackUtil.light();
+    HapticFeedbackUtils.light();
     if (cmt.deleted || cmt.dead) {
       return;
     }
@@ -349,7 +349,7 @@ class _ParentItemSection extends StatelessWidget {
                     ),
                   CustomSlidableAction(
                     onPressed: (_) {
-                      HapticFeedbackUtil.light();
+                      HapticFeedbackUtils.light();
 
                       if (item.id !=
                           context.read<EditCubit>().state.replyingTo?.id) {
@@ -423,7 +423,7 @@ class _ParentItemSection extends StatelessWidget {
                         children: <Widget>[
                           if (item is Story)
                             InkWell(
-                              onTap: () => LinkUtil.launch(
+                              onTap: () => LinkUtils.launch(
                                 item.url,
                                 context,
                                 shouldUseReader: prefState.isReaderEnabled,
@@ -437,7 +437,7 @@ class _ParentItemSection extends StatelessWidget {
                                   Clipboard.setData(
                                     ClipboardData(text: item.url),
                                   ).whenComplete(() {
-                                    HapticFeedbackUtil.selection();
+                                    HapticFeedbackUtils.selection();
                                     if (context.mounted) {
                                       context.showSnackBar(
                                         content: 'Link copied.',

@@ -151,7 +151,7 @@ class FavoritesScreen extends StatelessWidget {
                   ? favState.favStories
                   : favState.favComments,
               onRefresh: () {
-                HapticFeedbackUtil.light();
+                HapticFeedbackUtils.light();
                 context.read<FavCubit>().refresh();
               },
               onLoadMore: () {
@@ -167,7 +167,7 @@ class FavoritesScreen extends StatelessWidget {
                     children: <Widget>[
                       CustomSlidableAction(
                         onPressed: (_) {
-                          HapticFeedbackUtil.light();
+                          HapticFeedbackUtils.light();
                           context.read<FavCubit>().removeFav(item.id);
                         },
                         backgroundColor: Palette.red,

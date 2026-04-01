@@ -53,7 +53,7 @@ class ItemText extends StatelessWidget {
           primaryColor: Theme.of(context).colorScheme.primaryContainer,
           style: style,
           linkStyle: linkStyle,
-          onOpen: (LinkableElement link) => LinkUtil.launch(
+          onOpen: (LinkableElement link) => LinkUtils.launch(
             link.url,
             context,
           ),
@@ -84,7 +84,7 @@ class ItemText extends StatelessWidget {
               primaryColor: Theme.of(context).colorScheme.primaryContainer,
               style: style,
               linkStyle: linkStyle,
-              onOpen: (LinkableElement link) => LinkUtil.launch(
+              onOpen: (LinkableElement link) => LinkUtils.launch(
                 link.url,
                 context,
               ),
@@ -100,7 +100,7 @@ class ItemText extends StatelessWidget {
             textScaler: textScaler,
             style: style,
             linkStyle: linkStyle,
-            onOpen: (LinkableElement link) => LinkUtil.launch(
+            onOpen: (LinkableElement link) => LinkUtils.launch(
               link.url,
               context,
             ),
@@ -122,7 +122,7 @@ class ItemText extends StatelessWidget {
             textScaler: textScaler,
             style: style,
             linkStyle: linkStyle,
-            onOpen: (LinkableElement link) => LinkUtil.launch(
+            onOpen: (LinkableElement link) => LinkUtils.launch(
               link.url,
               context,
             ),

@@ -46,14 +46,14 @@ extension ContextMenuBuilder on Widget {
         )
         ..addAll(<ContextMenuButtonItem>[
           ContextMenuButtonItem(
-            onPressed: () => LinkUtil.launch(
+            onPressed: () => LinkUtils.launch(
               '''${Constants.wikipediaLink}$selectedText''',
               context,
             ),
             label: 'Wikipedia',
           ),
           ContextMenuButtonItem(
-            onPressed: () => LinkUtil.launch(
+            onPressed: () => LinkUtils.launch(
               '''${Constants.wiktionaryLink}$selectedText''',
               context,
             ),

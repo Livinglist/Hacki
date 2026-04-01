@@ -8,7 +8,7 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/comment_tile.dart';
 import 'package:hacki/screens/widgets/story_tile.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/utils/link_util.dart';
+import 'package:hacki/utils/link_utils.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 class TimeMachineDialog extends StatelessWidget {
@@ -85,7 +85,7 @@ class TimeMachineDialog extends StatelessWidget {
                                   final String url = rootItem.url.isNotEmpty
                                       ? rootItem.url
                                       : '''${Constants.hackerNewsItemLinkPrefix}${rootItem.id}''';
-                                  LinkUtil.launch(
+                                  LinkUtils.launch(
                                     url,
                                     context,
                                     shouldUseHackiForHnLink: false,

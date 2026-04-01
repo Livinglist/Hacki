@@ -4,7 +4,7 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/services.dart';
 import 'package:hacki/styles/styles.dart';
 
-abstract class ThemeUtil {
+abstract final class ThemeUtils {
   static Future<void> updateStatusBarSetting(
     Brightness brightness,
     AdaptiveThemeMode? mode,

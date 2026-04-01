@@ -14,14 +14,14 @@ final GetIt locator = GetIt.instance;
 
 /// Set up [GetIt] locator.
 Future<void> setUpLocator() async {
-  final File logOutputFile = await LogUtil.initLogFile();
+  final File logOutputFile = await LogUtils.initLogFile();
 
   locator
     ..registerSingleton<Logger>(
       Logger(
         filter: CustomLogFilter(),
-        printer: LogUtil.logPrinter,
-        output: LogUtil.logOutput(logOutputFile),
+        printer: LogUtils.logPrinter,
+        output: LogUtils.logOutput(logOutputFile),
       ),
     )
     ..registerSingleton<SembastRepository>(SembastRepository())

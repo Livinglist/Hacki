@@ -161,7 +161,7 @@ class StoryTile extends StatelessWidget {
           onTap: onTap,
           onLongPress: () {
             if (story.url.isNotEmpty) {
-              LinkUtil.launch(
+              LinkUtils.launch(
                 story.url,
                 context,
                 shouldUseReader:

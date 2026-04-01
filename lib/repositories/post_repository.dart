@@ -59,7 +59,7 @@ class PostRepository extends PostableRepository {
       path: 'submitlink',
     );
     final Map<String, String>? formValues =
-        HtmlUtil.getHiddenFormValues(formResponse.data);
+        HtmlUtils.getHiddenFormValues(formResponse.data);
 
     if (formValues == null || formValues.isEmpty) {
       return false;
@@ -103,7 +103,7 @@ class PostRepository extends PostableRepository {
       path: 'edit',
     );
     final Map<String, String>? formValues =
-        HtmlUtil.getHiddenFormValues(formResponse.data);
+        HtmlUtils.getHiddenFormValues(formResponse.data);
 
     if (formValues == null || formValues.isEmpty) {
       return false;

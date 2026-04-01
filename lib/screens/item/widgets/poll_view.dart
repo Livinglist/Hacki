@@ -97,7 +97,7 @@ class _PollViewState extends State<PollView> with ItemActionMixin {
                           children: <Widget>[
                             IconButton(
                               onPressed: () {
-                                HapticFeedbackUtil.light();
+                                HapticFeedbackUtils.light();
                                 context.read<VoteCubit>().upvote();
                               },
                               icon: Icon(

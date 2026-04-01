@@ -7,7 +7,7 @@ import 'package:hacki/utils/logger/simple_log_printer.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
-abstract class LogUtil {
+abstract final class LogUtils {
   static LogPrinter get logPrinter =>
       kDebugMode ? prettyPrinter : SimpleLogPrinter();
 

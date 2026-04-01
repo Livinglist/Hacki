@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hacki/extensions/context_extension.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/utils/haptic_feedback_util.dart';
-import 'package:hacki/utils/log_util.dart';
+import 'package:hacki/utils/haptic_feedback_utils.dart';
+import 'package:hacki/utils/log_utils.dart';
 
 class LogsScreen extends StatefulWidget {
   const LogsScreen({super.key});
@@ -26,7 +26,7 @@ class _LogsScreenState extends State<LogsScreen> {
   }
 
   Future<void> _fetchLogs() async {
-    final List<String> logs = await LogUtil.exportLogsAsStrings();
+    final List<String> logs = await LogUtils.exportLogsAsStrings();
     if (mounted) {
       setState(() {
         _logs = logs;
@@ -59,7 +59,7 @@ class _LogsScreenState extends State<LogsScreen> {
                     lhs + rhs,
               );
               Clipboard.setData(ClipboardData(text: data))
-                  .whenComplete(HapticFeedbackUtil.selection);
+                  .whenComplete(HapticFeedbackUtils.selection);
               context.showSnackBar(content: 'Logs copied.');
             },
             icon: Icon(

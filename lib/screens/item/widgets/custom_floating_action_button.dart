@@ -51,7 +51,7 @@ class FloatingSkipButtons extends StatelessWidget {
                     /// default [FloatingActionButton] animation.
                     heroTag: UniqueKey().hashCode,
                     onPressed: () {
-                      HapticFeedbackUtil.selection();
+                      HapticFeedbackUtils.selection();
                       context.read<CommentsCubit>().scrollToPreviousRoot();
                     },
                     materialTapTargetSize: MaterialTapTargetSize.padded,
@@ -84,7 +84,7 @@ class FloatingSkipButtons extends StatelessWidget {
                     /// Same as above.
                     heroTag: UniqueKey().hashCode,
                     onPressed: () {
-                      HapticFeedbackUtil.selection();
+                      HapticFeedbackUtils.selection();
                       context.read<CommentsCubit>().scrollToNextRoot(
                             onError: () => context.showSnackBar(
                               content: '''No more root level comment below.''',

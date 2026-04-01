@@ -6,7 +6,7 @@ import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
-import 'package:hacki/utils/haptic_feedback_util.dart';
+import 'package:hacki/utils/haptic_feedback_utils.dart';
 
 part 'vote_state.dart';
 
@@ -53,19 +53,19 @@ class VoteCubit extends Cubit<VoteState> {
 
   Future<bool> upvote({bool cancelIfVoted = true}) async {
     if (!_authBloc.state.isLoggedIn) {
-      HapticFeedbackUtil.error();
+      HapticFeedbackUtils.error();
       emit(state.copyWith(status: VoteStatus.failureNotLoggedIn));
       return false;
     }
 
     if (state.item.by == _authBloc.state.username) {
-      HapticFeedbackUtil.error();
+      HapticFeedbackUtils.error();
       emit(state.copyWith(status: VoteStatus.failureBeHumble));
       return false;
     }
 
     if (state.item.dead || state.item.deleted || state.item.by.isEmpty) {
-      HapticFeedbackUtil.error();
+      HapticFeedbackUtils.error();
       emit(state.copyWith(status: VoteStatus.failure));
       return false;
     }
@@ -77,7 +77,7 @@ class VoteCubit extends Cubit<VoteState> {
       );
 
       if (success) {
-        HapticFeedbackUtil.success();
+        HapticFeedbackUtils.success();
         emit(
           state.copyWith(
             vote: Vote.up,
@@ -95,7 +95,7 @@ class VoteCubit extends Cubit<VoteState> {
 
         return true;
       } else {
-        HapticFeedbackUtil.error();
+        HapticFeedbackUtils.error();
 
         emit(
           state.copyWith(
@@ -112,7 +112,7 @@ class VoteCubit extends Cubit<VoteState> {
         id: state.item.id,
       );
 
-      HapticFeedbackUtil.success();
+      HapticFeedbackUtils.success();
       emit(
         state.copyWithVoteRemoved(
           status: VoteStatus.canceled,
@@ -148,7 +148,7 @@ class VoteCubit extends Cubit<VoteState> {
             vote: false,
           );
 
-          HapticFeedbackUtil.success();
+          HapticFeedbackUtils.success();
           emit(
             state.copyWith(
               vote: Vote.down,
@@ -163,7 +163,7 @@ class VoteCubit extends Cubit<VoteState> {
           id: state.item.id,
         );
 
-        HapticFeedbackUtil.success();
+        HapticFeedbackUtils.success();
         emit(
           state.copyWithVoteRemoved(
             status: VoteStatus.canceled,
@@ -171,7 +171,7 @@ class VoteCubit extends Cubit<VoteState> {
         );
       }
     } else {
-      HapticFeedbackUtil.error();
+      HapticFeedbackUtils.error();
       emit(state.copyWith(status: VoteStatus.failureKarmaBelowThreshold));
     }
   }

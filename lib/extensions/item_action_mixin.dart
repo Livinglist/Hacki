@@ -53,7 +53,7 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
     Item? parent,
     VoidCallback? onSearchInThreadTapped,
   }) {
-    HapticFeedbackUtil.light();
+    HapticFeedbackUtils.light();
 
     if (item.dead || item.deleted) {
       return;
@@ -106,11 +106,11 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
     if (isFav) {
       favCubit.removeFav(item.id);
       showSnackBar(content: 'Removed from favorites.');
-      HapticFeedbackUtil.success();
+      HapticFeedbackUtils.success();
     } else {
       favCubit.addFav(item.id);
       showSnackBar(content: 'Added to favorites.');
-      HapticFeedbackUtil.success();
+      HapticFeedbackUtils.success();
     }
   }
 
@@ -194,7 +194,7 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
       if (mounted && (yesTapped ?? false)) {
         context.read<AuthBloc>().add(AuthFlag(item: item));
         showSnackBar(content: 'Comment flagged!');
-        HapticFeedbackUtil.success();
+        HapticFeedbackUtils.success();
       }
     });
   }
@@ -240,7 +240,7 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
         }
 
         showSnackBar(content: 'User ${isBlocked ? 'unblocked' : 'blocked'}!');
-        HapticFeedbackUtil.success();
+        HapticFeedbackUtils.success();
       }
     });
   }

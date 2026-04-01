@@ -9,7 +9,7 @@ import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/screens/widgets/tap_down_wrapper.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/utils/link_util.dart';
+import 'package:hacki/utils/link_utils.dart';
 import 'package:memoize/function_defs.dart';
 import 'package:memoize/memoize.dart';
 
@@ -107,7 +107,7 @@ class LinkView extends StatelessWidget {
               child: TapDownWrapper(
                 onTap: () {
                   if (url.isNotEmpty) {
-                    LinkUtil.launch(
+                    LinkUtils.launch(
                       url,
                       context,
                       shouldUseHackiForHnLink: false,

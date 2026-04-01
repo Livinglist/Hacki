@@ -117,7 +117,7 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
                       width: widget.indentLineWidth,
                       child: isEyeCandyEnabled
                           ? AnimatedIndentLine(
-                              color: ColorUtil.getRainbowColor(
+                              color: ColorUtils.getRainbowColor(
                                 i,
                                 Theme.of(context).canvasColor,
                               ).$1,
@@ -127,7 +127,7 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
                           : Container(
                               width: widget.indentLineWidth,
                               height: MediaQuery.of(context).size.height,
-                              color: ColorUtil.getRainbowColor(
+                              color: ColorUtils.getRainbowColor(
                                 i,
                                 Theme.of(context).canvasColor,
                               ).$1.withValues(

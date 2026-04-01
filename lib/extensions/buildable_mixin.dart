@@ -36,7 +36,7 @@ mixin BuildableMixin {
     if (comment == null) return null;
 
     final List<LinkifyElement> elements = await Isolate.run(
-      () => LinkifierUtil.linkify(
+      () => LinkifierUtils.linkify(
         comment.text,
         extraLinkifiers: <Linkifier>[
           if (withHighlightedText != null && withHighlightedText.isNotEmpty)
@@ -60,7 +60,7 @@ mixin BuildableMixin {
 
     final List<LinkifyElement> elements =
         await compute<String, List<LinkifyElement>>(
-      LinkifierUtil.linkify,
+      LinkifierUtils.linkify,
       story.text,
     );
 

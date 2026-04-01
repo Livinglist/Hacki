@@ -32,7 +32,7 @@ class PinnedStories extends StatelessWidget {
                     children: <Widget>[
                       CustomSlidableAction(
                         onPressed: (_) {
-                          HapticFeedbackUtil.light();
+                          HapticFeedbackUtils.light();
                           context.read<PinCubit>().unpinStory(story);
                         },
                         backgroundColor: Palette.red,

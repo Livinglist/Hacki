@@ -39,7 +39,7 @@ class _TabBarSettingsState extends State<TabBarSettings> {
                   scrollDirection: Axis.horizontal,
                   physics: const NeverScrollableScrollPhysics(),
                   onReorder: context.read<TabCubit>().update,
-                  onReorderStart: (_) => HapticFeedbackUtil.light(),
+                  onReorderStart: (_) => HapticFeedbackUtils.light(),
                   children: <Widget>[
                     for (final StoryType tab in state.tabs)
                       InkWell(

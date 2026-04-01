@@ -33,7 +33,7 @@ class CustomAppBar extends AppBar {
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
                 onPressed: () {
-                  HapticFeedbackUtil.light();
+                  HapticFeedbackUtils.light();
                   onZoomTap?.call();
                 },
               ),

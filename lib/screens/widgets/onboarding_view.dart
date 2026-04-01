@@ -71,7 +71,7 @@ class _OnboardingViewState extends State<OnboardingView> {
             right: Dimens.zero,
             child: ElevatedButton(
               onPressed: () {
-                HapticFeedbackUtil.light();
+                HapticFeedbackUtils.light();
                 if (pageController.page! >= 2) {
                   context.pop();
                 } else {

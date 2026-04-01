@@ -5,7 +5,7 @@ import 'package:hacki/cubits/notification/notification_cubit.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/utils/link_util.dart';
+import 'package:hacki/utils/link_utils.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class InboxView extends StatelessWidget {
@@ -139,7 +139,7 @@ class InboxView extends StatelessWidget {
                                     ),
                                     maxLines: 4,
                                     onOpen: (LinkableElement link) =>
-                                        LinkUtil.launch(link.url, context),
+                                        LinkUtils.launch(link.url, context),
                                   ),
                                 ],
                               ),

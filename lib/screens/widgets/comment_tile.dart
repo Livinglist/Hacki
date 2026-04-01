@@ -78,7 +78,7 @@ class CommentTile extends StatelessWidget {
         BlocklistState blocklistState,
       ) {
         final (Color, Color) slidableColors = level > 0
-            ? ColorUtil.getRainbowColor(
+            ? ColorUtils.getRainbowColor(
                 level,
                 Theme.of(context).canvasColor,
               )
@@ -201,7 +201,7 @@ class CommentTile extends StatelessWidget {
                   splashFactory: NoSplash.splashFactory,
                   onTap: () {
                     if (isCollapsable) {
-                      HapticFeedbackUtil.selection();
+                      HapticFeedbackUtils.selection();
                       _collapse(context);
                     } else {
                       onTap?.call();
@@ -394,7 +394,7 @@ class CommentTile extends StatelessWidget {
                                             MediaQuery.of(context).textScaler,
                                         onTap: () {
                                           if (isCollapsable) {
-                                            HapticFeedbackUtil.selection();
+                                            HapticFeedbackUtils.selection();
                                             _onTextTapped(context);
                                           } else {
                                             onTap?.call();

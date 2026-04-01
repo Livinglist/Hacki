@@ -115,7 +115,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                                   .toList(),
                               onSelected: (FetchMode? fetchMode) {
                                 if (fetchMode != null) {
-                                  HapticFeedbackUtil.selection();
+                                  HapticFeedbackUtils.selection();
                                   context.read<PreferenceCubit>().update(
                                         FetchModePreference(
                                           val: fetchMode.index,
@@ -149,7 +149,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                                   .toList(),
                               onSelected: (CommentsOrder? order) {
                                 if (order != null) {
-                                  HapticFeedbackUtil.selection();
+                                  HapticFeedbackUtils.selection();
                                   context.read<PreferenceCubit>().update(
                                         CommentsOrderPreference(
                                           val: order.index,
@@ -194,7 +194,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                                   .toList(),
                               onSelected: (DateDisplayFormat? order) {
                                 if (order != null) {
-                                  HapticFeedbackUtil.selection();
+                                  HapticFeedbackUtils.selection();
                                   context.read<PreferenceCubit>().update(
                                         DateFormatPreference(
                                           val: order.index,
@@ -242,7 +242,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                                           .toList(),
                                   onSelected: (HackerNewsDataSource? source) {
                                     if (source != null) {
-                                      HapticFeedbackUtil.selection();
+                                      HapticFeedbackUtils.selection();
                                       context.read<PreferenceCubit>().update(
                                             HackerNewsDataSourcePreference(
                                               val: source.index,
@@ -280,7 +280,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                         preferenceState.isPreviewImageLeftAligned,
                     index: 0,
                     story: Story.placeholder(),
-                    onTap: () => LinkUtil.launch(
+                    onTap: () => LinkUtils.launch(
                       Constants.guidelineLink,
                       context,
                     ),
@@ -335,7 +335,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                             onSelectionChanged: preference.dependencies
                                     .satisfy(preferenceState.preferences)
                                 ? (Set<bool> val) {
-                                    HapticFeedbackUtil.light();
+                                    HapticFeedbackUtils.light();
                                     context.read<PreferenceCubit>().update(
                                           preference.copyWith(val: val.single),
                                         );
@@ -357,7 +357,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                         onChanged: preference.dependencies
                                 .satisfy(preferenceState.preferences)
                             ? (bool val) {
-                                HapticFeedbackUtil.light();
+                                HapticFeedbackUtils.light();
 
                                 context
                                     .read<PreferenceCubit>()
@@ -386,7 +386,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                           initialSelection: preferenceState.storyMarkingMode,
                           onSelected: (StoryMarkingMode? storyMarkingMode) {
                             if (storyMarkingMode != null) {
-                              HapticFeedbackUtil.selection();
+                              HapticFeedbackUtils.selection();
                               context.read<PreferenceCubit>().update(
                                     StoryMarkingModePreference(
                                       val: storyMarkingMode.index,
@@ -486,7 +486,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                         'Reset Feature Discovery',
                       ),
                       onTap: () {
-                        HapticFeedbackUtil.light();
+                        HapticFeedbackUtils.light();
                         FeatureDiscovery.clearPreferences(
                           context,
                           DiscoverableFeature.values
@@ -499,7 +499,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                         'Reset Tips',
                       ),
                       onTap: () {
-                        HapticFeedbackUtil.light();
+                        HapticFeedbackUtils.light();
                         context.read<TipsCubit>().reset();
                       },
                     ),
@@ -507,7 +507,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                   const Divider(),
                   ListTile(
                     title: const Text('Feature Request'),
-                    onTap: () => LinkUtil.launch(
+                    onTap: () => LinkUtils.launch(
                       Constants.githubLink,
                       context,
                     ),
@@ -515,7 +515,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                   ListTile(
                     title: const Text('Rate Hacki : )'),
                     onTap: () {
-                      LinkUtil.launch(
+                      LinkUtils.launch(
                         Platform.isIOS
                             ? Constants.appStoreLink
                             : Constants.googlePlayLink,
@@ -533,7 +533,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                       final DevMode updatedDevMode =
                           DevMode(val: !preferenceState.isDevModeEnabled);
                       context.read<PreferenceCubit>().update(updatedDevMode);
-                      HapticFeedbackUtil.heavy();
+                      HapticFeedbackUtils.heavy();
                       if (updatedDevMode.val) {
                         showSnackBar(content: 'You are a dev now.');
                       } else {
@@ -688,7 +688,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
 
     final Brightness brightness =
         SchedulerBinding.instance.platformDispatcher.platformBrightness;
-    ThemeUtil.updateStatusBarSetting(brightness, val);
+    ThemeUtils.updateStatusBarSetting(brightness, val);
   }
 
   void showColorPicker() {
@@ -706,7 +706,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
             colors: materialColors,
             selectedColor: context.read<PreferenceCubit>().state.appColor,
             onMainColorChange: (ColorSwatch<dynamic>? color) {
-              ColorUtil.levelToRainbowBorderColors.clear();
+              ColorUtils.levelToRainbowBorderColors.clear();
               context.read<PreferenceCubit>().update(
                     AppColorPreference(
                       val: materialColors.indexOf(color ?? Palette.deepOrange),
@@ -743,7 +743,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
 
                 context.read<PreferenceCubit>().restoreDefaultSettings();
 
-                HapticFeedbackUtil.success();
+                HapticFeedbackUtils.success();
                 showSnackBar(content: 'Default settings restored.');
               },
               child: const Text(
@@ -788,7 +788,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
                   ..deleteCachedMetadata();
                 locator.get<CollapseStateCacheRepository>().clear();
 
-                HapticFeedbackUtil.success();
+                HapticFeedbackUtils.success();
                 showSnackBar(content: 'Cache cleared!');
               },
               child: const Text(
@@ -827,7 +827,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
         ),
         children: <Widget>[
           ElevatedButton(
-            onPressed: () => LinkUtil.launch(
+            onPressed: () => LinkUtils.launch(
               Constants.portfolioLink,
               context,
             ),
@@ -844,7 +844,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
             ),
           ),
           ElevatedButton(
-            onPressed: () => LinkUtil.launch(
+            onPressed: () => LinkUtils.launch(
               Constants.githubLink,
               context,
             ),
@@ -861,7 +861,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
             ),
           ),
           ElevatedButton(
-            onPressed: () => LinkUtil.launch(
+            onPressed: () => LinkUtils.launch(
               Platform.isIOS
                   ? Constants.appStoreLink
                   : Constants.googlePlayLink,
@@ -880,7 +880,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
             ),
           ),
           ElevatedButton(
-            onPressed: () => LinkUtil.launch(
+            onPressed: () => LinkUtils.launch(
               Constants.spotifyLink,
               context,
             ),
@@ -897,7 +897,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
             ),
           ),
           ElevatedButton(
-            onPressed: () => LinkUtil.launch(
+            onPressed: () => LinkUtils.launch(
               Constants.privacyPolicyLink,
               context,
             ),
@@ -981,7 +981,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
     final String previousLogPath =
         '${tempDir.path}/${Constants.previousLogFileName}';
 
-    await LogUtil.exportLogs();
+    await LogUtils.exportLogs();
 
     final Email email = Email(
       body:
@@ -997,7 +997,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
   /// Open an issue on GitHub.
   Future<void> onGithubTapped(Rect? rect) async {
     try {
-      final File originalFile = await LogUtil.exportLogs();
+      final File originalFile = await LogUtils.exportLogs();
       final XFile file = XFile(originalFile.path);
       final ShareResult result = await SharePlus.instance.share(
         ShareParams(
@@ -1008,7 +1008,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
       );
 
       if (result.status == ShareResultStatus.success) {
-        LinkUtil.launchInExternalBrowser(Constants.githubIssueLink);
+        LinkUtils.launchInExternalBrowser(Constants.githubIssueLink);
       }
     } catch (error, stackTrace) {
       logError(error, stackTrace: stackTrace);
@@ -1208,7 +1208,7 @@ class _SettingsState extends State<Settings> with ItemActionMixin, Loggable {
       case ExportDestination.clipBoard:
         try {
           await Clipboard.setData(ClipboardData(text: allFavoritesStr))
-              .whenComplete(HapticFeedbackUtil.selection);
+              .whenComplete(HapticFeedbackUtils.selection);
           showSnackBar(
             content: 'Ids of favorites have been copied to clipboard.',
           );

@@ -247,13 +247,13 @@ class _ItemScreenState extends State<ItemScreen>
                           ? 'updated'
                           : 'submitted';
                   final String msg = 'Comment $verb! ${Constants.happyFace}';
-                  HapticFeedbackUtil.success();
+                  HapticFeedbackUtils.success();
                   showSnackBar(content: msg);
                   context.read<EditCubit>().onReplySubmittedSuccessfully();
                   context.read<PostCubit>().reset();
                 } else if (postState.status == Status.failure) {
                   showErrorSnackBar();
-                  HapticFeedbackUtil.error();
+                  HapticFeedbackUtils.error();
                   context.read<PostCubit>().reset();
                 }
               },
@@ -503,7 +503,7 @@ class _ItemScreenState extends State<ItemScreen>
               ),
             ),
             onTap: () {
-              HapticFeedbackUtil.light();
+              HapticFeedbackUtils.light();
               locator.get<AppReviewService>().requestReview();
               context
                   .read<PreferenceCubit>()
@@ -518,7 +518,7 @@ class _ItemScreenState extends State<ItemScreen>
     Comment comment,
     Item rootItem,
   ) {
-    HapticFeedbackUtil.light();
+    HapticFeedbackUtils.light();
     showModalBottomSheet<void>(
       context: context,
       builder: (BuildContext context) {

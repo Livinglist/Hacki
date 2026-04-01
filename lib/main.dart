@@ -21,8 +21,8 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/fetcher.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/debug_http_overrides.dart';
-import 'package:hacki/utils/haptic_feedback_util.dart';
-import 'package:hacki/utils/theme_util.dart';
+import 'package:hacki/utils/haptic_feedback_utils.dart';
+import 'package:hacki/utils/theme_utils.dart';
 import 'package:hive/hive.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -246,7 +246,7 @@ class HackiApp extends StatelessWidget {
         listenWhen: (PreferenceState previous, PreferenceState current) =>
             previous.isHapticFeedbackEnabled != current.isHapticFeedbackEnabled,
         listener: (_, PreferenceState state) {
-          HapticFeedbackUtil.enabled = state.isHapticFeedbackEnabled;
+          HapticFeedbackUtils.enabled = state.isHapticFeedbackEnabled;
         },
         buildWhen: (PreferenceState previous, PreferenceState current) =>
             previous.appColor != current.appColor ||
@@ -286,7 +286,7 @@ class HackiApp extends StatelessWidget {
                   AsyncSnapshot<AdaptiveThemeMode?> snapshot,
                 ) {
                   final AdaptiveThemeMode? mode = snapshot.data;
-                  ThemeUtil.updateStatusBarSetting(
+                  ThemeUtils.updateStatusBarSetting(
                     SchedulerBinding
                         .instance.platformDispatcher.platformBrightness,
                     mode,

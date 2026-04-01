@@ -7,7 +7,7 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/dialog_proxy.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/utils/haptic_feedback_util.dart';
+import 'package:hacki/utils/haptic_feedback_utils.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 class OfflineListTile extends StatelessWidget {
@@ -113,7 +113,7 @@ class OfflineListTile extends StatelessWidget {
                               ListTile(
                                 title: Text(count.label),
                                 onTap: () {
-                                  HapticFeedbackUtil.selection();
+                                  HapticFeedbackUtils.selection();
 
                                   context.pop();
                                   final StoriesBloc storiesBloc =

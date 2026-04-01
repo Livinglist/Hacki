@@ -328,7 +328,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                           ),
                         ),
                         onPressed: () {
-                          HapticFeedbackUtil.light();
+                          HapticFeedbackUtils.light();
                           setState(() {
                             expanded = false;
                           });
@@ -350,7 +350,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                         ),
                         onPressed: () => Clipboard.setData(
                           ClipboardData(text: replyingTo.text),
-                        ).then((_) => HapticFeedbackUtil.selection()),
+                        ).then((_) => HapticFeedbackUtils.selection()),
                       ),
                       IconButton(
                         icon: Icon(

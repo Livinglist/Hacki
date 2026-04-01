@@ -25,7 +25,7 @@ class LazyFetchLoadButton extends StatelessWidget {
             Expanded(
               child: TextButton(
                 onPressed: () {
-                  HapticFeedbackUtil.selection();
+                  HapticFeedbackUtils.selection();
                   context.read<CommentsCubit>().loadMore(comment: comment);
                 },
                 child: Row(

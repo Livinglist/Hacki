@@ -1,7 +1,7 @@
 import 'package:flutter/painting.dart';
 import 'package:hacki/styles/styles.dart';
 
-abstract final class ColorUtil {
+abstract final class ColorUtils {
   static final Map<int, (Color, Color)> levelToRainbowBorderColors =
       <int, (Color, Color)>{};
 

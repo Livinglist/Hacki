@@ -13,7 +13,7 @@ import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart' show ItemScreenArgs;
 import 'package:url_launcher/url_launcher.dart';
 
-abstract class LinkUtil {
+abstract final class LinkUtils {
   static final ChromeSafariBrowser _browser = ChromeSafariBrowser();
 
   static void launchInExternalBrowser(

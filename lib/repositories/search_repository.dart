@@ -44,7 +44,7 @@ class SearchRepository {
       if (title.isEmpty) {
         final String text = hit['comment_text'] as String? ?? '';
         final String parsedText = await compute<String, String>(
-          HtmlUtil.parseHtml,
+          HtmlUtils.parseHtml,
           text,
         );
         final int parentId = hit['parent_id'] as int? ?? 0;
@@ -66,7 +66,7 @@ class SearchRepository {
       } else {
         final String text = hit['story_text'] as String? ?? '';
         final String parsedText = await compute<String, String>(
-          HtmlUtil.parseHtml,
+          HtmlUtils.parseHtml,
           text,
         );
         final Story story = Story(

@@ -5,7 +5,7 @@ import 'package:hacki/models/models.dart'
     show CommentsNumberFilter, NumericCondition;
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/utils/haptic_feedback_util.dart';
+import 'package:hacki/utils/haptic_feedback_utils.dart';
 
 class NumberOfCommentsFilterChip extends StatelessWidget {
   const NumberOfCommentsFilterChip({
@@ -93,7 +93,7 @@ class _NumberOfCommentsDialogState extends State<_NumberOfCommentsDialog> {
               _selectedCondition,
             },
             onSelectionChanged: (Set<NumericCondition> val) {
-              HapticFeedbackUtil.light();
+              HapticFeedbackUtils.light();
               setState(() {
                 _selectedCondition = val.single;
               });

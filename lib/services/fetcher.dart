@@ -109,7 +109,7 @@ abstract class Fetcher {
     if (newReply != null) {
       final Story? story =
           await hackerNewsRepository.fetchRawParentStory(id: newReply!.id);
-      final String text = HtmlUtil.parseHtml(newReply!.text);
+      final String text = HtmlUtils.parseHtml(newReply!.text);
 
       if (story != null) {
         final Map<String, int> payloadJson = <String, int>{

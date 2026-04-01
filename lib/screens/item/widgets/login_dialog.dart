@@ -124,7 +124,7 @@ class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
                             child: Transform.translate(
                               offset: const Offset(0, 1),
                               child: TapDownWrapper(
-                                onTap: () => LinkUtil.launch(
+                                onTap: () => LinkUtils.launch(
                                   Constants.endUserAgreementLink,
                                   context,
                                 ),

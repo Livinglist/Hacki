@@ -432,7 +432,7 @@ class HackerNewsRepository with Loggable {
       final String? text = json.text;
       if (text == null || text.isEmpty) return json;
       final String parsedText = await compute<String, String>(
-        HtmlUtil.parseHtml,
+        HtmlUtils.parseHtml,
         text,
       );
       json.text = parsedText;

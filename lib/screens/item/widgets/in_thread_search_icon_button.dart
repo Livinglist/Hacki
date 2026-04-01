@@ -11,7 +11,7 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/debouncer.dart';
-import 'package:hacki/utils/haptic_feedback_util.dart';
+import 'package:hacki/utils/haptic_feedback_utils.dart';
 
 class InThreadSearchIconButton extends StatelessWidget {
   const InThreadSearchIconButton({super.key});
@@ -248,7 +248,7 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                       selected: false,
                       label: 'clear',
                       onSelected: (_) {
-                        HapticFeedbackUtil.selection();
+                        HapticFeedbackUtils.selection();
                         if (textEditingController.text.isNotEmpty) {
                           textEditingController.clear();
                           widget.commentsCubit.search(

@@ -11,7 +11,7 @@ import 'package:hacki/extensions/context_extension.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/utils/haptic_feedback_util.dart';
+import 'package:hacki/utils/haptic_feedback_utils.dart';
 import 'package:hacki/utils/image_saver.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -274,7 +274,7 @@ class _ShareScreenState extends State<ShareScreen> {
     );
 
     if (mounted) {
-      HapticFeedbackUtil.light();
+      HapticFeedbackUtils.light();
       if (result) {
         context.showSnackBar(content: 'Image saved.');
       } else {

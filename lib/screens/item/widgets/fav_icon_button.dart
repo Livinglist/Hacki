@@ -36,7 +36,7 @@ class FavIconButton extends StatelessWidget {
             ),
           ),
           onPressed: () {
-            HapticFeedbackUtil.light();
+            HapticFeedbackUtils.light();
             if (isFav) {
               context.read<FavCubit>().removeFav(storyId);
             } else {

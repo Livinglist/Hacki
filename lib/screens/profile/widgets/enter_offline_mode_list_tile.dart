@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/extensions/extensions.dart';
-import 'package:hacki/utils/haptic_feedback_util.dart';
+import 'package:hacki/utils/haptic_feedback_utils.dart';
 
 class EnterOfflineModeListTile extends StatelessWidget {
   const EnterOfflineModeListTile({super.key});
@@ -18,7 +18,7 @@ class EnterOfflineModeListTile extends StatelessWidget {
           activeThumbColor: Theme.of(context).colorScheme.primary,
           title: const Text('Offline Mode'),
           onChanged: (bool value) {
-            HapticFeedbackUtil.light();
+            HapticFeedbackUtils.light();
             context.read<StoriesBloc>().add(
                   value ? StoriesEnterOfflineMode() : StoriesExitOfflineMode(),
                 );

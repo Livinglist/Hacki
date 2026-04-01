@@ -112,7 +112,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               .where((Item e) => !e.dead && !e.deleted)
                               .toList(),
                           onRefresh: () {
-                            HapticFeedbackUtil.light();
+                            HapticFeedbackUtils.light();
                             context.read<HistoryCubit>().refresh();
                           },
                           onLoadMore: () {
@@ -184,7 +184,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               context.read<NotificationCubit>().loadMore();
                             },
                             onRefresh: () {
-                              HapticFeedbackUtil.light();
+                              HapticFeedbackUtils.light();
                               context.read<NotificationCubit>().refresh();
                             },
                           ),

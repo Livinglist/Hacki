@@ -7,7 +7,7 @@ import 'package:hacki/config/locator.dart';
 import 'package:hacki/extensions/buildable_mixin.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
-import 'package:hacki/utils/haptic_feedback_util.dart';
+import 'package:hacki/utils/haptic_feedback_utils.dart';
 import 'package:rxdart/rxdart.dart';
 
 part 'search_state.dart';
@@ -72,7 +72,7 @@ class SearchCubit extends Cubit<SearchState> with BuildableMixin {
   }
 
   void addFilter<T extends SearchFilter>(T filter) {
-    HapticFeedbackUtil.selection();
+    HapticFeedbackUtils.selection();
     if (state.params.contains<T>()) {
       emit(
         state.copyWith(
@@ -91,7 +91,7 @@ class SearchCubit extends Cubit<SearchState> with BuildableMixin {
   }
 
   void removeFilter<T extends SearchFilter>() {
-    HapticFeedbackUtil.selection();
+    HapticFeedbackUtils.selection();
     if (state.params.contains<T>() == false) return;
 
     emit(
@@ -104,7 +104,7 @@ class SearchCubit extends Cubit<SearchState> with BuildableMixin {
   }
 
   void onToggled(TypeTagFilter filter) {
-    HapticFeedbackUtil.selection();
+    HapticFeedbackUtils.selection();
     if (state.params.contains<TypeTagFilter>() &&
         state.params.get<TypeTagFilter>() == filter) {
       removeFilter<TypeTagFilter>();
@@ -115,7 +115,7 @@ class SearchCubit extends Cubit<SearchState> with BuildableMixin {
   }
 
   void onSortToggled() {
-    HapticFeedbackUtil.selection();
+    HapticFeedbackUtils.selection();
     emit(
       state.copyWith(
         params: state.params.copyWith(
@@ -128,7 +128,7 @@ class SearchCubit extends Cubit<SearchState> with BuildableMixin {
   }
 
   void onExactMatchToggled() {
-    HapticFeedbackUtil.selection();
+    HapticFeedbackUtils.selection();
     emit(
       state.copyWith(
         params: state.params.copyWith(
@@ -141,7 +141,7 @@ class SearchCubit extends Cubit<SearchState> with BuildableMixin {
   }
 
   void onDateTimeRangeUpdated(DateTime start, DateTime end) {
-    HapticFeedbackUtil.selection();
+    HapticFeedbackUtils.selection();
     final DateTime updatedStart = start.copyWith(
       second: 0,
       millisecond: 0,
@@ -168,7 +168,7 @@ class SearchCubit extends Cubit<SearchState> with BuildableMixin {
   }
 
   void onPostedByChanged(String? username) {
-    HapticFeedbackUtil.selection();
+    HapticFeedbackUtils.selection();
     if (username == null) {
       removeFilter<PostedByFilter>();
     } else {
@@ -181,7 +181,7 @@ class SearchCubit extends Cubit<SearchState> with BuildableMixin {
         state.params.filters.whereType<PointsFilter>().singleOrNull;
     if (pointsFilter == existingFilter) return;
 
-    HapticFeedbackUtil.selection();
+    HapticFeedbackUtils.selection();
     if (pointsFilter == null) {
       removeFilter<PointsFilter>();
     } else {
@@ -194,7 +194,7 @@ class SearchCubit extends Cubit<SearchState> with BuildableMixin {
         state.params.filters.whereType<CommentsNumberFilter>().singleOrNull;
     if (filter == existingFilter) return;
 
-    HapticFeedbackUtil.selection();
+    HapticFeedbackUtils.selection();
     if (filter == null) {
       removeFilter<CommentsNumberFilter>();
     } else {

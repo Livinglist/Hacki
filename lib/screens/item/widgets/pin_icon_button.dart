@@ -41,7 +41,7 @@ class PinIconButton extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-                HapticFeedbackUtil.light();
+                HapticFeedbackUtils.light();
                 if (pinned) {
                   context.read<PinCubit>().unpinStory(story);
                 } else {

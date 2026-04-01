@@ -1,6 +1,6 @@
 import 'package:hacki/screens/widgets/custom_linkify/custom_linkify.dart';
 
-abstract class LinkifierUtil {
+abstract final class LinkifierUtils {
   static const LinkifyOptions linkifyOptions = LinkifyOptions(humanize: false);
 
   static List<LinkifyElement> linkify(

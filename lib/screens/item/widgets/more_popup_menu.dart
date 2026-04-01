@@ -131,7 +131,7 @@ class MorePopupMenu extends StatelessWidget {
                                       ],
                                     )
                                   : SelectableLinkify(
-                                      text: HtmlUtil.parseHtml(
+                                      text: HtmlUtils.parseHtml(
                                         state.user.about,
                                       ),
                                       style: TextStyle(
@@ -144,7 +144,7 @@ class MorePopupMenu extends StatelessWidget {
                                             .primary,
                                       ),
                                       onOpen: (LinkableElement link) =>
-                                          LinkUtil.launch(
+                                          LinkUtils.launch(
                                         link.url,
                                         context,
                                       ),

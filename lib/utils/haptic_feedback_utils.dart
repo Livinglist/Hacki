@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:advanced_haptics/advanced_haptics.dart';
 import 'package:flutter/services.dart';
 
-abstract class HapticFeedbackUtil {
+abstract final class HapticFeedbackUtils {
   static bool enabled = true;
   static bool? hasCustomHapticsSupport;
 

@@ -32,7 +32,7 @@ class Linkify extends StatelessWidget {
     super.key,
     this.linkifiers = defaultLinkifiers,
     this.onOpen,
-    this.options = LinkifierUtil.linkifyOptions,
+    this.options = LinkifierUtils.linkifyOptions,
     // TextSpan
     this.style,
     this.linkStyle,
@@ -163,7 +163,7 @@ class SelectableLinkify extends StatelessWidget {
     this.semanticsLabel,
     this.linkifiers = defaultLinkifiers,
     this.onOpen,
-    this.options = LinkifierUtil.linkifyOptions,
+    this.options = LinkifierUtils.linkifyOptions,
     // TextSpan
     this.style,
     this.linkStyle,
@@ -289,7 +289,7 @@ class SelectableLinkify extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<LinkifyElement> elements = LinkifierUtil.linkify(text);
+    final List<LinkifyElement> elements = LinkifierUtils.linkify(text);
     return SelectableText.rich(
       buildTextSpan(
         elements,
@@ -389,7 +389,7 @@ TextSpan buildTextSpan(
                     Clipboard.setData(
                       ClipboardData(text: url),
                     ).whenComplete(() {
-                      HapticFeedbackUtil.selection();
+                      HapticFeedbackUtils.selection();
                       navigatorKey.currentContext?.showSnackBar(
                         content: 'Link copied.',
                       );

@@ -489,7 +489,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   }
 
   void loadAll(Story story) {
-    HapticFeedbackUtil.light();
+    HapticFeedbackUtils.light();
     emit(
       state.copyWith(
         onlyShowTargetComment: false,
@@ -664,7 +664,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   }
 
   Future<void> loadParentThread() async {
-    HapticFeedbackUtil.light();
+    HapticFeedbackUtils.light();
     emit(state.copyWith(fetchParentStatus: CommentsStatus.inProgress));
     final Item? parent =
         await _hackerNewsRepository.fetchItem(id: state.item.parent);
@@ -686,7 +686,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   }
 
   Future<void> loadRootThread() async {
-    HapticFeedbackUtil.light();
+    HapticFeedbackUtils.light();
     emit(state.copyWith(fetchRootStatus: CommentsStatus.inProgress));
     final Story? parent = await _hackerNewsRepository
         .fetchParentStory(id: state.item.id)
@@ -712,7 +712,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     if (order == null) return;
     if (state.order == order) return;
     if (state.status == CommentsStatus.inProgress) return;
-    HapticFeedbackUtil.selection();
+    HapticFeedbackUtils.selection();
     _streamSubscription?.cancel();
     for (final StreamSubscription<Comment> s in _streamSubscriptions.values) {
       s.cancel();
@@ -744,7 +744,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
 
     if (fetchMode == null) return;
     if (state.fetchMode == fetchMode) return;
-    HapticFeedbackUtil.selection();
+    HapticFeedbackUtils.selection();
     _streamSubscription?.cancel();
     for (final StreamSubscription<Comment> s in _streamSubscriptions.values) {
       s.cancel();
@@ -1151,7 +1151,7 @@ comments length is ${state.comments.length}
       final int newCommentsCount =
           state.comments.where((Comment c) => c.isNew).length;
       if (newCommentsCount > 0) {
-        HapticFeedbackUtil.success();
+        HapticFeedbackUtils.success();
         navigatorKey.currentContext?.showSnackBar(
           persist: false,
           duration: AppDurations.fiveSeconds,

@@ -37,7 +37,7 @@ class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
       listener: (BuildContext context, SubmitState state) {
         if (state.status == Status.success) {
           context.pop();
-          HapticFeedbackUtil.light();
+          HapticFeedbackUtils.light();
           showSnackBar(
             content: 'Post submitted.',
           );

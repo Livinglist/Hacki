@@ -8,7 +8,7 @@ import 'package:hacki/models/item/item.dart';
 import 'package:hacki/screens/item/widgets/time_machine_dialog.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/utils/haptic_feedback_util.dart';
+import 'package:hacki/utils/haptic_feedback_utils.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
@@ -78,7 +78,7 @@ abstract final class DialogProxy {
   }
 
   static void showDownloadCompletedDialog([BuildContext? context]) {
-    HapticFeedbackUtil.success();
+    HapticFeedbackUtils.success();
     context ??= navigatorKey.currentContext;
     if (context == null) return;
     showDialog<bool>(

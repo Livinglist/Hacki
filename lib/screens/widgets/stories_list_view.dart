@@ -103,7 +103,7 @@ class _StoriesListViewState extends State<StoriesListView>
               refreshController: refreshController,
               items: state.storiesByType[storyType]!,
               onRefresh: () {
-                HapticFeedbackUtil.light();
+                HapticFeedbackUtils.light();
 
                 if (state.statusByType[storyType] != Status.inProgress) {
                   context
@@ -176,7 +176,7 @@ class _StoriesListViewState extends State<StoriesListView>
                     children: <Widget>[
                       CustomSlidableAction(
                         onPressed: (_) {
-                          HapticFeedbackUtil.light();
+                          HapticFeedbackUtils.light();
                           context.read<PinCubit>().pinStory(story);
                         },
                         backgroundColor:
@@ -288,7 +288,7 @@ class _StoriesListViewState extends State<StoriesListView>
   }
 
   void mark(Story story) {
-    HapticFeedbackUtil.light();
+    HapticFeedbackUtils.light();
     final StoriesBloc storiesBloc = context.read<StoriesBloc>();
     final HideCubit hideCubit = context.read<HideCubit>();
 
