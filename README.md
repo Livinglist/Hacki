@@ -16,9 +16,8 @@ A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
 Features:
 - Hacker News account [login](#login-reply-notification-favorites-sync-and-more)
 - [Favorites sync](#login-reply-notification-favorites-sync-and-more)
-- [Hacker News Search]()
+- [Hacker News Search](#hacker-news-search)
 - [In-thread search](#in-thread-local-and-global-search)
-- Reply, vote, filter, block
 - [Ancestor lookup](#ancestor-lookup) so you don't have to scroll back up to regain context
 - [In-thread notification for new comments](#new-comments-notification-and-lookup) since last visit
 - [In-app notification for new replies](#login-reply-notification-favorites-sync-and-more) to your comments or stories
@@ -27,6 +26,7 @@ Features:
 - [Favorites import and export](#settings)
 - Open Hacker News link in Hacki via system share dialog
 - [Share story or comment as image](#share-story-or-comment-as-image)
+- Reply, vote, filter, block
 - Polls
 - And more...
 
