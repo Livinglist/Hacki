@@ -86,24 +86,26 @@ Features:
 
 ## Ancestor lookup
 <p align="center">
-    <img width="240" src="assets/new_screenshots/hacki_61.png">
-    <img width="240" src="assets/new_screenshots/hacki_64.png">
-    <img width="240" src="assets/new_screenshots/hacki_65.png">
-    <img width="240" src="assets/new_screenshots/hacki_68.png">
-    <img width="240" src="assets/new_screenshots/hacki_62.png">
-    <img width="240" src="assets/new_screenshots/hacki_63.png">
-    <img width="240" src="assets/new_screenshots/hacki_66.png">
-    <img width="240" src="assets/new_screenshots/hacki_67.png">
+    <img width="220" src="assets/new_screenshots/hacki_61.png">
+    <img width="220" src="assets/new_screenshots/hacki_64.png">
+    <img width="220" src="assets/new_screenshots/hacki_65.png">
+    <img width="220" src="assets/new_screenshots/hacki_68.png">
+</p>
+<p align="center">
+    <img width="220" src="assets/new_screenshots/hacki_62.png">
+    <img width="220" src="assets/new_screenshots/hacki_63.png">
+    <img width="220" src="assets/new_screenshots/hacki_66.png">
+    <img width="220" src="assets/new_screenshots/hacki_67.png">
 </p>
 
 ## Share story or comment as image
 <p align="center">
-    <img width="300" src="assets/new_screenshots/hacki_103.png">
-    <img width="300" src="assets/new_screenshots/hacki_105.png">
-    <img width="300" src="assets/new_screenshots/hacki_107.png">
-    <img width="300" src="assets/new_screenshots/hacki_109.png">
-    <img width="300" src="assets/new_screenshots/hacki_111.png">
-    <img width="300" src="assets/new_screenshots/hacki_113.png">
+    <img width="250" src="assets/new_screenshots/hacki_103.png">
+    <img width="250" src="assets/new_screenshots/hacki_105.png">
+    <img width="250" src="assets/new_screenshots/hacki_107.png">
+    <img width="250" src="assets/new_screenshots/hacki_109.png">
+    <img width="250" src="assets/new_screenshots/hacki_111.png">
+    <img width="250" src="assets/new_screenshots/hacki_113.png">
 </p>
 
 <p align="center">
