@@ -27,6 +27,7 @@ A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
 - [Polls](#polls)
 - [True dark mode](#true-dark-mode)
 - [Tablet support](#tablet-support)
+- [Accent color](#thread) and [font customization](#accent-color-and-font-customization)
 - And more...
 
 # Home page and story tile customization
@@ -44,8 +45,6 @@ A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
     <img width="200" src="assets/new_screenshots/hacki_11.png"> 
     <img width="200" src="assets/new_screenshots/hacki_12.png">
 </p>
-
-# Thread reading experience
 
 ## Thread
 <p align="center">
