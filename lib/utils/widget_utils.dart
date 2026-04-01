@@ -16,7 +16,6 @@ abstract final class WidgetUtils {
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final double screenHeight = mediaQuery.size.height;
     final double devicePixelRatio = mediaQuery.devicePixelRatio;
-    final double physicalHeight = screenHeight * devicePixelRatio;
 
     double cacheExtent = screenHeight * 2;
 
@@ -30,15 +29,8 @@ abstract final class WidgetUtils {
       cacheExtent *= 0.9;
     }
 
-    late final double result;
-    if (physicalHeight > 2800) {
-      result = cacheExtent.clamp(0, screenHeight * 1.5);
-      _cachedPreferredCacheExtent = result;
-    } else {
-      result = cacheExtent.clamp(400, 2000);
-      _cachedPreferredCacheExtent = result;
-    }
-
+    final double result = cacheExtent.clamp(400, 2000);
+    _cachedPreferredCacheExtent = result;
     _logger.i('[WidgetUtils]: preferred cache extent: $result');
     return result;
   }
