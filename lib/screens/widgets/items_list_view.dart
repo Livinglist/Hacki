@@ -82,200 +82,203 @@ class ItemsListView<T extends Item> extends StatelessWidget {
             shouldShowExitButton: true,
           ),
         if (header != null) header!,
-        ...List<int>.generate(items.length, (_) => _).map((int index) {
-          final T e = items.elementAt(index);
-          if (e is Story) {
-            final bool hasRead = context.read<StoriesBloc>().hasRead(e);
-            final bool swipeGestureEnabled =
-                context.read<PreferenceCubit>().state.isSwipeGestureEnabled;
-            if (isHideInsteadOfMarkingGrayEnabled &&
-                context.watch<HideCubit>().isHidden(e.id)) {
-              return const <Widget>[];
-            }
-            return <Widget>[
-              if (shouldShowDivider && items.first.id != e.id)
-                Padding(
-                  padding: EdgeInsetsGeometry.only(
-                    bottom: shouldShowWebPreviewOnStoryTile
-                        ? Dimens.pt8
-                        : Dimens.zero,
-                  ),
-                  child: const Divider(
-                    height: Dimens.zero,
-                  ),
-                )
-              else if (context.read<SplitViewCubit>().state.enabled)
-                const Divider(
-                  height: Dimens.pt6,
-                  color: Palette.transparent,
-                ),
-              if (shouldUseMinimalTileForStory)
-                FadeIn(
-                  child: InkWell(
-                    onTap: () => onTap(e),
+        ...List<int>.generate(items.length, (_) => _)
+            .map((int index) {
+              final T e = items.elementAt(index);
+              if (e is Story) {
+                final bool hasRead = context.read<StoriesBloc>().hasRead(e);
+                final bool swipeGestureEnabled =
+                    context.read<PreferenceCubit>().state.isSwipeGestureEnabled;
 
-                    /// If swipe gesture is enabled on home screen, use
-                    /// long press instead of slide action to trigger
-                    /// the action menu.
-                    onLongPress: swipeGestureEnabled
-                        ? () => onMoreTapped?.call(e, context.rect)
-                        : null,
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        top: Dimens.pt8,
-                        bottom: Dimens.pt8,
-                        left: Dimens.pt12,
-                        right: Dimens.pt6,
+                return <Widget>[
+                  if (shouldShowDivider && items.first.id != e.id)
+                    Padding(
+                      padding: EdgeInsetsGeometry.only(
+                        bottom: shouldShowWebPreviewOnStoryTile
+                            ? Dimens.pt8
+                            : Dimens.zero,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Row(
+                      child: const Divider(
+                        height: Dimens.zero,
+                      ),
+                    )
+                  else if (context.read<SplitViewCubit>().state.enabled)
+                    const Divider(
+                      height: Dimens.pt6,
+                      color: Palette.transparent,
+                    ),
+                  if (shouldUseMinimalTileForStory)
+                    FadeIn(
+                      child: InkWell(
+                        onTap: () => onTap(e),
+
+                        /// If swipe gesture is enabled on home screen, use
+                        /// long press instead of slide action to trigger
+                        /// the action menu.
+                        onLongPress: swipeGestureEnabled
+                            ? () => onMoreTapped?.call(e, context.rect)
+                            : null,
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            top: Dimens.pt8,
+                            bottom: Dimens.pt8,
+                            left: Dimens.pt12,
+                            right: Dimens.pt6,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
-                              Text(
-                                shouldShowAuthor
-                                    ? '''${e.timeAgo} by ${e.by}'''
-                                    : e.timeAgo,
-                                style: TextStyle(
-                                  color: Theme.of(context).metadataColor,
-                                ),
+                              Row(
+                                children: <Widget>[
+                                  Text(
+                                    shouldShowAuthor
+                                        ? '''${e.timeAgo} by ${e.by}'''
+                                        : e.timeAgo,
+                                    style: TextStyle(
+                                      color: Theme.of(context).metadataColor,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: Dimens.pt12,
+                                  ),
+                                ],
                               ),
-                              const SizedBox(
-                                width: Dimens.pt12,
+                              Linkify(
+                                text: e.title,
+                                maxLines: 4,
+                                style: const TextStyle(
+                                  fontSize: TextDimens.pt16,
+                                ),
+                                linkStyle: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                                onOpen: (LinkableElement link) =>
+                                    LinkUtils.launch(
+                                  link.url,
+                                  context,
+                                ),
                               ),
                             ],
                           ),
-                          Linkify(
-                            text: e.title,
-                            maxLines: 4,
-                            style: const TextStyle(
-                              fontSize: TextDimens.pt16,
-                            ),
-                            linkStyle: TextStyle(
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                            onOpen: (LinkableElement link) => LinkUtils.launch(
-                              link.url,
-                              context,
-                            ),
-                          ),
-                        ],
+                        ),
+                      ),
+                    )
+                  else ...<Widget>[
+                    GestureDetector(
+                      /// If swipe gesture is enabled on home screen, use
+                      /// long press instead of slide action to trigger
+                      /// the action menu.
+                      onLongPress: swipeGestureEnabled
+                          ? () => onMoreTapped?.call(e, context.rect)
+                          : null,
+                      child: FadeIn(
+                        child: StoryTile(
+                          key: ValueKey<int>(e.id),
+                          story: e,
+                          onTap: () => onTap(e),
+                          index: index,
+                          shouldShowWebPreview: shouldShowWebPreviewOnStoryTile,
+                          shouldShowMetadata: shouldShowMetadataOnStoryTile,
+                          shouldShowUrl: shouldShowUrl,
+                          shouldShowFavicon: shouldShowFavicon,
+                          shouldShowPreviewImage: shouldShowPreviewImage,
+                          isExpandedTileEnabled: isExpandedTileEnabled,
+                          isIndexedStoryTileEnabled: isIndexedStoryTileEnabled,
+                          isImageLeftAligned: isPreviewImageLeftAligned,
+                          hasRead: shouldMarkReadStories && hasRead,
+                        ),
                       ),
                     ),
-                  ),
-                )
-              else ...<Widget>[
-                GestureDetector(
-                  /// If swipe gesture is enabled on home screen, use long press
-                  /// instead of slide action to trigger the action menu.
-                  onLongPress: swipeGestureEnabled
-                      ? () => onMoreTapped?.call(e, context.rect)
-                      : null,
-                  child: FadeIn(
-                    child: StoryTile(
-                      key: ValueKey<int>(e.id),
-                      story: e,
+                    if (shouldShowDivider && shouldShowWebPreviewOnStoryTile)
+                      const SizedBox(
+                        height: Dimens.pt8,
+                      ),
+                  ],
+                ];
+              } else if (e is Comment) {
+                return <Widget>[
+                  FadeIn(
+                    child: InkWell(
                       onTap: () => onTap(e),
-                      index: index,
-                      shouldShowWebPreview: shouldShowWebPreviewOnStoryTile,
-                      shouldShowMetadata: shouldShowMetadataOnStoryTile,
-                      shouldShowUrl: shouldShowUrl,
-                      shouldShowFavicon: shouldShowFavicon,
-                      shouldShowPreviewImage: shouldShowPreviewImage,
-                      isExpandedTileEnabled: isExpandedTileEnabled,
-                      isIndexedStoryTileEnabled: isIndexedStoryTileEnabled,
-                      isImageLeftAligned: isPreviewImageLeftAligned,
-                      hasRead: shouldMarkReadStories && hasRead,
-                    ),
-                  ),
-                ),
-                if (shouldShowDivider && shouldShowWebPreviewOnStoryTile)
-                  const SizedBox(
-                    height: Dimens.pt8,
-                  ),
-              ],
-            ];
-          } else if (e is Comment) {
-            return <Widget>[
-              FadeIn(
-                child: InkWell(
-                  onTap: () => onTap(e),
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      top: Dimens.pt8,
-                      bottom: Dimens.pt8,
-                      left: Dimens.pt12,
-                      right: Dimens.pt6,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        if (e.deleted)
-                          const Center(
-                            child: Padding(
-                              padding: EdgeInsets.only(
-                                top: Dimens.pt6,
-                              ),
-                              child: Text(
-                                'deleted',
-                                style: TextStyle(color: Palette.grey),
-                              ),
-                            ),
-                          ),
-                        Column(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          top: Dimens.pt8,
+                          bottom: Dimens.pt8,
+                          left: Dimens.pt12,
+                          right: Dimens.pt6,
+                        ),
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Text(
-                                  shouldShowAuthor
-                                      ? '''${e.timeAgo} by ${e.by}'''
-                                      : e.timeAgo,
-                                  style: TextStyle(
-                                    color: Theme.of(context).metadataColor,
+                            if (e.deleted)
+                              const Center(
+                                child: Padding(
+                                  padding: EdgeInsets.only(
+                                    top: Dimens.pt6,
+                                  ),
+                                  child: Text(
+                                    'deleted',
+                                    style: TextStyle(color: Palette.grey),
                                   ),
                                 ),
-                                const SizedBox(
-                                  width: Dimens.pt12,
+                              ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      shouldShowAuthor
+                                          ? '''${e.timeAgo} by ${e.by}'''
+                                          : e.timeAgo,
+                                      style: TextStyle(
+                                        color: Theme.of(context).metadataColor,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: Dimens.pt12,
+                                    ),
+                                  ],
+                                ),
+                                Linkify(
+                                  text: e.text,
+                                  maxLines: 4,
+                                  style: const TextStyle(
+                                    fontSize: TextDimens.pt16,
+                                  ),
+                                  linkStyle: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                                  onOpen: (LinkableElement link) =>
+                                      LinkUtils.launch(
+                                    link.url,
+                                    context,
+                                  ),
                                 ),
                               ],
                             ),
-                            Linkify(
-                              text: e.text,
-                              maxLines: 4,
-                              style: const TextStyle(
-                                fontSize: TextDimens.pt16,
-                              ),
-                              linkStyle: TextStyle(
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                              onOpen: (LinkableElement link) =>
-                                  LinkUtils.launch(
-                                link.url,
-                                context,
-                              ),
-                            ),
                           ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
-              ),
-              const Divider(
-                height: Dimens.zero,
-              ),
-            ];
-          }
+                  const Divider(
+                    height: Dimens.zero,
+                  ),
+                ];
+              }
 
-          return <Widget>[Container()];
-        }).mapIndexed(
-          (int index, List<Widget> e) => itemBuilder == null
-              ? Column(children: e)
-              : itemBuilder!(Column(children: e), items.elementAt(index)),
-        ),
+              return <Widget>[Container()];
+            })
+            .where((List<Widget> list) => list.isNotEmpty)
+            .mapIndexed(
+              (int index, List<Widget> e) => itemBuilder == null
+                  ? Column(children: e)
+                  : itemBuilder!(Column(children: e), items.elementAt(index)),
+            ),
         if (footer != null) footer!,
         const SizedBox(
           height: Dimens.pt40,

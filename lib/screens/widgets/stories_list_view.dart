@@ -168,6 +168,12 @@ class _StoriesListViewState extends State<StoriesListView>
                   : const SizedBox.shrink(),
               onMoreTapped: onMoreTapped,
               itemBuilder: (Widget child, Story story) {
+                if (story.hidden) {
+                  return const SizedBox.shrink();
+                } else if (preferenceState.isHideInsteadOfMarkingGrayEnabled &&
+                    context.read<HideCubit>().isHidden(story.id)) {
+                  return const SizedBox.shrink();
+                }
                 return Slidable(
                   key: ValueKey<Story>(story),
                   enabled: !preferenceState.isSwipeGestureEnabled,
