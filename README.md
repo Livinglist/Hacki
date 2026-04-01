@@ -92,21 +92,21 @@ Features:
 
 ### Story and comment sharing
 <p align="center">
-    <img width="20%" src="assets/new_screenshots/hacki_103.png">
-    <img width="20%" src="assets/new_screenshots/hacki_105.png">
-    <img width="20%" src="assets/new_screenshots/hacki_107.png">
-    <img width="20%" src="assets/new_screenshots/hacki_109.png">
-    <img width="20%" src="assets/new_screenshots/hacki_111.png">
-    <img width="20%" src="assets/new_screenshots/hacki_113.png">
+    <img width="16.6%" src="assets/new_screenshots/hacki_103.png">
+    <img width="16.6%" src="assets/new_screenshots/hacki_105.png">
+    <img width="16.6%" src="assets/new_screenshots/hacki_107.png">
+    <img width="16.6%" src="assets/new_screenshots/hacki_109.png">
+    <img width="16.6%" src="assets/new_screenshots/hacki_111.png">
+    <img width="16.6%" src="assets/new_screenshots/hacki_113.png">
 </p>
 
 <p align="center">
-    <img width="20%" src="assets/new_screenshots/hacki_104.png">
-    <img width="20%" src="assets/new_screenshots/hacki_106.png">
-    <img width="20%" src="assets/new_screenshots/hacki_108.png">
-    <img width="20%" src="assets/new_screenshots/hacki_110.png">
-    <img width="20%" src="assets/new_screenshots/hacki_112.png">
-    <img width="20%" src="assets/new_screenshots/hacki_114.png">
+    <img width="16.6%" src="assets/new_screenshots/hacki_104.png">
+    <img width="16.6%" src="assets/new_screenshots/hacki_106.png">
+    <img width="16.6%" src="assets/new_screenshots/hacki_108.png">
+    <img width="16.6%" src="assets/new_screenshots/hacki_110.png">
+    <img width="16.6%" src="assets/new_screenshots/hacki_112.png">
+    <img width="16.6%" src="assets/new_screenshots/hacki_114.png">
 </p>
 
 # Login, reply notification, favorites sync and more
