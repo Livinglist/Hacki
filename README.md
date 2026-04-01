@@ -8,6 +8,10 @@ A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
 [![GH version](https://img.shields.io/github/release/livinglist/hacki.svg?logo=github)](https://github.com/Livinglist/Hacki/releases/latest)
 [![GitHub](https://img.shields.io/github/stars/livinglist/hacki)](https://github.com/Livinglist/Hacki)
 
+[![Publish (iOS)](https://github.com/Livinglist/Hacki/actions/workflows/publish_ios.yml/badge.svg?branch=master)](https://github.com/Livinglist/Hacki/actions/workflows/publish_ios.yml)
+[![Build Android APK](https://github.com/Livinglist/Hacki/actions/workflows/build_android_apk.yml/badge.svg?branch=master)](https://github.com/Livinglist/Hacki/actions/workflows/build_android_apk.yml)
+[![Parser Check](https://github.com/Livinglist/Hacki/actions/workflows/parser_check.yml/badge.svg?branch=master)](https://github.com/Livinglist/Hacki/actions/workflows/parser_check.yml)
+
 [<img src="assets/images/app_store_badge.png" height="50">](https://apps.apple.com/us/app/hacki/id1602043763?platform=iphone) [<img src="assets/images/google_play_badge.png" height="50">](https://play.google.com/store/apps/details?id=com.jiaqifeng.hacki&hl=en_US&gl=US) [<img src="assets/images/f_droid_badge.png" height="50">](https://f-droid.org/en/packages/com.jiaqifeng.hacki/)
 
 # Features
