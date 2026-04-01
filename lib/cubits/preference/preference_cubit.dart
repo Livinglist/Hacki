@@ -8,6 +8,7 @@ import 'package:hacki/config/locator.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
+import 'package:hacki/utils/haptic_feedback_util.dart';
 
 part 'preference_state.dart';
 
@@ -78,6 +79,10 @@ class PreferenceCubit extends Cubit<PreferenceState> with Loggable {
     logInfo('updating $preference to ${preference.val}');
 
     emit(state.copyWithPreference(preference));
+
+    if (preference is EyeCandyPreference && preference.val as bool) {
+      unawaited(HapticFeedbackUtil.loadAndPlay());
+    }
 
     switch (preference.val) {
       case int():

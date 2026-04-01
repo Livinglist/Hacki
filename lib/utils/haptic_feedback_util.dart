@@ -37,6 +37,7 @@ abstract class HapticFeedbackUtil {
   }
 
   static Future<void> loadAndPlay() async {
+    await stop();
     if (Platform.isIOS) {
       await AdvancedHaptics.playAhap('assets/haptics/heartbeats.ahap');
     } else {
@@ -46,5 +47,5 @@ abstract class HapticFeedbackUtil {
     }
   }
 
-  static Future<void> stop() async => AdvancedHaptics.stop();
+  static Future<void> stop() => AdvancedHaptics.stop();
 }

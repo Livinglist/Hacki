@@ -125,10 +125,9 @@ class MainView extends StatelessWidget {
                               SizedBoxes.pt100,
                               if (preferenceState.isEyeCandyEnabled)
                                 GestureDetector(
-                                  onLongPressDown: (_) => unawaited(
+                                  onTap: () => unawaited(
                                     HapticFeedbackUtil.loadAndPlay(),
                                   ),
-                                  onLongPressUp: HapticFeedbackUtil.stop,
                                   child: Center(
                                     child: Padding(
                                       padding:
