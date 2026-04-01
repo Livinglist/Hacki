@@ -16,7 +16,7 @@ A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
 - [Hacker News Search](#hacker-news-search)
 - [In-thread search](#in-thread-local-and-global-search)
 - [Ancestor lookup](#ancestor-lookup) so you don't have to scroll back up to regain context
-- [In-thread notification for new comments](#new-comments-notification-and-lookup) since last visit
+- [In-thread notification for new comments](#new-comments-notification-and-lookup) since your last visit
 - [In-app notification for new replies](#login-reply-notification-favorites-sync-and-more) to your comments or stories
 - [Offline mode](#settings)
 - Synced settings across devices (iOS only)
