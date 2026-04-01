@@ -89,7 +89,7 @@ class MainView extends StatelessWidget {
                       context.read<CommentsCubit>().itemPositionsListener,
                   itemCount: state.comments.length + 2,
                   scrollOffsetListener: scrollOffsetListener,
-                  minCacheExtent: WidgetUtils.preferredCacheExtent,
+                  minCacheExtent: WidgetUtils.calculateCacheExtent(context),
                   itemBuilder: (BuildContext context, int index) {
                     if (index == 0) {
                       return Material(

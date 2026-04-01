@@ -5,12 +5,14 @@ import 'package:hacki/config/locator.dart';
 import 'package:logger/logger.dart';
 
 abstract final class WidgetUtils {
-  static double? preferredCacheExtent;
+  static double? _cachedPreferredCacheExtent;
 
   static Logger get _logger => locator.get<Logger>();
 
   static double calculateCacheExtent(BuildContext context) {
-    if (preferredCacheExtent != null) return preferredCacheExtent!;
+    if (_cachedPreferredCacheExtent != null) {
+      return _cachedPreferredCacheExtent!;
+    }
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final double screenHeight = mediaQuery.size.height;
     final double devicePixelRatio = mediaQuery.devicePixelRatio;
@@ -31,10 +33,10 @@ abstract final class WidgetUtils {
     late final double result;
     if (physicalHeight > 2800) {
       result = cacheExtent.clamp(0, screenHeight * 1.5);
-      preferredCacheExtent = result;
+      _cachedPreferredCacheExtent = result;
     } else {
       result = cacheExtent.clamp(400, 2000);
-      preferredCacheExtent = result;
+      _cachedPreferredCacheExtent = result;
     }
 
     _logger.i('[WidgetUtils]: preferred cache extent: $result');
