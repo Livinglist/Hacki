@@ -130,14 +130,16 @@ Features:
 
 ## Open comment in separate thread
 <p align="center">
-    <img width="250" src="assets/new_screenshots/hacki_123.png">
-    <img width="250" src="assets/new_screenshots/hacki_125.png">
-    <img width="250" src="assets/new_screenshots/hacki_127.png">
+    <img width="200" src="assets/new_screenshots/hacki_135.png">
+    <img width="200" src="assets/new_screenshots/hacki_137.png">
+    <img width="200" src="assets/new_screenshots/hacki_139.png">
+    <img width="200" src="assets/new_screenshots/hacki_141.png">
 </p>
 <p align="center">
-    <img width="250" src="assets/new_screenshots/hacki_124.png">
-    <img width="250" src="assets/new_screenshots/hacki_126.png">
-    <img width="250" src="assets/new_screenshots/hacki_128.png">
+    <img width="200" src="assets/new_screenshots/hacki_136.png">
+    <img width="200" src="assets/new_screenshots/hacki_138.png">
+    <img width="200" src="assets/new_screenshots/hacki_140.png">
+    <img width="200" src="assets/new_screenshots/hacki_142.png">
 </p>
 
 # Hacker News search
