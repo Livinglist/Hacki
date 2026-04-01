@@ -122,7 +122,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                           ),
                           if (!isLoading) ...<Widget>[
                             ...<Widget>[
-                              if (replyingTo != null)
+                              if (replyingTo != null && replyingTo is Comment)
                                 AnimatedOpacity(
                                   opacity:
                                       expanded ? NumSwitch.on : NumSwitch.off,

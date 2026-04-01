@@ -117,6 +117,20 @@ Features:
     <img width="250" src="assets/new_screenshots/hacki_114.png">
 </p>
 
+## Reply to comment or story
+<p align="center">
+    <img width="200" src="assets/new_screenshots/hacki_115.png">
+    <img width="200" src="assets/new_screenshots/hacki_117.png">
+    <img width="200" src="assets/new_screenshots/hacki_119.png">
+    <img width="200" src="assets/new_screenshots/hacki_121.png">
+</p>
+<p align="center">
+    <img width="200" src="assets/new_screenshots/hacki_116.png">
+    <img width="200" src="assets/new_screenshots/hacki_118.png">
+    <img width="200" src="assets/new_screenshots/hacki_120.png">
+    <img width="200" src="assets/new_screenshots/hacki_122.png">
+</p>
+
 # Login, reply notification, favorites sync and more
 <p align="center">
     <img width="250" src="assets/new_screenshots/hacki_37.png">
