@@ -10,9 +10,6 @@ A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
 
 [<img src="assets/images/app_store_badge.png" height="50">](https://apps.apple.com/us/app/hacki/id1602043763?platform=iphone) [<img src="assets/images/google_play_badge.png" height="50">](https://play.google.com/store/apps/details?id=com.jiaqifeng.hacki&hl=en_US&gl=US) [<img src="assets/images/f_droid_badge.png" height="50">](https://f-droid.org/en/packages/com.jiaqifeng.hacki/)
 
-**https://github.com/Livinglist/Hacki#home-page-and-story-tile-customization**
-
-
 Features:
 - Hacker News account [login](#login-reply-notification-favorites-sync-and-more)
 - [Favorites sync](#login-reply-notification-favorites-sync-and-more)
@@ -30,18 +27,17 @@ Features:
 - Polls
 - And more...
 
-
 # Home page and story tile customization
 <p align="center">
-    <img width="200" alt="01" src="assets/new_screenshots/hacki_01.png">
-    <img width="200" alt="07" src="assets/new_screenshots/hacki_04.png">
-    <img width="200" alt="03" src="assets/new_screenshots/hacki_05.png"> 
-    <img width="200" alt="09" src="assets/new_screenshots/hacki_08.png"> 
-    <img width="200" alt="06" src="assets/new_screenshots/hacki_02.png"> 
-    <img width="200" alt="02" src="assets/new_screenshots/hacki_03.png">
-    <img width="200" alt="08" src="assets/new_screenshots/hacki_06.png">
-    <img width="200" alt="04" src="assets/new_screenshots/hacki_07.png">
-    <img width="200" alt="05" src="assets/new_screenshots/hacki_09.png">
+    <img width="200" src="assets/new_screenshots/hacki_01.png">
+    <img width="200" src="assets/new_screenshots/hacki_04.png">
+    <img width="200" src="assets/new_screenshots/hacki_05.png"> 
+    <img width="200" src="assets/new_screenshots/hacki_08.png"> 
+    <img width="200" src="assets/new_screenshots/hacki_02.png"> 
+    <img width="200" src="assets/new_screenshots/hacki_03.png">
+    <img width="200" src="assets/new_screenshots/hacki_06.png">
+    <img width="200" src="assets/new_screenshots/hacki_07.png">
+    <img width="200" src="assets/new_screenshots/hacki_09.png">
     <img width="200" src="assets/new_screenshots/hacki_10.png"> 
     <img width="200" src="assets/new_screenshots/hacki_11.png"> 
     <img width="200" src="assets/new_screenshots/hacki_12.png">
