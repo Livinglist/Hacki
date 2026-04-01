@@ -39,7 +39,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.header,
     this.footer,
     this.onMoreTapped,
-    this.scrollController,
+    //this.scrollController,
     this.itemBuilder,
   });
 
@@ -64,7 +64,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   final Widget? header;
   final Widget? footer;
   final RefreshController refreshController;
-  final ScrollController? scrollController;
+  //final ScrollController? scrollController;
   final VoidCallback? onRefresh;
   final VoidCallback? onLoadMore;
   final ValueChanged<Story>? onPinned;
@@ -77,7 +77,8 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ListView child = ListView(
-      controller: scrollController,
+      cacheExtent: WidgetUtils.calculateCacheExtent(context),
+      primary: true,
       children: <Widget>[
         if (shouldShowOfflineBanner)
           const OfflineBanner(

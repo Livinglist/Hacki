@@ -192,7 +192,15 @@ class _ProfileScreenState extends State<ProfileScreen>
                 ),
                 Visibility(
                   visible: pageType == PageType.settings,
-                  child: const SettingsView(),
+                  child: Positioned.fill(
+                    top: context
+                            .read<PreferenceCubit>()
+                            .state
+                            .isHackerNewsThemeEnabled
+                        ? Dimens.pt64
+                        : Dimens.pt50,
+                    child: const SettingsView(),
+                  ),
                 ),
                 Align(
                   alignment: Alignment.topLeft,

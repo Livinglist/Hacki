@@ -879,7 +879,7 @@ comments length is ${state.comments.length}
           }
         }
 
-        await Future<void>.delayed(AppDurations.ms400, () {
+        await Future<void>.delayed(AppDurations.ms300, () {
           final BuildContext? newTargetCommentContext =
               targetCommentGlobalKey?.currentContext;
           if (targetCommentGlobalKey != null &&
