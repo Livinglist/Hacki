@@ -54,10 +54,10 @@ Features:
 
 ## Thread
 <p align="center">
-    <img width="300" src="assets/new_screenshots/hacki_21.png"> 
-    <img width="300" src="assets/new_screenshots/hacki_70.png">
-    <img width="300" src="assets/new_screenshots/hacki_22.png"> 
-    <img width="300" src="assets/new_screenshots/hacki_69.png">
+    <img width="200" src="assets/new_screenshots/hacki_21.png"> 
+    <img width="200" src="assets/new_screenshots/hacki_70.png">
+    <img width="200" src="assets/new_screenshots/hacki_22.png"> 
+    <img width="200" src="assets/new_screenshots/hacki_69.png">
 </p>
 
 ## New comments notification and lookup
