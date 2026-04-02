@@ -371,10 +371,14 @@ class HackiApp extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                bottomSheetTheme: const BottomSheetThemeData(
+                                bottomSheetTheme: BottomSheetThemeData(
                                   modalElevation: 8,
                                   clipBehavior: Clip.hardEdge,
                                   shadowColor: Palette.black,
+                                  backgroundColor: isDarkModeEnabled &&
+                                          state.isTrueDarkModeEnabled
+                                      ? Palette.black
+                                      : null,
                                 ),
                                 inputDecorationTheme: InputDecorationTheme(
                                   enabledBorder: UnderlineInputBorder(

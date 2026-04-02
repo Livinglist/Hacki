@@ -37,7 +37,7 @@ class TimeMachineDialog extends StatelessWidget {
                     Dimens.pt4,
                   ),
                 ),
-                color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                color: Theme.of(context).canvasColor,
               ),
               child: Padding(
                 padding: const EdgeInsets.only(
