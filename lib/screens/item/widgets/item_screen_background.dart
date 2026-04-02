@@ -80,7 +80,7 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
           child: AnimatedCrossFade(
             duration: AppDurations.ms400,
             crossFadeState: !_overrideCommentsStatus &&
-                    state.status == CommentsStatus.inProgress
+                    state.status != CommentsStatus.allLoaded
                 ? CrossFadeState.showFirst
                 : CrossFadeState.showSecond,
             firstChild: Stack(
