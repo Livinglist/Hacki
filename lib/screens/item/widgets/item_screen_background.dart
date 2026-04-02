@@ -30,70 +30,55 @@ class ItemScreenBackground extends StatefulWidget {
 
 class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
   int _shineIndex = 0;
-  Timer? _startUpTimer;
   bool _isVisible = false;
-  bool _overrideCommentsStatus = false
+  bool _overrideCommentsStatus = false;
+
+  Timer? _visibilityTimer;
+  Timer? _overrideTimer;
 
   @override
   void initState() {
     super.initState();
 
-    unawaited(
-      Future<void>.delayed(
-        AppDurations.oneSecond,
-            () {
-          if (mounted) {
-            setState(() {
-              _isVisible = true;
-            });
-          }
-        },
-      ),
-    );
-
-    unawaited(
-      Future<void>.delayed(
-        AppDurations.fiveSeconds,
-            () {
-          if (mounted) {
-            setState(() {
-              _overrideCommentsStatus = true;
-            });
-          }
-        },
-      ),
-    );
+    _visibilityTimer = Timer(AppDurations.oneSecond, () {
+      if (mounted) {
+        setState(() => _isVisible = true);
+      }
+    });
+    _overrideTimer = Timer(AppDurations.fiveSeconds, () {
+      if (mounted) {
+        setState(() => _overrideCommentsStatus = true);
+      }
+    });
   }
 
   @override
   void dispose() {
-    _startUpTimer?.cancel();
+    _visibilityTimer?.cancel();
+    _overrideTimer?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final bool isEyeCandyEnabled =
-        context
-            .read<PreferenceCubit>()
-            .state
-            .isEyeCandyEnabled;
+        context.read<PreferenceCubit>().state.isEyeCandyEnabled;
     return BlocConsumer<CommentsCubit, CommentsState>(
       listenWhen: (CommentsState previous, CommentsState current) =>
-      previous.status != current.status,
+          previous.status != current.status,
       listener: (BuildContext context, CommentsState state) {
         if (state.status == CommentsStatus.allLoaded && isEyeCandyEnabled) {
-          _startUpTimer?.cancel();
-          _startUpTimer =
+          _visibilityTimer?.cancel();
+          _visibilityTimer =
               Timer.periodic(const Duration(milliseconds: 1200), (_) {
-                setState(() {
-                  _shineIndex = (_shineIndex + 1) % (state.maxLevel + 1);
-                });
-              });
+            setState(() {
+              _shineIndex = (_shineIndex + 1) % (state.maxLevel + 1);
+            });
+          });
         }
       },
       buildWhen: (CommentsState previous, CommentsState current) =>
-      previous.maxLevel != current.maxLevel ||
+          previous.maxLevel != current.maxLevel ||
           previous.status != current.status,
       builder: (BuildContext context, CommentsState state) {
         if (!_isVisible || state.comments.isEmpty) {
@@ -125,33 +110,21 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
                 Padding(
                   padding: EdgeInsets.zero,
                   child: SizedBox(
-                    height: MediaQuery
-                        .of(context)
-                        .size
-                        .height,
+                    height: MediaQuery.of(context).size.height,
                     width: widget.indentLineWidth,
                     child: isEyeCandyEnabled
                         ? AnimatedIndentLine(
-                      color:
-                      Theme
-                          .of(context)
-                          .colorScheme
-                          .primaryContainer,
-                      width: widget.indentLineWidth,
-                      isShining: _shineIndex == 0,
-                    )
+                            color:
+                                Theme.of(context).colorScheme.primaryContainer,
+                            width: widget.indentLineWidth,
+                            isShining: _shineIndex == 0,
+                          )
                         : Container(
-                      width: widget.indentLineWidth,
-                      height: MediaQuery
-                          .of(context)
-                          .size
-                          .height,
-                      color:
-                      Theme
-                          .of(context)
-                          .colorScheme
-                          .primaryContainer,
-                    ),
+                            width: widget.indentLineWidth,
+                            height: MediaQuery.of(context).size.height,
+                            color:
+                                Theme.of(context).colorScheme.primaryContainer,
+                          ),
                   ),
                 ),
               if (state.maxLevel > 0)
@@ -165,47 +138,30 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
                           : widget.indentPadding * i - widget.indentLineWidth,
                     ),
                     child: SizedBox(
-                      height: MediaQuery
-                          .of(context)
-                          .size
-                          .height,
+                      height: MediaQuery.of(context).size.height,
                       width: widget.indentLineWidth,
                       child: isEyeCandyEnabled
                           ? AnimatedIndentLine(
-                        color: ColorUtils
-                            .getRainbowColor(
-                          i,
-                          Theme
-                              .of(context)
-                              .canvasColor,
-                        )
-                            .$1,
-                        width: widget.indentLineWidth,
-                        isShining: _shineIndex == i,
-                      )
+                              color: ColorUtils.getRainbowColor(
+                                i,
+                                Theme.of(context).canvasColor,
+                              ).$1,
+                              width: widget.indentLineWidth,
+                              isShining: _shineIndex == i,
+                            )
                           : Container(
-                        width: widget.indentLineWidth,
-                        height: MediaQuery
-                            .of(context)
-                            .size
-                            .height,
-                        color: ColorUtils
-                            .getRainbowColor(
-                          i,
-                          Theme
-                              .of(context)
-                              .canvasColor,
-                        )
-                            .$1
-                            .withValues(
-                          alpha: Theme
-                              .of(context)
-                              .brightness ==
-                              Brightness.dark
-                              ? 0.6
-                              : 1,
-                        ),
-                      ),
+                              width: widget.indentLineWidth,
+                              height: MediaQuery.of(context).size.height,
+                              color: ColorUtils.getRainbowColor(
+                                i,
+                                Theme.of(context).canvasColor,
+                              ).$1.withValues(
+                                    alpha: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? 0.6
+                                        : 1,
+                                  ),
+                            ),
                     ),
                   ),
             ],
