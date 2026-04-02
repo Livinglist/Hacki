@@ -76,7 +76,6 @@ abstract final class DialogProxy {
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      backgroundColor: Theme.of(context).canvasColor,
       builder: (BuildContext context) {
         return SizedBox(
           height: MediaQuery.of(context).size.height - Dimens.pt120,

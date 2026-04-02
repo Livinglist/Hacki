@@ -30,14 +30,14 @@ class TimeMachineDialog extends StatelessWidget {
       child: BlocBuilder<TimeMachineCubit, TimeMachineState>(
         builder: (BuildContext context, TimeMachineState state) {
           return Material(
+            color: Palette.transparent,
             child: Container(
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.all(
                   Radius.circular(
                     Dimens.pt4,
                   ),
                 ),
-                color: Theme.of(context).canvasColor,
               ),
               child: Padding(
                 padding: const EdgeInsets.only(
