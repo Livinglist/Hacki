@@ -330,16 +330,6 @@ class HackiApp extends StatelessWidget {
                         theme: state.isHackerNewsThemeEnabled
                             ? HackerNewsTheme.theme
                             : ThemeData(
-                                colorScheme: colorScheme,
-                                fontFamily: state.font.name,
-                                canvasColor: isDarkModeEnabled &&
-                                        state.isTrueDarkModeEnabled
-                                    ? Palette.black
-                                    : null,
-                                scaffoldBackgroundColor: isDarkModeEnabled &&
-                                        state.isTrueDarkModeEnabled
-                                    ? Palette.black
-                                    : null,
                                 appBarTheme: AppBarTheme(
                                   foregroundColor: colorScheme.onSurface,
                                   iconTheme: IconThemeData(
@@ -347,7 +337,7 @@ class HackiApp extends StatelessWidget {
                                   ),
                                 ),
                                 bottomSheetTheme: BottomSheetThemeData(
-                                  modalElevation: 8,
+                                  modalElevation: Dimens.pt8,
                                   clipBehavior: Clip.hardEdge,
                                   shadowColor: Palette.black,
                                   backgroundColor: isDarkModeEnabled &&
@@ -355,6 +345,11 @@ class HackiApp extends StatelessWidget {
                                       ? Palette.black
                                       : null,
                                 ),
+                                canvasColor: isDarkModeEnabled &&
+                                        state.isTrueDarkModeEnabled
+                                    ? Palette.black
+                                    : null,
+                                colorScheme: colorScheme,
                                 dividerTheme: DividerThemeData(
                                   color: Palette.grey.withValues(alpha: 0.2),
                                 ),
@@ -362,6 +357,15 @@ class HackiApp extends StatelessWidget {
                                     const ElevatedButtonThemeData(
                                   style: ButtonStyle(enableFeedback: false),
                                 ),
+                                floatingActionButtonTheme:
+                                    const FloatingActionButtonThemeData(
+                                  enableFeedback: false,
+                                ),
+                                fontFamily: state.font.name,
+                                scaffoldBackgroundColor: isDarkModeEnabled &&
+                                        state.isTrueDarkModeEnabled
+                                    ? Palette.black
+                                    : null,
                                 switchTheme: SwitchThemeData(
                                   trackColor: WidgetStateProperty.resolveWith(
                                     (Set<WidgetState> states) {
