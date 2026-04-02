@@ -30,31 +30,26 @@ class ItemScreenBackground extends StatefulWidget {
 
 class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
   int _shineIndex = 0;
-  bool _isVisible = false;
   bool _overrideCommentsStatus = false;
 
-  Timer? _visibilityTimer;
+  Timer? _animationTimer;
   Timer? _overrideTimer;
 
   @override
   void initState() {
     super.initState();
 
-    _visibilityTimer = Timer(AppDurations.oneSecond, () {
-      if (mounted) {
-        setState(() => _isVisible = true);
-      }
-    });
     _overrideTimer = Timer(AppDurations.fiveSeconds, () {
       if (mounted) {
         setState(() => _overrideCommentsStatus = true);
       }
+      _overrideTimer?.cancel();
     });
   }
 
   @override
   void dispose() {
-    _visibilityTimer?.cancel();
+    _animationTimer?.cancel();
     _overrideTimer?.cancel();
     super.dispose();
   }
@@ -68,8 +63,8 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
           previous.status != current.status,
       listener: (BuildContext context, CommentsState state) {
         if (state.status == CommentsStatus.allLoaded && isEyeCandyEnabled) {
-          _visibilityTimer?.cancel();
-          _visibilityTimer =
+          _animationTimer?.cancel();
+          _animationTimer =
               Timer.periodic(const Duration(milliseconds: 1200), (_) {
             setState(() {
               _shineIndex = (_shineIndex + 1) % (state.maxLevel + 1);
@@ -81,12 +76,14 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
           previous.maxLevel != current.maxLevel ||
           previous.status != current.status,
       builder: (BuildContext context, CommentsState state) {
-        if (!_isVisible || state.comments.isEmpty) {
-          return const SizedBox.shrink();
-        } else if (!_overrideCommentsStatus &&
-            state.status == CommentsStatus.inProgress) {
-          return FadeIn(
-            child: Stack(
+        return FadeIn(
+          child: AnimatedCrossFade(
+            duration: AppDurations.ms400,
+            crossFadeState: !_overrideCommentsStatus &&
+                    state.status == CommentsStatus.inProgress
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond,
+            firstChild: Stack(
               children: <Widget>[
                 Positioned(
                   left: Dimens.zero,
@@ -96,75 +93,80 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
                     quarterTurns: 1,
                     child: LinearProgressIndicator(
                       minHeight: widget.indentLineWidth,
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      backgroundColor: Theme.of(context)
+                          .colorScheme
+                          .primaryContainer
+                          .withValues(alpha: 0.2),
                     ),
                   ),
                 ),
               ],
             ),
-          );
-        }
-        return FadeIn(
-          child: Stack(
-            children: <Widget>[
-              if (widget.shouldShowRootLevelLine)
-                Padding(
-                  padding: EdgeInsets.zero,
-                  child: SizedBox(
-                    height: MediaQuery.of(context).size.height,
-                    width: widget.indentLineWidth,
-                    child: isEyeCandyEnabled
-                        ? AnimatedIndentLine(
-                            color:
-                                Theme.of(context).colorScheme.primaryContainer,
-                            width: widget.indentLineWidth,
-                            isShining: _shineIndex == 0,
-                          )
-                        : Container(
-                            width: widget.indentLineWidth,
-                            height: MediaQuery.of(context).size.height,
-                            color:
-                                Theme.of(context).colorScheme.primaryContainer,
-                          ),
-                  ),
-                ),
-              if (state.maxLevel > 0)
-                for (final int i in 1.to(
-                  state.maxLevel,
-                ))
+            secondChild: Stack(
+              children: <Widget>[
+                if (widget.shouldShowRootLevelLine)
                   Padding(
-                    padding: EdgeInsets.only(
-                      left: widget.shouldShowRootLevelLine
-                          ? widget.indentPadding * i
-                          : widget.indentPadding * i - widget.indentLineWidth,
-                    ),
+                    padding: EdgeInsets.zero,
                     child: SizedBox(
                       height: MediaQuery.of(context).size.height,
                       width: widget.indentLineWidth,
                       child: isEyeCandyEnabled
                           ? AnimatedIndentLine(
-                              color: ColorUtils.getRainbowColor(
-                                i,
-                                Theme.of(context).canvasColor,
-                              ).$1,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
                               width: widget.indentLineWidth,
-                              isShining: _shineIndex == i,
+                              isShining: _shineIndex == 0,
                             )
                           : Container(
                               width: widget.indentLineWidth,
                               height: MediaQuery.of(context).size.height,
-                              color: ColorUtils.getRainbowColor(
-                                i,
-                                Theme.of(context).canvasColor,
-                              ).$1.withValues(
-                                    alpha: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? 0.6
-                                        : 1,
-                                  ),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
                             ),
                     ),
                   ),
-            ],
+                if (state.maxLevel > 0)
+                  for (final int i in 1.to(
+                    state.maxLevel,
+                  ))
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: widget.shouldShowRootLevelLine
+                            ? widget.indentPadding * i
+                            : widget.indentPadding * i - widget.indentLineWidth,
+                      ),
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height,
+                        width: widget.indentLineWidth,
+                        child: isEyeCandyEnabled
+                            ? AnimatedIndentLine(
+                                color: ColorUtils.getRainbowColor(
+                                  i,
+                                  Theme.of(context).canvasColor,
+                                ).$1,
+                                width: widget.indentLineWidth,
+                                isShining: _shineIndex == i,
+                              )
+                            : Container(
+                                width: widget.indentLineWidth,
+                                height: MediaQuery.of(context).size.height,
+                                color: ColorUtils.getRainbowColor(
+                                  i,
+                                  Theme.of(context).canvasColor,
+                                ).$1.withValues(
+                                      alpha: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? 0.6
+                                          : 1,
+                                    ),
+                              ),
+                      ),
+                    ),
+              ],
+            ),
           ),
         );
       },

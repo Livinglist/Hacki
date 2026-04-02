@@ -446,6 +446,7 @@ class _ParentItemSection extends StatelessWidget {
                         children: <Widget>[
                           if (item is Story)
                             InkWell(
+                              enableFeedback: false,
                               onTap: () => LinkUtils.launch(
                                 item.url,
                                 context,
