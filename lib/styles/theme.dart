@@ -3,7 +3,7 @@ import 'package:hacki/models/font.dart';
 import 'package:hacki/styles/dimens.dart';
 
 extension ThemeDataExtension on ThemeData {
-  Color get readGrey => colorScheme.onSurface.withValues(alpha: 0.6);
+  Color get readGrey => hintColor;
 
   Color get metadataColor => colorScheme.onSurface.withValues(alpha: 0.8);
 }
