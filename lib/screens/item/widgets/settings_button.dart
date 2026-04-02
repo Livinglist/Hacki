@@ -21,13 +21,13 @@ class SettingsButton extends StatelessWidget {
       tooltip: 'Go to settings',
       icon: CustomDescribedFeatureOverlay(
         tapTarget: Icon(
-          Icons.settings,
+          Icons.stream,
           color: Theme.of(context).colorScheme.onPrimaryContainer,
         ),
         feature: DiscoverableFeature.settingsShortcutOnItemScreen,
         contentLocation: ContentLocation.below,
         child: Icon(
-          Icons.settings,
+          Icons.stream,
           color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
