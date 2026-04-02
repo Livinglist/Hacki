@@ -113,81 +113,82 @@ class MainView extends StatelessWidget {
                         ),
                       );
                     } else if (index == state.comments.length + 1) {
-                      if ((state.status == CommentsStatus.allLoaded &&
-                              state.comments.isNotEmpty) ||
-                          state.onlyShowTargetComment) {
-                        return Container(
-                          color: Theme.of(context).canvasColor,
-                          height: MediaQuery.of(context).size.height -
-                              MediaQuery.of(context).padding.top,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: Dimens.pt48,
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              SizedBoxes.pt100,
-                              if (preferenceState.isEyeCandyEnabled)
-                                GestureDetector(
-                                  onTap: () => unawaited(
-                                    HapticFeedbackUtils.loadAndPlay(),
-                                  ),
-                                  child: Center(
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.all(Dimens.pt24),
-                                      child: FaIcon(
-                                        FontAwesomeIcons.heartPulse,
-                                        applyTextScaling: false,
+                      return Container(
+                        color: Theme.of(context).canvasColor,
+                        height: MediaQuery.of(context).size.height -
+                            MediaQuery.of(context).padding.top,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: Dimens.pt48,
+                        ),
+                        margin: EdgeInsets.only(
+                          left: state.status == CommentsStatus.allLoaded
+                              ? Dimens.zero
+                              : indentLineWidth,
+                        ),
+                        child: state.status == CommentsStatus.allLoaded
+                            ? Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  SizedBoxes.pt100,
+                                  if (preferenceState.isEyeCandyEnabled)
+                                    GestureDetector(
+                                      onTap: () => unawaited(
+                                        HapticFeedbackUtils.loadAndPlay(),
+                                      ),
+                                      child: Center(
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.all(Dimens.pt24),
+                                          child: FaIcon(
+                                            FontAwesomeIcons.heartPulse,
+                                            applyTextScaling: false,
+                                            color: Theme.of(context).hintColor,
+                                            size: Dimens.pt36,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  else if (DateUtils.isMidnight)
+                                    Text(
+                                      'Time for bed',
+                                      style: TextStyle(
                                         color: Theme.of(context).hintColor,
-                                        size: Dimens.pt36,
+                                        fontSize: TextDimens.pt10,
+                                      ),
+                                      textScaler: TextScaler.noScaling,
+                                      textAlign: TextAlign.center,
+                                    )
+                                  else if (DateUtils.isTodayAnniversary)
+                                    Text(
+                                      '''Hacki turns ${DateUtils.yearsSinceFirstCommit} today!''',
+                                      style: TextStyle(
+                                        color: Theme.of(context).hintColor,
+                                        fontSize: TextDimens.pt10,
+                                      ),
+                                      textScaler: TextScaler.noScaling,
+                                      textAlign: TextAlign.center,
+                                    )
+                                  else
+                                    Text(
+                                      Constants.happyFace,
+                                      style: TextStyle(
+                                        color: Theme.of(context).hintColor,
                                       ),
                                     ),
+                                  SizedBoxes.pt36,
+                                  Text(
+                                    context.read<CommentsCubit>().currentTips,
+                                    style: TextStyle(
+                                      fontSize: TextDimens.pt10,
+                                      color: Theme.of(context).hintColor,
+                                    ),
+                                    textScaler: TextScaler.noScaling,
+                                    textAlign: TextAlign.center,
                                   ),
-                                )
-                              else if (DateUtils.isMidnight)
-                                Text(
-                                  'Time for bed',
-                                  style: TextStyle(
-                                    color: Theme.of(context).hintColor,
-                                    fontSize: TextDimens.pt10,
-                                  ),
-                                  textScaler: TextScaler.noScaling,
-                                  textAlign: TextAlign.center,
-                                )
-                              else if (DateUtils.isTodayAnniversary)
-                                Text(
-                                  '''Hacki turns ${DateUtils.yearsSinceFirstCommit} today!''',
-                                  style: TextStyle(
-                                    color: Theme.of(context).hintColor,
-                                    fontSize: TextDimens.pt10,
-                                  ),
-                                  textScaler: TextScaler.noScaling,
-                                  textAlign: TextAlign.center,
-                                )
-                              else
-                                Text(
-                                  Constants.happyFace,
-                                  style: TextStyle(
-                                    color: Theme.of(context).hintColor,
-                                  ),
-                                ),
-                              SizedBoxes.pt36,
-                              Text(
-                                context.read<CommentsCubit>().currentTips,
-                                style: TextStyle(
-                                  fontSize: TextDimens.pt10,
-                                  color: Theme.of(context).hintColor,
-                                ),
-                                textScaler: TextScaler.noScaling,
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
-                        );
-                      } else {
-                        return const SizedBox.shrink();
-                      }
+                                ],
+                              )
+                            : const SizedBox.shrink(),
+                      );
                     }
 
                     index = index - 1;
