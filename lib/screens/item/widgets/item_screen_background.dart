@@ -7,6 +7,7 @@ import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 
 class ItemScreenBackground extends StatefulWidget {
@@ -29,8 +30,9 @@ class ItemScreenBackground extends StatefulWidget {
 
 class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
   int _shineIndex = 0;
-  Timer? _timer;
+  Timer? _startUpTimer;
   bool _isVisible = false;
+  bool _overrideCommentsStatus = false
 
   @override
   void initState() {
@@ -39,10 +41,23 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
     unawaited(
       Future<void>.delayed(
         AppDurations.oneSecond,
-        () {
+            () {
           if (mounted) {
             setState(() {
               _isVisible = true;
+            });
+          }
+        },
+      ),
+    );
+
+    unawaited(
+      Future<void>.delayed(
+        AppDurations.fiveSeconds,
+            () {
+          if (mounted) {
+            setState(() {
+              _overrideCommentsStatus = true;
             });
           }
         },
@@ -52,33 +67,56 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _startUpTimer?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final bool isEyeCandyEnabled =
-        context.read<PreferenceCubit>().state.isEyeCandyEnabled;
+        context
+            .read<PreferenceCubit>()
+            .state
+            .isEyeCandyEnabled;
     return BlocConsumer<CommentsCubit, CommentsState>(
       listenWhen: (CommentsState previous, CommentsState current) =>
-          previous.status != current.status,
+      previous.status != current.status,
       listener: (BuildContext context, CommentsState state) {
         if (state.status == CommentsStatus.allLoaded && isEyeCandyEnabled) {
-          _timer?.cancel();
-          _timer = Timer.periodic(const Duration(milliseconds: 1200), (_) {
-            setState(() {
-              _shineIndex = (_shineIndex + 1) % (state.maxLevel + 1);
-            });
-          });
+          _startUpTimer?.cancel();
+          _startUpTimer =
+              Timer.periodic(const Duration(milliseconds: 1200), (_) {
+                setState(() {
+                  _shineIndex = (_shineIndex + 1) % (state.maxLevel + 1);
+                });
+              });
         }
       },
       buildWhen: (CommentsState previous, CommentsState current) =>
-          previous.maxLevel != current.maxLevel ||
+      previous.maxLevel != current.maxLevel ||
           previous.status != current.status,
       builder: (BuildContext context, CommentsState state) {
         if (!_isVisible || state.comments.isEmpty) {
           return const SizedBox.shrink();
+        } else if (!_overrideCommentsStatus &&
+            state.status == CommentsStatus.inProgress) {
+          return FadeIn(
+            child: Stack(
+              children: <Widget>[
+                Positioned(
+                  left: Dimens.zero,
+                  top: Dimens.zero,
+                  bottom: Dimens.zero,
+                  child: RotatedBox(
+                    quarterTurns: 1,
+                    child: LinearProgressIndicator(
+                      minHeight: widget.indentLineWidth,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
         }
         return FadeIn(
           child: Stack(
@@ -87,21 +125,33 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
                 Padding(
                   padding: EdgeInsets.zero,
                   child: SizedBox(
-                    height: MediaQuery.of(context).size.height,
+                    height: MediaQuery
+                        .of(context)
+                        .size
+                        .height,
                     width: widget.indentLineWidth,
                     child: isEyeCandyEnabled
                         ? AnimatedIndentLine(
-                            color:
-                                Theme.of(context).colorScheme.primaryContainer,
-                            width: widget.indentLineWidth,
-                            isShining: _shineIndex == 0,
-                          )
+                      color:
+                      Theme
+                          .of(context)
+                          .colorScheme
+                          .primaryContainer,
+                      width: widget.indentLineWidth,
+                      isShining: _shineIndex == 0,
+                    )
                         : Container(
-                            width: widget.indentLineWidth,
-                            height: MediaQuery.of(context).size.height,
-                            color:
-                                Theme.of(context).colorScheme.primaryContainer,
-                          ),
+                      width: widget.indentLineWidth,
+                      height: MediaQuery
+                          .of(context)
+                          .size
+                          .height,
+                      color:
+                      Theme
+                          .of(context)
+                          .colorScheme
+                          .primaryContainer,
+                    ),
                   ),
                 ),
               if (state.maxLevel > 0)
@@ -115,30 +165,47 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
                           : widget.indentPadding * i - widget.indentLineWidth,
                     ),
                     child: SizedBox(
-                      height: MediaQuery.of(context).size.height,
+                      height: MediaQuery
+                          .of(context)
+                          .size
+                          .height,
                       width: widget.indentLineWidth,
                       child: isEyeCandyEnabled
                           ? AnimatedIndentLine(
-                              color: ColorUtils.getRainbowColor(
-                                i,
-                                Theme.of(context).canvasColor,
-                              ).$1,
-                              width: widget.indentLineWidth,
-                              isShining: _shineIndex == i,
-                            )
+                        color: ColorUtils
+                            .getRainbowColor(
+                          i,
+                          Theme
+                              .of(context)
+                              .canvasColor,
+                        )
+                            .$1,
+                        width: widget.indentLineWidth,
+                        isShining: _shineIndex == i,
+                      )
                           : Container(
-                              width: widget.indentLineWidth,
-                              height: MediaQuery.of(context).size.height,
-                              color: ColorUtils.getRainbowColor(
-                                i,
-                                Theme.of(context).canvasColor,
-                              ).$1.withValues(
-                                    alpha: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? 0.6
-                                        : 1,
-                                  ),
-                            ),
+                        width: widget.indentLineWidth,
+                        height: MediaQuery
+                            .of(context)
+                            .size
+                            .height,
+                        color: ColorUtils
+                            .getRainbowColor(
+                          i,
+                          Theme
+                              .of(context)
+                              .canvasColor,
+                        )
+                            .$1
+                            .withValues(
+                          alpha: Theme
+                              .of(context)
+                              .brightness ==
+                              Brightness.dark
+                              ? 0.6
+                              : 1,
+                        ),
+                      ),
                     ),
                   ),
             ],
