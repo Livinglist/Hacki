@@ -383,6 +383,7 @@ TextSpan buildTextSpan(
           } else {
             return WidgetSpan(
               child: InkWell(
+                enableFeedback: false,
                 onLongPress: () {
                   final String url = element.url;
                   if (url.isNotEmpty) {

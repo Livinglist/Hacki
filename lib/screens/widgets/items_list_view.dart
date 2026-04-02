@@ -109,6 +109,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
               if (shouldUseMinimalTileForStory)
                 FadeIn(
                   child: InkWell(
+                    enableFeedback: false,
                     onTap: () => onTap(e),
 
                     /// If swipe gesture is enabled on home screen, use

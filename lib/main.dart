@@ -411,12 +411,6 @@ class HackiApp extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                sliderTheme: SliderThemeData(
-                                  inactiveTrackColor: colorScheme.primary
-                                      .withValues(alpha: 0.5),
-                                  activeTrackColor: colorScheme.primary,
-                                  thumbColor: colorScheme.primary,
-                                ),
                                 outlinedButtonTheme: OutlinedButtonThemeData(
                                   style: ButtonStyle(
                                     enableFeedback: false,
@@ -426,6 +420,12 @@ class HackiApp extends StatelessWidget {
                                       ),
                                     ),
                                   ),
+                                ),
+                                sliderTheme: SliderThemeData(
+                                  inactiveTrackColor: colorScheme.primary
+                                      .withValues(alpha: 0.5),
+                                  activeTrackColor: colorScheme.primary,
+                                  thumbColor: colorScheme.primary,
                                 ),
                               ),
                         routerConfig: router,
