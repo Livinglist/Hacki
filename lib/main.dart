@@ -349,6 +349,17 @@ class HackiApp extends StatelessWidget {
                                 dividerTheme: DividerThemeData(
                                   color: Palette.grey.withValues(alpha: 0.2),
                                 ),
+                                elevatedButtonTheme:
+                                    const ElevatedButtonThemeData(
+                                  style: ButtonStyle(enableFeedback: false),
+                                ),
+                                textButtonTheme: const TextButtonThemeData(
+                                  style: ButtonStyle(enableFeedback: false),
+                                ),
+                                outlinedButtonTheme:
+                                    const OutlinedButtonThemeData(
+                                  style: ButtonStyle(enableFeedback: false),
+                                ),
                                 switchTheme: SwitchThemeData(
                                   trackColor: WidgetStateProperty.resolveWith(
                                     (Set<WidgetState> states) {
