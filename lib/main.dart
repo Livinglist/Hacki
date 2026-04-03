@@ -258,9 +258,6 @@ class HackiApp extends StatelessWidget {
             previous.isDevModeEnabled != current.isDevModeEnabled,
         builder: (BuildContext context, PreferenceState state) {
           return AdaptiveTheme(
-            key: ValueKey<String>(
-              '''${state.appColor}${state.font}${state.isTrueDarkModeEnabled}''',
-            ),
             light: ThemeData(
               primaryColor: state.appColor,
               colorScheme: ColorScheme.fromSwatch(

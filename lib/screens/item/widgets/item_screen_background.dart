@@ -83,25 +83,29 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
                     state.status != CommentsStatus.allLoaded
                 ? CrossFadeState.showFirst
                 : CrossFadeState.showSecond,
-            firstChild: Stack(
-              children: <Widget>[
-                Positioned(
-                  left: Dimens.zero,
-                  top: Dimens.zero,
-                  bottom: Dimens.zero,
-                  child: RotatedBox(
-                    quarterTurns: 1,
-                    child: LinearProgressIndicator(
-                      minHeight: widget.indentLineWidth,
-                      color: Theme.of(context).colorScheme.primaryContainer,
-                      backgroundColor: Theme.of(context)
-                          .colorScheme
-                          .primaryContainer
-                          .withValues(alpha: 0.2),
+            firstChild: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: Stack(
+                children: <Widget>[
+                  Positioned(
+                    left: Dimens.zero,
+                    top: Dimens.zero,
+                    bottom: Dimens.zero,
+                    child: RotatedBox(
+                      quarterTurns: 1,
+                      child: LinearProgressIndicator(
+                        minHeight: widget.indentLineWidth,
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                        backgroundColor: Theme.of(context)
+                            .colorScheme
+                            .primaryContainer
+                            .withValues(alpha: 0.2),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             secondChild: Stack(
               children: <Widget>[
