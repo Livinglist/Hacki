@@ -25,6 +25,7 @@ class CustomDescribedFeatureOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DescribedFeatureOverlay(
+      enablePulsingAnimation: !MediaQuery.of(context).disableAnimations,
       featureId: feature.featureId,
       overflowMode: OverflowMode.extendBackground,
       targetColor: Theme.of(context).colorScheme.primaryContainer,
@@ -43,13 +44,18 @@ class CustomDescribedFeatureOverlay extends StatelessWidget {
           color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
-      barrierDismissible: false,
       contentLocation: contentLocation,
       onBackgroundTap: () {
         HapticFeedbackUtils.light();
         FeatureDiscovery.completeCurrentStep(context);
         onComplete?.call();
         return Future<bool>.value(true);
+      },
+      onDismiss: () async {
+        HapticFeedbackUtils.light();
+        unawaited(FeatureDiscovery.completeCurrentStep(context));
+        onComplete?.call();
+        return false;
       },
       onComplete: () async {
         HapticFeedbackUtils.light();
