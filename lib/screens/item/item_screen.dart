@@ -14,7 +14,7 @@ import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
-import 'package:hacki/screens/widgets/download_progress_reminder.dart';
+import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
@@ -159,6 +159,8 @@ class _ItemScreenState extends State<ItemScreen>
       AppDurations.oneSecond;
   static const double _indentPadding = 8;
   static const double _indentLineWidth = 2;
+  static const double _webViewOffsetInvisible = 0.06;
+  bool _isWebViewBottomSheetVisible = true;
 
   @override
   void didPop() {
@@ -349,6 +351,33 @@ class _ItemScreenState extends State<ItemScreen>
                             bottom: Dimens.pt36,
                             child: FloatingSkipButtons(),
                           ),
+                        Positioned.fill(
+                          child: AnimatedSlide(
+                            offset: Offset(
+                              0,
+                              _isWebViewBottomSheetVisible
+                                  ? 0
+                                  : _webViewOffsetInvisible,
+                            ),
+                            duration: AppDurations.ms200,
+                            child: WebViewBottomSheet(
+                              initialUrl: widget.item.url,
+                              onDragHandleTapped: () {
+                                if (!_isWebViewBottomSheetVisible) {
+                                  setState(() {
+                                    _isWebViewBottomSheetVisible = true;
+                                  });
+                                }
+                              },
+                              onCloseTapped: () {
+                                setState(() {
+                                  _isWebViewBottomSheetVisible =
+                                      !_isWebViewBottomSheetVisible;
+                                });
+                              },
+                            ),
+                          ),
+                        ),
                         Positioned(
                           bottom: Dimens.zero,
                           left: Dimens.zero,
@@ -434,6 +463,33 @@ class _ItemScreenState extends State<ItemScreen>
                           height: Dimens.pt40,
                           child: DownloadProgressReminder(
                             isDockedAtBottom: true,
+                          ),
+                        ),
+                        Positioned.fill(
+                          child: AnimatedSlide(
+                            offset: Offset(
+                              0,
+                              _isWebViewBottomSheetVisible
+                                  ? 0
+                                  : _webViewOffsetInvisible,
+                            ),
+                            duration: AppDurations.ms200,
+                            child: WebViewBottomSheet(
+                              initialUrl: widget.item.url,
+                              onDragHandleTapped: () {
+                                if (!_isWebViewBottomSheetVisible) {
+                                  setState(() {
+                                    _isWebViewBottomSheetVisible = true;
+                                  });
+                                }
+                              },
+                              onCloseTapped: () {
+                                setState(() {
+                                  _isWebViewBottomSheetVisible =
+                                      !_isWebViewBottomSheetVisible;
+                                });
+                              },
+                            ),
                           ),
                         ),
                       ],

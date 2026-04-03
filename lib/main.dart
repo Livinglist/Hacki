@@ -20,7 +20,6 @@ import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/fetcher.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/utils/debug_http_overrides.dart';
 import 'package:hacki/utils/haptic_feedback_utils.dart';
 import 'package:hacki/utils/theme_utils.dart';
 import 'package:hive/hive.dart';
@@ -47,7 +46,7 @@ void notificationReceiver(NotificationResponse details) =>
 
 Future<void> main({bool testing = false}) async {
   if (kDebugMode) {
-    HttpOverrides.global = DebugHttpOverrides();
+    // HttpOverrides.global = DebugHttpOverrides();
   }
 
   WidgetsFlutterBinding.ensureInitialized();

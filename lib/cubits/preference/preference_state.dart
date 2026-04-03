@@ -97,6 +97,8 @@ class PreferenceState extends Equatable {
 
   bool get isCustomTabEnabled => _isOn<CustomTabPreference>();
 
+  bool get isWebViewBottomSheetEnabled => _isOn<WebViewBottomSheetPreference>();
+
   bool get isManualPaginationEnabled => _isOn<ManualPaginationPreference>();
 
   bool get isTrueDarkModeEnabled => _isOn<TrueDarkModePreference>();

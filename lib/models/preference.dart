@@ -83,6 +83,7 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
       const SplitViewPreference(),
       const CollapseModePreference(),
       const CustomTabPreference(),
+      const WebViewBottomSheetPreference(),
       const DividerPlaceholder(label: 'Look And Feel'),
       const EyeCandyPreference(),
       const HackerNewsThemePreference(),
@@ -751,6 +752,28 @@ final class CustomTabPreference extends BooleanPreference {
 
   @override
   bool get isDisplayable => Platform.isAndroid;
+}
+
+final class WebViewBottomSheetPreference extends BooleanPreference {
+  const WebViewBottomSheetPreference({bool? val})
+      : super(val: val ?? _defaultValue);
+
+  static const bool _defaultValue = false;
+
+  @override
+  WebViewBottomSheetPreference copyWith({required bool? val}) {
+    return WebViewBottomSheetPreference(val: val);
+  }
+
+  @override
+  String get key => 'webViewBottomSheetPreference';
+
+  @override
+  String get title => 'Web View Bottom Sheet';
+
+  @override
+  String get subtitle =>
+      '''display story's URL in a draggable bottom sheet. (experimental)''';
 }
 
 final class TrueDarkModePreference extends BooleanPreference {
