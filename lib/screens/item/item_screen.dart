@@ -351,33 +351,34 @@ class _ItemScreenState extends State<ItemScreen>
                             bottom: Dimens.pt36,
                             child: FloatingSkipButtons(),
                           ),
-                        Positioned.fill(
-                          child: AnimatedSlide(
-                            offset: Offset(
-                              0,
-                              _isWebViewBottomSheetVisible
-                                  ? 0
-                                  : _webViewOffsetInvisible,
-                            ),
-                            duration: AppDurations.ms200,
-                            child: WebViewBottomSheet(
-                              initialUrl: widget.item.url,
-                              onDragHandleTapped: () {
-                                if (!_isWebViewBottomSheetVisible) {
+                        if (widget.item is Story && widget.item.url.isNotEmpty)
+                          Positioned.fill(
+                            child: AnimatedSlide(
+                              offset: Offset(
+                                0,
+                                _isWebViewBottomSheetVisible
+                                    ? 0
+                                    : _webViewOffsetInvisible,
+                              ),
+                              duration: AppDurations.ms200,
+                              child: WebViewBottomSheet(
+                                initialUrl: widget.item.url,
+                                onDragHandleTapped: () {
+                                  if (!_isWebViewBottomSheetVisible) {
+                                    setState(() {
+                                      _isWebViewBottomSheetVisible = true;
+                                    });
+                                  }
+                                },
+                                onCloseTapped: () {
                                   setState(() {
-                                    _isWebViewBottomSheetVisible = true;
+                                    _isWebViewBottomSheetVisible =
+                                        !_isWebViewBottomSheetVisible;
                                   });
-                                }
-                              },
-                              onCloseTapped: () {
-                                setState(() {
-                                  _isWebViewBottomSheetVisible =
-                                      !_isWebViewBottomSheetVisible;
-                                });
-                              },
+                                },
+                              ),
                             ),
                           ),
-                        ),
                         Positioned(
                           bottom: Dimens.zero,
                           left: Dimens.zero,
@@ -465,33 +466,34 @@ class _ItemScreenState extends State<ItemScreen>
                             isDockedAtBottom: true,
                           ),
                         ),
-                        Positioned.fill(
-                          child: AnimatedSlide(
-                            offset: Offset(
-                              0,
-                              _isWebViewBottomSheetVisible
-                                  ? 0
-                                  : _webViewOffsetInvisible,
-                            ),
-                            duration: AppDurations.ms200,
-                            child: WebViewBottomSheet(
-                              initialUrl: widget.item.url,
-                              onDragHandleTapped: () {
-                                if (!_isWebViewBottomSheetVisible) {
+                        if (widget.item is Story && widget.item.url.isNotEmpty)
+                          Positioned.fill(
+                            child: AnimatedSlide(
+                              offset: Offset(
+                                0,
+                                _isWebViewBottomSheetVisible
+                                    ? 0
+                                    : _webViewOffsetInvisible,
+                              ),
+                              duration: AppDurations.ms200,
+                              child: WebViewBottomSheet(
+                                initialUrl: widget.item.url,
+                                onDragHandleTapped: () {
+                                  if (!_isWebViewBottomSheetVisible) {
+                                    setState(() {
+                                      _isWebViewBottomSheetVisible = true;
+                                    });
+                                  }
+                                },
+                                onCloseTapped: () {
                                   setState(() {
-                                    _isWebViewBottomSheetVisible = true;
+                                    _isWebViewBottomSheetVisible =
+                                        !_isWebViewBottomSheetVisible;
                                   });
-                                }
-                              },
-                              onCloseTapped: () {
-                                setState(() {
-                                  _isWebViewBottomSheetVisible =
-                                      !_isWebViewBottomSheetVisible;
-                                });
-                              },
+                                },
+                              ),
                             ),
                           ),
-                        ),
                       ],
                     ),
                     bottomSheet: ReplyBox(
