@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
@@ -32,7 +34,7 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
   late final AnimationController _animController;
   late final Animation<double> _rotationAnim;
   static const double _minChildSize = 0.1;
-  static const double _maxChildSize = 0.9;
+  static final double _maxChildSize = Platform.isIOS ? 0.88 : 0.9;
   bool _isLoading = true;
   bool _canGoBack = false;
   bool _canGoForward = false;
@@ -107,7 +109,7 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
         context.select<PreferenceCubit, bool>(
       (PreferenceCubit cubit) => cubit.state.isWebViewBottomSheetEnabled,
     );
-    if (isWebViewBottomSheetEnabled) {
+    if (!isWebViewBottomSheetEnabled) {
       return const SizedBox.shrink();
     }
     return DraggableScrollableSheet(
@@ -117,7 +119,7 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
       minChildSize: _minChildSize,
       maxChildSize: _maxChildSize,
       snap: true,
-      snapSizes: const <double>[_minChildSize, 0.5, _maxChildSize],
+      snapSizes: <double>[_minChildSize, 0.5, _maxChildSize],
       builder: (BuildContext context, ScrollController scrollController) {
         return Container(
           decoration: BoxDecoration(

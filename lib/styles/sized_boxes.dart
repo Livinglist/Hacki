@@ -46,6 +46,10 @@ final class SizedBoxes {
     height: Dimens.pt48,
     width: Dimens.pt48,
   );
+  static const SizedBox pt64 = SizedBox(
+    height: Dimens.pt64,
+    width: Dimens.pt64,
+  );
   static const SizedBox pt100 = SizedBox(
     height: Dimens.pt100,
     width: Dimens.pt100,

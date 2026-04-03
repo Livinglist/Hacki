@@ -16,6 +16,10 @@ class FloatingSkipButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isWebViewBottomSheetEnabled =
+        context.select<PreferenceCubit, bool>(
+      (PreferenceCubit cubit) => cubit.state.isWebViewBottomSheetEnabled,
+    );
     return BlocBuilder<EditCubit, EditState>(
       buildWhen: (EditState previous, EditState current) =>
           previous.showReplyBox != current.showReplyBox,
@@ -103,6 +107,10 @@ class FloatingSkipButtons extends StatelessWidget {
                   ),
                 ),
               ),
+              if (isWebViewBottomSheetEnabled)
+                const SizedBox(
+                  height: Dimens.pt64,
+                ),
             ],
           ),
         );
