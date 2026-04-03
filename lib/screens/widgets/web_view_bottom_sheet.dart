@@ -260,7 +260,6 @@ class _UrlBarState extends State<_UrlBar> {
             ),
             onPressed: widget.canGoBack ? widget.onBack : null,
             visualDensity: VisualDensity.compact,
-            tooltip: 'Back',
           ),
           IconButton(
             icon: const Icon(
@@ -269,7 +268,6 @@ class _UrlBarState extends State<_UrlBar> {
             ),
             onPressed: widget.canGoForward ? widget.onForward : null,
             visualDensity: VisualDensity.compact,
-            tooltip: 'Forward',
           ),
           SizedBoxes.pt4,
           Expanded(
@@ -305,7 +303,6 @@ class _UrlBarState extends State<_UrlBar> {
             ),
             onPressed: widget.onRefresh,
             visualDensity: VisualDensity.compact,
-            tooltip: widget.isLoading ? 'Stop' : 'Refresh',
           ),
           IconButton(
             icon: const Icon(
@@ -314,7 +311,6 @@ class _UrlBarState extends State<_UrlBar> {
             ),
             onPressed: widget.onClose,
             visualDensity: VisualDensity.compact,
-            tooltip: 'Close',
           ),
         ],
       ),
