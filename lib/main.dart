@@ -46,7 +46,7 @@ void notificationReceiver(NotificationResponse details) =>
 
 Future<void> main({bool testing = false}) async {
   if (kDebugMode) {
-    // HttpOverrides.global = DebugHttpOverrides();
+    HttpOverrides.global = DebugHttpOverrides();
   }
 
   WidgetsFlutterBinding.ensureInitialized();
