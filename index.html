@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacki for Hacker News</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #0d1117;
+            color: #c9d1d9;
+        }
+        h1, h2 {
+            color: #f0f6fc;
+            border-bottom: 1px solid #21262d;
+            padding-bottom: 10px;
+        }
+        h1 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        h1 img {
+            vertical-align: middle;
+        }
+        a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .badges {
+            margin: 20px 0;
+        }
+        .badges img {
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        .store-badges {
+            margin: 20px 0;
+        }
+        .store-badges a {
+            margin-right: 10px;
+        }
+        .store-badges img {
+            height: 50px;
+        }
+        .features {
+            background-color: #161b22;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .features ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .features li {
+            padding: 8px 0;
+            border-bottom: 1px solid #21262d;
+        }
+        .features li:last-child {
+            border-bottom: none;
+        }
+        .features li::before {
+            content: "✓ ";
+            color: #3fb950;
+        }
+        .screenshot-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .screenshot-row img {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        @media (max-width: 768px) {
+            .screenshot-row img {
+                width: 45% !important;
+                min-width: 140px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>
+        <img width="64" src="https://user-images.githubusercontent.com/7277662/167775086-0b234f28-dee4-44f6-aae4-14a28ed4bbb6.png" alt="Hacki Logo">
+        Hacki for Hacker News
+    </h1>
+
+    <p>A <a href="https://news.ycombinator.com/">Hacker News</a> client built with Flutter.</p>
+
+    <div class="badges">
+        <a href="https://apps.apple.com/us/app/hacki/id1602043763?platform=iphone"><img src="https://img.shields.io/itunes/v/1602043763?label=App%20Store&logo=appstore" alt="App Store"></a>
+        <a href="https://play.google.com/store/apps/details?id=com.jiaqifeng.hacki&hl=en_US&gl=US&pli=1"><img src="https://img.shields.io/endpoint?color=green&logo=googleplay&logoColor=green&url=https%3A%2F%2Fplay.cuzi.workers.dev%2Fplay%3Fi%3Dcom.jiaqifeng.hacki%26gl%3DUS%26hl%3Den%26l%3DGoogle%2520Play%26m%3D%24version" alt="Google Play"></a>
+        <a href="https://f-droid.org/en/packages/com.jiaqifeng.hacki/"><img src="https://img.shields.io/f-droid/v/com.jiaqifeng.hacki?logo=fdroid" alt="F-Droid"></a>
+        <a href="https://github.com/Livinglist/Hacki/releases/latest"><img src="https://img.shields.io/github/release/livinglist/hacki.svg?logo=github" alt="GitHub Release"></a>
+        <a href="https://github.com/Livinglist/Hacki"><img src="https://img.shields.io/github/stars/livinglist/hacki" alt="GitHub Stars"></a>
+    </div>
+
+    <div class="badges">
+        <a href="https://github.com/Livinglist/Hacki/actions/workflows/publish_ios.yml"><img src="https://github.com/Livinglist/Hacki/actions/workflows/publish_ios.yml/badge.svg?branch=master" alt="Publish iOS"></a>
+        <a href="https://github.com/Livinglist/Hacki/actions/workflows/build_android_apk.yml"><img src="https://github.com/Livinglist/Hacki/actions/workflows/build_android_apk.yml/badge.svg?branch=master" alt="Build Android APK"></a>
+        <a href="https://github.com/Livinglist/Hacki/actions/workflows/parser_check.yml"><img src="https://github.com/Livinglist/Hacki/actions/workflows/parser_check.yml/badge.svg?branch=master" alt="Parser Check"></a>
+    </div>
+
+    <div class="store-badges">
+        <a href="https://apps.apple.com/us/app/hacki/id1602043763?platform=iphone"><img src="assets/images/app_store_badge.png" alt="Download on App Store"></a>
+        <a href="https://play.google.com/store/apps/details?id=com.jiaqifeng.hacki&hl=en_US&gl=US"><img src="assets/images/google_play_badge.png" alt="Get it on Google Play"></a>
+        <a href="https://f-droid.org/en/packages/com.jiaqifeng.hacki/"><img src="assets/images/f_droid_badge.png" alt="Get it on F-Droid"></a>
+    </div>
+
+    <h2>Features</h2>
+    <div class="features">
+        <ul>
+            <li>Hacker News account <a href="#login-reply-notification-favorites-sync-and-more">login</a></li>
+            <li><a href="#login-reply-notification-favorites-sync-and-more">Favorites sync</a></li>
+            <li><a href="#hacker-news-search">Hacker News Search</a></li>
+            <li><a href="#in-thread-local-and-global-search">In-thread search</a></li>
+            <li><a href="#ancestor-lookup">Ancestor lookup</a> so you don't have to scroll back up to regain context</li>
+            <li><a href="#new-comments-notification-and-lookup">In-thread notification for new comments</a> since your last visit</li>
+            <li><a href="#login-reply-notification-favorites-sync-and-more">In-app notification for new replies</a> to your comments or stories</li>
+            <li><a href="#settings">Offline mode</a></li>
+            <li>Synced settings across devices (iOS only)</li>
+            <li><a href="#settings">Favorites import and export</a></li>
+            <li>Open Hacker News link in Hacki via system share dialog</li>
+            <li><a href="#share-story-or-comment-as-image">Share story or comment as image</a></li>
+            <li><a href="#reply-to-comment-or-story">Reply</a>, vote, filter, block</li>
+            <li><a href="#polls">Polls</a></li>
+            <li><a href="#true-dark-mode">True dark mode</a></li>
+            <li><a href="#tablet-support">Tablet support</a></li>
+            <li><a href="#thread">Accent color</a> and <a href="#accent-color-and-font-customization">font customization</a></li>
+            <li>And more...</li>
+        </ul>
+    </div>
+
+    <h2 id="home-page-and-story-tile-customization">Home page and story tile customization</h2>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_01.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_04.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_05.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_08.png" alt="Screenshot">
+    </div>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_02.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_03.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_06.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_07.png" alt="Screenshot">
+    </div>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_09.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_10.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_11.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_12.png" alt="Screenshot">
+    </div>
+
+    <h2 id="thread">Thread</h2>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_21.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_70.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_22.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_69.png" alt="Screenshot">
+    </div>
+
+    <h2 id="new-comments-notification-and-lookup">New comments notification and lookup</h2>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_59.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_60.png" alt="Screenshot">
+    </div>
+
+    <h2 id="in-thread-local-and-global-search">In-thread local and global search</h2>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_91.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_93.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_95.png" alt="Screenshot">
+    </div>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_101.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_97.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_99.png" alt="Screenshot">
+    </div>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_92.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_94.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_96.png" alt="Screenshot">
+    </div>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_102.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_98.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_100.png" alt="Screenshot">
+    </div>
+
+    <h2 id="ancestor-lookup">Ancestor lookup</h2>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_61.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_64.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_65.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_68.png" alt="Screenshot">
+    </div>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_62.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_63.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_66.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_67.png" alt="Screenshot">
+    </div>
+
+    <h2 id="share-story-or-comment-as-image">Share story or comment as image</h2>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_103.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_105.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_107.png" alt="Screenshot">
+    </div>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_109.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_111.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_113.png" alt="Screenshot">
+    </div>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_104.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_106.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_108.png" alt="Screenshot">
+    </div>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_110.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_112.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_114.png" alt="Screenshot">
+    </div>
+
+    <h2 id="reply-to-comment-or-story">Reply to comment or story</h2>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_115.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_117.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_119.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_121.png" alt="Screenshot">
+    </div>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_116.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_118.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_120.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_122.png" alt="Screenshot">
+    </div>
+
+    <h2 id="open-comment-in-separate-thread">Open comment in separate thread</h2>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_135.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_137.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_139.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_141.png" alt="Screenshot">
+    </div>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_136.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_138.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_140.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_142.png" alt="Screenshot">
+    </div>
+
+    <h2 id="hacker-news-search">Hacker News search</h2>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_129.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_131.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_133.png" alt="Screenshot">
+    </div>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_130.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_132.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_134.png" alt="Screenshot">
+    </div>
+
+    <h2 id="login-reply-notification-favorites-sync-and-more">Login, reply notification, favorites sync and more</h2>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_37.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_39.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_47.png" alt="Screenshot">
+    </div>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_38.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_40.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_48.png" alt="Screenshot">
+    </div>
+
+    <h2 id="settings">Settings</h2>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_71.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_74.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_75.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_78.png" alt="Screenshot">
+    </div>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_72.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_73.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_76.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_77.png" alt="Screenshot">
+    </div>
+
+    <h2 id="accent-color-and-font-customization">Accent color and font customization</h2>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_79.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_80.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_81.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_82.png" alt="Screenshot">
+    </div>
+
+    <h2 id="true-dark-mode">True dark mode</h2>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_143.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_145.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_144.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_146.png" alt="Screenshot">
+    </div>
+
+    <h2 id="polls">Polls</h2>
+    <div class="screenshot-row">
+        <img width="300" src="assets/new_screenshots/hacki_147.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_148.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_149.png" alt="Screenshot">
+        <img width="300" src="assets/new_screenshots/hacki_150.png" alt="Screenshot">
+    </div>
+
+    <h2 id="tablet-support">Tablet support</h2>
+    <div class="screenshot-row">
+        <img width="600" src="assets/screenshots/selected/hacki_tablet_01.png" alt="Tablet screenshot">
+        <img width="600" src="assets/screenshots/selected/hacki_tablet_02.png" alt="Tablet screenshot">
+    </div>
+    <div class="screenshot-row">
+        <img width="600" src="assets/screenshots/selected/hacki_tablet_03.png" alt="Tablet screenshot">
+        <img width="600" src="assets/screenshots/selected/hacki_tablet_04.png" alt="Tablet screenshot">
+    </div>
+
+    <footer style="text-align: center; margin-top: 40px; padding: 20px; border-top: 1px solid #21262d; color: #8b949e;">
+        <p>Made with Flutter</p>
+        <p><a href="https://github.com/Livinglist/Hacki">View on GitHub</a></p>
+    </footer>
+</body>
+</html>
