@@ -15,24 +15,24 @@ A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
 [<img src="assets/images/app_store_badge.png" height="50">](https://apps.apple.com/us/app/hacki/id1602043763?platform=iphone) [<img src="assets/images/google_play_badge.png" height="50">](https://play.google.com/store/apps/details?id=com.jiaqifeng.hacki&hl=en_US&gl=US) [<img src="assets/images/f_droid_badge.png" height="50">](https://f-droid.org/en/packages/com.jiaqifeng.hacki/)
 
 # Features
-- Hacker News account [login](#login-reply-notification-favorites-sync-and-more)
-- [Favorites sync](#login-reply-notification-favorites-sync-and-more)
-- [Hacker News Search](#hacker-news-search)
-- [In-thread search](#in-thread-local-and-global-search)
-- [Ancestor lookup](#ancestor-lookup) so you don't have to scroll back up to regain context
-- [In-thread notification for new comments](#new-comments-notification-and-lookup) since your last visit
-- [In-app notification for new replies](#login-reply-notification-favorites-sync-and-more) to your comments or stories
-- [Offline mode](#settings)
-- Synced settings across devices (iOS only)
-- [Favorites import and export](#settings)
-- Open Hacker News link in Hacki via system share dialog
-- [Share story or comment as image](#share-story-or-comment-as-image)
-- [Reply](#reply-to-comment-or-story), vote, filter, block
-- [Polls](#polls)
-- [True dark mode](#true-dark-mode)
-- [Tablet support](#tablet-support)
-- [Accent color](#thread) and [font customization](#accent-color-and-font-customization)
-- And more...
+- [x] Hacker News account [login](#login-reply-notification-favorites-sync-and-more)
+- [x] [Favorites sync](#login-reply-notification-favorites-sync-and-more)
+- [x] [Hacker News Search](#hacker-news-search)
+- [x] [In-thread search](#in-thread-local-and-global-search)
+- [x] [Ancestor lookup](#ancestor-lookup) so you don't have to scroll back up to regain context
+- [x] [In-thread notification for new comments](#new-comments-notification-and-lookup) since your last visit
+- [x] [In-app notification for new replies](#login-reply-notification-favorites-sync-and-more) to your comments or stories
+- [x] [Offline mode](#settings)
+- [x] Synced settings across devices (iOS only)
+- [x] [Favorites import and export](#settings)
+- [x] Open Hacker News link in Hacki via system share dialog
+- [x] [Share story or comment as image](#share-story-or-comment-as-image)
+- [x] [Reply](#reply-to-comment-or-story), vote, filter, block
+- [x] [Polls](#polls)
+- [x] [True dark mode](#true-dark-mode)
+- [x] [Tablet support](#tablet-support)
+- [x] [Accent color](#thread) and [font customization](#accent-color-and-font-customization)
+- [x] And more...
 
 ## Home page and story tile customization
 <p align="center">
