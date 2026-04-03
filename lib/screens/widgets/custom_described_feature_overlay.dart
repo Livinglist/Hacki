@@ -25,6 +25,7 @@ class CustomDescribedFeatureOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DescribedFeatureOverlay(
+      enablePulsingAnimation: !MediaQuery.of(context).disableAnimations,
       featureId: feature.featureId,
       overflowMode: OverflowMode.extendBackground,
       targetColor: Theme.of(context).colorScheme.primaryContainer,
