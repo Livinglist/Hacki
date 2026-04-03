@@ -44,13 +44,18 @@ class CustomDescribedFeatureOverlay extends StatelessWidget {
           color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
-      barrierDismissible: false,
       contentLocation: contentLocation,
       onBackgroundTap: () {
         HapticFeedbackUtils.light();
         FeatureDiscovery.completeCurrentStep(context);
         onComplete?.call();
         return Future<bool>.value(true);
+      },
+      onDismiss: () async {
+        HapticFeedbackUtils.light();
+        unawaited(FeatureDiscovery.completeCurrentStep(context));
+        onComplete?.call();
+        return false;
       },
       onComplete: () async {
         HapticFeedbackUtils.light();
