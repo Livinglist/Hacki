@@ -21,7 +21,6 @@ class MainView extends StatelessWidget {
   const MainView({
     required this.scrollOffsetListener,
     required this.commentEditingController,
-    required this.authState,
     required this.preferenceState,
     required this.splitViewEnabled,
     required this.onMoreTapped,
@@ -35,7 +34,6 @@ class MainView extends StatelessWidget {
 
   final ScrollOffsetListener scrollOffsetListener;
   final TextEditingController commentEditingController;
-  final AuthState authState;
   final PreferenceState preferenceState;
   final bool splitViewEnabled;
   final bool shouldMarkNewComment;
@@ -49,6 +47,7 @@ class MainView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AuthState authState = context.watch<AuthBloc>().state;
     return Stack(
       children: <Widget>[
         Positioned.fill(

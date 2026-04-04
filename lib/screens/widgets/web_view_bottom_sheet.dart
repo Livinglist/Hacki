@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
@@ -34,7 +32,7 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
   late final AnimationController _animController;
   late final Animation<double> _rotationAnim;
   static const double _minChildSize = 0.1;
-  static final double _maxChildSize = Platform.isIOS ? 0.87 : 0.9;
+  static const double _maxChildSize = 0.9;
   bool _isLoading = true;
   bool _canGoBack = false;
   bool _canGoForward = false;
@@ -119,94 +117,97 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
       minChildSize: _minChildSize,
       maxChildSize: _maxChildSize,
       snap: true,
-      snapSizes: <double>[_minChildSize, 0.5, _maxChildSize],
+      snapSizes: const <double>[_minChildSize, 0.5, _maxChildSize],
       builder: (BuildContext context, ScrollController scrollController) {
-        return Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(Dimens.pt20)),
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                color: Theme.of(context).colorScheme.shadow.withValues(
-                      alpha: 0.18,
-                    ),
-                blurRadius: 8,
-                offset: const Offset(0, -2),
+        return Material(
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(Dimens.pt20),
               ),
-            ],
-          ),
-          child: Column(
-            children: <Widget>[
-              GestureDetector(
-                onTap: () {
-                  widget.onDragHandleTapped();
-                  if (_sheetController.isAttached) {
-                    final double animateToSize =
-                        _sheetController.size == _minChildSize
-                            ? _maxChildSize
-                            : _minChildSize;
-                    _sheetController.animateTo(
-                      animateToSize,
-                      duration: AppDurations.ms500,
-                      curve: SpringCurve.overDamped,
-                    );
-                  }
-                },
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  child: Column(
-                    children: <Widget>[
-                      SizedBoxes.pt8,
-                      RotationTransition(
-                        turns: _rotationAnim,
-                        child: const Icon(
-                          Icons.keyboard_arrow_up_rounded,
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                  color: Theme.of(context).colorScheme.shadow.withValues(
+                        alpha: 0.18,
+                      ),
+                  blurRadius: 8,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+            ),
+            child: Column(
+              children: <Widget>[
+                GestureDetector(
+                  onTap: () {
+                    widget.onDragHandleTapped();
+                    if (_sheetController.isAttached) {
+                      final double animateToSize =
+                          _sheetController.size == _minChildSize
+                              ? _maxChildSize
+                              : _minChildSize;
+                      _sheetController.animateTo(
+                        animateToSize,
+                        duration: AppDurations.ms500,
+                        curve: SpringCurve.overDamped,
+                      );
+                    }
+                  },
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    child: Column(
+                      children: <Widget>[
+                        SizedBoxes.pt8,
+                        RotationTransition(
+                          turns: _rotationAnim,
+                          child: const Icon(
+                            Icons.keyboard_arrow_up_rounded,
+                          ),
                         ),
-                      ),
-                      _UrlBar(
-                        controller: _urlController,
-                        isLoading: _isLoading,
-                        loadingProgress: _loadingProgress,
-                        canGoBack: _canGoBack,
-                        canGoForward: _canGoForward,
-                        onBack: () => _controller.goBack(),
-                        onForward: () => _controller.goForward(),
-                        onRefresh: _refresh,
-                        onClose: () {
-                          if (_sheetController.isAttached) {
-                            if (_sheetController.size == _minChildSize) {
-                              widget.onCloseTapped();
-                            } else {
-                              _sheetController.animateTo(
-                                _minChildSize,
-                                duration: AppDurations.ms300,
-                                curve: Curves.easeOutCubic,
-                              );
+                        _UrlBar(
+                          controller: _urlController,
+                          isLoading: _isLoading,
+                          loadingProgress: _loadingProgress,
+                          canGoBack: _canGoBack,
+                          canGoForward: _canGoForward,
+                          onBack: () => _controller.goBack(),
+                          onForward: () => _controller.goForward(),
+                          onRefresh: _refresh,
+                          onClose: () {
+                            if (_sheetController.isAttached) {
+                              if (_sheetController.size == _minChildSize) {
+                                widget.onCloseTapped();
+                              } else {
+                                _sheetController.animateTo(
+                                  _minChildSize,
+                                  duration: AppDurations.ms300,
+                                  curve: Curves.easeOutCubic,
+                                );
+                              }
                             }
-                          }
-                        },
-                        onSubmit: _loadUrl,
-                      ),
-                      SizedBoxes.pt8,
-                    ],
+                          },
+                          onSubmit: _loadUrl,
+                        ),
+                        SizedBoxes.pt8,
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Expanded(
-                key: ValueKey<double>(
-                  _sheetController.isAttached
-                      ? _sheetController.size
-                      : _minChildSize,
-                ),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
-                    bottom: Radius.circular(Dimens.pt20),
+                Expanded(
+                  key: ValueKey<double>(
+                    _sheetController.isAttached
+                        ? _sheetController.size
+                        : _minChildSize,
                   ),
-                  child: WebViewWidget(controller: _controller),
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.vertical(
+                      bottom: Radius.circular(Dimens.pt20),
+                    ),
+                    child: WebViewWidget(controller: _controller),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
