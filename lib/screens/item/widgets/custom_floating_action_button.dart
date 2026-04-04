@@ -52,7 +52,7 @@ class FloatingSkipButtons extends StatelessWidget {
                     backgroundColor: Theme.of(context)
                         .colorScheme
                         .primaryContainer
-                        .withAlpha(200)
+                        .withAlpha(200),
 
                     /// Randomly generated string as heroTag to prevent
                     /// default [FloatingActionButton] animation.
