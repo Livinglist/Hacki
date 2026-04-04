@@ -453,7 +453,8 @@ class _ParentItemSection extends StatelessWidget {
                             InkWell(
                               enableFeedback: false,
                               onTap: () {
-                                if (prefState.isWebViewBottomSheetEnabled) {
+                                if (!state.isOfflineReading &&
+                                    prefState.isWebViewBottomSheetEnabled) {
                                   onStoryUrlTapped();
                                 } else {
                                   LinkUtils.launch(

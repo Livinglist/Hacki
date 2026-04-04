@@ -206,6 +206,10 @@ class _ItemScreenState extends State<ItemScreen>
 
   @override
   Widget build(BuildContext context) {
+    final bool isOfflineReading =
+        context.read<CommentsCubit>().state.isOfflineReading;
+    final bool shouldShowWebViewBottomSheet =
+        !isOfflineReading && widget.item is Story && widget.item.url.isNotEmpty;
     return MultiBlocListener(
       listeners: <BlocListener<dynamic, dynamic>>[
         BlocListener<PostCubit, PostState>(
@@ -334,8 +338,7 @@ class _ItemScreenState extends State<ItemScreen>
                       bottom: Dimens.pt36,
                       child: FloatingSkipButtons(),
                     ),
-                  if (widget.item is Story && widget.item.url.isNotEmpty)
-                    webViewBottomSheet,
+                  if (shouldShowWebViewBottomSheet) webViewBottomSheet,
                   Positioned(
                     bottom: Dimens.zero,
                     left: Dimens.zero,
@@ -445,8 +448,7 @@ class _ItemScreenState extends State<ItemScreen>
                         context.read<CommentsCubit>().scrollTo(index: 0),
                   ),
                 ),
-                if (widget.item is Story && widget.item.url.isNotEmpty)
-                  webViewBottomSheet,
+                if (shouldShowWebViewBottomSheet) webViewBottomSheet,
               ],
             ),
     );
