@@ -60,8 +60,10 @@ A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
 
 ## New comments notification and lookup
 <p align="center">
-    <img width="300" src="assets/new_screenshots/hacki_59.png"> 
-    <img width="300" src="assets/new_screenshots/hacki_60.png">
+    <img width="200" src="assets/new_screenshots/hacki_59.png"> 
+    <img width="200" src="assets/new_screenshots/hacki_60.png">
+    <img width="200" src="assets/new_screenshots/hacki_169.png">
+    <img width="200" src="assets/new_screenshots/hacki_170.png">
 </p>
 
 ## In-thread local and global search
