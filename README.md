@@ -189,6 +189,12 @@ A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
     <img width="200" src="assets/new_screenshots/hacki_81.png">
     <img width="200" src="assets/new_screenshots/hacki_82.png">
 </p>
+<p align="center">
+    <img width="200" src="assets/new_screenshots/hacki_157.png">
+    <img width="200" src="assets/new_screenshots/hacki_158.png">
+    <img width="200" src="assets/new_screenshots/hacki_159.png">
+    <img width="200" src="assets/new_screenshots/hacki_160.png">
+</p>
 
 # True dark mode
 <p align="center">
@@ -204,6 +210,18 @@ A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
     <img width="200" src="assets/new_screenshots/hacki_148.png">
     <img width="200" src="assets/new_screenshots/hacki_149.png">
     <img width="200" src="assets/new_screenshots/hacki_150.png">
+</p>
+
+# Web view bottom sheet
+<p align="center">
+    <img width="200" src="assets/new_screenshots/hacki_151.png">
+    <img width="200" src="assets/new_screenshots/hacki_152.png">
+    <img width="200" src="assets/new_screenshots/hacki_153.png">
+</p>
+<p align="center">
+    <img width="200" src="assets/new_screenshots/hacki_154.png">
+    <img width="200" src="assets/new_screenshots/hacki_155.png">
+    <img width="200" src="assets/new_screenshots/hacki_156.png">
 </p>
 
 # Tablet support
