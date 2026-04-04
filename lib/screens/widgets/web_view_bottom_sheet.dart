@@ -4,6 +4,7 @@ import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/screens/widgets/spring_curve.dart';
 import 'package:hacki/styles/dimens.dart';
+import 'package:hacki/styles/palette.dart';
 import 'package:hacki/styles/sized_boxes.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -120,6 +121,7 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
       snapSizes: const <double>[_minChildSize, 0.5, _maxChildSize],
       builder: (BuildContext context, ScrollController scrollController) {
         return Material(
+          color: Palette.transparent,
           child: Container(
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primaryContainer,

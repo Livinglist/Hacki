@@ -65,6 +65,7 @@ abstract class Constants {
         'Open any Hacker News links in Hacki via the system share menu',
         '''Swipe right on a comment and tap the dots icon to search for the poster within the thread or across HN''',
         '''Disabling `Mark Read Stories` in settings will clear your existing read history''',
+        "What's beyond the universe?",
       ].randomlyPicked!;
 
   static final String happyFace = <String>[
