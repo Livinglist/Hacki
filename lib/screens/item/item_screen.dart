@@ -18,6 +18,7 @@ import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:scrolls_to_top/scrolls_to_top.dart';
 
 class ItemScreenArgs extends Equatable {
   const ItemScreenArgs({
@@ -372,118 +373,84 @@ class _ItemScreenState extends State<ItemScreen>
                   ],
                 ),
               )
-            : Stack(
-                children: <Widget>[
-                  Positioned.fill(
-                    child: Scaffold(
-                      extendBodyBehindAppBar: true,
-                      resizeToAvoidBottomInset: true,
-                      appBar: CustomAppBar(
-                        context: context,
-                        backgroundColor: Theme.of(context)
-                            .canvasColor
-                            .withValues(alpha: 0.6),
-                        foregroundColor: Theme.of(context).iconTheme.color,
-                        item: widget.item,
-                        onFontSizeTap: onFontSizeTapped,
-                        fontSizeIconButtonKey: fontSizeIconButtonKey,
-                      ),
-                      body: Stack(
-                        children: <Widget>[
-                          const Positioned.fill(
-                            child: ItemScreenBackground(
-                              indentPadding: _indentPadding,
-                              indentLineWidth: _indentLineWidth,
-                            ),
-                          ),
-                          Positioned.fill(
-                            child: MainView(
-                              topPadding: context.topPadding,
-                              indentPadding: _indentPadding,
-                              scrollOffsetListener: scrollOffsetListener,
-                              commentEditingController:
-                                  commentEditingController,
-                              preferenceState:
-                                  context.read<PreferenceCubit>().state,
-                              splitViewEnabled: widget.splitViewEnabled,
-                              indentLineWidth: _indentLineWidth,
-                              onMoreTapped: (Item item, Rect? rect) =>
-                                  onMoreTapped(
-                                item,
-                                rect,
-                                parent: widget.item,
-                                onSearchInThreadTapped: () {
-                                  context.pop();
-                                  context.read<CommentsCubit>()
-                                    ..search(item.by)
-                                    ..openInThreadSearch?.call();
-                                },
-                              ),
-                              onRightMoreTapped: (Comment cmt) =>
-                                  onRightMoreTapped(
-                                cmt,
-                                context.read<CommentsCubit>().state.item,
-                              ),
-                              shouldMarkNewComment: widget.shouldMarkNewComment,
-                            ),
-                          ),
-                          if (context
-                              .read<PreferenceCubit>()
-                              .state
-                              .areSkipButtonsEnabled)
-                            const Positioned(
-                              right: Dimens.pt12,
-                              bottom: Dimens.pt48,
-                              child: FloatingSkipButtons(),
-                            ),
-                          const Positioned(
-                            left: Dimens.zero,
-                            right: Dimens.zero,
-                            bottom: Dimens.zero,
-                            height: Dimens.pt40,
-                            child: DownloadProgressReminder(
-                              isDockedAtBottom: true,
-                            ),
-                          ),
-                        ],
-                      ),
-                      bottomSheet: ReplyBox(
-                        textEditingController: commentEditingController,
-                        focusNode: focusNode,
-                        onSendTapped: onSendTapped,
-                        onChanged: context.read<EditCubit>().onTextChanged,
-                      ),
-                    ),
+            : ScrollsToTop(
+                child: Scaffold(
+                  extendBodyBehindAppBar: true,
+                  resizeToAvoidBottomInset: true,
+                  appBar: CustomAppBar(
+                    context: context,
+                    backgroundColor:
+                        Theme.of(context).canvasColor.withValues(alpha: 0.6),
+                    foregroundColor: Theme.of(context).iconTheme.color,
+                    item: widget.item,
+                    onFontSizeTap: onFontSizeTapped,
+                    fontSizeIconButtonKey: fontSizeIconButtonKey,
                   ),
-                  if (widget.item is Story && widget.item.url.isNotEmpty)
-                    Positioned.fill(
-                      child: AnimatedSlide(
-                        offset: Offset(
-                          0,
-                          _isWebViewBottomSheetVisible
-                              ? 0
-                              : _webViewOffsetInvisible,
-                        ),
-                        duration: AppDurations.ms200,
-                        child: WebViewBottomSheet(
-                          initialUrl: widget.item.url,
-                          onDragHandleTapped: () {
-                            if (!_isWebViewBottomSheetVisible) {
-                              setState(() {
-                                _isWebViewBottomSheetVisible = true;
-                              });
-                            }
-                          },
-                          onCloseTapped: () {
-                            setState(() {
-                              _isWebViewBottomSheetVisible =
-                                  !_isWebViewBottomSheetVisible;
-                            });
-                          },
+                  body: Stack(
+                    children: <Widget>[
+                      const Positioned.fill(
+                        child: ItemScreenBackground(
+                          indentPadding: _indentPadding,
+                          indentLineWidth: _indentLineWidth,
                         ),
                       ),
-                    ),
-                ],
+                      Positioned.fill(
+                        child: MainView(
+                          topPadding: context.topPadding,
+                          indentPadding: _indentPadding,
+                          scrollOffsetListener: scrollOffsetListener,
+                          commentEditingController: commentEditingController,
+                          preferenceState:
+                              context.read<PreferenceCubit>().state,
+                          splitViewEnabled: widget.splitViewEnabled,
+                          indentLineWidth: _indentLineWidth,
+                          onMoreTapped: (Item item, Rect? rect) => onMoreTapped(
+                            item,
+                            rect,
+                            parent: widget.item,
+                            onSearchInThreadTapped: () {
+                              context.pop();
+                              context.read<CommentsCubit>()
+                                ..search(item.by)
+                                ..openInThreadSearch?.call();
+                            },
+                          ),
+                          onRightMoreTapped: (Comment cmt) => onRightMoreTapped(
+                            cmt,
+                            context.read<CommentsCubit>().state.item,
+                          ),
+                          shouldMarkNewComment: widget.shouldMarkNewComment,
+                        ),
+                      ),
+                      if (context
+                          .read<PreferenceCubit>()
+                          .state
+                          .areSkipButtonsEnabled)
+                        const Positioned(
+                          right: Dimens.pt12,
+                          bottom: Dimens.pt48,
+                          child: FloatingSkipButtons(),
+                        ),
+                      const Positioned(
+                        left: Dimens.zero,
+                        right: Dimens.zero,
+                        bottom: Dimens.zero,
+                        height: Dimens.pt40,
+                        child: DownloadProgressReminder(
+                          isDockedAtBottom: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                  bottomSheet: ReplyBox(
+                    textEditingController: commentEditingController,
+                    focusNode: focusNode,
+                    onSendTapped: onSendTapped,
+                    onChanged: context.read<EditCubit>().onTextChanged,
+                  ),
+                ),
+                onScrollsToTop: (_) =>
+                    context.read<CommentsCubit>().scrollTo(index: 0),
               ),
       ),
     );
