@@ -31,13 +31,22 @@ class ItemScreenBackground extends StatefulWidget {
 class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
   int _shineIndex = 0;
   bool _overrideCommentsStatus = false;
+  bool _hideBackground = true;
 
   Timer? _animationTimer;
   Timer? _overrideTimer;
+  Timer? _initTimer;
 
   @override
   void initState() {
     super.initState();
+
+    _initTimer = Timer(AppDurations.oneSecond, () {
+      if (mounted) {
+        setState(() => _hideBackground = false);
+      }
+      _initTimer?.cancel();
+    });
 
     _overrideTimer = Timer(AppDurations.fiveSeconds, () {
       if (mounted) {
@@ -49,6 +58,7 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
 
   @override
   void dispose() {
+    _initTimer?.cancel();
     _animationTimer?.cancel();
     _overrideTimer?.cancel();
     super.dispose();
@@ -79,7 +89,8 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
         return FadeIn(
           child: AnimatedCrossFade(
             duration: AppDurations.ms400,
-            crossFadeState: !_overrideCommentsStatus &&
+            crossFadeState: _hideBackground &&
+                    !_overrideCommentsStatus &&
                     state.status != CommentsStatus.allLoaded
                 ? CrossFadeState.showFirst
                 : CrossFadeState.showSecond,
