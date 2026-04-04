@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:equatable/equatable.dart';
-import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -182,17 +181,17 @@ class _ItemScreenState extends State<ItemScreen>
 
     SchedulerBinding.instance
       ..addPostFrameCallback((_) {
-        FeatureDiscovery.discoverFeatures(
-          context,
-          <String>{
-            DiscoverableFeature.searchInThread.featureId,
-            DiscoverableFeature.pinToTop.featureId,
-            DiscoverableFeature.addStoryToFavList.featureId,
-            DiscoverableFeature.settingsShortcutOnItemScreen.featureId,
-            DiscoverableFeature.jumpUpButton.featureId,
-            DiscoverableFeature.jumpDownButton.featureId,
-          },
-        );
+        // FeatureDiscovery.discoverFeatures(
+        //   context,
+        //   <String>{
+        //     DiscoverableFeature.searchInThread.featureId,
+        //     DiscoverableFeature.pinToTop.featureId,
+        //     DiscoverableFeature.addStoryToFavList.featureId,
+        //     DiscoverableFeature.settingsShortcutOnItemScreen.featureId,
+        //     DiscoverableFeature.jumpUpButton.featureId,
+        //     DiscoverableFeature.jumpDownButton.featureId,
+        //   },
+        // );
       })
       ..addPostFrameCallback((_) {
         final ModalRoute<dynamic>? route = ModalRoute.of(context);

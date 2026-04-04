@@ -88,12 +88,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     SchedulerBinding.instance
       ..addPostFrameCallback((_) {
-        FeatureDiscovery.discoverFeatures(
-          context,
-          <String>{
-            DiscoverableFeature.login.featureId,
-          },
-        );
+        _showFeatureDiscoveryDialog();
       })
       ..addPostFrameCallback((_) {
         final ModalRoute<dynamic>? route = ModalRoute.of(context);
@@ -205,6 +200,50 @@ class _HomeScreenState extends State<HomeScreen>
       context.read<SplitViewCubit>().disableSplitView();
       return MobileHomeScreen(
         homeScreen: homeScreen,
+      );
+    }
+  }
+
+  Future<void> _showFeatureDiscoveryDialog() async {
+    final bool hasSeen = await FeatureDiscovery.hasPreviouslyCompleted(
+      context,
+      DiscoverableFeature.login.featureId,
+    );
+    if (!hasSeen && context.mounted) {
+      await showDialog<void>(
+        // ignore: use_build_context_synchronously
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Take a tour?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                context.pop();
+              },
+              child: const Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                context.pop();
+
+                FeatureDiscovery.discoverFeatures(
+                  context,
+                  <String>{
+                    DiscoverableFeature.login.featureId,
+                    DiscoverableFeature.searchInThread.featureId,
+                    DiscoverableFeature.pinToTop.featureId,
+                    DiscoverableFeature.addStoryToFavList.featureId,
+                    DiscoverableFeature.settingsShortcutOnItemScreen.featureId,
+                    DiscoverableFeature.jumpUpButton.featureId,
+                    DiscoverableFeature.jumpDownButton.featureId,
+                  },
+                );
+              },
+              child: const Text('Yes'),
+            ),
+          ],
+        ),
       );
     }
   }

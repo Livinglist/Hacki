@@ -76,6 +76,7 @@ class FloatingSkipButtons extends StatelessWidget {
                   Icons.keyboard_arrow_down,
                   color: Theme.of(context).colorScheme.onPrimary,
                 ),
+                contentLocation: ContentLocation.above,
                 child: InkWell(
                   enableFeedback: false,
                   onLongPress: () {
