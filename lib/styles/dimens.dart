@@ -25,6 +25,7 @@ abstract class Dimens {
   static const double pt100 = 100;
   static const double pt120 = 120;
   static const double pt200 = 200;
+  static const double pt240 = 240;
 
   static const double replyBoxCollapsedHeight = 200;
 }

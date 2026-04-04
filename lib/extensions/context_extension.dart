@@ -22,6 +22,8 @@ extension ContextExtension on BuildContext {
     Duration duration = AppDurations.fourSeconds,
     String? label,
     bool? persist,
+    double? bottomPadding,
+    bool isFloating = false,
   }) {
     ScaffoldMessenger.of(this)
       ..clearSnackBars()
@@ -29,6 +31,11 @@ extension ContextExtension on BuildContext {
         SnackBar(
           persist: persist,
           duration: duration,
+          margin: bottomPadding == null
+              ? null
+              : EdgeInsets.only(bottom: bottomPadding, left: 10, right: 10),
+          behavior:
+              isFloating ? SnackBarBehavior.floating : SnackBarBehavior.fixed,
           backgroundColor: Theme.of(this).colorScheme.primary,
           content: Text(
             content,

@@ -25,6 +25,7 @@ class MainView extends StatelessWidget {
     required this.splitViewEnabled,
     required this.onMoreTapped,
     required this.onRightMoreTapped,
+    required this.onStoryUrlTapped,
     required this.shouldMarkNewComment,
     required this.indentPadding,
     required this.indentLineWidth,
@@ -39,6 +40,7 @@ class MainView extends StatelessWidget {
   final bool shouldMarkNewComment;
   final void Function(Item item, Rect? rect) onMoreTapped;
   final ValueChanged<Comment> onRightMoreTapped;
+  final VoidCallback onStoryUrlTapped;
   final double indentPadding;
   final double indentLineWidth;
   final double topPadding;
@@ -108,6 +110,7 @@ class MainView extends StatelessWidget {
                               context,
                               item,
                             ),
+                            onStoryUrlTapped: onStoryUrlTapped,
                           ),
                         ),
                       );
@@ -330,6 +333,7 @@ class _ParentItemSection extends StatelessWidget {
     required this.splitViewEnabled,
     required this.onMoreTapped,
     required this.onUpvoteTapped,
+    required this.onStoryUrlTapped,
   });
 
   final TextEditingController commentEditingController;
@@ -339,6 +343,7 @@ class _ParentItemSection extends StatelessWidget {
   final bool splitViewEnabled;
   final void Function(Item item, Rect? rect) onMoreTapped;
   final void Function(Item) onUpvoteTapped;
+  final VoidCallback onStoryUrlTapped;
 
   @override
   Widget build(BuildContext context) {
@@ -447,15 +452,21 @@ class _ParentItemSection extends StatelessWidget {
                           if (item is Story)
                             InkWell(
                               enableFeedback: false,
-                              onTap: () => LinkUtils.launch(
-                                item.url,
-                                context,
-                                shouldUseReader: prefState.isReaderEnabled,
-                                isOfflineReading: context
-                                    .read<StoriesBloc>()
-                                    .state
-                                    .isOfflineReading,
-                              ),
+                              onTap: () {
+                                if (prefState.isWebViewBottomSheetEnabled) {
+                                  onStoryUrlTapped();
+                                } else {
+                                  LinkUtils.launch(
+                                    item.url,
+                                    context,
+                                    shouldUseReader: prefState.isReaderEnabled,
+                                    isOfflineReading: context
+                                        .read<StoriesBloc>()
+                                        .state
+                                        .isOfflineReading,
+                                  );
+                                }
+                              },
                               onLongPress: () {
                                 if (item.url.isNotEmpty) {
                                   Clipboard.setData(

@@ -20,6 +20,7 @@ import 'package:hacki/screens/item/widgets/in_thread_search_icon_button.dart'
 import 'package:hacki/screens/screens.dart' show ItemScreen, ItemScreenArgs;
 import 'package:hacki/screens/widgets/shine_overlay.dart';
 import 'package:hacki/services/services.dart';
+import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -1153,12 +1154,20 @@ comments length is ${state.comments.length}
           state.comments.where((Comment c) => c.isNew).length;
       if (newCommentsCount > 0) {
         HapticFeedbackUtils.success();
-        navigatorKey.currentContext?.showSnackBar(
+        final bool isWebViewBottomSheetEnabled =
+            _preferenceCubit.state.isWebViewBottomSheetEnabled;
+        final BuildContext? rootContext = navigatorKey.currentContext;
+        if (rootContext == null) return;
+        rootContext.showSnackBar(
           persist: false,
           duration: AppDurations.fiveSeconds,
           content:
               '''$newCommentsCount new comment${newCommentsCount > 1 ? 's' : ''} fetched.''',
           label: openInThreadSearch == null ? null : 'Search',
+          isFloating: isWebViewBottomSheetEnabled,
+          bottomPadding: isWebViewBottomSheetEnabled
+              ? MediaQuery.of(rootContext).size.height - Dimens.pt240
+              : null,
           action: openInThreadSearch == null
               ? null
               : () {
