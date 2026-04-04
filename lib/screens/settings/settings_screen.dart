@@ -1170,7 +1170,7 @@ class _SettingsViewState extends State<SettingsView>
       case ImportSource.qrCode:
         data = await router.push(Paths.qrCode.scanner) as String?;
       case ImportSource.file:
-        final FilePickerResult? result = await FilePicker.platform.pickFiles(
+        final FilePickerResult? result = await FilePicker.pickFiles(
           withData: true,
         );
         if (result == null) return;
