@@ -91,7 +91,7 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
             duration: AppDurations.ms400,
             crossFadeState: _hideBackground ||
                     (!_overrideCommentsStatus &&
-                    state.status != CommentsStatus.allLoaded)
+                        state.status != CommentsStatus.allLoaded)
                 ? CrossFadeState.showFirst
                 : CrossFadeState.showSecond,
             firstChild: SizedBox(
