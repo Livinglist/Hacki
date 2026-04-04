@@ -87,9 +87,7 @@ class _HomeScreenState extends State<HomeScreen>
     }
 
     SchedulerBinding.instance
-      ..addPostFrameCallback((_) {
-        _showFeatureDiscoveryDialog();
-      })
+      ..addPostFrameCallback((_) => showFeatureDiscoveryDialog())
       ..addPostFrameCallback((_) {
         final ModalRoute<dynamic>? route = ModalRoute.of(context);
 
@@ -204,18 +202,23 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
-  Future<void> _showFeatureDiscoveryDialog() async {
-    final bool hasSeen = await FeatureDiscovery.hasPreviouslyCompleted(
-      context,
-      DiscoverableFeature.login.featureId,
-    );
-    if (!hasSeen && context.mounted) {
+  Future<void> showFeatureDiscoveryDialog() async {
+    final PreferenceRepository repo = locator.get<PreferenceRepository>();
+    final bool hasSeen = await repo.hasSeenTour ?? false;
+    if (!hasSeen) {
+      repo.markTourAsCompleted();
+      await FeatureDiscovery.clearPreferences(
+        // ignore: use_build_context_synchronously
+        context,
+        DiscoverableFeature.values.map((DiscoverableFeature e) => e.featureId),
+      );
       await showDialog<void>(
         // ignore: use_build_context_synchronously
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) => AlertDialog(
-          title: const Text('Take a tour?'),
+          title: const Text('Welcome to Hacki!'),
+          content: const Text('Take a quick tour to see what Hacki can do?'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -226,7 +229,6 @@ class _HomeScreenState extends State<HomeScreen>
             TextButton(
               onPressed: () {
                 context.pop();
-
                 FeatureDiscovery.discoverFeatures(
                   context,
                   <String>{

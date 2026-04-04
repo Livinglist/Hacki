@@ -34,7 +34,7 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
   late final AnimationController _animController;
   late final Animation<double> _rotationAnim;
   static const double _minChildSize = 0.1;
-  static final double _maxChildSize = Platform.isIOS ? 0.88 : 0.9;
+  static final double _maxChildSize = Platform.isIOS ? 0.87 : 0.9;
   bool _isLoading = true;
   bool _canGoBack = false;
   bool _canGoForward = false;

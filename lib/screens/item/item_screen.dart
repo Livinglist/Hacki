@@ -179,29 +179,13 @@ class _ItemScreenState extends State<ItemScreen>
   void initState() {
     super.initState();
 
-    SchedulerBinding.instance
-      ..addPostFrameCallback((_) {
-        // FeatureDiscovery.discoverFeatures(
-        //   context,
-        //   <String>{
-        //     DiscoverableFeature.searchInThread.featureId,
-        //     DiscoverableFeature.pinToTop.featureId,
-        //     DiscoverableFeature.addStoryToFavList.featureId,
-        //     DiscoverableFeature.settingsShortcutOnItemScreen.featureId,
-        //     DiscoverableFeature.jumpUpButton.featureId,
-        //     DiscoverableFeature.jumpDownButton.featureId,
-        //   },
-        // );
-      })
-      ..addPostFrameCallback((_) {
-        final ModalRoute<dynamic>? route = ModalRoute.of(context);
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      final ModalRoute<dynamic>? route = ModalRoute.of(context);
 
-        if (route == null) return;
+      if (route == null) return;
 
-        locator
-            .get<RouteObserver<ModalRoute<dynamic>>>()
-            .subscribe(this, route);
-      });
+      locator.get<RouteObserver<ModalRoute<dynamic>>>().subscribe(this, route);
+    });
 
     scrollOffsetSubscription =
         scrollOffsetListener.changes.listen(removeReplyBoxFocusOnScroll);

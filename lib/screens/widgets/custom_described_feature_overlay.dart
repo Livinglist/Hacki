@@ -38,12 +38,26 @@ class CustomDescribedFeatureOverlay extends StatelessWidget {
           color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
-      description: Text(
-        feature.description,
-        style: TextStyle(
-          fontSize: TextDimens.pt16,
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
+      description: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            feature.description,
+            style: TextStyle(
+              fontSize: TextDimens.pt16,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          SizedBoxes.pt6,
+          Text(
+            'Tap anywhere inside to dismiss',
+            style: TextStyle(
+              fontSize: TextDimens.pt12,
+              color: Theme.of(context).hintColor,
+            ),
+          ),
+        ],
       ),
       contentLocation: contentLocation,
       onBackgroundTap: () {

@@ -491,6 +491,7 @@ class _SettingsViewState extends State<SettingsView>
                   ),
                   onTap: () {
                     HapticFeedbackUtils.light();
+                    locator.get<PreferenceRepository>().resetTourStatus();
                     FeatureDiscovery.clearPreferences(
                       context,
                       DiscoverableFeature.values

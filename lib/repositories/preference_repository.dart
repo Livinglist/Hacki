@@ -26,6 +26,7 @@ class PreferenceRepository with Loggable {
   static const String _unreadCommentsIdsKey = 'unreadCommentsIds';
   static const String _lastReadStoryIdKey = 'lastReadStoryId';
   static const String _downloadTimestampKey = 'downloadTimestamp';
+  static const String _tourKey = 'tour';
 
   final SyncedSharedPreferences _syncedPrefs;
   final Future<SharedPreferences> _prefs;
@@ -61,6 +62,12 @@ class PreferenceRepository with Loggable {
   void setDouble(String key, double val) => _prefs.then(
         (SharedPreferences prefs) => prefs.setDouble(key, val),
       );
+
+  Future<bool?> get hasSeenTour => getBool(_tourKey);
+
+  void markTourAsCompleted() => setBool(_tourKey, true);
+
+  void resetTourStatus() => setBool(_tourKey, false);
 
   Future<bool> hasPushed(int commentId) async =>
       _prefs.then((SharedPreferences prefs) {
