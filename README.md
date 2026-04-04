@@ -214,14 +214,14 @@ A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
 
 # Web view bottom sheet
 <p align="center">
-    <img width="200" src="assets/new_screenshots/hacki_151.png">
-    <img width="200" src="assets/new_screenshots/hacki_152.png">
-    <img width="200" src="assets/new_screenshots/hacki_153.png">
+    <img width="250" src="assets/new_screenshots/hacki_151.png">
+    <img width="250" src="assets/new_screenshots/hacki_152.png">
+    <img width="250" src="assets/new_screenshots/hacki_153.png">
 </p>
 <p align="center">
-    <img width="200" src="assets/new_screenshots/hacki_154.png">
-    <img width="200" src="assets/new_screenshots/hacki_155.png">
-    <img width="200" src="assets/new_screenshots/hacki_156.png">
+    <img width="250" src="assets/new_screenshots/hacki_154.png">
+    <img width="250" src="assets/new_screenshots/hacki_155.png">
+    <img width="250" src="assets/new_screenshots/hacki_156.png">
 </p>
 
 # Tablet support
