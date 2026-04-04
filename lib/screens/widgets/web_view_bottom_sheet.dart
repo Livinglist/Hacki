@@ -128,12 +128,11 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
                 const BorderRadius.vertical(top: Radius.circular(Dimens.pt20)),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.18),
-                blurRadius: 24,
-                offset: const Offset(0, -4),
+                color: Theme.of(context).colorScheme.shadow.withValues(
+                      alpha: 0.18,
+                    ),
+                blurRadius: 8,
+                offset: const Offset(0, -2),
               ),
             ],
           ),
