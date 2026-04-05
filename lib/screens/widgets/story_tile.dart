@@ -154,151 +154,156 @@ class StoryTile extends StatelessWidget {
         ),
       );
     } else {
-      return Semantics(
-        label: story.screenReaderLabel,
-        excludeSemantics: true,
-        child: TapDownWrapper(
-          onTap: onTap,
-          onLongPress: () {
-            if (story.url.isNotEmpty) {
-              LinkUtils.launch(
-                story.url,
-                context,
-                shouldUseReader:
-                    context.read<PreferenceCubit>().state.isReaderEnabled,
-                isOfflineReading:
-                    context.read<StoriesBloc>().state.isOfflineReading,
-              );
-            }
-          },
-          child: Padding(
-            padding: const EdgeInsets.only(
-              left: Dimens.pt12,
-              right: Dimens.pt8,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                if (shouldShowFavicon) ...<Widget>[
-                  if (story.url.isNotEmpty)
-                    SizedBox(
-                      height: Dimens.pt20,
-                      width: Dimens.pt24,
-                      child: Center(
-                        child: CachedNetworkImage(
-                          fit: BoxFit.fitHeight,
-                          imageUrl: Constants.favicon(story.url),
-                          errorWidget: (_, __, ___) {
-                            return const Icon(
-                              Icons.public,
-                              size: Dimens.pt20,
-                            );
-                          },
+      return FadeIn(
+        child: Semantics(
+          label: story.screenReaderLabel,
+          excludeSemantics: true,
+          child: TapDownWrapper(
+            onTap: onTap,
+            onLongPress: () {
+              if (story.url.isNotEmpty) {
+                LinkUtils.launch(
+                  story.url,
+                  context,
+                  shouldUseReader:
+                      context.read<PreferenceCubit>().state.isReaderEnabled,
+                  isOfflineReading:
+                      context.read<StoriesBloc>().state.isOfflineReading,
+                );
+              }
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(
+                left: Dimens.pt12,
+                right: Dimens.pt10,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  if (shouldShowFavicon) ...<Widget>[
+                    if (story.url.isNotEmpty)
+                      SizedBox(
+                        height: Dimens.pt20,
+                        width: Dimens.pt24,
+                        child: Center(
+                          child: CachedNetworkImage(
+                            fit: BoxFit.fitHeight,
+                            imageUrl: Constants.favicon(story.url),
+                            errorWidget: (_, __, ___) {
+                              return const FadeIn(
+                                child: Icon(
+                                  Icons.public,
+                                  size: Dimens.pt20,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      )
+                    else
+                      SizedBox(
+                        height: Dimens.pt20,
+                        width: Dimens.pt24,
+                        child: Center(
+                          child: Image.asset(
+                            Constants.hackerNewsLogoPath,
+                            fit: BoxFit.fitWidth,
+                            height: Dimens.pt20,
+                            width: Dimens.pt20,
+                          ),
                         ),
                       ),
-                    )
-                  else
-                    SizedBox(
-                      height: Dimens.pt20,
-                      width: Dimens.pt24,
-                      child: Center(
-                        child: Image.asset(
-                          Constants.hackerNewsLogoPath,
-                          fit: BoxFit.fitWidth,
-                          height: Dimens.pt20,
-                          width: Dimens.pt20,
-                        ),
-                      ),
+                    const SizedBox(
+                      width: Dimens.pt8,
                     ),
-                  const SizedBox(
-                    width: Dimens.pt8,
-                  ),
-                ],
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      const SizedBox(
-                        height: Dimens.pt8,
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: Text.rich(
-                              TextSpan(
-                                children: <TextSpan>[
-                                  if (isIndexedStoryTileEnabled &&
-                                      index != null)
+                  ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        const SizedBox(
+                          height: Dimens.pt8,
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Text.rich(
+                                TextSpan(
+                                  children: <TextSpan>[
+                                    if (isIndexedStoryTileEnabled &&
+                                        index != null)
+                                      TextSpan(
+                                        text: '#${index! + 1} ',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                      ),
                                     TextSpan(
-                                      text: '#${index! + 1} ',
+                                      text: story.title,
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleMedium
                                           ?.copyWith(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurface,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                    ),
-                                  TextSpan(
-                                    text: story.title,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(
-                                          color: hasRead
-                                              ? Theme.of(context).readGrey
-                                              : null,
-                                          fontWeight:
-                                              hasRead ? null : FontWeight.bold,
-                                        ),
-                                  ),
-                                  if (shouldShowUrl && story.url.isNotEmpty)
-                                    TextSpan(
-                                      text: ' (${story.readableUrl})',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall
-                                          ?.copyWith(
                                             color: hasRead
                                                 ? Theme.of(context).readGrey
                                                 : null,
+                                            fontWeight: hasRead
+                                                ? null
+                                                : FontWeight.bold,
                                           ),
                                     ),
-                                ],
-                              ),
-                              textScaler: MediaQuery.of(context).textScaler,
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (shouldShowMetadata)
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Text(
-                                story.metadataWithShortTimeAgoString,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.copyWith(
-                                      color: hasRead
-                                          ? Theme.of(context).readGrey
-                                          : Theme.of(context).metadataColor,
-                                    ),
-                                maxLines: 1,
+                                    if (shouldShowUrl && story.url.isNotEmpty)
+                                      TextSpan(
+                                        text: ' (${story.readableUrl})',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall
+                                            ?.copyWith(
+                                              color: hasRead
+                                                  ? Theme.of(context).readGrey
+                                                  : null,
+                                            ),
+                                      ),
+                                  ],
+                                ),
+                                textScaler: MediaQuery.of(context).textScaler,
                               ),
                             ),
                           ],
                         ),
-                      const SizedBox(
-                        height: Dimens.pt14,
-                      ),
-                    ],
+                        if (shouldShowMetadata)
+                          Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: Text(
+                                  story.metadataWithShortTimeAgoString,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.copyWith(
+                                        color: hasRead
+                                            ? Theme.of(context).readGrey
+                                            : Theme.of(context).metadataColor,
+                                      ),
+                                  maxLines: 1,
+                                ),
+                              ),
+                            ],
+                          ),
+                        const SizedBox(
+                          height: Dimens.pt14,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
