@@ -174,7 +174,7 @@ class StoryTile extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.only(
               left: Dimens.pt12,
-              right: Dimens.pt4,
+              right: Dimens.pt8,
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
