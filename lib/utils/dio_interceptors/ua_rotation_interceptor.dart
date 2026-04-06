@@ -23,7 +23,7 @@ class UARotationInterceptor extends Interceptor with Loggable {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    final String? userAgent = Platform.isIOS
+    final String? userAgent = Platform.isIOS || Platform.isMacOS
         ? _iosUserAgents.randomlyPicked
         : _androidUserAgents.randomlyPicked;
     logInfo('user agent: $userAgent');
