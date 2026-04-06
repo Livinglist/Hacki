@@ -166,11 +166,11 @@ class _ShareScreenState extends State<ShareScreen> {
                               const Divider(
                                 height: Dimens.zero,
                               ),
-                              SizedBoxes.pt8,
+                              SizedBoxes.pt6,
                               Text(
                                 '''Shared from Hacki, an open-source Hacker News client.''',
                                 style: TextStyle(
-                                  fontSize: TextDimens.pt12,
+                                  fontSize: TextDimens.pt10,
                                   color: Theme.of(context)
                                       .colorScheme
                                       .onSurface
@@ -179,7 +179,7 @@ class _ShareScreenState extends State<ShareScreen> {
                                 textScaler: TextScaler.noScaling,
                                 textAlign: TextAlign.center,
                               ),
-                              SizedBoxes.pt8,
+                              SizedBoxes.pt6,
                             ],
                           ],
                         ),

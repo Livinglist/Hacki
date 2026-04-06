@@ -195,40 +195,49 @@ class MainView extends StatelessWidget {
 
                     index = index - 1;
                     final Comment comment = state.comments.elementAt(index);
-
-                    if (comment.isHiddenByUser) return const SizedBox.shrink();
-
-                    return Padding(
-                      padding: EdgeInsets.only(
-                        left: splitViewEnabled
-                            ? comment.level * indentPadding
-                            : comment.level * indentPadding + indentLineWidth,
+                    final GlobalKey<State<StatefulWidget>>? key =
+                        context.read<CommentsCubit>().globalKeys[comment.id];
+                    if (comment.isHiddenByUser) {
+                      return SizedBox.shrink(
+                        key: key,
+                      );
+                    } else {
+                      return Padding(
+                        key: key,
+                        padding: EdgeInsets.only(
+                          left: splitViewEnabled
+                              ? comment.level * indentPadding
+                              : comment.level * indentPadding +
+                              indentLineWidth,
+                        ),
+                        child: CommentTile(
+                          comment: comment,
+                          commentBackgroundColor:
+                          Theme.of(context).canvasColor,
+                          index: index,
+                          level: comment.level,
+                          opUsername: state.item.by,
+                          fetchMode: state.fetchMode,
+                          isResponse: state.isResponse(comment),
+                          isCompactCollapsedTileEnabled:
+                          preferenceState.isCompactCollapsedTileEnabled,
+                          shouldHighlightNewComments:
+                          preferenceState.shouldHighlightNewComments,
+                          isDev: preferenceState.isDevModeEnabled,
+                          isNew: shouldMarkNewComment && !comment.isFromCache,
+                          isEyeCandyEnabled:
+                          preferenceState.isEyeCandyEnabled,
+                          onUpvoteTapped: (Comment cmt) =>
+                              onUpvoteTapped(context, cmt),
+                          onReplyTapped: (Comment cmt) =>
+                              onReplyTapped(context, cmt),
+                          onEditTapped: (Comment cmt) =>
+                              onEditTapped(context, cmt),
+                          onMoreTapped: onMoreTapped,
+                          onRightMoreTapped: onRightMoreTapped,
+                        ),
                       ),
-                      child: CommentTile(
-                        comment: comment,
-                        commentBackgroundColor: Theme.of(context).canvasColor,
-                        index: index,
-                        level: comment.level,
-                        opUsername: state.item.by,
-                        fetchMode: state.fetchMode,
-                        isResponse: state.isResponse(comment),
-                        isCompactCollapsedTileEnabled:
-                            preferenceState.isCompactCollapsedTileEnabled,
-                        shouldHighlightNewComments:
-                            preferenceState.shouldHighlightNewComments,
-                        isDev: preferenceState.isDevModeEnabled,
-                        isNew: shouldMarkNewComment && !comment.isFromCache,
-                        isEyeCandyEnabled: preferenceState.isEyeCandyEnabled,
-                        onUpvoteTapped: (Comment cmt) =>
-                            onUpvoteTapped(context, cmt),
-                        onReplyTapped: (Comment cmt) =>
-                            onReplyTapped(context, cmt),
-                        onEditTapped: (Comment cmt) =>
-                            onEditTapped(context, cmt),
-                        onMoreTapped: onMoreTapped,
-                        onRightMoreTapped: onRightMoreTapped,
-                      ),
-                    );
+                    }
                   },
                 ),
               );
