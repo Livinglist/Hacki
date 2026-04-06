@@ -207,26 +207,23 @@ class MainView extends StatelessWidget {
                         padding: EdgeInsets.only(
                           left: splitViewEnabled
                               ? comment.level * indentPadding
-                              : comment.level * indentPadding +
-                              indentLineWidth,
+                              : comment.level * indentPadding + indentLineWidth,
                         ),
                         child: CommentTile(
                           comment: comment,
-                          commentBackgroundColor:
-                          Theme.of(context).canvasColor,
+                          commentBackgroundColor: Theme.of(context).canvasColor,
                           index: index,
                           level: comment.level,
                           opUsername: state.item.by,
                           fetchMode: state.fetchMode,
                           isResponse: state.isResponse(comment),
                           isCompactCollapsedTileEnabled:
-                          preferenceState.isCompactCollapsedTileEnabled,
+                              preferenceState.isCompactCollapsedTileEnabled,
                           shouldHighlightNewComments:
-                          preferenceState.shouldHighlightNewComments,
+                              preferenceState.shouldHighlightNewComments,
                           isDev: preferenceState.isDevModeEnabled,
                           isNew: shouldMarkNewComment && !comment.isFromCache,
-                          isEyeCandyEnabled:
-                          preferenceState.isEyeCandyEnabled,
+                          isEyeCandyEnabled: preferenceState.isEyeCandyEnabled,
                           onUpvoteTapped: (Comment cmt) =>
                               onUpvoteTapped(context, cmt),
                           onReplyTapped: (Comment cmt) =>
@@ -236,7 +233,7 @@ class MainView extends StatelessWidget {
                           onMoreTapped: onMoreTapped,
                           onRightMoreTapped: onRightMoreTapped,
                         ),
-                      ),
+                      );
                     }
                   },
                 ),
