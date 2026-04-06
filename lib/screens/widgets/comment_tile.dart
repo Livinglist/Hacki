@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
@@ -447,7 +448,9 @@ class CommentTile extends StatelessWidget {
             }
             return commentBackgroundColor;
           }(),
-          child: child,
+          child: FadeIn(
+            child: child,
+          ),
         );
 
         /// This makes the left part of the thread that doesn't contain
