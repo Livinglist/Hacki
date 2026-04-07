@@ -281,6 +281,7 @@ class MorePopupMenu extends StatelessWidget {
                   LinkUtils.launch(
                     url,
                     context,
+                    shouldUseHackiForHnLink: false,
                   );
                 },
               ),
