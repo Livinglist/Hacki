@@ -24,6 +24,7 @@ A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
 - [x] [In-app notification for new replies](#login-reply-notification-favorites-sync-and-more) to your comments or stories
 - [x] [Offline mode](#settings)
 - [x] Synced settings across devices (iOS only)
+- [x] Home Screen and Lock Screen widgets (iOS only)
 - [x] [Favorites import and export](#settings)
 - [x] Open Hacker News link in Hacki via system share dialog
 - [x] [Share story or comment as image](#share-story-or-comment-as-image)
