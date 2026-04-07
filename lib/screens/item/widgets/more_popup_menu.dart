@@ -270,6 +270,19 @@ class MorePopupMenu extends StatelessWidget {
                 onTap: () => context.pop(MenuAction.block),
               ),
               ListTile(
+                leading: const Icon(
+                  Icons.open_in_browser,
+                ),
+                title: const Text('View in Browser'),
+                onTap: () {
+                  context.pop();
+                  LinkUtils.launch(
+                    '${Constants.hackerNewsItemLinkPrefix}${item.id}',
+                    context,
+                  );
+                },
+              ),
+              ListTile(
                 leading: const Icon(Icons.close),
                 title: const Text(
                   'Cancel',
