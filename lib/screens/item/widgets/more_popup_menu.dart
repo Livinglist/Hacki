@@ -276,8 +276,10 @@ class MorePopupMenu extends StatelessWidget {
                 title: const Text('View in Browser'),
                 onTap: () {
                   context.pop();
+                  final String url =
+                      '${Constants.hackerNewsItemLinkPrefix}${item.id}';
                   LinkUtils.launch(
-                    '${Constants.hackerNewsItemLinkPrefix}${item.id}',
+                    url,
                     context,
                   );
                 },
