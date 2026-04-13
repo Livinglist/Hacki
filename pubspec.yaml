@@ -17,7 +17,7 @@ dependencies:
   bloc_concurrency: ^0.3.0
   cached_network_image: ^3.4.1
   collection: ^1.19.1
-  connectivity_plus: ^7.1.0
+  connectivity_plus: ^7.1.1
   device_info_plus: ^12.4.0
   dio: ^5.9.2
   dio_smart_retry: ^7.0.1
