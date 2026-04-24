@@ -18,10 +18,7 @@ import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
 class ShareScreenArgs extends Equatable {
-  const ShareScreenArgs({
-    required this.item,
-    this.parent,
-  });
+  const ShareScreenArgs({required this.item, this.parent});
 
   final Item item;
   final Item? parent;
@@ -31,10 +28,7 @@ class ShareScreenArgs extends Equatable {
 }
 
 class ShareScreen extends StatefulWidget {
-  const ShareScreen(
-    this.args, {
-    super.key,
-  });
+  const ShareScreen(this.args, {super.key});
 
   final ShareScreenArgs args;
 
@@ -59,8 +53,10 @@ class _ShareScreenState extends State<ShareScreen> {
   Widget build(BuildContext context) {
     final Item item = widget.args.item;
     final Item? parent = widget.args.parent;
-    final bool isPreviewImageLeftAligned =
-        context.read<PreferenceCubit>().state.isPreviewImageLeftAligned;
+    final bool isPreviewImageLeftAligned = context
+        .read<PreferenceCubit>()
+        .state
+        .isPreviewImageLeftAligned;
     final Widget targetWidget = item is Story
         ? StoryTile(
             story: item,
@@ -103,16 +99,12 @@ class _ShareScreenState extends State<ShareScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Share as image'),
-        actions: const <Widget>[
-          ShareScreenTips(),
-        ],
+        actions: const <Widget>[ShareScreenTips()],
       ),
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: 600,
-          ),
+          constraints: const BoxConstraints(maxWidth: 600),
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -121,9 +113,7 @@ class _ShareScreenState extends State<ShareScreen> {
                 Screenshot(
                   controller: _screenshotController,
                   child: Padding(
-                    padding: const EdgeInsets.all(
-                      Dimens.pt12,
-                    ),
+                    padding: const EdgeInsets.all(Dimens.pt12),
                     child: Material(
                       elevation: Dimens.pt8,
                       child: ColoredBox(
@@ -145,8 +135,9 @@ class _ShareScreenState extends State<ShareScreen> {
                                   'From Hacker News:',
                                   style: TextStyle(
                                     fontSize: TextDimens.pt16,
-                                    color:
-                                        Theme.of(context).colorScheme.onSurface,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
                                   ),
                                   textScaler: TextScaler.noScaling,
                                 ),
@@ -163,18 +154,15 @@ class _ShareScreenState extends State<ShareScreen> {
                             ),
                             SizedBoxes.pt8,
                             if (_shouldShowHackiBanner) ...<Widget>[
-                              const Divider(
-                                height: Dimens.zero,
-                              ),
+                              const Divider(height: Dimens.zero),
                               SizedBoxes.pt6,
                               Text(
                                 '''Shared from Hacki, an open-source Hacker News client.''',
                                 style: TextStyle(
                                   fontSize: TextDimens.pt10,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurface
-                                      .withAlpha(150),
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withAlpha(150),
                                 ),
                                 textScaler: TextScaler.noScaling,
                                 textAlign: TextAlign.center,
@@ -264,8 +252,9 @@ class _ShareScreenState extends State<ShareScreen> {
   }
 
   Future<void> _save() async {
-    final Uint8List? imageBytes =
-        await _screenshotController.capture(pixelRatio: _screenshotPixelRatio);
+    final Uint8List? imageBytes = await _screenshotController.capture(
+      pixelRatio: _screenshotPixelRatio,
+    );
     if (imageBytes == null) return;
 
     final bool result = await ImageSaver.saveImage(
@@ -303,18 +292,14 @@ class _ShareScreenState extends State<ShareScreen> {
       );
 
       final ShareParams shareParams = ShareParams(
-        files: <XFile>[
-          XFile(file.path, mimeType: 'image/png'),
-        ],
+        files: <XFile>[XFile(file.path, mimeType: 'image/png')],
         text: itemUrl.toString(),
         sharePositionOrigin:
             rect ?? const Rect.fromLTWH(0, 0, 100, 100), // Tablet support
       );
 
       if (_shouldCopyHnLink) {
-        await Clipboard.setData(
-          ClipboardData(text: itemUrl.toString()),
-        );
+        await Clipboard.setData(ClipboardData(text: itemUrl.toString()));
       }
 
       await SharePlus.instance.share(shareParams);

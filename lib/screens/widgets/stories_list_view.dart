@@ -106,9 +106,9 @@ class _StoriesListViewState extends State<StoriesListView>
                 HapticFeedbackUtils.light();
 
                 if (state.statusByType[storyType] != Status.inProgress) {
-                  context
-                      .read<StoriesBloc>()
-                      .add(StoriesRefresh(type: storyType));
+                  context.read<StoriesBloc>().add(
+                    StoriesRefresh(type: storyType),
+                  );
                 } else {
                   refreshController
                     ..refreshCompleted(resetFooterState: true)
@@ -139,7 +139,8 @@ class _StoriesListViewState extends State<StoriesListView>
                 ],
               ),
               loadStyle: LoadStyle.HideAlways,
-              footer: preferenceState.isManualPaginationEnabled &&
+              footer:
+                  preferenceState.isManualPaginationEnabled &&
                       state.statusByType[widget.storyType] == Status.success
                   ? Center(
                       child: Padding(
@@ -185,10 +186,12 @@ class _StoriesListViewState extends State<StoriesListView>
                           HapticFeedbackUtils.light();
                           context.read<PinCubit>().pinStory(story);
                         },
-                        backgroundColor:
-                            Theme.of(context).colorScheme.primaryContainer,
-                        foregroundColor:
-                            Theme.of(context).colorScheme.onPrimaryContainer,
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.primaryContainer,
+                        foregroundColor: Theme.of(
+                          context,
+                        ).colorScheme.onPrimaryContainer,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
@@ -198,30 +201,25 @@ class _StoriesListViewState extends State<StoriesListView>
                                 size: Dimens.pt24,
                               ),
                             if (!preferenceState.isRichStoryTileEnabled)
-                              const Text(
-                                'Pin',
-                              ),
+                              const Text('Pin'),
                           ],
                         ),
                       ),
                       CustomSlidableAction(
                         onPressed: (_) => onMoreTapped(story, context.rect),
-                        backgroundColor:
-                            Theme.of(context).colorScheme.primaryContainer,
-                        foregroundColor:
-                            Theme.of(context).colorScheme.onPrimaryContainer,
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.primaryContainer,
+                        foregroundColor: Theme.of(
+                          context,
+                        ).colorScheme.onPrimaryContainer,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             if (preferenceState.isRichStoryTileEnabled)
-                              const Icon(
-                                Icons.more_horiz,
-                                size: Dimens.pt24,
-                              ),
+                              const Icon(Icons.more_horiz, size: Dimens.pt24),
                             if (!preferenceState.isRichStoryTileEnabled)
-                              const Text(
-                                'More',
-                              ),
+                              const Text('More'),
                           ],
                         ),
                       ),
@@ -242,15 +240,13 @@ class _StoriesListViewState extends State<StoriesListView>
                         onPressed: (_) => mark(story),
                         backgroundColor:
                             preferenceState.isMarkReadStoriesEnabled
-                                ? Theme.of(context).colorScheme.primaryContainer
-                                : Palette.grey,
-                        foregroundColor:
-                            Theme.of(context).colorScheme.onPrimaryContainer,
+                            ? Theme.of(context).colorScheme.primaryContainer
+                            : Palette.grey,
+                        foregroundColor: Theme.of(
+                          context,
+                        ).colorScheme.onPrimaryContainer,
                         child: preferenceState.isHideInsteadOfMarkingGrayEnabled
-                            ? const Icon(
-                                Icons.delete_sweep,
-                                size: Dimens.pt24,
-                              )
+                            ? const Icon(Icons.delete_sweep, size: Dimens.pt24)
                             : Icon(
                                 state.readStoriesIds.contains(story.id)
                                     ? Icons.visibility_off
@@ -261,7 +257,8 @@ class _StoriesListViewState extends State<StoriesListView>
                     ],
                   ),
                   child: OptionalWrapper(
-                    enabled: context
+                    enabled:
+                        context
                             .read<PreferenceCubit>()
                             .state
                             .storyMarkingMode
@@ -275,9 +272,9 @@ class _StoriesListViewState extends State<StoriesListView>
                             refreshController.position?.userScrollDirection ==
                                 ScrollDirection.reverse &&
                             !state.readStoriesIds.contains(story.id)) {
-                          context
-                              .read<StoriesBloc>()
-                              .add(StoryRead(story: story));
+                          context.read<StoriesBloc>().add(
+                            StoryRead(story: story),
+                          );
                         }
                       },
                       child: child,
@@ -298,16 +295,20 @@ class _StoriesListViewState extends State<StoriesListView>
     final StoriesBloc storiesBloc = context.read<StoriesBloc>();
     final HideCubit hideCubit = context.read<HideCubit>();
 
-    final bool isHideInsteadOfMarkingGrayEnabled =
-        context.read<PreferenceCubit>().state.isHideInsteadOfMarkingGrayEnabled;
+    final bool isHideInsteadOfMarkingGrayEnabled = context
+        .read<PreferenceCubit>()
+        .state
+        .isHideInsteadOfMarkingGrayEnabled;
 
     if (isHideInsteadOfMarkingGrayEnabled) {
       hideCubit.hide(story.id);
       return;
     }
 
-    final bool markReadStoriesEnabled =
-        context.read<PreferenceCubit>().state.isMarkReadStoriesEnabled;
+    final bool markReadStoriesEnabled = context
+        .read<PreferenceCubit>()
+        .state
+        .isMarkReadStoriesEnabled;
     if (markReadStoriesEnabled) {
       if (storiesBloc.state.readStoriesIds.contains(story.id)) {
         storiesBloc.add(StoryUnread(story: story));

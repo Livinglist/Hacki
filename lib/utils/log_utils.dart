@@ -11,20 +11,14 @@ abstract final class LogUtils {
   static LogPrinter get logPrinter =>
       kDebugMode ? prettyPrinter : SimpleLogPrinter();
 
-  static LogPrinter get prettyPrinter => PrettyPrinter(
-        dateTimeFormat: DateTimeFormat.onlyTime,
-      );
+  static LogPrinter get prettyPrinter =>
+      PrettyPrinter(dateTimeFormat: DateTimeFormat.onlyTime);
 
-  static LogOutput logOutput(File outputFile) => MultiOutput(
-        <LogOutput>[
-          ConsoleOutput(),
-          if (kReleaseMode || kProfileMode)
-            CustomFileOutput(
-              file: outputFile,
-              overrideExisting: true,
-            ),
-        ],
-      );
+  static LogOutput logOutput(File outputFile) => MultiOutput(<LogOutput>[
+    ConsoleOutput(),
+    if (kReleaseMode || kProfileMode)
+      CustomFileOutput(file: outputFile, overrideExisting: true),
+  ]);
 
   static Future<File> initLogFile() async {
     final Directory tempDir = await getTemporaryDirectory();
@@ -48,10 +42,7 @@ abstract final class LogUtils {
       '=============== Current session logs ===============\n',
       mode: FileMode.append,
     );
-    return previousSessionLog.writeAsBytes(
-      fileContent,
-      mode: FileMode.append,
-    );
+    return previousSessionLog.writeAsBytes(fileContent, mode: FileMode.append);
   }
 
   static Future<List<String>> exportLogsAsStrings() async {

@@ -43,48 +43,34 @@ class PostedByFilterChip extends StatelessWidget {
         return SimpleDialog(
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: Dimens.pt18,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: Dimens.pt18),
               child: TextField(
                 controller: usernameController,
                 cursorColor: Theme.of(context).colorScheme.primary,
                 autocorrect: false,
-                decoration: const InputDecoration(
-                  hintText: 'Username',
-                ),
+                decoration: const InputDecoration(hintText: 'Username'),
               ),
             ),
-            const SizedBox(
-              height: Dimens.pt16,
-            ),
+            const SizedBox(height: Dimens.pt16),
             Padding(
-              padding: const EdgeInsets.only(
-                right: Dimens.pt12,
-              ),
+              padding: const EdgeInsets.only(right: Dimens.pt12),
               child: OverflowBar(
                 alignment: MainAxisAlignment.end,
                 children: <Widget>[
                   TextButton(
                     onPressed: () => context.pop(filter?.author),
-                    child: const Text(
-                      'Cancel',
-                    ),
+                    child: const Text('Cancel'),
                   ),
                   TextButton(
                     onPressed: () => context.pop(),
-                    child: const Text(
-                      'Clear',
-                    ),
+                    child: const Text('Clear'),
                   ),
                   ElevatedButton(
                     onPressed: () {
                       final String text = usernameController.text.trim();
                       context.pop(text.isEmpty ? null : text);
                     },
-                    child: const Text(
-                      'Confirm',
-                    ),
+                    child: const Text('Confirm'),
                   ),
                 ],
               ),

@@ -7,9 +7,7 @@ class TimeMachineState extends Equatable {
 
   final List<Comment> ancestors;
 
-  TimeMachineState copyWith({
-    List<Comment>? ancestors,
-  }) {
+  TimeMachineState copyWith({List<Comment>? ancestors}) {
     return TimeMachineState(ancestors: ancestors ?? this.ancestors);
   }
 

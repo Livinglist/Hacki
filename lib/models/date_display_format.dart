@@ -11,15 +11,16 @@ enum DateDisplayFormat {
   yMMMEd;
 
   String get description {
-    final DateTime exampleDate =
-        DateTime.now().subtract(const Duration(days: 5));
+    final DateTime exampleDate = DateTime.now().subtract(
+      const Duration(days: 5),
+    );
     return switch (this) {
       timeAgo => exampleDate.toTimeAgoString(),
       yMd || yMEd || yMMMd || yMMMEd => () {
-          final String defaultLocale = Platform.localeName;
-          final DateFormat formatter = DateFormat(name, defaultLocale).add_Hm();
-          return formatter.format(exampleDate);
-        }(),
+        final String defaultLocale = Platform.localeName;
+        final DateFormat formatter = DateFormat(name, defaultLocale).add_Hm();
+        return formatter.format(exampleDate);
+      }(),
     };
   }
 

@@ -16,10 +16,9 @@ class SearchCubit extends Cubit<SearchState> with BuildableMixin {
   SearchCubit({
     SearchRepository? searchRepository,
     TextEditingController? textEditingController,
-  })  : _searchRepository = searchRepository ?? locator.get<SearchRepository>(),
-        textEditingController =
-            textEditingController ?? TextEditingController(),
-        super(SearchState.init());
+  }) : _searchRepository = searchRepository ?? locator.get<SearchRepository>(),
+       textEditingController = textEditingController ?? TextEditingController(),
+       super(SearchState.init());
 
   final SearchRepository _searchRepository;
   final TextEditingController textEditingController;
@@ -36,14 +35,17 @@ class SearchCubit extends Cubit<SearchState> with BuildableMixin {
         params: state.params.copyWith(query: query, page: 0),
       ),
     );
-    streamSubscription = _searchRepository
-        .search(params: state.params)
-        .asyncMap((Item item) => toBuildable(item, withHighlightedText: query))
-        .whereNotNull()
-        .listen(_onItemFetched)
-      ..onDone(() {
-        emit(state.copyWith(status: SearchStatus.loaded));
-      });
+    streamSubscription =
+        _searchRepository
+            .search(params: state.params)
+            .asyncMap(
+              (Item item) => toBuildable(item, withHighlightedText: query),
+            )
+            .whereNotNull()
+            .listen(_onItemFetched)
+          ..onDone(() {
+            emit(state.copyWith(status: SearchStatus.loaded));
+          });
   }
 
   void loadMore() {
@@ -55,37 +57,28 @@ class SearchCubit extends Cubit<SearchState> with BuildableMixin {
           params: state.params.copyWith(page: updatedPage),
         ),
       );
-      streamSubscription = _searchRepository
-          .search(params: state.params)
-          .asyncMap(
-            (Item item) => toBuildable(
-              item,
-              withHighlightedText: state.params.query,
-            ),
-          )
-          .whereNotNull()
-          .listen(_onItemFetched)
-        ..onDone(() {
-          emit(state.copyWith(status: SearchStatus.loaded));
-        });
+      streamSubscription =
+          _searchRepository
+              .search(params: state.params)
+              .asyncMap(
+                (Item item) =>
+                    toBuildable(item, withHighlightedText: state.params.query),
+              )
+              .whereNotNull()
+              .listen(_onItemFetched)
+            ..onDone(() {
+              emit(state.copyWith(status: SearchStatus.loaded));
+            });
     }
   }
 
   void addFilter<T extends SearchFilter>(T filter) {
     HapticFeedbackUtils.selection();
     if (state.params.contains<T>()) {
-      emit(
-        state.copyWith(
-          params: state.params.copyWithFilterRemoved<T>(),
-        ),
-      );
+      emit(state.copyWith(params: state.params.copyWithFilterRemoved<T>()));
     }
 
-    emit(
-      state.copyWith(
-        params: state.params.copyWithFilterAdded(filter),
-      ),
-    );
+    emit(state.copyWith(params: state.params.copyWithFilterAdded(filter)));
 
     search(state.params.query);
   }
@@ -94,11 +87,7 @@ class SearchCubit extends Cubit<SearchState> with BuildableMixin {
     HapticFeedbackUtils.selection();
     if (state.params.contains<T>() == false) return;
 
-    emit(
-      state.copyWith(
-        params: state.params.copyWithFilterRemoved<T>(),
-      ),
-    );
+    emit(state.copyWith(params: state.params.copyWithFilterRemoved<T>()));
 
     search(state.params.query);
   }
@@ -118,9 +107,7 @@ class SearchCubit extends Cubit<SearchState> with BuildableMixin {
     HapticFeedbackUtils.selection();
     emit(
       state.copyWith(
-        params: state.params.copyWith(
-          sorted: !state.params.sorted,
-        ),
+        params: state.params.copyWith(sorted: !state.params.sorted),
       ),
     );
 
@@ -131,9 +118,7 @@ class SearchCubit extends Cubit<SearchState> with BuildableMixin {
     HapticFeedbackUtils.selection();
     emit(
       state.copyWith(
-        params: state.params.copyWith(
-          exactMatch: !state.params.exactMatch,
-        ),
+        params: state.params.copyWith(exactMatch: !state.params.exactMatch),
       ),
     );
 
@@ -152,18 +137,17 @@ class SearchCubit extends Cubit<SearchState> with BuildableMixin {
       millisecond: 0,
       microsecond: 0,
     );
-    final DateTime? existingStart =
-        state.params.get<DateTimeRangeFilter>()?.startTime;
-    final DateTime? existingEnd =
-        state.params.get<DateTimeRangeFilter>()?.endTime;
+    final DateTime? existingStart = state.params
+        .get<DateTimeRangeFilter>()
+        ?.startTime;
+    final DateTime? existingEnd = state.params
+        .get<DateTimeRangeFilter>()
+        ?.endTime;
 
     if (existingStart == updatedStart && existingEnd == updatedEnd) return;
 
     addFilter(
-      DateTimeRangeFilter(
-        startTime: updatedStart,
-        endTime: updatedEnd,
-      ),
+      DateTimeRangeFilter(startTime: updatedStart, endTime: updatedEnd),
     );
   }
 
@@ -177,8 +161,9 @@ class SearchCubit extends Cubit<SearchState> with BuildableMixin {
   }
 
   void onPointsFilterChanged(PointsFilter? pointsFilter) {
-    final PointsFilter? existingFilter =
-        state.params.filters.whereType<PointsFilter>().singleOrNull;
+    final PointsFilter? existingFilter = state.params.filters
+        .whereType<PointsFilter>()
+        .singleOrNull;
     if (pointsFilter == existingFilter) return;
 
     HapticFeedbackUtils.selection();
@@ -190,8 +175,9 @@ class SearchCubit extends Cubit<SearchState> with BuildableMixin {
   }
 
   void onNumberOfCommentsFilterChanged(CommentsNumberFilter? filter) {
-    final CommentsNumberFilter? existingFilter =
-        state.params.filters.whereType<CommentsNumberFilter>().singleOrNull;
+    final CommentsNumberFilter? existingFilter = state.params.filters
+        .whereType<CommentsNumberFilter>()
+        .singleOrNull;
     if (filter == existingFilter) return;
 
     HapticFeedbackUtils.selection();
@@ -203,11 +189,7 @@ class SearchCubit extends Cubit<SearchState> with BuildableMixin {
   }
 
   void _onItemFetched(Item item) {
-    emit(
-      state.copyWith(
-        results: List<Item>.from(state.results)..add(item),
-      ),
-    );
+    emit(state.copyWith(results: List<Item>.from(state.results)..add(item)));
   }
 
   @override

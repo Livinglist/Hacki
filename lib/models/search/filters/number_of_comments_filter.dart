@@ -17,8 +17,5 @@ final class CommentsNumberFilter extends Equatable implements NumericFilter {
   }
 
   @override
-  List<Object?> get props => <Object?>[
-        commentsNumber,
-        condition,
-      ];
+  List<Object?> get props => <Object?>[commentsNumber, condition];
 }

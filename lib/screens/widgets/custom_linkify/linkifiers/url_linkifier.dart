@@ -60,7 +60,8 @@ class UrlLinkifier extends Linkifier {
             String url = originalUrl;
 
             if (!originalUrl.startsWith(_protocolIdentifierRegex)) {
-              originalUrl = (options.defaultToHttps ? 'https://' : 'http://') +
+              originalUrl =
+                  (options.defaultToHttps ? 'https://' : 'http://') +
                   originalUrl;
             }
 
@@ -122,7 +123,7 @@ class UrlLinkifier extends Linkifier {
 @immutable
 class UrlElement extends LinkableElement {
   UrlElement(String url, [String? text, String? originText])
-      : super(text, url, originText);
+    : super(text, url, originText);
 
   @override
   String toString() {

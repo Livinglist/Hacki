@@ -11,11 +11,11 @@ class PinCubit extends Cubit<PinState> {
   PinCubit({
     PreferenceRepository? preferenceRepository,
     HackerNewsRepository? hackerNewsRepository,
-  })  : _preferenceRepository =
-            preferenceRepository ?? locator.get<PreferenceRepository>(),
-        _hackerNewsRepository =
-            hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
-        super(PinState.init()) {
+  }) : _preferenceRepository =
+           preferenceRepository ?? locator.get<PreferenceRepository>(),
+       _hackerNewsRepository =
+           hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
+       super(PinState.init()) {
     init();
   }
 
@@ -24,19 +24,18 @@ class PinCubit extends Cubit<PinState> {
 
   void init() {
     emit(PinState.init());
-    _preferenceRepository.pinnedStoriesIds.then((List<int> ids) {
-      emit(state.copyWith(pinnedStoriesIds: ids));
+    _preferenceRepository.pinnedStoriesIds
+        .then((List<int> ids) {
+          emit(state.copyWith(pinnedStoriesIds: ids));
 
-      _hackerNewsRepository
-          .fetchStoriesStream(ids: ids)
-          .listen(_onStoryFetched);
-    }).whenComplete(() => emit(state.copyWith(status: Status.success)));
+          _hackerNewsRepository
+              .fetchStoriesStream(ids: ids)
+              .listen(_onStoryFetched);
+        })
+        .whenComplete(() => emit(state.copyWith(status: Status.success)));
   }
 
-  void pinStory(
-    Story story, {
-    VoidCallback? onDone,
-  }) {
+  void pinStory(Story story, {VoidCallback? onDone}) {
     if (!state.pinnedStoriesIds.contains(story.id)) {
       emit(
         state.copyWith(
@@ -49,10 +48,7 @@ class PinCubit extends Cubit<PinState> {
     }
   }
 
-  void unpinStory(
-    Story story, {
-    VoidCallback? onDone,
-  }) {
+  void unpinStory(Story story, {VoidCallback? onDone}) {
     emit(
       state.copyWith(
         pinnedStoriesIds: <int>[...state.pinnedStoriesIds]..remove(story.id),

@@ -21,56 +21,51 @@ class CustomAppBar extends AppBar {
     VoidCallback? onZoomTap,
     bool? expanded,
   }) : super(
-          elevation: Dimens.zero,
-          actions: <Widget>[
-            if (splitViewEnabled) ...<Widget>[
-              IconButton(
-                icon: Icon(
-                  expanded ?? false
-                      ? FeatherIcons.minimize2
-                      : FeatherIcons.maximize2,
-                  size: TextDimens.pt20,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-                onPressed: () {
-                  HapticFeedbackUtils.light();
-                  onZoomTap?.call();
-                },
-              ),
-              const Spacer(),
-            ],
-            BlocBuilder<TipsCubit, TipsState>(
-              builder: (BuildContext context, TipsState state) {
-                if (state.isTipsCompleted(Tips.itemScreen)) {
-                  return const SizedBox.shrink();
-                }
-                return const ItemScreenTips();
-              },
-            ),
-            const InThreadSearchIconButton(),
-            IconButton(
-              key: fontSizeIconButtonKey,
-              icon: Text(
-                String.fromCharCode(FeatherIcons.type.codePoint),
-                style: TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: TextDimens.pt18,
-                  fontFamily: FeatherIcons.type.fontFamily,
-                  package: FeatherIcons.type.fontPackage,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-                textScaler: TextScaler.noScaling,
-              ),
-              onPressed: onFontSizeTap,
-            ),
-            if (item is Story)
-              PinIconButton(
-                story: item,
-              ),
-            FavIconButton(
-              storyId: item.id,
-            ),
-            const SettingsButton(),
-          ],
-        );
+         elevation: Dimens.zero,
+         actions: <Widget>[
+           if (splitViewEnabled) ...<Widget>[
+             IconButton(
+               icon: Icon(
+                 expanded ?? false
+                     ? FeatherIcons.minimize2
+                     : FeatherIcons.maximize2,
+                 size: TextDimens.pt20,
+                 color: Theme.of(context).colorScheme.onSurface,
+               ),
+               onPressed: () {
+                 HapticFeedbackUtils.light();
+                 onZoomTap?.call();
+               },
+             ),
+             const Spacer(),
+           ],
+           BlocBuilder<TipsCubit, TipsState>(
+             builder: (BuildContext context, TipsState state) {
+               if (state.isTipsCompleted(Tips.itemScreen)) {
+                 return const SizedBox.shrink();
+               }
+               return const ItemScreenTips();
+             },
+           ),
+           const InThreadSearchIconButton(),
+           IconButton(
+             key: fontSizeIconButtonKey,
+             icon: Text(
+               String.fromCharCode(FeatherIcons.type.codePoint),
+               style: TextStyle(
+                 fontWeight: FontWeight.w800,
+                 fontSize: TextDimens.pt18,
+                 fontFamily: FeatherIcons.type.fontFamily,
+                 package: FeatherIcons.type.fontPackage,
+                 color: Theme.of(context).colorScheme.onSurface,
+               ),
+               textScaler: TextScaler.noScaling,
+             ),
+             onPressed: onFontSizeTap,
+           ),
+           if (item is Story) PinIconButton(story: item),
+           FavIconButton(storyId: item.id),
+           const SettingsButton(),
+         ],
+       );
 }

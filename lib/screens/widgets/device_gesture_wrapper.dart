@@ -6,10 +6,7 @@ import 'package:flutter/material.dart';
 ///
 /// https://github.com/flutter/flutter/issues/124421#issuecomment-1500666795
 class DeviceGestureWrapper extends StatelessWidget {
-  const DeviceGestureWrapper({
-    required this.child,
-    super.key,
-  });
+  const DeviceGestureWrapper({required this.child, super.key});
 
   final Widget child;
 

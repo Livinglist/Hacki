@@ -15,32 +15,28 @@ class Story extends Item {
     required super.kids,
     required super.parts,
     required super.hidden,
-  }) : super(
-          dead: false,
-          deleted: false,
-          parent: 0,
-        );
+  }) : super(dead: false, deleted: false, parent: 0);
 
   Story.empty() : super.empty();
 
   Story.placeholder()
-      : super(
-          id: 0,
-          score: 0,
-          descendants: 0,
-          time: 1171872000,
-          by: 'Y Combinator',
-          title: 'Hacker News Guidelines',
-          url: Constants.guidelineLink,
-          kids: <int>[],
-          dead: false,
-          parts: <int>[],
-          deleted: false,
-          parent: 0,
-          text: '',
-          type: '',
-          hidden: false,
-        );
+    : super(
+        id: 0,
+        score: 0,
+        descendants: 0,
+        time: 1171872000,
+        by: 'Y Combinator',
+        title: 'Hacker News Guidelines',
+        url: Constants.guidelineLink,
+        kids: <int>[],
+        dead: false,
+        parts: <int>[],
+        deleted: false,
+        parent: 0,
+        text: '',
+        type: '',
+        hidden: false,
+      );
 
   Story.fromJson(super.json) : super.fromJson();
 

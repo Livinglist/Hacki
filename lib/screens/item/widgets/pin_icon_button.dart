@@ -9,10 +9,7 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/utils/utils.dart';
 
 class PinIconButton extends StatelessWidget {
-  const PinIconButton({
-    required this.story,
-    super.key,
-  });
+  const PinIconButton({required this.story, super.key});
 
   final Story story;
 
@@ -46,11 +43,10 @@ class PinIconButton extends StatelessWidget {
                   context.read<PinCubit>().unpinStory(story);
                 } else {
                   context.read<PinCubit>().pinStory(
-                        story,
-                        onDone: () => context.showSnackBar(
-                          content: 'Pinned to home page.',
-                        ),
-                      );
+                    story,
+                    onDone: () =>
+                        context.showSnackBar(content: 'Pinned to home page.'),
+                  );
                 }
               },
             ),

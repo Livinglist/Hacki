@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:linkify/linkify.dart';
 
-final RegExp _emphasisRegex = RegExp(
-  r'\*(.*?)\*',
-  multiLine: true,
-);
+final RegExp _emphasisRegex = RegExp(r'\*(.*?)\*', multiLine: true);
 
 class EmphasisLinkifier extends Linkifier {
   const EmphasisLinkifier();
@@ -29,8 +26,10 @@ class EmphasisLinkifier extends Linkifier {
           list.add(element);
         } else {
           final String matchedText = match.group(1)!;
-          final num pos =
-              (element.text.indexOf(matchedText) - 1).clamp(0, double.infinity);
+          final num pos = (element.text.indexOf(matchedText) - 1).clamp(
+            0,
+            double.infinity,
+          );
           final List<String> splitTexts = element.text.split(match.group(0)!);
 
           int curPos = 0;

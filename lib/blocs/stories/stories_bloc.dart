@@ -26,29 +26,23 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     HackerNewsRepository? hackerNewsRepository,
     HackerNewsWebRepository? hackerNewsWebRepository,
     PreferenceRepository? preferenceRepository,
-  })  : _preferenceCubit = preferenceCubit,
-        _filterCubit = filterCubit,
-        _hideCubit = hideCubit,
-        _offlineRepository =
-            offlineRepository ?? locator.get<OfflineRepository>(),
-        _hackerNewsRepository =
-            hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
-        _hackerNewsWebRepository =
-            hackerNewsWebRepository ?? locator.get<HackerNewsWebRepository>(),
-        _preferenceRepository =
-            preferenceRepository ?? locator.get<PreferenceRepository>(),
-        super(const StoriesState.init()) {
-    on<LoadStories>(
-      onLoadStories,
-      transformer: concurrent(),
-    );
+  }) : _preferenceCubit = preferenceCubit,
+       _filterCubit = filterCubit,
+       _hideCubit = hideCubit,
+       _offlineRepository =
+           offlineRepository ?? locator.get<OfflineRepository>(),
+       _hackerNewsRepository =
+           hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
+       _hackerNewsWebRepository =
+           hackerNewsWebRepository ?? locator.get<HackerNewsWebRepository>(),
+       _preferenceRepository =
+           preferenceRepository ?? locator.get<PreferenceRepository>(),
+       super(const StoriesState.init()) {
+    on<LoadStories>(onLoadStories, transformer: concurrent());
     on<StoriesInitialize>(onInitialize);
     on<StoriesRefresh>(onRefresh);
     on<StoriesLoadMore>(onLoadMore);
-    on<StoryLoaded>(
-      onStoryLoaded,
-      transformer: sequential(),
-    );
+    on<StoryLoaded>(onStoryLoaded, transformer: sequential());
     on<StoryRead>(onStoryRead);
     on<StoryUnread>(onStoryUnread);
     on<StoriesDownload>(onDownload);
@@ -64,11 +58,11 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         .map((PreferenceState s) => s.status)
         .distinct()
         .listen((Status status) {
-      if (status.isSuccessful) {
-        add(StoriesInitialize(startup: true));
-        _preferenceStatusSubscription?.cancel();
-      }
-    });
+          if (status.isSuccessful) {
+            add(StoriesInitialize(startup: true));
+            _preferenceStatusSubscription?.cancel();
+          }
+        });
   }
 
   final PreferenceCubit _preferenceCubit;
@@ -112,8 +106,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     );
 
     if (event.startup) {
-      final List<ConnectivityResult> status =
-          await Connectivity().checkConnectivity();
+      final List<ConnectivityResult> status = await Connectivity()
+          .checkConnectivity();
       logInfo('network status: $status');
       if (status.contains(ConnectivityResult.none)) {
         logInfo('no network connection, entering offline mode.');
@@ -127,10 +121,11 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
 
     _preferenceSubscription ??= _preferenceCubit.stream
         .distinct((PreferenceState lhs, PreferenceState rhs) {
-      return lhs.dataSource == rhs.dataSource;
-    }).listen((PreferenceState prefState) {
-      add(StoriesInitialize());
-    });
+          return lhs.dataSource == rhs.dataSource;
+        })
+        .listen((PreferenceState prefState) {
+          add(StoriesInitialize());
+        });
   }
 
   Future<void> onLoadStories(
@@ -144,8 +139,9 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     final StoryType type = event.type;
     if (state.isOfflineReading) {
       logInfo('($type) loading stories from local cache.');
-      final List<int> ids =
-          await _offlineRepository.getCachedStoryIds(type: type);
+      final List<int> ids = await _offlineRepository.getCachedStoryIds(
+        type: type,
+      );
       emit(
         state
             .copyWithStoryIdsUpdated(type: type, to: ids)
@@ -161,8 +157,9 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     } else if (event.shouldUseApi ||
         state.dataSource == HackerNewsDataSource.api) {
       logInfo('($type) loading stories from API.');
-      final List<int> ids =
-          await _hackerNewsRepository.fetchStoryIds(type: type);
+      final List<int> ids = await _hackerNewsRepository.fetchStoryIds(
+        type: type,
+      );
 
       if (_preferenceCubit.state.isHideInsteadOfMarkingGrayEnabled) {
         ids.removeWhere(_hideCubit.isHidden);
@@ -176,13 +173,16 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
       );
 
       await _storySubscriptions[type]?.cancel();
-      _storySubscriptions[type] = _hackerNewsRepository
-          .fetchStoriesStream(
-            ids: ids.sublist(0, min(_pageSize, ids.length)),
-            sequential: true,
-          )
-          .listen((Story story) => add(StoryLoaded(story: story, type: type)))
-        ..onDone(() => add(StoryLoadingCompleted(type: type)));
+      _storySubscriptions[type] =
+          _hackerNewsRepository
+              .fetchStoriesStream(
+                ids: ids.sublist(0, min(_pageSize, ids.length)),
+                sequential: true,
+              )
+              .listen(
+                (Story story) => add(StoryLoaded(story: story, type: type)),
+              )
+            ..onDone(() => add(StoryLoadingCompleted(type: type)));
     } else {
       logInfo('($type) loading stories from web.');
       emit(
@@ -192,25 +192,27 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
       );
 
       await _storySubscriptions[type]?.cancel();
-      _storySubscriptions[type] = _hackerNewsWebRepository
-          .fetchStoriesStream(event.type, page: 1)
-          .handleError((dynamic e) {
-        logError('($type) error loading stories from web $e');
+      _storySubscriptions[type] =
+          _hackerNewsWebRepository
+              .fetchStoriesStream(event.type, page: 1)
+              .handleError((dynamic e) {
+                logError('($type) error loading stories from web $e');
 
-        switch (e.runtimeType) {
-          case RateLimitedException:
-          case RateLimitedWithFallbackException:
-          case ParsingException:
-            add(event.copyWith(shouldUseApi: true));
-        }
-      }).listen((Story story) {
-        if (_hideCubit.isHidden(story.id)) {
-          return;
-        } else {
-          add(StoryLoaded(story: story, type: type));
-        }
-      })
-        ..onDone(() => add(StoryLoadingCompleted(type: type)));
+                switch (e.runtimeType) {
+                  case RateLimitedException:
+                  case RateLimitedWithFallbackException:
+                  case ParsingException:
+                    add(event.copyWith(shouldUseApi: true));
+                }
+              })
+              .listen((Story story) {
+                if (_hideCubit.isHidden(story.id)) {
+                  return;
+                } else {
+                  add(StoryLoaded(story: story, type: type));
+                }
+              })
+            ..onDone(() => add(StoryLoadingCompleted(type: type)));
     }
   }
 
@@ -220,20 +222,10 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
   ) async {
     if (state.statusByType[event.type] == Status.inProgress) return;
 
-    emit(
-      state.copyWithStatusUpdated(
-        type: event.type,
-        to: Status.inProgress,
-      ),
-    );
+    emit(state.copyWithStatusUpdated(type: event.type, to: Status.inProgress));
 
     if (state.isOfflineReading) {
-      emit(
-        state.copyWithStatusUpdated(
-          type: event.type,
-          to: Status.success,
-        ),
-      );
+      emit(state.copyWithStatusUpdated(type: event.type, to: Status.success));
     } else {
       emit(state.copyWithRefreshed(type: event.type));
       add(LoadStories(type: event.type, isRefreshing: true));
@@ -248,38 +240,23 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
 
     if (state.statusByType[type] == Status.inProgress) return;
 
-    emit(
-      state.copyWithStatusUpdated(
-        type: type,
-        to: Status.inProgress,
-      ),
-    );
+    emit(state.copyWithStatusUpdated(type: type, to: Status.inProgress));
 
     final int currentPage = state.currentPageByType[type]! + 1;
 
-    emit(
-      state.copyWithCurrentPageUpdated(type: type, to: currentPage),
-    );
+    emit(state.copyWithCurrentPageUpdated(type: type, to: currentPage));
 
     if (state.isOfflineReading) {
       final List<int>? ids = state.storyIdsByType[type];
       if (ids == null) {
         logError('ids should not be null.');
-        emit(
-          state.copyWithStatusUpdated(
-            type: type,
-            to: Status.failure,
-          ),
-        );
+        emit(state.copyWithStatusUpdated(type: type, to: Status.failure));
         return;
       }
       final int length = ids.length;
       final int lower = min(length, _pageSize * (currentPage - 1));
       final int upper = min(length, lower + _pageSize);
-      final List<int> idsForCurrentPage = ids.sublist(
-        lower,
-        upper,
-      );
+      final List<int> idsForCurrentPage = ids.sublist(lower, upper);
       _offlineRepository
           .getCachedStoriesStream(ids: idsForCurrentPage)
           .listen((Story story) => add(StoryLoaded(story: story, type: type)))
@@ -299,45 +276,40 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
 
       final int lower = min(length, _pageSize * (currentPage - 1));
       final int upper = min(length, lower + _pageSize);
-      final List<int> idsForCurrentPage = ids.sublist(
-        lower,
-        upper,
-      );
+      final List<int> idsForCurrentPage = ids.sublist(lower, upper);
       _hackerNewsRepository
           .fetchStoriesStream(ids: idsForCurrentPage)
-          .listen(
-            (Story story) => add(StoryLoaded(story: story, type: type)),
-          )
+          .listen((Story story) => add(StoryLoaded(story: story, type: type)))
           .onDone(() => add(StoryLoadingCompleted(type: type)));
     } else {
       _hackerNewsWebRepository
           .fetchStoriesStream(type, page: currentPage)
           .handleError((dynamic e) {
-        logError('error loading more stories $e');
+            logError('error loading more stories $e');
 
-        switch (e.runtimeType) {
-          case RateLimitedException:
-          case RateLimitedWithFallbackException:
-          case ParsingException:
+            switch (e.runtimeType) {
+              case RateLimitedException:
+              case RateLimitedWithFallbackException:
+              case ParsingException:
 
-            /// Fall back to use API instead.
-            add(event.copyWith(shouldUseApi: true));
-            emit(
-              state.copyWithCurrentPageUpdated(
-                type: type,
-                to: currentPage - 1,
-              ),
-            );
-        }
-      }).listen(
-        (Story story) {
-          if (_hideCubit.isHidden(story.id)) {
-            return;
-          } else {
-            add(StoryLoaded(story: story, type: type));
-          }
-        },
-      ).onDone(() => add(StoryLoadingCompleted(type: type)));
+                /// Fall back to use API instead.
+                add(event.copyWith(shouldUseApi: true));
+                emit(
+                  state.copyWithCurrentPageUpdated(
+                    type: type,
+                    to: currentPage - 1,
+                  ),
+                );
+            }
+          })
+          .listen((Story story) {
+            if (_hideCubit.isHidden(story.id)) {
+              return;
+            } else {
+              add(StoryLoaded(story: story, type: type));
+            }
+          })
+          .onDone(() => add(StoryLoadingCompleted(type: type)));
     }
   }
 
@@ -347,9 +319,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
   ) async {
     if (event is StoryLoadingCompleted) {
       logInfo('loading of ${event.type} stories completed.');
-      emit(
-        state.copyWithStatusUpdated(type: event.type, to: Status.success),
-      );
+      emit(state.copyWithStatusUpdated(type: event.type, to: Status.success));
       return;
     }
 
@@ -382,11 +352,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     StoriesDownload event,
     Emitter<StoriesState> emit,
   ) async {
-    emit(
-      state.copyWith(
-        downloadStatus: StoriesDownloadStatus.downloading,
-      ),
-    );
+    emit(state.copyWith(downloadStatus: StoriesDownloadStatus.downloading));
 
     await _offlineRepository.deleteAllStoryIds();
     await _offlineRepository.deleteAllStories();
@@ -405,8 +371,9 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     ];
 
     for (final StoryType type in prioritizedTypes) {
-      final List<int> ids =
-          await _hackerNewsRepository.fetchStoryIds(type: type);
+      final List<int> ids = await _hackerNewsRepository.fetchStoryIds(
+        type: type,
+      );
       await _offlineRepository.cacheStoryIds(type: type, ids: ids);
       prioritizedIds.addAll(ids);
     }
@@ -451,11 +418,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
         isPrioritized: false,
       );
     } catch (_) {
-      emit(
-        state.copyWith(
-          downloadStatus: StoriesDownloadStatus.failure,
-        ),
-      );
+      emit(state.copyWith(downloadStatus: StoriesDownloadStatus.failure));
     }
   }
 
@@ -463,11 +426,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     StoriesCancelDownload event,
     Emitter<StoriesState> emit,
   ) async {
-    emit(
-      state.copyWith(
-        downloadStatus: StoriesDownloadStatus.canceled,
-      ),
-    );
+    emit(state.copyWith(downloadStatus: StoriesDownloadStatus.canceled));
   }
 
   Future<void> fetchAndCacheStories(
@@ -533,36 +492,36 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
       /// the comments in the story.
       late final StreamSubscription<Comment>? downloadStream;
       logDebug('start fetching comments for story ${story.id}');
-      downloadStream = _hackerNewsRepository
-          .fetchAllChildrenComments(ids: story.kids)
-          .whereType<Comment>()
-          .listen(
-        (Comment comment) {
-          if (state.downloadStatus == StoriesDownloadStatus.canceled) {
-            logDebug('aborting downloading from comments stream');
-            downloadStream?.cancel();
-            return;
-          } else if (state.downloadStatus == StoriesDownloadStatus.finished) {
-            logDebug(
-              '''A download status is finished, abort fetching stories and comments''',
-            );
-            for (final StreamSubscription<Comment> stream in downloadStreams) {
-              stream.cancel();
-            }
-            return;
-          }
+      downloadStream =
+          _hackerNewsRepository
+              .fetchAllChildrenComments(ids: story.kids)
+              .whereType<Comment>()
+              .listen((Comment comment) {
+                if (state.downloadStatus == StoriesDownloadStatus.canceled) {
+                  logDebug('aborting downloading from comments stream');
+                  downloadStream?.cancel();
+                  return;
+                } else if (state.downloadStatus ==
+                    StoriesDownloadStatus.finished) {
+                  logDebug(
+                    '''A download status is finished, abort fetching stories and comments''',
+                  );
+                  for (final StreamSubscription<Comment> stream
+                      in downloadStreams) {
+                    stream.cancel();
+                  }
+                  return;
+                }
 
-          logDebug('fetched comment ${comment.id}');
-          unawaited(
-            _offlineRepository.cacheComment(comment: comment),
-          );
-        },
-      )..onDone(() {
-          logDebug(
-            '''finished downloading story ${story.id} with ${story.descendants} comments''',
-          );
-          add(StoryDownloaded(skipped: false));
-        });
+                logDebug('fetched comment ${comment.id}');
+                unawaited(_offlineRepository.cacheComment(comment: comment));
+              })
+            ..onDone(() {
+              logDebug(
+                '''finished downloading story ${story.id} with ${story.descendants} comments''',
+              );
+              add(StoryDownloaded(skipped: false));
+            });
 
       downloadStreams.add(downloadStream);
     }
@@ -575,7 +534,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
       emit(
         state.copyWith(
           storiesToBeDownloaded: updatedStoriesToBeDownloaded,
-          downloadStatus: updatedStoriesToBeDownloaded == 0 ||
+          downloadStatus:
+              updatedStoriesToBeDownloaded == 0 ||
                   updatedStoriesToBeDownloaded == state.storiesDownloaded ||
                   state.storiesDownloaded >=
                       (state.maxOfflineStoriesCount?.count ?? 1000)
@@ -587,14 +547,15 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
       final int updatedStoriesDownloaded = state.storiesDownloaded + 1;
       final int updatedStoriesToBeDownloaded =
           updatedStoriesDownloaded > state.storiesToBeDownloaded
-              ? state.storiesToBeDownloaded + 1
-              : state.storiesToBeDownloaded;
+          ? state.storiesToBeDownloaded + 1
+          : state.storiesToBeDownloaded;
 
       emit(
         state.copyWith(
           storiesDownloaded: updatedStoriesDownloaded,
           storiesToBeDownloaded: updatedStoriesToBeDownloaded,
-          downloadStatus: updatedStoriesToBeDownloaded == 0 ||
+          downloadStatus:
+              updatedStoriesToBeDownloaded == 0 ||
                   updatedStoriesToBeDownloaded == updatedStoriesDownloaded ||
                   updatedStoriesDownloaded >=
                       (state.maxOfflineStoriesCount?.count ?? 1000)
@@ -635,10 +596,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     emit(state.copyWithMaxOfflineStoriesCountReset());
   }
 
-  Future<void> onStoryRead(
-    StoryRead event,
-    Emitter<StoriesState> emit,
-  ) async {
+  Future<void> onStoryRead(StoryRead event, Emitter<StoriesState> emit) async {
     unawaited(_preferenceRepository.addHasRead(event.story.id));
 
     emit(
@@ -667,11 +625,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
   ) async {
     unawaited(_preferenceRepository.clearAllReadStories());
 
-    emit(
-      state.copyWith(
-        readStoriesIds: <int>{},
-      ),
-    );
+    emit(state.copyWith(readStoriesIds: <int>{}));
   }
 
   bool hasRead(Story story) => state.readStoriesIds.contains(story.id);

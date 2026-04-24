@@ -47,10 +47,8 @@ abstract final class WidgetUtils {
       );
       if (totalLine.isEmpty) return 1;
 
-      final int kb = int.tryParse(
-            totalLine.replaceAll(RegExp('[^0-9]'), ''),
-          ) ??
-          0;
+      final int kb =
+          int.tryParse(totalLine.replaceAll(RegExp('[^0-9]'), '')) ?? 0;
       final double gb = kb / (1024 * 1024);
 
       if (gb >= 8) return 1.3;

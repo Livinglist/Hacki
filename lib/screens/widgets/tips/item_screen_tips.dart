@@ -21,18 +21,17 @@ class _ItemScreenTipsState extends State<ItemScreenTips> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset(
-      Constants.itemScreenTimeMachineTipsPath,
-      videoPlayerOptions: VideoPlayerOptions(
-        mixWithOthers: true,
-      ),
-    )
-      ..setVolume(0)
-      ..setLooping(true)
-      ..initialize().then((_) {
-        /// Ensure the first frame is shown after the video is initialized.
-        setState(() {});
-      });
+    _controller =
+        VideoPlayerController.asset(
+            Constants.itemScreenTimeMachineTipsPath,
+            videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+          )
+          ..setVolume(0)
+          ..setLooping(true)
+          ..initialize().then((_) {
+            /// Ensure the first frame is shown after the video is initialized.
+            setState(() {});
+          });
   }
 
   @override
@@ -44,22 +43,16 @@ class _ItemScreenTipsState extends State<ItemScreenTips> {
       closedBuilder: (BuildContext context, void Function() action) {
         return IconButton(
           onPressed: action,
-          icon: const Icon(
-            Icons.tips_and_updates_outlined,
-          ),
+          icon: const Icon(Icons.tips_and_updates_outlined),
         );
       },
       openBuilder: (BuildContext context, void Function() action) {
         _controller.play();
         context.read<TipsCubit>().completeTips(Tips.itemScreen);
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('Tips'),
-          ),
+          appBar: AppBar(title: const Text('Tips')),
           body: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: Dimens.pt12,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: Dimens.pt12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -67,7 +60,8 @@ class _ItemScreenTipsState extends State<ItemScreenTips> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     SizedBox(
-                      height: MediaQuery.of(context).size.height *
+                      height:
+                          MediaQuery.of(context).size.height *
                           _videoHeightFactor,
                       child: Card(
                         elevation: Dimens.pt4,
@@ -89,9 +83,7 @@ class _ItemScreenTipsState extends State<ItemScreenTips> {
                 ),
                 SizedBoxes.pt24,
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: Dimens.pt12,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: Dimens.pt12),
                   child: Text(
                     '''When you find yourself too deep in a thread, you can swipe left on a comment to see all its ancestors including the root story (or comment).''',
                     style: TextStyle(
@@ -108,9 +100,7 @@ class _ItemScreenTipsState extends State<ItemScreenTips> {
                       onPressed: action,
                       child: const Text(
                         'Dismiss',
-                        style: TextStyle(
-                          fontSize: TextDimens.pt16,
-                        ),
+                        style: TextStyle(fontSize: TextDimens.pt16),
                       ),
                     ),
                     TextButton(

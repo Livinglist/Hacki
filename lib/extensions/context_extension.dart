@@ -34,29 +34,22 @@ extension ContextExtension on BuildContext {
           margin: bottomPadding == null
               ? null
               : EdgeInsets.only(bottom: bottomPadding, left: 10, right: 10),
-          behavior:
-              isFloating ? SnackBarBehavior.floating : SnackBarBehavior.fixed,
+          behavior: isFloating
+              ? SnackBarBehavior.floating
+              : SnackBarBehavior.fixed,
           backgroundColor: Theme.of(this).colorScheme.primary,
           content: Text(
             content,
-            style: TextStyle(
-              color: Theme.of(this).colorScheme.onPrimary,
-            ),
+            style: TextStyle(color: Theme.of(this).colorScheme.onPrimary),
           ),
           action: action != null && label != null
-              ? SnackBarAction(
-                  label: label,
-                  onPressed: action,
-                )
+              ? SnackBarAction(label: label, onPressed: action)
               : null,
         ),
       );
   }
 
-  void showErrorSnackBar([
-    String? message,
-    dynamic error,
-  ]) {
+  void showErrorSnackBar([String? message, dynamic error]) {
     ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
         backgroundColor: Theme.of(this).colorScheme.errorContainer,
@@ -74,9 +67,9 @@ extension ContextExtension on BuildContext {
               Text(
                 error.toString(),
                 style: TextStyle(
-                  color: Theme.of(this).colorScheme.onErrorContainer.withAlpha(
-                        150,
-                      ),
+                  color: Theme.of(
+                    this,
+                  ).colorScheme.onErrorContainer.withAlpha(150),
                   fontSize: TextDimens.pt10,
                 ),
               ),
@@ -88,8 +81,9 @@ extension ContextExtension on BuildContext {
 
   Rect? get rect {
     final RenderBox? box = findRenderObject() as RenderBox?;
-    final Rect? rect =
-        box == null ? null : box.localToGlobal(Offset.zero) & box.size;
+    final Rect? rect = box == null
+        ? null
+        : box.localToGlobal(Offset.zero) & box.size;
     return rect;
   }
 
@@ -104,8 +98,10 @@ extension ContextExtension on BuildContext {
   static const double _picHeightFactor = 0.3;
 
   double get storyTileHeight {
-    final double screenWidth =
-        min(MediaQuery.of(this).size.height, MediaQuery.of(this).size.width);
+    final double screenWidth = min(
+      MediaQuery.of(this).size.height,
+      MediaQuery.of(this).size.width,
+    );
 
     if (screenWidth == _screenWidth) {
       return _storyTileHeight;
@@ -115,11 +111,13 @@ extension ContextExtension on BuildContext {
 
     final bool shouldShowSmallerPreviewPic =
         screenWidth > _screenWidthLowerBound &&
-            screenWidth < _screenWidthUpperBound;
+        screenWidth < _screenWidthUpperBound;
     final double height = shouldShowSmallerPreviewPic
         ? _smallPicHeight
-        : (screenWidth * _picHeightFactor)
-            .clamp(_picHeightLowerBound, _picHeightUpperBound);
+        : (screenWidth * _picHeightFactor).clamp(
+            _picHeightLowerBound,
+            _picHeightUpperBound,
+          );
     final int maxLines = height == _smallPicHeight ? 3 : 4;
     _storyTileMaxLines = maxLines;
 

@@ -54,19 +54,19 @@ abstract class Constants {
       '''Mozilla/5.0 (iPhone; CPU iPhone OS 18_3_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3.1 Mobile/15E148 Safari/604.1''';
 
   static String get tips => <String>[
-        'Swipe right on story title to vote or share',
-        'Long press on story title to copy its article URL',
-        'Long press on any link in comment or story to copy',
-        'Long press and select text in comment to search on HN',
-        'Text preview on collapsed comment can be turned off in settings',
-        'Use lazy fetching to fetch only the root level comments',
-        'Turn on True Dark Mode in settings to use black background',
-        'Download stories in settings to read stories offline',
-        'Open any Hacker News links in Hacki via the system share menu',
-        '''Swipe right on a comment and tap the dots icon to search for the poster within the thread or across HN''',
-        '''Disabling `Mark Read Stories` in settings will clear your existing read history''',
-        "What's beyond the universe?",
-      ].randomlyPicked!;
+    'Swipe right on story title to vote or share',
+    'Long press on story title to copy its article URL',
+    'Long press on any link in comment or story to copy',
+    'Long press and select text in comment to search on HN',
+    'Text preview on collapsed comment can be turned off in settings',
+    'Use lazy fetching to fetch only the root level comments',
+    'Turn on True Dark Mode in settings to use black background',
+    'Download stories in settings to read stories offline',
+    'Open any Hacker News links in Hacki via the system share menu',
+    '''Swipe right on a comment and tap the dots icon to search for the poster within the thread or across HN''',
+    '''Disabling `Mark Read Stories` in settings will clear your existing read history''',
+    "What's beyond the universe?",
+  ].randomlyPicked!;
 
   static final String happyFace = <String>[
     '(๑•̀ㅂ•́)و✧',

@@ -14,9 +14,7 @@ class RemoteConfigRepository {
   Future<Map<String, dynamic>> fetchRemoteConfig() async {
     if (kReleaseMode) {
       const String fileName = 'remote-config.json';
-      final Response<dynamic> response = await _dio.get(
-        '$_path$fileName',
-      );
+      final Response<dynamic> response = await _dio.get('$_path$fileName');
       final String data = response.data as String? ?? '';
       final Map<String, dynamic> json =
           jsonDecode(data) as Map<String, dynamic>;

@@ -67,8 +67,8 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                 bottom: expanded
                     ? Dimens.zero
                     : widget.splitViewEnabled
-                        ? MediaQuery.of(context).viewInsets.bottom
-                        : Dimens.zero,
+                    ? MediaQuery.of(context).viewInsets.bottom
+                    : Dimens.zero,
               ),
               child: AnimatedContainer(
                 height: editState.showReplyBox
@@ -93,9 +93,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       if (context.read<SplitViewCubit>().state.enabled)
-                        const Divider(
-                          height: Dimens.zero,
-                        ),
+                        const Divider(height: Dimens.zero),
                       AnimatedContainer(
                         height: expanded ? Dimens.pt64 : Dimens.zero,
                         duration: AppDurations.ms300,
@@ -113,7 +111,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                                 replyingTo == null
                                     ? 'Editing'
                                     : 'Replying to '
-                                        '${replyingTo.by}',
+                                          '${replyingTo.by}',
                                 style: const TextStyle(color: Palette.grey),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -124,15 +122,17 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                             ...<Widget>[
                               if (replyingTo != null && replyingTo is Comment)
                                 AnimatedOpacity(
-                                  opacity:
-                                      expanded ? NumSwitch.on : NumSwitch.off,
+                                  opacity: expanded
+                                      ? NumSwitch.on
+                                      : NumSwitch.off,
                                   duration: AppDurations.ms300,
                                   child: IconButton(
                                     key: const Key('quote'),
                                     icon: Icon(
                                       FeatherIcons.code,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
                                       size: TextDimens.pt18,
                                     ),
                                     onPressed: expanded ? showTextPopup : null,
@@ -165,8 +165,9 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                                   expanded = false;
                                 });
 
-                                final EditState state =
-                                    context.read<EditCubit>().state;
+                                final EditState state = context
+                                    .read<EditCubit>()
+                                    .state;
                                 if (state.replyingTo != null &&
                                     state.text.isNotNullOrEmpty) {
                                   showDialog<void>(
@@ -174,26 +175,26 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                                     barrierDismissible: false,
                                     builder: (BuildContext context) =>
                                         AlertDialog(
-                                      title: const Text('Abort editing?'),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          onPressed: context.pop,
-                                          child: const Text(
-                                            'No',
-                                            style: TextStyle(
-                                              color: Palette.red,
+                                          title: const Text('Abort editing?'),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: context.pop,
+                                              child: const Text(
+                                                'No',
+                                                style: TextStyle(
+                                                  color: Palette.red,
+                                                ),
+                                              ),
                                             ),
-                                          ),
+                                            TextButton(
+                                              onPressed: () {
+                                                context.pop();
+                                                onCloseTapped();
+                                              },
+                                              child: const Text('Yes'),
+                                            ),
+                                          ],
                                         ),
-                                        TextButton(
-                                          onPressed: () {
-                                            context.pop();
-                                            onCloseTapped();
-                                          },
-                                          child: const Text('Yes'),
-                                        ),
-                                      ],
-                                    ),
                                   );
                                 } else {
                                   onCloseTapped();
@@ -238,13 +239,9 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                           maxLines: null,
                           decoration: const InputDecoration(
                             alignLabelWithHint: true,
-                            contentPadding: EdgeInsets.only(
-                              left: Dimens.pt10,
-                            ),
+                            contentPadding: EdgeInsets.only(left: Dimens.pt10),
                             hintText: '...',
-                            hintStyle: TextStyle(
-                              color: Palette.grey,
-                            ),
+                            hintStyle: TextStyle(color: Palette.grey),
                             enabledBorder: InputBorder.none,
                             disabledBorder: InputBorder.none,
                             focusedBorder: InputBorder.none,
@@ -256,9 +253,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                           onChanged: widget.onChanged,
                         ),
                       ),
-                      const SizedBox(
-                        height: Dimens.pt8,
-                      ),
+                      const SizedBox(height: Dimens.pt8),
                     ],
                   ),
                 ),
@@ -295,14 +290,9 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
             horizontal: Dimens.pt12,
             vertical: Dimens.pt24,
           ),
-          contentPadding: const EdgeInsets.only(
-            bottom: Dimens.pt12,
-          ),
+          contentPadding: const EdgeInsets.only(bottom: Dimens.pt12),
           content: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: 500,
-              maxHeight: 500,
-            ),
+            constraints: const BoxConstraints(maxWidth: 500, maxHeight: 500),
             child: Column(
               children: <Widget>[
                 Padding(
@@ -323,9 +313,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                       TextButton(
                         child: const Text(
                           'View thread',
-                          style: TextStyle(
-                            fontSize: TextDimens.pt14,
-                          ),
+                          style: TextStyle(fontSize: TextDimens.pt14),
                         ),
                         onPressed: () {
                           HapticFeedbackUtils.light();
@@ -344,9 +332,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                       TextButton(
                         child: const Text(
                           'Copy all',
-                          style: TextStyle(
-                            fontSize: TextDimens.pt14,
-                          ),
+                          style: TextStyle(fontSize: TextDimens.pt14),
                         ),
                         onPressed: () => Clipboard.setData(
                           ClipboardData(text: replyingTo.text),

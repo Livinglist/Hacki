@@ -16,14 +16,9 @@ import 'package:url_launcher/url_launcher.dart';
 abstract final class LinkUtils {
   static final ChromeSafariBrowser _browser = ChromeSafariBrowser();
 
-  static void launchInExternalBrowser(
-    String link,
-  ) {
+  static void launchInExternalBrowser(String link) {
     final Uri uri = Uri.parse(link);
-    launchUrl(
-      uri,
-      mode: LaunchMode.externalApplication,
-    );
+    launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
   static void launch(
@@ -34,15 +29,11 @@ abstract final class LinkUtils {
     bool shouldUseHackiForHnLink = true,
   }) {
     if (isOfflineReading) {
-      locator
-          .get<OfflineRepository>()
-          .hasCachedWebPage(url: link)
-          .then((bool cached) {
+      locator.get<OfflineRepository>().hasCachedWebPage(url: link).then((
+        bool cached,
+      ) {
         if (cached) {
-          router.push(
-            Paths.webView.landing,
-            extra: link,
-          );
+          router.push(Paths.webView.landing, extra: link);
         }
       });
 
@@ -52,15 +43,11 @@ abstract final class LinkUtils {
     if (shouldUseHackiForHnLink && link.isStoryLink) {
       final int? id = link.itemId;
       if (id != null) {
-        locator
-            .get<HackerNewsRepository>()
-            .fetchItem(id: id)
-            .then((Item? item) {
+        locator.get<HackerNewsRepository>().fetchItem(id: id).then((
+          Item? item,
+        ) {
           if (item != null) {
-            router.push(
-              Paths.item.landing,
-              extra: ItemScreenArgs(item: item),
-            );
+            router.push(Paths.item.landing, extra: ItemScreenArgs(item: item));
           }
         });
         return;

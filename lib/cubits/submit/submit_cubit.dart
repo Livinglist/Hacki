@@ -8,8 +8,8 @@ part 'submit_state.dart';
 
 class SubmitCubit extends Cubit<SubmitState> {
   SubmitCubit({PostRepository? postRepository})
-      : _postRepository = postRepository ?? locator.get<PostRepository>(),
-        super(const SubmitState.init());
+    : _postRepository = postRepository ?? locator.get<PostRepository>(),
+      super(const SubmitState.init());
 
   final PostRepository _postRepository;
 
@@ -32,10 +32,11 @@ class SubmitCubit extends Cubit<SubmitState> {
       _postRepository
           .submit(title: state.title!, url: state.url, text: state.text)
           .then((bool successful) {
-        emit(state.copyWith(status: Status.success));
-      }).onError((Object? error, StackTrace stackTrace) {
-        emit(state.copyWith(status: Status.failure));
-      });
+            emit(state.copyWith(status: Status.success));
+          })
+          .onError((Object? error, StackTrace stackTrace) {
+            emit(state.copyWith(status: Status.failure));
+          });
     }
   }
 }

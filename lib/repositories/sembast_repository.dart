@@ -17,10 +17,7 @@ import 'package:sembast/sembast_io.dart';
 /// documents directory assigned by host system which you can retrieve
 /// by calling [getApplicationDocumentsDirectory].
 class SembastRepository with Loggable {
-  SembastRepository({
-    Database? database,
-    Database? cache,
-  }) {
+  SembastRepository({Database? database, Database? cache}) {
     if (database == null) {
       initializeDatabase();
     } else {
@@ -72,17 +69,20 @@ class SembastRepository with Loggable {
   //#region Cached comments for time machine feature and favorites screen.
   Future<Map<String, Object?>> cacheComment(Comment comment) async {
     final Database db = _database ?? await initializeDatabase();
-    final StoreRef<int, Map<String, Object?>> store =
-        intMapStoreFactory.store(_cachedCommentsKey);
+    final StoreRef<int, Map<String, Object?>> store = intMapStoreFactory.store(
+      _cachedCommentsKey,
+    );
     return store.record(comment.id).put(db, comment.toJson());
   }
 
   Future<Comment?> getCachedComment({required int id}) async {
     final Database db = _database ?? await initializeDatabase();
-    final StoreRef<int, Map<String, Object?>> store =
-        intMapStoreFactory.store(_cachedCommentsKey);
-    final RecordSnapshot<int, Map<String, Object?>>? snapshot =
-        await store.record(id).getSnapshot(db);
+    final StoreRef<int, Map<String, Object?>> store = intMapStoreFactory.store(
+      _cachedCommentsKey,
+    );
+    final RecordSnapshot<int, Map<String, Object?>>? snapshot = await store
+        .record(id)
+        .getSnapshot(db);
     if (snapshot != null) {
       final Comment comment = Comment.fromJson(snapshot.value);
       return comment;
@@ -93,17 +93,20 @@ class SembastRepository with Loggable {
 
   Future<Map<String, Object?>> cacheItem(Item item) async {
     final Database db = _database ?? await initializeDatabase();
-    final StoreRef<int, Map<String, Object?>> store =
-        intMapStoreFactory.store(_cachedCommentsKey);
+    final StoreRef<int, Map<String, Object?>> store = intMapStoreFactory.store(
+      _cachedCommentsKey,
+    );
     return store.record(item.id).put(db, item.toJson());
   }
 
   Future<Item?> getCachedItem({required int id}) async {
     final Database db = _database ?? await initializeDatabase();
-    final StoreRef<int, Map<String, Object?>> store =
-        intMapStoreFactory.store(_cachedCommentsKey);
-    final RecordSnapshot<int, Map<String, Object?>>? snapshot =
-        await store.record(id).getSnapshot(db);
+    final StoreRef<int, Map<String, Object?>> store = intMapStoreFactory.store(
+      _cachedCommentsKey,
+    );
+    final RecordSnapshot<int, Map<String, Object?>>? snapshot = await store
+        .record(id)
+        .getSnapshot(db);
     if (snapshot != null) {
       final bool isStory = snapshot['type'] == 'story';
       if (isStory) {
@@ -120,8 +123,9 @@ class SembastRepository with Loggable {
 
   Future<int> deleteAllCachedItems() async {
     final Database db = _database ?? await initializeDatabase();
-    final StoreRef<int, Map<String, Object?>> store =
-        intMapStoreFactory.store(_cachedCommentsKey);
+    final StoreRef<int, Map<String, Object?>> store = intMapStoreFactory.store(
+      _cachedCommentsKey,
+    );
     return store.delete(db);
   }
 
@@ -130,15 +134,17 @@ class SembastRepository with Loggable {
   //#region Saved comments for notification feature.
   Future<Map<String, Object?>> saveComment(Comment comment) async {
     final Database db = _database ?? await initializeDatabase();
-    final StoreRef<int, Map<String, Object?>> store =
-        intMapStoreFactory.store(_commentsKey);
+    final StoreRef<int, Map<String, Object?>> store = intMapStoreFactory.store(
+      _commentsKey,
+    );
     return store.record(comment.id).put(db, comment.toJson());
   }
 
   Future<void> saveComments(List<Comment> comments) async {
     final Database db = _database ?? await initializeDatabase();
-    final StoreRef<int, Map<String, Object?>> store =
-        intMapStoreFactory.store(_commentsKey);
+    final StoreRef<int, Map<String, Object?>> store = intMapStoreFactory.store(
+      _commentsKey,
+    );
 
     return db.transaction((Transaction txn) async {
       for (final Comment cmt in comments) {
@@ -150,10 +156,11 @@ class SembastRepository with Loggable {
   Future<List<int>> getIdsOfCommentsRepliedToMe() async {
     final Database db = _database ?? await initializeDatabase();
     final StoreRef<dynamic, dynamic> store = StoreRef<dynamic, dynamic>.main();
-    final RecordSnapshot<dynamic, dynamic>? snapshot =
-        await store.record(_idsOfCommentsRepliedToMeKey).getSnapshot(db);
-    final List<int> repliedToMe =
-        (snapshot?.value as List<dynamic>? ?? <int>[]).cast<int>();
+    final RecordSnapshot<dynamic, dynamic>? snapshot = await store
+        .record(_idsOfCommentsRepliedToMeKey)
+        .getSnapshot(db);
+    final List<int> repliedToMe = (snapshot?.value as List<dynamic>? ?? <int>[])
+        .cast<int>();
     _idsOfCommentsRepliedToMe = repliedToMe;
     return repliedToMe;
   }
@@ -164,16 +171,19 @@ class SembastRepository with Loggable {
     late final List<int> list;
 
     if (_idsOfCommentsRepliedToMe == null) {
-      final RecordSnapshot<dynamic, dynamic>? snapshot =
-          await store.record(_idsOfCommentsRepliedToMeKey).getSnapshot(db);
+      final RecordSnapshot<dynamic, dynamic>? snapshot = await store
+          .record(_idsOfCommentsRepliedToMeKey)
+          .getSnapshot(db);
       list = (snapshot?.value as List<dynamic>? ?? <int>[]).cast<int>();
       _idsOfCommentsRepliedToMe = list;
     } else {
       list = _idsOfCommentsRepliedToMe!;
     }
 
-    final List<int> updatedList =
-        (<int>{id, ...list}.toList()..sort()).reversed.toList();
+    final List<int> updatedList = (<int>{
+      id,
+      ...list,
+    }.toList()..sort()).reversed.toList();
     _idsOfCommentsRepliedToMe = updatedList;
 
     return store.record(_idsOfCommentsRepliedToMeKey).put(db, updatedList);
@@ -181,10 +191,12 @@ class SembastRepository with Loggable {
 
   Future<Comment?> getComment({required int id}) async {
     final Database db = _database ?? await initializeDatabase();
-    final StoreRef<int, Map<String, Object?>> store =
-        intMapStoreFactory.store(_commentsKey);
-    final RecordSnapshot<int, Map<String, Object?>>? snapshot =
-        await store.record(id).getSnapshot(db);
+    final StoreRef<int, Map<String, Object?>> store = intMapStoreFactory.store(
+      _commentsKey,
+    );
+    final RecordSnapshot<int, Map<String, Object?>>? snapshot = await store
+        .record(id)
+        .getSnapshot(db);
     if (snapshot != null) {
       final Comment comment = Comment.fromJson(snapshot.value);
       return comment;
@@ -195,14 +207,16 @@ class SembastRepository with Loggable {
 
   Future<List<Comment>> getComments({required List<int> ids}) async {
     final Database db = _database ?? await initializeDatabase();
-    final StoreRef<int, Map<String, Object?>> store =
-        intMapStoreFactory.store(_commentsKey);
+    final StoreRef<int, Map<String, Object?>> store = intMapStoreFactory.store(
+      _commentsKey,
+    );
     final List<Comment> comments = <Comment>[];
 
     await db.transaction((Transaction txn) async {
       for (final int id in ids) {
-        final RecordSnapshot<int, Map<String, Object?>>? snapshot =
-            await store.record(id).getSnapshot(txn);
+        final RecordSnapshot<int, Map<String, Object?>>? snapshot = await store
+            .record(id)
+            .getSnapshot(txn);
         if (snapshot != null) {
           final Comment comment = Comment.fromJson(snapshot.value);
           comments.add(comment);
@@ -228,8 +242,9 @@ class SembastRepository with Loggable {
     final Database db = _database ?? await initializeDatabase();
     final StoreRef<int, List<dynamic>> store =
         StoreRef<int, List<dynamic>>.main();
-    final RecordSnapshot<int, List<dynamic>>? snapshot =
-        await store.record(itemId).getSnapshot(db);
+    final RecordSnapshot<int, List<dynamic>>? snapshot = await store
+        .record(itemId)
+        .getSnapshot(db);
     final List<int>? kids = snapshot?.value.cast<int>();
     return kids;
   }
@@ -243,21 +258,20 @@ class SembastRepository with Loggable {
     required WebInfo info,
   }) async {
     final Database db = _cache ?? await initializeCache();
-    final StoreRef<String, Map<String, Object?>> store =
-        stringMapStoreFactory.store(_metadataCacheKey);
+    final StoreRef<String, Map<String, Object?>> store = stringMapStoreFactory
+        .store(_metadataCacheKey);
     return db.transaction((Transaction txn) async {
       await store.record(key).put(txn, info.toJson());
     });
   }
 
-  Future<WebInfo?> getCachedMetadata({
-    required String key,
-  }) async {
+  Future<WebInfo?> getCachedMetadata({required String key}) async {
     final Database db = _cache ?? await initializeCache();
-    final StoreRef<String, Map<String, Object?>> store =
-        stringMapStoreFactory.store(_metadataCacheKey);
-    final RecordSnapshot<String, Map<String, Object?>>? snapshot =
-        await store.record(key).getSnapshot(db);
+    final StoreRef<String, Map<String, Object?>> store = stringMapStoreFactory
+        .store(_metadataCacheKey);
+    final RecordSnapshot<String, Map<String, Object?>>? snapshot = await store
+        .record(key)
+        .getSnapshot(db);
     if (snapshot != null) {
       final WebInfo info = WebInfo.fromJson(snapshot.value);
       return info;

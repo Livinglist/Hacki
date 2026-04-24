@@ -10,15 +10,12 @@ import 'package:hacki/utils/utils.dart';
 /// [PostRepository] is for posting contents to Hacker News.
 class PostRepository extends PostableRepository {
   PostRepository({super.dio, PreferenceRepository? storageRepository})
-      : _preferenceRepository =
-            storageRepository ?? locator.get<PreferenceRepository>();
+    : _preferenceRepository =
+          storageRepository ?? locator.get<PreferenceRepository>();
 
   final PreferenceRepository _preferenceRepository;
 
-  Future<bool> comment({
-    required int parentId,
-    required String text,
-  }) async {
+  Future<bool> comment({required int parentId, required String text}) async {
     final String? username = await _preferenceRepository.username;
     final String? password = await _preferenceRepository.password;
     final Uri uri = Uri.https(authority, 'comment');
@@ -58,15 +55,17 @@ class PostRepository extends PostableRepository {
       password: password,
       path: 'submitlink',
     );
-    final Map<String, String>? formValues =
-        HtmlUtils.getHiddenFormValues(formResponse.data);
+    final Map<String, String>? formValues = HtmlUtils.getHiddenFormValues(
+      formResponse.data,
+    );
 
     if (formValues == null || formValues.isEmpty) {
       return false;
     }
 
-    final String? cookie =
-        formResponse.headers.value(HttpHeaders.setCookieHeader);
+    final String? cookie = formResponse.headers.value(
+      HttpHeaders.setCookieHeader,
+    );
 
     final Uri uri = Uri.https(authority, 'r');
     final PostDataMixin data = SubmitPostData(
@@ -85,10 +84,7 @@ class PostRepository extends PostableRepository {
     );
   }
 
-  Future<bool> edit({
-    required int id,
-    String? text,
-  }) async {
+  Future<bool> edit({required int id, String? text}) async {
     final String? username = await _preferenceRepository.username;
     final String? password = await _preferenceRepository.password;
 
@@ -102,15 +98,17 @@ class PostRepository extends PostableRepository {
       id: id,
       path: 'edit',
     );
-    final Map<String, String>? formValues =
-        HtmlUtils.getHiddenFormValues(formResponse.data);
+    final Map<String, String>? formValues = HtmlUtils.getHiddenFormValues(
+      formResponse.data,
+    );
 
     if (formValues == null || formValues.isEmpty) {
       return false;
     }
 
-    final String? cookie =
-        formResponse.headers.value(HttpHeaders.setCookieHeader);
+    final String? cookie = formResponse.headers.value(
+      HttpHeaders.setCookieHeader,
+    );
 
     final Uri uri = Uri.https(authority, 'xedit');
     final PostDataMixin data = EditPostData(
@@ -119,10 +117,6 @@ class PostRepository extends PostableRepository {
       text: text,
     );
 
-    return performDefaultPost(
-      uri,
-      data,
-      cookie: cookie,
-    );
+    return performDefaultPost(uri, data, cookie: cookie);
   }
 }

@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 class Debouncer {
-  Debouncer({
-    required this.delay,
-  });
+  Debouncer({required this.delay});
 
   final Duration delay;
   Timer? _timer;

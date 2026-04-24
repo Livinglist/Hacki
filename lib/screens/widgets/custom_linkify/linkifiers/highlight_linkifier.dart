@@ -2,12 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:linkify/linkify.dart';
 
 class HighlightLinkifier extends Linkifier {
-  HighlightLinkifier({
-    required String highlightedText,
-  }) : highlightRegExp = RegExp(
-          highlightedText,
-          caseSensitive: false,
-        );
+  HighlightLinkifier({required String highlightedText})
+    : highlightRegExp = RegExp(highlightedText, caseSensitive: false);
 
   final RegExp highlightRegExp;
 
@@ -31,8 +27,10 @@ class HighlightLinkifier extends Linkifier {
           list.add(element);
         } else {
           final String matchedText = match.group(0)!;
-          final num pos =
-              (element.text.indexOf(matchedText) - 1).clamp(0, double.infinity);
+          final num pos = (element.text.indexOf(matchedText) - 1).clamp(
+            0,
+            double.infinity,
+          );
           final List<String> splitTexts = element.text.split(matchedText);
 
           int curPos = 0;

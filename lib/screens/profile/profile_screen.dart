@@ -55,17 +55,17 @@ class _ProfileScreenState extends State<ProfileScreen>
               previous.status != current.status,
           listener:
               (BuildContext context, NotificationState notificationState) {
-            if (notificationState.status == Status.success) {
-              refreshControllerNotification
-                ..refreshCompleted()
-                ..loadComplete();
-            }
-          },
+                if (notificationState.status == Status.success) {
+                  refreshControllerNotification
+                    ..refreshCompleted()
+                    ..loadComplete();
+                }
+              },
           builder: (BuildContext context, NotificationState notificationState) {
             final double topPadding =
                 context.watch<PreferenceCubit>().state.isHackerNewsThemeEnabled
-                    ? Dimens.pt64
-                    : Dimens.pt50;
+                ? Dimens.pt64
+                : Dimens.pt50;
             return Stack(
               children: <Widget>[
                 Positioned.fill(
@@ -73,62 +73,59 @@ class _ProfileScreenState extends State<ProfileScreen>
                   child: Visibility(
                     visible: pageType == PageType.history,
                     child: BlocConsumer<HistoryCubit, HistoryState>(
-                      listener: (
-                        BuildContext context,
-                        HistoryState historyState,
-                      ) {
-                        if (historyState.status == Status.success) {
-                          refreshControllerHistory
-                            ..refreshCompleted()
-                            ..loadComplete();
-                        }
-                      },
-                      builder: (
-                        BuildContext context,
-                        HistoryState historyState,
-                      ) {
-                        if ((!authState.isLoggedIn ||
-                                historyState.submittedItems.isEmpty) &&
-                            historyState.status != Status.inProgress) {
-                          return const CenteredMessageView(
-                            content: 'Your past comments and stories will '
-                                'show up here.',
-                          );
-                        }
-
-                        return ItemsListView<Item>(
-                          shouldShowWebPreviewOnStoryTile: false,
-                          shouldShowMetadataOnStoryTile: false,
-                          shouldShowPreviewImage: context
-                              .read<PreferenceCubit>()
-                              .state
-                              .isStoryTilePreviewImageEnabled,
-                          shouldShowFavicon: false,
-                          shouldShowUrl: false,
-                          shouldShowAuthor: false,
-                          shouldUseMinimalTileForStory: true,
-                          refreshController: refreshControllerHistory,
-                          items: historyState.submittedItems
-                              .where((Item e) => !e.dead && !e.deleted)
-                              .toList(),
-                          onRefresh: () {
-                            HapticFeedbackUtils.light();
-                            context.read<HistoryCubit>().refresh();
-                          },
-                          onLoadMore: () {
-                            context.read<HistoryCubit>().loadMore();
-                          },
-                          onTap: (Item item) {
-                            if (item is Story) {
-                              goToItemScreen(
-                                args: ItemScreenArgs(item: item),
-                              );
-                            } else if (item is Comment) {
-                              onCommentTapped(item);
+                      listener:
+                          (BuildContext context, HistoryState historyState) {
+                            if (historyState.status == Status.success) {
+                              refreshControllerHistory
+                                ..refreshCompleted()
+                                ..loadComplete();
                             }
                           },
-                        );
-                      },
+                      builder:
+                          (BuildContext context, HistoryState historyState) {
+                            if ((!authState.isLoggedIn ||
+                                    historyState.submittedItems.isEmpty) &&
+                                historyState.status != Status.inProgress) {
+                              return const CenteredMessageView(
+                                content:
+                                    'Your past comments and stories will '
+                                    'show up here.',
+                              );
+                            }
+
+                            return ItemsListView<Item>(
+                              shouldShowWebPreviewOnStoryTile: false,
+                              shouldShowMetadataOnStoryTile: false,
+                              shouldShowPreviewImage: context
+                                  .read<PreferenceCubit>()
+                                  .state
+                                  .isStoryTilePreviewImageEnabled,
+                              shouldShowFavicon: false,
+                              shouldShowUrl: false,
+                              shouldShowAuthor: false,
+                              shouldUseMinimalTileForStory: true,
+                              refreshController: refreshControllerHistory,
+                              items: historyState.submittedItems
+                                  .where((Item e) => !e.dead && !e.deleted)
+                                  .toList(),
+                              onRefresh: () {
+                                HapticFeedbackUtils.light();
+                                context.read<HistoryCubit>().refresh();
+                              },
+                              onLoadMore: () {
+                                context.read<HistoryCubit>().loadMore();
+                              },
+                              onTap: (Item item) {
+                                if (item is Story) {
+                                  goToItemScreen(
+                                    args: ItemScreenArgs(item: item),
+                                  );
+                                } else if (item is Comment) {
+                                  onCommentTapped(item);
+                                }
+                              },
+                            );
+                          },
                     ),
                   ),
                 ),
@@ -139,9 +136,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                     child: FavoritesScreen(
                       refreshController: refreshControllerFav,
                       authState: authState,
-                      onItemTap: (Item item) => goToItemScreen(
-                        args: ItemScreenArgs(item: item),
-                      ),
+                      onItemTap: (Item item) =>
+                          goToItemScreen(args: ItemScreenArgs(item: item)),
                     ),
                   ),
                 ),
@@ -159,7 +155,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                     visible: pageType == PageType.notification,
                     child: notificationState.comments.isEmpty
                         ? const CenteredMessageView(
-                            content: 'New replies to your comments or stories '
+                            content:
+                                'New replies to your comments or stories '
                                 'will show up here.',
                           )
                         : InboxView(
@@ -171,9 +168,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                               onCommentTapped(
                                 cmt,
                                 then: () {
-                                  context
-                                      .read<NotificationCubit>()
-                                      .markAsRead(cmt.id);
+                                  context.read<NotificationCubit>().markAsRead(
+                                    cmt.id,
+                                  );
                                 },
                               );
                             },
@@ -193,7 +190,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                 Visibility(
                   visible: pageType == PageType.settings,
                   child: Positioned.fill(
-                    top: context
+                    top:
+                        context
                             .read<PreferenceCubit>()
                             .state
                             .isHackerNewsThemeEnabled
@@ -206,7 +204,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                   alignment: Alignment.topLeft,
                   child: Padding(
                     padding: EdgeInsets.only(
-                      top: context
+                      top:
+                          context
                               .read<PreferenceCubit>()
                               .state
                               .isHackerNewsThemeEnabled
@@ -218,9 +217,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                       controller: scrollController,
                       child: Row(
                         children: <Widget>[
-                          const SizedBox(
-                            width: Dimens.pt12,
-                          ),
+                          const SizedBox(width: Dimens.pt12),
                           if (authState.isLoggedIn) ...<Widget>[
                             CustomChip(
                               label: 'Submit',
@@ -237,9 +234,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 }
                               },
                             ),
-                            const SizedBox(
-                              width: Dimens.pt12,
-                            ),
+                            const SizedBox(width: Dimens.pt12),
                             CustomChip(
                               label:
                                   '''Inbox : ${notificationState.unreadCommentsIds.length}''',
@@ -252,9 +247,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 }
                               },
                             ),
-                            const SizedBox(
-                              width: Dimens.pt12,
-                            ),
+                            const SizedBox(width: Dimens.pt12),
                           ],
                           CustomChip(
                             label: 'Favorite',
@@ -267,9 +260,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               }
                             },
                           ),
-                          const SizedBox(
-                            width: Dimens.pt12,
-                          ),
+                          const SizedBox(width: Dimens.pt12),
                           if (authState.isLoggedIn) ...<Widget>[
                             CustomChip(
                               label: 'Submitted',
@@ -282,9 +273,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 }
                               },
                             ),
-                            const SizedBox(
-                              width: Dimens.pt12,
-                            ),
+                            const SizedBox(width: Dimens.pt12),
                           ],
                           CustomChip(
                             label: 'Search',
@@ -297,9 +286,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               }
                             },
                           ),
-                          const SizedBox(
-                            width: Dimens.pt12,
-                          ),
+                          const SizedBox(width: Dimens.pt12),
                           CustomChip(
                             label: 'Settings',
                             selected: pageType == PageType.settings,
@@ -311,9 +298,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               }
                             },
                           ),
-                          const SizedBox(
-                            width: Dimens.pt12,
-                          ),
+                          const SizedBox(width: Dimens.pt12),
                         ],
                       ),
                     ),

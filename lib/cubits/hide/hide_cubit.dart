@@ -8,8 +8,8 @@ part 'hide_state.dart';
 
 class HideCubit extends HydratedCubit<HideState> {
   HideCubit({required PreferenceCubit preferenceCubit})
-      : _preferenceCubit = preferenceCubit,
-        super(HideState.init()) {
+    : _preferenceCubit = preferenceCubit,
+      super(HideState.init()) {
     init();
   }
 
@@ -30,11 +30,11 @@ class HideCubit extends HydratedCubit<HideState> {
               prefState.isHideInsteadOfMarkingGrayEnabled,
         )
         .listen((bool isHideInsteadOfMarkingGrayEnabled) {
-      if (!isHideInsteadOfMarkingGrayEnabled) {
-        clear();
-        emit(HideState.init());
-      }
-    });
+          if (!isHideInsteadOfMarkingGrayEnabled) {
+            clear();
+            emit(HideState.init());
+          }
+        });
   }
 
   bool isHidden(int storyId) =>

@@ -13,11 +13,11 @@ class SearchParams extends Equatable with Loggable {
   });
 
   SearchParams.init()
-      : filters = <SearchFilter>{},
-        query = '',
-        page = 0,
-        sorted = false,
-        exactMatch = false;
+    : filters = <SearchFilter>{},
+      query = '',
+      page = 0,
+      sorted = false,
+      exactMatch = false;
 
   final Set<SearchFilter> filters;
   final String query;
@@ -52,9 +52,7 @@ class SearchParams extends Equatable with Loggable {
     );
   }
 
-  SearchParams copyWithFilterAdded(
-    SearchFilter filter,
-  ) {
+  SearchParams copyWithFilterAdded(SearchFilter filter) {
     return SearchParams(
       filters: <SearchFilter>{...filters, filter},
       query: query,
@@ -66,8 +64,9 @@ class SearchParams extends Equatable with Loggable {
 
   String get filteredQuery {
     final StringBuffer buffer = StringBuffer();
-    final String encodedQuery =
-        Uri.encodeComponent(exactMatch ? '"$query"' : query);
+    final String encodedQuery = Uri.encodeComponent(
+      exactMatch ? '"$query"' : query,
+    );
 
     if (sorted) {
       buffer.write('search_by_date?query=$encodedQuery');
@@ -75,8 +74,8 @@ class SearchParams extends Equatable with Loggable {
       buffer.write('search?query=$encodedQuery');
     }
 
-    final Iterable<NumericFilter> numericFilters =
-        filters.whereType<NumericFilter>();
+    final Iterable<NumericFilter> numericFilters = filters
+        .whereType<NumericFilter>();
     final List<TagFilter> tagFilters = <TagFilter>[
       ...filters.whereType<TagFilter>(),
     ];
@@ -93,10 +92,7 @@ class SearchParams extends Equatable with Loggable {
     if (tagFilters.isNotEmpty) {
       buffer
         ..write('&tags=')
-        ..writeAll(
-          tagFilters.map<String>((TagFilter e) => e.query),
-          ',',
-        );
+        ..writeAll(tagFilters.map<String>((TagFilter e) => e.query), ',');
     }
 
     buffer.write('&page=$page');
@@ -112,19 +108,17 @@ class SearchParams extends Equatable with Loggable {
   }
 
   T? get<T extends SearchFilter>() {
-    return filters.singleWhereOrNull(
-      (SearchFilter e) => e is T,
-    ) as T?;
+    return filters.singleWhereOrNull((SearchFilter e) => e is T) as T?;
   }
 
   @override
   List<Object?> get props => <Object?>[
-        filters,
-        query,
-        page,
-        sorted,
-        exactMatch,
-      ];
+    filters,
+    query,
+    page,
+    sorted,
+    exactMatch,
+  ];
 
   @override
   String get logIdentifier => 'SearchParams';

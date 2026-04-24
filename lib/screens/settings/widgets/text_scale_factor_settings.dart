@@ -20,9 +20,7 @@ class TextScaleFactorSettings extends StatelessWidget {
           children: <Widget>[
             Row(
               children: <Widget>[
-                const SizedBox(
-                  width: Dimens.pt16,
-                ),
+                const SizedBox(width: Dimens.pt16),
                 Text('Text scale factor: $label'),
                 const Spacer(),
               ],

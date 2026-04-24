@@ -46,40 +46,28 @@ class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
               )
             else if (!state.isLoggedIn) ...<Widget>[
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: Dimens.pt18,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: Dimens.pt18),
                 child: TextField(
                   controller: usernameController,
                   cursorColor: Theme.of(context).colorScheme.primary,
                   autocorrect: false,
                   autofillHints: const <String>[AutofillHints.username],
-                  decoration: const InputDecoration(
-                    hintText: 'Username',
-                  ),
+                  decoration: const InputDecoration(hintText: 'Username'),
                 ),
               ),
-              const SizedBox(
-                height: Dimens.pt16,
-              ),
+              const SizedBox(height: Dimens.pt16),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: Dimens.pt18,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: Dimens.pt18),
                 child: TextField(
                   controller: passwordController,
                   cursorColor: Theme.of(context).colorScheme.primary,
                   obscureText: true,
                   autocorrect: false,
                   autofillHints: const <String>[AutofillHints.password],
-                  decoration: const InputDecoration(
-                    hintText: 'Password',
-                  ),
+                  decoration: const InputDecoration(hintText: 'Password'),
                 ),
               ),
-              const SizedBox(
-                height: Dimens.pt16,
-              ),
+              const SizedBox(height: Dimens.pt16),
               if (state.status == Status.failure)
                 Padding(
                   padding: const EdgeInsets.only(
@@ -116,9 +104,7 @@ class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
                         children: <InlineSpan>[
                           const TextSpan(
                             text: 'I agree to ',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: TextStyle(fontWeight: FontWeight.w500),
                           ),
                           WidgetSpan(
                             child: Transform.translate(
@@ -131,8 +117,9 @@ class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
                                 child: Text(
                                   'End User Agreement',
                                   style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                     decoration: TextDecoration.underline,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -147,9 +134,7 @@ class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.only(
-                  right: Dimens.pt12,
-                ),
+                padding: const EdgeInsets.only(right: Dimens.pt12),
                 child: OverflowBar(
                   alignment: MainAxisAlignment.end,
                   children: <Widget>[
@@ -158,9 +143,7 @@ class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
                         context.pop();
                         context.read<AuthBloc>().add(AuthInitialize());
                       },
-                      child: const Text(
-                        'Cancel',
-                      ),
+                      child: const Text('Cancel'),
                     ),
                     ElevatedButton(
                       onPressed: () {
@@ -169,11 +152,8 @@ class _LoginDialogState extends State<LoginDialog> with ItemActionMixin {
                           final String password = passwordController.text;
                           if (username.isNotEmpty && password.isNotEmpty) {
                             context.read<AuthBloc>().add(
-                                  AuthLogin(
-                                    username: username,
-                                    password: password,
-                                  ),
-                                );
+                              AuthLogin(username: username, password: password),
+                            );
                           }
                         }
                       },

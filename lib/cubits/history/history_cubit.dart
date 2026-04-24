@@ -11,10 +11,10 @@ class HistoryCubit extends Cubit<HistoryState> {
   HistoryCubit({
     required AuthBloc authBloc,
     HackerNewsRepository? hackerNewsRepository,
-  })  : _authBloc = authBloc,
-        _hackerNewsRepository =
-            hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
-        super(HistoryState.init()) {
+  }) : _authBloc = authBloc,
+       _hackerNewsRepository =
+           hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
+       super(HistoryState.init()) {
     init();
   }
 
@@ -27,9 +27,9 @@ class HistoryCubit extends Cubit<HistoryState> {
       if (authState.isLoggedIn) {
         final String username = authState.username;
 
-        _hackerNewsRepository
-            .fetchSubmitted(userId: username)
-            .then((List<int>? submittedIds) {
+        _hackerNewsRepository.fetchSubmitted(userId: username).then((
+          List<int>? submittedIds,
+        ) {
           emit(
             state.copyWith(
               submittedIds: submittedIds,
@@ -67,16 +67,11 @@ class HistoryCubit extends Cubit<HistoryState> {
       }
 
       _hackerNewsRepository
-          .fetchItemsStream(
-            ids: state.submittedIds.sublist(
-              lower,
-              upper,
-            ),
-          )
+          .fetchItemsStream(ids: state.submittedIds.sublist(lower, upper))
           .listen(_onItemLoaded)
           .onDone(() {
-        emit(state.copyWith(status: Status.success));
-      });
+            emit(state.copyWith(status: Status.success));
+          });
     } else {
       emit(state.copyWith(status: Status.success));
     }
@@ -93,9 +88,9 @@ class HistoryCubit extends Cubit<HistoryState> {
       ),
     );
 
-    _hackerNewsRepository
-        .fetchSubmitted(userId: username)
-        .then((List<int>? submittedIds) {
+    _hackerNewsRepository.fetchSubmitted(userId: username).then((
+      List<int>? submittedIds,
+    ) {
       emit(state.copyWith(submittedIds: submittedIds));
       if (submittedIds != null) {
         _hackerNewsRepository
@@ -107,8 +102,8 @@ class HistoryCubit extends Cubit<HistoryState> {
             )
             .listen(_onItemLoaded)
             .onDone(() {
-          emit(state.copyWith(status: Status.success));
-        });
+              emit(state.copyWith(status: Status.success));
+            });
       }
     });
   }

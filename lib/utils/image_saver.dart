@@ -8,11 +8,10 @@ class ImageSaver {
     String name = 'image',
   }) async {
     try {
-      final bool? result =
-          await _channel.invokeMethod<bool>('saveImage', <String, Object>{
-        'bytes': bytes,
-        'name': name,
-      });
+      final bool? result = await _channel.invokeMethod<bool>(
+        'saveImage',
+        <String, Object>{'bytes': bytes, 'name': name},
+      );
       return result ?? false;
     } catch (e) {
       return false;

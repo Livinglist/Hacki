@@ -37,11 +37,11 @@ class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin, RouteAware, ItemActionMixin, Loggable {
   late final TabController tabController;
   late final StreamSubscription<List<SharedMediaFile>>
-      intentDataStreamSubscription;
+  intentDataStreamSubscription;
   late final StreamSubscription<String?> notificationStreamSubscription;
   late final StreamSubscription<String?> siriSuggestionStreamSubscription;
   late final StreamSubscription<StoriesDownloadStatus>
-      downloadStreamSubscription;
+  downloadStreamSubscription;
   final AppLinks appLinks = AppLinks();
 
   static final int tabLength = StoryType.values.length + 1;
@@ -56,10 +56,10 @@ class _HomeScreenState extends State<HomeScreen>
         .map((StoriesState state) => state.downloadStatus)
         .distinct()
         .listen((StoriesDownloadStatus status) {
-      if (status == StoriesDownloadStatus.finished) {
-        DialogProxy.showDownloadCompletedDialog();
-      }
-    });
+          if (status == StoriesDownloadStatus.finished) {
+            DialogProxy.showDownloadCompletedDialog();
+          }
+        });
 
     appLinks.uriLinkStream.listen((Uri uri) {
       logInfo('deeplink uri received: ${uri.path}');
@@ -68,22 +68,24 @@ class _HomeScreenState extends State<HomeScreen>
       }
     });
 
-    ReceiveSharingIntent.instance
-        .getInitialMedia()
-        .then(onShareExtensionTapped);
+    ReceiveSharingIntent.instance.getInitialMedia().then(
+      onShareExtensionTapped,
+    );
 
     intentDataStreamSubscription = ReceiveSharingIntent.instance
         .getMediaStream()
         .listen(onShareExtensionTapped);
 
     if (!selectNotificationSubject.hasListener) {
-      notificationStreamSubscription =
-          selectNotificationSubject.stream.listen(onNotificationTapped);
+      notificationStreamSubscription = selectNotificationSubject.stream.listen(
+        onNotificationTapped,
+      );
     }
 
     if (!siriSuggestionSubject.hasListener) {
-      siriSuggestionStreamSubscription =
-          siriSuggestionSubject.stream.listen(onSiriSuggestionTapped);
+      siriSuggestionStreamSubscription = siriSuggestionSubject.stream.listen(
+        onSiriSuggestionTapped,
+      );
     }
 
     SchedulerBinding.instance
@@ -93,9 +95,10 @@ class _HomeScreenState extends State<HomeScreen>
 
         if (route == null) return;
 
-        locator
-            .get<RouteObserver<ModalRoute<dynamic>>>()
-            .subscribe(this, route);
+        locator.get<RouteObserver<ModalRoute<dynamic>>>().subscribe(
+          this,
+          route,
+        );
       });
 
     tabController = TabController(length: tabLength, vsync: this);
@@ -113,8 +116,8 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    final BlocBuilder<PreferenceCubit, PreferenceState> homeScreen =
-        BlocBuilder<PreferenceCubit, PreferenceState>(
+    final BlocBuilder<PreferenceCubit, PreferenceState>
+    homeScreen = BlocBuilder<PreferenceCubit, PreferenceState>(
       buildWhen: (PreferenceState previous, PreferenceState current) =>
           previous.isRichStoryTileEnabled != current.isRichStoryTileEnabled ||
           previous.isMetadataEnabled != current.isMetadataEnabled ||
@@ -129,24 +132,17 @@ class _HomeScreenState extends State<HomeScreen>
           child: Scaffold(
             resizeToAvoidBottomInset: false,
             appBar: PreferredSize(
-              preferredSize: const Size(
-                Dimens.zero,
-                Dimens.pt40,
-              ),
+              preferredSize: const Size(Dimens.zero, Dimens.pt40),
               child: OptionalWrapper(
                 enabled: preferenceState.isHackerNewsThemeEnabled,
-                wrapper: (Widget c) => ColoredBox(
-                  color: HackerNewsTheme.hnOrange,
-                  child: c,
-                ),
+                wrapper: (Widget c) =>
+                    ColoredBox(color: HackerNewsTheme.hnOrange, child: c),
                 child: Column(
                   children: <Widget>[
                     SizedBox(
                       height: MediaQuery.of(context).padding.top - Dimens.pt8,
                     ),
-                    CustomTabBar(
-                      tabController: tabController,
-                    ),
+                    CustomTabBar(tabController: tabController),
                   ],
                 ),
               ),
@@ -183,22 +179,16 @@ class _HomeScreenState extends State<HomeScreen>
       return ScreenTypeLayout.builder(
         mobile: (BuildContext context) {
           context.read<SplitViewCubit>().disableSplitView();
-          return MobileHomeScreen(
-            homeScreen: homeScreen,
-          );
+          return MobileHomeScreen(homeScreen: homeScreen);
         },
         tablet: (BuildContext context) {
           context.read<SplitViewCubit>().enableSplitView();
-          return TabletHomeScreen(
-            homeScreen: homeScreen,
-          );
+          return TabletHomeScreen(homeScreen: homeScreen);
         },
       );
     } else {
       context.read<SplitViewCubit>().disableSplitView();
-      return MobileHomeScreen(
-        homeScreen: homeScreen,
-      );
+      return MobileHomeScreen(homeScreen: homeScreen);
     }
   }
 
@@ -229,18 +219,15 @@ class _HomeScreenState extends State<HomeScreen>
             TextButton(
               onPressed: () {
                 context.pop();
-                FeatureDiscovery.discoverFeatures(
-                  context,
-                  <String>{
-                    DiscoverableFeature.login.featureId,
-                    DiscoverableFeature.searchInThread.featureId,
-                    DiscoverableFeature.pinToTop.featureId,
-                    DiscoverableFeature.addStoryToFavList.featureId,
-                    DiscoverableFeature.settingsShortcutOnItemScreen.featureId,
-                    DiscoverableFeature.jumpUpButton.featureId,
-                    DiscoverableFeature.jumpDownButton.featureId,
-                  },
-                );
+                FeatureDiscovery.discoverFeatures(context, <String>{
+                  DiscoverableFeature.login.featureId,
+                  DiscoverableFeature.searchInThread.featureId,
+                  DiscoverableFeature.pinToTop.featureId,
+                  DiscoverableFeature.addStoryToFavList.featureId,
+                  DiscoverableFeature.settingsShortcutOnItemScreen.featureId,
+                  DiscoverableFeature.jumpUpButton.featureId,
+                  DiscoverableFeature.jumpDownButton.featureId,
+                });
               },
               child: const Text('Yes'),
             ),
@@ -254,10 +241,14 @@ class _HomeScreenState extends State<HomeScreen>
     final PreferenceState prefState = context.read<PreferenceCubit>().state;
     final bool shouldUseReader = prefState.isReaderEnabled;
     final StoryMarkingMode storyMarkingMode = prefState.storyMarkingMode;
-    final bool isOfflineReading =
-        context.read<StoriesBloc>().state.isOfflineReading;
-    final bool isSplitViewEnabled =
-        context.read<SplitViewCubit>().state.enabled;
+    final bool isOfflineReading = context
+        .read<StoriesBloc>()
+        .state
+        .isOfflineReading;
+    final bool isSplitViewEnabled = context
+        .read<SplitViewCubit>()
+        .state
+        .enabled;
     final bool isMarkReadStoriesEnabled = prefState.isMarkReadStoriesEnabled;
 
     // If a story is a job story and it has a link to the job posting,
@@ -267,7 +258,8 @@ class _HomeScreenState extends State<HomeScreen>
     if (isJobWithLink) {
       context.read<ReminderCubit>().removeLastReadStoryId();
     } else {
-      final bool shouldMarkNewComment = isMarkReadStoriesEnabled &&
+      final bool shouldMarkNewComment =
+          isMarkReadStoriesEnabled &&
           context.read<StoriesBloc>().state.readStoriesIds.contains(story.id);
       final ItemScreenArgs args = ItemScreenArgs(
         item: story,
@@ -322,10 +314,9 @@ class _HomeScreenState extends State<HomeScreen>
     final int? storyId = int.tryParse(id);
     if (storyId == null) return;
 
-    await locator
-        .get<HackerNewsRepository>()
-        .fetchStory(id: storyId)
-        .then((Story? story) {
+    await locator.get<HackerNewsRepository>().fetchStory(id: storyId).then((
+      Story? story,
+    ) {
       if (story == null) {
         showErrorSnackBar();
         return;
@@ -347,10 +338,9 @@ class _HomeScreenState extends State<HomeScreen>
     if (storyId != null && commentId != null) {
       context.read<NotificationCubit>().markAsRead(commentId);
 
-      await locator
-          .get<HackerNewsRepository>()
-          .fetchStory(id: storyId)
-          .then((Story? story) {
+      await locator.get<HackerNewsRepository>().fetchStory(id: storyId).then((
+        Story? story,
+      ) {
         if (story == null) {
           showErrorSnackBar();
           return;

@@ -35,9 +35,7 @@ class PointsFilterChip extends StatelessWidget {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return _PointsDialog(
-          filter: filter,
-        );
+        return _PointsDialog(filter: filter);
       },
     );
     return updatedFilter;
@@ -73,9 +71,7 @@ class _PointsDialogState extends State<_PointsDialog> {
     return SimpleDialog(
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: Dimens.pt18,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: Dimens.pt18),
           child: SegmentedButton<NumericCondition>(
             showSelectedIcon: false,
             emptySelectionAllowed: true,
@@ -86,9 +82,7 @@ class _PointsDialogState extends State<_PointsDialog> {
                   label: Text(condition.operator),
                 ),
             ],
-            selected: <NumericCondition>{
-              _selectedCondition,
-            },
+            selected: <NumericCondition>{_selectedCondition},
             onSelectionChanged: (Set<NumericCondition> val) {
               HapticFeedbackUtils.light();
               setState(() {
@@ -98,48 +92,37 @@ class _PointsDialogState extends State<_PointsDialog> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: Dimens.pt18,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: Dimens.pt18),
           child: TextField(
             controller: _pointsController,
             cursorColor: Theme.of(context).colorScheme.primary,
             keyboardType: TextInputType.number,
             autocorrect: false,
-            decoration: const InputDecoration(
-              hintText: 'Points',
-            ),
+            decoration: const InputDecoration(hintText: 'Points'),
             inputFormatters: <TextInputFormatter>[
               FilteringTextInputFormatter.digitsOnly,
             ],
           ),
         ),
-        const SizedBox(
-          height: Dimens.pt16,
-        ),
+        const SizedBox(height: Dimens.pt16),
         Padding(
-          padding: const EdgeInsets.only(
-            right: Dimens.pt12,
-          ),
+          padding: const EdgeInsets.only(right: Dimens.pt12),
           child: OverflowBar(
             alignment: MainAxisAlignment.end,
             children: <Widget>[
               TextButton(
                 onPressed: () => context.pop(widget.filter),
-                child: const Text(
-                  'Cancel',
-                ),
+                child: const Text('Cancel'),
               ),
               TextButton(
                 onPressed: () => context.pop(),
-                child: const Text(
-                  'Remove',
-                ),
+                child: const Text('Remove'),
               ),
               ElevatedButton(
                 onPressed: () {
-                  final int? points =
-                      int.tryParse(_pointsController.text.trim());
+                  final int? points = int.tryParse(
+                    _pointsController.text.trim(),
+                  );
                   if (points == null) return;
                   final PointsFilter filter = PointsFilter(
                     points: points,
@@ -147,9 +130,7 @@ class _PointsDialogState extends State<_PointsDialog> {
                   );
                   context.pop(filter);
                 },
-                child: const Text(
-                  'Confirm',
-                ),
+                child: const Text('Confirm'),
               ),
             ],
           ),

@@ -39,65 +39,56 @@ class FavoritesScreen extends StatelessWidget {
           previous.isDisplayingStories != current.isDisplayingStories,
       builder: (BuildContext context, FavState favState) {
         Widget? header() => Column(
-              children: <Widget>[
-                if (authState.isLoggedIn)
-                  BlocSelector<FavCubit, FavState, Status>(
-                    selector: (FavState state) => state.mergeStatus,
-                    builder: (
-                      BuildContext context,
-                      Status status,
-                    ) {
-                      return TextButton(
-                        onPressed: () => context.read<FavCubit>().merge(
-                              onError: (AppException e) =>
-                                  context.showErrorSnackBar(e.message),
-                              onSuccess: () => context.showSnackBar(
-                                content: '''Sync completed.''',
-                              ),
+          children: <Widget>[
+            if (authState.isLoggedIn)
+              BlocSelector<FavCubit, FavState, Status>(
+                selector: (FavState state) => state.mergeStatus,
+                builder: (BuildContext context, Status status) {
+                  return TextButton(
+                    onPressed: () => context.read<FavCubit>().merge(
+                      onError: (AppException e) =>
+                          context.showErrorSnackBar(e.message),
+                      onSuccess: () =>
+                          context.showSnackBar(content: '''Sync completed.'''),
+                    ),
+                    child: status == Status.inProgress
+                        ? const SizedBox(
+                            height: Dimens.pt12,
+                            width: Dimens.pt12,
+                            child: CustomCircularProgressIndicator(
+                              strokeWidth: Dimens.pt2,
                             ),
-                        child: status == Status.inProgress
-                            ? const SizedBox(
-                                height: Dimens.pt12,
-                                width: Dimens.pt12,
-                                child: CustomCircularProgressIndicator(
-                                  strokeWidth: Dimens.pt2,
-                                ),
-                              )
-                            : const Text(
-                                'Sync from Hacker News',
-                              ),
-                      );
-                    },
-                  ),
-                Row(
-                  children: <Widget>[
-                    const SizedBox(
-                      width: Dimens.pt12,
-                    ),
-                    CustomChip(
-                      selected: favState.isDisplayingStories,
-                      label: 'Story',
-                      onSelected: (_) => context.read<FavCubit>().switchTab(),
-                    ),
-                    const SizedBox(
-                      width: Dimens.pt12,
-                    ),
-                    CustomChip(
-                      selected: !favState.isDisplayingStories,
-                      label: 'Comment',
-                      onSelected: (_) => context.read<FavCubit>().switchTab(),
-                    ),
-                  ],
+                          )
+                        : const Text('Sync from Hacker News'),
+                  );
+                },
+              ),
+            Row(
+              children: <Widget>[
+                const SizedBox(width: Dimens.pt12),
+                CustomChip(
+                  selected: favState.isDisplayingStories,
+                  label: 'Story',
+                  onSelected: (_) => context.read<FavCubit>().switchTab(),
+                ),
+                const SizedBox(width: Dimens.pt12),
+                CustomChip(
+                  selected: !favState.isDisplayingStories,
+                  label: 'Comment',
+                  onSelected: (_) => context.read<FavCubit>().switchTab(),
                 ),
               ],
-            );
+            ),
+          ],
+        );
 
         if (favState.favItems.isEmpty && favState.status != Status.inProgress) {
           return Column(
             children: <Widget>[
               header() ?? const SizedBox.shrink(),
               const CenteredMessageView(
-                content: 'Your favorite stories will show up here.'
+                content:
+                    'Your favorite stories will show up here.'
                     '\nThey will be synced to your Hacker '
                     'News account if you are logged in.',
               ),
@@ -108,9 +99,7 @@ class FavoritesScreen extends StatelessWidget {
             return Column(
               children: <Widget>[
                 header() ?? const SizedBox.shrink(),
-                const CenteredMessageView(
-                  content: 'No favorite story.',
-                ),
+                const CenteredMessageView(content: 'No favorite story.'),
               ],
             );
           } else if (!favState.isDisplayingStories &&
@@ -118,27 +107,19 @@ class FavoritesScreen extends StatelessWidget {
             return Column(
               children: <Widget>[
                 header() ?? const SizedBox.shrink(),
-                const CenteredMessageView(
-                  content: 'No favorite comment.',
-                ),
+                const CenteredMessageView(content: 'No favorite comment.'),
               ],
             );
           }
         }
 
         return BlocBuilder<PreferenceCubit, PreferenceState>(
-          buildWhen: (
-            PreferenceState previous,
-            PreferenceState current,
-          ) =>
+          buildWhen: (PreferenceState previous, PreferenceState current) =>
               previous.isRichStoryTileEnabled !=
                   current.isRichStoryTileEnabled ||
               previous.isMetadataEnabled != current.isMetadataEnabled ||
               previous.isUrlEnabled != current.isUrlEnabled,
-          builder: (
-            BuildContext context,
-            PreferenceState prefState,
-          ) {
+          builder: (BuildContext context, PreferenceState prefState) {
             return ItemsListView<Item>(
               shouldShowWebPreviewOnStoryTile: prefState.isRichStoryTileEnabled,
               shouldShowMetadataOnStoryTile: prefState.isMetadataEnabled,
@@ -172,10 +153,7 @@ class FavoritesScreen extends StatelessWidget {
                         },
                         backgroundColor: Palette.red,
                         foregroundColor: Palette.white,
-                        child: const Icon(
-                          Icons.close,
-                          size: Dimens.pt24,
-                        ),
+                        child: const Icon(Icons.close, size: Dimens.pt24),
                       ),
                     ],
                   ),

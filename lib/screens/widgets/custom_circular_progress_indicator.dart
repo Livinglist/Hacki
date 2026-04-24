@@ -6,10 +6,7 @@ import 'package:flutter/material.dart';
 /// CircularProgressIndicators and TextFields.
 /// We only want the CircularProgressIndicators to be `Palette.purple`.
 class CustomCircularProgressIndicator extends StatelessWidget {
-  const CustomCircularProgressIndicator({
-    super.key,
-    this.strokeWidth = 4,
-  });
+  const CustomCircularProgressIndicator({super.key, this.strokeWidth = 4});
 
   final double strokeWidth;
 

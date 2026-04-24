@@ -20,17 +20,17 @@ class FavCubit extends Cubit<FavState> with Loggable {
     HackerNewsRepository? hackerNewsRepository,
     HackerNewsWebRepository? hackerNewsWebRepository,
     SembastRepository? sembastRepository,
-  })  : _authBloc = authBloc,
-        _authRepository = authRepository ?? locator.get<AuthRepository>(),
-        _preferenceRepository =
-            preferenceRepository ?? locator.get<PreferenceRepository>(),
-        _hackerNewsRepository =
-            hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
-        _hackerNewsWebRepository =
-            hackerNewsWebRepository ?? locator.get<HackerNewsWebRepository>(),
-        _sembastRepository =
-            sembastRepository ?? locator.get<SembastRepository>(),
-        super(FavState.init()) {
+  }) : _authBloc = authBloc,
+       _authRepository = authRepository ?? locator.get<AuthRepository>(),
+       _preferenceRepository =
+           preferenceRepository ?? locator.get<PreferenceRepository>(),
+       _hackerNewsRepository =
+           hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
+       _hackerNewsWebRepository =
+           hackerNewsWebRepository ?? locator.get<HackerNewsWebRepository>(),
+       _sembastRepository =
+           sembastRepository ?? locator.get<SembastRepository>(),
+       super(FavState.init()) {
     init();
   }
 
@@ -48,30 +48,26 @@ class FavCubit extends Cubit<FavState> with Loggable {
         .map((AuthState event) => event.username)
         .distinct()
         .listen((String username) {
-      _preferenceRepository.favList(of: username).then((List<int> favIds) {
-        emit(
-          state.copyWith(
-            favIds: LinkedHashSet<int>.from(favIds).toList(),
-            favItems: <Item>[],
-            currentPage: 0,
-          ),
-        );
-        _hackerNewsRepository
-            .fetchItemsStream(
-              ids: favIds.sublist(0, _pageSize.clamp(0, favIds.length)),
-              getFromCache: (int id) =>
-                  _sembastRepository.getCachedItem(id: id),
-            )
-            .listen(_onItemLoaded)
-            .onDone(() {
-          emit(
-            state.copyWith(
-              status: Status.success,
-            ),
-          );
+          _preferenceRepository.favList(of: username).then((List<int> favIds) {
+            emit(
+              state.copyWith(
+                favIds: LinkedHashSet<int>.from(favIds).toList(),
+                favItems: <Item>[],
+                currentPage: 0,
+              ),
+            );
+            _hackerNewsRepository
+                .fetchItemsStream(
+                  ids: favIds.sublist(0, _pageSize.clamp(0, favIds.length)),
+                  getFromCache: (int id) =>
+                      _sembastRepository.getCachedItem(id: id),
+                )
+                .listen(_onItemLoaded)
+                .onDone(() {
+                  emit(state.copyWith(status: Status.success));
+                });
+          });
         });
-      });
-    });
   }
 
   Future<void> addFav(int id) async {
@@ -79,11 +75,7 @@ class FavCubit extends Cubit<FavState> with Loggable {
 
     await _preferenceRepository.addFav(username: username, id: id);
 
-    emit(
-      state.copyWith(
-        favIds: List<int>.from(state.favIds)..add(id),
-      ),
-    );
+    emit(state.copyWith(favIds: List<int>.from(state.favIds)..add(id)));
 
     final Item? item = await _hackerNewsRepository.fetchItem(id: id);
 
@@ -103,10 +95,7 @@ class FavCubit extends Cubit<FavState> with Loggable {
   void removeFav(int id) {
     _preferenceRepository
       ..removeFav(username: username, id: id)
-      ..removeFav(
-        username: '',
-        id: id,
-      );
+      ..removeFav(username: '', id: id);
 
     emit(
       state.copyWith(
@@ -135,16 +124,11 @@ class FavCubit extends Cubit<FavState> with Loggable {
       }
 
       _hackerNewsRepository
-          .fetchItemsStream(
-            ids: state.favIds.sublist(
-              lower,
-              upper,
-            ),
-          )
+          .fetchItemsStream(ids: state.favIds.sublist(lower, upper))
           .listen(_onItemLoaded)
           .onDone(() {
-        emit(state.copyWith(status: Status.success));
-      });
+            emit(state.copyWith(status: Status.success));
+          });
     } else {
       emit(state.copyWith(status: Status.success));
     }
@@ -168,8 +152,8 @@ class FavCubit extends Cubit<FavState> with Loggable {
           )
           .listen(_onItemLoaded)
           .onDone(() {
-        emit(state.copyWith(status: Status.success));
-      });
+            emit(state.copyWith(status: Status.success));
+          });
     });
   }
 
@@ -192,8 +176,9 @@ class FavCubit extends Cubit<FavState> with Loggable {
         );
         logDebug('fetched ${ids.length} favorite items from HN.');
         final List<int> combinedIds = <int>[...ids, ...state.favIds];
-        final LinkedHashSet<int> mergedIds =
-            LinkedHashSet<int>.from(combinedIds);
+        final LinkedHashSet<int> mergedIds = LinkedHashSet<int>.from(
+          combinedIds,
+        );
         await _preferenceRepository.overwriteFav(
           username: username,
           ids: mergedIds,
@@ -210,11 +195,7 @@ class FavCubit extends Cubit<FavState> with Loggable {
 
   void _onItemLoaded(Item item) {
     _sembastRepository.cacheItem(item);
-    emit(
-      state.copyWith(
-        favItems: List<Item>.from(state.favItems)..add(item),
-      ),
-    );
+    emit(state.copyWith(favItems: List<Item>.from(state.favItems)..add(item)));
   }
 
   void switchTab() =>

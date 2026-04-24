@@ -10,11 +10,11 @@ class SplitViewState extends Equatable {
   });
 
   const SplitViewState.init()
-      : enabled = false,
-        expanded = false,
-        submissionPanelWidth = null,
-        resizingAnimationDuration = Duration.zero,
-        itemScreenArgs = null;
+    : enabled = false,
+      expanded = false,
+      submissionPanelWidth = null,
+      resizingAnimationDuration = Duration.zero,
+      itemScreenArgs = null;
 
   final bool enabled;
   final bool expanded;
@@ -41,10 +41,10 @@ class SplitViewState extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        enabled,
-        expanded,
-        submissionPanelWidth,
-        resizingAnimationDuration,
-        itemScreenArgs,
-      ];
+    enabled,
+    expanded,
+    submissionPanelWidth,
+    resizingAnimationDuration,
+    itemScreenArgs,
+  ];
 }

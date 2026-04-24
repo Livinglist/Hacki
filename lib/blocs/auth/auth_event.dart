@@ -8,19 +8,13 @@ class AuthInitialize extends AuthEvent {
 }
 
 class AuthLogin extends AuthEvent {
-  AuthLogin({
-    required this.username,
-    required this.password,
-  });
+  AuthLogin({required this.username, required this.password});
 
   final String username;
   final String password;
 
   @override
-  List<Object?> get props => <Object?>[
-        username,
-        password,
-      ];
+  List<Object?> get props => <Object?>[username, password];
 }
 
 class AuthToggleAgreeToEULA extends AuthEvent {

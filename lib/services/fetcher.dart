@@ -14,8 +14,10 @@ import 'package:shared_preferences_foundation/shared_preferences_foundation.dart
 import 'package:workmanager/workmanager.dart';
 
 void fetcherCallbackDispatcher() {
-  Workmanager()
-      .executeTask((String task, Map<String, dynamic>? inputData) async {
+  Workmanager().executeTask((
+    String task,
+    Map<String, dynamic>? inputData,
+  ) async {
     if (Platform.isAndroid) {
       PathProviderAndroid.registerWith();
       SharedPreferencesAndroid.registerWith();
@@ -35,11 +37,13 @@ abstract class Fetcher {
 
   static Future<void> fetchReplies() async {
     final PreferenceRepository preferenceRepository = PreferenceRepository();
-    final AuthRepository authRepository =
-        AuthRepository(preferenceRepository: preferenceRepository);
+    final AuthRepository authRepository = AuthRepository(
+      preferenceRepository: preferenceRepository,
+    );
     final SembastRepository sembastRepository = SembastRepository();
-    final HackerNewsRepository hackerNewsRepository =
-        HackerNewsRepository(sembastRepository: sembastRepository);
+    final HackerNewsRepository hackerNewsRepository = HackerNewsRepository(
+      sembastRepository: sembastRepository,
+    );
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();
 
@@ -50,9 +54,9 @@ abstract class Fetcher {
 
     Comment? newReply;
 
-    await hackerNewsRepository
-        .fetchSubmitted(userId: username)
-        .then((List<int>? submittedItems) async {
+    await hackerNewsRepository.fetchSubmitted(userId: username).then((
+      List<int>? submittedItems,
+    ) async {
       if (submittedItems != null) {
         final List<int> subscribedItems = submittedItems.sublist(
           0,
@@ -60,17 +64,18 @@ abstract class Fetcher {
         );
 
         for (final int id in subscribedItems) {
-          await hackerNewsRepository
-              .fetchRawItem(id: id)
-              .then((Item? item) async {
+          await hackerNewsRepository.fetchRawItem(id: id).then((
+            Item? item,
+          ) async {
             final List<int> kids = item?.kids ?? <int>[];
             final List<int> previousKids =
                 (await sembastRepository.kids(of: id)) ?? <int>[];
 
             await sembastRepository.updateKidsOf(id: id, kids: kids);
 
-            final Set<int> diff =
-                <int>{...kids}.difference(<int>{...previousKids});
+            final Set<int> diff = <int>{
+              ...kids,
+            }.difference(<int>{...previousKids});
 
             if (diff.isNotEmpty) {
               for (final int newCommentId in diff) {
@@ -79,20 +84,22 @@ abstract class Fetcher {
                 await hackerNewsRepository
                     .fetchRawComment(id: newCommentId)
                     .then((Comment? comment) async {
-                  final bool hasPushedBefore =
-                      await preferenceRepository.hasPushed(newReply!.id);
+                      final bool hasPushedBefore = await preferenceRepository
+                          .hasPushed(newReply!.id);
 
-                  if (comment != null && !comment.dead && !comment.deleted) {
-                    await sembastRepository.saveComment(comment);
-                    await sembastRepository.updateIdsOfCommentsRepliedToMe(
-                      comment.id,
-                    );
+                      if (comment != null &&
+                          !comment.dead &&
+                          !comment.deleted) {
+                        await sembastRepository.saveComment(comment);
+                        await sembastRepository.updateIdsOfCommentsRepliedToMe(
+                          comment.id,
+                        );
 
-                    if (!hasPushedBefore) {
-                      newReply = comment;
-                    }
-                  }
-                });
+                        if (!hasPushedBefore) {
+                          newReply = comment;
+                        }
+                      }
+                    });
 
                 if (newReply != null) break;
               }
@@ -107,8 +114,9 @@ abstract class Fetcher {
     // Push notification for new unread reply that has not been
     // pushed before.
     if (newReply != null) {
-      final Story? story =
-          await hackerNewsRepository.fetchRawParentStory(id: newReply!.id);
+      final Story? story = await hackerNewsRepository.fetchRawParentStory(
+        id: newReply!.id,
+      );
       final String text = HtmlUtils.parseHtml(newReply!.text);
 
       if (story != null) {

@@ -20,15 +20,11 @@ class SpringCurve extends Curve {
     double stiffness = 180,
     double mass = 1.0,
   }) : _sim = SpringSimulation(
-          SpringDescription(
-            damping: damping,
-            mass: mass,
-            stiffness: stiffness,
-          ),
-          0,
-          1,
-          0,
-        );
+         SpringDescription(damping: damping, mass: mass, stiffness: stiffness),
+         0,
+         1,
+         0,
+       );
 
   /// The underlying physics simulation.
   final SpringSimulation _sim;

@@ -26,9 +26,7 @@ class ItemText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final PreferenceState prefState = context.read<PreferenceCubit>().state;
-    final TextStyle style = TextStyle(
-      fontSize: prefState.fontSize.fontSize,
-    );
+    final TextStyle style = TextStyle(fontSize: prefState.fontSize.fontSize);
     final TextStyle linkStyle = TextStyle(
       fontSize: prefState.fontSize.fontSize,
       decoration: TextDecoration.underline,
@@ -53,26 +51,18 @@ class ItemText extends StatelessWidget {
           primaryColor: Theme.of(context).colorScheme.primaryContainer,
           style: style,
           linkStyle: linkStyle,
-          onOpen: (LinkableElement link) => LinkUtils.launch(
-            link.url,
-            context,
-          ),
+          onOpen: (LinkableElement link) => LinkUtils.launch(link.url, context),
         ),
         scrollPhysics: const NeverScrollableScrollPhysics(),
-        selectionColor:
-            Theme.of(context).colorScheme.primaryContainer.withAlpha(180),
+        selectionColor: Theme.of(
+          context,
+        ).colorScheme.primaryContainer.withAlpha(180),
         onTap: onTap,
         textScaler: textScaler,
         onSelectionChanged: onSelectionChanged,
-        contextMenuBuilder: (
-          BuildContext context,
-          EditableTextState editableTextState,
-        ) =>
-            contextMenuBuilder(
-          context,
-          editableTextState,
-          item: item,
-        ),
+        contextMenuBuilder:
+            (BuildContext context, EditableTextState editableTextState) =>
+                contextMenuBuilder(context, editableTextState, item: item),
         semanticsLabel: item.text,
       );
     } else {
@@ -84,10 +74,8 @@ class ItemText extends StatelessWidget {
               primaryColor: Theme.of(context).colorScheme.primaryContainer,
               style: style,
               linkStyle: linkStyle,
-              onOpen: (LinkableElement link) => LinkUtils.launch(
-                link.url,
-                context,
-              ),
+              onOpen: (LinkableElement link) =>
+                  LinkUtils.launch(link.url, context),
             ),
             textScaler: textScaler,
             semanticsLabel: item.text,
@@ -100,19 +88,11 @@ class ItemText extends StatelessWidget {
             textScaler: textScaler,
             style: style,
             linkStyle: linkStyle,
-            onOpen: (LinkableElement link) => LinkUtils.launch(
-              link.url,
-              context,
-            ),
-            contextMenuBuilder: (
-              BuildContext context,
-              EditableTextState editableTextState,
-            ) =>
-                contextMenuBuilder(
-              context,
-              editableTextState,
-              item: item,
-            ),
+            onOpen: (LinkableElement link) =>
+                LinkUtils.launch(link.url, context),
+            contextMenuBuilder:
+                (BuildContext context, EditableTextState editableTextState) =>
+                    contextMenuBuilder(context, editableTextState, item: item),
           ),
         );
       } else {
@@ -122,10 +102,8 @@ class ItemText extends StatelessWidget {
             textScaler: textScaler,
             style: style,
             linkStyle: linkStyle,
-            onOpen: (LinkableElement link) => LinkUtils.launch(
-              link.url,
-              context,
-            ),
+            onOpen: (LinkableElement link) =>
+                LinkUtils.launch(link.url, context),
           ),
         );
       }

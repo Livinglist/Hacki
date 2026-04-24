@@ -41,10 +41,7 @@ class PinnedStories extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             if (preferenceState.isRichStoryTileEnabled)
-                              const Icon(
-                                Icons.close,
-                                size: Dimens.pt24,
-                              ),
+                              const Icon(Icons.close, size: Dimens.pt24),
                             const Text('Unpin'),
                           ],
                         ),
@@ -52,9 +49,9 @@ class PinnedStories extends StatelessWidget {
                     ],
                   ),
                   child: ColoredBox(
-                    color: Theme.of(context).colorScheme.primary.withValues(
-                          alpha: 0.2,
-                        ),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.2),
                     child: StoryTile(
                       key: ValueKey<String>('${story.id}-PinnedStoryTile'),
                       story: story,
@@ -80,10 +77,9 @@ class PinnedStories extends StatelessWidget {
                   vertical: Dimens.pt4,
                 ),
                 child: Divider(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .primary
-                      .withValues(alpha: 0.8),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.8),
                 ),
               ),
           ],

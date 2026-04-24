@@ -16,20 +16,11 @@ class PollOption extends Item {
     required super.kids,
     required super.parts,
     required this.ratio,
-  }) : super(
-          descendants: 0,
-          dead: false,
-          deleted: false,
-          hidden: false,
-        );
+  }) : super(descendants: 0, dead: false, deleted: false, hidden: false);
 
-  PollOption.empty()
-      : ratio = 0,
-        super.empty();
+  PollOption.empty() : ratio = 0, super.empty();
 
-  PollOption.fromJson(super.json)
-      : ratio = 0,
-        super.fromJson();
+  PollOption.fromJson(super.json) : ratio = 0, super.fromJson();
 
   final double ratio;
 
@@ -52,16 +43,14 @@ class PollOption extends Item {
 
   @override
   Map<String, dynamic> toJson({bool full = true}) {
-    return <String, dynamic>{
-      ...super.toJson(full: full),
-      'ratio': ratio,
-    };
+    return <String, dynamic>{...super.toJson(full: full), 'ratio': ratio};
   }
 
   @override
   String toString() {
-    final String prettyString =
-        const JsonEncoder.withIndent('  ').convert(this);
+    final String prettyString = const JsonEncoder.withIndent(
+      '  ',
+    ).convert(this);
     return 'PollOption $prettyString';
   }
 }

@@ -7,9 +7,7 @@ class TabState extends Equatable {
 
   final List<StoryType> tabs;
 
-  TabState copyWith({
-    List<StoryType>? tabs,
-  }) {
+  TabState copyWith({List<StoryType>? tabs}) {
     return TabState(tabs: tabs ?? this.tabs);
   }
 

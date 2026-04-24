@@ -17,11 +17,11 @@ class VoteCubit extends Cubit<VoteState> {
     bool shouldInitialize = true,
     AuthRepository? authRepository,
     PreferenceRepository? preferenceRepository,
-  })  : _authBloc = authBloc,
-        _authRepository = authRepository ?? locator.get<AuthRepository>(),
-        _preferenceRepository =
-            preferenceRepository ?? locator.get<PreferenceRepository>(),
-        super(VoteState.init(item: item)) {
+  }) : _authBloc = authBloc,
+       _authRepository = authRepository ?? locator.get<AuthRepository>(),
+       _preferenceRepository =
+           preferenceRepository ?? locator.get<PreferenceRepository>(),
+       super(VoteState.init(item: item)) {
     if (shouldInitialize) {
       unawaited(init());
     }
@@ -41,14 +41,10 @@ class VoteCubit extends Cubit<VoteState> {
     final Vote? parsedVote = vote == null
         ? null
         : vote
-            ? Vote.up
-            : Vote.down;
+        ? Vote.up
+        : Vote.down;
 
-    emit(
-      state.copyWith(
-        vote: parsedVote,
-      ),
-    );
+    emit(state.copyWith(vote: parsedVote));
   }
 
   Future<bool> upvote({bool cancelIfVoted = true}) async {
@@ -78,12 +74,7 @@ class VoteCubit extends Cubit<VoteState> {
 
       if (success) {
         HapticFeedbackUtils.success();
-        emit(
-          state.copyWith(
-            vote: Vote.up,
-            status: VoteStatus.submitted,
-          ),
-        );
+        emit(state.copyWith(vote: Vote.up, status: VoteStatus.submitted));
 
         unawaited(
           _preferenceRepository.addVote(
@@ -97,11 +88,7 @@ class VoteCubit extends Cubit<VoteState> {
       } else {
         HapticFeedbackUtils.error();
 
-        emit(
-          state.copyWith(
-            status: VoteStatus.failure,
-          ),
-        );
+        emit(state.copyWith(status: VoteStatus.failure));
 
         return false;
       }
@@ -113,11 +100,7 @@ class VoteCubit extends Cubit<VoteState> {
       );
 
       HapticFeedbackUtils.success();
-      emit(
-        state.copyWithVoteRemoved(
-          status: VoteStatus.canceled,
-        ),
-      );
+      emit(state.copyWithVoteRemoved(status: VoteStatus.canceled));
 
       return true;
     }
@@ -138,8 +121,10 @@ class VoteCubit extends Cubit<VoteState> {
 
     if (_authBloc.state.user.karma >= _karmaThreshold) {
       if (state.vote == null || state.vote == Vote.up) {
-        final bool success =
-            await _authRepository.downvote(id: state.item.id, downvote: true);
+        final bool success = await _authRepository.downvote(
+          id: state.item.id,
+          downvote: true,
+        );
 
         if (success) {
           await _preferenceRepository.addVote(
@@ -149,12 +134,7 @@ class VoteCubit extends Cubit<VoteState> {
           );
 
           HapticFeedbackUtils.success();
-          emit(
-            state.copyWith(
-              vote: Vote.down,
-              status: VoteStatus.submitted,
-            ),
-          );
+          emit(state.copyWith(vote: Vote.down, status: VoteStatus.submitted));
         }
       } else {
         await _authRepository.downvote(id: state.item.id, downvote: false);
@@ -164,11 +144,7 @@ class VoteCubit extends Cubit<VoteState> {
         );
 
         HapticFeedbackUtils.success();
-        emit(
-          state.copyWithVoteRemoved(
-            status: VoteStatus.canceled,
-          ),
-        );
+        emit(state.copyWithVoteRemoved(status: VoteStatus.canceled));
       }
     } else {
       HapticFeedbackUtils.error();

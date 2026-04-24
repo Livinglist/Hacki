@@ -82,8 +82,10 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
     _sheetController.addListener(() {
       final double newSize = _sheetController.size;
       final double scrollPosition =
-          ((newSize - _minChildSize) / (_maxChildSize - _minChildSize))
-              .clamp(0.0, 1.0);
+          ((newSize - _minChildSize) / (_maxChildSize - _minChildSize)).clamp(
+            0.0,
+            1.0,
+          );
 
       _animController.animateTo(scrollPosition, duration: Duration.zero);
     });
@@ -104,10 +106,10 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
 
   @override
   Widget build(BuildContext context) {
-    final bool isWebViewBottomSheetEnabled =
-        context.select<PreferenceCubit, bool>(
-      (PreferenceCubit cubit) => cubit.state.isWebViewBottomSheetEnabled,
-    );
+    final bool isWebViewBottomSheetEnabled = context
+        .select<PreferenceCubit, bool>(
+          (PreferenceCubit cubit) => cubit.state.isWebViewBottomSheetEnabled,
+        );
     if (!isWebViewBottomSheetEnabled) {
       return const SizedBox.shrink();
     }
@@ -130,9 +132,9 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
               ),
               boxShadow: <BoxShadow>[
                 BoxShadow(
-                  color: Theme.of(context).colorScheme.shadow.withValues(
-                        alpha: 0.18,
-                      ),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.shadow.withValues(alpha: 0.18),
                   blurRadius: 8,
                   offset: const Offset(0, -2),
                 ),
@@ -146,8 +148,8 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
                     if (_sheetController.isAttached) {
                       final double animateToSize =
                           _sheetController.size == _minChildSize
-                              ? _maxChildSize
-                              : _minChildSize;
+                          ? _maxChildSize
+                          : _minChildSize;
                       _sheetController.animateTo(
                         animateToSize,
                         duration: AppDurations.ms500,
@@ -165,9 +167,9 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
                           turns: _rotationAnim,
                           child: Icon(
                             Icons.keyboard_arrow_up_rounded,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onPrimaryContainer,
                           ),
                         ),
                         _UrlBar(

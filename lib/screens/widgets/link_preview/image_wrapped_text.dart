@@ -48,8 +48,10 @@ class ImageWrapText extends StatelessWidget {
         final double lineHeight = _measureLineHeight(effectiveStyle, context);
 
         /// Check how many lines can be fit in the image height.
-        final int linesBesideImage =
-            math.max(1, (imageHeight / lineHeight).floor());
+        final int linesBesideImage = math.max(
+          1,
+          (imageHeight / lineHeight).floor(),
+        );
 
         /// Get the index of text where the upper and
         /// lower part should be split.
@@ -64,9 +66,7 @@ class ImageWrapText extends StatelessWidget {
         final String firstPart = text.substring(0, splitIndex).trimRight();
         final String secondPart = text.substring(splitIndex).trimLeft();
         final Widget imageWidget = Padding(
-          padding: const EdgeInsets.only(
-            top: Dimens.pt5,
-          ),
+          padding: const EdgeInsets.only(top: Dimens.pt5),
           child: TapDownWrapper(
             onTap: () {
               if (url.isNotEmpty) {
@@ -74,10 +74,14 @@ class ImageWrapText extends StatelessWidget {
                   url,
                   context,
                   shouldUseHackiForHnLink: false,
-                  shouldUseReader:
-                      context.read<PreferenceCubit>().state.isReaderEnabled,
-                  isOfflineReading:
-                      context.read<StoriesBloc>().state.isOfflineReading,
+                  shouldUseReader: context
+                      .read<PreferenceCubit>()
+                      .state
+                      .isReaderEnabled,
+                  isOfflineReading: context
+                      .read<StoriesBloc>()
+                      .state
+                      .isOfflineReading,
                 );
               } else {
                 onTap();

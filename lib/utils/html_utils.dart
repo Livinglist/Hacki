@@ -14,10 +14,9 @@ abstract final class HtmlUtils {
   static Iterable<String>? getIds(
     dom.Element? element, {
     required String selector,
-  }) =>
-      element
-          ?.querySelectorAll(selector)
-          .map((dom.Element element) => element.id);
+  }) => element
+      ?.querySelectorAll(selector)
+      .map((dom.Element element) => element.id);
 
   static Map<String, String>? getHiddenFormValues(dynamic input) {
     final Iterable<dom.Element>? hiddenInputs = getBody(input)

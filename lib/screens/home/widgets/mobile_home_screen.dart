@@ -5,10 +5,7 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 
 class MobileHomeScreen extends StatelessWidget {
-  const MobileHomeScreen({
-    required this.homeScreen,
-    super.key,
-  });
+  const MobileHomeScreen({required this.homeScreen, super.key});
 
   final Widget homeScreen;
 

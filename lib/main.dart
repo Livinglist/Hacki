@@ -69,18 +69,14 @@ Future<void> main({bool testing = false}) async {
 
   FlutterError.onError = (FlutterErrorDetails details) {
     locator.get<Logger>().e(
-          details.summary,
-          error: details.exceptionAsString(),
-          stackTrace: details.stack,
-        );
+      details.summary,
+      error: details.exceptionAsString(),
+      stackTrace: details.stack,
+    );
   };
 
   if (Platform.isIOS) {
-    unawaited(
-      Workmanager().initialize(
-        fetcherCallbackDispatcher,
-      ),
-    );
+    unawaited(Workmanager().initialize(fetcherCallbackDispatcher));
 
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
         FlutterLocalNotificationsPlugin();
@@ -90,9 +86,9 @@ Future<void> main({bool testing = false}) async {
         DarwinInitializationSettings();
     const InitializationSettings initializationSettings =
         InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
-    );
+          android: initializationSettingsAndroid,
+          iOS: initializationSettingsIOS,
+        );
     await flutterLocalNotificationsPlugin.initialize(
       onDidReceiveBackgroundNotificationResponse: notificationReceiver,
       onDidReceiveNotificationResponse: notificationReceiver,
@@ -100,12 +96,9 @@ Future<void> main({bool testing = false}) async {
     );
     await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin>()
-        ?.requestPermissions(
-          alert: true,
-          badge: true,
-          sound: true,
-        );
+          IOSFlutterLocalNotificationsPlugin
+        >()
+        ?.requestPermissions(alert: true, badge: true, sound: true);
   } else if (Platform.isAndroid) {
     final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
     final AndroidDeviceInfo androidInfo = await deviceInfoPlugin.androidInfo;
@@ -134,18 +127,11 @@ Future<void> main({bool testing = false}) async {
 
   VisibilityDetectorController.instance.updateInterval = AppDurations.ms200;
 
-  runApp(
-    HackiApp(
-      savedThemeMode: savedThemeMode,
-    ),
-  );
+  runApp(HackiApp(savedThemeMode: savedThemeMode));
 }
 
 class HackiApp extends StatelessWidget {
-  const HackiApp({
-    super.key,
-    this.savedThemeMode,
-  });
+  const HackiApp({super.key, this.savedThemeMode});
 
   final AdaptiveThemeMode? savedThemeMode;
 
@@ -165,9 +151,8 @@ class HackiApp extends StatelessWidget {
           create: (BuildContext context) => FilterCubit(),
         ),
         BlocProvider<HideCubit>(
-          create: (BuildContext context) => HideCubit(
-            preferenceCubit: context.read<PreferenceCubit>(),
-          ),
+          create: (BuildContext context) =>
+              HideCubit(preferenceCubit: context.read<PreferenceCubit>()),
         ),
         BlocProvider<StoriesBloc>(
           create: (BuildContext context) => StoriesBloc(
@@ -182,15 +167,13 @@ class HackiApp extends StatelessWidget {
         ),
         BlocProvider<HistoryCubit>(
           lazy: false,
-          create: (BuildContext context) => HistoryCubit(
-            authBloc: context.read<AuthBloc>(),
-          ),
+          create: (BuildContext context) =>
+              HistoryCubit(authBloc: context.read<AuthBloc>()),
         ),
         BlocProvider<FavCubit>(
           lazy: false,
-          create: (BuildContext context) => FavCubit(
-            authBloc: context.read<AuthBloc>(),
-          ),
+          create: (BuildContext context) =>
+              FavCubit(authBloc: context.read<AuthBloc>()),
         ),
         BlocProvider<BlocklistCubit>(
           lazy: false,
@@ -213,9 +196,8 @@ class HackiApp extends StatelessWidget {
         ),
         BlocProvider<SplitViewCubit>(
           lazy: false,
-          create: (BuildContext context) => SplitViewCubit(
-            preferenceCubit: context.read<PreferenceCubit>(),
-          ),
+          create: (BuildContext context) =>
+              SplitViewCubit(preferenceCubit: context.read<PreferenceCubit>()),
         ),
         BlocProvider<ReminderCubit>(
           lazy: false,
@@ -231,9 +213,8 @@ class HackiApp extends StatelessWidget {
         ),
         BlocProvider<TabCubit>(
           lazy: false,
-          create: (BuildContext context) => TabCubit(
-            preferenceCubit: context.read<PreferenceCubit>(),
-          ),
+          create: (BuildContext context) =>
+              TabCubit(preferenceCubit: context.read<PreferenceCubit>()),
         ),
         BlocProvider<TipsCubit>(
           lazy: false,
@@ -276,176 +257,89 @@ class HackiApp extends StatelessWidget {
             builder: (ThemeData theme, ThemeData darkTheme) {
               return FutureBuilder<AdaptiveThemeMode?>(
                 future: AdaptiveTheme.getThemeMode(),
-                builder: (
-                  BuildContext context,
-                  AsyncSnapshot<AdaptiveThemeMode?> snapshot,
-                ) {
-                  final AdaptiveThemeMode? mode = snapshot.data;
-                  ThemeUtils.updateStatusBarSetting(
-                    SchedulerBinding
-                        .instance.platformDispatcher.platformBrightness,
-                    mode,
-                  );
-                  final bool isDarkModeEnabled = () {
-                    if (mode == null) {
-                      return View.of(context)
-                              .platformDispatcher
-                              .platformBrightness ==
-                          Brightness.dark;
-                    } else {
-                      return mode == AdaptiveThemeMode.dark ||
-                          (mode == AdaptiveThemeMode.system &&
-                              View.of(context)
-                                      .platformDispatcher
-                                      .platformBrightness ==
-                                  Brightness.dark);
-                    }
-                  }();
-                  final ColorScheme colorScheme = ColorScheme.fromSeed(
-                    brightness:
-                        isDarkModeEnabled ? Brightness.dark : Brightness.light,
-                    seedColor: state.appColor,
-                    dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
-                  );
-                  return FeatureDiscovery(
-                    child: MediaQuery(
-                      data: state.textScaleFactor == 1
-                          ? MediaQuery.of(context)
-                          : MediaQuery.of(context).copyWith(
-                              textScaler: TextScaler.linear(
-                                state.textScaleFactor,
-                              ),
-                            ),
-                      child: MaterialApp.router(
-                        title: 'Hacki',
-                        debugShowCheckedModeBanner: false,
-                        darkTheme: state.isHackerNewsThemeEnabled
-                            ? HackerNewsDarkTheme.theme
-                            : null,
-                        theme: state.isHackerNewsThemeEnabled
-                            ? HackerNewsTheme.theme
-                            : ThemeData(
-                                appBarTheme: AppBarTheme(
-                                  foregroundColor: colorScheme.onSurface,
-                                  iconTheme: IconThemeData(
-                                    color: colorScheme.onSurface,
+                builder:
+                    (
+                      BuildContext context,
+                      AsyncSnapshot<AdaptiveThemeMode?> snapshot,
+                    ) {
+                      final AdaptiveThemeMode? mode = snapshot.data;
+                      ThemeUtils.updateStatusBarSetting(
+                        SchedulerBinding
+                            .instance
+                            .platformDispatcher
+                            .platformBrightness,
+                        mode,
+                      );
+                      final bool isDarkModeEnabled = () {
+                        if (mode == null) {
+                          return View.of(
+                                context,
+                              ).platformDispatcher.platformBrightness ==
+                              Brightness.dark;
+                        } else {
+                          return mode == AdaptiveThemeMode.dark ||
+                              (mode == AdaptiveThemeMode.system &&
+                                  View.of(
+                                        context,
+                                      ).platformDispatcher.platformBrightness ==
+                                      Brightness.dark);
+                        }
+                      }();
+                      final ColorScheme colorScheme = ColorScheme.fromSeed(
+                        brightness: isDarkModeEnabled
+                            ? Brightness.dark
+                            : Brightness.light,
+                        seedColor: state.appColor,
+                        dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+                      );
+                      return FeatureDiscovery(
+                        child: MediaQuery(
+                          data: state.textScaleFactor == 1
+                              ? MediaQuery.of(context)
+                              : MediaQuery.of(context).copyWith(
+                                  textScaler: TextScaler.linear(
+                                    state.textScaleFactor,
                                   ),
                                 ),
-                                bottomSheetTheme: BottomSheetThemeData(
-                                  modalElevation: Dimens.pt8,
-                                  clipBehavior: Clip.hardEdge,
-                                  shadowColor: Palette.black,
-                                  backgroundColor: isDarkModeEnabled &&
-                                          state.isTrueDarkModeEnabled
-                                      ? Palette.black
-                                      : null,
-                                ),
-                                canvasColor: isDarkModeEnabled &&
-                                        state.isTrueDarkModeEnabled
-                                    ? Palette.black
-                                    : null,
-                                colorScheme: colorScheme,
-                                dividerTheme: DividerThemeData(
-                                  color: Palette.grey.withValues(alpha: 0.2),
-                                ),
-                                elevatedButtonTheme:
-                                    const ElevatedButtonThemeData(
-                                  style: ButtonStyle(enableFeedback: false),
-                                ),
-                                floatingActionButtonTheme:
-                                    const FloatingActionButtonThemeData(
-                                  enableFeedback: false,
-                                ),
-                                fontFamily: state.font.name,
-                                scaffoldBackgroundColor: isDarkModeEnabled &&
-                                        state.isTrueDarkModeEnabled
-                                    ? Palette.black
-                                    : null,
-                                switchTheme: SwitchThemeData(
-                                  trackColor: WidgetStateProperty.resolveWith(
-                                    (Set<WidgetState> states) {
-                                      if (states
-                                          .contains(WidgetState.selected)) {
-                                        return colorScheme.primaryContainer
-                                            .withValues(alpha: 0.6);
-                                      } else {
-                                        return Palette.grey
-                                            .withValues(alpha: 0.2);
-                                      }
-                                    },
+                          child: MaterialApp.router(
+                            title: 'Hacki',
+                            debugShowCheckedModeBanner: false,
+                            darkTheme: state.isHackerNewsThemeEnabled
+                                ? HackerNewsDarkTheme.theme
+                                : null,
+                            theme: state.isHackerNewsThemeEnabled
+                                ? HackerNewsTheme.theme
+                                : AppTheme.theme(
+                                    colorScheme,
+                                    state.font,
+                                    isDarkModeEnabled: isDarkModeEnabled,
+                                    isTrueDarkModeEnabled:
+                                        state.isTrueDarkModeEnabled,
                                   ),
-                                ),
-                                textButtonTheme: TextButtonThemeData(
-                                  style: ButtonStyle(
-                                    enableFeedback: false,
-                                    foregroundColor:
-                                        WidgetStateProperty.resolveWith(
-                                      (_) => colorScheme.primary,
-                                    ),
-                                  ),
-                                ),
-                                inputDecorationTheme: InputDecorationTheme(
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: isDarkModeEnabled
-                                          ? Palette.white
-                                          : Palette.black,
-                                    ),
-                                  ),
-                                  focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: colorScheme.primary,
-                                    ),
-                                  ),
-                                  disabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: (isDarkModeEnabled
-                                              ? Palette.white
-                                              : Palette.black)
-                                          .withValues(alpha: 0.4),
-                                    ),
-                                  ),
-                                ),
-                                outlinedButtonTheme: OutlinedButtonThemeData(
-                                  style: ButtonStyle(
-                                    enableFeedback: false,
-                                    side: WidgetStateBorderSide.resolveWith(
-                                      (_) => const BorderSide(
-                                        color: Palette.grey,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                sliderTheme: SliderThemeData(
-                                  inactiveTrackColor: colorScheme.primary
-                                      .withValues(alpha: 0.5),
-                                  activeTrackColor: colorScheme.primary,
-                                  thumbColor: colorScheme.primary,
-                                ),
-                              ),
-                        routerConfig: router,
-                        builder: state.isDevModeEnabled
-                            ? (BuildContext context, Widget? child) => Stack(
-                                  children: <Widget>[
-                                    Positioned.fill(child: child!),
-                                    DraggableFloatingButton(
-                                      onTap: () {
-                                        router.push(Paths.logs.landing);
-                                      },
-                                      child: Icon(
-                                        Icons.bug_report,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimaryContainer,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                            : null,
-                      ),
-                    ),
-                  );
-                },
+                            routerConfig: router,
+                            builder: state.isDevModeEnabled
+                                ? (BuildContext context, Widget? child) =>
+                                      Stack(
+                                        children: <Widget>[
+                                          Positioned.fill(child: child!),
+                                          DraggableFloatingButton(
+                                            onTap: () {
+                                              router.push(Paths.logs.landing);
+                                            },
+                                            child: Icon(
+                                              Icons.bug_report,
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.onPrimaryContainer,
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                : null,
+                          ),
+                        ),
+                      );
+                    },
               );
             },
           );

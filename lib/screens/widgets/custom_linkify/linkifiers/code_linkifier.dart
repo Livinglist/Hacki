@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:linkify/linkify.dart';
 
-final RegExp _codeRegex =
-    RegExp(r'\<pre\>\<code\>(.*?)\<\/code\>\<\/pre\>', dotAll: true);
+final RegExp _codeRegex = RegExp(
+  r'\<pre\>\<code\>(.*?)\<\/code\>\<\/pre\>',
+  dotAll: true,
+);
 
 class CodeLinkifier extends Linkifier {
   const CodeLinkifier();
@@ -32,12 +34,9 @@ class CodeLinkifier extends Linkifier {
           final String preceding = splitTexts[0];
 
           list.addAll(
-            parse(
-              <LinkifyElement>[
-                TextElement(preceding == '\n\n' ? '' : preceding),
-              ],
-              options,
-            ),
+            parse(<LinkifyElement>[
+              TextElement(preceding == '\n\n' ? '' : preceding),
+            ], options),
           );
 
           String trimmedText = matchedText
@@ -48,12 +47,7 @@ class CodeLinkifier extends Linkifier {
           list
             ..add(CodeElement(trimmedText))
             ..addAll(
-              parse(
-                <LinkifyElement>[
-                  TextElement(splitTexts[1]),
-                ],
-                options,
-              ),
+              parse(<LinkifyElement>[TextElement(splitTexts[1])], options),
             );
         }
       } else {

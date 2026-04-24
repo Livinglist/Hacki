@@ -25,23 +25,23 @@ class BuildableComment extends Comment with Buildable {
   });
 
   BuildableComment.fromComment(Comment comment, {required this.elements})
-      : super(
-          id: comment.id,
-          time: comment.time,
-          parent: comment.parent,
-          score: comment.score,
-          by: comment.by,
-          text: comment.text,
-          kids: comment.kids,
-          dead: comment.dead,
-          deleted: comment.deleted,
-          level: comment.level,
-          hidden: comment.hidden,
-          isFromCache: comment.isFromCache,
-          isHiddenByUser: comment.isHiddenByUser,
-          isCollapsedByUser: comment.isCollapsedByUser,
-          isNew: comment.isNew,
-        );
+    : super(
+        id: comment.id,
+        time: comment.time,
+        parent: comment.parent,
+        score: comment.score,
+        by: comment.by,
+        text: comment.text,
+        kids: comment.kids,
+        dead: comment.dead,
+        deleted: comment.deleted,
+        level: comment.level,
+        hidden: comment.hidden,
+        isFromCache: comment.isFromCache,
+        isHiddenByUser: comment.isHiddenByUser,
+        isCollapsedByUser: comment.isCollapsedByUser,
+        isNew: comment.isNew,
+      );
 
   @override
   BuildableComment copyWith({

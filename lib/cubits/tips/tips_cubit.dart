@@ -12,11 +12,10 @@ extension on Tips {
 }
 
 class TipsCubit extends Cubit<TipsState> {
-  TipsCubit({
-    PreferenceRepository? preferenceRepository,
-  })  : _preferenceRepository =
-            preferenceRepository ?? locator.get<PreferenceRepository>(),
-        super(const TipsState.init()) {
+  TipsCubit({PreferenceRepository? preferenceRepository})
+    : _preferenceRepository =
+          preferenceRepository ?? locator.get<PreferenceRepository>(),
+      super(const TipsState.init()) {
     unawaited(init());
   }
 
@@ -31,11 +30,7 @@ class TipsCubit extends Cubit<TipsState> {
         completedTips.add(tips);
       }
     }
-    emit(
-      state.copyWith(
-        completedTips: completedTips,
-      ),
-    );
+    emit(state.copyWith(completedTips: completedTips));
   }
 
   Future<void> reset() async {
@@ -43,21 +38,13 @@ class TipsCubit extends Cubit<TipsState> {
       final String key = tips.completionStatusKey;
       _preferenceRepository.setBool(key, false);
     }
-    emit(
-      state.copyWith(
-        completedTips: const <Tips>{},
-      ),
-    );
+    emit(state.copyWith(completedTips: const <Tips>{}));
   }
 
   void completeTips(Tips tips) {
     final String key = tips.completionStatusKey;
     _preferenceRepository.setBool(key, true);
     final Set<Tips> updatedCompletedTips = <Tips>{...state.completedTips, tips};
-    emit(
-      state.copyWith(
-        completedTips: updatedCompletedTips,
-      ),
-    );
+    emit(state.copyWith(completedTips: updatedCompletedTips));
   }
 }

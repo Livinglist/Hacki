@@ -55,16 +55,14 @@ class OfflineListTile extends StatelessWidget {
         }();
 
         return ListTile(
-          title: Text(
-            () {
-              if (downloading) {
-                return '''Downloading Stories (${state.storiesDownloaded}/${state.storiesToBeDownloaded})''';
-              } else if (state.storiesDownloaded != 0) {
-                return '''${state.storiesDownloaded} stories downloaded.''';
-              }
-              return 'Download Stories';
-            }(),
-          ),
+          title: Text(() {
+            if (downloading) {
+              return '''Downloading Stories (${state.storiesDownloaded}/${state.storiesToBeDownloaded})''';
+            } else if (state.storiesDownloaded != 0) {
+              return '''${state.storiesDownloaded} stories downloaded.''';
+            }
+            return 'Download Stories';
+          }()),
           subtitle: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,8 +78,9 @@ class OfflineListTile extends StatelessWidget {
                   'Last downloaded at ${state.downloadDateTime}',
                   style: TextStyle(
                     fontSize: TextDimens.pt12,
-                    color:
-                        Theme.of(context).colorScheme.onSurface.withAlpha(160),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withAlpha(160),
                   ),
                 ),
             ],
@@ -93,9 +92,9 @@ class OfflineListTile extends StatelessWidget {
               DialogProxy.showAbortDownloadDialog(context);
             } else {
               context.read<StoriesBloc>().add(ClearMaxOfflineStoriesCount());
-              Connectivity()
-                  .checkConnectivity()
-                  .then((List<ConnectivityResult> res) {
+              Connectivity().checkConnectivity().then((
+                List<ConnectivityResult> res,
+              ) {
                 if (!res.contains(ConnectivityResult.none) && context.mounted) {
                   showModalBottomSheet<void>(
                     context: context,
@@ -117,16 +116,12 @@ class OfflineListTile extends StatelessWidget {
 
                                   context.pop();
                                   final StoriesBloc storiesBloc =
-                                      context.read<StoriesBloc>()
-                                        ..add(
-                                          UpdateMaxOfflineStoriesCount(
-                                            count: count,
-                                          ),
-                                        );
-                                  showConfirmationDialog(
-                                    context,
-                                    storiesBloc,
-                                  );
+                                      context.read<StoriesBloc>()..add(
+                                        UpdateMaxOfflineStoriesCount(
+                                          count: count,
+                                        ),
+                                      );
+                                  showConfirmationDialog(context, storiesBloc);
                                 },
                               ),
                           ],
@@ -168,11 +163,7 @@ class OfflineListTile extends StatelessWidget {
       if (includeWebPage != null) {
         WakelockPlus.enable();
 
-        storiesBloc.add(
-          StoriesDownload(
-            includingWebPage: includeWebPage,
-          ),
-        );
+        storiesBloc.add(StoriesDownload(includingWebPage: includeWebPage));
       }
     });
   }

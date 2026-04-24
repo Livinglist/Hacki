@@ -7,9 +7,9 @@ part 'filter_state.dart';
 
 class FilterCubit extends Cubit<FilterState> {
   FilterCubit({PreferenceRepository? preferenceRepository})
-      : _preferenceRepository =
-            preferenceRepository ?? locator.get<PreferenceRepository>(),
-        super(FilterState.init()) {
+    : _preferenceRepository =
+          preferenceRepository ?? locator.get<PreferenceRepository>(),
+      super(FilterState.init()) {
     init();
   }
 
@@ -17,11 +17,8 @@ class FilterCubit extends Cubit<FilterState> {
 
   void init() {
     _preferenceRepository.filterKeywords.then(
-      (List<String> keywords) => emit(
-        state.copyWith(
-          keywords: keywords.toSet(),
-        ),
-      ),
+      (List<String> keywords) =>
+          emit(state.copyWith(keywords: keywords.toSet())),
     );
   }
 

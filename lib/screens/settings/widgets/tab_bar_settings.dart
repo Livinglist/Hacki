@@ -22,9 +22,7 @@ class _TabBarSettingsState extends State<TabBarSettings> {
       children: <Widget>[
         const Row(
           children: <Widget>[
-            SizedBox(
-              width: Dimens.pt16,
-            ),
+            SizedBox(width: Dimens.pt16),
             Text('Default tab bar'),
             Spacer(),
           ],

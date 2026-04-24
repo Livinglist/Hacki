@@ -66,16 +66,19 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isEyeCandyEnabled =
-        context.read<PreferenceCubit>().state.isEyeCandyEnabled;
+    final bool isEyeCandyEnabled = context
+        .read<PreferenceCubit>()
+        .state
+        .isEyeCandyEnabled;
     return BlocConsumer<CommentsCubit, CommentsState>(
       listenWhen: (CommentsState previous, CommentsState current) =>
           previous.status != current.status,
       listener: (BuildContext context, CommentsState state) {
         if (state.status == CommentsStatus.allLoaded && isEyeCandyEnabled) {
           _animationTimer?.cancel();
-          _animationTimer =
-              Timer.periodic(const Duration(milliseconds: 1200), (_) {
+          _animationTimer = Timer.periodic(const Duration(milliseconds: 1200), (
+            _,
+          ) {
             setState(() {
               _shineIndex = (_shineIndex + 1) % (state.maxLevel + 1);
             });
@@ -89,7 +92,8 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
         return FadeIn(
           child: AnimatedCrossFade(
             duration: AppDurations.ms400,
-            crossFadeState: _hideBackground ||
+            crossFadeState:
+                _hideBackground ||
                     (!_overrideCommentsStatus &&
                         state.status != CommentsStatus.allLoaded)
                 ? CrossFadeState.showFirst
@@ -108,10 +112,9 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
                       child: LinearProgressIndicator(
                         minHeight: widget.indentLineWidth,
                         color: Theme.of(context).colorScheme.primaryContainer,
-                        backgroundColor: Theme.of(context)
-                            .colorScheme
-                            .primaryContainer
-                            .withValues(alpha: 0.2),
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.primaryContainer.withValues(alpha: 0.2),
                       ),
                     ),
                   ),
@@ -128,25 +131,23 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
                       width: widget.indentLineWidth,
                       child: isEyeCandyEnabled
                           ? AnimatedIndentLine(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primaryContainer,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.primaryContainer,
                               width: widget.indentLineWidth,
                               isShining: _shineIndex == 0,
                             )
                           : Container(
                               width: widget.indentLineWidth,
                               height: MediaQuery.of(context).size.height,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primaryContainer,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.primaryContainer,
                             ),
                     ),
                   ),
                 if (state.maxLevel > 0)
-                  for (final int i in 1.to(
-                    state.maxLevel,
-                  ))
+                  for (final int i in 1.to(state.maxLevel))
                     Padding(
                       padding: EdgeInsets.only(
                         left: widget.shouldShowRootLevelLine
@@ -168,11 +169,13 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
                             : Container(
                                 width: widget.indentLineWidth,
                                 height: MediaQuery.of(context).size.height,
-                                color: ColorUtils.getRainbowColor(
-                                  i,
-                                  Theme.of(context).canvasColor,
-                                ).$1.withValues(
-                                      alpha: Theme.of(context).brightness ==
+                                color:
+                                    ColorUtils.getRainbowColor(
+                                      i,
+                                      Theme.of(context).canvasColor,
+                                    ).$1.withValues(
+                                      alpha:
+                                          Theme.of(context).brightness ==
                                               Brightness.dark
                                           ? 0.6
                                           : 1,

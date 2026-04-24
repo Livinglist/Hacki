@@ -33,33 +33,22 @@ class TimeMachineDialog extends StatelessWidget {
             color: Palette.transparent,
             child: Container(
               decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(
-                    Dimens.pt4,
-                  ),
-                ),
+                borderRadius: BorderRadius.all(Radius.circular(Dimens.pt4)),
               ),
               child: Padding(
-                padding: const EdgeInsets.only(
-                  right: Dimens.pt4,
-                ),
+                padding: const EdgeInsets.only(right: Dimens.pt4),
                 child: Column(
                   children: <Widget>[
                     Row(
                       children: <Widget>[
-                        const SizedBox(
-                          width: Dimens.pt8,
-                        ),
+                        const SizedBox(width: Dimens.pt8),
                         Text(
                           'Ancestors:',
                           style: TextTheme.of(context).titleMedium,
                         ),
                         const Spacer(),
                         IconButton(
-                          icon: const Icon(
-                            Icons.close,
-                            size: Dimens.pt24,
-                          ),
+                          icon: const Icon(Icons.close, size: Dimens.pt24),
                           onPressed: () => context.pop(),
                           padding: EdgeInsets.zero,
                         ),
@@ -70,34 +59,34 @@ class TimeMachineDialog extends StatelessWidget {
                         children: <Widget>[
                           switch (rootItem) {
                             Story() => StoryTile(
-                                shouldShowWebPreview: false,
-                                shouldShowPreviewImage: false,
-                                shouldShowMetadata: true,
-                                shouldShowFavicon: true,
-                                shouldShowUrl: true,
-                                isExpandedTileEnabled: false,
-                                isImageLeftAligned: context
-                                    .read<PreferenceCubit>()
-                                    .state
-                                    .isPreviewImageLeftAligned,
-                                story: rootItem as Story,
-                                onTap: () {
-                                  final String url = rootItem.url.isNotEmpty
-                                      ? rootItem.url
-                                      : '''${Constants.hackerNewsItemLinkPrefix}${rootItem.id}''';
-                                  LinkUtils.launch(
-                                    url,
-                                    context,
-                                    shouldUseHackiForHnLink: false,
-                                  );
-                                },
-                              ),
+                              shouldShowWebPreview: false,
+                              shouldShowPreviewImage: false,
+                              shouldShowMetadata: true,
+                              shouldShowFavicon: true,
+                              shouldShowUrl: true,
+                              isExpandedTileEnabled: false,
+                              isImageLeftAligned: context
+                                  .read<PreferenceCubit>()
+                                  .state
+                                  .isPreviewImageLeftAligned,
+                              story: rootItem as Story,
+                              onTap: () {
+                                final String url = rootItem.url.isNotEmpty
+                                    ? rootItem.url
+                                    : '''${Constants.hackerNewsItemLinkPrefix}${rootItem.id}''';
+                                LinkUtils.launch(
+                                  url,
+                                  context,
+                                  shouldUseHackiForHnLink: false,
+                                );
+                              },
+                            ),
                             Comment() => CommentTile(
-                                comment: rootItem as Comment,
-                                isActionable: false,
-                                isCollapsable: false,
-                                fetchMode: FetchMode.eager,
-                              ),
+                              comment: rootItem as Comment,
+                              isActionable: false,
+                              isCollapsable: false,
+                              fetchMode: FetchMode.eager,
+                            ),
                             Item() => const SizedBox.shrink(),
                           },
                           for (final int i in 0.to(
@@ -134,9 +123,7 @@ class TimeMachineDialog extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            const Divider(
-                              height: Dimens.zero,
-                            ),
+                            const Divider(height: Dimens.zero),
                           ],
                         ],
                       ),

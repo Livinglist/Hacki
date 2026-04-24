@@ -13,11 +13,9 @@ import 'package:hacki/repositories/preference_repository.dart';
 ///
 /// For posting actions such as posting a comment, see [PostRepository].
 class AuthRepository extends PostableRepository with Loggable {
-  AuthRepository({
-    super.dio,
-    PreferenceRepository? preferenceRepository,
-  }) : _preferenceRepository =
-            preferenceRepository ?? locator.get<PreferenceRepository>();
+  AuthRepository({super.dio, PreferenceRepository? preferenceRepository})
+    : _preferenceRepository =
+          preferenceRepository ?? locator.get<PreferenceRepository>();
 
   final PreferenceRepository _preferenceRepository;
 
@@ -61,10 +59,7 @@ class AuthRepository extends PostableRepository with Loggable {
     await _preferenceRepository.removeAuth();
   }
 
-  Future<bool> flag({
-    required int id,
-    required bool flag,
-  }) async {
+  Future<bool> flag({required int id, required bool flag}) async {
     final Uri uri = Uri.https(authority, 'flag');
     final String? username = await _preferenceRepository.username;
     final String? password = await _preferenceRepository.password;
@@ -78,10 +73,7 @@ class AuthRepository extends PostableRepository with Loggable {
     return performDefaultPost(uri, data);
   }
 
-  Future<bool> favorite({
-    required int id,
-    required bool favorite,
-  }) async {
+  Future<bool> favorite({required int id, required bool favorite}) async {
     final Uri uri = Uri.https(authority, 'fave');
     final String? username = await _preferenceRepository.username;
     final String? password = await _preferenceRepository.password;
@@ -95,10 +87,7 @@ class AuthRepository extends PostableRepository with Loggable {
     return performDefaultPost(uri, data);
   }
 
-  Future<bool> upvote({
-    required int id,
-    required bool upvote,
-  }) async {
+  Future<bool> upvote({required int id, required bool upvote}) async {
     final Uri uri = Uri.https(authority, 'vote');
     final String? username = await _preferenceRepository.username;
     final String? password = await _preferenceRepository.password;
@@ -112,10 +101,7 @@ class AuthRepository extends PostableRepository with Loggable {
     return performDefaultPost(uri, data);
   }
 
-  Future<bool> downvote({
-    required int id,
-    required bool downvote,
-  }) async {
+  Future<bool> downvote({required int id, required bool downvote}) async {
     final Uri uri = Uri.https(authority, 'vote');
     final String? username = await _preferenceRepository.username;
     final String? password = await _preferenceRepository.password;

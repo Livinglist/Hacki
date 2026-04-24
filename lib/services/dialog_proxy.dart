@@ -15,9 +15,7 @@ import 'package:responsive_builder/responsive_builder.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 abstract final class DialogProxy {
-  static void showSettingsBottomSheet(
-    BuildContext context,
-  ) {
+  static void showSettingsBottomSheet(BuildContext context) {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -26,11 +24,7 @@ abstract final class DialogProxy {
         return SizedBox(
           height: MediaQuery.of(context).size.height - Dimens.pt120,
           child: const Column(
-            children: <Widget>[
-              Expanded(
-                child: SettingsView(),
-              ),
-            ],
+            children: <Widget>[Expanded(child: SettingsView())],
           ),
         );
       },
@@ -52,11 +46,7 @@ abstract final class DialogProxy {
             height: MediaQuery.of(context).size.height - Dimens.pt120,
             child: const Column(
               children: <Widget>[
-                Expanded(
-                  child: SearchScreen(
-                    isInBottomSheet: true,
-                  ),
-                ),
+                Expanded(child: SearchScreen(isInBottomSheet: true)),
               ],
             ),
           ),

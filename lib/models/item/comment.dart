@@ -17,27 +17,21 @@ class Comment extends Item {
     this.isHiddenByUser = false,
     this.isCollapsedByUser = false,
     this.isNew = false,
-  }) : super(
-          descendants: 0,
-          parts: <int>[],
-          title: '',
-          url: '',
-          type: '',
-        );
+  }) : super(descendants: 0, parts: <int>[], title: '', url: '', type: '');
 
   Comment.fromJson(super.json, {this.level = 0})
-      : isFromCache = json['fromCache'] == true,
-        isHiddenByUser = false,
-        isCollapsedByUser = false,
-        isNew = false,
-        super.fromJson();
+    : isFromCache = json['fromCache'] == true,
+      isHiddenByUser = false,
+      isCollapsedByUser = false,
+      isNew = false,
+      super.fromJson();
 
   Comment.fromJsonWithCollapsedStateOnly(super.json, {this.level = 0})
-      : isFromCache = json['fromCache'] == true,
-        isHiddenByUser = json['isHiddenByUser'] == true,
-        isCollapsedByUser = json['isCollapsedByUser'] == true,
-        isNew = false,
-        super.fromJson();
+    : isFromCache = json['fromCache'] == true,
+      isHiddenByUser = json['isHiddenByUser'] == true,
+      isCollapsedByUser = json['isCollapsedByUser'] == true,
+      isNew = false,
+      super.fromJson();
 
   final int level;
   final bool isHiddenByUser;
@@ -125,9 +119,9 @@ class Comment extends Item {
 
   @override
   List<Object?> get props => <Object?>[
-        ...super.props,
-        isHiddenByUser,
-        isCollapsedByUser,
-        isNew,
-      ];
+    ...super.props,
+    isHiddenByUser,
+    isCollapsedByUser,
+    isNew,
+  ];
 }

@@ -12,10 +12,10 @@ import 'package:responsive_builder/responsive_builder.dart';
 extension PreferenceDependenciesExtension on Set<Preference<dynamic>> {
   bool satisfy(Iterable<Preference<dynamic>> preferences) {
     for (final Preference<dynamic> dependency in this) {
-      final Preference<dynamic>? concreteDependency =
-          preferences.singleWhereOrNull(
-        (Preference<dynamic> pref) => pref.key == dependency.key,
-      );
+      final Preference<dynamic>? concreteDependency = preferences
+          .singleWhereOrNull(
+            (Preference<dynamic> pref) => pref.key == dependency.key,
+          );
       if (concreteDependency?.val != dependency.val) {
         return false;
       }
@@ -36,62 +36,60 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
   Preference<T> copyWith({required T? val});
 
   static final List<Preference<dynamic>> allPreferences =
-      UnmodifiableListView<Preference<dynamic>>(
-    <Preference<dynamic>>[
-      /// Order of these preferences does not matter.
-      FetchModePreference(),
-      CommentsOrderPreference(),
-      FontPreference(),
-      FontSizePreference(),
-      TabOrderPreference(),
-      StoryMarkingModePreference(),
-      AppColorPreference(),
-      DateFormatPreference(),
-      HackerNewsDataSourcePreference(),
-      const TextScaleFactorPreference(),
+      UnmodifiableListView<Preference<dynamic>>(<Preference<dynamic>>[
+        /// Order of these preferences does not matter.
+        FetchModePreference(),
+        CommentsOrderPreference(),
+        FontPreference(),
+        FontSizePreference(),
+        TabOrderPreference(),
+        StoryMarkingModePreference(),
+        AppColorPreference(),
+        DateFormatPreference(),
+        HackerNewsDataSourcePreference(),
+        const TextScaleFactorPreference(),
 
-      ///
-      /// !!! NOTE !!!
-      /// The order of items below matters and
-      /// reflects the order on in-app settings screen.
-      ///
-      const RichStoryTilePreference(),
-      const RichStoryTileImageDisplayPreference(),
-      const PreviewImageAlignmentPreference(),
-      const ExpandTileForLongerTextPreference(),
-      const IndexedStoryTilePreference(),
-      const FaviconModePreference(),
-      const MetadataModePreference(),
-      const StoryUrlModePreference(),
-      const DividerPreference(),
+        ///
+        /// !!! NOTE !!!
+        /// The order of items below matters and
+        /// reflects the order on in-app settings screen.
+        ///
+        const RichStoryTilePreference(),
+        const RichStoryTileImageDisplayPreference(),
+        const PreviewImageAlignmentPreference(),
+        const ExpandTileForLongerTextPreference(),
+        const IndexedStoryTilePreference(),
+        const FaviconModePreference(),
+        const MetadataModePreference(),
+        const StoryUrlModePreference(),
+        const DividerPreference(),
 
-      /// Divider.
-      const HideStoryInsteadOfMarkingGray(),
-      const MarkReadStoriesModePreference(),
+        /// Divider.
+        const HideStoryInsteadOfMarkingGray(),
+        const MarkReadStoriesModePreference(),
 
-      /// Divider.
-      const ManualPaginationPreference(),
-      const NotificationModePreference(),
-      const SwipeGesturePreference(),
-      const DividerPlaceholder(label: 'Thread'),
-      const CompactCollapsedTile(),
-      const HighlightNewComments(),
-      const PersistCollapseStateAcrossSessions(),
-      const PreserveCollapseStateAfterScreenExit(),
-      const ReaderModePreference(),
-      const SkipButtonsPreference(),
-      const SplitViewPreference(),
-      const CollapseModePreference(),
-      const CustomTabPreference(),
-      const WebViewBottomSheetPreference(),
-      const DividerPlaceholder(label: 'Look And Feel'),
-      const EyeCandyPreference(),
-      const HackerNewsThemePreference(),
-      const HapticFeedbackPreference(),
-      const TrueDarkModePreference(),
-      const DevMode(),
-    ],
-  );
+        /// Divider.
+        const ManualPaginationPreference(),
+        const NotificationModePreference(),
+        const SwipeGesturePreference(),
+        const DividerPlaceholder(label: 'Thread'),
+        const CompactCollapsedTile(),
+        const HighlightNewComments(),
+        const PersistCollapseStateAcrossSessions(),
+        const PreserveCollapseStateAfterScreenExit(),
+        const ReaderModePreference(),
+        const SkipButtonsPreference(),
+        const SplitViewPreference(),
+        const CollapseModePreference(),
+        const CustomTabPreference(),
+        const WebViewBottomSheetPreference(),
+        const DividerPlaceholder(label: 'Look And Feel'),
+        const EyeCandyPreference(),
+        const HackerNewsThemePreference(),
+        const HapticFeedbackPreference(),
+        const TrueDarkModePreference(),
+        const DevMode(),
+      ]);
 
   @override
   List<Object?> get props => <Object?>[key];
@@ -154,7 +152,7 @@ final class DevMode extends BooleanPreference {
 
 final class SkipButtonsPreference extends BooleanPreference {
   const SkipButtonsPreference({bool? val})
-      : super(val: val ?? _skipButtonsPreferenceDefaultValue);
+    : super(val: val ?? _skipButtonsPreferenceDefaultValue);
 
   static const bool _skipButtonsPreferenceDefaultValue = true;
 
@@ -176,7 +174,7 @@ final class SkipButtonsPreference extends BooleanPreference {
 
 final class SplitViewPreference extends BooleanPreference {
   const SplitViewPreference({bool? val})
-      : super(val: val ?? _splitViewPreferenceDefaultValue);
+    : super(val: val ?? _splitViewPreferenceDefaultValue);
 
   /// Enable split view by default.
   static const bool _splitViewPreferenceDefaultValue = true;
@@ -220,7 +218,7 @@ final class SplitViewPreference extends BooleanPreference {
 
 final class EyeCandyPreference extends BooleanPreference {
   const EyeCandyPreference({bool? val})
-      : super(val: val ?? _eyeCandyPreferenceDefaultValue);
+    : super(val: val ?? _eyeCandyPreferenceDefaultValue);
 
   static const bool _eyeCandyPreferenceDefaultValue = false;
 
@@ -241,7 +239,7 @@ final class EyeCandyPreference extends BooleanPreference {
 
 final class HackerNewsThemePreference extends BooleanPreference {
   const HackerNewsThemePreference({bool? val})
-      : super(val: val ?? _hackerNewsThemePreferenceDefaultValue);
+    : super(val: val ?? _hackerNewsThemePreferenceDefaultValue);
 
   static const bool _hackerNewsThemePreferenceDefaultValue = false;
 
@@ -262,7 +260,7 @@ final class HackerNewsThemePreference extends BooleanPreference {
 
 final class SwipeGesturePreference extends BooleanPreference {
   const SwipeGesturePreference({bool? val})
-      : super(val: val ?? _swipeGestureModeDefaultValue);
+    : super(val: val ?? _swipeGestureModeDefaultValue);
 
   static const bool _swipeGestureModeDefaultValue = false;
 
@@ -284,7 +282,7 @@ final class SwipeGesturePreference extends BooleanPreference {
 
 final class NotificationModePreference extends BooleanPreference {
   const NotificationModePreference({bool? val})
-      : super(val: val ?? _notificationModeDefaultValue);
+    : super(val: val ?? _notificationModeDefaultValue);
 
   static const bool _notificationModeDefaultValue = true;
 
@@ -306,7 +304,7 @@ final class NotificationModePreference extends BooleanPreference {
 
 final class CollapseModePreference extends BooleanPreference {
   const CollapseModePreference({bool? val})
-      : super(val: val ?? _collapseModeDefaultValue);
+    : super(val: val ?? _collapseModeDefaultValue);
 
   static const bool _collapseModeDefaultValue = true;
 
@@ -328,7 +326,7 @@ final class CollapseModePreference extends BooleanPreference {
 
 final class IndexedStoryTilePreference extends BooleanPreference {
   const IndexedStoryTilePreference({bool? val})
-      : super(val: val ?? _indexedStoryTilePreferenceDefaultValue);
+    : super(val: val ?? _indexedStoryTilePreferenceDefaultValue);
 
   static const bool _indexedStoryTilePreferenceDefaultValue = false;
 
@@ -351,7 +349,7 @@ final class IndexedStoryTilePreference extends BooleanPreference {
 /// tile should display link preview. Defaults to true.
 final class RichStoryTilePreference extends BooleanPreference {
   const RichStoryTilePreference({bool? val})
-      : super(val: val ?? _richStoryTilePreferenceDefaultValue);
+    : super(val: val ?? _richStoryTilePreferenceDefaultValue);
 
   static const bool _richStoryTilePreferenceDefaultValue = true;
 
@@ -372,7 +370,7 @@ final class RichStoryTilePreference extends BooleanPreference {
 
 final class PreviewImageAlignmentPreference extends BooleanPreference {
   const PreviewImageAlignmentPreference({bool? val})
-      : super(val: val ?? _imageAlignmentPreferenceDefaultValue);
+    : super(val: val ?? _imageAlignmentPreferenceDefaultValue);
 
   /// true for left, false for right.
   static const bool _imageAlignmentPreferenceDefaultValue = true;
@@ -384,9 +382,9 @@ final class PreviewImageAlignmentPreference extends BooleanPreference {
 
   @override
   Set<Preference<dynamic>> get dependencies => <Preference<dynamic>>{
-        const RichStoryTilePreference(val: true),
-        const RichStoryTileImageDisplayPreference(val: true),
-      };
+    const RichStoryTilePreference(val: true),
+    const RichStoryTileImageDisplayPreference(val: true),
+  };
 
   @override
   String get key => 'previewImageAlignmentPreference';
@@ -402,7 +400,7 @@ final class PreviewImageAlignmentPreference extends BooleanPreference {
 /// the preview image.
 final class ExpandTileForLongerTextPreference extends BooleanPreference {
   const ExpandTileForLongerTextPreference({bool? val})
-      : super(val: val ?? _expandTileForLongerTextPreferenceDefaultValue);
+    : super(val: val ?? _expandTileForLongerTextPreferenceDefaultValue);
 
   static const bool _expandTileForLongerTextPreferenceDefaultValue = false;
 
@@ -413,8 +411,8 @@ final class ExpandTileForLongerTextPreference extends BooleanPreference {
 
   @override
   Set<Preference<dynamic>> get dependencies => <Preference<dynamic>>{
-        const RichStoryTilePreference(val: true),
-      };
+    const RichStoryTilePreference(val: true),
+  };
 
   @override
   String get key => 'expandTileForLongerTextPreference';
@@ -428,7 +426,7 @@ final class ExpandTileForLongerTextPreference extends BooleanPreference {
 
 final class RichStoryTileImageDisplayPreference extends BooleanPreference {
   const RichStoryTileImageDisplayPreference({bool? val})
-      : super(val: val ?? _richStoryTileImageDisplayPreferenceDefaultValue);
+    : super(val: val ?? _richStoryTileImageDisplayPreferenceDefaultValue);
 
   static const bool _richStoryTileImageDisplayPreferenceDefaultValue = true;
 
@@ -439,8 +437,8 @@ final class RichStoryTileImageDisplayPreference extends BooleanPreference {
 
   @override
   Set<Preference<dynamic>> get dependencies => <Preference<dynamic>>{
-        const RichStoryTilePreference(val: true),
-      };
+    const RichStoryTilePreference(val: true),
+  };
 
   @override
   String get key => 'largeStoryTileImageDisplayPreference';
@@ -454,7 +452,7 @@ final class RichStoryTileImageDisplayPreference extends BooleanPreference {
 
 final class FaviconModePreference extends BooleanPreference {
   const FaviconModePreference({bool? val})
-      : super(val: val ?? _faviconModePreferenceDefaultValue);
+    : super(val: val ?? _faviconModePreferenceDefaultValue);
 
   static const bool _faviconModePreferenceDefaultValue = true;
 
@@ -465,8 +463,8 @@ final class FaviconModePreference extends BooleanPreference {
 
   @override
   Set<Preference<dynamic>> get dependencies => <Preference<dynamic>>{
-        const RichStoryTilePreference(val: false),
-      };
+    const RichStoryTilePreference(val: false),
+  };
 
   @override
   String get key => 'faviconMode';
@@ -480,7 +478,7 @@ final class FaviconModePreference extends BooleanPreference {
 
 final class MetadataModePreference extends BooleanPreference {
   const MetadataModePreference({bool? val})
-      : super(val: val ?? _metadataModeDefaultValue);
+    : super(val: val ?? _metadataModeDefaultValue);
 
   static const bool _metadataModeDefaultValue = true;
 
@@ -502,7 +500,7 @@ final class MetadataModePreference extends BooleanPreference {
 
 final class StoryUrlModePreference extends BooleanPreference {
   const StoryUrlModePreference({bool? val})
-      : super(val: val ?? _storyUrlModeDefaultValue);
+    : super(val: val ?? _storyUrlModeDefaultValue);
 
   static const bool _storyUrlModeDefaultValue = true;
 
@@ -523,7 +521,7 @@ final class StoryUrlModePreference extends BooleanPreference {
 
 final class DividerPreference extends BooleanPreference {
   const DividerPreference({bool? val})
-      : super(val: val ?? _dividerDefaultValue);
+    : super(val: val ?? _dividerDefaultValue);
 
   static const bool _dividerDefaultValue = true;
 
@@ -544,7 +542,7 @@ final class DividerPreference extends BooleanPreference {
 
 final class ReaderModePreference extends BooleanPreference {
   const ReaderModePreference({bool? val})
-      : super(val: val ?? _readerModeDefaultValue);
+    : super(val: val ?? _readerModeDefaultValue);
 
   static const bool _readerModeDefaultValue = false;
 
@@ -569,7 +567,7 @@ final class ReaderModePreference extends BooleanPreference {
 
 final class MarkReadStoriesModePreference extends BooleanPreference {
   const MarkReadStoriesModePreference({bool? val})
-      : super(val: val ?? _markReadStoriesModeDefaultValue);
+    : super(val: val ?? _markReadStoriesModeDefaultValue);
 
   static const bool _markReadStoriesModeDefaultValue = true;
 
@@ -592,7 +590,7 @@ final class MarkReadStoriesModePreference extends BooleanPreference {
 /// marking it gray.
 final class HideStoryInsteadOfMarkingGray extends BooleanPreference {
   const HideStoryInsteadOfMarkingGray({bool? val})
-      : super(val: val ?? _hideStoryInsteadOfMarkingGray);
+    : super(val: val ?? _hideStoryInsteadOfMarkingGray);
 
   static const bool _hideStoryInsteadOfMarkingGray = false;
 
@@ -614,7 +612,7 @@ final class HideStoryInsteadOfMarkingGray extends BooleanPreference {
 
 final class ManualPaginationPreference extends BooleanPreference {
   const ManualPaginationPreference({bool? val})
-      : super(val: val ?? _paginationModeDefaultValue);
+    : super(val: val ?? _paginationModeDefaultValue);
 
   static const bool _paginationModeDefaultValue = false;
 
@@ -636,7 +634,7 @@ final class ManualPaginationPreference extends BooleanPreference {
 /// Option to keep collapse state in local persistence.
 final class PersistCollapseStateAcrossSessions extends BooleanPreference {
   const PersistCollapseStateAcrossSessions({bool? val})
-      : super(val: val ?? _defaultValue);
+    : super(val: val ?? _defaultValue);
 
   static const bool _defaultValue = true;
 
@@ -647,8 +645,8 @@ final class PersistCollapseStateAcrossSessions extends BooleanPreference {
 
   @override
   Set<Preference<dynamic>> get dependencies => <Preference<dynamic>>{
-        const PreserveCollapseStateAfterScreenExit(val: true),
-      };
+    const PreserveCollapseStateAfterScreenExit(val: true),
+  };
 
   @override
   String get key => 'persistCollapseStateAcrossSessions';
@@ -664,7 +662,7 @@ final class PersistCollapseStateAcrossSessions extends BooleanPreference {
 /// Option to keep collapse state in memory.
 final class PreserveCollapseStateAfterScreenExit extends BooleanPreference {
   const PreserveCollapseStateAfterScreenExit({bool? val})
-      : super(val: val ?? _defaultValue);
+    : super(val: val ?? _defaultValue);
 
   static const bool _defaultValue = true;
 
@@ -731,7 +729,7 @@ final class HighlightNewComments extends BooleanPreference {
 /// https://developer.chrome.com/docs/android/custom-tabs/
 final class CustomTabPreference extends BooleanPreference {
   const CustomTabPreference({bool? val})
-      : super(val: val ?? _customTabModeDefaultValue);
+    : super(val: val ?? _customTabModeDefaultValue);
 
   static const bool _customTabModeDefaultValue = false;
 
@@ -756,7 +754,7 @@ final class CustomTabPreference extends BooleanPreference {
 
 final class WebViewBottomSheetPreference extends BooleanPreference {
   const WebViewBottomSheetPreference({bool? val})
-      : super(val: val ?? _defaultValue);
+    : super(val: val ?? _defaultValue);
 
   static const bool _defaultValue = false;
 
@@ -778,7 +776,7 @@ final class WebViewBottomSheetPreference extends BooleanPreference {
 
 final class TrueDarkModePreference extends BooleanPreference {
   const TrueDarkModePreference({bool? val})
-      : super(val: val ?? _trueDarkModeDefaultValue);
+    : super(val: val ?? _trueDarkModeDefaultValue);
 
   static const bool _trueDarkModeDefaultValue = false;
 
@@ -799,7 +797,7 @@ final class TrueDarkModePreference extends BooleanPreference {
 
 final class HapticFeedbackPreference extends BooleanPreference {
   const HapticFeedbackPreference({bool? val})
-      : super(val: val ?? _hapticFeedbackModeDefaultValue);
+    : super(val: val ?? _hapticFeedbackModeDefaultValue);
 
   static const bool _hapticFeedbackModeDefaultValue = true;
 
@@ -837,7 +835,7 @@ final class FetchModePreference extends IntPreference {
 
 final class CommentsOrderPreference extends IntPreference {
   CommentsOrderPreference({int? val})
-      : super(val: val ?? _commentsOrderDefaultValue);
+    : super(val: val ?? _commentsOrderDefaultValue);
 
   static final int _commentsOrderDefaultValue = CommentsOrder.natural.index;
 
@@ -890,8 +888,9 @@ final class FontSizePreference extends IntPreference {
 final class TabOrderPreference extends IntPreference {
   TabOrderPreference({int? val}) : super(val: val ?? _tabOrderDefaultValue);
 
-  static final int _tabOrderDefaultValue =
-      StoryType.convertToSettingsValue(StoryType.values);
+  static final int _tabOrderDefaultValue = StoryType.convertToSettingsValue(
+    StoryType.values,
+  );
 
   @override
   TabOrderPreference copyWith({required int? val}) {
@@ -907,7 +906,7 @@ final class TabOrderPreference extends IntPreference {
 
 final class StoryMarkingModePreference extends IntPreference {
   StoryMarkingModePreference({int? val})
-      : super(val: val ?? _markStoriesAsReadWhenPreferenceDefaultValue);
+    : super(val: val ?? _markStoriesAsReadWhenPreferenceDefaultValue);
 
   static final int _markStoriesAsReadWhenPreferenceDefaultValue =
       StoryMarkingMode.tap.index;
@@ -927,8 +926,9 @@ final class StoryMarkingModePreference extends IntPreference {
 final class AppColorPreference extends IntPreference {
   AppColorPreference({int? val}) : super(val: val ?? _appColorDefaultValue);
 
-  static final int _appColorDefaultValue =
-      materialColors.indexOf(Palette.deepOrange);
+  static final int _appColorDefaultValue = materialColors.indexOf(
+    Palette.deepOrange,
+  );
 
   @override
   AppColorPreference copyWith({required int? val}) {
@@ -944,7 +944,7 @@ final class AppColorPreference extends IntPreference {
 
 final class TextScaleFactorPreference extends DoublePreference {
   const TextScaleFactorPreference({double? val})
-      : super(val: val ?? _textScaleFactorDefaultValue);
+    : super(val: val ?? _textScaleFactorDefaultValue);
 
   static const double _textScaleFactorDefaultValue = 1;
 
@@ -979,7 +979,7 @@ final class DateFormatPreference extends IntPreference {
 
 final class HackerNewsDataSourcePreference extends IntPreference {
   HackerNewsDataSourcePreference({int? val})
-      : super(val: val ?? _hackerNewsDataSourceDefaultValue);
+    : super(val: val ?? _hackerNewsDataSourceDefaultValue);
 
   static final int _hackerNewsDataSourceDefaultValue =
       HackerNewsDataSource.api.index;

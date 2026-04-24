@@ -69,12 +69,9 @@ class MainView extends StatelessWidget {
                       state.onlyShowTargetComment == false) {
                     unawaited(
                       context.read<CommentsCubit>().refresh(
-                            onError: (AppException e) =>
-                                context.showErrorSnackBar(
-                              e.message,
-                              e.error,
-                            ),
-                          ),
+                        onError: (AppException e) =>
+                            context.showErrorSnackBar(e.message, e.error),
+                      ),
                     );
 
                     if (state.item.isPoll) {
@@ -84,10 +81,12 @@ class MainView extends StatelessWidget {
                 },
                 child: ScrollablePositionedList.builder(
                   physics: const ClampingScrollPhysics(),
-                  itemScrollController:
-                      context.read<CommentsCubit>().itemScrollController,
-                  itemPositionsListener:
-                      context.read<CommentsCubit>().itemPositionsListener,
+                  itemScrollController: context
+                      .read<CommentsCubit>()
+                      .itemScrollController,
+                  itemPositionsListener: context
+                      .read<CommentsCubit>()
+                      .itemPositionsListener,
                   itemCount: state.comments.length + 2,
                   scrollOffsetListener: scrollOffsetListener,
                   minCacheExtent: WidgetUtils.calculateCacheExtent(context),
@@ -96,9 +95,7 @@ class MainView extends StatelessWidget {
                       return Material(
                         color: Theme.of(context).canvasColor,
                         child: Padding(
-                          padding: EdgeInsets.only(
-                            top: topPadding,
-                          ),
+                          padding: EdgeInsets.only(top: topPadding),
                           child: _ParentItemSection(
                             commentEditingController: commentEditingController,
                             state: state,
@@ -106,10 +103,8 @@ class MainView extends StatelessWidget {
                             preferenceState: preferenceState,
                             splitViewEnabled: splitViewEnabled,
                             onMoreTapped: onMoreTapped,
-                            onUpvoteTapped: (Item item) => onUpvoteTapped(
-                              context,
-                              item,
-                            ),
+                            onUpvoteTapped: (Item item) =>
+                                onUpvoteTapped(context, item),
                             onStoryUrlTapped: onStoryUrlTapped,
                           ),
                         ),
@@ -117,7 +112,8 @@ class MainView extends StatelessWidget {
                     } else if (index == state.comments.length + 1) {
                       return Container(
                         color: Theme.of(context).canvasColor,
-                        height: MediaQuery.of(context).size.height -
+                        height:
+                            MediaQuery.of(context).size.height -
                             MediaQuery.of(context).padding.top,
                         padding: const EdgeInsets.symmetric(
                           horizontal: Dimens.pt48,
@@ -139,8 +135,9 @@ class MainView extends StatelessWidget {
                                       ),
                                       child: Center(
                                         child: Padding(
-                                          padding:
-                                              const EdgeInsets.all(Dimens.pt24),
+                                          padding: const EdgeInsets.all(
+                                            Dimens.pt24,
+                                          ),
                                           child: FaIcon(
                                             FontAwesomeIcons.heartPulse,
                                             applyTextScaling: false,
@@ -195,12 +192,11 @@ class MainView extends StatelessWidget {
 
                     index = index - 1;
                     final Comment comment = state.comments.elementAt(index);
-                    final GlobalKey<State<StatefulWidget>>? key =
-                        context.read<CommentsCubit>().globalKeys[comment.id];
+                    final GlobalKey<State<StatefulWidget>>? key = context
+                        .read<CommentsCubit>()
+                        .globalKeys[comment.id];
                     if (comment.isHiddenByUser) {
-                      return SizedBox.shrink(
-                        key: key,
-                      );
+                      return SizedBox.shrink(key: key);
                     } else {
                       return Padding(
                         key: key,
@@ -277,9 +273,7 @@ class MainView extends StatelessWidget {
       );
       final bool res = await cubit.upvote();
       if (res && context.mounted) {
-        context.showSnackBar(
-          content: SnackBarMessages.voteSubmitted,
-        );
+        context.showSnackBar(content: SnackBarMessages.voteSubmitted);
       }
     } else {
       HapticFeedbackUtils.error();
@@ -365,14 +359,13 @@ class _ParentItemSection extends StatelessWidget {
                   if (context.read<AuthBloc>().state.user.id != item.by)
                     CustomSlidableAction(
                       onPressed: (_) => onUpvoteTapped.call(item),
-                      backgroundColor:
-                          Theme.of(context).colorScheme.primaryContainer,
-                      foregroundColor:
-                          Theme.of(context).colorScheme.onPrimaryContainer,
-                      child: const Icon(
-                        Icons.thumb_up,
-                        size: Dimens.pt24,
-                      ),
+                      backgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.primaryContainer,
+                      foregroundColor: Theme.of(
+                        context,
+                      ).colorScheme.onPrimaryContainer,
+                      child: const Icon(Icons.thumb_up, size: Dimens.pt24),
                     ),
                   CustomSlidableAction(
                     onPressed: (_) {
@@ -384,26 +377,24 @@ class _ParentItemSection extends StatelessWidget {
                       }
                       context.read<EditCubit>().onReplyTapped(item);
                     },
-                    backgroundColor:
-                        Theme.of(context).colorScheme.primaryContainer,
-                    foregroundColor:
-                        Theme.of(context).colorScheme.onPrimaryContainer,
-                    child: const Icon(
-                      Icons.message,
-                      size: Dimens.pt24,
-                    ),
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.primaryContainer,
+                    foregroundColor: Theme.of(
+                      context,
+                    ).colorScheme.onPrimaryContainer,
+                    child: const Icon(Icons.message, size: Dimens.pt24),
                   ),
                   CustomSlidableAction(
                     onPressed: (BuildContext context) =>
                         onMoreTapped(item, context.rect),
-                    backgroundColor:
-                        Theme.of(context).colorScheme.primaryContainer,
-                    foregroundColor:
-                        Theme.of(context).colorScheme.onPrimaryContainer,
-                    child: const Icon(
-                      Icons.more_horiz,
-                      size: Dimens.pt24,
-                    ),
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.primaryContainer,
+                    foregroundColor: Theme.of(
+                      context,
+                    ).colorScheme.onPrimaryContainer,
+                    child: const Icon(Icons.more_horiz, size: Dimens.pt24),
                   ),
                 ],
               ),
@@ -425,8 +416,9 @@ class _ParentItemSection extends StatelessWidget {
                         ),
                         const Spacer(),
                         Text(
-                          preferenceState.displayDateFormat
-                              .convertToString(item.time),
+                          preferenceState.displayDateFormat.convertToString(
+                            item.time,
+                          ),
                           style: TextStyle(
                             color: Theme.of(context).metadataColor,
                           ),
@@ -436,15 +428,10 @@ class _ParentItemSection extends StatelessWidget {
                     ),
                   ),
                   BlocBuilder<PreferenceCubit, PreferenceState>(
-                    buildWhen: (
-                      PreferenceState previous,
-                      PreferenceState current,
-                    ) =>
-                        previous.fontSize != current.fontSize,
-                    builder: (
-                      BuildContext context,
-                      PreferenceState prefState,
-                    ) {
+                    buildWhen:
+                        (PreferenceState previous, PreferenceState current) =>
+                            previous.fontSize != current.fontSize,
+                    builder: (BuildContext context, PreferenceState prefState) {
                       final double fontSize = prefState.fontSize.fontSize;
                       return Column(
                         children: <Widget>[
@@ -498,9 +485,9 @@ class _ParentItemSection extends StatelessWidget {
                                           fontWeight: FontWeight.bold,
                                           fontSize: fontSize,
                                           color: item.url.isNotEmpty
-                                              ? Theme.of(context)
-                                                  .colorScheme
-                                                  .primary
+                                              ? Theme.of(
+                                                  context,
+                                                ).colorScheme.primary
                                               : null,
                                         ),
                                       ),
@@ -510,9 +497,9 @@ class _ParentItemSection extends StatelessWidget {
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: fontSize - 4,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.primary,
                                           ),
                                         ),
                                     ],
@@ -523,9 +510,7 @@ class _ParentItemSection extends StatelessWidget {
                               ),
                             )
                           else
-                            const SizedBox(
-                              height: Dimens.pt6,
-                            ),
+                            const SizedBox(height: Dimens.pt6),
                           if (item.text.isNotEmpty)
                             FadeIn(
                               child: SizedBox(
@@ -537,8 +522,9 @@ class _ParentItemSection extends StatelessWidget {
                                   ),
                                   child: ItemText(
                                     item: item,
-                                    textScaler:
-                                        MediaQuery.of(context).textScaler,
+                                    textScaler: MediaQuery.of(
+                                      context,
+                                    ).textScaler,
                                     selectable: true,
                                   ),
                                 ),
@@ -560,9 +546,7 @@ class _ParentItemSection extends StatelessWidget {
               ),
             ),
           ),
-          const Divider(
-            height: Dimens.zero,
-          ),
+          const Divider(height: Dimens.zero),
           if (state.onlyShowTargetComment && item is Story) ...<Widget>[
             Center(
               child: TextButton(
@@ -570,34 +554,29 @@ class _ParentItemSection extends StatelessWidget {
                 child: const Text('View all comments'),
               ),
             ),
-            const Divider(
-              height: Dimens.zero,
-            ),
+            const Divider(height: Dimens.zero),
           ] else ...<Widget>[
             SizedBox(
               height: 48,
               child: Row(
                 children: <Widget>[
                   if (item is Story) ...<Widget>[
-                    const SizedBox(
-                      width: Dimens.pt12,
-                    ),
+                    const SizedBox(width: Dimens.pt12),
                     Text(
                       '''${item.score} karma, ${item.descendants} cmt${item.descendants > 1 ? 's' : ''}''',
                       style: Theme.of(context).textTheme.labelLarge,
                       textScaler: MediaQuery.of(context).clampedTextScaler,
                     ),
                   ] else ...<Widget>[
-                    const SizedBox(
-                      width: Dimens.pt4,
-                    ),
+                    const SizedBox(width: Dimens.pt4),
                     BlocSelector<CommentsCubit, CommentsState, CommentsStatus>(
                       selector: (CommentsState state) =>
                           state.fetchParentStatus,
                       builder: (BuildContext context, CommentsStatus status) {
                         return TextButton(
-                          onPressed:
-                              context.read<CommentsCubit>().loadParentThread,
+                          onPressed: context
+                              .read<CommentsCubit>()
+                              .loadParentThread,
                           child: status == CommentsStatus.inProgress
                               ? const SizedBox(
                                   height: Dimens.pt12,
@@ -608,16 +587,15 @@ class _ParentItemSection extends StatelessWidget {
                                 )
                               : Text(
                                   'View Parent',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelLarge
+                                  style: Theme.of(context).textTheme.labelLarge
                                       ?.copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.primary,
                                       ),
-                                  textScaler:
-                                      MediaQuery.of(context).clampedTextScaler,
+                                  textScaler: MediaQuery.of(
+                                    context,
+                                  ).clampedTextScaler,
                                 ),
                         );
                       },
@@ -626,8 +604,9 @@ class _ParentItemSection extends StatelessWidget {
                       selector: (CommentsState state) => state.fetchRootStatus,
                       builder: (BuildContext context, CommentsStatus status) {
                         return TextButton(
-                          onPressed:
-                              context.read<CommentsCubit>().loadRootThread,
+                          onPressed: context
+                              .read<CommentsCubit>()
+                              .loadRootThread,
                           child: status == CommentsStatus.inProgress
                               ? const SizedBox(
                                   height: Dimens.pt12,
@@ -638,16 +617,15 @@ class _ParentItemSection extends StatelessWidget {
                                 )
                               : Text(
                                   'View Root',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelLarge
+                                  style: Theme.of(context).textTheme.labelLarge
                                       ?.copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.primary,
                                       ),
-                                  textScaler:
-                                      MediaQuery.of(context).clampedTextScaler,
+                                  textScaler: MediaQuery.of(
+                                    context,
+                                  ).clampedTextScaler,
                                 ),
                         );
                       },
@@ -660,38 +638,25 @@ class _ParentItemSection extends StatelessWidget {
                       onSelected: context.read<CommentsCubit>().updateFetchMode,
                       selected: state.fetchMode,
                     ),
-                  const SizedBox(
-                    width: Dimens.pt6,
-                  ),
+                  const SizedBox(width: Dimens.pt6),
                   CustomDropdownMenu<CommentsOrder>(
                     menuChildren: CommentsOrder.values,
                     onSelected: context.read<CommentsCubit>().updateOrder,
                     selected: state.order,
                   ),
-                  const SizedBox(
-                    width: Dimens.pt4,
-                  ),
+                  const SizedBox(width: Dimens.pt4),
                 ],
               ),
             ),
-            const Divider(
-              height: Dimens.zero,
-            ),
+            const Divider(height: Dimens.zero),
           ],
           if (state.comments.isEmpty &&
               state.status == CommentsStatus.allLoaded) ...<Widget>[
-            const SizedBox(
-              height: 240,
-            ),
+            const SizedBox(height: 240),
             const Center(
-              child: Text(
-                'Nothing yet',
-                style: TextStyle(color: Palette.grey),
-              ),
+              child: Text('Nothing yet', style: TextStyle(color: Palette.grey)),
             ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height - 240,
-            ),
+            SizedBox(height: MediaQuery.of(context).size.height - 240),
           ],
         ],
       ),

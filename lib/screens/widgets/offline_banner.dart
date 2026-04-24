@@ -7,10 +7,7 @@ import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 
 class OfflineBanner extends StatelessWidget {
-  const OfflineBanner({
-    super.key,
-    this.shouldShowExitButton = false,
-  });
+  const OfflineBanner({super.key, this.shouldShowExitButton = false});
 
   final bool shouldShowExitButton;
 
@@ -26,11 +23,13 @@ class OfflineBanner extends StatelessWidget {
             content: Text(
               'You are currently in offline mode. '
               '${shouldShowExitButton ? 'Exit to fetch latest stories.' : ''}',
-              textAlign:
-                  shouldShowExitButton ? TextAlign.left : TextAlign.center,
+              textAlign: shouldShowExitButton
+                  ? TextAlign.left
+                  : TextAlign.center,
             ),
-            backgroundColor:
-                Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+            backgroundColor: Theme.of(
+              context,
+            ).colorScheme.primary.withValues(alpha: 0.3),
             actions: <Widget>[
               if (shouldShowExitButton)
                 TextButton(
@@ -50,9 +49,7 @@ class OfflineBanner extends StatelessWidget {
                               onPressed: () => context.pop(true),
                               child: const Text(
                                 'Yes',
-                                style: TextStyle(
-                                  color: Palette.red,
-                                ),
+                                style: TextStyle(color: Palette.red),
                               ),
                             ),
                           ],
@@ -60,18 +57,16 @@ class OfflineBanner extends StatelessWidget {
                       },
                     ).then((bool? value) {
                       if (context.mounted && (value ?? false)) {
-                        context
-                            .read<StoriesBloc>()
-                            .add(StoriesExitOfflineMode());
+                        context.read<StoriesBloc>().add(
+                          StoriesExitOfflineMode(),
+                        );
                         context.read<AuthBloc>().add(AuthInitialize());
                         context.read<PinCubit>().init();
                         WebAnalyzer.cacheMap.clear();
                       }
                     });
                   },
-                  child: const Text(
-                    'Exit',
-                  ),
+                  child: const Text('Exit'),
                 )
               else
                 Container(),

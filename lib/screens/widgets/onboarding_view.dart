@@ -86,9 +86,7 @@ class _OnboardingViewState extends State<OnboardingView> {
               style: ElevatedButton.styleFrom(
                 shape: const CircleBorder(),
                 backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                padding: const EdgeInsets.all(
-                  Dimens.pt18,
-                ),
+                padding: const EdgeInsets.all(Dimens.pt18),
                 elevation: Dimens.pt12,
               ),
               child: Icon(
@@ -105,10 +103,7 @@ class _OnboardingViewState extends State<OnboardingView> {
 }
 
 class _PageViewChild extends StatelessWidget {
-  const _PageViewChild({
-    required this.path,
-    required this.description,
-  });
+  const _PageViewChild({required this.path, required this.description});
 
   final String path;
   final String description;

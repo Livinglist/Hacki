@@ -38,9 +38,7 @@ class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
         if (state.status == Status.success) {
           context.pop();
           HapticFeedbackUtils.light();
-          showSnackBar(
-            content: 'Post submitted.',
-          );
+          showSnackBar(content: 'Post submitted.');
         } else if (state.status == Status.failure) {
           showErrorSnackBar();
         }
@@ -79,9 +77,7 @@ class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
                           onPressed: () => context.pop(true),
                           child: const Text(
                             'Yes',
-                            style: TextStyle(
-                              color: Palette.red,
-                            ),
+                            style: TextStyle(color: Palette.red),
                           ),
                         ),
                       ],
@@ -96,9 +92,7 @@ class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
             ),
             title: Text(
               'Submit',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
             ),
             actions: <Widget>[
               if (state.status == Status.inProgress)
@@ -138,9 +132,7 @@ class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
                               onPressed: () => context.pop(true),
                               child: const Text(
                                 'Yes',
-                                style: TextStyle(
-                                  color: Palette.red,
-                                ),
+                                style: TextStyle(color: Palette.red),
                               ),
                             ),
                           ],
@@ -155,10 +147,7 @@ class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
                 )
               else
                 IconButton(
-                  icon: const Icon(
-                    Icons.send,
-                    color: Palette.grey,
-                  ),
+                  icon: const Icon(Icons.send, color: Palette.grey),
                   onPressed: () {},
                 ),
             ],
@@ -166,48 +155,34 @@ class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
           body: Column(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: Dimens.pt12,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: Dimens.pt12),
                 child: TextField(
                   controller: titleEditingController,
                   cursorColor: Theme.of(context).colorScheme.primary,
                   autocorrect: false,
                   maxLength: 80,
-                  decoration: const InputDecoration(
-                    hintText: 'Title',
-                  ),
+                  decoration: const InputDecoration(hintText: 'Title'),
                   onChanged: context.read<SubmitCubit>().onTitleChanged,
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: Dimens.pt12,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: Dimens.pt12),
                 child: TextField(
                   enabled: textEditingController.text.isEmpty,
                   controller: urlEditingController,
                   cursorColor: Theme.of(context).colorScheme.primary,
                   autocorrect: false,
-                  decoration: const InputDecoration(
-                    hintText: 'Url',
-                  ),
+                  decoration: const InputDecoration(hintText: 'Url'),
                   onChanged: context.read<SubmitCubit>().onUrlChanged,
                 ),
               ),
               const Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: Dimens.pt12,
-                ),
-                child: Center(
-                  child: Text('or'),
-                ),
+                padding: EdgeInsets.symmetric(vertical: Dimens.pt12),
+                child: Center(child: Text('or')),
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: Dimens.pt12,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: Dimens.pt12),
                   child: TextField(
                     enabled: urlEditingController.text.isEmpty,
                     controller: textEditingController,
@@ -218,9 +193,7 @@ class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide.none,
                       ),
-                      border: UnderlineInputBorder(
-                        borderSide: BorderSide.none,
-                      ),
+                      border: UnderlineInputBorder(borderSide: BorderSide.none),
                     ),
                     onChanged: context.read<SubmitCubit>().onTextChanged,
                     textCapitalization: TextCapitalization.sentences,

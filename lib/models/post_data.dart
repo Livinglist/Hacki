@@ -3,11 +3,7 @@ mixin PostDataMixin {
 }
 
 class LoginPostData with PostDataMixin {
-  LoginPostData({
-    required this.acct,
-    required this.pw,
-    required this.goto,
-  });
+  LoginPostData({required this.acct, required this.pw, required this.goto});
 
   final String acct;
   final String pw;
@@ -15,11 +11,7 @@ class LoginPostData with PostDataMixin {
 
   @override
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'acct': acct,
-      'pw': pw,
-      'goto': goto,
-    };
+    return <String, dynamic>{'acct': acct, 'pw': pw, 'goto': goto};
   }
 }
 
@@ -62,12 +54,7 @@ class FlagPostData with PostDataMixin {
 
   @override
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'acct': acct,
-      'pw': pw,
-      'id': id,
-      'un': un,
-    };
+    return <String, dynamic>{'acct': acct, 'pw': pw, 'id': id, 'un': un};
   }
 }
 
@@ -86,12 +73,7 @@ class FavoritePostData with PostDataMixin {
 
   @override
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'acct': acct,
-      'pw': pw,
-      'id': id,
-      'un': un,
-    };
+    return <String, dynamic>{'acct': acct, 'pw': pw, 'id': id, 'un': un};
   }
 }
 
@@ -110,12 +92,7 @@ class VotePostData with PostDataMixin {
 
   @override
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'acct': acct,
-      'pw': pw,
-      'id': id,
-      'how': how,
-    };
+    return <String, dynamic>{'acct': acct, 'pw': pw, 'id': id, 'how': how};
   }
 }
 
@@ -127,9 +104,9 @@ class SubmitPostData with PostDataMixin {
     this.url,
     this.text,
   }) : assert(
-          (url != null && text == null) || (url == null && text != null),
-          'URL and text cannot be submitted at the same time',
-        );
+         (url != null && text == null) || (url == null && text != null),
+         'URL and text cannot be submitted at the same time',
+       );
 
   final String fnid;
   final String fnop;
@@ -150,11 +127,7 @@ class SubmitPostData with PostDataMixin {
 }
 
 class EditPostData with PostDataMixin {
-  EditPostData({
-    required this.hmac,
-    required this.id,
-    this.text,
-  });
+  EditPostData({required this.hmac, required this.id, this.text});
 
   final String hmac;
   final int id;
@@ -162,20 +135,12 @@ class EditPostData with PostDataMixin {
 
   @override
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'hmac': hmac,
-      'id': id,
-      'text': text,
-    };
+    return <String, dynamic>{'hmac': hmac, 'id': id, 'text': text};
   }
 }
 
 class FormPostData with PostDataMixin {
-  FormPostData({
-    required this.acct,
-    required this.pw,
-    this.id,
-  });
+  FormPostData({required this.acct, required this.pw, this.id});
 
   final String acct;
   final String pw;
@@ -183,10 +148,6 @@ class FormPostData with PostDataMixin {
 
   @override
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'acct': acct,
-      'pw': pw,
-      'id': id,
-    };
+    return <String, dynamic>{'acct': acct, 'pw': pw, 'id': id};
   }
 }

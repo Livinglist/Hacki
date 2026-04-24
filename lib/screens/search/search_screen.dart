@@ -14,10 +14,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:scrolls_to_top/scrolls_to_top.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({
-    super.key,
-    this.isInBottomSheet = false,
-  });
+  const SearchScreen({super.key, this.isInBottomSheet = false});
 
   /// If user is viewing [SearchScreen] in bottom sheet,
   /// we navigate to [ItemScreen] directly instead of injecting the
@@ -78,8 +75,9 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                     enablePullDown: false,
                     enablePullUp: true,
                     header: WaterDropMaterialHeader(
-                      backgroundColor:
-                          Theme.of(context).colorScheme.primaryContainer,
+                      backgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.primaryContainer,
                       color: Theme.of(context).colorScheme.onPrimaryContainer,
                     ),
                     footer: CustomFooter(
@@ -91,9 +89,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                         if (mode == LoadStatus.loading) {
                           body = const CustomCircularProgressIndicator();
                         } else if (mode == LoadStatus.failed) {
-                          body = const Text(
-                            'loading failed.',
-                          );
+                          body = const Text('loading failed.');
                         } else {
                           body = const SizedBox.shrink();
                         }
@@ -125,8 +121,9 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                     .read<SearchCubit>()
                                     .textEditingController,
                                 focusNode: focusNode,
-                                cursorColor:
-                                    Theme.of(context).colorScheme.primary,
+                                cursorColor: Theme.of(
+                                  context,
+                                ).colorScheme.primary,
                                 autocorrect: false,
                                 decoration: const InputDecoration(
                                   hintText: 'Search Hacker News',
@@ -140,9 +137,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                 },
                               ),
                             ),
-                            const SizedBox(
-                              height: Dimens.pt6,
-                            ),
+                            const SizedBox(height: Dimens.pt6),
                             SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Row(
@@ -157,9 +152,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                           .read<SearchCubit>()
                                           .onDateTimeRangeUpdated,
                                     ),
-                                    const SizedBox(
-                                      width: Dimens.pt8,
-                                    ),
+                                    const SizedBox(width: Dimens.pt8),
                                   ],
                                 ],
                               ),
@@ -177,9 +170,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                     scrollDirection: Axis.horizontal,
                                     child: Row(
                                       children: <Widget>[
-                                        const SizedBox(
-                                          width: Dimens.pt8,
-                                        ),
+                                        const SizedBox(width: Dimens.pt8),
                                         DateTimeShortcutChip.dayBefore(
                                           onDateTimeRangeUpdated: context
                                               .read<SearchCubit>()
@@ -188,9 +179,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                               state.dateFilter?.startTime,
                                           endDate: state.dateFilter?.endTime,
                                         ),
-                                        const SizedBox(
-                                          width: Dimens.pt8,
-                                        ),
+                                        const SizedBox(width: Dimens.pt8),
                                         DateTimeShortcutChip.dayAfter(
                                           onDateTimeRangeUpdated: context
                                               .read<SearchCubit>()
@@ -199,9 +188,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                               state.dateFilter?.startTime,
                                           endDate: state.dateFilter?.endTime,
                                         ),
-                                        const SizedBox(
-                                          width: Dimens.pt8,
-                                        ),
+                                        const SizedBox(width: Dimens.pt8),
                                         DateTimeShortcutChip.weekBefore(
                                           onDateTimeRangeUpdated: context
                                               .read<SearchCubit>()
@@ -210,9 +197,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                               state.dateFilter?.startTime,
                                           endDate: state.dateFilter?.endTime,
                                         ),
-                                        const SizedBox(
-                                          width: Dimens.pt8,
-                                        ),
+                                        const SizedBox(width: Dimens.pt8),
                                         DateTimeShortcutChip.weekAfter(
                                           onDateTimeRangeUpdated: context
                                               .read<SearchCubit>()
@@ -221,9 +206,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                               state.dateFilter?.startTime,
                                           endDate: state.dateFilter?.endTime,
                                         ),
-                                        const SizedBox(
-                                          width: Dimens.pt8,
-                                        ),
+                                        const SizedBox(width: Dimens.pt8),
                                         DateTimeShortcutChip.monthBefore(
                                           onDateTimeRangeUpdated: context
                                               .read<SearchCubit>()
@@ -232,9 +215,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                               state.dateFilter?.startTime,
                                           endDate: state.dateFilter?.endTime,
                                         ),
-                                        const SizedBox(
-                                          width: Dimens.pt8,
-                                        ),
+                                        const SizedBox(width: Dimens.pt8),
                                         DateTimeShortcutChip.monthAfter(
                                           onDateTimeRangeUpdated: context
                                               .read<SearchCubit>()
@@ -243,9 +224,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                               state.dateFilter?.startTime,
                                           endDate: state.dateFilter?.endTime,
                                         ),
-                                        const SizedBox(
-                                          width: Dimens.pt8,
-                                        ),
+                                        const SizedBox(width: Dimens.pt8),
                                         DateTimeShortcutChip.yearBefore(
                                           onDateTimeRangeUpdated: context
                                               .read<SearchCubit>()
@@ -254,9 +233,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                               state.dateFilter?.startTime,
                                           endDate: state.dateFilter?.endTime,
                                         ),
-                                        const SizedBox(
-                                          width: Dimens.pt8,
-                                        ),
+                                        const SizedBox(width: Dimens.pt8),
                                         DateTimeShortcutChip.yearAfter(
                                           onDateTimeRangeUpdated: context
                                               .read<SearchCubit>()
@@ -265,9 +242,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                               state.dateFilter?.startTime,
                                           endDate: state.dateFilter?.endTime,
                                         ),
-                                        const SizedBox(
-                                          width: Dimens.pt8,
-                                        ),
+                                        const SizedBox(width: Dimens.pt8),
                                       ],
                                     ),
                                   ),
@@ -287,13 +262,12 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                           onSelected: (_) => context
                                               .read<SearchCubit>()
                                               .removeFilter<
-                                                  DateTimeRangeFilter>(),
+                                                DateTimeRangeFilter
+                                              >(),
                                           selected: false,
                                           label: '''reset''',
                                         ),
-                                        const SizedBox(
-                                          width: Dimens.pt8,
-                                        ),
+                                        const SizedBox(width: Dimens.pt8),
                                       ],
                                     ),
                                   DateTimeRangeFilterChip(
@@ -356,14 +330,13 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                 children: <Widget>[
                                   for (final TypeTagFilter filter
                                       in TypeTagFilter.all) ...<Widget>[
-                                    const SizedBox(
-                                      width: Dimens.pt8,
-                                    ),
+                                    const SizedBox(width: Dimens.pt8),
                                     CustomChip(
                                       onSelected: (_) => context
                                           .read<SearchCubit>()
                                           .onToggled(filter),
-                                      selected: context
+                                      selected:
+                                          context
                                               .read<SearchCubit>()
                                               .state
                                               .params
@@ -378,24 +351,18 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                             ),
                             if (state.status == SearchStatus.loading &&
                                 state.results.isEmpty) ...<Widget>[
-                              const SizedBox(
-                                height: Dimens.pt100,
-                              ),
+                              const SizedBox(height: Dimens.pt100),
                               const Center(
                                 child: CustomCircularProgressIndicator(),
                               ),
                             ],
                             if (state.status == SearchStatus.loaded &&
                                 state.results.isEmpty) ...<Widget>[
-                              const SizedBox(
-                                height: Dimens.pt100,
-                              ),
+                              const SizedBox(height: Dimens.pt100),
                               const Center(
                                 child: Text(
                                   'Nothing found...',
-                                  style: TextStyle(
-                                    color: Palette.grey,
-                                  ),
+                                  style: TextStyle(color: Palette.grey),
                                 ),
                               ),
                             ],
@@ -448,9 +415,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                               ],
                             )
                             .expand((List<Widget> e) => e),
-                        const SizedBox(
-                          height: Dimens.pt40,
-                        ),
+                        const SizedBox(height: Dimens.pt40),
                       ],
                     ),
                   ),

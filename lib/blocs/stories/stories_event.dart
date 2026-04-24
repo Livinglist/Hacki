@@ -25,17 +25,11 @@ class LoadStories extends StoriesEvent {
   }
 
   @override
-  List<Object?> get props => <Object?>[
-        type,
-        isRefreshing,
-        shouldUseApi,
-      ];
+  List<Object?> get props => <Object?>[type, isRefreshing, shouldUseApi];
 }
 
 class StoriesInitialize extends StoriesEvent {
-  StoriesInitialize({
-    this.startup = false,
-  });
+  StoriesInitialize({this.startup = false});
 
   final bool startup;
 
@@ -53,10 +47,7 @@ class StoriesRefresh extends StoriesEvent {
 }
 
 class StoriesLoadMore extends StoriesEvent {
-  StoriesLoadMore({
-    required this.type,
-    this.shouldUseApi = false,
-  });
+  StoriesLoadMore({required this.type, this.shouldUseApi = false});
 
   final StoryType type;
 
@@ -67,10 +58,7 @@ class StoriesLoadMore extends StoriesEvent {
   }
 
   @override
-  List<Object?> get props => <Object?>[
-        type,
-        shouldUseApi,
-      ];
+  List<Object?> get props => <Object?>[type, shouldUseApi];
 }
 
 class StoriesDownload extends StoriesEvent {

@@ -19,9 +19,7 @@ class ShareScreenTips extends StatelessWidget {
       closedBuilder: (BuildContext context, void Function() action) {
         return IconButton(
           onPressed: action,
-          icon: const Icon(
-            Icons.tips_and_updates_outlined,
-          ),
+          icon: const Icon(Icons.tips_and_updates_outlined),
         );
       },
       openBuilder: (BuildContext context, void Function() action) {
@@ -30,19 +28,13 @@ class ShareScreenTips extends StatelessWidget {
           MediaQuery.of(context).size.width / 2 - Dimens.pt36,
         );
         return Scaffold(
-          appBar: AppBar(
-            title: const Text('Tips'),
-          ),
+          appBar: AppBar(title: const Text('Tips')),
           body: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: Dimens.pt12,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: Dimens.pt12),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                SizedBox(
-                  height: MediaQuery.of(context).padding.top,
-                ),
+                SizedBox(height: MediaQuery.of(context).padding.top),
                 SizedBoxes.pt48,
                 SizedBoxes.pt48,
                 SizedBoxes.pt48,
@@ -85,9 +77,7 @@ class ShareScreenTips extends StatelessWidget {
                 ),
                 SizedBoxes.pt24,
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: Dimens.pt12,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: Dimens.pt12),
                   child: Text(
                     '''You can select text in the comment before tapping on Share button and the text will be highlighted in resulted screenshot.''',
                     style: TextStyle(
@@ -104,9 +94,7 @@ class ShareScreenTips extends StatelessWidget {
                       onPressed: action,
                       child: const Text(
                         'Dismiss',
-                        style: TextStyle(
-                          fontSize: TextDimens.pt16,
-                        ),
+                        style: TextStyle(fontSize: TextDimens.pt16),
                       ),
                     ),
                     TextButton(

@@ -3,11 +3,7 @@ import 'package:hacki/config/constants.dart';
 import 'package:hacki/screens/widgets/painters/shine_painter.dart';
 
 class ShineOverlay extends StatefulWidget {
-  const ShineOverlay({
-    required this.rect,
-    required this.onDone,
-    super.key,
-  });
+  const ShineOverlay({required this.rect, required this.onDone, super.key});
 
   final Rect rect;
   final VoidCallback onDone;

@@ -11,9 +11,9 @@ part 'edit_state.dart';
 
 class EditCubit extends HydratedCubit<EditState> {
   EditCubit({DraftCache? draftCache})
-      : _draftCache = draftCache ?? locator.get<DraftCache>(),
-        _debouncer = Debouncer(delay: AppDurations.oneSecond),
-        super(const EditState.init());
+    : _draftCache = draftCache ?? locator.get<DraftCache>(),
+      _debouncer = Debouncer(delay: AppDurations.oneSecond),
+      super(const EditState.init());
 
   final DraftCache _draftCache;
   final Debouncer _debouncer;
@@ -30,12 +30,7 @@ class EditCubit extends HydratedCubit<EditState> {
   }
 
   void onEditTapped(Item itemToBeEdited) {
-    emit(
-      EditState(
-        itemBeingEdited: itemToBeEdited,
-        text: itemToBeEdited.text,
-      ),
-    );
+    emit(EditState(itemBeingEdited: itemToBeEdited, text: itemToBeEdited.text));
   }
 
   void onReplySubmittedSuccessfully() {
@@ -51,10 +46,7 @@ class EditCubit extends HydratedCubit<EditState> {
     if (state.replyingTo != null) {
       final int? id = state.replyingTo?.id;
       _debouncer.run(() {
-        _draftCache.cacheDraft(
-          text: text,
-          replyingTo: id!,
-        );
+        _draftCache.cacheDraft(text: text, replyingTo: id!);
       });
     }
   }
@@ -78,10 +70,7 @@ class EditCubit extends HydratedCubit<EditState> {
     if (replyingTo != null && text.isNotEmpty) {
       _draftCache.cacheDraft(text: text, replyingTo: replyingTo.id);
 
-      final EditState state = EditState(
-        text: text,
-        replyingTo: replyingTo,
-      );
+      final EditState state = EditState(text: text, replyingTo: replyingTo);
 
       _cachedState = state;
 

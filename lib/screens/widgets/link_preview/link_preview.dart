@@ -123,7 +123,8 @@ class _LinkPreviewState extends State<LinkPreview> {
   @override
   void initState() {
     _errorTitle = widget.errorTitle ?? Constants.errorMessage;
-    _errorBody = widget.errorBody ??
+    _errorBody =
+        widget.errorBody ??
         'Oops! Unable to parse the url. We have '
             'sent feedback to our developers & '
             'we will try to fix this in our next release. Thanks!';
@@ -159,7 +160,8 @@ class _LinkPreviewState extends State<LinkPreview> {
   }) {
     if (widget.isExpandedTileEnabled) {
       if (widget.shouldShowMultimedia) {
-        final String imageUrl = imageUri ??
+        final String imageUrl =
+            imageUri ??
             Constants.favicon(
               widget.story.url.isNotEmpty
                   ? widget.story.url
@@ -181,10 +183,7 @@ class _LinkPreviewState extends State<LinkPreview> {
               filterQuality: FilterQuality.none,
               errorWidget: (_, __, ___) {
                 return const FadeIn(
-                  child: Icon(
-                    Icons.public,
-                    size: Dimens.pt20,
-                  ),
+                  child: Icon(Icons.public, size: Dimens.pt20),
                 );
               },
             ),
@@ -205,9 +204,8 @@ class _LinkPreviewState extends State<LinkPreview> {
                   desc ?? '',
                   maxLines: 20,
                   style: DefaultTextStyle.of(context).style.copyWith(
-                        color:
-                            widget.hasRead ? Theme.of(context).readGrey : null,
-                      ),
+                    color: widget.hasRead ? Theme.of(context).readGrey : null,
+                  ),
                 ),
               ),
             );
@@ -219,15 +217,13 @@ class _LinkPreviewState extends State<LinkPreview> {
     return Container(
       decoration: BoxDecoration(
         color: widget.backgroundColor,
-        borderRadius: BorderRadius.circular(
-          widget.borderRadius ?? Dimens.pt12,
-        ),
+        borderRadius: BorderRadius.circular(widget.borderRadius ?? Dimens.pt12),
         boxShadow: widget.removeElevation
             ? <BoxShadow>[]
             : widget.boxShadow ??
-                <BoxShadow>[
-                  const BoxShadow(blurRadius: 3, color: Palette.grey),
-                ],
+                  <BoxShadow>[
+                    const BoxShadow(blurRadius: 3, color: Palette.grey),
+                  ],
       ),
       height: widget.shouldShowMultimedia ? height : null,
       child: LinkView(
@@ -256,7 +252,8 @@ class _LinkPreviewState extends State<LinkPreview> {
 
   @override
   Widget build(BuildContext context) {
-    final Widget loadingWidget = widget.placeholderWidget ??
+    final Widget loadingWidget =
+        widget.placeholderWidget ??
         Container(
           height: context.storyTileHeight,
           width: MediaQuery.of(context).size.width,
@@ -294,8 +291,9 @@ class _LinkPreviewState extends State<LinkPreview> {
     return AnimatedCrossFade(
       firstChild: loadingWidget,
       secondChild: loadedWidget,
-      crossFadeState:
-          _loading ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+      crossFadeState: _loading
+          ? CrossFadeState.showFirst
+          : CrossFadeState.showSecond,
       duration: AppDurations.ms500,
     );
   }

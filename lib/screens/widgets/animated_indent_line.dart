@@ -31,9 +31,10 @@ class _AnimatedIndentLineState extends State<AnimatedIndentLine>
       duration: const Duration(seconds: 3),
     );
 
-    _shimmerPos = Tween<double>(begin: -0.2, end: 1.2).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _shimmerPos = Tween<double>(
+      begin: -0.2,
+      end: 1.2,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
     _glowOpacity = TweenSequence<double>(<TweenSequenceItem<double>>[
       TweenSequenceItem<double>(

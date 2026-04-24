@@ -61,8 +61,11 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
       return;
     }
 
-    final bool isBlocked =
-        context.read<BlocklistCubit>().state.blocklist.contains(item.by);
+    final bool isBlocked = context
+        .read<BlocklistCubit>()
+        .state
+        .blocklist
+        .contains(item.by);
     showModalBottomSheet<MenuAction>(
       context: context,
       isScrollControlled: true,
@@ -86,11 +89,7 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
           case MenuAction.fav:
             onFavTapped(item);
           case MenuAction.share:
-            onShareTapped(
-              item,
-              rect,
-              parent: parent,
-            );
+            onShareTapped(item, rect, parent: parent);
           case MenuAction.flag:
             onFlagTapped(item);
           case MenuAction.block:
@@ -149,17 +148,11 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
     if (linkToShare == 'image' && mounted) {
       await context.push(
         Paths.share.landing,
-        extra: ShareScreenArgs(
-          item: item,
-          parent: parent,
-        ),
+        extra: ShareScreenArgs(item: item, parent: parent),
       );
     } else if (linkToShare != null) {
       await SharePlus.instance.share(
-        ShareParams(
-          uri: Uri.parse(linkToShare),
-          sharePositionOrigin: rect,
-        ),
+        ShareParams(uri: Uri.parse(linkToShare), sharePositionOrigin: rect),
       );
     }
   }
@@ -172,22 +165,16 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
           title: const Text('Flag this comment?'),
           content: Text(
             'Flag this comment posted by ${item.by}?',
-            style: const TextStyle(
-              color: Palette.grey,
-            ),
+            style: const TextStyle(color: Palette.grey),
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () => context.pop(false),
-              child: const Text(
-                'Cancel',
-              ),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () => context.pop(true),
-              child: const Text(
-                'Yes',
-              ),
+              child: const Text('Yes'),
             ),
           ],
         );
@@ -211,22 +198,16 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
             'Do you want to ${isBlocked ? 'unblock' : 'block'} ${item.by}'
             ' and ${isBlocked ? 'display' : 'hide'} '
             'comments posted by this user?',
-            style: const TextStyle(
-              color: Palette.grey,
-            ),
+            style: const TextStyle(color: Palette.grey),
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () => context.pop(false),
-              child: const Text(
-                'Cancel',
-              ),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () => context.pop(true),
-              child: const Text(
-                'Yes',
-              ),
+              child: const Text('Yes'),
             ),
           ],
         );

@@ -5,10 +5,7 @@ import 'package:hacki/styles/styles.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewScreen extends StatefulWidget {
-  const WebViewScreen({
-    required this.url,
-    super.key,
-  });
+  const WebViewScreen({required this.url, super.key});
 
   static const String routeName = 'web-view';
 
@@ -31,8 +28,8 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
   Future<void> getUrlAndLoadWebView() async {
     final String? html = await locator.get<OfflineRepository>().getHtml(
-          url: widget.url,
-        );
+      url: widget.url,
+    );
 
     if (html != null) {
       await controller.loadHtmlString(html);
@@ -55,9 +52,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
             shouldShowFullUrl
                 ? humanize(widget.url)
                 : Uri.parse(widget.url).authority,
-            style: const TextStyle(
-              fontSize: TextDimens.pt14,
-            ),
+            style: const TextStyle(fontSize: TextDimens.pt14),
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
           ),
@@ -65,9 +60,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
         centerTitle: true,
         elevation: Dimens.zero,
       ),
-      body: WebViewWidget(
-        controller: controller,
-      ),
+      body: WebViewWidget(controller: controller),
     );
   }
 

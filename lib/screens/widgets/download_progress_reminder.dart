@@ -21,10 +21,7 @@ class _DownloadProgressReminderState extends State<DownloadProgressReminder>
     with SingleTickerProviderStateMixin, ItemActionMixin {
   late final AnimationController animationController;
   late final Animation<double> progressAnimation;
-  final Tween<double> progress = Tween<double>(
-    begin: 0,
-    end: 1,
-  );
+  final Tween<double> progress = Tween<double>(begin: 0, end: 1);
 
   @override
   void initState() {
@@ -35,13 +32,7 @@ class _DownloadProgressReminderState extends State<DownloadProgressReminder>
       duration: AppDurations.threeSeconds,
     );
     progressAnimation = progress.animate(
-      CurvedAnimation(
-        parent: animationController,
-        curve: const Interval(
-          0,
-          1,
-        ),
-      ),
+      CurvedAnimation(parent: animationController, curve: const Interval(0, 1)),
     );
 
     final StoriesBloc storiesBloc = context.read<StoriesBloc>();
@@ -61,13 +52,16 @@ class _DownloadProgressReminderState extends State<DownloadProgressReminder>
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<StoriesBloc, StoriesState,
-        (int, int, StoriesDownloadStatus)>(
+    return BlocSelector<
+      StoriesBloc,
+      StoriesState,
+      (int, int, StoriesDownloadStatus)
+    >(
       selector: (StoriesState state) {
         return (
           state.storiesDownloaded,
           state.storiesToBeDownloaded,
-          state.downloadStatus
+          state.downloadStatus,
         );
       },
       builder: (BuildContext context, (int, int, StoriesDownloadStatus) state) {
@@ -92,9 +86,7 @@ class _DownloadProgressReminderState extends State<DownloadProgressReminder>
                       color: Theme.of(context).colorScheme.primary,
                       clipBehavior: Clip.hardEdge,
                       borderRadius: const BorderRadius.all(
-                        Radius.circular(
-                          Dimens.pt4,
-                        ),
+                        Radius.circular(Dimens.pt4),
                       ),
                       child: Column(
                         children: <Widget>[
@@ -108,9 +100,7 @@ class _DownloadProgressReminderState extends State<DownloadProgressReminder>
                               children: <Widget>[
                                 Text(
                                   ' ',
-                                  style: TextStyle(
-                                    fontSize: TextDimens.pt12,
-                                  ),
+                                  style: TextStyle(fontSize: TextDimens.pt12),
                                 ),
                                 Spacer(),
                               ],
@@ -122,48 +112,49 @@ class _DownloadProgressReminderState extends State<DownloadProgressReminder>
                             children: <Widget>[
                               Expanded(
                                 child: BlocListener<StoriesBloc, StoriesState>(
-                                  listenWhen: (
-                                    StoriesState previous,
-                                    StoriesState current,
-                                  ) =>
+                                  listenWhen:
                                       (
-                                        previous.storiesDownloaded,
-                                        previous.storiesToBeDownloaded,
-                                        previous.downloadStatus
-                                      ) !=
+                                        StoriesState previous,
+                                        StoriesState current,
+                                      ) =>
+                                          (
+                                            previous.storiesDownloaded,
+                                            previous.storiesToBeDownloaded,
+                                            previous.downloadStatus,
+                                          ) !=
+                                          (
+                                            current.storiesDownloaded,
+                                            current.storiesToBeDownloaded,
+                                            current.downloadStatus,
+                                          ),
+                                  listener:
                                       (
-                                        current.storiesDownloaded,
-                                        current.storiesToBeDownloaded,
-                                        current.downloadStatus
-                                      ),
-                                  listener: (
-                                    BuildContext context,
-                                    StoriesState state,
-                                  ) {
-                                    final int storiesDownloaded =
-                                        state.storiesDownloaded;
-                                    final int storiesToBeDownloaded =
-                                        state.storiesToBeDownloaded;
-                                    final double progress =
-                                        storiesToBeDownloaded == 0
+                                        BuildContext context,
+                                        StoriesState state,
+                                      ) {
+                                        final int storiesDownloaded =
+                                            state.storiesDownloaded;
+                                        final int storiesToBeDownloaded =
+                                            state.storiesToBeDownloaded;
+                                        final double progress =
+                                            storiesToBeDownloaded == 0
                                             ? 0
                                             : storiesDownloaded /
-                                                storiesToBeDownloaded;
-                                    animationController.animateTo(progress);
-                                  },
+                                                  storiesToBeDownloaded;
+                                        animationController.animateTo(progress);
+                                      },
                                   child: AnimatedBuilder(
                                     animation: animationController,
                                     builder: (_, __) {
                                       return LinearProgressIndicator(
                                         value: progressAnimation.value,
                                         minHeight: Dimens.pt4,
-                                        backgroundColor: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary
-                                            .withAlpha(140),
+                                        backgroundColor: Theme.of(
+                                          context,
+                                        ).colorScheme.primary,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onPrimary.withAlpha(140),
                                       );
                                     },
                                   ),
@@ -189,9 +180,7 @@ class _DownloadProgressReminderState extends State<DownloadProgressReminder>
                     child: Row(
                       children: <Widget>[
                         if (widget.isDockedAtBottom)
-                          const SizedBox(
-                            width: Dimens.pt28,
-                          ),
+                          const SizedBox(width: Dimens.pt28),
                         Hero(
                           tag: HeroTags.progressReminderTextHeroTag,
                           child: Material(

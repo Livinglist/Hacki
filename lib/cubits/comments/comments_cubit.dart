@@ -46,27 +46,28 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     HackerNewsWebRepository? hackerNewsWebRepository,
     CollapseStateCacheRepository? collapseStateCacheRepository,
     AppLifecycleService? appLifecycleService,
-  })  : _filterCubit = filterCubit,
-        _preferenceCubit = preferenceCubit,
-        _commentCache = commentCache ?? locator.get<CommentCache>(),
-        _offlineRepository =
-            offlineRepository ?? locator.get<OfflineRepository>(),
-        _hackerNewsRepository =
-            hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
-        _hackerNewsWebRepository =
-            hackerNewsWebRepository ?? locator.get<HackerNewsWebRepository>(),
-        _collapseStateCacheRepository = collapseStateCacheRepository ??
-            locator.get<CollapseStateCacheRepository>(),
-        _appLifecycleService =
-            appLifecycleService ?? locator.get<AppLifecycleService>(),
-        super(
-          CommentsState.init(
-            isOfflineReading: isOfflineReading,
-            item: item,
-            fetchMode: defaultFetchMode,
-            order: defaultCommentsOrder,
-          ),
-        ) {
+  }) : _filterCubit = filterCubit,
+       _preferenceCubit = preferenceCubit,
+       _commentCache = commentCache ?? locator.get<CommentCache>(),
+       _offlineRepository =
+           offlineRepository ?? locator.get<OfflineRepository>(),
+       _hackerNewsRepository =
+           hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
+       _hackerNewsWebRepository =
+           hackerNewsWebRepository ?? locator.get<HackerNewsWebRepository>(),
+       _collapseStateCacheRepository =
+           collapseStateCacheRepository ??
+           locator.get<CollapseStateCacheRepository>(),
+       _appLifecycleService =
+           appLifecycleService ?? locator.get<AppLifecycleService>(),
+       super(
+         CommentsState.init(
+           isOfflineReading: isOfflineReading,
+           item: item,
+           fetchMode: defaultFetchMode,
+           order: defaultCommentsOrder,
+         ),
+       ) {
     _appStateSubscription = _appLifecycleService.stream
         .where((AppLifecycleState s) => s == AppLifecycleState.inactive)
         .listen(_onAppHidden);
@@ -118,7 +119,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     final bool isOnWifi = await _isOnWifi;
     final bool isPastRetryAfterDateTime =
         _hackerNewsWebRetryAfterDateTime == null ||
-            DateTime.now().isAfter(_hackerNewsWebRetryAfterDateTime!);
+        DateTime.now().isAfter(_hackerNewsWebRetryAfterDateTime!);
     if (isOnWifi && isPastRetryAfterDateTime) {
       return switch (state.item) {
         Story(descendants: final int descendants)
@@ -135,8 +136,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   }
 
   static Future<bool> get _isOnWifi async {
-    final List<ConnectivityResult> status =
-        await Connectivity().checkConnectivity();
+    final List<ConnectivityResult> status = await Connectivity()
+        .checkConnectivity();
     return status.contains(ConnectivityResult.wifi);
   }
 
@@ -198,15 +199,16 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
         ),
       );
 
-      _streamSubscription = _hackerNewsRepository
-          .fetchAllCommentsRecursivelyStream(
-            ids: targetAncestors!.last.kids,
-            level: targetAncestors.last.level + 1,
-          )
-          .asyncMap(toBuildableComment)
-          .whereNotNull()
-          .listen(_onCommentFetched)
-        ..onDone(_onDone);
+      _streamSubscription =
+          _hackerNewsRepository
+              .fetchAllCommentsRecursivelyStream(
+                ids: targetAncestors!.last.kids,
+                level: targetAncestors.last.level + 1,
+              )
+              .asyncMap(toBuildableComment)
+              .whereNotNull()
+              .listen(_onCommentFetched)
+            ..onDone(_onDone);
 
       return;
     }
@@ -224,10 +226,10 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     final Item updatedItem = state.isOfflineReading
         ? item
         : await _hackerNewsRepository
-                .fetchItem(id: item.id)
-                .then(toBuildable)
-                .onError((_, __) => item) ??
-            item;
+                  .fetchItem(id: item.id)
+                  .then(toBuildable)
+                  .onError((_, __) => item) ??
+              item;
 
     final List<int> kids = _sortKids(updatedItem.kids);
 
@@ -236,13 +238,12 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
         item is Story && !state.isOfflineReading;
 
     if (state.isOfflineReading) {
-      commentStream = _offlineRepository.getCachedCommentsStream(
-        ids: kids,
-      );
+      commentStream = _offlineRepository.getCachedCommentsStream(ids: kids);
     } else {
       /// Check if we should keep using the comment cache in memory.
-      final Story? cachedStory =
-          item is Story ? _globalIdToStoryCache[item.id] : null;
+      final Story? cachedStory = item is Story
+          ? _globalIdToStoryCache[item.id]
+          : null;
       bool shouldPrioritizeCache = false;
 
       /// If there is a cached story and the descendants is same as that of
@@ -276,83 +277,76 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
                 commentStream = _hackerNewsWebRepository
                     .fetchCommentsStream(updatedItem)
                     .handleError((dynamic e) {
-                  _streamSubscription?.cancel();
+                      _streamSubscription?.cancel();
 
-                  logError(e);
+                      logError(e);
 
-                  switch (e.runtimeType) {
-                    case RateLimitedException:
-                    case RateLimitedWithFallbackException:
-                    case ParsingException:
-                      if (_preferenceCubit.state.isDevModeEnabled) {
-                        onError?.call(e as AppException);
+                      switch (e.runtimeType) {
+                        case RateLimitedException:
+                        case RateLimitedWithFallbackException:
+                        case ParsingException:
+                          if (_preferenceCubit.state.isDevModeEnabled) {
+                            onError?.call(e as AppException);
+                          }
+                        case TooManyRequestsException:
+                          final DateTime retryAfter =
+                              (e as TooManyRequestsException).retryAfter;
+                          _hackerNewsWebRetryAfterDateTime = retryAfter;
+                          logInfo('retry after $retryAfter');
+                          if (_preferenceCubit.state.isDevModeEnabled) {
+                            onError?.call(e);
+                          }
+                        default:
+                          onError?.call(GenericException(error: e));
                       }
-                    case TooManyRequestsException:
-                      final DateTime retryAfter =
-                          (e as TooManyRequestsException).retryAfter;
-                      _hackerNewsWebRetryAfterDateTime = retryAfter;
-                      logInfo('retry after $retryAfter');
-                      if (_preferenceCubit.state.isDevModeEnabled) {
-                        onError?.call(e);
-                      }
-                    default:
-                      onError?.call(GenericException(error: e));
-                  }
 
-                  emit(state.copyWith(status: CommentsStatus.error));
+                      emit(state.copyWith(status: CommentsStatus.error));
 
-                  /// If fetching from web failed, fetch using API instead.
-                  init(onError: onError, isFetchingFromWebAllowed: false);
-                  return;
-                });
+                      /// If fetching from web failed, fetch using API instead.
+                      init(onError: onError, isFetchingFromWebAllowed: false);
+                      return;
+                    });
               } else {
                 logInfo('fetching comments of ${item.id} from API.');
-                commentStream =
-                    _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
-                  ids: kids,
-                  getFromCache:
-                      shouldUseCommentCacheInMemory || shouldPrioritizeCache
+                commentStream = _hackerNewsRepository
+                    .fetchAllCommentsRecursivelyStream(
+                      ids: kids,
+                      getFromCache:
+                          shouldUseCommentCacheInMemory || shouldPrioritizeCache
                           ? _commentCache.getComment
                           : null,
-                );
+                    );
               }
             case CommentsOrder.oldestFirst:
             case CommentsOrder.newestFirst:
               logInfo('fetching comments of ${item.id} from API.');
-              commentStream =
-                  _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
-                ids: kids,
-                getFromCache:
-                    shouldUseCommentCacheInMemory || shouldPrioritizeCache
+              commentStream = _hackerNewsRepository
+                  .fetchAllCommentsRecursivelyStream(
+                    ids: kids,
+                    getFromCache:
+                        shouldUseCommentCacheInMemory || shouldPrioritizeCache
                         ? _commentCache.getComment
                         : null,
-              );
+                  );
           }
       }
     }
 
-    _streamSubscription = commentStream
-        .asyncMap(toBuildableComment)
-        .whereNotNull()
-        .listen(_onCommentFetched)
-      ..onDone(
-        () {
-          if (item is Story &&
-              state.comments.length >= updatedItem.descendants) {
-            _globalIdToStoryCache[item.id] = updatedItem as Story;
-            emit(
-              state.copyWith(
-                item: updatedItem,
-              ),
-            );
-          }
+    _streamSubscription =
+        commentStream
+            .asyncMap(toBuildableComment)
+            .whereNotNull()
+            .listen(_onCommentFetched)
+          ..onDone(() {
+            if (item is Story &&
+                state.comments.length >= updatedItem.descendants) {
+              _globalIdToStoryCache[item.id] = updatedItem as Story;
+              emit(state.copyWith(item: updatedItem));
+            }
 
-          _onDone(
-            isCompletionSnackBarEnabled: shouldShowCompletionSnackBar,
-          );
-        },
-      )
-      ..onError((_) => emit(state.copyWith(status: CommentsStatus.error)));
+            _onDone(isCompletionSnackBarEnabled: shouldShowCompletionSnackBar);
+          })
+          ..onError((_) => emit(state.copyWith(status: CommentsStatus.error)));
   }
 
   Future<void> refresh({
@@ -380,9 +374,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
       if (hasNewComment) {
         final List<Comment> updatedComments = <Comment>[];
         for (final Comment cmt in state.comments) {
-          updatedComments.add(
-            cmt.copyWith(isNew: false),
-          );
+          updatedComments.add(cmt.copyWith(isNew: false));
         }
 
         emit(state.copyWith(comments: updatedComments));
@@ -399,12 +391,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     }
     _streamSubscriptions.clear();
 
-    emit(
-      state.copyWith(
-        comments: <Comment>[],
-        currentPage: 0,
-      ),
-    );
+    emit(state.copyWith(comments: <Comment>[], currentPage: 0));
 
     final List<int> kids = _sortKids(updatedItem.kids);
 
@@ -418,43 +405,38 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
           case CommentsOrder.natural:
             final bool shouldFetchFromWeb = await _shouldFetchFromWeb;
             if (fetchFromWeb && shouldFetchFromWeb) {
-              logInfo(
-                'fetching comments of ${item.id} from web.',
-              );
+              logInfo('fetching comments of ${item.id} from web.');
               commentStream = _hackerNewsWebRepository
                   .fetchCommentsStream(updatedItem)
                   .handleError((dynamic e) {
-                logError(e);
+                    logError(e);
 
-                switch (e.runtimeType) {
-                  case RateLimitedException:
-                  case RateLimitedWithFallbackException:
-                  case ParsingException:
-                    if (_preferenceCubit.state.isDevModeEnabled) {
-                      onError?.call(e as AppException);
+                    switch (e.runtimeType) {
+                      case RateLimitedException:
+                      case RateLimitedWithFallbackException:
+                      case ParsingException:
+                        if (_preferenceCubit.state.isDevModeEnabled) {
+                          onError?.call(e as AppException);
+                        }
+                      case TooManyRequestsException:
+                        final DateTime retryAfter =
+                            (e as TooManyRequestsException).retryAfter;
+                        _hackerNewsWebRetryAfterDateTime = retryAfter;
+                        logInfo('retry after $retryAfter');
+                        if (_preferenceCubit.state.isDevModeEnabled) {
+                          onError?.call(e);
+                        }
+                      default:
+                        onError?.call(GenericException(error: e));
                     }
-                  case TooManyRequestsException:
-                    final DateTime retryAfter =
-                        (e as TooManyRequestsException).retryAfter;
-                    _hackerNewsWebRetryAfterDateTime = retryAfter;
-                    logInfo('retry after $retryAfter');
-                    if (_preferenceCubit.state.isDevModeEnabled) {
-                      onError?.call(e);
-                    }
-                  default:
-                    onError?.call(GenericException(error: e));
-                }
 
-                /// If fetching from web failed, fetch using API instead.
-                emit(
-                  state.copyWith(
-                    status: CommentsStatus.error,
-                    item: item,
-                  ),
-                );
-                refresh(onError: onError, fetchFromWeb: false);
-                return;
-              });
+                    /// If fetching from web failed, fetch using API instead.
+                    emit(
+                      state.copyWith(status: CommentsStatus.error, item: item),
+                    );
+                    refresh(onError: onError, fetchFromWeb: false);
+                    return;
+                  });
             } else {
               logInfo('fetching comments of ${item.id} from API.');
               commentStream = _hackerNewsRepository
@@ -463,30 +445,26 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
           case CommentsOrder.oldestFirst:
           case CommentsOrder.newestFirst:
             logInfo('fetching comments of ${item.id} from API.');
-            commentStream =
-                _hackerNewsRepository.fetchAllCommentsRecursivelyStream(
-              ids: kids,
-            );
+            commentStream = _hackerNewsRepository
+                .fetchAllCommentsRecursivelyStream(ids: kids);
         }
     }
 
-    _streamSubscription = commentStream
-        .asyncMap(toBuildableComment)
-        .whereNotNull()
-        .listen(_onCommentFetched)
-      ..onDone(() {
-        if (item is Story && state.comments.length >= updatedItem.descendants) {
-          _globalIdToStoryCache[item.id] = updatedItem as Story;
-          emit(
-            state.copyWith(
-              item: updatedItem,
-            ),
-          );
-        }
+    _streamSubscription =
+        commentStream
+            .asyncMap(toBuildableComment)
+            .whereNotNull()
+            .listen(_onCommentFetched)
+          ..onDone(() {
+            if (item is Story &&
+                state.comments.length >= updatedItem.descendants) {
+              _globalIdToStoryCache[item.id] = updatedItem as Story;
+              emit(state.copyWith(item: updatedItem));
+            }
 
-        _onDone(isCompletionSnackBarEnabled: true);
-      })
-      ..onError((_) => emit(state.copyWith(status: CommentsStatus.error)));
+            _onDone(isCompletionSnackBarEnabled: true);
+          })
+          ..onError((_) => emit(state.copyWith(status: CommentsStatus.error)));
   }
 
   void loadAll(Story story) {
@@ -502,10 +480,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   }
 
   /// [comment] is only used for lazy fetching.
-  void loadMore({
-    Comment? comment,
-    VoidCallback? onDone,
-  }) {
+  void loadMore({Comment? comment, VoidCallback? onDone}) {
     if (comment == null && state.status == CommentsStatus.inProgress) return;
 
     switch (state.fetchMode) {
@@ -524,25 +499,26 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
                 .asyncMap(toBuildableComment)
                 .whereNotNull()
                 .listen((Comment cmt) {
-          globalKeys[cmt.id] = GlobalKey();
-          _commentCache.cacheComment(cmt);
+                  globalKeys[cmt.id] = GlobalKey();
+                  _commentCache.cacheComment(cmt);
 
-          final Map<int, Comment> updatedIdToCommentMap =
-              Map<int, Comment>.from(state.idToCommentMap);
-          updatedIdToCommentMap[comment.id] = comment;
+                  final Map<int, Comment> updatedIdToCommentMap =
+                      Map<int, Comment>.from(state.idToCommentMap);
+                  updatedIdToCommentMap[comment.id] = comment;
 
-          emit(
-            state.copyWith(
-              comments: <Comment>[...state.comments]..insert(
-                  state.comments.indexOf(comment) + offset + 1,
-                  cmt.copyWith(level: level),
-                ),
-              idToCommentMap: updatedIdToCommentMap,
-              maxLevel: state.maxLevel < level ? level : null,
-            ),
-          );
-          offset++;
-        })
+                  emit(
+                    state.copyWith(
+                      comments: <Comment>[...state.comments]
+                        ..insert(
+                          state.comments.indexOf(comment) + offset + 1,
+                          cmt.copyWith(level: level),
+                        ),
+                      idToCommentMap: updatedIdToCommentMap,
+                      maxLevel: state.maxLevel < level ? level : null,
+                    ),
+                  );
+                  offset++;
+                })
               ..onDone(() {
                 _streamSubscriptions[comment.id]?.cancel();
                 _streamSubscriptions.remove(comment.id);
@@ -571,8 +547,9 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
 
   void collapse(Comment comment) {
     final List<Comment> comments = <Comment>[...state.comments];
-    final int commentIndex =
-        state.comments.indexWhere((Comment c) => c.id == comment.id);
+    final int commentIndex = state.comments.indexWhere(
+      (Comment c) => c.id == comment.id,
+    );
     final int commentLevel = comment.level;
     final Comment updatedComment = comment.copyWith(isCollapsedByUser: true);
     final List<Comment> updatedComments = <Comment>[updatedComment];
@@ -604,8 +581,9 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
 
   void uncollapse(Comment comment) {
     final List<Comment> comments = <Comment>[...state.comments];
-    final int commentIndex =
-        state.comments.indexWhere((Comment c) => c.id == comment.id);
+    final int commentIndex = state.comments.indexWhere(
+      (Comment c) => c.id == comment.id,
+    );
     final int commentLevel = comment.level;
     final Comment updatedComment = comment.copyWith(isCollapsedByUser: false);
     final List<Comment> updatedComments = <Comment>[updatedComment];
@@ -643,13 +621,11 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   }
 
   /// Hidden and new comments count.
-  (int, int) collapsedCount(
-    Comment comment, {
-    bool countNewComments = false,
-  }) {
+  (int, int) collapsedCount(Comment comment, {bool countNewComments = false}) {
     final List<Comment> comments = state.comments;
-    final int commentIndex =
-        state.comments.indexWhere((Comment c) => c.id == comment.id);
+    final int commentIndex = state.comments.indexWhere(
+      (Comment c) => c.id == comment.id,
+    );
     final int commentLevel = comment.level;
     int count = 0;
     int newCommentsCount = 0;
@@ -668,8 +644,9 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   Future<void> loadParentThread() async {
     HapticFeedbackUtils.light();
     emit(state.copyWith(fetchParentStatus: CommentsStatus.inProgress));
-    final Item? parent =
-        await _hackerNewsRepository.fetchItem(id: state.item.parent);
+    final Item? parent = await _hackerNewsRepository.fetchItem(
+      id: state.item.parent,
+    );
 
     if (parent == null) {
       return;
@@ -679,11 +656,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
         extra: ItemScreenArgs(item: parent),
       );
 
-      emit(
-        state.copyWith(
-          fetchParentStatus: CommentsStatus.loaded,
-        ),
-      );
+      emit(state.copyWith(fetchParentStatus: CommentsStatus.loaded));
     }
   }
 
@@ -702,11 +675,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
         extra: ItemScreenArgs(item: parent),
       );
 
-      emit(
-        state.copyWith(
-          fetchRootStatus: CommentsStatus.loaded,
-        ),
-      );
+      emit(state.copyWith(fetchRootStatus: CommentsStatus.loaded));
     }
   }
 
@@ -731,13 +700,18 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
 
     final Item item = state.item;
     final List<int> kids = _sortKids(item.kids);
-    final Stream<Comment> commentStream =
-        _commentCache.getCommentsStream(ids: kids);
+    final Stream<Comment> commentStream = _commentCache.getCommentsStream(
+      ids: kids,
+    );
     _streamSubscription =
-        commentStream.asyncMap(toBuildableComment).whereNotNull().listen(
+        commentStream
+            .asyncMap(toBuildableComment)
+            .whereNotNull()
+            .listen(
               (BuildableComment cmt) =>
                   _onCommentFetched(cmt, persistNewState: true),
-            )..onDone(_onDone);
+            )
+          ..onDone(_onDone);
   }
 
   void updateFetchMode(FetchMode? fetchMode) {
@@ -757,29 +731,31 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   }
 
   bool _isCommentOnScreen(Comment comment) {
-    final Iterable<Comment> onScreenComments =
-        itemPositionsListener.itemPositions.value
-            // The header is also a part of the list view,
-            // thus ignoring it here.
-            .where(
-              (ItemPosition e) =>
-                  e.index >= 1 &&
-                      (e.itemLeadingEdge > 0.12 && e.itemLeadingEdge < 0.48) ||
-                  (e.itemLeadingEdge >= 0.48 && e.itemTrailingEdge < 1),
-            )
-            .map(
-              (ItemPosition e) => e.index <= state.comments.length
-                  ? state.comments.elementAt(e.index - 1)
-                  : null,
-            )
-            .nonNulls;
+    final Iterable<Comment> onScreenComments = itemPositionsListener
+        .itemPositions
+        .value
+        // The header is also a part of the list view,
+        // thus ignoring it here.
+        .where(
+          (ItemPosition e) =>
+              e.index >= 1 &&
+                  (e.itemLeadingEdge > 0.12 && e.itemLeadingEdge < 0.48) ||
+              (e.itemLeadingEdge >= 0.48 && e.itemTrailingEdge < 1),
+        )
+        .map(
+          (ItemPosition e) => e.index <= state.comments.length
+              ? state.comments.elementAt(e.index - 1)
+              : null,
+        )
+        .nonNulls;
     if (kDebugMode) {
       debugPrint(
         '''on screen comments are ${onScreenComments.map((Comment e) => e.id)}''',
       );
     }
-    final bool isTargetCommentInRange =
-        onScreenComments.any((Comment c) => c.id == comment.id);
+    final bool isTargetCommentInRange = onScreenComments.any(
+      (Comment c) => c.id == comment.id,
+    );
     return isTargetCommentInRange;
   }
 
@@ -796,10 +772,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
 
     /// If index if found, scroll to the comment.
     if (index != -1) {
-      await scrollTo(
-        index: index,
-        duration: AppDurations.ms300,
-      );
+      await scrollTo(index: index, duration: AppDurations.ms300);
     }
 
     /// Find out all of its ancestors, uncollapse them if they
@@ -833,14 +806,12 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
         final bool isCommentOnScreen = _isCommentOnScreen(comment);
 
         if (kDebugMode) {
-          debugPrint(
-            '''
+          debugPrint('''
 target comment is ${comment.id}
 target comment is in range? $isCommentOnScreen
 index is $index
 comments length is ${state.comments.length}            
-            ''',
-          );
+            ''');
         }
 
         if (!isCommentOnScreen) {
@@ -887,10 +858,7 @@ comments length is ${state.comments.length}
           if (targetCommentGlobalKey != null &&
               newTargetCommentContext != null &&
               newTargetCommentContext.mounted) {
-            _startShine(
-              newTargetCommentContext,
-              targetCommentGlobalKey,
-            );
+            _startShine(newTargetCommentContext, targetCommentGlobalKey);
           }
         });
       });
@@ -918,7 +886,8 @@ comments length is ${state.comments.length}
   void scrollToNextRoot({VoidCallback? onError}) {
     final int totalComments = state.comments.length;
     final List<Comment> onScreenComments = itemPositionsListener
-        .itemPositions.value
+        .itemPositions
+        .value
         // The header is also a part of the list view,
         // thus ignoring it here.
         .where((ItemPosition e) => e.index >= 1 && e.itemLeadingEdge > 0.1)
@@ -940,18 +909,21 @@ comments length is ${state.comments.length}
       return;
     }
 
-    final Comment? firstVisibleRootComment =
-        onScreenComments.firstWhereOrNull((Comment e) => e.isRoot);
+    final Comment? firstVisibleRootComment = onScreenComments.firstWhereOrNull(
+      (Comment e) => e.isRoot,
+    );
     late int startIndex;
 
     if (firstVisibleRootComment != null) {
       /// The index of first root level comment visible on screen.
-      final int firstVisibleRootCommentIndex =
-          state.comments.indexOf(firstVisibleRootComment);
+      final int firstVisibleRootCommentIndex = state.comments.indexOf(
+        firstVisibleRootComment,
+      );
       startIndex = min(firstVisibleRootCommentIndex + 1, totalComments);
     } else if (onScreenComments.isNotEmpty) {
-      final int lastVisibleCommentIndex =
-          state.comments.indexOf(onScreenComments.last);
+      final int lastVisibleCommentIndex = state.comments.indexOf(
+        onScreenComments.last,
+      );
       startIndex = min(lastVisibleCommentIndex + 1, totalComments);
     }
 
@@ -976,7 +948,8 @@ comments length is ${state.comments.length}
   /// Scroll to previous root level comment.
   void scrollToPreviousRoot() {
     final List<Comment> onScreenComments = itemPositionsListener
-        .itemPositions.value
+        .itemPositions
+        .value
         // The header is also a part of the list view,
         // thus ignoring it here.
         .where((ItemPosition e) => e.index >= 1 && e.itemLeadingEdge > 0)
@@ -1024,27 +997,24 @@ comments length is ${state.comments.length}
         isNewInSearchSelected: isNewSelected,
       ),
     );
-    _searchStreamSubscription = _searchStream(
-      query,
-      author: author,
-      isNewSelected: isNewSelected,
-    ).listen((Comment? comment) {
-      emit(
-        state.copyWith(
-          matchedComments: <Comment>[
-            ...state.matchedComments,
-            if (comment != null) comment,
-          ],
-        ),
-      );
-    })
-      ..onDone(() {
-        emit(
-          state.copyWith(
-            inThreadSearchStatus: Status.success,
-          ),
-        );
-      });
+    _searchStreamSubscription =
+        _searchStream(
+            query,
+            author: author,
+            isNewSelected: isNewSelected,
+          ).listen((Comment? comment) {
+            emit(
+              state.copyWith(
+                matchedComments: <Comment>[
+                  ...state.matchedComments,
+                  if (comment != null) comment,
+                ],
+              ),
+            );
+          })
+          ..onDone(() {
+            emit(state.copyWith(inThreadSearchStatus: Status.success));
+          });
   }
 
   Stream<Comment?> _searchStream(
@@ -1067,8 +1037,8 @@ comments length is ${state.comments.length}
           (cmt.by.toLowerCase().contains(lowercaseQuery) ||
               cmt.text.toLowerCase().contains(lowercaseQuery));
     } else if (query.isEmpty) {
-      conditionSatisfied =
-          (Comment cmt) => newCommentsSelector(cmt) && cmt.by == author;
+      conditionSatisfied = (Comment cmt) =>
+          newCommentsSelector(cmt) && cmt.by == author;
     } else {
       conditionSatisfied = (Comment cmt) =>
           newCommentsSelector(cmt) &&
@@ -1080,21 +1050,23 @@ comments length is ${state.comments.length}
       final Comment cmt = state.comments.elementAt(i);
       if (conditionSatisfied(cmt)) {
         final Comment comment = state.comments.elementAt(i);
-        final BuildableComment? buildableComment =
-            await toBuildableComment(comment, withHighlightedText: query);
+        final BuildableComment? buildableComment = await toBuildableComment(
+          comment,
+          withHighlightedText: query,
+        );
         yield buildableComment;
       }
     }
   }
 
   void resetSearch() => emit(
-        state.copyWith(
-          matchedComments: <Comment>[],
-          inThreadSearchQuery: '',
-          inThreadSearchAuthor: '',
-          inThreadSearchStatus: Status.idle,
-        ),
-      );
+    state.copyWith(
+      matchedComments: <Comment>[],
+      inThreadSearchQuery: '',
+      inThreadSearchAuthor: '',
+      inThreadSearchStatus: Status.idle,
+    ),
+  );
 
   void _preserveCollapseState() {
     if (state.status == CommentsStatus.inProgress) return;
@@ -1141,17 +1113,14 @@ comments length is ${state.comments.length}
     _streamSubscription = null;
 
     logInfo('loading of ${state.item.id} is complete.');
-    emit(
-      state.copyWith(
-        status: CommentsStatus.allLoaded,
-      ),
-    );
+    emit(state.copyWith(status: CommentsStatus.allLoaded));
 
-    final bool isFirstTimeReading =
-        !_globalStoryIdToPreviousCollapseStates.containsKey(state.item.id);
+    final bool isFirstTimeReading = !_globalStoryIdToPreviousCollapseStates
+        .containsKey(state.item.id);
     if (isCompletionSnackBarEnabled && !isFirstTimeReading) {
-      final int newCommentsCount =
-          state.comments.where((Comment c) => c.isNew).length;
+      final int newCommentsCount = state.comments
+          .where((Comment c) => c.isNew)
+          .length;
       if (newCommentsCount > 0) {
         HapticFeedbackUtils.success();
         final bool isWebViewBottomSheetEnabled =
@@ -1186,8 +1155,9 @@ comments length is ${state.comments.length}
   }) {
     if (comment != null) {
       final Comment? prevState = _previousCommentStates?[comment.id];
-      final int parentIndex =
-          state.comments.indexWhere((Comment c) => c.id == comment?.parent);
+      final int parentIndex = state.comments.indexWhere(
+        (Comment c) => c.id == comment?.parent,
+      );
       final bool isCommentValid = !(comment.dead || comment.deleted);
       if (parentIndex > -1) {
         final Comment parent = state.comments.elementAt(parentIndex);
@@ -1195,7 +1165,8 @@ comments length is ${state.comments.length}
         comment = comment.copyWith(
           isCollapsedByUser: prevState?.isCollapsedByUser,
           isHiddenByUser: parent.isHiddenByUser || parent.isCollapsedByUser,
-          isNew: isCommentValid &&
+          isNew:
+              isCommentValid &&
               _previousCommentStates != null &&
               prevState == null,
         );
@@ -1203,9 +1174,7 @@ comments length is ${state.comments.length}
           prevState == null) {
         final Comment? parent = _previousCommentStates?[comment.parent];
         if (parent == null) {
-          comment = comment.copyWith(
-            isNew: isCommentValid,
-          );
+          comment = comment.copyWith(isNew: isCommentValid);
         } else {
           comment = comment.copyWith(
             isHiddenByUser: parent.isCollapsedByUser || parent.isHiddenByUser,
@@ -1235,8 +1204,9 @@ comments length is ${state.comments.length}
         comment.copyWith(hidden: hidden),
       ];
 
-      final Map<int, Comment> updatedIdToCommentMap =
-          Map<int, Comment>.from(state.idToCommentMap);
+      final Map<int, Comment> updatedIdToCommentMap = Map<int, Comment>.from(
+        state.idToCommentMap,
+      );
       updatedIdToCommentMap[comment.id] = comment;
 
       emit(
@@ -1282,10 +1252,7 @@ comments length is ${state.comments.length}
 
     late OverlayEntry entry;
     entry = OverlayEntry(
-      builder: (_) => ShineOverlay(
-        rect: rect,
-        onDone: () => entry.remove(),
-      ),
+      builder: (_) => ShineOverlay(rect: rect, onDone: () => entry.remove()),
     );
 
     Overlay.of(targetContext).insert(entry);

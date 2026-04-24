@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart' as date_utils;
 
 abstract final class DateUtils {
-  static final DateTime _hackiAnniversary =
-      DateTime(2021, DateTime.december, 24);
+  static final DateTime _hackiAnniversary = DateTime(
+    2021,
+    DateTime.december,
+    24,
+  );
 
   static final int yearsSinceFirstCommit = () {
     final DateTime now = DateTime.now();

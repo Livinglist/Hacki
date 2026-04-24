@@ -41,12 +41,12 @@ class ItemScreenArgs extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        item,
-        shouldOnlyShowTargetComment,
-        shouldMarkNewComment,
-        targetComments,
-        shouldUseCommentCache,
-      ];
+    item,
+    shouldOnlyShowTargetComment,
+    shouldMarkNewComment,
+    targetComments,
+    shouldUseCommentCache,
+  ];
 }
 
 class ItemScreen extends StatefulWidget {
@@ -64,21 +64,30 @@ class ItemScreen extends StatefulWidget {
     return MultiBlocProvider(
       providers: <BlocProvider<dynamic>>[
         BlocProvider<CommentsCubit>(
-          create: (BuildContext context) => CommentsCubit(
-            filterCubit: context.read<FilterCubit>(),
-            preferenceCubit: context.read<PreferenceCubit>(),
-            isOfflineReading:
-                context.read<StoriesBloc>().state.isOfflineReading,
-            item: args.item,
-            defaultFetchMode: context.read<PreferenceCubit>().state.fetchMode,
-            defaultCommentsOrder: context.read<PreferenceCubit>().state.order,
-          )..init(
-              shouldOnlyShowTargetComment: args.shouldOnlyShowTargetComment,
-              targetAncestors: args.targetComments,
-              shouldUseCommentCacheInMemory: args.shouldUseCommentCache,
-              onError: (AppException e) =>
-                  context.showErrorSnackBar(e.message, e.error),
-            ),
+          create: (BuildContext context) =>
+              CommentsCubit(
+                filterCubit: context.read<FilterCubit>(),
+                preferenceCubit: context.read<PreferenceCubit>(),
+                isOfflineReading: context
+                    .read<StoriesBloc>()
+                    .state
+                    .isOfflineReading,
+                item: args.item,
+                defaultFetchMode: context
+                    .read<PreferenceCubit>()
+                    .state
+                    .fetchMode,
+                defaultCommentsOrder: context
+                    .read<PreferenceCubit>()
+                    .state
+                    .order,
+              )..init(
+                shouldOnlyShowTargetComment: args.shouldOnlyShowTargetComment,
+                targetAncestors: args.targetComments,
+                shouldUseCommentCacheInMemory: args.shouldUseCommentCache,
+                onError: (AppException e) =>
+                    context.showErrorSnackBar(e.message, e.error),
+              ),
         ),
       ],
       child: ItemScreen(
@@ -103,20 +112,29 @@ class ItemScreen extends StatefulWidget {
         key: ValueKey<ItemScreenArgs>(args),
         providers: <BlocProvider<dynamic>>[
           BlocProvider<CommentsCubit>(
-            create: (BuildContext context) => CommentsCubit(
-              filterCubit: context.read<FilterCubit>(),
-              preferenceCubit: context.read<PreferenceCubit>(),
-              isOfflineReading:
-                  context.read<StoriesBloc>().state.isOfflineReading,
-              item: args.item,
-              defaultFetchMode: context.read<PreferenceCubit>().state.fetchMode,
-              defaultCommentsOrder: context.read<PreferenceCubit>().state.order,
-            )..init(
-                shouldOnlyShowTargetComment: args.shouldOnlyShowTargetComment,
-                targetAncestors: args.targetComments,
-                onError: (AppException e) =>
-                    context.showErrorSnackBar(e.message, e.error),
-              ),
+            create: (BuildContext context) =>
+                CommentsCubit(
+                  filterCubit: context.read<FilterCubit>(),
+                  preferenceCubit: context.read<PreferenceCubit>(),
+                  isOfflineReading: context
+                      .read<StoriesBloc>()
+                      .state
+                      .isOfflineReading,
+                  item: args.item,
+                  defaultFetchMode: context
+                      .read<PreferenceCubit>()
+                      .state
+                      .fetchMode,
+                  defaultCommentsOrder: context
+                      .read<PreferenceCubit>()
+                      .state
+                      .order,
+                )..init(
+                  shouldOnlyShowTargetComment: args.shouldOnlyShowTargetComment,
+                  targetAncestors: args.targetComments,
+                  onError: (AppException e) =>
+                      context.showErrorSnackBar(e.message, e.error),
+                ),
           ),
         ],
         child: ItemScreen(
@@ -188,8 +206,9 @@ class _ItemScreenState extends State<ItemScreen>
       locator.get<RouteObserver<ModalRoute<dynamic>>>().subscribe(this, route);
     });
 
-    scrollOffsetSubscription =
-        scrollOffsetListener.changes.listen(removeReplyBoxFocusOnScroll);
+    scrollOffsetSubscription = scrollOffsetListener.changes.listen(
+      removeReplyBoxFocusOnScroll,
+    );
 
     commentEditingController.text = context.read<EditCubit>().state.text ?? '';
   }
@@ -206,8 +225,10 @@ class _ItemScreenState extends State<ItemScreen>
 
   @override
   Widget build(BuildContext context) {
-    final bool isOfflineReading =
-        context.read<CommentsCubit>().state.isOfflineReading;
+    final bool isOfflineReading = context
+        .read<CommentsCubit>()
+        .state
+        .isOfflineReading;
     final bool shouldShowWebViewBottomSheet =
         !isOfflineReading && widget.item is Story && widget.item.url.isNotEmpty;
     return MultiBlocListener(
@@ -217,8 +238,8 @@ class _ItemScreenState extends State<ItemScreen>
             if (postState.status == Status.success) {
               final String verb =
                   context.read<EditCubit>().state.replyingTo == null
-                      ? 'updated'
-                      : 'submitted';
+                  ? 'updated'
+                  : 'submitted';
               final String msg = 'Comment $verb! ${Constants.happyFace}';
               HapticFeedbackUtils.success();
               showSnackBar(content: msg);
@@ -300,24 +321,19 @@ class _ItemScreenState extends State<ItemScreen>
                     ),
                   ),
                   BlocBuilder<SplitViewCubit, SplitViewState>(
-                    buildWhen: (
-                      SplitViewState previous,
-                      SplitViewState current,
-                    ) =>
-                        previous.expanded != current.expanded,
-                    builder: (
-                      BuildContext context,
-                      SplitViewState state,
-                    ) {
+                    buildWhen:
+                        (SplitViewState previous, SplitViewState current) =>
+                            previous.expanded != current.expanded,
+                    builder: (BuildContext context, SplitViewState state) {
                       return Positioned(
                         top: Dimens.zero,
                         left: Dimens.zero,
                         right: Dimens.zero,
                         child: CustomAppBar(
                           context: context,
-                          backgroundColor: Theme.of(context)
-                              .canvasColor
-                              .withValues(alpha: 0.6),
+                          backgroundColor: Theme.of(
+                            context,
+                          ).canvasColor.withValues(alpha: 0.6),
                           foregroundColor: Theme.of(context).iconTheme.color,
                           item: widget.item,
                           splitViewEnabled: state.enabled,
@@ -365,9 +381,9 @@ class _ItemScreenState extends State<ItemScreen>
                       resizeToAvoidBottomInset: true,
                       appBar: CustomAppBar(
                         context: context,
-                        backgroundColor: Theme.of(context)
-                            .canvasColor
-                            .withValues(alpha: 0.6),
+                        backgroundColor: Theme.of(
+                          context,
+                        ).canvasColor.withValues(alpha: 0.6),
                         foregroundColor: Theme.of(context).iconTheme.color,
                         item: widget.item,
                         onFontSizeTap: onFontSizeTapped,
@@ -388,27 +404,28 @@ class _ItemScreenState extends State<ItemScreen>
                               scrollOffsetListener: scrollOffsetListener,
                               commentEditingController:
                                   commentEditingController,
-                              preferenceState:
-                                  context.read<PreferenceCubit>().state,
+                              preferenceState: context
+                                  .read<PreferenceCubit>()
+                                  .state,
                               splitViewEnabled: widget.splitViewEnabled,
                               indentLineWidth: _indentLineWidth,
                               onMoreTapped: (Item item, Rect? rect) =>
                                   onMoreTapped(
-                                item,
-                                rect,
-                                parent: widget.item,
-                                onSearchInThreadTapped: () {
-                                  context.pop();
-                                  context.read<CommentsCubit>()
-                                    ..search(item.by)
-                                    ..openInThreadSearch?.call();
-                                },
-                              ),
+                                    item,
+                                    rect,
+                                    parent: widget.item,
+                                    onSearchInThreadTapped: () {
+                                      context.pop();
+                                      context.read<CommentsCubit>()
+                                        ..search(item.by)
+                                        ..openInThreadSearch?.call();
+                                    },
+                                  ),
                               onRightMoreTapped: (Comment cmt) =>
                                   onRightMoreTapped(
-                                cmt,
-                                context.read<CommentsCubit>().state.item,
-                              ),
+                                    cmt,
+                                    context.read<CommentsCubit>().state.item,
+                                  ),
                               onStoryUrlTapped: () {
                                 setState(() {
                                   _isWebViewBottomSheetVisible = true;
@@ -455,29 +472,29 @@ class _ItemScreenState extends State<ItemScreen>
   }
 
   Widget get webViewBottomSheet => Positioned.fill(
-        child: AnimatedSlide(
-          offset: Offset(
-            0,
-            _isWebViewBottomSheetVisible ? 0 : _webViewOffsetInvisible,
-          ),
-          duration: AppDurations.ms200,
-          child: WebViewBottomSheet(
-            initialUrl: widget.item.url,
-            onDragHandleTapped: () {
-              if (!_isWebViewBottomSheetVisible) {
-                setState(() {
-                  _isWebViewBottomSheetVisible = true;
-                });
-              }
-            },
-            onCloseTapped: () {
-              setState(() {
-                _isWebViewBottomSheetVisible = !_isWebViewBottomSheetVisible;
-              });
-            },
-          ),
-        ),
-      );
+    child: AnimatedSlide(
+      offset: Offset(
+        0,
+        _isWebViewBottomSheetVisible ? 0 : _webViewOffsetInvisible,
+      ),
+      duration: AppDurations.ms200,
+      child: WebViewBottomSheet(
+        initialUrl: widget.item.url,
+        onDragHandleTapped: () {
+          if (!_isWebViewBottomSheetVisible) {
+            setState(() {
+              _isWebViewBottomSheetVisible = true;
+            });
+          }
+        },
+        onCloseTapped: () {
+          setState(() {
+            _isWebViewBottomSheetVisible = !_isWebViewBottomSheetVisible;
+          });
+        },
+      ),
+    ),
+  );
 
   void removeReplyBoxFocusOnScroll(double _) {
     focusNode.unfocus();
@@ -520,26 +537,23 @@ class _ItemScreenState extends State<ItemScreen>
                 fontSize: fontSize.fontSize,
                 color:
                     context.read<PreferenceCubit>().state.fontSize == fontSize
-                        ? Theme.of(context).colorScheme.primaryContainer
-                        : Theme.of(context).colorScheme.onSurface,
+                    ? Theme.of(context).colorScheme.primaryContainer
+                    : Theme.of(context).colorScheme.onSurface,
               ),
             ),
             onTap: () {
               HapticFeedbackUtils.light();
               locator.get<AppReviewService>().requestReview();
-              context
-                  .read<PreferenceCubit>()
-                  .update(FontSizePreference(val: fontSize.index));
+              context.read<PreferenceCubit>().update(
+                FontSizePreference(val: fontSize.index),
+              );
             },
           ),
       ],
     );
   }
 
-  void onRightMoreTapped(
-    Comment comment,
-    Item rootItem,
-  ) {
+  void onRightMoreTapped(Comment comment, Item rootItem) {
     HapticFeedbackUtils.light();
     showModalBottomSheet<void>(
       context: context,

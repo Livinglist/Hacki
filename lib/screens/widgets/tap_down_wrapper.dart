@@ -24,10 +24,7 @@ class _TapDownWrapperState extends State<TapDownWrapper>
 
   @override
   void initState() {
-    controller = AnimationController(
-      duration: AppDurations.ms100,
-      vsync: this,
-    );
+    controller = AnimationController(duration: AppDurations.ms100, vsync: this);
 
     super.initState();
   }
@@ -42,8 +39,10 @@ class _TapDownWrapperState extends State<TapDownWrapper>
       onLongPress: widget.onLongPress,
       behavior: HitTestBehavior.opaque,
       child: AnimatedBuilder(
-        animation:
-            CurvedAnimation(parent: controller, curve: Curves.decelerate),
+        animation: CurvedAnimation(
+          parent: controller,
+          curve: Curves.decelerate,
+        ),
         builder: (BuildContext context, Widget? child) {
           return Transform.scale(
             scale: tween.evaluate(controller),

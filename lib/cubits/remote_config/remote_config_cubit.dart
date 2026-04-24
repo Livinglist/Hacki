@@ -8,20 +8,19 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 part 'remote_config_state.dart';
 
 class RemoteConfigCubit extends HydratedCubit<RemoteConfigState> with Loggable {
-  RemoteConfigCubit({
-    RemoteConfigRepository? remoteConfigRepository,
-  })  : _remoteConfigRepository =
-            remoteConfigRepository ?? locator.get<RemoteConfigRepository>(),
-        super(RemoteConfigState.init()) {
+  RemoteConfigCubit({RemoteConfigRepository? remoteConfigRepository})
+    : _remoteConfigRepository =
+          remoteConfigRepository ?? locator.get<RemoteConfigRepository>(),
+      super(RemoteConfigState.init()) {
     init();
   }
 
   final RemoteConfigRepository _remoteConfigRepository;
 
   void init() {
-    _remoteConfigRepository
-        .fetchRemoteConfig()
-        .then((Map<String, dynamic> data) {
+    _remoteConfigRepository.fetchRemoteConfig().then((
+      Map<String, dynamic> data,
+    ) {
       if (data.isNotEmpty) {
         logInfo('remote config fetched: $data');
         emit(state.copyWith(data: data));

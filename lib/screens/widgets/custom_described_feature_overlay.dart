@@ -34,9 +34,7 @@ class CustomDescribedFeatureOverlay extends StatelessWidget {
       tapTarget: tapTarget,
       title: Text(
         feature.title,
-        style: TextStyle(
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
+        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
       ),
       description: Column(
         mainAxisSize: MainAxisSize.min,

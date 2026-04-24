@@ -26,7 +26,7 @@ class StoryCacheInterceptor extends CacheInterceptor {
 
 class CacheInterceptor extends Interceptor with Loggable {
   CacheInterceptor({Duration? maxStale})
-      : _maxStale = maxStale ?? _defaultMaxStale;
+    : _maxStale = maxStale ?? _defaultMaxStale;
 
   static const Duration _defaultMaxStale = AppDurations.twoMinutes;
   static final Map<String, CachedResponse<dynamic>> _cache =
@@ -41,7 +41,8 @@ class CacheInterceptor extends Interceptor with Loggable {
   ) async {
     final String key = options.uri.toString();
     final CachedResponse<dynamic>? cachedResponse = _cache[key];
-    final bool isCacheValid = cachedResponse != null &&
+    final bool isCacheValid =
+        cachedResponse != null &&
         DateTime.now().difference(cachedResponse.setDateTime).inSeconds <
             _maxStale.inSeconds;
 

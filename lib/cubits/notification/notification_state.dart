@@ -13,14 +13,14 @@ class NotificationState extends Equatable {
   });
 
   NotificationState.init()
-      : comments = <Comment>[],
-        unreadCommentsIds = <int>[],
-        allCommentsIds = <int>[],
-        currentPage = 0,
-        offset = 0,
-        status = Status.idle,
-        commentFetchingStatus = Status.idle,
-        tappedCommentId = null;
+    : comments = <Comment>[],
+      unreadCommentsIds = <int>[],
+      allCommentsIds = <int>[],
+      currentPage = 0,
+      offset = 0,
+      status = Status.idle,
+      commentFetchingStatus = Status.idle,
+      tappedCommentId = null;
 
   final List<Comment> comments;
   final List<int> allCommentsIds;
@@ -71,10 +71,14 @@ class NotificationState extends Equatable {
     return NotificationState(
       comments: <Comment>[comment, ...comments]
         ..sort((Comment lhs, Comment rhs) => rhs.time.compareTo(lhs.time)),
-      allCommentsIds:
-          (<int>[comment.id, ...allCommentsIds]..sort()).reversed.toList(),
-      unreadCommentsIds:
-          (<int>[comment.id, ...unreadCommentsIds]..sort()).reversed.toList(),
+      allCommentsIds: (<int>[
+        comment.id,
+        ...allCommentsIds,
+      ]..sort()).reversed.toList(),
+      unreadCommentsIds: (<int>[
+        comment.id,
+        ...unreadCommentsIds,
+      ]..sort()).reversed.toList(),
       currentPage: currentPage,
       offset: offset + 1,
       status: status,
@@ -85,12 +89,12 @@ class NotificationState extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        currentPage,
-        offset,
-        status,
-        commentFetchingStatus,
-        comments,
-        unreadCommentsIds,
-        allCommentsIds,
-      ];
+    currentPage,
+    offset,
+    status,
+    commentFetchingStatus,
+    comments,
+    unreadCommentsIds,
+    allCommentsIds,
+  ];
 }

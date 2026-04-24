@@ -19,12 +19,13 @@ class OfflineRepository with Loggable {
     Future<Box<Map<dynamic, dynamic>>>? storyBox,
     Future<LazyBox<String>>? webPageBox,
     Future<LazyBox<Map<dynamic, dynamic>>>? commentBox,
-  })  : _storyIdBox = storyIdBox ?? Hive.openBox<List<int>>(_storyIdBoxName),
-        _storyBox =
-            storyBox ?? Hive.openBox<Map<dynamic, dynamic>>(_storyBoxName),
-        _webPageBox = webPageBox ?? Hive.openLazyBox<String>(_webPageBoxName),
-        _commentBox = commentBox ??
-            Hive.openLazyBox<Map<dynamic, dynamic>>(_commentBoxName);
+  }) : _storyIdBox = storyIdBox ?? Hive.openBox<List<int>>(_storyIdBoxName),
+       _storyBox =
+           storyBox ?? Hive.openBox<Map<dynamic, dynamic>>(_storyBoxName),
+       _webPageBox = webPageBox ?? Hive.openLazyBox<String>(_webPageBoxName),
+       _commentBox =
+           commentBox ??
+           Hive.openLazyBox<Map<dynamic, dynamic>>(_commentBoxName);
 
   static const String _storyIdBoxName = 'storyIdBox';
   static const String _storyBoxName = 'storyBox';
@@ -80,18 +81,18 @@ class OfflineRepository with Loggable {
       box = await _webPageBox;
     }
 
-    final String html = await compute(_downloadWebPage, url).timeout(
-      AppDurations.tenSeconds,
-      onTimeout: () {
-        logInfo('failed to download URL due to timeout $url');
-        return 'download timeout.';
-      },
-    ).catchError(
-      (dynamic e) {
-        logError('failed to download URL $url: $e');
-        return 'failed to download URL $url: $e';
-      },
-    );
+    final String html = await compute(_downloadWebPage, url)
+        .timeout(
+          AppDurations.tenSeconds,
+          onTimeout: () {
+            logInfo('failed to download URL due to timeout $url');
+            return 'download timeout.';
+          },
+        )
+        .catchError((dynamic e) {
+          logError('failed to download URL $url: $e');
+          return 'failed to download URL $url: $e';
+        });
 
     return box.put(url, html);
   }

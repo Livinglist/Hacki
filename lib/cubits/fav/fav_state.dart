@@ -11,12 +11,12 @@ class FavState extends Equatable {
   });
 
   FavState.init()
-      : favIds = <int>[],
-        favItems = <Item>[],
-        status = Status.idle,
-        mergeStatus = Status.idle,
-        currentPage = 0,
-        isDisplayingStories = true;
+    : favIds = <int>[],
+      favItems = <Item>[],
+      status = Status.idle,
+      mergeStatus = Status.idle,
+      currentPage = 0,
+      isDisplayingStories = true;
 
   final List<int> favIds;
   final List<Item> favItems;
@@ -51,11 +51,11 @@ class FavState extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        status,
-        mergeStatus,
-        currentPage,
-        favIds,
-        favItems,
-        isDisplayingStories,
-      ];
+    status,
+    mergeStatus,
+    currentPage,
+    favIds,
+    favItems,
+    isDisplayingStories,
+  ];
 }

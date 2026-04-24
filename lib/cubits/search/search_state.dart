@@ -1,11 +1,6 @@
 part of 'search_cubit.dart';
 
-enum SearchStatus {
-  idle,
-  loading,
-  loadingMore,
-  loaded,
-}
+enum SearchStatus { idle, loading, loadingMore, loaded }
 
 class SearchState extends Equatable {
   const SearchState({
@@ -15,9 +10,9 @@ class SearchState extends Equatable {
   });
 
   SearchState.init()
-      : status = SearchStatus.idle,
-        results = <Item>[],
-        params = SearchParams.init();
+    : status = SearchStatus.idle,
+      results = <Item>[],
+      params = SearchParams.init();
 
   final List<Item> results;
   final SearchStatus status;
@@ -42,11 +37,7 @@ class SearchState extends Equatable {
   }
 
   @override
-  List<Object?> get props => <Object?>[
-        status,
-        results,
-        params,
-      ];
+  List<Object?> get props => <Object?>[status, results, params];
 }
 
 extension SearchStateExtension on SearchState {

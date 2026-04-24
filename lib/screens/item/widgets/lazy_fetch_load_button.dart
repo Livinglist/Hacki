@@ -16,9 +16,7 @@ class LazyFetchLoadButton extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: Dimens.pt12,
-        ).copyWith(
-          bottom: Dimens.pt6,
-        ),
+        ).copyWith(bottom: Dimens.pt6),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[

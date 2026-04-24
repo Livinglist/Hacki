@@ -14,9 +14,9 @@ class PreferenceRepository with Loggable {
     SyncedSharedPreferences? syncedPrefs,
     Future<SharedPreferences>? prefs,
     FlutterSecureStorage? secureStorage,
-  })  : _syncedPrefs = syncedPrefs ?? SyncedSharedPreferences.instance,
-        _prefs = prefs ?? SharedPreferences.getInstance(),
-        _secureStorage = secureStorage ?? const FlutterSecureStorage();
+  }) : _syncedPrefs = syncedPrefs ?? SyncedSharedPreferences.instance,
+       _prefs = prefs ?? SharedPreferences.getInstance(),
+       _secureStorage = secureStorage ?? const FlutterSecureStorage();
 
   static const String _usernameKey = 'username';
   static const String _passwordKey = 'password';
@@ -38,30 +38,24 @@ class PreferenceRepository with Loggable {
 
   Future<String?> get password async => _secureStorage.read(key: _passwordKey);
 
-  Future<bool?> getBool(String key) => _prefs.then(
-        (SharedPreferences prefs) => prefs.getBool(key),
-      );
+  Future<bool?> getBool(String key) =>
+      _prefs.then((SharedPreferences prefs) => prefs.getBool(key));
 
-  Future<int?> getInt(String key) => _prefs.then(
-        (SharedPreferences prefs) => prefs.getInt(key),
-      );
+  Future<int?> getInt(String key) =>
+      _prefs.then((SharedPreferences prefs) => prefs.getInt(key));
 
-  Future<double?> getDouble(String key) => _prefs.then(
-        (SharedPreferences prefs) => prefs.getDouble(key),
-      );
+  Future<double?> getDouble(String key) =>
+      _prefs.then((SharedPreferences prefs) => prefs.getDouble(key));
 
   //ignore: avoid_positional_boolean_parameters
-  void setBool(String key, bool val) => _prefs.then(
-        (SharedPreferences prefs) => prefs.setBool(key, val),
-      );
+  void setBool(String key, bool val) =>
+      _prefs.then((SharedPreferences prefs) => prefs.setBool(key, val));
 
-  void setInt(String key, int val) => _prefs.then(
-        (SharedPreferences prefs) => prefs.setInt(key, val),
-      );
+  void setInt(String key, int val) =>
+      _prefs.then((SharedPreferences prefs) => prefs.setInt(key, val));
 
-  void setDouble(String key, double val) => _prefs.then(
-        (SharedPreferences prefs) => prefs.setDouble(key, val),
-      );
+  void setDouble(String key, double val) =>
+      _prefs.then((SharedPreferences prefs) => prefs.setDouble(key, val));
 
   Future<bool?> get hasSeenTour => getBool(_tourKey);
 
@@ -96,15 +90,11 @@ class PreferenceRepository with Loggable {
 
   Future<int?> getDownloadTimestamp() async {
     return _prefs.then(
-      (SharedPreferences prefs) => prefs.getInt(
-        _downloadTimestampKey,
-      ),
+      (SharedPreferences prefs) => prefs.getInt(_downloadTimestampKey),
     );
   }
 
-  Future<void> setDownloadTimestamp({
-    required int timestamp,
-  }) async {
+  Future<void> setDownloadTimestamp({required int timestamp}) async {
     return _prefs.then((SharedPreferences prefs) async {
       await prefs.setInt(_downloadTimestampKey, timestamp);
     });
@@ -134,9 +124,7 @@ class PreferenceRepository with Loggable {
       );
     } catch (_) {
       try {
-        await _secureStorage.deleteAll(
-          aOptions: androidOptions,
-        );
+        await _secureStorage.deleteAll(aOptions: androidOptions);
       } catch (e) {
         logError(e);
       }
@@ -171,15 +159,14 @@ class PreferenceRepository with Loggable {
         await prefs.remove(_getFavKey(of));
       }
 
-      final List<String>? initialList =
-          await _syncedPrefs.getStringList(key: _getFavKey(''));
-      final List<String>? userList =
-          await _syncedPrefs.getStringList(key: _getFavKey(of));
+      final List<String>? initialList = await _syncedPrefs.getStringList(
+        key: _getFavKey(''),
+      );
+      final List<String>? userList = await _syncedPrefs.getStringList(
+        key: _getFavKey(of),
+      );
 
-      return <String>{
-        ...?initialList,
-        ...?userList,
-      }.map(int.parse).toList();
+      return <String>{...?initialList, ...?userList}.map(int.parse).toList();
     } else {
       final List<int> favList =
           ((prefs.getStringList(_getFavKey('')) ?? <String>[])
@@ -223,21 +210,16 @@ class PreferenceRepository with Loggable {
     required Iterable<int> ids,
   }) async {
     final String key = _getFavKey(username);
-    final List<String> favList =
-        ids.map((int e) => e.toString()).toList(growable: false);
+    final List<String> favList = ids
+        .map((int e) => e.toString())
+        .toList(growable: false);
 
     if (Platform.isIOS) {
-      await _syncedPrefs.setStringList(
-        key: key,
-        val: favList,
-      );
+      await _syncedPrefs.setStringList(key: key, val: favList);
     } else {
       final SharedPreferences prefs = await _prefs;
 
-      await prefs.setStringList(
-        key,
-        favList,
-      );
+      await prefs.setStringList(key, favList);
     }
   }
 
@@ -270,16 +252,10 @@ class PreferenceRepository with Loggable {
     final String key = _getFavKey(username);
 
     if (Platform.isIOS) {
-      await _syncedPrefs.setStringList(
-        key: key,
-        val: <String>[],
-      );
+      await _syncedPrefs.setStringList(key: key, val: <String>[]);
     } else {
       final SharedPreferences prefs = await _prefs;
-      await prefs.setStringList(
-        key,
-        <String>[],
-      );
+      await prefs.setStringList(key, <String>[]);
     }
   }
 
@@ -306,10 +282,7 @@ class PreferenceRepository with Loggable {
     await prefs.setBool(key, vote);
   }
 
-  Future<void> removeVote({
-    required String username,
-    required int id,
-  }) async {
+  Future<void> removeVote({required String username, required int id}) async {
     final SharedPreferences prefs = await _prefs;
     final String key = _getVoteKey(username, id);
     await prefs.remove(key);
@@ -322,9 +295,9 @@ class PreferenceRepository with Loggable {
   //#region blocklist
 
   Future<List<String>> get blocklist async => _prefs.then(
-        (SharedPreferences prefs) =>
-            prefs.getStringList(_blocklistKey) ?? <String>[],
-      );
+    (SharedPreferences prefs) =>
+        prefs.getStringList(_blocklistKey) ?? <String>[],
+  );
 
   Future<void> updateBlocklist(List<String> usernames) async {
     final SharedPreferences prefs = await _prefs;
@@ -336,9 +309,9 @@ class PreferenceRepository with Loggable {
   //#region filter
 
   Future<List<String>> get filterKeywords async => _prefs.then(
-        (SharedPreferences prefs) =>
-            prefs.getStringList(_filterKeywordsKey) ?? <String>[],
-      );
+    (SharedPreferences prefs) =>
+        prefs.getStringList(_filterKeywordsKey) ?? <String>[],
+  );
 
   Future<void> updateFilterKeywords(List<String> keywords) async {
     final SharedPreferences prefs = await _prefs;
@@ -387,13 +360,10 @@ class PreferenceRepository with Loggable {
   //#region unread comment ids
 
   Future<List<int>> get unreadCommentsIds async => _prefs.then(
-        (SharedPreferences prefs) =>
-            prefs
-                .getStringList(_unreadCommentsIdsKey)
-                ?.map(int.parse)
-                .toList() ??
-            <int>[],
-      );
+    (SharedPreferences prefs) =>
+        prefs.getStringList(_unreadCommentsIdsKey)?.map(int.parse).toList() ??
+        <int>[],
+  );
 
   Future<void> updateUnreadCommentsIds(List<int> ids) async {
     final SharedPreferences prefs = await _prefs;
@@ -418,20 +388,14 @@ class PreferenceRepository with Loggable {
 
   Future<void> updateLastReadStoryId(int? id) async {
     final SharedPreferences prefs = await _prefs;
-    await prefs.setString(
-      _lastReadStoryIdKey,
-      id.toString(),
-    );
+    await prefs.setString(_lastReadStoryIdKey, id.toString());
   }
 
   //#endregion
 
   Future<void> updateHasPushed(int commentId) async {
     final SharedPreferences prefs = await _prefs;
-    await prefs.setBool(
-      _getPushNotificationKey(commentId),
-      true,
-    );
+    await prefs.setBool(_getPushNotificationKey(commentId), true);
   }
 
   final List<String> _storiesIdQueue = <String>[];
@@ -451,10 +415,7 @@ class PreferenceRepository with Loggable {
     } else {
       final SharedPreferences prefs = await _prefs;
 
-      await prefs.setBool(
-        _getHasReadKey(storyId),
-        true,
-      );
+      await prefs.setBool(_getHasReadKey(storyId), true);
     }
   }
 
@@ -475,8 +436,9 @@ class PreferenceRepository with Loggable {
     } else {
       final SharedPreferences prefs = await _prefs;
 
-      final Iterable<String> allKeys =
-          prefs.getKeys().where((String e) => e.contains('hasRead'));
+      final Iterable<String> allKeys = prefs.getKeys().where(
+        (String e) => e.contains('hasRead'),
+      );
       for (final String key in allKeys) {
         await prefs.remove(key);
       }

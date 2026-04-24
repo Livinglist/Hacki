@@ -6,8 +6,8 @@ import 'package:in_app_review/in_app_review.dart';
 
 class AppReviewService {
   AppReviewService({PreferenceRepository? preferenceRepository})
-      : _preferenceRepository =
-            preferenceRepository ?? locator.get<PreferenceRepository>();
+    : _preferenceRepository =
+          preferenceRepository ?? locator.get<PreferenceRepository>();
 
   final PreferenceRepository _preferenceRepository;
 
@@ -24,8 +24,9 @@ class AppReviewService {
 
   Future<bool> _shouldDisplay() async {
     final DateTime now = DateTime.now();
-    final int? timestamp =
-        await _preferenceRepository.getInt(_lastRequestTimestampKey);
+    final int? timestamp = await _preferenceRepository.getInt(
+      _lastRequestTimestampKey,
+    );
 
     if (timestamp == null) {
       _preferenceRepository.setInt(
@@ -35,8 +36,10 @@ class AppReviewService {
       return true;
     }
 
-    final DateTime lastReviewRequest =
-        DateTime.fromMillisecondsSinceEpoch(timestamp, isUtc: true);
+    final DateTime lastReviewRequest = DateTime.fromMillisecondsSinceEpoch(
+      timestamp,
+      isUtc: true,
+    );
     final int difference = now.difference(lastReviewRequest).inDays;
 
     if (difference >= _differenceInDays) {

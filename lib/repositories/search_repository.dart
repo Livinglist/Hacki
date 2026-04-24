@@ -13,17 +13,15 @@ class SearchRepository {
 
   final Dio _dio;
 
-  Stream<Item> search({
-    required SearchParams params,
-  }) async* {
+  Stream<Item> search({required SearchParams params}) async* {
     final String url = '$_baseUrl${params.filteredQuery}';
-    final Response<Map<String, dynamic>> response =
-        await _dio.get<Map<String, dynamic>>(url);
+    final Response<Map<String, dynamic>> response = await _dio
+        .get<Map<String, dynamic>>(url);
     final Map<String, dynamic>? data = response.data;
     if (data == null) return;
     final Map<String, dynamic> json = data;
-    final List<Map<String, dynamic>> hits =
-        (json['hits'] as List<dynamic>).cast<Map<String, dynamic>>();
+    final List<Map<String, dynamic>> hits = (json['hits'] as List<dynamic>)
+        .cast<Map<String, dynamic>>();
 
     if (hits.isEmpty) {
       return;
@@ -37,8 +35,9 @@ class SearchRepository {
       final int descendants = hit['num_comments'] as int? ?? 0;
 
       final String url = hit['url'] as String? ?? '';
-      final String type =
-          title.toLowerCase().contains('poll:') ? 'poll' : 'story';
+      final String type = title.toLowerCase().contains('poll:')
+          ? 'poll'
+          : 'story';
       final int id = int.parse(hit['objectID'] as String? ?? '0');
 
       if (title.isEmpty) {

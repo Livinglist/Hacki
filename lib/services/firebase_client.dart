@@ -14,12 +14,12 @@ class FirebaseClient {
   /// an authentication token.
   /// See: <https://firebase.google.com/docs/reference/rest/database/user-auth>.
   FirebaseClient(this.credential, {Client? client})
-      : _client = client ?? Client();
+    : _client = client ?? Client();
 
   /// Creates a new anonymous FirebaseClient with optional [client].
   FirebaseClient.anonymous({Client? client})
-      : credential = null,
-        _client = client ?? Client();
+    : credential = null,
+      _client = client ?? Client();
 
   /// Auth credential.
   final String? credential;

@@ -28,27 +28,39 @@ class SpindlePainter extends CustomPainter {
       ..moveTo(center - neckHalf, 0) // top-left neck
       // Left side going DOWN
       ..cubicTo(
-        center - neckHalf, h * 0.20,
-        w * 0.20, h * 0.30,
-        w * 0.20, h * 0.50, // widest point left
+        center - neckHalf,
+        h * 0.20,
+        w * 0.20,
+        h * 0.30,
+        w * 0.20,
+        h * 0.50, // widest point left
       )
       ..cubicTo(
-        w * 0.20, h * 0.70,
-        center - neckHalf, h * 0.80,
-        center - neckHalf, h * 1.0, // bottom-left neck
+        w * 0.20,
+        h * 0.70,
+        center - neckHalf,
+        h * 0.80,
+        center - neckHalf,
+        h * 1.0, // bottom-left neck
       )
       // Connect across bottom
       ..lineTo(center + neckHalf, h * 1.0)
       // Right side going UP
       ..cubicTo(
-        center + neckHalf, h * 0.80,
-        w * 0.80, h * 0.70,
-        w * 0.80, h * 0.50, // widest point right
+        center + neckHalf,
+        h * 0.80,
+        w * 0.80,
+        h * 0.70,
+        w * 0.80,
+        h * 0.50, // widest point right
       )
       ..cubicTo(
-        w * 0.80, h * 0.30,
-        center + neckHalf, h * 0.20,
-        center + neckHalf, 0, // top-right neck
+        w * 0.80,
+        h * 0.30,
+        center + neckHalf,
+        h * 0.20,
+        center + neckHalf,
+        0, // top-right neck
       )
       ..close();
 

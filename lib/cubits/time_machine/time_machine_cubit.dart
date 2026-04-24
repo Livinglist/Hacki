@@ -7,10 +7,9 @@ import 'package:hacki/services/services.dart';
 part 'time_machine_state.dart';
 
 class TimeMachineCubit extends Cubit<TimeMachineState> {
-  TimeMachineCubit({
-    CommentCache? commentCache,
-  })  : _commentCache = commentCache ?? locator.get<CommentCache>(),
-        super(TimeMachineState.init());
+  TimeMachineCubit({CommentCache? commentCache})
+    : _commentCache = commentCache ?? locator.get<CommentCache>(),
+      super(TimeMachineState.init());
 
   final CommentCache _commentCache;
 

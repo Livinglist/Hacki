@@ -46,9 +46,9 @@ class InThreadSearchIconButton extends StatelessWidget {
       },
       openBuilder: (_, void Function({Object? returnValue}) action) =>
           _InThreadSearchView(
-        commentsCubit: context.read<CommentsCubit>(),
-        action: action,
-      ),
+            commentsCubit: context.read<CommentsCubit>(),
+            action: action,
+          ),
     );
   }
 }
@@ -70,9 +70,7 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
   final ScrollController scrollController = ScrollController();
   final FocusNode focusNode = FocusNode();
   final TextEditingController textEditingController = TextEditingController();
-  final Debouncer debouncer = Debouncer(
-    delay: AppDurations.oneSecond,
-  );
+  final Debouncer debouncer = Debouncer(delay: AppDurations.oneSecond);
 
   @override
   void initState() {
@@ -172,9 +170,7 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
               children: <Widget>[
                 Row(
                   children: <Widget>[
-                    const SizedBox(
-                      width: Dimens.pt12,
-                    ),
+                    const SizedBox(width: Dimens.pt12),
                     CustomChip(
                       selected: state.inThreadSearchAuthor == state.item.by,
                       label: 'by OP',
@@ -194,9 +190,7 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                       },
                     ),
                     if (authState.isLoggedIn) ...<Widget>[
-                      const SizedBox(
-                        width: Dimens.pt12,
-                      ),
+                      const SizedBox(width: Dimens.pt12),
                       CustomChip(
                         selected:
                             state.inThreadSearchAuthor == authState.username,
@@ -218,9 +212,7 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                       ),
                     ],
                     if (widget.commentsCubit.hasNewComment) ...<Widget>[
-                      const SizedBox(
-                        width: Dimens.pt12,
-                      ),
+                      const SizedBox(width: Dimens.pt12),
                       CustomChip(
                         selected: state.isNewInSearchSelected,
                         label: 'new',
@@ -241,9 +233,7 @@ class _InThreadSearchViewState extends State<_InThreadSearchView> {
                         },
                       ),
                     ],
-                    const SizedBox(
-                      width: Dimens.pt12,
-                    ),
+                    const SizedBox(width: Dimens.pt12),
                     CustomChip(
                       selected: false,
                       label: 'clear',

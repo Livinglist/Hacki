@@ -2,22 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:hacki/styles/dimens.dart';
 
 final class SizedBoxes {
-  static const SizedBox pt2 = SizedBox(
-    height: Dimens.pt2,
-    width: Dimens.pt2,
-  );
-  static const SizedBox pt4 = SizedBox(
-    height: Dimens.pt4,
-    width: Dimens.pt4,
-  );
-  static const SizedBox pt6 = SizedBox(
-    height: Dimens.pt6,
-    width: Dimens.pt6,
-  );
-  static const SizedBox pt8 = SizedBox(
-    height: Dimens.pt8,
-    width: Dimens.pt8,
-  );
+  static const SizedBox pt2 = SizedBox(height: Dimens.pt2, width: Dimens.pt2);
+  static const SizedBox pt4 = SizedBox(height: Dimens.pt4, width: Dimens.pt4);
+  static const SizedBox pt6 = SizedBox(height: Dimens.pt6, width: Dimens.pt6);
+  static const SizedBox pt8 = SizedBox(height: Dimens.pt8, width: Dimens.pt8);
   static const SizedBox pt12 = SizedBox(
     height: Dimens.pt12,
     width: Dimens.pt12,

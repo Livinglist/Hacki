@@ -8,24 +8,27 @@ part 'user_state.dart';
 
 class UserCubit extends Cubit<UserState> {
   UserCubit({HackerNewsRepository? hackerNewsRepository})
-      : _hackerNewsRepository =
-            hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
-        super(const UserState.init());
+    : _hackerNewsRepository =
+          hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
+      super(const UserState.init());
 
   final HackerNewsRepository _hackerNewsRepository;
 
   void init({required String userId}) {
     emit(state.copyWith(status: Status.inProgress));
-    _hackerNewsRepository.fetchUser(id: userId).then((User? user) {
-      emit(
-        state.copyWith(
-          user: user ?? User.emptyWithId(userId),
-          status: Status.success,
-        ),
-      );
-    }).onError((_, __) {
-      emit(state.copyWith(status: Status.failure));
-      return;
-    });
+    _hackerNewsRepository
+        .fetchUser(id: userId)
+        .then((User? user) {
+          emit(
+            state.copyWith(
+              user: user ?? User.emptyWithId(userId),
+              status: Status.success,
+            ),
+          );
+        })
+        .onError((_, __) {
+          emit(state.copyWith(status: Status.failure));
+          return;
+        });
   }
 }

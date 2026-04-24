@@ -4,10 +4,7 @@ import 'package:hacki/styles/palette.dart';
 
 /// Used with [ShineOverlay] to highlight a widget on the screen.
 class ShinePainter extends CustomPainter {
-  ShinePainter(
-    this.progress, {
-    this.color,
-  });
+  ShinePainter(this.progress, {this.color});
 
   final double progress;
   final Color? color;
@@ -30,9 +27,7 @@ class ShinePainter extends CustomPainter {
           highlightColor.withValues(alpha: 0),
         ],
         stops: const <double>[0, 0.5, 1],
-      ).createShader(
-        Rect.fromLTWH(sweepX - 60, 0, 120, size.height),
-      );
+      ).createShader(Rect.fromLTWH(sweepX - 60, 0, 120, size.height));
 
     canvas.drawRect(Offset.zero & size, paint);
   }

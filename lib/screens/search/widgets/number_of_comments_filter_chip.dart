@@ -34,14 +34,12 @@ class NumberOfCommentsFilterChip extends StatelessWidget {
   Future<CommentsNumberFilter?> onChipTapped(BuildContext context) async {
     final CommentsNumberFilter? updatedFilter =
         await showDialog<CommentsNumberFilter?>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return _NumberOfCommentsDialog(
-          filter: filter,
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return _NumberOfCommentsDialog(filter: filter);
+          },
         );
-      },
-    );
     return updatedFilter;
   }
 }
@@ -76,9 +74,7 @@ class _NumberOfCommentsDialogState extends State<_NumberOfCommentsDialog> {
     return SimpleDialog(
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: Dimens.pt18,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: Dimens.pt18),
           child: SegmentedButton<NumericCondition>(
             showSelectedIcon: false,
             emptySelectionAllowed: true,
@@ -89,9 +85,7 @@ class _NumberOfCommentsDialogState extends State<_NumberOfCommentsDialog> {
                   label: Text(condition.operator),
                 ),
             ],
-            selected: <NumericCondition>{
-              _selectedCondition,
-            },
+            selected: <NumericCondition>{_selectedCondition},
             onSelectionChanged: (Set<NumericCondition> val) {
               HapticFeedbackUtils.light();
               setState(() {
@@ -101,49 +95,38 @@ class _NumberOfCommentsDialogState extends State<_NumberOfCommentsDialog> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: Dimens.pt18,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: Dimens.pt18),
           child: TextField(
             controller: _numberController,
             cursorColor: Theme.of(context).colorScheme.primary,
             keyboardType: TextInputType.number,
             autocorrect: false,
-            decoration: const InputDecoration(
-              hintText: 'Number of comments',
-            ),
+            decoration: const InputDecoration(hintText: 'Number of comments'),
             inputFormatters: <TextInputFormatter>[
               FilteringTextInputFormatter.digitsOnly,
             ],
           ),
         ),
-        const SizedBox(
-          height: Dimens.pt16,
-        ),
+        const SizedBox(height: Dimens.pt16),
         Padding(
-          padding: const EdgeInsets.only(
-            right: Dimens.pt12,
-          ),
+          padding: const EdgeInsets.only(right: Dimens.pt12),
           child: OverflowBar(
             alignment: MainAxisAlignment.end,
             children: <Widget>[
               TextButton(
                 onPressed: () => context.pop(widget.filter),
-                child: const Text(
-                  'Cancel',
-                ),
+                child: const Text('Cancel'),
               ),
               TextButton(
                 onPressed: () => context.pop(),
-                child: const Text(
-                  'Remove',
-                ),
+                child: const Text('Remove'),
               ),
               SizedBoxes.pt6,
               ElevatedButton(
                 onPressed: () {
-                  final int? commentsNumber =
-                      int.tryParse(_numberController.text.trim());
+                  final int? commentsNumber = int.tryParse(
+                    _numberController.text.trim(),
+                  );
                   if (commentsNumber == null) return;
                   final CommentsNumberFilter filter = CommentsNumberFilter(
                     commentsNumber: commentsNumber,
@@ -151,9 +134,7 @@ class _NumberOfCommentsDialogState extends State<_NumberOfCommentsDialog> {
                   );
                   context.pop(filter);
                 },
-                child: const Text(
-                  'Confirm',
-                ),
+                child: const Text('Confirm'),
               ),
             ],
           ),

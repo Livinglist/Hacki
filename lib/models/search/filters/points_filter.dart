@@ -3,10 +3,7 @@ import 'package:hacki/models/search/filters/numeric_condition.dart';
 import 'package:hacki/models/search/filters/numeric_filter.dart';
 
 final class PointsFilter extends Equatable implements NumericFilter {
-  const PointsFilter({
-    required this.points,
-    required this.condition,
-  });
+  const PointsFilter({required this.points, required this.condition});
 
   final int points;
   final NumericCondition condition;
@@ -17,8 +14,5 @@ final class PointsFilter extends Equatable implements NumericFilter {
   }
 
   @override
-  List<Object?> get props => <Object?>[
-        points,
-        condition,
-      ];
+  List<Object?> get props => <Object?>[points, condition];
 }

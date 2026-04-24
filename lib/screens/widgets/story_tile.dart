@@ -29,10 +29,10 @@ class StoryTile extends StatelessWidget {
     this.hasRead = false,
     this.simpleTileFontSize = 16,
   }) : assert(
-          !isIndexedStoryTileEnabled ||
-              (isIndexedStoryTileEnabled && index != null),
-          '`index` cannot be null when `shouldShowIndex` is enabled.',
-        );
+         !isIndexedStoryTileEnabled ||
+             (isIndexedStoryTileEnabled && index != null),
+         '`index` cannot be null when `shouldShowIndex` is enabled.',
+       );
 
   final bool shouldShowWebPreview;
   final bool shouldShowPreviewImage;
@@ -57,9 +57,7 @@ class StoryTile extends StatelessWidget {
         label: story.screenReaderLabel,
         excludeSemantics: true,
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: Dimens.pt12,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: Dimens.pt12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -74,20 +72,17 @@ class StoryTile extends StatelessWidget {
                           if (isIndexedStoryTileEnabled && index != null)
                             TextSpan(
                               text: '#${index! + 1} ',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
+                              style: Theme.of(context).textTheme.titleMedium
                                   ?.copyWith(
-                                    color:
-                                        Theme.of(context).colorScheme.onSurface,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
                                     fontWeight: FontWeight.bold,
                                   ),
                             ),
                           TextSpan(
                             text: story.title,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
+                            style: Theme.of(context).textTheme.titleMedium
                                 ?.copyWith(
                                   color: hasRead
                                       ? Theme.of(context).readGrey
@@ -98,9 +93,7 @@ class StoryTile extends StatelessWidget {
                           if (shouldShowUrl && story.readableUrl.isNotEmpty)
                             TextSpan(
                               text: ' (${story.readableUrl})',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
+                              style: Theme.of(context).textTheme.bodySmall
                                   ?.copyWith(
                                     color: hasRead
                                         ? Theme.of(context).readGrey
@@ -114,10 +107,10 @@ class StoryTile extends StatelessWidget {
                       Text(
                         story.metadata,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: hasRead
-                                  ? Theme.of(context).readGrey
-                                  : Theme.of(context).metadataColor,
-                            ),
+                          color: hasRead
+                              ? Theme.of(context).readGrey
+                              : Theme.of(context).metadataColor,
+                        ),
                         textAlign: TextAlign.left,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
@@ -129,8 +122,10 @@ class StoryTile extends StatelessWidget {
                 story: story,
                 link: story.url,
                 isImageLeftAligned: isImageLeftAligned,
-                isOfflineReading:
-                    context.read<StoriesBloc>().state.isOfflineReading,
+                isOfflineReading: context
+                    .read<StoriesBloc>()
+                    .state
+                    .isOfflineReading,
                 isExpandedTileEnabled: isExpandedTileEnabled,
                 placeholderWidget: _LinkPreviewPlaceholder(
                   height: height,
@@ -165,10 +160,14 @@ class StoryTile extends StatelessWidget {
                 LinkUtils.launch(
                   story.url,
                   context,
-                  shouldUseReader:
-                      context.read<PreferenceCubit>().state.isReaderEnabled,
-                  isOfflineReading:
-                      context.read<StoriesBloc>().state.isOfflineReading,
+                  shouldUseReader: context
+                      .read<PreferenceCubit>()
+                      .state
+                      .isReaderEnabled,
+                  isOfflineReading: context
+                      .read<StoriesBloc>()
+                      .state
+                      .isOfflineReading,
                 );
               }
             },
@@ -191,10 +190,7 @@ class StoryTile extends StatelessWidget {
                             imageUrl: Constants.favicon(story.url),
                             errorWidget: (_, __, ___) {
                               return const FadeIn(
-                                child: Icon(
-                                  Icons.public,
-                                  size: Dimens.pt20,
-                                ),
+                                child: Icon(Icons.public, size: Dimens.pt20),
                               );
                             },
                           ),
@@ -213,17 +209,13 @@ class StoryTile extends StatelessWidget {
                           ),
                         ),
                       ),
-                    const SizedBox(
-                      width: Dimens.pt8,
-                    ),
+                    const SizedBox(width: Dimens.pt8),
                   ],
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        const SizedBox(
-                          height: Dimens.pt8,
-                        ),
+                        const SizedBox(height: Dimens.pt8),
                         Row(
                           children: <Widget>[
                             Expanded(
@@ -238,9 +230,9 @@ class StoryTile extends StatelessWidget {
                                             .textTheme
                                             .titleMedium
                                             ?.copyWith(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onSurface,
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.onSurface,
                                               fontWeight: FontWeight.bold,
                                             ),
                                       ),
@@ -283,9 +275,7 @@ class StoryTile extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   story.metadataWithShortTimeAgoString,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall
+                                  style: Theme.of(context).textTheme.bodySmall
                                       ?.copyWith(
                                         color: hasRead
                                             ? Theme.of(context).readGrey
@@ -296,9 +286,7 @@ class StoryTile extends StatelessWidget {
                               ),
                             ],
                           ),
-                        const SizedBox(
-                          height: Dimens.pt14,
-                        ),
+                        const SizedBox(height: Dimens.pt14),
                       ],
                     ),
                   ),
@@ -330,10 +318,9 @@ class _LinkPreviewPlaceholder extends StatelessWidget {
         height: shouldShowPreviewImage ? height : null,
         child: Shimmer.fromColors(
           baseColor: Theme.of(context).colorScheme.secondaryContainer,
-          highlightColor: Theme.of(context)
-              .colorScheme
-              .secondaryContainer
-              .withValues(alpha: 0.8),
+          highlightColor: Theme.of(
+            context,
+          ).colorScheme.secondaryContainer.withValues(alpha: 0.8),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -355,13 +342,15 @@ class _LinkPreviewPlaceholder extends StatelessWidget {
                 child: Padding(
                   padding: isImageLeftAligned
                       ? EdgeInsets.only(
-                          left:
-                              shouldShowPreviewImage ? Dimens.pt4 : Dimens.zero,
+                          left: shouldShowPreviewImage
+                              ? Dimens.pt4
+                              : Dimens.zero,
                           top: Dimens.pt5,
                         )
                       : EdgeInsets.only(
-                          right:
-                              shouldShowPreviewImage ? Dimens.pt4 : Dimens.zero,
+                          right: shouldShowPreviewImage
+                              ? Dimens.pt4
+                              : Dimens.zero,
                           top: Dimens.pt5,
                         ),
                   child: Column(
@@ -373,9 +362,7 @@ class _LinkPreviewPlaceholder extends StatelessWidget {
                         color: Palette.white,
                       ),
                       const Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: Dimens.pt4,
-                        ),
+                        padding: EdgeInsets.symmetric(vertical: Dimens.pt4),
                       ),
                       Container(
                         width: double.infinity,
@@ -383,9 +370,7 @@ class _LinkPreviewPlaceholder extends StatelessWidget {
                         color: Palette.white,
                       ),
                       const Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: Dimens.pt4,
-                        ),
+                        padding: EdgeInsets.symmetric(vertical: Dimens.pt4),
                       ),
                       Container(
                         width: double.infinity,
@@ -393,9 +378,7 @@ class _LinkPreviewPlaceholder extends StatelessWidget {
                         color: Palette.white,
                       ),
                       const Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: Dimens.pt4,
-                        ),
+                        padding: EdgeInsets.symmetric(vertical: Dimens.pt4),
                       ),
                       Container(
                         width: double.infinity,
@@ -403,9 +386,7 @@ class _LinkPreviewPlaceholder extends StatelessWidget {
                         color: Palette.white,
                       ),
                       const Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: Dimens.pt4,
-                        ),
+                        padding: EdgeInsets.symmetric(vertical: Dimens.pt4),
                       ),
                       Container(
                         width: Dimens.pt40,

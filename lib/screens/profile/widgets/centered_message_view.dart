@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hacki/styles/styles.dart';
 
 class CenteredMessageView extends StatelessWidget {
-  const CenteredMessageView({
-    required this.content,
-    super.key,
-  });
+  const CenteredMessageView({required this.content, super.key});
 
   final String content;
 

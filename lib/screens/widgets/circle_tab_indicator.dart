@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CircleTabIndicator extends Decoration {
   CircleTabIndicator({required Color color, required double radius})
-      : _painter = _CirclePainter(color, radius);
+    : _painter = _CirclePainter(color, radius);
 
   final BoxPainter _painter;
 
@@ -12,9 +12,9 @@ class CircleTabIndicator extends Decoration {
 
 class _CirclePainter extends BoxPainter {
   _CirclePainter(Color color, this.radius)
-      : _paint = Paint()
-          ..color = color
-          ..isAntiAlias = true;
+    : _paint = Paint()
+        ..color = color
+        ..isAntiAlias = true;
 
   final Paint _paint;
   final double radius;

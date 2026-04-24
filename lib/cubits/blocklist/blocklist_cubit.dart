@@ -7,9 +7,9 @@ part 'blocklist_state.dart';
 
 class BlocklistCubit extends Cubit<BlocklistState> {
   BlocklistCubit({PreferenceRepository? storageRepository})
-      : _preferenceRepository =
-            storageRepository ?? locator.get<PreferenceRepository>(),
-        super(BlocklistState.init()) {
+    : _preferenceRepository =
+          storageRepository ?? locator.get<PreferenceRepository>(),
+      super(BlocklistState.init()) {
     init();
   }
 

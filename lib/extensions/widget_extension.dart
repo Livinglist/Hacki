@@ -22,8 +22,7 @@ extension ContextMenuBuilder on Widget {
     if (start != -1 && end != -1) {
       late final String text;
       if (item is Buildable) {
-        text = (item as Buildable)
-            .elements
+        text = (item as Buildable).elements
             .map((LinkifyElement e) => e.text)
             .reduce((String value, String e) => '$value$e');
       } else {
@@ -71,9 +70,6 @@ extension WidgetModifier on Widget {
   Widget padded([
     EdgeInsetsGeometry value = const EdgeInsets.all(Dimens.pt12),
   ]) {
-    return Padding(
-      padding: value,
-      child: this,
-    );
+    return Padding(padding: value, child: this);
   }
 }

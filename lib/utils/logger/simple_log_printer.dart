@@ -14,8 +14,9 @@ class SimpleLogPrinter extends LogPrinter {
   @override
   List<String> log(LogEvent event) {
     final String messageStr = _stringifyMessage(event.message);
-    final String errorStr =
-        event.error != null ? '  ERROR: ${event.error}' : '';
+    final String errorStr = event.error != null
+        ? '  ERROR: ${event.error}'
+        : '';
     final String timeStr = 'TIME: ${DateTimeFormat.dateAndTime(event.time)}';
     return <String>['${_labelFor(event.level)} $timeStr $messageStr$errorStr'];
   }
@@ -27,8 +28,9 @@ class SimpleLogPrinter extends LogPrinter {
   }
 
   String _stringifyMessage(dynamic message) {
-    final dynamic finalMessage =
-        message is Function ? (message as Function)() : message;
+    final dynamic finalMessage = message is Function
+        ? (message as Function)()
+        : message;
     if (finalMessage is Map || finalMessage is Iterable) {
       const JsonEncoder encoder = JsonEncoder.withIndent(null);
       return encoder.convert(finalMessage);

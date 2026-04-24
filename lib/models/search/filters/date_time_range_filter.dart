@@ -1,10 +1,7 @@
 import 'package:hacki/models/search/filters/numeric_filter.dart';
 
 final class DateTimeRangeFilter implements NumericFilter {
-  const DateTimeRangeFilter({
-    this.startTime,
-    this.endTime,
-  });
+  const DateTimeRangeFilter({this.startTime, this.endTime});
 
   final DateTime? startTime;
   final DateTime? endTime;
@@ -21,7 +18,8 @@ final class DateTimeRangeFilter implements NumericFilter {
         : endTime!.toUtc().millisecondsSinceEpoch ~/ 1000;
 
     if (startTimestamp == endTimestamp) {
-      endTimestamp = startTime!
+      endTimestamp =
+          startTime!
               .add(const Duration(hours: 24))
               .toUtc()
               .millisecondsSinceEpoch ~/

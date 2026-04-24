@@ -9,10 +9,10 @@ class SubmitState extends Equatable {
   });
 
   const SubmitState.init()
-      : title = null,
-        url = null,
-        text = null,
-        status = Status.idle;
+    : title = null,
+      url = null,
+      text = null,
+      status = Status.idle;
 
   final String? title;
   final String? url;
@@ -34,10 +34,5 @@ class SubmitState extends Equatable {
   }
 
   @override
-  List<Object?> get props => <Object?>[
-        title,
-        url,
-        text,
-        status,
-      ];
+  List<Object?> get props => <Object?>[title, url, text, status];
 }

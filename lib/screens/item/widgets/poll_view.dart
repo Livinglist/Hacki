@@ -25,26 +25,18 @@ class _PollViewState extends State<PollView> with ItemActionMixin {
           children: <Widget>[
             if (state.status == Status.inProgress) ...<Widget>[
               const LinearProgressIndicator(),
-              const SizedBox(
-                height: Dimens.pt24,
-              ),
+              const SizedBox(height: Dimens.pt24),
             ] else ...<Widget>[
               Row(
                 children: <Widget>[
-                  const SizedBox(
-                    width: Dimens.pt24,
-                  ),
+                  const SizedBox(width: Dimens.pt24),
                   Text(
                     'Total votes: ${state.totalVotes}',
-                    style: const TextStyle(
-                      fontSize: TextDimens.pt14,
-                    ),
+                    style: const TextStyle(fontSize: TextDimens.pt14),
                   ),
                 ],
               ),
-              const SizedBox(
-                height: Dimens.pt12,
-              ),
+              const SizedBox(height: Dimens.pt12),
             ],
             for (final PollOption option in state.pollOptions)
               FadeIn(
@@ -60,18 +52,14 @@ class _PollViewState extends State<PollView> with ItemActionMixin {
                     listener: (BuildContext context, VoteState voteState) {
                       ScaffoldMessenger.of(context).clearSnackBars();
                       if (voteState.status == VoteStatus.submitted) {
-                        showSnackBar(
-                          content: SnackBarMessages.voteSubmitted,
-                        );
+                        showSnackBar(content: SnackBarMessages.voteSubmitted);
                       } else if (voteState.status == VoteStatus.canceled) {
                         showSnackBar(content: SnackBarMessages.voteCanceled);
                       } else if (voteState.status == VoteStatus.failure) {
                         showErrorSnackBar();
                       } else if (voteState.status ==
                           VoteStatus.failureKarmaBelowThreshold) {
-                        showSnackBar(
-                          content: SnackBarMessages.karmalyBroke,
-                        );
+                        showSnackBar(content: SnackBarMessages.karmalyBroke);
                       } else if (voteState.status ==
                           VoteStatus.failureNotLoggedIn) {
                         showSnackBar(
@@ -113,9 +101,7 @@ class _PollViewState extends State<PollView> with ItemActionMixin {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Text(
-                                    option.text,
-                                  ),
+                                  Text(option.text),
                                   Text(
                                     '''${option.score} vote${option.score > 1 ? 's' : ''}''',
                                     style: const TextStyle(
@@ -123,13 +109,12 @@ class _PollViewState extends State<PollView> with ItemActionMixin {
                                       fontSize: TextDimens.pt12,
                                     ),
                                   ),
-                                  const SizedBox(
-                                    height: Dimens.pt4,
-                                  ),
+                                  const SizedBox(height: Dimens.pt4),
                                   LinearProgressIndicator(
                                     value: option.ratio,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                   ),
                                 ],
                               ),

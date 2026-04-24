@@ -7,10 +7,9 @@ import 'package:hacki/repositories/repositories.dart';
 part 'post_state.dart';
 
 class PostCubit extends Cubit<PostState> {
-  PostCubit({
-    PostRepository? postRepository,
-  })  : _postRepository = postRepository ?? locator.get<PostRepository>(),
-        super(const PostState.init());
+  PostCubit({PostRepository? postRepository})
+    : _postRepository = postRepository ?? locator.get<PostRepository>(),
+      super(const PostState.init());
 
   final PostRepository _postRepository;
 

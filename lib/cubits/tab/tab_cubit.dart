@@ -10,10 +10,9 @@ import 'package:hacki/models/models.dart';
 part 'tab_state.dart';
 
 class TabCubit extends Cubit<TabState> with Loggable {
-  TabCubit({
-    required PreferenceCubit preferenceCubit,
-  })  : _preferenceCubit = preferenceCubit,
-        super(TabState.init()) {
+  TabCubit({required PreferenceCubit preferenceCubit})
+    : _preferenceCubit = preferenceCubit,
+      super(TabState.init()) {
     init();
   }
 
@@ -25,15 +24,13 @@ class TabCubit extends Cubit<TabState> with Loggable {
         .map((PreferenceState s) => s.tabs)
         .distinct(listEquals)
         .listen((List<StoryType> tabs) {
-      logInfo('updating tabs to $tabs');
-      emit(state.copyWith(tabs: tabs));
-    });
+          logInfo('updating tabs to $tabs');
+          emit(state.copyWith(tabs: tabs));
+        });
   }
 
   void update(int startIndex, int endIndex) {
-    logDebug(
-      'updating ${state.tabs} by moving $startIndex to $endIndex',
-    );
+    logDebug('updating ${state.tabs} by moving $startIndex to $endIndex');
     final StoryType tab = state.tabs.elementAt(startIndex);
     final List<StoryType> updatedTabs = List<StoryType>.from(state.tabs)
       ..insert(endIndex, tab)

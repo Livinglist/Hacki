@@ -10,10 +10,7 @@ import 'package:hacki/utils/utils.dart';
 /// that can be rendered in [Linkify] widget.
 ///
 mixin BuildableMixin {
-  Future<Item?> toBuildable(
-    Item? item, {
-    String? withHighlightedText,
-  }) async {
+  Future<Item?> toBuildable(Item? item, {String? withHighlightedText}) async {
     if (item == null) return null;
 
     switch (item.runtimeType) {
@@ -45,8 +42,10 @@ mixin BuildableMixin {
       ),
     );
 
-    final BuildableComment buildableComment =
-        BuildableComment.fromComment(comment, elements: elements);
+    final BuildableComment buildableComment = BuildableComment.fromComment(
+      comment,
+      elements: elements,
+    );
 
     return buildableComment;
   }
@@ -60,12 +59,14 @@ mixin BuildableMixin {
 
     final List<LinkifyElement> elements =
         await compute<String, List<LinkifyElement>>(
-      LinkifierUtils.linkify,
-      story.text,
-    );
+          LinkifierUtils.linkify,
+          story.text,
+        );
 
-    final BuildableStory buildableStory =
-        BuildableStory.fromStory(story, elements: elements);
+    final BuildableStory buildableStory = BuildableStory.fromStory(
+      story,
+      elements: elements,
+    );
 
     return buildableStory;
   }

@@ -5,10 +5,7 @@ import 'package:hacki/styles/styles.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class QrCodeViewScreen extends StatelessWidget {
-  const QrCodeViewScreen({
-    required this.data,
-    super.key,
-  });
+  const QrCodeViewScreen({required this.data, super.key});
 
   final String data;
 
@@ -29,9 +26,7 @@ class QrCodeViewScreen extends StatelessWidget {
           Center(
             child: QrImageView(
               data: data,
-              padding: const EdgeInsets.symmetric(
-                horizontal: Dimens.pt24,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: Dimens.pt24),
               dataModuleStyle: QrDataModuleStyle(
                 dataModuleShape: QrDataModuleShape.square,
                 color: Theme.of(context).colorScheme.onSurface,
@@ -40,16 +35,11 @@ class QrCodeViewScreen extends StatelessWidget {
                 eyeShape: QrEyeShape.square,
                 color: Theme.of(context).colorScheme.onSurface,
               ),
-              size: min(
-                600,
-                screenWidth,
-              ),
+              size: min(600, screenWidth),
             ),
           ),
           const Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: Dimens.pt24,
-            ),
+            padding: EdgeInsets.symmetric(horizontal: Dimens.pt24),
             child: Text(
               '''Scan this QR code using Hacki on the other device by tapping on Import Favorites on Settings screen.''',
               textAlign: TextAlign.center,

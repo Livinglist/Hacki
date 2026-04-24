@@ -55,9 +55,7 @@ class InboxView extends StatelessWidget {
                 if (mode == LoadStatus.loading) {
                   body = const CustomCircularProgressIndicator();
                 } else if (mode == LoadStatus.failed) {
-                  body = const Text(
-                    'loading failed.',
-                  );
+                  body = const Text('loading failed.');
                 } else {
                   body = const SizedBox.shrink();
                 }
@@ -72,90 +70,93 @@ class InboxView extends StatelessWidget {
             onRefresh: onRefresh,
             child: ListView(
               children: <Widget>[
-                ...comments.map((Comment e) {
-                  final NotificationState state =
-                      context.read<NotificationCubit>().state;
-                  return <Widget>[
-                    Stack(
-                      children: <Widget>[
-                        if (state.commentFetchingStatus == Status.inProgress &&
-                            state.tappedCommentId == e.id)
-                          Positioned(
-                            left: Dimens.zero,
-                            right: Dimens.zero,
-                            top: Dimens.zero,
-                            bottom: Dimens.zero,
-                            child: LinearProgressIndicator(
-                              color: Theme.of(context)
-                                  .primaryColor
-                                  .withValues(alpha: 0.1),
-                            ),
-                          ),
-                        FadeIn(
-                          child: InkWell(
-                            onTap: () => onCommentTapped(e),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: Dimens.pt8,
-                                horizontal: Dimens.pt12,
+                ...comments
+                    .map((Comment e) {
+                      final NotificationState state = context
+                          .read<NotificationCubit>()
+                          .state;
+                      return <Widget>[
+                        Stack(
+                          children: <Widget>[
+                            if (state.commentFetchingStatus ==
+                                    Status.inProgress &&
+                                state.tappedCommentId == e.id)
+                              Positioned(
+                                left: Dimens.zero,
+                                right: Dimens.zero,
+                                top: Dimens.zero,
+                                bottom: Dimens.zero,
+                                child: LinearProgressIndicator(
+                                  color: Theme.of(
+                                    context,
+                                  ).primaryColor.withValues(alpha: 0.1),
+                                ),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Row(
+                            FadeIn(
+                              child: InkWell(
+                                onTap: () => onCommentTapped(e),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: Dimens.pt8,
+                                    horizontal: Dimens.pt12,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: <Widget>[
-                                      Text(
-                                        '''${e.timeAgo} from ${e.by}:''',
+                                      Row(
+                                        children: <Widget>[
+                                          Text(
+                                            '''${e.timeAgo} from ${e.by}:''',
+                                            style: TextStyle(
+                                              color: Theme.of(
+                                                context,
+                                              ).metadataColor,
+                                            ),
+                                          ),
+                                          const SizedBox(width: Dimens.pt12),
+                                        ],
+                                      ),
+                                      Linkify(
+                                        text: e.text,
                                         style: TextStyle(
                                           color:
-                                              Theme.of(context).metadataColor,
+                                              unreadCommentsIds.contains(e.id)
+                                              ? Theme.of(
+                                                  context,
+                                                ).colorScheme.onSurface
+                                              : Theme.of(context).readGrey,
+                                          fontSize: TextDimens.pt16,
                                         ),
-                                      ),
-                                      const SizedBox(
-                                        width: Dimens.pt12,
+                                        linkStyle: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary
+                                              .withValues(
+                                                alpha:
+                                                    unreadCommentsIds.contains(
+                                                      e.id,
+                                                    )
+                                                    ? 1
+                                                    : 0.6,
+                                              ),
+                                        ),
+                                        maxLines: 4,
+                                        onOpen: (LinkableElement link) =>
+                                            LinkUtils.launch(link.url, context),
                                       ),
                                     ],
                                   ),
-                                  Linkify(
-                                    text: e.text,
-                                    style: TextStyle(
-                                      color: unreadCommentsIds.contains(e.id)
-                                          ? Theme.of(context)
-                                              .colorScheme
-                                              .onSurface
-                                          : Theme.of(context).readGrey,
-                                      fontSize: TextDimens.pt16,
-                                    ),
-                                    linkStyle: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary
-                                          .withValues(
-                                            alpha:
-                                                unreadCommentsIds.contains(e.id)
-                                                    ? 1
-                                                    : 0.6,
-                                          ),
-                                    ),
-                                    maxLines: 4,
-                                    onOpen: (LinkableElement link) =>
-                                        LinkUtils.launch(link.url, context),
-                                  ),
-                                ],
+                                ),
                               ),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
-                    const Divider(
-                      height: Dimens.zero,
-                    ),
-                  ];
-                }).expand((List<Widget> element) => element),
-                const SizedBox(
-                  height: Dimens.pt40,
-                ),
+                        const Divider(height: Dimens.zero),
+                      ];
+                    })
+                    .expand((List<Widget> element) => element),
+                const SizedBox(height: Dimens.pt40),
               ],
             ),
           ),

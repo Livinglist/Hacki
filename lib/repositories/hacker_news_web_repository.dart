@@ -27,29 +27,27 @@ class HackerNewsWebRepository with Loggable {
     HttpClient? httpClient,
     Dio? dioWithCache,
     Dio? dio,
-  })  : _httpClient = httpClient ?? HttpClient()
-          ..idleTimeout = AppDurations.sec30
-          ..maxConnectionsPerHost = 2,
-        _dio = dio ?? Dio()
-          ..interceptors.addAll(
-            <Interceptor>[
-              ..._interceptors,
-              StoryCacheInterceptor(),
-            ],
-          )
-          ..options.headers[HttpHeaders.userAgentHeader] =
-              Constants.iphoneUserAgent,
-        _dioForComments = dioWithCache ?? Dio()
-          ..interceptors.addAll(<Interceptor>[
-            ..._interceptors,
-            CacheInterceptor(),
-          ])
-          ..options.headers[HttpHeaders.userAgentHeader] =
-              Constants.iphoneUserAgent,
-        _remoteConfigCubit =
-            remoteConfigCubit ?? locator.get<RemoteConfigCubit>(),
-        _hackerNewsRepository =
-            hackerNewsRepository ?? locator.get<HackerNewsRepository>() {
+  }) : _httpClient = httpClient ?? HttpClient()
+         ..idleTimeout = AppDurations.sec30
+         ..maxConnectionsPerHost = 2,
+       _dio = dio ?? Dio()
+         ..interceptors.addAll(<Interceptor>[
+           ..._interceptors,
+           StoryCacheInterceptor(),
+         ])
+         ..options.headers[HttpHeaders.userAgentHeader] =
+             Constants.iphoneUserAgent,
+       _dioForComments = dioWithCache ?? Dio()
+         ..interceptors.addAll(<Interceptor>[
+           ..._interceptors,
+           CacheInterceptor(),
+         ])
+         ..options.headers[HttpHeaders.userAgentHeader] =
+             Constants.iphoneUserAgent,
+       _remoteConfigCubit =
+           remoteConfigCubit ?? locator.get<RemoteConfigCubit>(),
+       _hackerNewsRepository =
+           hackerNewsRepository ?? locator.get<HackerNewsRepository>() {
     _dio
       ..interceptors.add(RetryInterceptor(dio: _dio))
       ..httpClientAdapter = IOHttpClientAdapter(
@@ -121,18 +119,14 @@ class HackerNewsWebRepository with Loggable {
     StoryType storyType, {
     required int page,
   }) async* {
-    Future<Iterable<(Element, Element)>> fetchElements(
-      int page,
-    ) async {
+    Future<Iterable<(Element, Element)>> fetchElements(int page) async {
       try {
         final String urlStr = switch (storyType) {
           StoryType.top => '$_storiesBaseUrl?p=$page',
-          StoryType.best ||
-          StoryType.ask ||
-          StoryType.show =>
+          StoryType.best || StoryType.ask || StoryType.show =>
             '$_storiesBaseUrl/${storyType.webPathParam}?p=$page',
           StoryType.latest =>
-            '$_storiesBaseUrl/${storyType.webPathParam}?next=${_next[page]}'
+            '$_storiesBaseUrl/${storyType.webPathParam}?next=${_next[page]}',
         };
 
         final Uri url = Uri.parse(urlStr);
@@ -149,20 +143,26 @@ class HackerNewsWebRepository with Loggable {
 
         final String data = response.data ?? '';
         final Document document = parse(data);
-        final List<Element> elements =
-            document.querySelectorAll(_storySelector);
-        final List<Element> subtextElements =
-            document.querySelectorAll(_subtextSelector);
+        final List<Element> elements = document.querySelectorAll(
+          _storySelector,
+        );
+        final List<Element> subtextElements = document.querySelectorAll(
+          _subtextSelector,
+        );
 
         if (storyType == StoryType.latest) {
           /// Get the next id for latest stories.
-          final Element? moreLinkElement =
-              document.querySelector(_moreLinkSelector);
+          final Element? moreLinkElement = document.querySelector(
+            _moreLinkSelector,
+          );
 
           /// Example: "newest?next=41240344&n=31"
           final String? href = moreLinkElement?.attributes['href'];
-          final String? nextIdStr =
-              href?.split('&n').firstOrNull?.split('=').lastOrNull;
+          final String? nextIdStr = href
+              ?.split('&n')
+              .firstOrNull
+              ?.split('=')
+              .lastOrNull;
           final int? nextId = int.tryParse(nextIdStr ?? '');
 
           if (nextId != null) {
@@ -199,35 +199,40 @@ class HackerNewsWebRepository with Loggable {
         final int? id = int.tryParse(idStr ?? '');
 
         /// Get user.
-        final Element? userElement =
-            subtextElement.querySelector(_userSelector);
+        final Element? userElement = subtextElement.querySelector(
+          _userSelector,
+        );
         final String? user = userElement?.nodes.firstOrNull?.text;
 
         /// Get post date.
         final Element? postDateElement =
             subtextElement.querySelector(_ageSelector) ??
-                subtextElement.querySelector('.age');
+            subtextElement.querySelector('.age');
 
-        final String? dateStr =
-            postDateElement?.attributes['title']?.split(' ').firstOrNull;
+        final String? dateStr = postDateElement?.attributes['title']
+            ?.split(' ')
+            .firstOrNull;
         final int? timestamp = dateStr == null
             ? null
-            : DateTime.parse(dateStr)
-                .copyWith(isUtc: true)
-                .millisecondsSinceEpoch;
+            : DateTime.parse(
+                dateStr,
+              ).copyWith(isUtc: true).millisecondsSinceEpoch;
 
         /// Get descendants.
-        final Element? cmtCountElement =
-            subtextElement.querySelectorAll(_cmtCountSelector).lastOrNull;
-        final String cmtCountStr = cmtCountElement?.nodes.firstOrNull?.text
+        final Element? cmtCountElement = subtextElement
+            .querySelectorAll(_cmtCountSelector)
+            .lastOrNull;
+        final String cmtCountStr =
+            cmtCountElement?.nodes.firstOrNull?.text
                 ?.split('\u{00A0}')
                 .firstOrNull ??
             '';
         final int cmtCount = int.tryParse(cmtCountStr) ?? 0;
 
         /// Get title;
-        final Element? titlelineElement =
-            titleElement.querySelector(_titlelineSelector);
+        final Element? titlelineElement = titleElement.querySelector(
+          _titlelineSelector,
+        );
         final String title = titlelineElement?.nodes.firstOrNull?.text ?? '';
         final String url = titlelineElement?.attributes['href'] ?? '';
 
@@ -236,8 +241,9 @@ class HackerNewsWebRepository with Loggable {
 
         /// Example: "80 points"
         final String? pointsStr = ptElement?.nodes.firstOrNull?.text;
-        final int? points =
-            int.tryParse(pointsStr?.split(' ').firstOrNull ?? '');
+        final int? points = int.tryParse(
+          pointsStr?.split(' ').firstOrNull ?? '',
+        );
 
         if (id == null) continue;
 
@@ -308,10 +314,12 @@ class HackerNewsWebRepository with Loggable {
         await Future<void>.delayed(AppDurations.twoSeconds);
 
         final Document document = parse(response.data);
-        final List<Element> elements =
-            document.querySelectorAll(_aThingSelector);
-        final Iterable<int> parsedIds =
-            elements.map((Element e) => int.tryParse(e.id)).nonNulls;
+        final List<Element> elements = document.querySelectorAll(
+          _aThingSelector,
+        );
+        final Iterable<int> parsedIds = elements
+            .map((Element e) => int.tryParse(e.id))
+            .nonNulls;
         return parsedIds;
       } on DioException catch (e) {
         if (_rateLimitedStatusCode.contains(e.response?.statusCode)) {
@@ -378,9 +386,9 @@ class HackerNewsWebRepository with Loggable {
         /// Be more conservative while user is on wifi.
         final Response<String> response =
             await (isOnWifi ? _dioForComments : _dio).getUri<String>(
-          url,
-          options: option,
-        );
+              url,
+              options: option,
+            );
 
         final String data = response.data ?? '';
 
@@ -389,8 +397,9 @@ class HackerNewsWebRepository with Loggable {
         }
 
         final Document document = parse(data);
-        final List<Element> elements =
-            document.querySelectorAll(_athingComtrSelector);
+        final List<Element> elements = document.querySelectorAll(
+          _athingComtrSelector,
+        );
         return elements;
       } on DioException catch (e) {
         final int statusCode = e.response?.statusCode ?? 0;
@@ -401,14 +410,13 @@ class HackerNewsWebRepository with Loggable {
         if (statusCode == HttpStatus.tooManyRequests) {
           final String retryAfter =
               e.response?.headers[HttpHeaders.retryAfterHeader] as String? ??
-                  '';
+              '';
           final int retryAfterInSeconds = int.tryParse(retryAfter) ?? 0;
-          final DateTime retryAfterDate =
-              DateTime.now().add(Duration(seconds: retryAfterInSeconds));
+          final DateTime retryAfterDate = DateTime.now().add(
+            Duration(seconds: retryAfterInSeconds),
+          );
           if (retryAfterInSeconds > 0) {
-            throw TooManyRequestsException(
-              retryAfter: retryAfterDate,
-            );
+            throw TooManyRequestsException(retryAfter: retryAfterDate);
           }
         }
 
@@ -438,36 +446,42 @@ class HackerNewsWebRepository with Loggable {
         final int? cmtId = int.tryParse(cmtIdString);
 
         /// Get comment text.
-        final Element? cmtTextElement =
-            element.querySelector(_commentTextSelector);
+        final Element? cmtTextElement = element.querySelector(
+          _commentTextSelector,
+        );
         final String parsedText = await compute(
           _parseCommentTextHtml,
           cmtTextElement?.innerHtml ?? '',
         );
 
         /// Get comment author.
-        final Element? cmtHeadElement =
-            element.querySelector(_commentHeadSelector);
+        final Element? cmtHeadElement = element.querySelector(
+          _commentHeadSelector,
+        );
         final String? cmtAuthor = cmtHeadElement?.text;
 
         /// Get comment age.
-        final Element? cmtAgeElement =
-            element.querySelector(_commentAgeSelector);
-        final String? ageString =
-            cmtAgeElement?.attributes['title']?.split(' ').firstOrNull;
+        final Element? cmtAgeElement = element.querySelector(
+          _commentAgeSelector,
+        );
+        final String? ageString = cmtAgeElement?.attributes['title']
+            ?.split(' ')
+            .firstOrNull;
 
         final int? timestamp = ageString == null
             ? null
-            : DateTime.parse(ageString)
-                .copyWith(isUtc: true)
-                .millisecondsSinceEpoch;
+            : DateTime.parse(
+                ageString,
+              ).copyWith(isUtc: true).millisecondsSinceEpoch;
 
         /// Get comment indent.
-        final Element? cmtIndentElement =
-            element.querySelector(_commentIndentSelector);
+        final Element? cmtIndentElement = element.querySelector(
+          _commentIndentSelector,
+        );
         final String? indentString = cmtIndentElement?.attributes['indent'];
-        final int indent =
-            indentString == null ? 0 : (int.tryParse(indentString) ?? 0);
+        final int indent = indentString == null
+            ? 0
+            : (int.tryParse(indentString) ?? 0);
 
         indentToParentId[indent] = cmtId ?? 0;
         final int parentId = indentToParentId[indent - 1] ?? -1;
@@ -521,8 +535,8 @@ class HackerNewsWebRepository with Loggable {
   }
 
   static Future<bool> get _isOnWifi async {
-    final List<ConnectivityResult> status =
-        await Connectivity().checkConnectivity();
+    final List<ConnectivityResult> status = await Connectivity()
+        .checkConnectivity();
     return status.contains(ConnectivityResult.wifi);
   }
 
@@ -530,24 +544,15 @@ class HackerNewsWebRepository with Loggable {
     return HtmlUnescape()
         .convert(text)
         .replaceAllMapped(
-          RegExp(
-            r'\<div class="reply"\>(.*?)\<\/div\>',
-            dotAll: true,
-          ),
+          RegExp(r'\<div class="reply"\>(.*?)\<\/div\>', dotAll: true),
           (Match match) => '',
         )
         .replaceAllMapped(
-          RegExp(
-            r'\<span class="(.*?)"\>(.*?)\<\/span\>',
-            dotAll: true,
-          ),
+          RegExp(r'\<span class="(.*?)"\>(.*?)\<\/span\>', dotAll: true),
           (Match match) => '${match[2]}',
         )
         .replaceAllMapped(
-          RegExp(
-            r'\<p\>(.*?)\<\/p\>',
-            dotAll: true,
-          ),
+          RegExp(r'\<p\>(.*?)\<\/p\>', dotAll: true),
           (Match match) => '\n\n${match[1]}',
         )
         .replaceAllMapped(

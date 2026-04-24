@@ -17,9 +17,9 @@ class HackerNewsRepository with Loggable {
   HackerNewsRepository({
     FirebaseClient? firebaseClient,
     SembastRepository? sembastRepository,
-  })  : _firebaseClient = firebaseClient ?? FirebaseClient.anonymous(),
-        _sembastRepository =
-            sembastRepository ?? locator.get<SembastRepository>();
+  }) : _firebaseClient = firebaseClient ?? FirebaseClient.anonymous(),
+       _sembastRepository =
+           sembastRepository ?? locator.get<SembastRepository>();
 
   final FirebaseClient _firebaseClient;
   final SembastRepository _sembastRepository;
@@ -39,8 +39,9 @@ class HackerNewsRepository with Loggable {
 
   /// Fetch a [Item] based on its id.
   Future<Item?> fetchItem({required int id}) async {
-    final Item? item =
-        await _fetchItemJson(id).then((Map<String, dynamic>? json) {
+    final Item? item = await _fetchItemJson(id).then((
+      Map<String, dynamic>? json,
+    ) {
       if (json == null) return null;
 
       if (json.isStory) {
@@ -84,13 +85,13 @@ class HackerNewsRepository with Loggable {
     final User? user = await _firebaseClient
         .get('${_baseUrl}user/$id.json')
         .then((dynamic val) {
-      final Map<String, dynamic>? json = val as Map<String, dynamic>?;
+          final Map<String, dynamic>? json = val as Map<String, dynamic>?;
 
-      if (json == null) return null;
+          if (json == null) return null;
 
-      final User user = User.fromJson(json);
-      return user;
-    });
+          final User user = User.fromJson(json);
+          return user;
+        });
 
     return user;
   }
@@ -100,14 +101,14 @@ class HackerNewsRepository with Loggable {
     final List<int>? submitted = await _firebaseClient
         .get('${_baseUrl}user/$userId.json')
         .then((dynamic val) {
-      if (val == null) {
-        return null;
-      }
-      final Map<String, dynamic> json = val as Map<String, dynamic>;
-      final List<int> submitted =
-          (json['submitted'] as List<dynamic>? ?? <dynamic>[]).cast<int>();
-      return submitted;
-    });
+          if (val == null) {
+            return null;
+          }
+          final Map<String, dynamic> json = val as Map<String, dynamic>;
+          final List<int> submitted =
+              (json['submitted'] as List<dynamic>? ?? <dynamic>[]).cast<int>();
+          return submitted;
+        });
 
     return submitted;
   }
@@ -117,17 +118,18 @@ class HackerNewsRepository with Loggable {
     final List<int> ids = await _firebaseClient
         .get('$_baseUrl${type.apiPathParam}.json')
         .then((dynamic val) {
-      final List<int> ids = (val as List<dynamic>).cast<int>();
-      return ids;
-    });
+          final List<int> ids = (val as List<dynamic>).cast<int>();
+          return ids;
+        });
 
     return ids;
   }
 
   /// Fetch a [Story] based on its id.
   Future<Story?> fetchStory({required int id}) async {
-    final Story? story =
-        await _fetchItemJson(id).then((Map<String, dynamic>? json) {
+    final Story? story = await _fetchItemJson(id).then((
+      Map<String, dynamic>? json,
+    ) {
       if (json == null) return null;
       final Story story = Story.fromJson(json);
       return story;
@@ -138,8 +140,9 @@ class HackerNewsRepository with Loggable {
 
   /// Fetch a [Comment] based on its id.
   Future<Comment?> fetchComment({required int id}) async {
-    final Comment? comment =
-        await _fetchItemJson(id).then((Map<String, dynamic>? json) async {
+    final Comment? comment = await _fetchItemJson(id).then((
+      Map<String, dynamic>? json,
+    ) async {
       if (json == null) return null;
 
       final Comment comment = Comment.fromJson(json);
@@ -153,8 +156,9 @@ class HackerNewsRepository with Loggable {
   /// The content of [Comment] will not be parsed, use this function only if
   /// the format of content doesn't matter, otherwise, use [fetchComment].
   Future<Comment?> fetchRawComment({required int id}) async {
-    final Comment? comment =
-        await _fetchRawItemJson(id).then((dynamic val) async {
+    final Comment? comment = await _fetchRawItemJson(id).then((
+      dynamic val,
+    ) async {
       if (val == null) return null;
       final Map<String, dynamic> json = val as Map<String, dynamic>;
 
@@ -208,14 +212,12 @@ class HackerNewsRepository with Loggable {
     } while (item is Comment);
 
     for (int i = 0; i < parentComments.length; i++) {
-      parentComments[i] =
-          parentComments[i].copyWith(level: parentComments.length - i - 1);
+      parentComments[i] = parentComments[i].copyWith(
+        level: parentComments.length - i - 1,
+      );
     }
 
-    return (
-      item as Story,
-      parentComments.reversed.toList(),
-    );
+    return (item as Story, parentComments.reversed.toList());
   }
 
   /// Fetch a list of [Comment] based on ids and return results
@@ -237,23 +239,24 @@ class HackerNewsRepository with Loggable {
         );
       }
 
-      comment ??=
-          await _fetchItemJson(id).then((Map<String, dynamic>? json) async {
-        if (json == null) return null;
+      comment ??= await _fetchItemJson(id)
+          .then((Map<String, dynamic>? json) async {
+            if (json == null) return null;
 
-        final Comment comment = Comment.fromJson(json, level: level);
+            final Comment comment = Comment.fromJson(json, level: level);
 
-        if (!json.isFromCache) {
-          unawaited(_sembastRepository.cacheComment(comment));
-        }
+            if (!json.isFromCache) {
+              unawaited(_sembastRepository.cacheComment(comment));
+            }
 
-        return comment;
-      }).onError((Object? error, StackTrace stackTrace) {
-        logError(error, stackTrace: stackTrace);
-        return _sembastRepository
-            .getCachedComment(id: id)
-            .then((Comment? value) => value?.copyWith(level: level));
-      });
+            return comment;
+          })
+          .onError((Object? error, StackTrace stackTrace) {
+            logError(error, stackTrace: stackTrace);
+            return _sembastRepository
+                .getCachedComment(id: id)
+                .then((Comment? value) => value?.copyWith(level: level));
+          });
 
       if (comment != null) {
         yield comment;
@@ -281,23 +284,24 @@ class HackerNewsRepository with Loggable {
         );
       }
 
-      comment ??=
-          await _fetchItemJson(id).then((Map<String, dynamic>? json) async {
-        if (json == null) return null;
+      comment ??= await _fetchItemJson(id)
+          .then((Map<String, dynamic>? json) async {
+            if (json == null) return null;
 
-        final Comment comment = Comment.fromJson(json, level: level);
+            final Comment comment = Comment.fromJson(json, level: level);
 
-        if (!json.isFromCache) {
-          unawaited(_sembastRepository.cacheComment(comment));
-        }
+            if (!json.isFromCache) {
+              unawaited(_sembastRepository.cacheComment(comment));
+            }
 
-        return comment;
-      }).onError((Object? error, StackTrace stackTrace) {
-        logError(error, stackTrace: stackTrace);
-        return _sembastRepository
-            .getCachedComment(id: id)
-            .then((Comment? value) => value?.copyWith(level: level));
-      });
+            return comment;
+          })
+          .onError((Object? error, StackTrace stackTrace) {
+            logError(error, stackTrace: stackTrace);
+            return _sembastRepository
+                .getCachedComment(id: id)
+                .then((Comment? value) => value?.copyWith(level: level));
+          });
 
       if (comment != null) {
         yield comment;
@@ -323,8 +327,9 @@ class HackerNewsRepository with Loggable {
       if (cachedItem != null) {
         yield cachedItem;
       } else {
-        final Item? item =
-            await _fetchItemJson(id).then((Map<String, dynamic>? json) async {
+        final Item? item = await _fetchItemJson(id).then((
+          Map<String, dynamic>? json,
+        ) async {
           if (json == null) return null;
 
           if (json.isStory) {
@@ -352,8 +357,9 @@ class HackerNewsRepository with Loggable {
   }) async* {
     if (sequential) {
       for (final int id in ids) {
-        final Story? story =
-            await _fetchItemJson(id).then((Map<String, dynamic>? json) async {
+        final Story? story = await _fetchItemJson(id).then((
+          Map<String, dynamic>? json,
+        ) async {
           if (json == null) return null;
           final Story story = Story.fromJson(json);
           return story;
@@ -365,9 +371,7 @@ class HackerNewsRepository with Loggable {
       }
     } else {
       final List<Map<String, dynamic>?> responses = await Future.wait(
-        <Future<Map<String, dynamic>?>>[
-          ...ids.map(_fetchItemJson),
-        ],
+        <Future<Map<String, dynamic>?>>[...ids.map(_fetchItemJson)],
       );
       for (final Map<String, dynamic>? json in responses) {
         if (json == null) continue;
@@ -381,11 +385,13 @@ class HackerNewsRepository with Loggable {
   /// using a stream.
   Stream<PollOption> fetchPollOptionsStream({required List<int> ids}) async* {
     for (final int id in ids) {
-      final PollOption? option =
-          await _fetchRawItemJson(id).then((dynamic json) async {
+      final PollOption? option = await _fetchRawItemJson(id).then((
+        dynamic json,
+      ) async {
         if (json == null) return null;
-        final PollOption option =
-            PollOption.fromJson(json as Map<String, dynamic>);
+        final PollOption option = PollOption.fromJson(
+          json as Map<String, dynamic>,
+        );
         return option;
       });
 
@@ -415,9 +421,9 @@ class HackerNewsRepository with Loggable {
 
     String? cachedText;
     if (json.isComment && itemId != null) {
-      cachedText =
-          (await locator.get<SembastRepository>().getCachedComment(id: itemId))
-              ?.text;
+      cachedText = (await locator.get<SembastRepository>().getCachedComment(
+        id: itemId,
+      ))?.text;
     }
 
     bool isValid(String? text) {

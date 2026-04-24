@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:linkify/linkify.dart';
 
-final RegExp _quoteRegex = RegExp(
-  r'(?=^>)(.*?)(?=\n|$)',
-  multiLine: true,
-);
+final RegExp _quoteRegex = RegExp(r'(?=^>)(.*?)(?=\n|$)', multiLine: true);
 
 class QuoteLinkifier extends Linkifier {
   const QuoteLinkifier();

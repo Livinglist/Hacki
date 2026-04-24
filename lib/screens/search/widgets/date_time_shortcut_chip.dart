@@ -21,68 +21,68 @@ class DateTimeShortcutChip extends StatelessWidget {
     required this.startDate,
     required this.endDate,
     super.key,
-  })  : label = '- day',
-        _calculator =
-            ((DateTime date) => date.subtract(const Duration(hours: 24)));
+  }) : label = '- day',
+       _calculator = ((DateTime date) =>
+           date.subtract(const Duration(hours: 24)));
 
   DateTimeShortcutChip.dayAfter({
     required this.onDateTimeRangeUpdated,
     required this.startDate,
     required this.endDate,
     super.key,
-  })  : label = '+ day',
-        _calculator = ((DateTime date) => date.add(const Duration(hours: 24)));
+  }) : label = '+ day',
+       _calculator = ((DateTime date) => date.add(const Duration(hours: 24)));
 
   DateTimeShortcutChip.weekBefore({
     required this.onDateTimeRangeUpdated,
     required this.startDate,
     required this.endDate,
     super.key,
-  })  : label = '- week',
-        _calculator =
-            ((DateTime date) => date.subtract(const Duration(days: 7)));
+  }) : label = '- week',
+       _calculator = ((DateTime date) =>
+           date.subtract(const Duration(days: 7)));
 
   DateTimeShortcutChip.weekAfter({
     required this.onDateTimeRangeUpdated,
     required this.startDate,
     required this.endDate,
     super.key,
-  })  : label = '+ week',
-        _calculator = ((DateTime date) => date.add(const Duration(days: 7)));
+  }) : label = '+ week',
+       _calculator = ((DateTime date) => date.add(const Duration(days: 7)));
 
   DateTimeShortcutChip.monthBefore({
     required this.onDateTimeRangeUpdated,
     required this.startDate,
     required this.endDate,
     super.key,
-  })  : label = '- 30 days',
-        _calculator =
-            ((DateTime date) => date.subtract(const Duration(days: 30)));
+  }) : label = '- 30 days',
+       _calculator = ((DateTime date) =>
+           date.subtract(const Duration(days: 30)));
 
   DateTimeShortcutChip.monthAfter({
     required this.onDateTimeRangeUpdated,
     required this.startDate,
     required this.endDate,
     super.key,
-  })  : label = '+ 30 days',
-        _calculator = ((DateTime date) => date.add(const Duration(days: 30)));
+  }) : label = '+ 30 days',
+       _calculator = ((DateTime date) => date.add(const Duration(days: 30)));
 
   DateTimeShortcutChip.yearAfter({
     required this.onDateTimeRangeUpdated,
     required this.startDate,
     required this.endDate,
     super.key,
-  })  : label = '+ 1 year',
-        _calculator = ((DateTime date) => date.add(const Duration(days: 365)));
+  }) : label = '+ 1 year',
+       _calculator = ((DateTime date) => date.add(const Duration(days: 365)));
 
   DateTimeShortcutChip.yearBefore({
     required this.onDateTimeRangeUpdated,
     required this.startDate,
     required this.endDate,
     super.key,
-  })  : label = '- 1 year',
-        _calculator =
-            ((DateTime date) => date.subtract(const Duration(days: 365)));
+  }) : label = '- 1 year',
+       _calculator = ((DateTime date) =>
+           date.subtract(const Duration(days: 365)));
 
   final void Function(DateTime, DateTime) onDateTimeRangeUpdated;
   final DateTime? startDate;

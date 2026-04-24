@@ -9,9 +9,7 @@ import 'package:hacki/services/services.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 class SettingsButton extends StatelessWidget {
-  const SettingsButton({
-    super.key,
-  });
+  const SettingsButton({super.key});
 
   static DeviceScreenType? _cachedDeviceType;
 

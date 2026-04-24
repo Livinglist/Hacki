@@ -1,12 +1,6 @@
 part of 'stories_bloc.dart';
 
-enum StoriesDownloadStatus {
-  idle,
-  downloading,
-  finished,
-  failure,
-  canceled,
-}
+enum StoriesDownloadStatus { idle, downloading, finished, failure, canceled }
 
 extension StoriesStateExtension on StoriesState {
   static final DateFormat _dateTimeFormatter = DateFormat()
@@ -15,8 +9,9 @@ extension StoriesStateExtension on StoriesState {
 
   String? get downloadDateTime {
     if (downloadTimestamp == null) return null;
-    final DateTime datetime =
-        DateTime.fromMillisecondsSinceEpoch(downloadTimestamp!);
+    final DateTime datetime = DateTime.fromMillisecondsSinceEpoch(
+      downloadTimestamp!,
+    );
     return _dateTimeFormatter.format(datetime);
   }
 }
@@ -66,14 +61,14 @@ class StoriesState extends Equatable {
       StoryType.ask: 0,
       StoryType.show: 0,
     },
-  })  : isOfflineReading = false,
-        downloadStatus = StoriesDownloadStatus.idle,
-        readStoriesIds = const <int>{},
-        storiesDownloaded = 0,
-        storiesToBeDownloaded = 0,
-        downloadTimestamp = null,
-        maxOfflineStoriesCount = null,
-        dataSource = null;
+  }) : isOfflineReading = false,
+       downloadStatus = StoriesDownloadStatus.idle,
+       readStoriesIds = const <int>{},
+       storiesDownloaded = 0,
+       storiesToBeDownloaded = 0,
+       downloadTimestamp = null,
+       maxOfflineStoriesCount = null,
+       dataSource = null;
 
   final Map<StoryType, List<Story>> storiesByType;
   final Map<StoryType, List<int>> storyIdsByType;
@@ -142,15 +137,13 @@ class StoriesState extends Equatable {
     required Story story,
     required bool hasRead,
   }) {
-    final Map<StoryType, List<Story>> newMap =
-        Map<StoryType, List<Story>>.from(storiesByType);
+    final Map<StoryType, List<Story>> newMap = Map<StoryType, List<Story>>.from(
+      storiesByType,
+    );
     newMap[type] = List<Story>.from(newMap[type]!)..add(story);
     return copyWith(
       storiesByType: newMap,
-      readStoriesIds: <int>{
-        ...readStoriesIds,
-        if (hasRead) story.id,
-      },
+      readStoriesIds: <int>{...readStoriesIds, if (hasRead) story.id},
     );
   }
 
@@ -158,36 +151,33 @@ class StoriesState extends Equatable {
     required StoryType type,
     required List<int> to,
   }) {
-    final Map<StoryType, List<int>> newMap =
-        Map<StoryType, List<int>>.from(storyIdsByType);
-    newMap[type] = to;
-    return copyWith(
-      storyIdsByType: newMap,
+    final Map<StoryType, List<int>> newMap = Map<StoryType, List<int>>.from(
+      storyIdsByType,
     );
+    newMap[type] = to;
+    return copyWith(storyIdsByType: newMap);
   }
 
   StoriesState copyWithStatusUpdated({
     required StoryType type,
     required Status to,
   }) {
-    final Map<StoryType, Status> newMap =
-        Map<StoryType, Status>.from(statusByType);
-    newMap[type] = to;
-    return copyWith(
-      statusByType: newMap,
+    final Map<StoryType, Status> newMap = Map<StoryType, Status>.from(
+      statusByType,
     );
+    newMap[type] = to;
+    return copyWith(statusByType: newMap);
   }
 
   StoriesState copyWithCurrentPageUpdated({
     required StoryType type,
     required int to,
   }) {
-    final Map<StoryType, int> newMap =
-        Map<StoryType, int>.from(currentPageByType);
-    newMap[type] = to;
-    return copyWith(
-      currentPageByType: newMap,
+    final Map<StoryType, int> newMap = Map<StoryType, int>.from(
+      currentPageByType,
     );
+    newMap[type] = to;
+    return copyWith(currentPageByType: newMap);
   }
 
   StoriesState copyWithRefreshed({required StoryType type}) {
@@ -197,11 +187,13 @@ class StoriesState extends Equatable {
     final Map<StoryType, List<int>> newStoryIdsMap =
         Map<StoryType, List<int>>.from(storyIdsByType);
     newStoryIdsMap[type] = <int>[];
-    final Map<StoryType, Status> newStatusMap =
-        Map<StoryType, Status>.from(statusByType);
+    final Map<StoryType, Status> newStatusMap = Map<StoryType, Status>.from(
+      statusByType,
+    );
     newStatusMap[type] = Status.inProgress;
-    final Map<StoryType, int> newCurrentPageMap =
-        Map<StoryType, int>.from(currentPageByType);
+    final Map<StoryType, int> newCurrentPageMap = Map<StoryType, int>.from(
+      currentPageByType,
+    );
     newCurrentPageMap[type] = 0;
     return copyWith(
       storiesByType: newStoriesMap,
@@ -213,17 +205,17 @@ class StoriesState extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        storiesByType,
-        storyIdsByType,
-        statusByType,
-        currentPageByType,
-        readStoriesIds,
-        isOfflineReading,
-        downloadStatus,
-        storiesDownloaded,
-        storiesToBeDownloaded,
-        downloadTimestamp,
-        dataSource,
-        maxOfflineStoriesCount,
-      ];
+    storiesByType,
+    storyIdsByType,
+    statusByType,
+    currentPageByType,
+    readStoriesIds,
+    isOfflineReading,
+    downloadStatus,
+    storiesDownloaded,
+    storiesToBeDownloaded,
+    downloadTimestamp,
+    dataSource,
+    maxOfflineStoriesCount,
+  ];
 }

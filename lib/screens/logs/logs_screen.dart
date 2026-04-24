@@ -52,14 +52,11 @@ class _LogsScreenState extends State<LogsScreen> {
             onPressed: () {
               if (_logs.isEmpty) return;
               final String data = _logs.reduce(
-                (
-                  String lhs,
-                  String rhs,
-                ) =>
-                    lhs + rhs,
+                (String lhs, String rhs) => lhs + rhs,
               );
-              Clipboard.setData(ClipboardData(text: data))
-                  .whenComplete(HapticFeedbackUtils.selection);
+              Clipboard.setData(
+                ClipboardData(text: data),
+              ).whenComplete(HapticFeedbackUtils.selection);
               context.showSnackBar(content: 'Logs copied.');
             },
             icon: Icon(

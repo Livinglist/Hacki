@@ -32,10 +32,8 @@ class MorePopupMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<VoteCubit>(
-      create: (BuildContext context) => VoteCubit(
-        item: item,
-        authBloc: context.read<AuthBloc>(),
-      ),
+      create: (BuildContext context) =>
+          VoteCubit(item: item, authBloc: context.read<AuthBloc>()),
       child: BlocConsumer<VoteCubit, VoteState>(
         listenWhen: (VoteState previous, VoteState current) {
           return previous.status != current.status;
@@ -49,9 +47,7 @@ class MorePopupMenu extends StatelessWidget {
             context.showErrorSnackBar();
           } else if (voteState.status ==
               VoteStatus.failureKarmaBelowThreshold) {
-            context.showSnackBar(
-              content: SnackBarMessages.karmalyBroke,
-            );
+            context.showSnackBar(content: SnackBarMessages.karmalyBroke);
           } else if (voteState.status == VoteStatus.failureNotLoggedIn) {
             context.showSnackBar(
               content: SnackBarMessages.notLoggedInNoVoting,
@@ -93,16 +89,12 @@ class MorePopupMenu extends StatelessWidget {
                               firstChild: const Icon(
                                 Icons.account_circle_outlined,
                               ),
-                              secondChild: const Icon(
-                                Icons.account_circle,
-                              ),
+                              secondChild: const Icon(Icons.account_circle),
                             ),
                           ],
                         ),
                         title: Text(item.by),
-                        subtitle: Text(
-                          state.user.description,
-                        ),
+                        subtitle: Text(state.user.description),
                         onTap: () {
                           context.pop();
                           final double fontSize = context
@@ -115,9 +107,7 @@ class MorePopupMenu extends StatelessWidget {
                             builder: (BuildContext context) => AlertDialog(
                               semanticLabel:
                                   '''About ${state.user.id}. ${state.user.about}''',
-                              title: Text(
-                                'About ${state.user.id}',
-                              ),
+                              title: Text('About ${state.user.id}'),
                               content: state.user.about.isEmpty
                                   ? const Row(
                                       mainAxisAlignment:
@@ -125,9 +115,7 @@ class MorePopupMenu extends StatelessWidget {
                                       children: <Widget>[
                                         Text(
                                           'empty',
-                                          style: TextStyle(
-                                            color: Palette.grey,
-                                          ),
+                                          style: TextStyle(color: Palette.grey),
                                         ),
                                       ],
                                     )
@@ -135,20 +123,15 @@ class MorePopupMenu extends StatelessWidget {
                                       text: HtmlUtils.parseHtml(
                                         state.user.about,
                                       ),
-                                      style: TextStyle(
-                                        fontSize: fontSize,
-                                      ),
+                                      style: TextStyle(fontSize: fontSize),
                                       linkStyle: TextStyle(
                                         fontSize: fontSize,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.primary,
                                       ),
                                       onOpen: (LinkableElement link) =>
-                                          LinkUtils.launch(
-                                        link.url,
-                                        context,
-                                      ),
+                                          LinkUtils.launch(link.url, context),
                                       semanticsLabel: state.user.about,
                                     ),
                               actions: <Widget>[
@@ -160,9 +143,7 @@ class MorePopupMenu extends StatelessWidget {
                                     context.pop();
                                     onSearchUserTapped(context);
                                   },
-                                  child: const Text(
-                                    'Search',
-                                  ),
+                                  child: const Text('Search'),
                                 ),
                                 TextButton(
                                   onPressed: () {
@@ -171,9 +152,7 @@ class MorePopupMenu extends StatelessWidget {
                                         .requestReview();
                                     context.pop();
                                   },
-                                  child: const Text(
-                                    'Okay',
-                                  ),
+                                  child: const Text('Okay'),
                                 ),
                               ],
                             ),
@@ -219,8 +198,9 @@ class MorePopupMenu extends StatelessWidget {
                   downvoted
                       ? Icons.thumb_down_rounded
                       : Icons.thumb_down_off_alt_outlined,
-                  color:
-                      downvoted ? Theme.of(context).colorScheme.primary : null,
+                  color: downvoted
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
                 ),
                 title: Text(
                   downvoted ? 'Downvoted' : 'Downvote',
@@ -236,43 +216,34 @@ class MorePopupMenu extends StatelessWidget {
                   return ListTile(
                     leading: Icon(
                       isFav ? Icons.favorite : Icons.favorite_border,
-                      color:
-                          isFav ? Theme.of(context).colorScheme.primary : null,
+                      color: isFav
+                          ? Theme.of(context).colorScheme.primary
+                          : null,
                     ),
-                    title: Text(
-                      isFav ? 'Unfavorite' : 'Favorite',
-                    ),
+                    title: Text(isFav ? 'Unfavorite' : 'Favorite'),
                     onTap: () => context.pop(MenuAction.fav),
                   );
                 },
               ),
               ListTile(
                 leading: const Icon(FeatherIcons.share),
-                title: const Text(
-                  'Share',
-                ),
+                title: const Text('Share'),
                 onTap: () => context.pop(MenuAction.share),
               ),
               ListTile(
                 leading: const Icon(Icons.local_police),
-                title: const Text(
-                  'Flag',
-                ),
+                title: const Text('Flag'),
                 onTap: () => context.pop(MenuAction.flag),
               ),
               ListTile(
                 leading: Icon(
                   isBlocked ? Icons.visibility : Icons.visibility_off,
                 ),
-                title: Text(
-                  isBlocked ? 'Unblock' : 'Block',
-                ),
+                title: Text(isBlocked ? 'Unblock' : 'Block'),
                 onTap: () => context.pop(MenuAction.block),
               ),
               ListTile(
-                leading: const Icon(
-                  Icons.open_in_browser,
-                ),
+                leading: const Icon(Icons.open_in_browser),
                 title: const Text('View in Browser'),
                 onTap: () {
                   context.pop();
@@ -287,9 +258,7 @@ class MorePopupMenu extends StatelessWidget {
               ),
               ListTile(
                 leading: const Icon(Icons.close),
-                title: const Text(
-                  'Cancel',
-                ),
+                title: const Text('Cancel'),
                 onTap: () => context.pop(MenuAction.cancel),
               ),
             ],
@@ -306,21 +275,13 @@ class MorePopupMenu extends StatelessWidget {
       showDragHandle: true,
       builder: (BuildContext context) {
         return BlocProvider<SearchCubit>(
-          create: (_) => SearchCubit()
-            ..addFilter(
-              PostedByFilter(
-                author: item.by,
-              ),
-            ),
+          create: (_) =>
+              SearchCubit()..addFilter(PostedByFilter(author: item.by)),
           child: SizedBox(
             height: MediaQuery.of(context).size.height - Dimens.pt120,
             child: const Column(
               children: <Widget>[
-                Expanded(
-                  child: SearchScreen(
-                    isInBottomSheet: true,
-                  ),
-                ),
+                Expanded(child: SearchScreen(isInBottomSheet: true)),
               ],
             ),
           ),

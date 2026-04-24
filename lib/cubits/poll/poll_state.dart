@@ -9,10 +9,10 @@ class PollState extends Equatable {
   });
 
   PollState.init()
-      : totalVotes = 0,
-        selections = <int>{},
-        pollOptions = <PollOption>[],
-        status = Status.idle;
+    : totalVotes = 0,
+      selections = <int>{},
+      pollOptions = <PollOption>[],
+      status = Status.idle;
 
   final int totalVotes;
   final Set<int> selections;
@@ -35,9 +35,9 @@ class PollState extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        totalVotes,
-        selections,
-        pollOptions,
-        status,
-      ];
+    totalVotes,
+    selections,
+    pollOptions,
+    status,
+  ];
 }

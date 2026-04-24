@@ -9,10 +9,8 @@ import 'package:hacki/repositories/post_repository.dart';
 /// [PostableRepository] is solely for hosting functionalities shared between
 /// [AuthRepository] and [PostRepository].
 class PostableRepository {
-  PostableRepository({
-    Dio? dio,
-    this.authority = 'news.ycombinator.com',
-  }) : _dio = dio ?? Dio();
+  PostableRepository({Dio? dio, this.authority = 'news.ycombinator.com'})
+    : _dio = dio ?? Dio();
 
   final Dio _dio;
 
@@ -75,11 +73,9 @@ class PostableRepository {
     required String path,
     int? id,
   }) async {
-    final Uri uri = Uri.https(
-      authority,
-      path,
-      <String, dynamic>{if (id != null) 'id': id.toString()},
-    );
+    final Uri uri = Uri.https(authority, path, <String, dynamic>{
+      if (id != null) 'id': id.toString(),
+    });
     final PostDataMixin data = FormPostData(
       acct: username,
       pw: password,

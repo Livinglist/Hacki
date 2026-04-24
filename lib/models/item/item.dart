@@ -32,38 +32,38 @@ class Item extends Equatable {
   });
 
   Item.empty()
-      : id = 0,
-        score = 0,
-        descendants = 0,
-        time = 0,
-        by = '',
-        title = '',
-        url = '',
-        kids = <int>[],
-        parts = <int>[],
-        dead = false,
-        deleted = false,
-        hidden = false,
-        parent = 0,
-        text = '',
-        type = '';
+    : id = 0,
+      score = 0,
+      descendants = 0,
+      time = 0,
+      by = '',
+      title = '',
+      url = '',
+      kids = <int>[],
+      parts = <int>[],
+      dead = false,
+      deleted = false,
+      hidden = false,
+      parent = 0,
+      text = '',
+      type = '';
 
   Item.fromJson(Map<String, dynamic> json)
-      : id = json['id'] as int? ?? 0,
-        score = json['score'] as int? ?? 0,
-        descendants = json['descendants'] as int? ?? 0,
-        time = json['time'] as int? ?? 0,
-        by = json['by'] as String? ?? '',
-        title = json['title'] as String? ?? '',
-        text = json['text'] as String? ?? '',
-        url = json['url'] as String? ?? '',
-        kids = (json['kids'] as List<dynamic>?)?.cast<int>() ?? <int>[],
-        dead = json['dead'] as bool? ?? false,
-        deleted = json['deleted'] as bool? ?? false,
-        parent = json['parent'] as int? ?? 0,
-        parts = (json['parts'] as List<dynamic>?)?.cast<int>() ?? <int>[],
-        type = json['type'] as String? ?? '',
-        hidden = json['hidden'] as bool? ?? false;
+    : id = json['id'] as int? ?? 0,
+      score = json['score'] as int? ?? 0,
+      descendants = json['descendants'] as int? ?? 0,
+      time = json['time'] as int? ?? 0,
+      by = json['by'] as String? ?? '',
+      title = json['title'] as String? ?? '',
+      text = json['text'] as String? ?? '',
+      url = json['url'] as String? ?? '',
+      kids = (json['kids'] as List<dynamic>?)?.cast<int>() ?? <int>[],
+      dead = json['dead'] as bool? ?? false,
+      deleted = json['deleted'] as bool? ?? false,
+      parent = json['parent'] as int? ?? 0,
+      parts = (json['parts'] as List<dynamic>?)?.cast<int>() ?? <int>[],
+      type = json['type'] as String? ?? '',
+      hidden = json['hidden'] as bool? ?? false;
 
   final int id;
   final int time;
@@ -103,9 +103,9 @@ class Item extends Equatable {
     if (time < 9999999999) {
       time = time * 1000;
     }
-    return DateTime.fromMillisecondsSinceEpoch(time).toTimeAgoString(
-      shouldUseAbbreviations: true,
-    );
+    return DateTime.fromMillisecondsSinceEpoch(
+      time,
+    ).toTimeAgoString(shouldUseAbbreviations: true);
   }
 
   bool get isPoll => type == 'poll';
@@ -118,11 +118,7 @@ class Item extends Equatable {
 
   Map<String, dynamic> toJson({bool full = true}) {
     return <String, dynamic>{
-      if (full) ...<String, dynamic>{
-        'title': title,
-        'url': url,
-        'text': text,
-      },
+      if (full) ...<String, dynamic>{'title': title, 'url': url, 'text': text},
       'descendants': descendants,
       'id': id,
       'score': score,
@@ -139,20 +135,20 @@ class Item extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        id,
-        deleted,
-        by,
-        time,
-        text,
-        dead,
-        parent,
-        kids,
-        url,
-        score,
-        title,
-        type,
-        parts,
-        descendants,
-        hidden,
-      ];
+    id,
+    deleted,
+    by,
+    time,
+    text,
+    dead,
+    parent,
+    kids,
+    url,
+    score,
+    title,
+    type,
+    parts,
+    descendants,
+    hidden,
+  ];
 }

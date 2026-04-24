@@ -32,43 +32,42 @@ void main() {
     karma: karma,
   );
 
-  group(
-    'AuthBloc',
-    () {
-      setUp(() {
-        when(() => mockAuthRepository.loggedIn)
-            .thenAnswer((_) => Future<bool>.value(false));
-      });
+  group('AuthBloc', () {
+    setUp(() {
+      when(
+        () => mockAuthRepository.loggedIn,
+      ).thenAnswer((_) => Future<bool>.value(false));
+    });
 
-      test(
-        'initial state is AuthState.init',
-        () {
-          expect(
-            AuthBloc(
-              authRepository: mockAuthRepository,
-              preferenceRepository: mockPreferenceRepository,
-              hackerNewsRepository: mockHackerNewsRepository,
-              sembastRepository: mockSembastRepository,
-            ).state,
-            equals(const AuthState.init()),
-          );
-        },
+    test('initial state is AuthState.init', () {
+      expect(
+        AuthBloc(
+          authRepository: mockAuthRepository,
+          preferenceRepository: mockPreferenceRepository,
+          hackerNewsRepository: mockHackerNewsRepository,
+          sembastRepository: mockSembastRepository,
+        ).state,
+        equals(const AuthState.init()),
       );
-    },
-  );
+    });
+  });
 
   group('AuthAppStarted', () {
     const String username = 'username';
     const String password = 'password';
     setUp(() {
-      when(() => mockAuthRepository.username)
-          .thenAnswer((_) => Future<String?>.value(username));
-      when(() => mockAuthRepository.password)
-          .thenAnswer((_) => Future<String>.value(password));
-      when(() => mockHackerNewsRepository.fetchUser(id: username))
-          .thenAnswer((_) => Future<User>.value(tUser));
-      when(() => mockAuthRepository.loggedIn)
-          .thenAnswer((_) => Future<bool>.value(false));
+      when(
+        () => mockAuthRepository.username,
+      ).thenAnswer((_) => Future<String?>.value(username));
+      when(
+        () => mockAuthRepository.password,
+      ).thenAnswer((_) => Future<String>.value(password));
+      when(
+        () => mockHackerNewsRepository.fetchUser(id: username),
+      ).thenAnswer((_) => Future<User>.value(tUser));
+      when(
+        () => mockAuthRepository.loggedIn,
+      ).thenAnswer((_) => Future<bool>.value(false));
     });
 
     blocTest<AuthBloc, AuthState>(
@@ -82,9 +81,7 @@ void main() {
         );
       },
       expect: () => <AuthState>[
-        const AuthState.init().copyWith(
-          status: Status.success,
-        ),
+        const AuthState.init().copyWith(status: Status.success),
       ],
       verify: (_) {
         verify(() => mockAuthRepository.loggedIn).called(2);
@@ -97,10 +94,8 @@ void main() {
       'sign in',
       build: () {
         when(
-          () => mockAuthRepository.login(
-            username: username,
-            password: password,
-          ),
+          () =>
+              mockAuthRepository.login(username: username, password: password),
         ).thenAnswer((_) => Future<bool>.value(true));
         return AuthBloc(
           authRepository: mockAuthRepository,
@@ -110,15 +105,8 @@ void main() {
         );
       },
       act: (AuthBloc bloc) => bloc
-        ..add(
-          AuthToggleAgreeToEULA(),
-        )
-        ..add(
-          AuthLogin(
-            username: username,
-            password: password,
-          ),
-        ),
+        ..add(AuthToggleAgreeToEULA())
+        ..add(AuthLogin(username: username, password: password)),
       expect: () => <AuthState>[
         const AuthState(
           user: User.empty(),
@@ -147,13 +135,12 @@ void main() {
       ],
       verify: (_) {
         verify(
-          () => mockAuthRepository.login(
-            username: username,
-            password: password,
-          ),
+          () =>
+              mockAuthRepository.login(username: username, password: password),
         ).called(1);
-        verify(() => mockHackerNewsRepository.fetchUser(id: username))
-            .called(1);
+        verify(
+          () => mockHackerNewsRepository.fetchUser(id: username),
+        ).called(1);
       },
     );
   });

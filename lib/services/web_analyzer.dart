@@ -27,10 +27,10 @@ class WebInfo extends InfoBase {
   WebInfo({this.title, this.icon, this.description, this.image});
 
   WebInfo.fromJson(Map<String, dynamic> json)
-      : title = json['title'] as String?,
-        icon = json['icon'] as String?,
-        description = json['description'] as String?,
-        image = json['image'] as String?;
+    : title = json['title'] as String?,
+      icon = json['icon'] as String?,
+      description = json['description'] as String?,
+      image = json['image'] as String?;
 
   final String? title;
   final String? icon;
@@ -56,9 +56,7 @@ class WebImageInfo extends InfoBase {
 
   @override
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'image': image,
-    };
+    return <String, dynamic>{'image': image};
   }
 }
 
@@ -70,8 +68,10 @@ class WebVideoInfo extends WebImageInfo {
 /// Web analyzer
 class WebAnalyzer {
   static final Map<String?, InfoBase> cacheMap = <String?, InfoBase>{};
-  static final RegExp _bodyReg =
-      RegExp(r'<body[^>]*>([\s\S]*?)<\/body>', caseSensitive: false);
+  static final RegExp _bodyReg = RegExp(
+    r'<body[^>]*>([\s\S]*?)<\/body>',
+    caseSensitive: false,
+  );
   static final RegExp _htmlReg = RegExp(
     r'(<head[^>]*>([\s\S]*?)<\/head>)|(<script[^>]*>([\s\S]*?)<\/script>)|(<style[^>]*>([\s\S]*?)<\/style>)|(<[^>]+>)|(<link[^>]*>([\s\S]*?)<\/link>)|(<[^>]+>)',
     caseSensitive: false,
@@ -81,8 +81,10 @@ class WebAnalyzer {
     caseSensitive: false,
     dotAll: true,
   );
-  static final RegExp _titleReg =
-      RegExp('(title|icon|description|image)', caseSensitive: false);
+  static final RegExp _titleReg = RegExp(
+    '(title|icon|description|image)',
+    caseSensitive: false,
+  );
   static final RegExp _lineReg = RegExp(r'[\n\r]|&nbsp;|&gt;');
   static final RegExp _spaceReg = RegExp(r'\s+');
   static const String _logPrefix = '[WebAnalyzer]';
@@ -130,10 +132,8 @@ ${info.toJson()}
     /// [2] If story doesn't have a url and text is not empty,
     /// just use story title and text.
     if (story.url.isEmpty && story.text.isNotEmpty) {
-      info = WebInfo(
-        title: story.title,
-        description: story.text,
-      ).._shouldRetry = false;
+      info = WebInfo(title: story.title, description: story.text)
+        .._shouldRetry = false;
 
       cacheMap[key] = info;
 
@@ -146,9 +146,9 @@ ${info.toJson()}
       Comment? comment;
 
       while (comment == null && index < story.kids.length) {
-        comment = await locator
-            .get<OfflineRepository>()
-            .getCachedComment(id: story.kids.elementAt(index));
+        comment = await locator.get<OfflineRepository>().getCachedComment(
+          id: story.kids.elementAt(index),
+        );
         index++;
       }
 
@@ -188,24 +188,22 @@ ${info.toJson()}
         cacheMap[key] = info;
 
         if (info is WebInfo) {
-          locator
-              .get<Logger>()
-              .d('$_logPrefix caching metadata using key $key for $story.');
+          locator.get<Logger>().d(
+            '$_logPrefix caching metadata using key $key for $story.',
+          );
           unawaited(
             locator.get<SembastRepository>().cacheMetadata(
-                  key: key,
-                  info: info,
-                ),
+              key: key,
+              info: info,
+            ),
           );
         }
       }
 
       return info;
     } catch (e) {
-      return WebInfo(
-        title: story.title,
-        description: story.text,
-      ).._shouldRetry = true;
+      return WebInfo(title: story.title, description: story.text)
+        .._shouldRetry = true;
     }
   }
 
@@ -234,10 +232,10 @@ ${info.toJson()}
     String? url,
   }) async {
     if (url == null) return null;
-    final List<dynamic>? res = await compute(
-      _fetchInfoFromUrl,
-      <dynamic>[url, multimedia],
-    );
+    final List<dynamic>? res = await compute(_fetchInfoFromUrl, <dynamic>[
+      url,
+      multimedia,
+    ]);
 
     late final bool shouldRetry;
     InfoBase? info;
@@ -270,10 +268,8 @@ ${info.toJson()}
         ).._shouldRetry = shouldRetry;
       }
     } else {
-      return WebInfo(
-        title: story.title,
-        description: description,
-      ).._shouldRetry = shouldRetry;
+      return WebInfo(title: story.title, description: description)
+        .._shouldRetry = shouldRetry;
     }
     return info;
   }
@@ -364,8 +360,9 @@ ${info.toJson()}
           'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9';
 
     try {
-      final IOStreamedResponse stream =
-          await client.send(request).timeout(AppDurations.tenSeconds);
+      final IOStreamedResponse stream = await client
+          .send(request)
+          .timeout(AppDurations.tenSeconds);
 
       if (stream.statusCode == HttpStatus.movedTemporarily ||
           stream.statusCode == HttpStatus.movedPermanently) {
@@ -387,8 +384,9 @@ ${info.toJson()}
       } else if (stream.statusCode == HttpStatus.ok) {
         res = await Response.fromStream(stream);
         if (uri.host == 'm.tb.cn') {
-          final RegExpMatch? match =
-              RegExp(r"var url = \'(.*)\'").firstMatch(res.body);
+          final RegExpMatch? match = RegExp(
+            r"var url = \'(.*)\'",
+          ).firstMatch(res.body);
           if (match != null) {
             final String? newUrl = match.group(1);
             if (newUrl != null) {
@@ -514,26 +512,30 @@ ${info.toJson()}
         !text.contains('You need to enable JavaScript');
 
     // 1. Try og:description first
-    final String? ogDesc =
-        _getMetaContent(document, 'property', 'og:description');
+    final String? ogDesc = _getMetaContent(
+      document,
+      'property',
+      'og:description',
+    );
     if (isUsable(ogDesc)) return ogDesc!.trim();
 
     // 2. Try twitter:description as additional fallback
     final String? twitterDesc =
         _getMetaContent(document, 'property', 'twitter:description') ??
-            _getMetaContent(document, 'name', 'twitter:description');
+        _getMetaContent(document, 'name', 'twitter:description');
     if (isUsable(twitterDesc)) return twitterDesc!.trim();
 
     // 3. Try standard meta description (case variations)
-    final String? metaDesc = _getMetaContent(document, 'name', 'description') ??
+    final String? metaDesc =
+        _getMetaContent(document, 'name', 'description') ??
         _getMetaContent(document, 'name', 'Description');
     if (isUsable(metaDesc)) return metaDesc!.trim();
 
     // 4. Try article:section or other semantic meta tags
     final String? articleDesc =
         _getMetaContent(document, 'property', 'article:section') ??
-            _getMetaContent(document, 'name', 'abstract') ??
-            _getMetaContent(document, 'name', 'summary');
+        _getMetaContent(document, 'name', 'abstract') ??
+        _getMetaContent(document, 'name', 'summary');
     if (isUsable(articleDesc)) return articleDesc!.trim();
 
     // 5. Try extracting from semantic HTML elements

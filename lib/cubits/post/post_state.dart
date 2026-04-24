@@ -8,13 +8,9 @@ class PostState extends Equatable {
   final Status status;
 
   PostState copyWith({Status? status}) {
-    return PostState(
-      status: status ?? this.status,
-    );
+    return PostState(status: status ?? this.status);
   }
 
   @override
-  List<Object?> get props => <Object?>[
-        status,
-      ];
+  List<Object?> get props => <Object?>[status];
 }

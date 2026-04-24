@@ -13,11 +13,10 @@ import 'package:hacki/utils/haptic_feedback_utils.dart';
 part 'preference_state.dart';
 
 class PreferenceCubit extends Cubit<PreferenceState> with Loggable {
-  PreferenceCubit({
-    PreferenceRepository? preferenceRepository,
-  })  : _preferenceRepository =
-            preferenceRepository ?? locator.get<PreferenceRepository>(),
-        super(PreferenceState.init()) {
+  PreferenceCubit({PreferenceRepository? preferenceRepository})
+    : _preferenceRepository =
+          preferenceRepository ?? locator.get<PreferenceRepository>(),
+      super(PreferenceState.init()) {
     unawaited(init());
   }
 
@@ -64,8 +63,9 @@ class PreferenceCubit extends Cubit<PreferenceState> with Loggable {
         final int? value = await _preferenceRepository.getInt(preference.key);
         return value as T?;
       case double:
-        final double? value =
-            await _preferenceRepository.getDouble(preference.key);
+        final double? value = await _preferenceRepository.getDouble(
+          preference.key,
+        );
         return value as T?;
       case bool:
         final bool? value = await _preferenceRepository.getBool(preference.key);
@@ -86,20 +86,14 @@ class PreferenceCubit extends Cubit<PreferenceState> with Loggable {
 
     switch (preference.val) {
       case int():
-        _preferenceRepository.setInt(
-          preference.key,
-          preference.val as int,
-        );
+        _preferenceRepository.setInt(preference.key, preference.val as int);
       case double():
         _preferenceRepository.setDouble(
           preference.key,
           preference.val as double,
         );
       case bool():
-        _preferenceRepository.setBool(
-          preference.key,
-          preference.val as bool,
-        );
+        _preferenceRepository.setBool(preference.key, preference.val as bool);
       default:
         throw UnimplementedError();
     }

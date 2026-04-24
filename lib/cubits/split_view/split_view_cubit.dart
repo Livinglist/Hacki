@@ -10,10 +10,9 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 part 'split_view_state.dart';
 
 class SplitViewCubit extends HydratedCubit<SplitViewState> with Loggable {
-  SplitViewCubit({
-    required PreferenceCubit preferenceCubit,
-  })  : _preferenceCubit = preferenceCubit,
-        super(const SplitViewState.init()) {
+  SplitViewCubit({required PreferenceCubit preferenceCubit})
+    : _preferenceCubit = preferenceCubit,
+      super(const SplitViewState.init()) {
     init();
   }
 
@@ -28,8 +27,8 @@ class SplitViewCubit extends HydratedCubit<SplitViewState> with Loggable {
         )
         .map((PreferenceState prefState) => prefState.isSplitViewEnabled)
         .listen((bool isSplitViewEnabled) {
-      isSplitViewEnabled ? enableSplitView() : disableSplitView();
-    });
+          isSplitViewEnabled ? enableSplitView() : disableSplitView();
+        });
   }
 
   void updateItemScreenArgs(ItemScreenArgs args) {
@@ -41,18 +40,18 @@ class SplitViewCubit extends HydratedCubit<SplitViewState> with Loggable {
   void disableSplitView() => emit(state.copyWith(enabled: false));
 
   void zoom() => emit(
-        state.copyWith(
-          expanded: !state.expanded,
-          resizingAnimationDuration: AppDurations.ms300,
-        ),
-      );
+    state.copyWith(
+      expanded: !state.expanded,
+      resizingAnimationDuration: AppDurations.ms300,
+    ),
+  );
 
   void updateSubmissionPanelWidth(double width) => emit(
-        state.copyWith(
-          submissionPanelWidth: width,
-          resizingAnimationDuration: Duration.zero,
-        ),
-      );
+    state.copyWith(
+      submissionPanelWidth: width,
+      resizingAnimationDuration: Duration.zero,
+    ),
+  );
 
   @override
   String get logIdentifier => 'SplitViewCubit';

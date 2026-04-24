@@ -15,15 +15,12 @@ class CustomLogFilter extends LogFilter {
       return true;
     }
 
-    assert(
-      () {
-        if (event.level.index >= level!.index) {
-          shouldLog = true;
-        }
-        return true;
-      }(),
-      '',
-    );
+    assert(() {
+      if (event.level.index >= level!.index) {
+        shouldLog = true;
+      }
+      return true;
+    }(), '');
 
     return shouldLog;
   }

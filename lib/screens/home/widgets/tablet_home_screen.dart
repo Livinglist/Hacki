@@ -8,10 +8,7 @@ import 'package:hacki/styles/styles.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 class TabletHomeScreen extends StatelessWidget {
-  const TabletHomeScreen({
-    required this.homeScreen,
-    super.key,
-  });
+  const TabletHomeScreen({required this.homeScreen, super.key});
 
   final Widget homeScreen;
   static const double _dragPanelWidth = Dimens.pt2;
@@ -102,10 +99,12 @@ class TabletHomeScreen extends StatelessWidget {
                     ),
                   ),
                   Positioned(
-                    left: submissionPanelWidth +
+                    left:
+                        submissionPanelWidth +
                         _dragPanelWidth / 2 -
                         _dragDotWidth / 2,
-                    top: (MediaQuery.of(context).size.height - _dragDotHeight) /
+                    top:
+                        (MediaQuery.of(context).size.height - _dragDotHeight) /
                         2,
                     height: _dragDotHeight,
                     width: _dragDotWidth,
@@ -121,9 +120,9 @@ class TabletHomeScreen extends StatelessWidget {
                         child: SizedBox(
                           child: CustomPaint(
                             painter: SpindlePainter(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primaryContainer,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.primaryContainer,
                             ),
                             child: Center(
                               child: Padding(
@@ -132,9 +131,9 @@ class TabletHomeScreen extends StatelessWidget {
                                 ),
                                 child: FaIcon(
                                   FontAwesomeIcons.gripLinesVertical,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onPrimaryContainer,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimaryContainer,
                                   size: TextDimens.pt18,
                                 ),
                               ),

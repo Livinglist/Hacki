@@ -34,9 +34,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({
-    super.key,
-  });
+  const SettingsScreen({super.key});
 
   static const String routeName = 'settings';
 
@@ -58,9 +56,7 @@ class _SettingsScreenState extends State<SettingsScreen> with ItemActionMixin {
 }
 
 class SettingsView extends StatefulWidget {
-  const SettingsView({
-    super.key,
-  });
+  const SettingsView({super.key});
 
   @override
   State<SettingsView> createState() => _SettingsViewState();
@@ -80,16 +76,13 @@ class _SettingsViewState extends State<SettingsView>
               ListTile(
                 leading: Icon(
                   Icons.person,
-                  color:
-                      isLoggedIn ? Theme.of(context).colorScheme.primary : null,
+                  color: isLoggedIn
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
                 ),
-                title: Text(
-                  isLoggedIn ? 'Log Out' : 'Log In',
-                ),
+                title: Text(isLoggedIn ? 'Log Out' : 'Log In'),
                 subtitle: isLoggedIn
-                    ? Text(
-                        context.read<AuthBloc>().state.username,
-                      )
+                    ? Text(context.read<AuthBloc>().state.username)
                     : null,
                 onTap: () {
                   if (isLoggedIn) {
@@ -101,17 +94,13 @@ class _SettingsViewState extends State<SettingsView>
               ),
               const EnterOfflineModeListTile(),
               const OfflineListTile(),
-              const SizedBox(
-                height: Dimens.pt8,
-              ),
+              const SizedBox(height: Dimens.pt8),
               OverflowBar(
                 alignment: MainAxisAlignment.spaceBetween,
                 overflowSpacing: Dimens.pt12,
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.only(
-                      left: Dimens.pt16,
-                    ),
+                    padding: const EdgeInsets.only(left: Dimens.pt16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
@@ -130,10 +119,8 @@ class _SettingsViewState extends State<SettingsView>
                             if (fetchMode != null) {
                               HapticFeedbackUtils.selection();
                               context.read<PreferenceCubit>().update(
-                                    FetchModePreference(
-                                      val: fetchMode.index,
-                                    ),
-                                  );
+                                FetchModePreference(val: fetchMode.index),
+                              );
                             }
                           },
                         ),
@@ -155,19 +142,17 @@ class _SettingsViewState extends State<SettingsView>
                               .map(
                                 (CommentsOrder val) =>
                                     DropdownMenuEntry<CommentsOrder>(
-                                  value: val,
-                                  label: val.description,
-                                ),
+                                      value: val,
+                                      label: val.description,
+                                    ),
                               )
                               .toList(),
                           onSelected: (CommentsOrder? order) {
                             if (order != null) {
                               HapticFeedbackUtils.selection();
                               context.read<PreferenceCubit>().update(
-                                    CommentsOrderPreference(
-                                      val: order.index,
-                                    ),
-                                  );
+                                CommentsOrderPreference(val: order.index),
+                              );
                             }
                           },
                         ),
@@ -176,42 +161,34 @@ class _SettingsViewState extends State<SettingsView>
                   ),
                 ],
               ),
-              const SizedBox(
-                height: Dimens.pt12,
-              ),
+              const SizedBox(height: Dimens.pt12),
               OverflowBar(
                 alignment: MainAxisAlignment.spaceBetween,
                 overflowSpacing: Dimens.pt12,
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.only(
-                      left: Dimens.pt16,
-                    ),
+                    padding: const EdgeInsets.only(left: Dimens.pt16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        const Text(
-                          'Date time display of comments',
-                        ),
+                        const Text('Date time display of comments'),
                         DropdownMenu<DateDisplayFormat>(
                           initialSelection: preferenceState.displayDateFormat,
                           dropdownMenuEntries: DateDisplayFormat.values
                               .map(
                                 (DateDisplayFormat val) =>
                                     DropdownMenuEntry<DateDisplayFormat>(
-                                  value: val,
-                                  label: val.description,
-                                ),
+                                      value: val,
+                                      label: val.description,
+                                    ),
                               )
                               .toList(),
                           onSelected: (DateDisplayFormat? order) {
                             if (order != null) {
                               HapticFeedbackUtils.selection();
                               context.read<PreferenceCubit>().update(
-                                    DateFormatPreference(
-                                      val: order.index,
-                                    ),
-                                  );
+                                DateFormatPreference(val: order.index),
+                              );
                               DateDisplayFormat.clearCache();
                             }
                           },
@@ -227,37 +204,32 @@ class _SettingsViewState extends State<SettingsView>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        const Text(
-                          'Data source',
-                        ),
+                        const Text('Data source'),
                         BlocSelector<StoriesBloc, StoriesState, bool>(
                           selector: (StoriesState state) =>
                               state.statusByType.values.any(
-                            (Status status) => status == Status.inProgress,
-                          ),
-                          builder: (
-                            BuildContext context,
-                            bool isInProgress,
-                          ) {
+                                (Status status) => status == Status.inProgress,
+                              ),
+                          builder: (BuildContext context, bool isInProgress) {
                             return DropdownMenu<HackerNewsDataSource>(
                               initialSelection: preferenceState.dataSource,
                               dropdownMenuEntries: HackerNewsDataSource.values
                                   .map(
                                     (HackerNewsDataSource val) =>
                                         DropdownMenuEntry<HackerNewsDataSource>(
-                                      value: val,
-                                      label: val.description,
-                                    ),
+                                          value: val,
+                                          label: val.description,
+                                        ),
                                   )
                                   .toList(),
                               onSelected: (HackerNewsDataSource? source) {
                                 if (source != null) {
                                   HapticFeedbackUtils.selection();
                                   context.read<PreferenceCubit>().update(
-                                        HackerNewsDataSourcePreference(
-                                          val: source.index,
-                                        ),
-                                      );
+                                    HackerNewsDataSourcePreference(
+                                      val: source.index,
+                                    ),
+                                  );
                                 }
                               },
                             );
@@ -268,9 +240,7 @@ class _SettingsViewState extends State<SettingsView>
                   ),
                 ],
               ),
-              const SizedBox(
-                height: Dimens.pt12,
-              ),
+              const SizedBox(height: Dimens.pt12),
               const TabBarSettings(),
               const TextScaleFactorSettings(),
               const Divider(),
@@ -287,10 +257,7 @@ class _SettingsViewState extends State<SettingsView>
                 isImageLeftAligned: preferenceState.isPreviewImageLeftAligned,
                 index: 0,
                 story: Story.placeholder(),
-                onTap: () => LinkUtils.launch(
-                  Constants.guidelineLink,
-                  context,
-                ),
+                onTap: () => LinkUtils.launch(Constants.guidelineLink, context),
               ),
               const Divider(),
               for (final Preference<dynamic> preference
@@ -303,15 +270,11 @@ class _SettingsViewState extends State<SettingsView>
                       direction: Axis.horizontal,
                       children: <Widget>[
                         SizedBoxes.pt12,
-                        const Flexible(
-                          child: Divider(),
-                        ),
+                        const Flexible(child: Divider()),
                         SizedBoxes.pt12,
                         Text(preference.label),
                         SizedBoxes.pt12,
-                        const Flexible(
-                          child: Divider(),
-                        ),
+                        const Flexible(child: Divider()),
                         SizedBoxes.pt12,
                       ],
                     ),
@@ -319,33 +282,31 @@ class _SettingsViewState extends State<SettingsView>
                 else if (preference is PreviewImageAlignmentPreference)
                   FadeIn(
                     child: ListTile(
-                      enabled: preference.dependencies
-                          .satisfy(preferenceState.preferences),
+                      enabled: preference.dependencies.satisfy(
+                        preferenceState.preferences,
+                      ),
                       title: Text(preference.title),
                       trailing: SegmentedButton<bool>(
                         showSelectedIcon: false,
                         segments: const <ButtonSegment<bool>>[
-                          ButtonSegment<bool>(
-                            value: true,
-                            label: Text('Left'),
-                          ),
+                          ButtonSegment<bool>(value: true, label: Text('Left')),
                           ButtonSegment<bool>(
                             value: false,
                             label: Text('Right'),
                           ),
                         ],
                         selected: <bool>{
-                          preferenceState.isOn(
-                            preference as BooleanPreference,
-                          ),
+                          preferenceState.isOn(preference as BooleanPreference),
                         },
-                        onSelectionChanged: preference.dependencies
-                                .satisfy(preferenceState.preferences)
+                        onSelectionChanged:
+                            preference.dependencies.satisfy(
+                              preferenceState.preferences,
+                            )
                             ? (Set<bool> val) {
                                 HapticFeedbackUtils.light();
                                 context.read<PreferenceCubit>().update(
-                                      preference.copyWith(val: val.single),
-                                    );
+                                  preference.copyWith(val: val.single),
+                                );
                               }
                             : null,
                       ),
@@ -361,20 +322,22 @@ class _SettingsViewState extends State<SettingsView>
                     value: preferenceState.isOn(
                       preference as BooleanPreference,
                     ),
-                    onChanged: preference.dependencies
-                            .satisfy(preferenceState.preferences)
+                    onChanged:
+                        preference.dependencies.satisfy(
+                          preferenceState.preferences,
+                        )
                         ? (bool val) {
                             HapticFeedbackUtils.light();
 
-                            context
-                                .read<PreferenceCubit>()
-                                .update(preference.copyWith(val: val));
+                            context.read<PreferenceCubit>().update(
+                              preference.copyWith(val: val),
+                            );
 
                             if (preference is MarkReadStoriesModePreference &&
                                 val == false) {
-                              context
-                                  .read<StoriesBloc>()
-                                  .add(ClearAllReadStories());
+                              context.read<StoriesBloc>().add(
+                                ClearAllReadStories(),
+                              );
                             }
                           }
                         : null,
@@ -393,26 +356,24 @@ class _SettingsViewState extends State<SettingsView>
                         if (storyMarkingMode != null) {
                           HapticFeedbackUtils.selection();
                           context.read<PreferenceCubit>().update(
-                                StoryMarkingModePreference(
-                                  val: storyMarkingMode.index,
-                                ),
-                              );
+                            StoryMarkingModePreference(
+                              val: storyMarkingMode.index,
+                            ),
+                          );
                         }
                       },
                       dropdownMenuEntries: StoryMarkingMode.values
                           .map(
                             (StoryMarkingMode val) =>
                                 DropdownMenuEntry<StoryMarkingMode>(
-                              value: val,
-                              label: val.label,
-                            ),
+                                  value: val,
+                                  label: val.label,
+                                ),
                           )
                           .toList(),
                       inputDecorationTheme: const InputDecorationTheme(
                         disabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Palette.grey,
-                          ),
+                          borderSide: BorderSide(color: Palette.grey),
                         ),
                       ),
                       expandedInsets: EdgeInsets.zero,
@@ -424,52 +385,33 @@ class _SettingsViewState extends State<SettingsView>
                 if (preference is DividerPreference) const Divider(),
               ],
               ListTile(
-                title: const Text(
-                  'Accent Color',
-                ),
+                title: const Text('Accent Color'),
                 onTap: showColorPicker,
               ),
+              ListTile(title: const Text('Font'), onTap: showFontSettingDialog),
               ListTile(
-                title: const Text(
-                  'Font',
-                ),
-                onTap: showFontSettingDialog,
-              ),
-              ListTile(
-                title: const Text(
-                  'Theme',
-                ),
+                title: const Text('Theme'),
                 onTap: showThemeSettingDialog,
               ),
               const Divider(),
               ListTile(
-                title: const Text(
-                  'Filter Keywords',
-                ),
+                title: const Text('Filter Keywords'),
                 onTap: onFilterKeywordsTapped,
               ),
               ListTile(
-                title: const Text(
-                  'Export Favorites',
-                ),
+                title: const Text('Export Favorites'),
                 onTap: onExportFavoritesTapped,
               ),
               ListTile(
-                title: const Text(
-                  'Import Favorites',
-                ),
+                title: const Text('Import Favorites'),
                 onTap: () => onImportFavoritesTapped(context.read<FavCubit>()),
               ),
               ListTile(
-                title: const Text(
-                  'Clear Favorites',
-                ),
+                title: const Text('Clear Favorites'),
                 onTap: showClearFavoritesDialog,
               ),
               ListTile(
-                title: const Text(
-                  'Clear Cache',
-                ),
+                title: const Text('Clear Cache'),
                 onTap: showClearCacheDialog,
               ),
               ListTile(
@@ -478,31 +420,26 @@ class _SettingsViewState extends State<SettingsView>
               ),
               if (preferenceState.isDevModeEnabled) ...<Widget>[
                 ListTile(
-                  title: const Text(
-                    'Logs',
-                  ),
+                  title: const Text('Logs'),
                   onTap: () {
                     context.go(Paths.logs.landing);
                   },
                 ),
                 ListTile(
-                  title: const Text(
-                    'Reset Feature Discovery',
-                  ),
+                  title: const Text('Reset Feature Discovery'),
                   onTap: () {
                     HapticFeedbackUtils.light();
                     locator.get<PreferenceRepository>().resetTourStatus();
                     FeatureDiscovery.clearPreferences(
                       context,
-                      DiscoverableFeature.values
-                          .map((DiscoverableFeature f) => f.featureId),
+                      DiscoverableFeature.values.map(
+                        (DiscoverableFeature f) => f.featureId,
+                      ),
                     );
                   },
                 ),
                 ListTile(
-                  title: const Text(
-                    'Reset Tips',
-                  ),
+                  title: const Text('Reset Tips'),
                   onTap: () {
                     HapticFeedbackUtils.light();
                     context.read<TipsCubit>().reset();
@@ -512,10 +449,7 @@ class _SettingsViewState extends State<SettingsView>
               const Divider(),
               ListTile(
                 title: const Text('Feature Request'),
-                onTap: () => LinkUtils.launch(
-                  Constants.githubLink,
-                  context,
-                ),
+                onTap: () => LinkUtils.launch(Constants.githubLink, context),
               ),
               ListTile(
                 title: const Text('Rate Hacki : )'),
@@ -530,14 +464,13 @@ class _SettingsViewState extends State<SettingsView>
               ),
               ListTile(
                 title: const Text('About'),
-                subtitle: Text(
-                  Constants.magicWord,
-                ),
+                subtitle: Text(Constants.magicWord),
                 onTap: showAboutHackiDialog,
                 onLongPress: () {
                   context.go(HomeScreen.routeName);
-                  final DevMode updatedDevMode =
-                      DevMode(val: !preferenceState.isDevModeEnabled);
+                  final DevMode updatedDevMode = DevMode(
+                    val: !preferenceState.isDevModeEnabled,
+                  );
                   context.read<PreferenceCubit>().update(updatedDevMode);
                   HapticFeedbackUtils.heavy();
                   if (updatedDevMode.val) {
@@ -547,9 +480,7 @@ class _SettingsViewState extends State<SettingsView>
                   }
                 },
               ),
-              const SizedBox(
-                height: Dimens.pt200,
-              ),
+              const SizedBox(height: Dimens.pt200),
             ],
           ),
         );
@@ -567,16 +498,12 @@ class _SettingsViewState extends State<SettingsView>
         return AlertDialog(
           content: Text(
             'Log out as ${authBloc.state.username}?',
-            style: const TextStyle(
-              fontSize: TextDimens.pt16,
-            ),
+            style: const TextStyle(fontSize: TextDimens.pt16),
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () => context.pop(),
-              child: const Text(
-                'Cancel',
-              ),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
@@ -584,9 +511,7 @@ class _SettingsViewState extends State<SettingsView>
                 context.read<AuthBloc>().add(AuthLogout());
                 context.read<HistoryCubit>().reset();
               },
-              child: const Text(
-                'Log out',
-              ),
+              child: const Text('Log out'),
             ),
           ],
         );
@@ -617,9 +542,9 @@ class _SettingsViewState extends State<SettingsView>
                 groupValue: state.font,
                 onChanged: (Font? val) {
                   if (val != null) {
-                    context
-                        .read<PreferenceCubit>()
-                        .update(FontPreference(val: val.index));
+                    context.read<PreferenceCubit>().update(
+                      FontPreference(val: val.index),
+                    );
                   }
                 },
                 child: Column(
@@ -712,10 +637,10 @@ class _SettingsViewState extends State<SettingsView>
             onMainColorChange: (ColorSwatch<dynamic>? color) {
               ColorUtils.levelToRainbowBorderColors.clear();
               context.read<PreferenceCubit>().update(
-                    AppColorPreference(
-                      val: materialColors.indexOf(color ?? Palette.deepOrange),
-                    ),
-                  );
+                AppColorPreference(
+                  val: materialColors.indexOf(color ?? Palette.deepOrange),
+                ),
+              );
               context.pop();
             },
             onBack: context.pop,
@@ -731,15 +656,11 @@ class _SettingsViewState extends State<SettingsView>
       builder: (_) {
         return AlertDialog(
           title: const Text('Restore default settings?'),
-          content: const Text(
-            'Your existing settings will be wiped out.',
-          ),
+          content: const Text('Your existing settings will be wiped out.'),
           actions: <Widget>[
             TextButton(
               onPressed: () => context.pop(),
-              child: const Text(
-                'Cancel',
-              ),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
@@ -750,12 +671,7 @@ class _SettingsViewState extends State<SettingsView>
                 HapticFeedbackUtils.success();
                 showSnackBar(content: 'Default settings restored.');
               },
-              child: const Text(
-                'Yes',
-                style: TextStyle(
-                  color: Palette.red,
-                ),
-              ),
+              child: const Text('Yes', style: TextStyle(color: Palette.red)),
             ),
           ],
         );
@@ -769,15 +685,11 @@ class _SettingsViewState extends State<SettingsView>
       builder: (_) {
         return AlertDialog(
           title: const Text('Clear cache?'),
-          content: const Text(
-            'Clear all cached images, stories and comments.',
-          ),
+          content: const Text('Clear all cached images, stories and comments.'),
           actions: <Widget>[
             TextButton(
               onPressed: () => context.pop(),
-              child: const Text(
-                'Cancel',
-              ),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
@@ -795,12 +707,7 @@ class _SettingsViewState extends State<SettingsView>
                 HapticFeedbackUtils.success();
                 showSnackBar(content: 'Cache cleared!');
               },
-              child: const Text(
-                'Yes',
-                style: TextStyle(
-                  color: Palette.red,
-                ),
-              ),
+              child: const Text('Yes', style: TextStyle(color: Palette.red)),
             ),
           ],
         );
@@ -818,11 +725,7 @@ class _SettingsViewState extends State<SettingsView>
         applicationName: 'Hacki',
         applicationVersion: 'v$version',
         applicationIcon: ClipRRect(
-          borderRadius: const BorderRadius.all(
-            Radius.circular(
-              Dimens.pt12,
-            ),
-          ),
+          borderRadius: const BorderRadius.all(Radius.circular(Dimens.pt12)),
           child: Image.asset(
             Constants.hackiIconPath,
             height: Dimens.pt50,
@@ -831,35 +734,21 @@ class _SettingsViewState extends State<SettingsView>
         ),
         children: <Widget>[
           ElevatedButton(
-            onPressed: () => LinkUtils.launch(
-              Constants.portfolioLink,
-              context,
-            ),
+            onPressed: () => LinkUtils.launch(Constants.portfolioLink, context),
             child: const Row(
               children: <Widget>[
-                FaIcon(
-                  FontAwesomeIcons.addressCard,
-                ),
-                SizedBox(
-                  width: Dimens.pt12,
-                ),
+                FaIcon(FontAwesomeIcons.addressCard),
+                SizedBox(width: Dimens.pt12),
                 Text('Developer'),
               ],
             ),
           ),
           ElevatedButton(
-            onPressed: () => LinkUtils.launch(
-              Constants.githubLink,
-              context,
-            ),
+            onPressed: () => LinkUtils.launch(Constants.githubLink, context),
             child: const Row(
               children: <Widget>[
-                FaIcon(
-                  FontAwesomeIcons.github,
-                ),
-                SizedBox(
-                  width: Dimens.pt12,
-                ),
+                FaIcon(FontAwesomeIcons.github),
+                SizedBox(width: Dimens.pt12),
                 Text('Source code'),
               ],
             ),
@@ -873,46 +762,29 @@ class _SettingsViewState extends State<SettingsView>
             ),
             child: const Row(
               children: <Widget>[
-                Icon(
-                  Icons.thumb_up,
-                ),
-                SizedBox(
-                  width: Dimens.pt12,
-                ),
+                Icon(Icons.thumb_up),
+                SizedBox(width: Dimens.pt12),
                 Text('Like this app?'),
               ],
             ),
           ),
           ElevatedButton(
-            onPressed: () => LinkUtils.launch(
-              Constants.spotifyLink,
-              context,
-            ),
+            onPressed: () => LinkUtils.launch(Constants.spotifyLink, context),
             child: const Row(
               children: <Widget>[
-                Icon(
-                  FeatherIcons.music,
-                ),
-                SizedBox(
-                  width: Dimens.pt12,
-                ),
+                Icon(FeatherIcons.music),
+                SizedBox(width: Dimens.pt12),
                 Text('Music I listen to'),
               ],
             ),
           ),
           ElevatedButton(
-            onPressed: () => LinkUtils.launch(
-              Constants.privacyPolicyLink,
-              context,
-            ),
+            onPressed: () =>
+                LinkUtils.launch(Constants.privacyPolicyLink, context),
             child: const Row(
               children: <Widget>[
-                Icon(
-                  Icons.privacy_tip_outlined,
-                ),
-                SizedBox(
-                  width: Dimens.pt12,
-                ),
+                Icon(Icons.privacy_tip_outlined),
+                SizedBox(width: Dimens.pt12),
                 Text('Privacy policy'),
               ],
             ),
@@ -921,12 +793,8 @@ class _SettingsViewState extends State<SettingsView>
             onPressed: onReportIssueTapped,
             child: const Row(
               children: <Widget>[
-                Icon(
-                  Icons.bug_report_outlined,
-                ),
-                SizedBox(
-                  width: Dimens.pt12,
-                ),
+                Icon(Icons.bug_report_outlined),
+                SizedBox(width: Dimens.pt12),
                 Text('Report issue'),
               ],
             ),
@@ -941,20 +809,14 @@ class _SettingsViewState extends State<SettingsView>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          actionsPadding: const EdgeInsets.all(
-            Dimens.pt16,
-          ),
+          actionsPadding: const EdgeInsets.all(Dimens.pt16),
           actions: <Widget>[
             ElevatedButton(
               onPressed: onSendEmailTapped,
               child: const Row(
                 children: <Widget>[
-                  Icon(
-                    Icons.email,
-                  ),
-                  SizedBox(
-                    width: Dimens.pt12,
-                  ),
+                  Icon(Icons.email),
+                  SizedBox(width: Dimens.pt12),
                   Text('Email'),
                 ],
               ),
@@ -963,12 +825,8 @@ class _SettingsViewState extends State<SettingsView>
               onPressed: () => onGithubTapped(context.rect),
               child: const Row(
                 children: <Widget>[
-                  Icon(
-                    Icons.bug_report_outlined,
-                  ),
-                  SizedBox(
-                    width: Dimens.pt12,
-                  ),
+                  Icon(Icons.bug_report_outlined),
+                  SizedBox(width: Dimens.pt12),
                   Text('GitHub'),
                 ],
               ),
@@ -1026,9 +884,7 @@ class _SettingsViewState extends State<SettingsView>
         return AlertDialog(
           title: const Text(
             'Filter Keywords',
-            style: TextStyle(
-              fontSize: TextDimens.pt16,
-            ),
+            style: TextStyle(fontSize: TextDimens.pt16),
           ),
           content: BlocBuilder<FilterCubit, FilterState>(
             builder: (BuildContext context, FilterState state) {
@@ -1063,15 +919,11 @@ class _SettingsViewState extends State<SettingsView>
           actions: <Widget>[
             TextButton(
               onPressed: onAddKeywordTapped,
-              child: const Text(
-                'Add keyword',
-              ),
+              child: const Text('Add keyword'),
             ),
             TextButton(
               onPressed: () => context.pop(),
-              child: const Text(
-                'Okay',
-              ),
+              child: const Text('Okay'),
             ),
           ],
         );
@@ -1085,16 +937,11 @@ class _SettingsViewState extends State<SettingsView>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          content: TextField(
-            autofocus: true,
-            controller: controller,
-          ),
+          content: TextField(autofocus: true, controller: controller),
           actions: <Widget>[
             TextButton(
               onPressed: () => context.pop(),
-              child: const Text(
-                'Cancel',
-              ),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
@@ -1103,9 +950,7 @@ class _SettingsViewState extends State<SettingsView>
                 context.read<FilterCubit>().addKeyword(keyword.toLowerCase());
                 context.pop();
               },
-              child: const Text(
-                'Confirm',
-              ),
+              child: const Text('Confirm'),
             ),
           ],
         );
@@ -1183,8 +1028,11 @@ class _SettingsViewState extends State<SettingsView>
     }
 
     // Identical parsing to QR path, one integer ID per line
-    final List<int>? ids =
-        data?.split('\n').map(int.tryParse).whereType<int>().toList();
+    final List<int>? ids = data
+        ?.split('\n')
+        .map(int.tryParse)
+        .whereType<int>()
+        .toList();
     if (ids == null || ids.isEmpty) return;
     for (final int id in ids) {
       await favCubit.addFav(id);
@@ -1205,14 +1053,12 @@ class _SettingsViewState extends State<SettingsView>
 
     switch (destination) {
       case ExportDestination.qrCode:
-        await router.push(
-          Paths.qrCode.viewer,
-          extra: allFavoritesStr,
-        );
+        await router.push(Paths.qrCode.viewer, extra: allFavoritesStr);
       case ExportDestination.clipBoard:
         try {
-          await Clipboard.setData(ClipboardData(text: allFavoritesStr))
-              .whenComplete(HapticFeedbackUtils.selection);
+          await Clipboard.setData(
+            ClipboardData(text: allFavoritesStr),
+          ).whenComplete(HapticFeedbackUtils.selection);
           showSnackBar(
             content: 'Ids of favorites have been copied to clipboard.',
           );
@@ -1234,9 +1080,7 @@ class _SettingsViewState extends State<SettingsView>
           actions: <Widget>[
             TextButton(
               onPressed: () => context.pop(),
-              child: const Text(
-                'Cancel',
-              ),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
@@ -1250,9 +1094,7 @@ class _SettingsViewState extends State<SettingsView>
               },
               child: const Text(
                 'Confirm',
-                style: TextStyle(
-                  color: Palette.red,
-                ),
+                style: TextStyle(color: Palette.red),
               ),
             ),
           ],

@@ -5,10 +5,7 @@ enum StoryType {
   ask('askstories', 'ask'),
   show('showstories', 'show');
 
-  const StoryType(
-    this.apiPathParam,
-    this.webPathParam,
-  );
+  const StoryType(this.apiPathParam, this.webPathParam);
 
   /// The path param used in the official Hacker News API.
   /// e.g. https://hacker-news.firebaseio.com/v0/{apiPathParam}.json

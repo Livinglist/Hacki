@@ -1,23 +1,19 @@
 part of 'preference_cubit.dart';
 
 class PreferenceState extends Equatable {
-  const PreferenceState({
-    required this.preferences,
-    required this.status,
-  });
+  const PreferenceState({required this.preferences, required this.status});
 
   PreferenceState.init()
-      : preferences = <Preference<dynamic>>{...Preference.allPreferences},
-        status = Status.idle;
+    : preferences = <Preference<dynamic>>{...Preference.allPreferences},
+      status = Status.idle;
 
   final Set<Preference<dynamic>> preferences;
   final Status status;
 
   Iterable<Preference<dynamic>> get settingsPreferences => preferences.where(
-        (Preference<dynamic> p) =>
-            p.isDisplayable &&
-            (p is BooleanPreference || p is DividerPlaceholder),
-      );
+    (Preference<dynamic> p) =>
+        p.isDisplayable && (p is BooleanPreference || p is DividerPlaceholder),
+  );
 
   PreferenceState copyWith({
     Set<Preference<dynamic>>? preferences,
@@ -55,9 +51,7 @@ class PreferenceState extends Equatable {
   bool _isOn<T extends BooleanPreference>() {
     return preferences
         .whereType<BooleanPreference>()
-        .singleWhere(
-          (BooleanPreference e) => e.runtimeType == T,
-        )
+        .singleWhere((BooleanPreference e) => e.runtimeType == T)
         .val;
   }
 
@@ -130,8 +124,9 @@ class PreferenceState extends Equatable {
 
   MaterialColor get appColor {
     return materialColors.elementAt(
-      preferences.singleWhereType<AppColorPreference>().val,
-    ) as MaterialColor;
+          preferences.singleWhereType<AppColorPreference>().val,
+        )
+        as MaterialColor;
   }
 
   HackerNewsDataSource get dataSource {
@@ -141,8 +136,10 @@ class PreferenceState extends Equatable {
   }
 
   List<StoryType> get tabs {
-    final String result =
-        preferences.singleWhereType<TabOrderPreference>().val.toString();
+    final String result = preferences
+        .singleWhereType<TabOrderPreference>()
+        .val
+        .toString();
     final List<int> tabIndexes = List<int>.generate(
       result.length,
       (int index) => result.codeUnitAt(index) - 48,
@@ -157,27 +154,32 @@ class PreferenceState extends Equatable {
     return tabs;
   }
 
-  StoryMarkingMode get storyMarkingMode => StoryMarkingMode.values
-      .elementAt(preferences.singleWhereType<StoryMarkingModePreference>().val);
+  StoryMarkingMode get storyMarkingMode => StoryMarkingMode.values.elementAt(
+    preferences.singleWhereType<StoryMarkingModePreference>().val,
+  );
 
-  FetchMode get fetchMode => FetchMode.values
-      .elementAt(preferences.singleWhereType<FetchModePreference>().val);
+  FetchMode get fetchMode => FetchMode.values.elementAt(
+    preferences.singleWhereType<FetchModePreference>().val,
+  );
 
-  CommentsOrder get order => CommentsOrder.values
-      .elementAt(preferences.singleWhereType<CommentsOrderPreference>().val);
+  CommentsOrder get order => CommentsOrder.values.elementAt(
+    preferences.singleWhereType<CommentsOrderPreference>().val,
+  );
 
-  FontSize get fontSize => FontSize.values
-      .elementAt(preferences.singleWhereType<FontSizePreference>().val);
+  FontSize get fontSize => FontSize.values.elementAt(
+    preferences.singleWhereType<FontSizePreference>().val,
+  );
 
   Font get font =>
       Font.values.elementAt(preferences.singleWhereType<FontPreference>().val);
 
-  DateDisplayFormat get displayDateFormat => DateDisplayFormat.values
-      .elementAt(preferences.singleWhereType<DateFormatPreference>().val);
+  DateDisplayFormat get displayDateFormat => DateDisplayFormat.values.elementAt(
+    preferences.singleWhereType<DateFormatPreference>().val,
+  );
 
   @override
   List<Object?> get props => <Object?>[
-        ...preferences.map<dynamic>((Preference<dynamic> e) => e.val),
-        status,
-      ];
+    ...preferences.map<dynamic>((Preference<dynamic> e) => e.val),
+    status,
+  ];
 }

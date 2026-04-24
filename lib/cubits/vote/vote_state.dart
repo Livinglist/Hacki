@@ -1,9 +1,6 @@
 part of 'vote_cubit.dart';
 
-enum Vote {
-  up,
-  down,
-}
+enum Vote { up, down }
 
 enum VoteStatus {
   idle,
@@ -23,8 +20,8 @@ class VoteState extends Equatable {
   });
 
   const VoteState.init({required this.item})
-      : vote = null,
-        status = VoteStatus.idle;
+    : vote = null,
+      status = VoteStatus.idle;
 
   /// Null means user has not voted,
   /// True means user voted up,
@@ -36,11 +33,7 @@ class VoteState extends Equatable {
 
   final VoteStatus status;
 
-  VoteState copyWith({
-    Vote? vote,
-    Item? item,
-    VoteStatus? status,
-  }) {
+  VoteState copyWith({Vote? vote, Item? item, VoteStatus? status}) {
     return VoteState(
       vote: vote ?? this.vote,
       item: item ?? this.item,
@@ -48,10 +41,7 @@ class VoteState extends Equatable {
     );
   }
 
-  VoteState copyWithVoteRemoved({
-    Item? item,
-    VoteStatus? status,
-  }) {
+  VoteState copyWithVoteRemoved({Item? item, VoteStatus? status}) {
     return VoteState(
       vote: null,
       item: item ?? this.item,
@@ -60,9 +50,5 @@ class VoteState extends Equatable {
   }
 
   @override
-  List<Object?> get props => <Object?>[
-        vote,
-        item,
-        status,
-      ];
+  List<Object?> get props => <Object?>[vote, item, status];
 }

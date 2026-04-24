@@ -8,9 +8,9 @@ class PinState extends Equatable {
   });
 
   PinState.init()
-      : pinnedStoriesIds = <int>[],
-        pinnedStories = <Story>[],
-        status = Status.idle;
+    : pinnedStoriesIds = <int>[],
+      pinnedStories = <Story>[],
+      status = Status.idle;
 
   final List<int> pinnedStoriesIds;
   final List<Story> pinnedStories;
@@ -29,9 +29,5 @@ class PinState extends Equatable {
   }
 
   @override
-  List<Object?> get props => <Object?>[
-        pinnedStoriesIds,
-        pinnedStories,
-        status,
-      ];
+  List<Object?> get props => <Object?>[pinnedStoriesIds, pinnedStories, status];
 }

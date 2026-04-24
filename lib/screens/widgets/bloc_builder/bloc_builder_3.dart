@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-typedef BlocWidgetBuilder3<StateA, StateB, StateC> = Widget Function(
-  BuildContext,
-  StateA,
-  StateB,
-  StateC,
-);
+typedef BlocWidgetBuilder3<StateA, StateB, StateC> =
+    Widget Function(BuildContext, StateA, StateB, StateC);
 
 class BlocBuilder3<
-    BlocA extends StateStreamable<BlocAState>,
-    BlocAState,
-    BlocB extends StateStreamable<BlocBState>,
-    BlocBState,
-    BlocC extends StateStreamable<BlocCState>,
-    BlocCState> extends StatelessWidget {
+  BlocA extends StateStreamable<BlocAState>,
+  BlocAState,
+  BlocB extends StateStreamable<BlocBState>,
+  BlocBState,
+  BlocC extends StateStreamable<BlocCState>,
+  BlocCState
+>
+    extends StatelessWidget {
   const BlocBuilder3({
     required this.builder,
     super.key,

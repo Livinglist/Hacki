@@ -22,14 +22,8 @@ class _CountDownReminderState extends State<CountdownReminder>
   late final AnimationController animationController;
   late final Animation<double> progressAnimation;
   late final Animation<double> opacityAnimation;
-  final Tween<double> progress = Tween<double>(
-    begin: 0,
-    end: 1,
-  );
-  final Tween<double> opacity = Tween<double>(
-    begin: 1,
-    end: 0,
-  );
+  final Tween<double> progress = Tween<double>(begin: 0, end: 1);
+  final Tween<double> opacity = Tween<double>(begin: 1, end: 0);
 
   bool isVisible = false;
 
@@ -38,36 +32,28 @@ class _CountDownReminderState extends State<CountdownReminder>
 
   @override
   void initState() {
-    animationController = AnimationController(
-      vsync: this,
-      duration: countdownDuration,
-    )..addStatusListener((AnimationStatus status) {
-        if (status == AnimationStatus.completed) {
-          setState(() {
-            isVisible = false;
-          });
+    animationController =
+        AnimationController(vsync: this, duration: countdownDuration)
+          ..addStatusListener((AnimationStatus status) {
+            if (status == AnimationStatus.completed) {
+              setState(() {
+                isVisible = false;
+              });
 
-          context.read<ReminderCubit>().onDismiss();
-        }
-      });
+              context.read<ReminderCubit>().onDismiss();
+            }
+          });
 
     progressAnimation = progress.animate(
       CurvedAnimation(
         parent: animationController,
-        curve: const Interval(
-          0,
-          0.8,
-        ),
+        curve: const Interval(0, 0.8),
       ),
     );
     opacityAnimation = opacity.animate(
       CurvedAnimation(
         parent: animationController,
-        curve: const Interval(
-          0.8,
-          1,
-          curve: Curves.ease,
-        ),
+        curve: const Interval(0.8, 1, curve: Curves.ease),
       ),
     );
 
@@ -102,9 +88,7 @@ class _CountDownReminderState extends State<CountdownReminder>
                 color: Theme.of(context).colorScheme.primary,
                 clipBehavior: Clip.hardEdge,
                 borderRadius: const BorderRadius.all(
-                  Radius.circular(
-                    Dimens.pt4,
-                  ),
+                  Radius.circular(Dimens.pt4),
                 ),
                 child: InkWell(
                   onTap: () {
@@ -113,17 +97,21 @@ class _CountDownReminderState extends State<CountdownReminder>
                           .get<HackerNewsRepository>()
                           .fetchStory(id: state.storyId!)
                           .then((Story? story) {
-                        if (story == null) {
-                          showErrorSnackBar();
-                          return;
-                        }
-                        final ItemScreenArgs args = ItemScreenArgs(item: story);
-                        goToItemScreen(args: args);
+                            if (story == null) {
+                              showErrorSnackBar();
+                              return;
+                            }
+                            final ItemScreenArgs args = ItemScreenArgs(
+                              item: story,
+                            );
+                            goToItemScreen(args: args);
 
-                        if (context.mounted) {
-                          context.read<ReminderCubit>().removeLastReadStoryId();
-                        }
-                      });
+                            if (context.mounted) {
+                              context
+                                  .read<ReminderCubit>()
+                                  .removeLastReadStoryId();
+                            }
+                          });
                     }
 
                     context.read<ReminderCubit>().onDismiss();
@@ -161,12 +149,12 @@ class _CountDownReminderState extends State<CountdownReminder>
                           return LinearProgressIndicator(
                             value: progressAnimation.value,
                             minHeight: Dimens.pt4,
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onPrimary
-                                .withAlpha(140),
+                            backgroundColor: Theme.of(
+                              context,
+                            ).colorScheme.primary,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onPrimary.withAlpha(140),
                           );
                         },
                       ),
@@ -176,10 +164,7 @@ class _CountDownReminderState extends State<CountdownReminder>
               ),
             ),
             builder: (BuildContext context, Widget? child) {
-              return Opacity(
-                opacity: opacityAnimation.value,
-                child: child,
-              );
+              return Opacity(opacity: opacityAnimation.value, child: child);
             },
           ),
         );

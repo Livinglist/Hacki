@@ -8,35 +8,15 @@ class CenteredText extends StatelessWidget {
     this.color = Palette.grey,
   });
 
-  const CenteredText.hidden({Key? key})
-      : this(
-          key: key,
-          text: 'hidden',
-        );
+  const CenteredText.hidden({Key? key}) : this(key: key, text: 'hidden');
 
-  const CenteredText.deleted({Key? key})
-      : this(
-          key: key,
-          text: 'deleted',
-        );
+  const CenteredText.deleted({Key? key}) : this(key: key, text: 'deleted');
 
-  const CenteredText.dead({Key? key})
-      : this(
-          key: key,
-          text: 'dead',
-        );
+  const CenteredText.dead({Key? key}) : this(key: key, text: 'dead');
 
-  const CenteredText.blocked({Key? key})
-      : this(
-          key: key,
-          text: 'blocked',
-        );
+  const CenteredText.blocked({Key? key}) : this(key: key, text: 'blocked');
 
-  const CenteredText.empty({Key? key})
-      : this(
-          key: key,
-          text: 'empty',
-        );
+  const CenteredText.empty({Key? key}) : this(key: key, text: 'empty');
 
   final String text;
   final Color color;
@@ -45,15 +25,8 @@ class CenteredText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.only(
-          bottom: Dimens.pt12,
-        ),
-        child: Text(
-          text,
-          style: TextStyle(
-            color: color,
-          ),
-        ),
+        padding: const EdgeInsets.only(bottom: Dimens.pt12),
+        child: Text(text, style: TextStyle(color: color)),
       ),
     );
   }

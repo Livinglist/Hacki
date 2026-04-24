@@ -11,10 +11,7 @@ class CustomBlocObserver extends BlocObserver {
   }
 
   @override
-  void onEvent(
-    Bloc<dynamic, dynamic> bloc,
-    Object? event,
-  ) {
+  void onEvent(Bloc<dynamic, dynamic> bloc, Object? event) {
     if (event is! StoriesEvent) {
       locator.get<Logger>().d(event);
     }
@@ -36,11 +33,7 @@ class CustomBlocObserver extends BlocObserver {
   }
 
   @override
-  void onError(
-    BlocBase<dynamic> bloc,
-    Object error,
-    StackTrace stackTrace,
-  ) {
+  void onError(BlocBase<dynamic> bloc, Object error, StackTrace stackTrace) {
     locator.get<Logger>().e(error);
     locator.get<Logger>().e(stackTrace);
 

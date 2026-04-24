@@ -118,9 +118,7 @@ class Linkify extends StatelessWidget {
         style: Theme.of(context).textTheme.bodyMedium?.merge(style),
         onOpen: onOpen,
         shouldUseMouseRegion: true,
-        linkStyle: Theme.of(context)
-            .textTheme
-            .bodyMedium
+        linkStyle: Theme.of(context).textTheme.bodyMedium
             ?.merge(style)
             .copyWith(
               color: Colors.blueAccent,
@@ -296,9 +294,7 @@ class SelectableLinkify extends StatelessWidget {
         primaryColor: context.read<PreferenceCubit>().state.appColor,
         style: Theme.of(context).textTheme.bodyMedium?.merge(style),
         onOpen: onOpen,
-        linkStyle: Theme.of(context)
-            .textTheme
-            .bodyMedium
+        linkStyle: Theme.of(context).textTheme.bodyMedium
             ?.merge(style)
             .copyWith(
               color: Colors.blueAccent,
@@ -347,13 +343,8 @@ class LinkableSpan extends WidgetSpan {
     required MouseCursor mouseCursor,
     required InlineSpan inlineSpan,
   }) : super(
-          child: MouseRegion(
-            cursor: mouseCursor,
-            child: Text.rich(
-              inlineSpan,
-            ),
-          ),
-        );
+         child: MouseRegion(cursor: mouseCursor, child: Text.rich(inlineSpan)),
+       );
 }
 
 /// Raw TextSpan builder for more control on the RichText
@@ -366,85 +357,73 @@ TextSpan buildTextSpan(
   bool shouldUseMouseRegion = false,
 }) {
   return TextSpan(
-    children: elements.map<InlineSpan>(
-      (LinkifyElement element) {
-        if (element is LinkableElement) {
-          if (shouldUseMouseRegion) {
-            return LinkableSpan(
-              mouseCursor: SystemMouseCursors.click,
-              inlineSpan: TextSpan(
-                text: element.text,
-                style: linkStyle,
-                recognizer: onOpen != null
-                    ? (TapGestureRecognizer()..onTap = () => onOpen(element))
-                    : null,
-              ),
-            );
-          } else {
-            return WidgetSpan(
-              child: InkWell(
-                enableFeedback: false,
-                onLongPress: () {
-                  final String url = element.url;
-                  if (url.isNotEmpty) {
-                    Clipboard.setData(
-                      ClipboardData(text: url),
-                    ).whenComplete(() {
-                      HapticFeedbackUtils.selection();
-                      navigatorKey.currentContext?.showSnackBar(
-                        content: 'Link copied.',
-                      );
-                    });
-                  }
-                },
-                onTap: () {
-                  onOpen?.call(element);
-                },
-                child: Text(
-                  element.text,
-                  style: linkStyle,
-                ),
-              ),
-            );
-          }
+    children: elements.map<InlineSpan>((LinkifyElement element) {
+      if (element is LinkableElement) {
+        if (shouldUseMouseRegion) {
+          return LinkableSpan(
+            mouseCursor: SystemMouseCursors.click,
+            inlineSpan: TextSpan(
+              text: element.text,
+              style: linkStyle,
+              recognizer: onOpen != null
+                  ? (TapGestureRecognizer()..onTap = () => onOpen(element))
+                  : null,
+            ),
+          );
         } else {
-          if (element is HighlightElement) {
-            return TextSpan(
-              text: element.text,
-              style: style?.copyWith(
-                backgroundColor: Palette.yellow.withAlpha(120),
-              ),
-            );
-          } else if (element is QuoteElement) {
-            return TextSpan(
-              text: element.text,
-              style: style?.copyWith(
-                backgroundColor: primaryColor.withValues(alpha: 0.3),
-              ),
-            );
-          } else if (element is EmphasisElement) {
-            return TextSpan(
-              text: element.text,
-              style: style?.copyWith(
-                fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.bold,
-              ),
-            );
-          } else if (element is CodeElement) {
-            return TextSpan(
-              text: element.text,
-              style: style?.copyWith(
-                fontFamily: Font.ubuntuMono.name,
-              ),
-            );
-          }
-
-          return TextSpan(
-            text: element.text,
-            style: style,
+          return WidgetSpan(
+            child: InkWell(
+              enableFeedback: false,
+              onLongPress: () {
+                final String url = element.url;
+                if (url.isNotEmpty) {
+                  Clipboard.setData(ClipboardData(text: url)).whenComplete(() {
+                    HapticFeedbackUtils.selection();
+                    navigatorKey.currentContext?.showSnackBar(
+                      content: 'Link copied.',
+                    );
+                  });
+                }
+              },
+              onTap: () {
+                onOpen?.call(element);
+              },
+              child: Text(element.text, style: linkStyle),
+            ),
           );
         }
-      },
-    ).toList(),
+      } else {
+        if (element is HighlightElement) {
+          return TextSpan(
+            text: element.text,
+            style: style?.copyWith(
+              backgroundColor: Palette.yellow.withAlpha(120),
+            ),
+          );
+        } else if (element is QuoteElement) {
+          return TextSpan(
+            text: element.text,
+            style: style?.copyWith(
+              backgroundColor: primaryColor.withValues(alpha: 0.3),
+            ),
+          );
+        } else if (element is EmphasisElement) {
+          return TextSpan(
+            text: element.text,
+            style: style?.copyWith(
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.bold,
+            ),
+          );
+        } else if (element is CodeElement) {
+          return TextSpan(
+            text: element.text,
+            style: style?.copyWith(fontFamily: Font.ubuntuMono.name),
+          );
+        }
+
+        return TextSpan(text: element.text, style: style);
+      }
+    }).toList(),
   );
 }

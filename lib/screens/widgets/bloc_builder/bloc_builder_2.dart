@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-typedef BlocWidgetBuilder2<StateA, StateB> = Widget Function(
-  BuildContext,
-  StateA,
-  StateB,
-);
+typedef BlocWidgetBuilder2<StateA, StateB> =
+    Widget Function(BuildContext, StateA, StateB);
 
 class BlocBuilder2<
-    BlocA extends StateStreamable<BlocAState>,
-    BlocAState,
-    BlocB extends StateStreamable<BlocBState>,
-    BlocBState> extends StatelessWidget {
+  BlocA extends StateStreamable<BlocAState>,
+  BlocAState,
+  BlocB extends StateStreamable<BlocBState>,
+  BlocBState
+>
+    extends StatelessWidget {
   const BlocBuilder2({
     required this.builder,
     super.key,
@@ -39,11 +38,7 @@ class BlocBuilder2<
           bloc: blocB,
           buildWhen: buildWhenB,
           builder: (BuildContext context, BlocBState blocBState) {
-            return builder(
-              context,
-              blocAState,
-              blocBState,
-            );
+            return builder(context, blocAState, blocBState);
           },
         );
       },

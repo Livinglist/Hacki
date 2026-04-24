@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 class Throttle {
-  Throttle({
-    required this.delay,
-  });
+  Throttle({required this.delay});
 
   final Duration delay;
   Timer? _timer;

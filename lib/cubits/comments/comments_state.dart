@@ -1,12 +1,6 @@
 part of 'comments_cubit.dart';
 
-enum CommentsStatus {
-  idle,
-  inProgress,
-  loaded,
-  allLoaded,
-  error,
-}
+enum CommentsStatus { idle, inProgress, loaded, allLoaded, error }
 
 class CommentsState extends Equatable {
   const CommentsState({
@@ -34,19 +28,19 @@ class CommentsState extends Equatable {
     required this.item,
     required this.fetchMode,
     required this.order,
-  })  : comments = <Comment>[],
-        matchedComments = <Comment>[],
-        idToCommentMap = <int, Comment>{},
-        status = CommentsStatus.idle,
-        fetchParentStatus = CommentsStatus.idle,
-        fetchRootStatus = CommentsStatus.idle,
-        onlyShowTargetComment = false,
-        currentPage = 0,
-        inThreadSearchQuery = '',
-        inThreadSearchAuthor = '',
-        inThreadSearchStatus = Status.idle,
-        isNewInSearchSelected = false,
-        maxLevel = 0;
+  }) : comments = <Comment>[],
+       matchedComments = <Comment>[],
+       idToCommentMap = <int, Comment>{},
+       status = CommentsStatus.idle,
+       fetchParentStatus = CommentsStatus.idle,
+       fetchRootStatus = CommentsStatus.idle,
+       onlyShowTargetComment = false,
+       currentPage = 0,
+       inThreadSearchQuery = '',
+       inThreadSearchAuthor = '',
+       inThreadSearchStatus = Status.idle,
+       isNewInSearchSelected = false,
+       maxLevel = 0;
 
   final Item item;
   final List<Comment> comments;
@@ -141,22 +135,22 @@ class CommentsState extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        item,
-        status,
-        fetchParentStatus,
-        fetchRootStatus,
-        order,
-        fetchMode,
-        onlyShowTargetComment,
-        isOfflineReading,
-        currentPage,
-        comments,
-        matchedComments,
-        inThreadSearchQuery,
-        inThreadSearchAuthor,
-        inThreadSearchStatus,
-        idToCommentMap,
-        isNewInSearchSelected,
-        maxLevel,
-      ];
+    item,
+    status,
+    fetchParentStatus,
+    fetchRootStatus,
+    order,
+    fetchMode,
+    onlyShowTargetComment,
+    isOfflineReading,
+    currentPage,
+    comments,
+    matchedComments,
+    inThreadSearchQuery,
+    inThreadSearchAuthor,
+    inThreadSearchStatus,
+    idToCommentMap,
+    isNewInSearchSelected,
+    maxLevel,
+  ];
 }

@@ -9,10 +9,10 @@ class AuthState extends Equatable {
   });
 
   const AuthState.init()
-      : user = const User.empty(),
-        isLoggedIn = false,
-        status = Status.success,
-        agreedToEULA = false;
+    : user = const User.empty(),
+      isLoggedIn = false,
+      status = Status.success,
+      agreedToEULA = false;
 
   final User user;
   final bool isLoggedIn;
@@ -36,10 +36,5 @@ class AuthState extends Equatable {
   }
 
   @override
-  List<Object?> get props => <Object?>[
-        user,
-        isLoggedIn,
-        agreedToEULA,
-        status,
-      ];
+  List<Object?> get props => <Object?>[user, isLoggedIn, agreedToEULA, status];
 }

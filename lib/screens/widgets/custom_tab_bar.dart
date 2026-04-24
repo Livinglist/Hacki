@@ -9,10 +9,7 @@ import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/haptic_feedback_utils.dart';
 
 class CustomTabBar extends StatefulWidget {
-  const CustomTabBar({
-    required this.tabController,
-    super.key,
-  });
+  const CustomTabBar({required this.tabController, super.key});
 
   final TabController tabController;
 
@@ -46,8 +43,10 @@ class _CustomTabBarState extends State<CustomTabBar> {
   Widget build(BuildContext context) {
     return BlocBuilder<TabCubit, TabState>(
       builder: (BuildContext context, TabState state) {
-        final bool isHackerNewsThemeEnabled =
-            context.read<PreferenceCubit>().state.isHackerNewsThemeEnabled;
+        final bool isHackerNewsThemeEnabled = context
+            .read<PreferenceCubit>()
+            .state
+            .isHackerNewsThemeEnabled;
         return TabBar(
           controller: widget.tabController,
           dividerHeight: 0,
@@ -58,9 +57,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
             radius: Dimens.pt2,
           ),
           splashFactory: NoSplash.splashFactory,
-          indicatorPadding: const EdgeInsets.only(
-            bottom: Dimens.pt8,
-          ),
+          indicatorPadding: const EdgeInsets.only(bottom: Dimens.pt8),
           onTap: (_) {
             HapticFeedbackUtils.selection();
           },
@@ -68,9 +65,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
           tabs: <Widget>[
             for (int i = 0; i < state.tabs.length; i++)
               Tab(
-                key: ValueKey<StoryType>(
-                  state.tabs.elementAt(i),
-                ),
+                key: ValueKey<StoryType>(state.tabs.elementAt(i)),
                 child: AnimatedDefaultTextStyle(
                   style: TextStyle(
                     fontFamily: context.read<PreferenceCubit>().state.font.name,
@@ -118,16 +113,11 @@ class _CustomTabBarState extends State<CustomTabBar> {
                 ),
                 feature: DiscoverableFeature.login,
                 child: BlocBuilder<NotificationCubit, NotificationState>(
-                  buildWhen: (
-                    NotificationState previous,
-                    NotificationState current,
-                  ) =>
-                      previous.unreadCommentsIds.length !=
-                      current.unreadCommentsIds.length,
-                  builder: (
-                    BuildContext context,
-                    NotificationState state,
-                  ) {
+                  buildWhen:
+                      (NotificationState previous, NotificationState current) =>
+                          previous.unreadCommentsIds.length !=
+                          current.unreadCommentsIds.length,
+                  builder: (BuildContext context, NotificationState state) {
                     return Badge(
                       showBadge: state.unreadCommentsIds.isNotEmpty,
                       badgeContent: Container(

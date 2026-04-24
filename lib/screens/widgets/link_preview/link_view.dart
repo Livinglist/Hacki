@@ -34,12 +34,12 @@ class LinkView extends StatelessWidget {
     this.hasRead = false,
     this.bgColor,
     this.radius = 0,
-  })  : shouldShowUrl = shouldShowUrl && url.isNotEmpty,
-        assert(
-          !shouldShowMultiMedia ||
-              (shouldShowMultiMedia && (imageUri != null || imagePath != null)),
-          'imageUri or imagePath cannot be null when showMultiMedia is true',
-        );
+  }) : shouldShowUrl = shouldShowUrl && url.isNotEmpty,
+       assert(
+         !shouldShowMultiMedia ||
+             (shouldShowMultiMedia && (imageUri != null || imagePath != null)),
+         'imageUri or imagePath cannot be null when showMultiMedia is true',
+       );
 
   final String metadata;
   final String url;
@@ -62,18 +62,17 @@ class LinkView extends StatelessWidget {
 
   static final Func3<TextScaler, TextStyle?, double, int> _computeMaxLines =
       memo3((TextScaler textScaler, TextStyle? style, double layoutHeight) {
-    if (layoutHeight.isInfinite) return 5;
-    final Size size = (TextPainter(
-      text: TextSpan(text: 'ABCDEFG', style: style),
-      maxLines: 1,
-      textScaler: textScaler,
-      textDirection: TextDirection.ltr,
-    )..layout())
-        .size;
-    final int maxLines = max(1, (layoutHeight / size.height).floor());
+        if (layoutHeight.isInfinite) return 5;
+        final Size size = (TextPainter(
+          text: TextSpan(text: 'ABCDEFG', style: style),
+          maxLines: 1,
+          textScaler: textScaler,
+          textDirection: TextDirection.ltr,
+        )..layout()).size;
+        final int maxLines = max(1, (layoutHeight / size.height).floor());
 
-    return maxLines;
-  });
+        return maxLines;
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -94,16 +93,8 @@ class LinkView extends StatelessWidget {
           if (shouldShowMultiMedia)
             Padding(
               padding: isImageLeftAligned
-                  ? const EdgeInsets.only(
-                      right: 8,
-                      top: 5,
-                      bottom: 5,
-                    )
-                  : const EdgeInsets.only(
-                      left: 8,
-                      top: 5,
-                      bottom: 5,
-                    ),
+                  ? const EdgeInsets.only(right: 8, top: 5, bottom: 5)
+                  : const EdgeInsets.only(left: 8, top: 5, bottom: 5),
               child: TapDownWrapper(
                 onTap: () {
                   if (url.isNotEmpty) {
@@ -111,10 +102,14 @@ class LinkView extends StatelessWidget {
                       url,
                       context,
                       shouldUseHackiForHnLink: false,
-                      shouldUseReader:
-                          context.read<PreferenceCubit>().state.isReaderEnabled,
-                      isOfflineReading:
-                          context.read<StoriesBloc>().state.isOfflineReading,
+                      shouldUseReader: context
+                          .read<PreferenceCubit>()
+                          .state
+                          .isReaderEnabled,
+                      isOfflineReading: context
+                          .read<StoriesBloc>()
+                          .state
+                          .isOfflineReading,
                     );
                   } else {
                     onTap();
@@ -127,9 +122,7 @@ class LinkView extends StatelessWidget {
                   child: imageUri == null && url.isEmpty
                       ? FadeIn(
                           child: Center(
-                            child: _HackerNewsImage(
-                              height: layoutHeight,
-                            ),
+                            child: _HackerNewsImage(height: layoutHeight),
                           ),
                         )
                       : () {
@@ -184,9 +177,7 @@ class LinkView extends StatelessWidget {
                           } else {
                             return FadeIn(
                               child: Center(
-                                child: _HackerNewsImage(
-                                  height: layoutHeight,
-                                ),
+                                child: _HackerNewsImage(height: layoutHeight),
                               ),
                             );
                           }
@@ -207,8 +198,8 @@ class LinkView extends StatelessWidget {
                 description,
                 textAlign: TextAlign.left,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: hasRead ? Theme.of(context).readGrey : null,
-                    ),
+                  color: hasRead ? Theme.of(context).readGrey : null,
+                ),
                 overflow: TextOverflow.ellipsis,
                 maxLines: maxLines,
               ),
@@ -225,9 +216,7 @@ class LinkView extends StatelessWidget {
 }
 
 class _HackerNewsImage extends StatelessWidget {
-  const _HackerNewsImage({
-    required this.height,
-  });
+  const _HackerNewsImage({required this.height});
 
   final double height;
 

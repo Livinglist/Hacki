@@ -1,14 +1,9 @@
 part of 'tips_cubit.dart';
 
-enum Tips {
-  shareScreen,
-  itemScreen;
-}
+enum Tips { shareScreen, itemScreen }
 
 class TipsState extends Equatable {
-  const TipsState({
-    required this.completedTips,
-  });
+  const TipsState({required this.completedTips});
 
   const TipsState.init() : completedTips = const <Tips>{};
 
@@ -16,9 +11,7 @@ class TipsState extends Equatable {
 
   bool isTipsCompleted(Tips tips) => completedTips.contains(tips);
 
-  TipsState copyWith({
-    Set<Tips>? completedTips,
-  }) {
+  TipsState copyWith({Set<Tips>? completedTips}) {
     return TipsState(completedTips: completedTips ?? this.completedTips);
   }
 

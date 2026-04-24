@@ -34,35 +34,32 @@ void main() {
       await tester.pump();
     }
 
-    await binding.traceAction(
-      () async {
-        await tester.tap(bestTabFinder);
-        await tester.pump();
+    await binding.traceAction(() async {
+      await tester.tap(bestTabFinder);
+      await tester.pump();
 
-        const int count = 10;
+      const int count = 10;
 
-        for (int i = 0; i < count; i++) {
-          await scrollDown(tester);
-        }
+      for (int i = 0; i < count; i++) {
+        await scrollDown(tester);
+      }
 
-        for (int i = 0; i < count - 3; i++) {
-          await scrollUp(tester);
-        }
+      for (int i = 0; i < count - 3; i++) {
+        await scrollUp(tester);
+      }
 
-        await tester.pumpAndSettle(const Duration(seconds: 2));
+      await tester.pumpAndSettle(const Duration(seconds: 2));
 
-        final Finder storyFinder = find.byType(StoryTile);
+      final Finder storyFinder = find.byType(StoryTile);
 
-        expect(storyFinder, findsWidgets);
+      expect(storyFinder, findsWidgets);
 
-        final Finder firstStoryFinder = storyFinder.first;
+      final Finder firstStoryFinder = storyFinder.first;
 
-        expect(firstStoryFinder, findsOneWidget);
+      expect(firstStoryFinder, findsOneWidget);
 
-        await tester.tap(firstStoryFinder);
-        await tester.pump(const Duration(seconds: 5));
-      },
-      reportKey: 'scrolling_timeline',
-    );
+      await tester.tap(firstStoryFinder);
+      await tester.pump(const Duration(seconds: 5));
+    }, reportKey: 'scrolling_timeline');
   });
 }

@@ -14,14 +14,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> with Loggable {
     PreferenceRepository? preferenceRepository,
     HackerNewsRepository? hackerNewsRepository,
     SembastRepository? sembastRepository,
-  })  : _authRepository = authRepository ?? locator.get<AuthRepository>(),
-        _preferenceRepository =
-            preferenceRepository ?? locator.get<PreferenceRepository>(),
-        _hackerNewsRepository =
-            hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
-        _sembastRepository =
-            sembastRepository ?? locator.get<SembastRepository>(),
-        super(const AuthState.init()) {
+  }) : _authRepository = authRepository ?? locator.get<AuthRepository>(),
+       _preferenceRepository =
+           preferenceRepository ?? locator.get<PreferenceRepository>(),
+       _hackerNewsRepository =
+           hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
+       _sembastRepository =
+           sembastRepository ?? locator.get<SembastRepository>(),
+       super(const AuthState.init()) {
     on<AuthInitialize>(onInitialize);
     on<AuthLogin>(onLogin);
     on<AuthLogout>(onLogout);
@@ -51,20 +51,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> with Loggable {
 
         logInfo('silently logged in as ${user.id}.');
         emit(
-          state.copyWith(
-            isLoggedIn: true,
-            user: user,
-            status: Status.success,
-          ),
+          state.copyWith(isLoggedIn: true, user: user, status: Status.success),
         );
       } else {
         logInfo('no previous session found.');
-        emit(
-          state.copyWith(
-            isLoggedIn: false,
-            status: Status.success,
-          ),
-        );
+        emit(state.copyWith(isLoggedIn: false, status: Status.success));
       }
     });
   }
@@ -92,8 +83,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> with Loggable {
     );
 
     if (successful) {
-      final User? user =
-          await _hackerNewsRepository.fetchUser(id: event.username);
+      final User? user = await _hackerNewsRepository.fetchUser(
+        id: event.username,
+      );
       logInfo('user logged in as ${user?.id}.');
       emit(
         state.copyWith(

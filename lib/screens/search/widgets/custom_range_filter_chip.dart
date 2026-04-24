@@ -25,36 +25,28 @@ class CustomRangeFilterChip extends StatelessWidget {
   final CustomDateTimeRange range;
   final DateRangeCallback onTap;
 
-  static Widget pastDay({
-    required DateRangeCallback onTap,
-  }) {
+  static Widget pastDay({required DateRangeCallback onTap}) {
     return CustomRangeFilterChip(
       range: CustomDateTimeRange.pastDay,
       onTap: onTap,
     );
   }
 
-  static Widget pastWeek({
-    required DateRangeCallback onTap,
-  }) {
+  static Widget pastWeek({required DateRangeCallback onTap}) {
     return CustomRangeFilterChip(
       range: CustomDateTimeRange.pastWeek,
       onTap: onTap,
     );
   }
 
-  static Widget pastMonth({
-    required DateRangeCallback onTap,
-  }) {
+  static Widget pastMonth({required DateRangeCallback onTap}) {
     return CustomRangeFilterChip(
       range: CustomDateTimeRange.pastMonth,
       onTap: onTap,
     );
   }
 
-  static Widget pastYear({
-    required DateRangeCallback onTap,
-  }) {
+  static Widget pastYear({required DateRangeCallback onTap}) {
     return CustomRangeFilterChip(
       range: CustomDateTimeRange.pastYear,
       onTap: onTap,

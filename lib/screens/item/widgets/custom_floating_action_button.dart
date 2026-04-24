@@ -10,25 +10,21 @@ import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 
 class FloatingSkipButtons extends StatelessWidget {
-  const FloatingSkipButtons({
-    super.key,
-  });
+  const FloatingSkipButtons({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final bool isWebViewBottomSheetEnabled =
-        context.select<PreferenceCubit, bool>(
-      (PreferenceCubit cubit) => cubit.state.isWebViewBottomSheetEnabled,
-    );
+    final bool isWebViewBottomSheetEnabled = context
+        .select<PreferenceCubit, bool>(
+          (PreferenceCubit cubit) => cubit.state.isWebViewBottomSheetEnabled,
+        );
     return BlocBuilder<EditCubit, EditState>(
       buildWhen: (EditState previous, EditState current) =>
           previous.showReplyBox != current.showReplyBox,
       builder: (BuildContext context, EditState editState) {
         return AnimatedPadding(
           padding: editState.showReplyBox
-              ? const EdgeInsets.only(
-                  bottom: Dimens.replyBoxCollapsedHeight,
-                )
+              ? const EdgeInsets.only(bottom: Dimens.replyBoxCollapsedHeight)
               : EdgeInsets.zero,
           duration: AppDurations.ms200,
           child: Column(
@@ -49,10 +45,9 @@ class FloatingSkipButtons extends StatelessWidget {
                   },
                   child: FloatingActionButton(
                     enableFeedback: false,
-                    backgroundColor: Theme.of(context)
-                        .colorScheme
-                        .primaryContainer
-                        .withAlpha(200),
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.primaryContainer.withAlpha(200),
 
                     /// Randomly generated string as heroTag to prevent
                     /// default [FloatingActionButton] animation.
@@ -86,20 +81,19 @@ class FloatingSkipButtons extends StatelessWidget {
                   },
                   child: FloatingActionButton(
                     enableFeedback: false,
-                    backgroundColor: Theme.of(context)
-                        .colorScheme
-                        .primaryContainer
-                        .withAlpha(200),
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.primaryContainer.withAlpha(200),
 
                     /// Same as above.
                     heroTag: UniqueKey().hashCode,
                     onPressed: () {
                       HapticFeedbackUtils.selection();
                       context.read<CommentsCubit>().scrollToNextRoot(
-                            onError: () => context.showSnackBar(
-                              content: '''No more root level comment below.''',
-                            ),
-                          );
+                        onError: () => context.showSnackBar(
+                          content: '''No more root level comment below.''',
+                        ),
+                      );
                     },
                     child: Icon(
                       Icons.keyboard_arrow_down,
@@ -109,9 +103,7 @@ class FloatingSkipButtons extends StatelessWidget {
                 ),
               ),
               if (isWebViewBottomSheetEnabled)
-                const SizedBox(
-                  height: Dimens.pt64,
-                ),
+                const SizedBox(height: Dimens.pt64),
             ],
           ),
         );

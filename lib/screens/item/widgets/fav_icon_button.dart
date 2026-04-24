@@ -7,10 +7,7 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/utils/utils.dart';
 
 class FavIconButton extends StatelessWidget {
-  const FavIconButton({
-    required this.storyId,
-    super.key,
-  });
+  const FavIconButton({required this.storyId, super.key});
 
   final int storyId;
 

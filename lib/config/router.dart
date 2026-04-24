@@ -50,15 +50,14 @@ final GoRouter router = GoRouter(
               future: locator.get<HackerNewsRepository>().fetchItem(id: itemId),
               builder: (BuildContext context, AsyncSnapshot<Item?> snapshot) {
                 if (snapshot.hasData) {
-                  final ItemScreenArgs args =
-                      ItemScreenArgs(item: snapshot.data!);
+                  final ItemScreenArgs args = ItemScreenArgs(
+                    item: snapshot.data!,
+                  );
                   return ItemScreen.phone(args);
                 } else {
                   return const Scaffold(
                     body: Center(
-                      child: CircularProgressIndicator(
-                        strokeWidth: Dimens.pt2,
-                      ),
+                      child: CircularProgressIndicator(strokeWidth: Dimens.pt2),
                     ),
                   );
                 }
@@ -87,9 +86,7 @@ final GoRouter router = GoRouter(
             if (link == null) {
               throw GoError("link can't be null");
             }
-            return WebViewScreen(
-              url: link,
-            );
+            return WebViewScreen(url: link);
           },
         ),
         GoRoute(
@@ -110,9 +107,7 @@ final GoRouter router = GoRouter(
             if (data == null) {
               throw GoError("data can't be null");
             }
-            return QrCodeViewScreen(
-              data: data,
-            );
+            return QrCodeViewScreen(data: data);
           },
         ),
       ],
