@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/extensions/loggable.dart';
 import 'package:hacki/models/models.dart';
@@ -11,40 +12,43 @@ class CollapseStateCacheRepository with Loggable {
   CollapseStateCacheRepository({
     Future<Box<String>>? commentBox,
   }) : _box = commentBox ?? Hive.openBox<String>(_boxName) {
-    initialize();
+    Future<void>.delayed(AppDurations.threeSeconds, initialize);
   }
 
   static const String _boxName = 'persistedCollapseStates';
   static const int _maxLength = 100_000;
   final Future<Box<String>> _box;
+  Status _status = .idle;
 
   Map<int, Map<int, Comment>> _itemIdToPreviousStates =
-      <int, Map<int, Comment>>{};
+  <int, Map<int, Comment>>{};
 
   Map<int, Map<int, Comment>> get cachedItemIdToPreviousStates =>
       _itemIdToPreviousStates;
 
   Future<void> initialize() async {
-    final Map<int, Map<int, Comment>> itemIdToPreviousStates = await loadAll();
-    _itemIdToPreviousStates = itemIdToPreviousStates;
-    logDebug(
-      '''retrieved collapse state for stories: ${_itemIdToPreviousStates.keys}''',
-    );
+    if (_status == .idle) {
+      final Map<int,
+          Map<int, Comment>> itemIdToPreviousStates = await loadAll();
+      _itemIdToPreviousStates = itemIdToPreviousStates;
+      logDebug(
+        '''
+        retrieved collapse state for stories: ${_itemIdToPreviousStates
+            .keys}''',
+      );
+      _status = .success;
+    }
   }
 
-  Future<void> saveAll(
-    Map<int, Map<int, Comment>> map,
-  ) async {
+  Future<void> saveAll(Map<int, Map<int, Comment>> map,) async {
     for (final MapEntry<int, Map<int, Comment>> entry in map.entries) {
       await saveStoryStates(entry.key, entry.value);
       logDebug('saved collapse state for story ${entry.key}');
     }
   }
 
-  Future<void> saveStoryStates(
-    int storyId,
-    Map<int, Comment> commentMap,
-  ) async {
+  Future<void> saveStoryStates(int storyId,
+      Map<int, Comment> commentMap,) async {
     final Box<String> box = await _box;
 
     logDebug('old keys for $storyId: ${box.keys}');
@@ -55,10 +59,11 @@ class CollapseStateCacheRepository with Loggable {
     await box.deleteAll(oldKeys);
 
     final Map<String, String> entries = commentMap.map(
-      (int commentId, Comment comment) => MapEntry<String, String>(
-        '${storyId}_$commentId',
-        jsonEncode(comment.toJsonWithOnlyCollapseState()),
-      ),
+          (int commentId, Comment comment) =>
+          MapEntry<String, String>(
+            '${storyId}_$commentId',
+            jsonEncode(comment.toJsonWithOnlyCollapseState()),
+          ),
     );
     await box.putAll(entries);
     logDebug('all entries: $entries');
@@ -73,7 +78,9 @@ class CollapseStateCacheRepository with Loggable {
           .cast<String>()
           .where((String k) => k.startsWith(prefix))
           .map((String k) {
-        final int commentId = int.parse(k.split('_').last);
+        final int commentId = int.parse(k
+            .split('_')
+            .last);
         final Comment comment = Comment.fromJsonWithCollapsedStateOnly(
           jsonDecode(box.get(k)!) as Map<String, dynamic>,
         );
@@ -110,7 +117,10 @@ class CollapseStateCacheRepository with Loggable {
       final Set<String> seenStories = <String>{};
       final List<String> orderedStoryIds = box.keys
           .cast<String>()
-          .map((String k) => k.split('_').first)
+          .map((String k) =>
+      k
+          .split('_')
+          .first)
           .where(seenStories.add)
           .toList()
         ..sort((String a, String b) => int.parse(a).compareTo(int.parse(b)));

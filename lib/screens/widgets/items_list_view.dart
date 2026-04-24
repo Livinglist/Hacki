@@ -82,7 +82,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
             shouldShowExitButton: true,
           ),
         if (header != null) header!,
-        ...List<int>.generate(items.length, (_) => _).map((int index) {
+        ...List<int>.generate(items.length, (int i) => i).map((int index) {
           final T e = items.elementAt(index);
           if (e is Story) {
             final bool hasRead = context.read<StoriesBloc>().hasRead(e);
