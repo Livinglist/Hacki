@@ -11,7 +11,7 @@ import 'package:hive/hive.dart';
 class CollapseStateCacheRepository with Loggable {
   CollapseStateCacheRepository({Future<Box<String>>? commentBox})
     : _box = commentBox ?? Hive.openBox<String>(_boxName) {
-    Future<void>.delayed(AppDurations.threeSeconds, initialize);
+    initialize();
   }
 
   static const String _boxName = 'persistedCollapseStates';

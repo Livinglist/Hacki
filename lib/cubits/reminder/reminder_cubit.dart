@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/repositories/repositories.dart';
 
@@ -24,9 +26,12 @@ class ReminderCubit extends Cubit<ReminderState> {
     if (status.contains(ConnectivityResult.none)) {
       return;
     } else {
-      await _preferenceRepository.lastReadStoryId.then((int? value) {
-        emit(state.copyWith(storyId: value));
-      });
+      final int? storyId = await _preferenceRepository.lastReadStoryId;
+      if (storyId != null) {
+        await Future<void>.delayed(AppDurations.twoSeconds, () {
+          emit(state.copyWith(storyId: value));
+        });
+      }
     }
   }
 
