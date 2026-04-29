@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:hacki/config/constants.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/extensions/loggable.dart';
 import 'package:hacki/models/models.dart';
