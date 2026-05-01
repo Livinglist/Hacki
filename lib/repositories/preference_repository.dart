@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:hacki/config/constants.dart';
 import 'package:hacki/extensions/extensions.dart';
-import 'package:hacki/utils/debouncer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:synced_shared_preferences/synced_shared_preferences.dart';
 
@@ -71,22 +69,6 @@ class PreferenceRepository with Loggable {
 
         return true;
       });
-
-  Future<bool> hasRead(int storyId) async {
-    final String key = _getHasReadKey(storyId);
-    if (Platform.isIOS) {
-      final bool? val = await _syncedPrefs.getBool(key: key);
-      return val ?? false;
-    } else {
-      return _prefs.then((SharedPreferences prefs) {
-        final bool? val = prefs.getBool(key);
-
-        if (val == null) return false;
-
-        return true;
-      });
-    }
-  }
 
   Future<int?> getDownloadTimestamp() async {
     return _prefs.then(
@@ -398,56 +380,7 @@ class PreferenceRepository with Loggable {
     await prefs.setBool(_getPushNotificationKey(commentId), true);
   }
 
-  final List<String> _storiesIdQueue = <String>[];
-  final Debouncer _debouncer = Debouncer(delay: AppDurations.tenSeconds);
-
-  Future<void> addHasRead(int storyId) async {
-    final String key = _getHasReadKey(storyId);
-
-    if (Platform.isIOS) {
-      _storiesIdQueue.add(key);
-      _debouncer.run(() {
-        for (final String key in _storiesIdQueue) {
-          _syncedPrefs.setBool(key: key, val: true);
-        }
-        _storiesIdQueue.clear();
-      });
-    } else {
-      final SharedPreferences prefs = await _prefs;
-
-      await prefs.setBool(_getHasReadKey(storyId), true);
-    }
-  }
-
-  Future<void> removeHasRead(int storyId) async {
-    final String key = _getHasReadKey(storyId);
-    if (Platform.isIOS) {
-      await _syncedPrefs.remove(key: key);
-    } else {
-      final SharedPreferences prefs = await _prefs;
-
-      await prefs.remove(_getHasReadKey(storyId));
-    }
-  }
-
-  Future<void> clearAllReadStories() async {
-    if (Platform.isIOS) {
-      await _syncedPrefs.clearAll();
-    } else {
-      final SharedPreferences prefs = await _prefs;
-
-      final Iterable<String> allKeys = prefs.getKeys().where(
-        (String e) => e.contains('hasRead'),
-      );
-      for (final String key in allKeys) {
-        await prefs.remove(key);
-      }
-    }
-  }
-
   static String _getPushNotificationKey(int commentId) => 'pushed_$commentId';
-
-  static String _getHasReadKey(int storyId) => 'hasRead_$storyId';
 
   @override
   String get logIdentifier => 'PreferenceRepository';

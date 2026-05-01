@@ -15,6 +15,7 @@ import 'package:responsive_builder/responsive_builder.dart';
 import 'package:rxdart/rxdart.dart';
 
 part 'stories_event.dart';
+
 part 'stories_state.dart';
 
 class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
@@ -25,6 +26,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     OfflineRepository? offlineRepository,
     HackerNewsRepository? hackerNewsRepository,
     HackerNewsWebRepository? hackerNewsWebRepository,
+    HistoryRepository? historyRepository,
     PreferenceRepository? preferenceRepository,
   }) : _preferenceCubit = preferenceCubit,
        _filterCubit = filterCubit,
@@ -35,6 +37,8 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
            hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
        _hackerNewsWebRepository =
            hackerNewsWebRepository ?? locator.get<HackerNewsWebRepository>(),
+       _historyRepository =
+           historyRepository ?? locator.get<HistoryRepository>(),
        _preferenceRepository =
            preferenceRepository ?? locator.get<PreferenceRepository>(),
        super(const StoriesState.init()) {
@@ -71,6 +75,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
   final OfflineRepository _offlineRepository;
   final HackerNewsRepository _hackerNewsRepository;
   final HackerNewsWebRepository _hackerNewsWebRepository;
+  final HistoryRepository _historyRepository;
   final PreferenceRepository _preferenceRepository;
   DeviceScreenType? deviceScreenType;
   StreamSubscription<PreferenceState>? _preferenceSubscription;
@@ -331,7 +336,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
       logDebug('story ${story.id} for ${event.type} already exists.');
       return;
     }
-    final bool hasRead = await _preferenceRepository.hasRead(story.id);
+    final bool hasRead = await _historyRepository.hasRead(story.id);
     final bool hidden = _filterCubit.state.keywords.any((String keyword) {
       // Match word only.
       final RegExp regExp = RegExp('\\b($keyword)\\b');
@@ -597,7 +602,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
   }
 
   Future<void> onStoryRead(StoryRead event, Emitter<StoriesState> emit) async {
-    unawaited(_preferenceRepository.addHasRead(event.story.id));
+    unawaited(_historyRepository.saveReadStoryId(event.story.id));
 
     emit(
       state.copyWith(
@@ -610,7 +615,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     StoryUnread event,
     Emitter<StoriesState> emit,
   ) async {
-    unawaited(_preferenceRepository.removeHasRead(event.story.id));
+    unawaited(_historyRepository.removeReadStoryId(event.story.id));
 
     emit(
       state.copyWith(
@@ -623,7 +628,7 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     ClearAllReadStories event,
     Emitter<StoriesState> emit,
   ) async {
-    unawaited(_preferenceRepository.clearAllReadStories());
+    unawaited(_historyRepository.clearAllReadStoryIds());
 
     emit(state.copyWith(readStoriesIds: <int>{}));
   }

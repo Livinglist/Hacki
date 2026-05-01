@@ -29,6 +29,7 @@ Future<void> setUpLocator() async {
     ..registerSingleton<RemoteConfigCubit>(RemoteConfigCubit())
     ..registerSingleton<HackerNewsRepository>(HackerNewsRepository())
     ..registerSingleton<HackerNewsWebRepository>(HackerNewsWebRepository())
+    ..registerSingleton<HistoryRepository>(HistoryRepository())
     ..registerSingleton<PreferenceRepository>(PreferenceRepository())
     ..registerSingleton<SearchRepository>(SearchRepository())
     ..registerSingleton<AuthRepository>(AuthRepository())

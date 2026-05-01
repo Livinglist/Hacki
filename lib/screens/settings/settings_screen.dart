@@ -695,7 +695,7 @@ class _SettingsViewState extends State<SettingsView>
               onPressed: () {
                 context.pop();
                 locator.get<OfflineRepository>().deleteAll();
-                locator.get<PreferenceRepository>().clearAllReadStories();
+                locator.get<HistoryRepository>().clearAllReadStoryIds();
                 DefaultCacheManager().emptyCache();
                 locator.get<SembastRepository>()
                   ..deleteAllCachedItems()

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:hacki/config/constants.dart';
+import 'package:collection/collection.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/extensions/loggable.dart';
 import 'package:hacki/models/models.dart';
@@ -11,7 +11,7 @@ import 'package:hive/hive.dart';
 class CollapseStateCacheRepository with Loggable {
   CollapseStateCacheRepository({Future<Box<String>>? commentBox})
     : _box = commentBox ?? Hive.openBox<String>(_boxName) {
-    Future<void>.delayed(AppDurations.threeSeconds, initialize);
+    initialize();
   }
 
   static const String _boxName = 'persistedCollapseStates';
@@ -105,29 +105,30 @@ class CollapseStateCacheRepository with Loggable {
       }
     }
 
-    logInfo('${box.length} keys detected in preserved collapse states');
+    logInfo('${box.length} keys in preserved collapse states');
 
     if (box.length > _maxLength) {
-      final Set<String> seenStories = <String>{};
-      final List<String> orderedStoryIds =
-          box.keys
-              .cast<String>()
-              .map((String k) => k.split('_').first)
-              .where(seenStories.add)
-              .toList()
-            ..sort(
-              (String a, String b) => int.parse(a).compareTo(int.parse(b)),
-            );
+      final List<int> orderedStoryIds = box.keys
+          .cast<String>()
+          .map((String k) => int.tryParse(k.split('_').first) ?? 0)
+          .toSet()
+          .sorted((int a, int b) => a.compareTo(b));
 
-      int i = 0;
-      while (box.length > _maxLength && i < orderedStoryIds.length) {
-        final String oldStoryId = orderedStoryIds[i++];
+      logInfo(
+        '''total unique story IDs in preserved collapse state: ${orderedStoryIds.length}''',
+      );
+
+      final int end = orderedStoryIds.length ~/ 2;
+      final List<int> storyIdsToBeDeleted = orderedStoryIds.sublist(0, end);
+      logInfo(
+        '''deleting ${storyIdsToBeDeleted.length} story IDs from collapse state''',
+      );
+      for (final int storyId in storyIdsToBeDeleted) {
         final List<String> keysToDelete = box.keys
             .cast<String>()
-            .where((String k) => k.startsWith('${oldStoryId}_'))
+            .where((String k) => k.startsWith('${storyId}_'))
             .toList();
 
-        logDebug('deleting $keysToDelete');
         await box.deleteAll(keysToDelete);
       }
     }
