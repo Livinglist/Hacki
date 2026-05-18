@@ -18,13 +18,13 @@ dependencies:
   cached_network_image: ^3.4.1
   collection: ^1.19.1
   connectivity_plus: ^7.1.1
-  device_info_plus: ^12.4.0
+  device_info_plus: ^13.1.0
   dio: ^5.9.2
   dio_smart_retry: ^7.0.1
   equatable: ^2.0.8
   fast_gbk: ^1.0.0
   feature_discovery: ^0.14.2
-  file_picker: ^11.0.2
+  file_picker: ^12.0.0-beta.3
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
@@ -52,7 +52,7 @@ dependencies:
   linkify: ^5.0.0
   logger: ^2.7.0
   memoize: ^3.0.0
-  package_info_plus: ^9.0.1
+  package_info_plus: ^10.1.0
   path: ^1.9.1
   path_provider: ^2.1.5
   path_provider_android: ^2.3.1
@@ -71,7 +71,7 @@ dependencies:
   scrollable_positioned_list: ^0.3.8
   scrolls_to_top: ^2.1.1
   sembast: ^3.8.6
-  share_plus: ^12.0.2
+  share_plus: ^13.1.0
   shared_preferences: ^2.5.5
   shared_preferences_android: ^2.4.23
   shared_preferences_foundation: ^2.5.6
@@ -82,7 +82,7 @@ dependencies:
   url_launcher: ^6.3.2
   video_player: ^2.11.1
   visibility_detector: ^0.4.0+2
-  wakelock_plus: ^1.5.2
+  wakelock_plus: ^1.6.1
   webview_flutter: ^4.13.1
   workmanager: ^0.9.0+3
 
