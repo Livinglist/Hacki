@@ -5,7 +5,6 @@ import 'package:hacki/extensions/extensions.dart';
 
 class UARotationInterceptor extends Interceptor with Loggable {
   static const List<String> _iosUserAgents = <String>[
-    'Mozilla/5.0 (iPhone; CPU iPhone OS 26_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) EdgiOS/146.0.3856.85 Version/26.0 Mobile/15E148 Safari/604.1',
     'Mozilla/5.0 (iPhone; CPU iPhone OS 26_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Brave/1 Mobile/15E148 Safari/604.1',
     'Mozilla/5.0 (iPhone; CPU iPhone OS 18_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Mobile/15E148 Safari/604.1',
   ];
