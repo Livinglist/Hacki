@@ -36,7 +36,7 @@ dependencies:
   flutter_local_notifications: ^21.0.0
   flutter_material_color_picker: ^1.2.0
   flutter_native_splash: ^2.4.7
-  flutter_secure_storage: ^10.2.0
+  flutter_secure_storage: ^10.3.0
   flutter_slidable: ^4.0.3
   font_awesome_flutter: ^11.0.0
   get_it: ^9.2.1
