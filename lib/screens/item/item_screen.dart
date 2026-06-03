@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -230,7 +231,10 @@ class _ItemScreenState extends State<ItemScreen>
         .state
         .isOfflineReading;
     final bool shouldShowWebViewBottomSheet =
-        !isOfflineReading && widget.item is Story && widget.item.url.isNotEmpty;
+        !isOfflineReading && 
+        widget.item is Story && 
+        widget.item.url.isNotEmpty &&
+        !Platform.isLinux;
     return MultiBlocListener(
       listeners: <BlocListener<dynamic, dynamic>>[
         BlocListener<PostCubit, PostState>(

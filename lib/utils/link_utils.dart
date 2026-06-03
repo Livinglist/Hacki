@@ -63,6 +63,8 @@ abstract final class LinkUtils {
               context.read<PreferenceCubit>().state.isCustomTabEnabled ==
                   false) {
             launchUrl(uri, mode: LaunchMode.externalApplication);
+          } else if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+            launchUrl(uri, mode: LaunchMode.externalApplication);
           } else {
             final Color primaryColor = Theme.of(context).colorScheme.primary;
             _browser
