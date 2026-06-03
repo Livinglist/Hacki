@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/styles/styles.dart';
@@ -40,13 +42,15 @@ class _QrCodeScannerScreenState extends State<QrCodeScannerScreen> {
         ],
       ),
       extendBodyBehindAppBar: true,
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: QRView(key: qrKey, onQRViewCreated: onQRViewCreated),
-          ),
-        ],
-      ),
+      body: (Platform.isAndroid || Platform.isIOS)
+          ? Column(
+              children: <Widget>[
+                Expanded(
+                  child: QRView(key: qrKey, onQRViewCreated: onQRViewCreated),
+                ),
+              ],
+            )
+          : const Center(child: Text('QR scanning is not supported on this platform.')),
     );
   }
 

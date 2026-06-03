@@ -811,16 +811,17 @@ class _SettingsViewState extends State<SettingsView>
         return AlertDialog(
           actionsPadding: const EdgeInsets.all(Dimens.pt16),
           actions: <Widget>[
-            ElevatedButton(
-              onPressed: onSendEmailTapped,
-              child: const Row(
-                children: <Widget>[
-                  Icon(Icons.email),
-                  SizedBox(width: Dimens.pt12),
-                  Text('Email'),
-                ],
+            if (Platform.isAndroid || Platform.isIOS)
+              ElevatedButton(
+                onPressed: onSendEmailTapped,
+                child: const Row(
+                  children: <Widget>[
+                    Icon(Icons.email),
+                    SizedBox(width: Dimens.pt12),
+                    Text('Email'),
+                  ],
+                ),
               ),
-            ),
             ElevatedButton(
               onPressed: () => onGithubTapped(context.rect),
               child: const Row(
@@ -991,11 +992,12 @@ class _SettingsViewState extends State<SettingsView>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              ListTile(
-                leading: const Icon(Icons.qr_code_scanner),
-                title: const Text('QR Code'),
-                onTap: () => context.pop(ImportSource.qrCode),
-              ),
+              if (Platform.isAndroid || Platform.isIOS)
+                ListTile(
+                  leading: const Icon(Icons.qr_code_scanner),
+                  title: const Text('QR Code'),
+                  onTap: () => context.pop(ImportSource.qrCode),
+                ),
               ListTile(
                 leading: const Icon(Icons.file_open_outlined),
                 title: const Text('From File'),
