@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:app_links/app_links.dart';
 import 'package:feature_discovery/feature_discovery.dart';
@@ -36,8 +37,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin, RouteAware, ItemActionMixin, Loggable {
   late final TabController tabController;
-  late final StreamSubscription<List<SharedMediaFile>>
-  intentDataStreamSubscription;
+  StreamSubscription<List<SharedMediaFile>>? intentDataStreamSubscription;
   late final StreamSubscription<String?> notificationStreamSubscription;
   late final StreamSubscription<String?> siriSuggestionStreamSubscription;
   late final StreamSubscription<StoriesDownloadStatus>
@@ -68,13 +68,15 @@ class _HomeScreenState extends State<HomeScreen>
       }
     });
 
-    ReceiveSharingIntent.instance.getInitialMedia().then(
-      onShareExtensionTapped,
-    );
+    if (Platform.isAndroid || Platform.isIOS) {
+      ReceiveSharingIntent.instance.getInitialMedia().then(
+        onShareExtensionTapped,
+      );
 
-    intentDataStreamSubscription = ReceiveSharingIntent.instance
-        .getMediaStream()
-        .listen(onShareExtensionTapped);
+      intentDataStreamSubscription = ReceiveSharingIntent.instance
+          .getMediaStream()
+          .listen(onShareExtensionTapped);
+    }
 
     if (!selectNotificationSubject.hasListener) {
       notificationStreamSubscription = selectNotificationSubject.stream.listen(
@@ -107,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void dispose() {
     tabController.dispose();
-    intentDataStreamSubscription.cancel();
+    intentDataStreamSubscription?.cancel();
     notificationStreamSubscription.cancel();
     siriSuggestionStreamSubscription.cancel();
     downloadStreamSubscription.cancel();
