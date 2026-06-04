@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -109,7 +111,7 @@ abstract final class DialogProxy {
       ),
     ).then((bool? abortDownloading) {
       if (abortDownloading ?? false) {
-        WakelockPlus.enable();
+        if (!Platform.isLinux) WakelockPlus.enable();
 
         if (context != null && context.mounted) {
           context.read<StoriesBloc>().add(StoriesCancelDownload());

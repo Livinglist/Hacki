@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,7 +23,7 @@ class OfflineListTile extends StatelessWidget {
       listener: (BuildContext context, StoriesState state) {
         if (state.downloadStatus == StoriesDownloadStatus.failure ||
             state.downloadStatus == StoriesDownloadStatus.finished) {
-          WakelockPlus.disable();
+          if (!Platform.isLinux) WakelockPlus.disable();
         }
       },
       buildWhen: (StoriesState previous, StoriesState current) =>
@@ -161,7 +163,7 @@ class OfflineListTile extends StatelessWidget {
       ),
     ).then((bool? includeWebPage) {
       if (includeWebPage != null) {
-        WakelockPlus.enable();
+        if (!Platform.isLinux) WakelockPlus.enable();
 
         storiesBloc.add(StoriesDownload(includingWebPage: includeWebPage));
       }
