@@ -29,13 +29,15 @@ abstract final class LinkUtils {
     bool shouldUseHackiForHnLink = true,
   }) {
     if (isOfflineReading) {
-      locator.get<OfflineRepository>().hasCachedWebPage(url: link).then((
-        bool cached,
-      ) {
-        if (cached) {
-          router.push(Paths.webView.landing, extra: link);
-        }
-      });
+      if (!Platform.isLinux) {
+        locator.get<OfflineRepository>().hasCachedWebPage(url: link).then((
+          bool cached,
+        ) {
+          if (cached) {
+            router.push(Paths.webView.landing, extra: link);
+          }
+        });
+      }
 
       return;
     }
