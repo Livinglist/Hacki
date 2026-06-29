@@ -48,7 +48,7 @@ dependencies:
   hydrated_bloc: ^11.0.0
   in_app_review:
     path: components/in_app_review
-  intl: ^0.20.2
+  intl: ^0.20.3
   linkify: ^5.0.0
   logger: ^2.7.0
   memoize: ^3.0.0
