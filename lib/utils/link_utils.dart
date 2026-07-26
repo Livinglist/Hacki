@@ -29,13 +29,15 @@ abstract final class LinkUtils {
     bool shouldUseHackiForHnLink = true,
   }) {
     if (isOfflineReading) {
-      locator.get<OfflineRepository>().hasCachedWebPage(url: link).then((
-        bool cached,
-      ) {
-        if (cached) {
-          router.push(Paths.webView.landing, extra: link);
-        }
-      });
+      if (!Platform.isLinux) {
+        locator.get<OfflineRepository>().hasCachedWebPage(url: link).then((
+          bool cached,
+        ) {
+          if (cached) {
+            router.push(Paths.webView.landing, extra: link);
+          }
+        });
+      }
 
       return;
     }
@@ -62,6 +64,8 @@ abstract final class LinkUtils {
           if (Platform.isAndroid &&
               context.read<PreferenceCubit>().state.isCustomTabEnabled ==
                   false) {
+            launchUrl(uri, mode: LaunchMode.externalApplication);
+          } else if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
             launchUrl(uri, mode: LaunchMode.externalApplication);
           } else {
             final Color primaryColor = Theme.of(context).colorScheme.primary;

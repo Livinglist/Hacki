@@ -39,6 +39,22 @@ A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
 - [x] [Accent color](#thread) and [font customization](#accent-color-and-font-customization)
 - [x] And more...
 
+## Desktop Support (Linux, macOS, Windows)
+
+Hacki can be built and run on desktop platforms. The primary motivation is Linux (including Arch Linux via the [AUR package](https://aur.archlinux.org/packages/hacki)), though macOS and Windows also benefit from the same changes.
+
+Desktop builds are left to the reader/packager — no official distribution is provided for desktop at this time.
+
+**Limitations on desktop — the following features are unavailable:**
+
+| Feature | Limitation |
+|---------|-----------|
+| Offline reading (WebView) | Not supported on Linux; links in offline mode are silently skipped |
+| Favorites import via QR code | Camera scanning unavailable; use the **From File** option instead |
+| Share extension | System share intent is mobile-only |
+| In-app bug report email | Use the **GitHub** option in the bug report dialog instead |
+| Custom haptics | No-op on desktop |
+
 ## Home page and story tile customization
 <p align="center">
     <img width="200" src="assets/new_screenshots/hacki_01.png">
