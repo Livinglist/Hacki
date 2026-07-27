@@ -33,7 +33,7 @@ dependencies:
   flutter_fadein: ^2.0.0
   flutter_feather_icons: 2.0.0+1
   flutter_inappwebview: ^6.1.5
-  flutter_local_notifications: ^21.0.0
+  flutter_local_notifications: ^22.2.0
   flutter_material_color_picker: ^1.2.0
   flutter_native_splash: ^2.4.7
   flutter_secure_storage: ^10.3.1
