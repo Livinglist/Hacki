@@ -71,7 +71,7 @@ dependencies:
   scrollable_positioned_list: ^0.3.8
   scrolls_to_top: ^2.1.1
   sembast: ^3.8.7
-  share_plus: ^13.1.0
+  share_plus: ^13.3.0
   shared_preferences: ^2.5.5
   shared_preferences_android: ^2.4.23
   shared_preferences_foundation: ^2.5.6
