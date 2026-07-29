@@ -83,7 +83,7 @@ dependencies:
   video_player: ^2.11.1
   visibility_detector: ^0.4.0+2
   wakelock_plus: ^1.6.1
-  webview_flutter: ^4.13.1
+  webview_flutter: ^4.14.1
   workmanager: ^0.9.0+3
 
 dev_dependencies:
