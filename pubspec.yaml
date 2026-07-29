@@ -19,7 +19,7 @@ dependencies:
   collection: ^1.19.1
   connectivity_plus: ^7.2.0
   device_info_plus: ^13.1.0
-  dio: ^5.9.2
+  dio: ^5.11.0
   dio_smart_retry: ^7.0.1
   equatable: ^2.0.8
   fast_gbk: ^1.0.0
