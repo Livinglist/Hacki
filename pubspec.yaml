@@ -1,6 +1,6 @@
 name: hacki
 description: A Hacker News client.
-version: 3.6.6+366
+version: 3.6.7+367
 publish_to: none
 
 environment:
@@ -19,7 +19,7 @@ dependencies:
   collection: ^1.19.1
   connectivity_plus: ^7.2.0
   device_info_plus: ^13.1.0
-  dio: ^5.9.2
+  dio: ^5.11.0
   dio_smart_retry: ^7.0.1
   equatable: ^2.0.8
   fast_gbk: ^1.0.0
@@ -33,7 +33,7 @@ dependencies:
   flutter_fadein: ^2.0.0
   flutter_feather_icons: 2.0.0+1
   flutter_inappwebview: ^6.1.5
-  flutter_local_notifications: ^21.0.0
+  flutter_local_notifications: ^22.2.0
   flutter_material_color_picker: ^1.2.0
   flutter_native_splash: ^2.4.7
   flutter_secure_storage: ^10.3.1
@@ -71,7 +71,7 @@ dependencies:
   scrollable_positioned_list: ^0.3.8
   scrolls_to_top: ^2.1.1
   sembast: ^3.8.7
-  share_plus: ^13.1.0
+  share_plus: ^13.3.0
   shared_preferences: ^2.5.5
   shared_preferences_android: ^2.4.23
   shared_preferences_foundation: ^2.5.6
@@ -83,7 +83,7 @@ dependencies:
   video_player: ^2.11.1
   visibility_detector: ^0.4.0+2
   wakelock_plus: ^1.7.0
-  webview_flutter: ^4.13.1
+  webview_flutter: ^4.14.1
   workmanager: ^0.9.0+3
 
 dev_dependencies:
