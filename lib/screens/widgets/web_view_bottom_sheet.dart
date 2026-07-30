@@ -9,12 +9,14 @@ import 'package:webview_flutter/webview_flutter.dart';
 class WebViewBottomSheet extends StatefulWidget {
   const WebViewBottomSheet({
     required this.initialUrl,
+    required this.isVisible,
     required this.onCloseTapped,
     required this.onDragHandleTapped,
     super.key,
   });
 
   final String initialUrl;
+  final bool isVisible;
   final VoidCallback onCloseTapped;
   final VoidCallback onDragHandleTapped;
 
@@ -35,18 +37,7 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
   bool _isLoading = false;
   bool _canGoBack = false;
   bool _canGoForward = false;
-  bool _hasLoaded = false;
   double _loadingProgress = 0;
-
-  /// Loads [WebViewBottomSheet.initialUrl] the first time the sheet is
-  /// expanded beyond its collapsed peek. Loading lazily (rather than in
-  /// [initState]) avoids running the linked page — and any audio/video it
-  /// autoplays — while the sheet is merely peeking and not being viewed.
-  void _loadIfNeeded() {
-    if (_hasLoaded) return;
-    _hasLoaded = true;
-    _controller.loadRequest(Uri.parse(widget.initialUrl));
-  }
 
   @override
   void initState() {
@@ -57,6 +48,7 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (String url) {
+            if (!mounted) return;
             setState(() {
               _isLoading = true;
               _loadingProgress = 0;
@@ -64,11 +56,13 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
             });
           },
           onProgress: (int progress) {
+            if (!mounted) return;
             setState(() => _loadingProgress = progress / 100.0);
           },
           onPageFinished: (String url) async {
             final bool canBack = await _controller.canGoBack();
             final bool canFwd = await _controller.canGoForward();
+            if (!mounted) return;
             setState(() {
               _isLoading = false;
               _loadingProgress = 1.0;
@@ -78,10 +72,12 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
             });
           },
           onWebResourceError: (WebResourceError error) {
+            if (!mounted) return;
             setState(() => _isLoading = false);
           },
         ),
-      );
+      )
+      ..loadRequest(Uri.parse(widget.initialUrl));
 
     _animController = AnimationController(
       duration: AppDurations.ms300,
@@ -90,11 +86,6 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
     _rotationAnim = Tween<double>(begin: 0, end: 0.5).animate(_animController);
     _sheetController.addListener(() {
       final double newSize = _sheetController.size;
-
-      /// Load the page only once the user starts expanding the sheet.
-      if (newSize > _minChildSize) {
-        _loadIfNeeded();
-      }
 
       final double scrollPosition =
           ((newSize - _minChildSize) / (_maxChildSize - _minChildSize)).clamp(
@@ -107,7 +98,24 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
   }
 
   @override
+  void didUpdateWidget(WebViewBottomSheet oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    /// When the sheet is revealed again after being hidden, reload the
+    /// original page (it was navigated to about:blank when closed to stop
+    /// any media playback).
+    if (!oldWidget.isVisible && widget.isVisible) {
+      _controller.loadRequest(Uri.parse(widget.initialUrl));
+    }
+  }
+
+  @override
   void dispose() {
+    /// Navigate the web view away from the loaded page so any audio/video it
+    /// is playing stops when the sheet is torn down (e.g. leaving the item
+    /// screen). WKWebView keeps playing media otherwise.
+    _controller.loadRequest(Uri.parse('about:blank'));
+    _animController.dispose();
     _urlController.dispose();
     _sheetController.dispose();
     super.dispose();
@@ -192,6 +200,9 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
                           onClose: () {
                             if (_sheetController.isAttached) {
                               if (_sheetController.size == _minChildSize) {
+                                _controller.loadRequest(
+                                  Uri.parse('about:blank'),
+                                );
                                 widget.onCloseTapped();
                               } else {
                                 _sheetController.animateTo(
