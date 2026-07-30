@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
-import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/screens/widgets/spring_curve.dart';
 import 'package:hacki/styles/dimens.dart';
 import 'package:hacki/styles/palette.dart';
@@ -34,14 +32,26 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
   late final Animation<double> _rotationAnim;
   static const double _minChildSize = 0.1;
   static const double _maxChildSize = 0.94;
-  bool _isLoading = true;
+  bool _isLoading = false;
   bool _canGoBack = false;
   bool _canGoForward = false;
+  bool _hasLoaded = false;
   double _loadingProgress = 0;
+
+  /// Loads [WebViewBottomSheet.initialUrl] the first time the sheet is
+  /// expanded beyond its collapsed peek. Loading lazily (rather than in
+  /// [initState]) avoids running the linked page — and any audio/video it
+  /// autoplays — while the sheet is merely peeking and not being viewed.
+  void _loadIfNeeded() {
+    if (_hasLoaded) return;
+    _hasLoaded = true;
+    _controller.loadRequest(Uri.parse(widget.initialUrl));
+  }
 
   @override
   void initState() {
     super.initState();
+    _urlController.text = widget.initialUrl;
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
@@ -71,8 +81,7 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
             setState(() => _isLoading = false);
           },
         ),
-      )
-      ..loadRequest(Uri.parse(widget.initialUrl));
+      );
 
     _animController = AnimationController(
       duration: AppDurations.ms300,
@@ -81,6 +90,12 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
     _rotationAnim = Tween<double>(begin: 0, end: 0.5).animate(_animController);
     _sheetController.addListener(() {
       final double newSize = _sheetController.size;
+
+      /// Load the page only once the user starts expanding the sheet.
+      if (newSize > _minChildSize) {
+        _loadIfNeeded();
+      }
+
       final double scrollPosition =
           ((newSize - _minChildSize) / (_maxChildSize - _minChildSize)).clamp(
             0.0,
@@ -106,13 +121,6 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
 
   @override
   Widget build(BuildContext context) {
-    final bool isWebViewBottomSheetEnabled = context
-        .select<PreferenceCubit, bool>(
-          (PreferenceCubit cubit) => cubit.state.isWebViewBottomSheetEnabled,
-        );
-    if (!isWebViewBottomSheetEnabled) {
-      return const SizedBox.shrink();
-    }
     return DraggableScrollableSheet(
       controller: _sheetController,
       snapAnimationDuration: AppDurations.ms200,
