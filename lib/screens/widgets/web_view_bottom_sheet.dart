@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
-import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/screens/widgets/spring_curve.dart';
 import 'package:hacki/styles/dimens.dart';
 import 'package:hacki/styles/palette.dart';
@@ -11,12 +9,14 @@ import 'package:webview_flutter/webview_flutter.dart';
 class WebViewBottomSheet extends StatefulWidget {
   const WebViewBottomSheet({
     required this.initialUrl,
+    required this.isVisible,
     required this.onCloseTapped,
     required this.onDragHandleTapped,
     super.key,
   });
 
   final String initialUrl;
+  final bool isVisible;
   final VoidCallback onCloseTapped;
   final VoidCallback onDragHandleTapped;
 
@@ -34,7 +34,7 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
   late final Animation<double> _rotationAnim;
   static const double _minChildSize = 0.1;
   static const double _maxChildSize = 0.94;
-  bool _isLoading = true;
+  bool _isLoading = false;
   bool _canGoBack = false;
   bool _canGoForward = false;
   double _loadingProgress = 0;
@@ -42,11 +42,13 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
   @override
   void initState() {
     super.initState();
+    _urlController.text = widget.initialUrl;
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (String url) {
+            if (!mounted) return;
             setState(() {
               _isLoading = true;
               _loadingProgress = 0;
@@ -54,11 +56,13 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
             });
           },
           onProgress: (int progress) {
+            if (!mounted) return;
             setState(() => _loadingProgress = progress / 100.0);
           },
           onPageFinished: (String url) async {
             final bool canBack = await _controller.canGoBack();
             final bool canFwd = await _controller.canGoForward();
+            if (!mounted) return;
             setState(() {
               _isLoading = false;
               _loadingProgress = 1.0;
@@ -68,6 +72,7 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
             });
           },
           onWebResourceError: (WebResourceError error) {
+            if (!mounted) return;
             setState(() => _isLoading = false);
           },
         ),
@@ -81,6 +86,7 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
     _rotationAnim = Tween<double>(begin: 0, end: 0.5).animate(_animController);
     _sheetController.addListener(() {
       final double newSize = _sheetController.size;
+
       final double scrollPosition =
           ((newSize - _minChildSize) / (_maxChildSize - _minChildSize)).clamp(
             0.0,
@@ -92,7 +98,24 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
   }
 
   @override
+  void didUpdateWidget(WebViewBottomSheet oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    /// When the sheet is revealed again after being hidden, reload the
+    /// original page (it was navigated to about:blank when closed to stop
+    /// any media playback).
+    if (!oldWidget.isVisible && widget.isVisible) {
+      _controller.loadRequest(Uri.parse(widget.initialUrl));
+    }
+  }
+
+  @override
   void dispose() {
+    /// Navigate the web view away from the loaded page so any audio/video it
+    /// is playing stops when the sheet is torn down (e.g. leaving the item
+    /// screen). WKWebView keeps playing media otherwise.
+    _controller.loadRequest(Uri.parse('about:blank'));
+    _animController.dispose();
     _urlController.dispose();
     _sheetController.dispose();
     super.dispose();
@@ -106,13 +129,6 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
 
   @override
   Widget build(BuildContext context) {
-    final bool isWebViewBottomSheetEnabled = context
-        .select<PreferenceCubit, bool>(
-          (PreferenceCubit cubit) => cubit.state.isWebViewBottomSheetEnabled,
-        );
-    if (!isWebViewBottomSheetEnabled) {
-      return const SizedBox.shrink();
-    }
     return DraggableScrollableSheet(
       controller: _sheetController,
       snapAnimationDuration: AppDurations.ms200,
@@ -184,6 +200,9 @@ class _WebViewBottomSheetState extends State<WebViewBottomSheet>
                           onClose: () {
                             if (_sheetController.isAttached) {
                               if (_sheetController.size == _minChildSize) {
+                                _controller.loadRequest(
+                                  Uri.parse('about:blank'),
+                                );
                                 widget.onCloseTapped();
                               } else {
                                 _sheetController.animateTo(

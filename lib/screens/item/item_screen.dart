@@ -177,8 +177,8 @@ class _ItemScreenState extends State<ItemScreen>
       AppDurations.oneSecond;
   static const double _indentPadding = 8;
   static const double _indentLineWidth = 2;
-  static const double _webViewOffsetInvisible = 0.1;
-  bool _isWebViewBottomSheetVisible = true;
+  final ItemScreenWebViewController _webViewController =
+      ItemScreenWebViewController();
 
   @override
   void didPop() {
@@ -220,6 +220,7 @@ class _ItemScreenState extends State<ItemScreen>
     featureDiscoveryDismissThrottle.dispose();
     focusNode.dispose();
     scrollOffsetSubscription?.cancel();
+    _webViewController.dispose();
     super.dispose();
   }
 
@@ -229,8 +230,15 @@ class _ItemScreenState extends State<ItemScreen>
         .read<CommentsCubit>()
         .state
         .isOfflineReading;
+    final bool isWebViewBottomSheetEnabled = context
+        .select<PreferenceCubit, bool>(
+          (PreferenceCubit cubit) => cubit.state.isWebViewBottomSheetEnabled,
+        );
     final bool shouldShowWebViewBottomSheet =
-        !isOfflineReading && widget.item is Story && widget.item.url.isNotEmpty;
+        !isOfflineReading &&
+        isWebViewBottomSheetEnabled &&
+        widget.item is Story &&
+        widget.item.url.isNotEmpty;
     return MultiBlocListener(
       listeners: <BlocListener<dynamic, dynamic>>[
         BlocListener<PostCubit, PostState>(
@@ -312,11 +320,7 @@ class _ItemScreenState extends State<ItemScreen>
                         cmt,
                         context.read<CommentsCubit>().state.item,
                       ),
-                      onStoryUrlTapped: () {
-                        setState(() {
-                          _isWebViewBottomSheetVisible = true;
-                        });
-                      },
+                      onStoryUrlTapped: _webViewController.show,
                       shouldMarkNewComment: widget.shouldMarkNewComment,
                     ),
                   ),
@@ -354,7 +358,11 @@ class _ItemScreenState extends State<ItemScreen>
                       bottom: Dimens.pt36,
                       child: FloatingSkipButtons(),
                     ),
-                  if (shouldShowWebViewBottomSheet) webViewBottomSheet,
+                  if (shouldShowWebViewBottomSheet)
+                    ItemScreenWebView(
+                      url: widget.item.url,
+                      controller: _webViewController,
+                    ),
                   Positioned(
                     bottom: Dimens.zero,
                     left: Dimens.zero,
@@ -426,11 +434,7 @@ class _ItemScreenState extends State<ItemScreen>
                                     cmt,
                                     context.read<CommentsCubit>().state.item,
                                   ),
-                              onStoryUrlTapped: () {
-                                setState(() {
-                                  _isWebViewBottomSheetVisible = true;
-                                });
-                              },
+                              onStoryUrlTapped: _webViewController.show,
                               shouldMarkNewComment: widget.shouldMarkNewComment,
                             ),
                           ),
@@ -465,36 +469,15 @@ class _ItemScreenState extends State<ItemScreen>
                         context.read<CommentsCubit>().scrollTo(index: 0),
                   ),
                 ),
-                if (shouldShowWebViewBottomSheet) webViewBottomSheet,
+                if (shouldShowWebViewBottomSheet)
+                  ItemScreenWebView(
+                    url: widget.item.url,
+                    controller: _webViewController,
+                  ),
               ],
             ),
     );
   }
-
-  Widget get webViewBottomSheet => Positioned.fill(
-    child: AnimatedSlide(
-      offset: Offset(
-        0,
-        _isWebViewBottomSheetVisible ? 0 : _webViewOffsetInvisible,
-      ),
-      duration: AppDurations.ms200,
-      child: WebViewBottomSheet(
-        initialUrl: widget.item.url,
-        onDragHandleTapped: () {
-          if (!_isWebViewBottomSheetVisible) {
-            setState(() {
-              _isWebViewBottomSheetVisible = true;
-            });
-          }
-        },
-        onCloseTapped: () {
-          setState(() {
-            _isWebViewBottomSheetVisible = !_isWebViewBottomSheetVisible;
-          });
-        },
-      ),
-    ),
-  );
 
   void removeReplyBoxFocusOnScroll(double _) {
     focusNode.unfocus();
