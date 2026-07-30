@@ -48,6 +48,7 @@
 		E5CE972B2D3E541A00430A81 /* StoryWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CE97172D3E541A00430A81 /* StoryWidgetBundle.swift */; };
 		E5CE972C2D3E541A00430A81 /* Timeline+Placeholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5CE97182D3E541A00430A81 /* Timeline+Placeholder.swift */; };
 		E5CE972D2D3E541A00430A81 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E5CE970F2D3E541A00430A81 /* Assets.xcassets */; };
+		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -156,6 +157,7 @@
 		E5CE97162D3E541A00430A81 /* StoryWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryWidget.swift; sourceTree = "<group>"; };
 		E5CE97172D3E541A00430A81 /* StoryWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryWidgetBundle.swift; sourceTree = "<group>"; };
 		E5CE97182D3E541A00430A81 /* Timeline+Placeholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Timeline+Placeholder.swift"; sourceTree = "<group>"; };
+		78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterGeneratedPluginSwiftPackage; path = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,6 +165,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */,
 				E575B6F127EBC6DB002B1508 /* CloudKit.framework in Frameworks */,
 				7A6CD5D595D5F4E8710804C0 /* Pods_Runner.framework in Frameworks */,
 			);
@@ -200,6 +203,7 @@
 		9740EEB11CF90186004384FC /* Flutter */ = {
 			isa = PBXGroup;
 			children = (
+				78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */,
 				3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */,
 				9740EEB21CF90195004384FC /* Debug.xcconfig */,
 				7AFA3C8E1D35360C0083082E /* Release.xcconfig */,
@@ -342,6 +346,9 @@
 
 /* Begin PBXNativeTarget section */
 		97C146ED1CF9000F007C117D /* Runner */ = {
+			packageProductDependencies = (
+				78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */,
+			);
 			isa = PBXNativeTarget;
 			buildConfigurationList = 97C147051CF9000F007C117D /* Build configuration list for PBXNativeTarget "Runner" */;
 			buildPhases = (
@@ -457,6 +464,7 @@
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
 			packageReferences = (
+				781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */,
 				E573DE372D3E282700831A51 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				E573DE3C2D3E28CD00831A51 /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 			);
@@ -1406,7 +1414,17 @@
 			package = E573DE3C2D3E28CD00831A51 /* XCRemoteSwiftPackageReference "SwiftSoup" */;
 			productName = SwiftSoup;
 		};
+		78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FlutterGeneratedPluginSwiftPackage;
+		};
 /* End XCSwiftPackageProductDependency section */
+/* Begin XCLocalSwiftPackageReference section */
+		781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage;
+		};
+/* End XCLocalSwiftPackageReference section */
 	};
 	rootObject = 97C146E61CF9000F007C117D /* Project object */;
 }
