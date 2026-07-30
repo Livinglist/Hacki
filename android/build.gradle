@@ -9,6 +9,16 @@ rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
     project.evaluationDependsOn(':app')
+
+    // Skip lint on release builds. The `lintVital*` tasks run lint on every
+    // module (including third-party Flutter plugins) during release assembly
+    // and provide little value here, while repeatedly breaking the build
+    // (e.g. AndroidLintWorkAction failing to initialize on JDK 21). Disabling
+    // the tasks lazily avoids evaluation-order issues with the
+    // `evaluationDependsOn(':app')` above.
+    project.tasks.matching { it.name.startsWith('lintVital') }.configureEach {
+        it.enabled = false
+    }
 }
 
 tasks.register("clean", Delete) {
