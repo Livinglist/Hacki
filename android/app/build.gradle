@@ -43,7 +43,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = '24'
+        jvmTarget = JavaVersion.VERSION_18.toString()
     }
 
     sourceSets {
