@@ -230,10 +230,10 @@ class _ItemScreenState extends State<ItemScreen>
         .read<CommentsCubit>()
         .state
         .isOfflineReading;
-    final bool isWebViewBottomSheetEnabled = context.select<PreferenceCubit,
-        bool>(
-      (PreferenceCubit cubit) => cubit.state.isWebViewBottomSheetEnabled,
-    );
+    final bool isWebViewBottomSheetEnabled = context
+        .select<PreferenceCubit, bool>(
+          (PreferenceCubit cubit) => cubit.state.isWebViewBottomSheetEnabled,
+        );
     final bool shouldShowWebViewBottomSheet =
         !isOfflineReading &&
         isWebViewBottomSheetEnabled &&
