@@ -129,11 +129,9 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                                   hintText: 'Search Hacker News',
                                 ),
                                 onChanged: (String val) {
-                                  if (val.isNotEmpty) {
-                                    debouncer.run(() {
-                                      context.read<SearchCubit>().search(val);
-                                    });
-                                  }
+                                  debouncer.run(() {
+                                    context.read<SearchCubit>().search(val);
+                                  });
                                 },
                               ),
                             ),
