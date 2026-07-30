@@ -5,37 +5,40 @@ publish_to: none
 
 environment:
   sdk: ">=3.11.0 <4.0.0"
-  flutter: "3.41.9"
+  flutter: "3.44.8"
 
 dependencies:
   adaptive_theme: ^3.7.2
   advanced_haptics: ^1.0.8
   animations: ^2.2.0
-  app_links: ^7.0.0
+  app_links: ^7.2.1
   badges: ^3.2.0
   bloc: ^9.2.1
   bloc_concurrency: ^0.3.0
   cached_network_image: ^3.4.1
   collection: ^1.19.1
-  connectivity_plus: ^7.2.0
+  connectivity_plus: ^7.3.1
   device_info_plus: ^13.1.0
   dio: ^5.11.0
   dio_smart_retry: ^7.0.1
-  equatable: ^2.0.8
+  equatable: ^2.1.0
   fast_gbk: ^1.0.0
   feature_discovery: ^0.14.2
   file_picker: ^12.0.0-beta.3
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
-  flutter_cache_manager: ^3.4.1
+  flutter_cache_manager: ^3.4.2
   flutter_email_sender: ^9.0.0
   flutter_fadein: ^2.0.0
-  flutter_feather_icons: 2.0.0+1
+  flutter_feather_icons:
+    git:
+      url: https://github.com/Livinglist/flutter_feather_icons
+      ref: master
   flutter_inappwebview: ^6.1.5
   flutter_local_notifications: ^22.2.0
   flutter_material_color_picker: ^1.2.0
-  flutter_native_splash: ^2.4.7
+  flutter_native_splash: ^2.4.8
   flutter_secure_storage: ^10.3.1
   flutter_slidable: ^4.0.3
   font_awesome_flutter: ^11.0.0
@@ -52,7 +55,7 @@ dependencies:
   linkify: ^5.0.0
   logger: ^2.7.0
   memoize: ^3.0.0
-  package_info_plus: ^10.1.0
+  package_info_plus: ^10.2.1
   path: ^1.9.1
   path_provider: ^2.1.6
   path_provider_android: ^2.3.1
@@ -62,7 +65,7 @@ dependencies:
     git:
       url: https://github.com/livinglist/flutter_pulltorefresh
       ref: master
-  qr_code_scanner_plus: ^2.1.2
+  qr_code_scanner_plus: ^2.2.0
   qr_flutter: ^4.1.0
   receive_sharing_intent: 1.8.1
   responsive_builder: ^0.7.1
@@ -70,7 +73,7 @@ dependencies:
   screenshot: ^3.0.0
   scrollable_positioned_list: ^0.3.8
   scrolls_to_top: ^2.1.1
-  sembast: ^3.8.7
+  sembast: ^3.8.9+1
   share_plus: ^13.3.0
   shared_preferences: ^2.5.5
   shared_preferences_android: ^2.4.23
@@ -80,7 +83,7 @@ dependencies:
     path: components/synced_shared_preferences
   universal_platform: ^1.1.0
   url_launcher: ^6.3.2
-  video_player: ^2.11.1
+  video_player: ^2.13.0
   visibility_detector: ^0.4.0+2
   wakelock_plus: ^1.7.0
   webview_flutter: ^4.14.1

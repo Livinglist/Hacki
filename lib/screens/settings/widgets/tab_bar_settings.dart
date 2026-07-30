@@ -36,7 +36,7 @@ class _TabBarSettingsState extends State<TabBarSettings> {
                 child: ReorderableListView(
                   scrollDirection: Axis.horizontal,
                   physics: const NeverScrollableScrollPhysics(),
-                  onReorder: context.read<TabCubit>().update,
+                  onReorderItem: context.read<TabCubit>().update,
                   onReorderStart: (_) => HapticFeedbackUtils.light(),
                   children: <Widget>[
                     for (final StoryType tab in state.tabs)
