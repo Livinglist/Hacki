@@ -31,7 +31,10 @@ dependencies:
   flutter_cache_manager: ^3.4.1
   flutter_email_sender: ^9.0.0
   flutter_fadein: ^2.0.0
-  flutter_feather_icons: 2.0.0+1
+  flutter_feather_icons:
+    git:
+      url: https://github.com/Livinglist/flutter_feather_icons
+      ref: master
   flutter_inappwebview: ^6.1.5
   flutter_local_notifications: ^22.2.0
   flutter_material_color_picker: ^1.2.0

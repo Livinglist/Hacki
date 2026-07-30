@@ -28,7 +28,7 @@ class _CountDownReminderState extends State<CountdownReminder>
   bool isVisible = false;
 
   static const Duration countdownDuration = AppDurations.tenSeconds;
-  static const Duration visibilityCountdownDuration = Duration.zero;
+  static const Duration visibilityCountdownDuration = AppDurations.threeSeconds;
 
   @override
   void initState() {

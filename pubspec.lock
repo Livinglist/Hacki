@@ -438,11 +438,12 @@ packages:
   flutter_feather_icons:
     dependency: "direct main"
     description:
-      name: flutter_feather_icons
-      sha256: b33b9c276fc8108254632da6644cf01f71af6c17fbfb26e136a86945f5ff9b67
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0+1"
+      path: "."
+      ref: master
+      resolved-ref: bee443fdd660e67808cbaa059a562925b56f949a
+      url: "https://github.com/Livinglist/flutter_feather_icons"
+    source: git
+    version: "3.0.0"
   flutter_inappwebview:
     dependency: "direct main"
     description:
