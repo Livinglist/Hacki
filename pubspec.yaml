@@ -67,7 +67,7 @@ dependencies:
       ref: master
   qr_code_scanner_plus: ^2.2.0
   qr_flutter: ^4.1.0
-  receive_sharing_intent: 1.8.1
+  receive_sharing_intent: 1.9.0
   responsive_builder: ^0.7.1
   rxdart: ^0.28.0
   screenshot: ^3.0.0
