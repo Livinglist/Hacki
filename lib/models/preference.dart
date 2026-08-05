@@ -85,6 +85,7 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
         const WebViewBottomSheetPreference(),
         const DividerPlaceholder(label: 'Look And Feel'),
         const EyeCandyPreference(),
+        const DynamicColorPreference(),
         const HackerNewsThemePreference(),
         const HapticFeedbackPreference(),
         const TrueDarkModePreference(),
@@ -117,6 +118,35 @@ final class DividerPlaceholder extends Preference<void> {
 
 abstract final class BooleanPreference extends Preference<bool> {
   const BooleanPreference({required super.val});
+
+  String? dependencyErrorMessage(Iterable<Preference<dynamic>> preferences) {
+    final List<String> unmetDependencies = <String>[];
+
+    for (final Preference<dynamic> dependency in dependencies) {
+      final Preference<dynamic>? concreteDependency = preferences
+          .singleWhereOrNull(
+            (Preference<dynamic> pref) => pref.key == dependency.key,
+          );
+      if (concreteDependency?.val != dependency.val) {
+        final String action = dependency.val == true ? 'enable' : 'disable';
+        unmetDependencies.add('$action ${dependency.title}');
+      }
+    }
+
+    if (unmetDependencies.isEmpty) {
+      return null;
+    }
+
+    final String precedingDependencies = unmetDependencies
+        .sublist(0, unmetDependencies.length - 1)
+        .join(', ');
+    final String dependencyList = switch (unmetDependencies.length) {
+      1 => unmetDependencies.single,
+      2 => '${unmetDependencies.first} and ${unmetDependencies.last}',
+      _ => '$precedingDependencies, and ${unmetDependencies.last}',
+    };
+    return 'Please $dependencyList first.';
+  }
 }
 
 abstract final class IntPreference extends Preference<int> {
@@ -247,6 +277,11 @@ final class HackerNewsThemePreference extends BooleanPreference {
   HackerNewsThemePreference copyWith({required bool? val}) {
     return HackerNewsThemePreference(val: val);
   }
+
+  @override
+  Set<Preference<dynamic>> get dependencies => <Preference<dynamic>>{
+    const DynamicColorPreference(val: false),
+  };
 
   @override
   String get key => 'hackerNewsThemePreference';
@@ -793,6 +828,35 @@ final class TrueDarkModePreference extends BooleanPreference {
 
   @override
   String get subtitle => 'real dark.';
+}
+
+final class DynamicColorPreference extends BooleanPreference {
+  const DynamicColorPreference({bool? val})
+    : super(val: val ?? _dynamicColorPreferenceDefaultValue);
+
+  static const bool _dynamicColorPreferenceDefaultValue = false;
+
+  @override
+  DynamicColorPreference copyWith({required bool? val}) {
+    return DynamicColorPreference(val: val);
+  }
+
+  @override
+  Set<Preference<dynamic>> get dependencies => <Preference<dynamic>>{
+    const HackerNewsThemePreference(val: false),
+  };
+
+  @override
+  String get key => 'dynamicColor';
+
+  @override
+  String get title => 'Dynamic Colors';
+
+  @override
+  String get subtitle => 'wallpaper colors.';
+
+  @override
+  bool get isDisplayable => Platform.isAndroid;
 }
 
 final class HapticFeedbackPreference extends BooleanPreference {

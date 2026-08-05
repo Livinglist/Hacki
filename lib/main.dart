@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:equatable/equatable.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/foundation.dart';
@@ -232,6 +233,7 @@ class HackiApp extends StatelessWidget {
             previous.font != current.font ||
             previous.textScaleFactor != current.textScaleFactor ||
             previous.isTrueDarkModeEnabled != current.isTrueDarkModeEnabled ||
+            previous.isDynamicColorEnabled != current.isDynamicColorEnabled ||
             previous.isHackerNewsThemeEnabled !=
                 current.isHackerNewsThemeEnabled ||
             previous.isDevModeEnabled != current.isDevModeEnabled,
@@ -285,59 +287,81 @@ class HackiApp extends StatelessWidget {
                                       Brightness.dark);
                         }
                       }();
-                      final ColorScheme colorScheme = ColorScheme.fromSeed(
-                        brightness: isDarkModeEnabled
-                            ? Brightness.dark
-                            : Brightness.light,
-                        seedColor: state.appColor,
-                        dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
-                      );
-                      return FeatureDiscovery(
-                        child: MediaQuery(
-                          data: state.textScaleFactor == 1
-                              ? MediaQuery.of(context)
-                              : MediaQuery.of(context).copyWith(
-                                  textScaler: TextScaler.linear(
-                                    state.textScaleFactor,
+                      return DynamicColorBuilder(
+                        builder:
+                            (
+                              ColorScheme? lightDynamic,
+                              ColorScheme? darkDynamic,
+                            ) {
+                              final ColorScheme fallbackColorScheme =
+                                  ColorScheme.fromSeed(
+                                    brightness: isDarkModeEnabled
+                                        ? Brightness.dark
+                                        : Brightness.light,
+                                    seedColor: state.appColor,
+                                    dynamicSchemeVariant:
+                                        DynamicSchemeVariant.fidelity,
+                                  );
+                              final ColorScheme colorScheme =
+                                  state.isDynamicColorEnabled
+                                  ? ((isDarkModeEnabled
+                                            ? darkDynamic
+                                            : lightDynamic) ??
+                                        fallbackColorScheme)
+                                  : fallbackColorScheme;
+                              return FeatureDiscovery(
+                                child: MediaQuery(
+                                  data: state.textScaleFactor == 1
+                                      ? MediaQuery.of(context)
+                                      : MediaQuery.of(context).copyWith(
+                                          textScaler: TextScaler.linear(
+                                            state.textScaleFactor,
+                                          ),
+                                        ),
+                                  child: MaterialApp.router(
+                                    title: 'Hacki',
+                                    debugShowCheckedModeBanner: false,
+                                    darkTheme: state.isHackerNewsThemeEnabled
+                                        ? HackerNewsDarkTheme.theme
+                                        : null,
+                                    theme: state.isHackerNewsThemeEnabled
+                                        ? HackerNewsTheme.theme
+                                        : AppTheme.theme(
+                                            colorScheme,
+                                            state.font,
+                                            isDarkModeEnabled:
+                                                isDarkModeEnabled,
+                                            isTrueDarkModeEnabled:
+                                                state.isTrueDarkModeEnabled,
+                                          ),
+                                    routerConfig: router,
+                                    builder: state.isDevModeEnabled
+                                        ? (
+                                            BuildContext context,
+                                            Widget? child,
+                                          ) => Stack(
+                                            children: <Widget>[
+                                              Positioned.fill(child: child!),
+                                              DraggableFloatingButton(
+                                                onTap: () {
+                                                  router.push(
+                                                    Paths.logs.landing,
+                                                  );
+                                                },
+                                                child: Icon(
+                                                  Icons.bug_report,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onPrimaryContainer,
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        : null,
                                   ),
                                 ),
-                          child: MaterialApp.router(
-                            title: 'Hacki',
-                            debugShowCheckedModeBanner: false,
-                            darkTheme: state.isHackerNewsThemeEnabled
-                                ? HackerNewsDarkTheme.theme
-                                : null,
-                            theme: state.isHackerNewsThemeEnabled
-                                ? HackerNewsTheme.theme
-                                : AppTheme.theme(
-                                    colorScheme,
-                                    state.font,
-                                    isDarkModeEnabled: isDarkModeEnabled,
-                                    isTrueDarkModeEnabled:
-                                        state.isTrueDarkModeEnabled,
-                                  ),
-                            routerConfig: router,
-                            builder: state.isDevModeEnabled
-                                ? (BuildContext context, Widget? child) =>
-                                      Stack(
-                                        children: <Widget>[
-                                          Positioned.fill(child: child!),
-                                          DraggableFloatingButton(
-                                            onTap: () {
-                                              router.push(Paths.logs.landing);
-                                            },
-                                            child: Icon(
-                                              Icons.bug_report,
-                                              color: Theme.of(
-                                                context,
-                                              ).colorScheme.onPrimaryContainer,
-                                            ),
-                                          ),
-                                        ],
-                                      )
-                                : null,
-                          ),
-                        ),
+                              );
+                            },
                       );
                     },
               );
