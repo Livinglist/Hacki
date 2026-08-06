@@ -423,10 +423,34 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_email_sender
-      sha256: f01bccb29bc1aba3d128859ca970883923a43824c7b9bc2fc47bb278a8cc2674
+      sha256: "0e1bc57128cef5bbc4c92c7d6d2768e61166c9118dcb961b7453c78531b382ed"
       url: "https://pub.dev"
     source: hosted
-    version: "9.0.0"
+    version: "10.0.1"
+  flutter_email_sender_method_channel:
+    dependency: transitive
+    description:
+      name: flutter_email_sender_method_channel
+      sha256: f40d2893b6f3e16d771b65fd9ffaeada44b65e95a02bcf532ed55775a0a96a60
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
+  flutter_email_sender_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_email_sender_platform_interface
+      sha256: "576fb2b08790040693bd02b1911ad51bf52ccabba87dc2964d6805552f27c39a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
+  flutter_email_sender_web:
+    dependency: transitive
+    description:
+      name: flutter_email_sender_web
+      sha256: cf47a07211d2e802f4638a8e17bfc87de0ee5c93f91d16051c0ed5ad01781c65
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   flutter_fadein:
     dependency: "direct main"
     description:

@@ -29,7 +29,7 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^9.1.1
   flutter_cache_manager: ^3.4.2
-  flutter_email_sender: ^9.0.0
+  flutter_email_sender: ^10.0.1
   flutter_fadein: ^2.0.0
   flutter_feather_icons:
     git:
