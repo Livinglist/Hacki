@@ -298,17 +298,18 @@ class _SettingsViewState extends State<SettingsView>
                         selected: <bool>{
                           preferenceState.isOn(preference as BooleanPreference),
                         },
-                        onSelectionChanged:
-                            preference.dependencies.satisfy(
-                              preferenceState.preferences,
-                            )
-                            ? (Set<bool> val) {
-                                HapticFeedbackUtils.light();
-                                context.read<PreferenceCubit>().update(
-                                  preference.copyWith(val: val.single),
-                                );
-                              }
-                            : null,
+                        onSelectionChanged: (Set<bool> val) {
+                          HapticFeedbackUtils.light();
+                          if (!preference.dependencies.satisfy(
+                            preferenceState.preferences,
+                          )) {
+                            showDependencyError(preference);
+                            return;
+                          }
+                          context.read<PreferenceCubit>().update(
+                            preference.copyWith(val: val.single),
+                          );
+                        },
                       ),
                     ),
                   )
@@ -322,25 +323,26 @@ class _SettingsViewState extends State<SettingsView>
                     value: preferenceState.isOn(
                       preference as BooleanPreference,
                     ),
-                    onChanged:
-                        preference.dependencies.satisfy(
-                          preferenceState.preferences,
-                        )
-                        ? (bool val) {
-                            HapticFeedbackUtils.light();
+                    onChanged: (bool val) {
+                      HapticFeedbackUtils.light();
 
-                            context.read<PreferenceCubit>().update(
-                              preference.copyWith(val: val),
-                            );
+                      if (val &&
+                          !preference.dependencies.satisfy(
+                            preferenceState.preferences,
+                          )) {
+                        showDependencyError(preference);
+                        return;
+                      }
 
-                            if (preference is MarkReadStoriesModePreference &&
-                                val == false) {
-                              context.read<StoriesBloc>().add(
-                                ClearAllReadStories(),
-                              );
-                            }
-                          }
-                        : null,
+                      context.read<PreferenceCubit>().update(
+                        preference.copyWith(val: val),
+                      );
+
+                      if (preference is MarkReadStoriesModePreference &&
+                          val == false) {
+                        context.read<StoriesBloc>().add(ClearAllReadStories());
+                      }
+                    },
                     activeThumbColor: Theme.of(context).colorScheme.primary,
                   ),
                 if (preference is MarkReadStoriesModePreference) ...<Widget>[
@@ -519,10 +521,26 @@ class _SettingsViewState extends State<SettingsView>
     );
   }
 
+  void showDependencyError(Preference<dynamic> preference) {
+    if (preference is! BooleanPreference) {
+      return;
+    }
+    final String? message = preference.dependencyErrorMessage(
+      context.read<PreferenceCubit>().state.preferences,
+    );
+    if (message != null) {
+      context
+        ..removeSnackBar()
+        ..showErrorSnackBar(message);
+    }
+  }
+
   void showHackerNewsThemeError() {
-    context
-      ..removeSnackBar()
-      ..showErrorSnackBar('Please disable Hacker News Theme first.');
+    showDependencyError(const DynamicColorPreference(val: true));
+  }
+
+  void showDynamicColorError() {
+    showDependencyError(const HackerNewsThemePreference(val: true));
   }
 
   void showFontSettingDialog() {
@@ -621,8 +639,15 @@ class _SettingsViewState extends State<SettingsView>
   }
 
   void showColorPicker() {
-    if (context.read<PreferenceCubit>().state.isHackerNewsThemeEnabled) {
+    final PreferenceState preferenceState = context
+        .read<PreferenceCubit>()
+        .state;
+    if (preferenceState.isHackerNewsThemeEnabled) {
       showHackerNewsThemeError();
+      return;
+    }
+    if (preferenceState.isDynamicColorEnabled) {
+      showDynamicColorError();
       return;
     }
     showDialog<void>(
