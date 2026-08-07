@@ -12,8 +12,6 @@ PODS:
   - in_app_review (0.2.0):
     - Flutter
   - OrderedSet (6.0.3)
-  - receive_sharing_intent (1.8.1):
-    - Flutter
   - synced_shared_preferences (0.0.1):
     - Flutter
   - workmanager_apple (0.0.1):
@@ -24,7 +22,6 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_inappwebview_ios (from `.symlinks/plugins/flutter_inappwebview_ios/ios`)
   - in_app_review (from `.symlinks/plugins/in_app_review/ios`)
-  - receive_sharing_intent (from `.symlinks/plugins/receive_sharing_intent/ios`)
   - synced_shared_preferences (from `.symlinks/plugins/synced_shared_preferences/ios`)
   - workmanager_apple (from `.symlinks/plugins/workmanager_apple/ios`)
 
@@ -41,8 +38,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_inappwebview_ios/ios"
   in_app_review:
     :path: ".symlinks/plugins/in_app_review/ios"
-  receive_sharing_intent:
-    :path: ".symlinks/plugins/receive_sharing_intent/ios"
   synced_shared_preferences:
     :path: ".symlinks/plugins/synced_shared_preferences/ios"
   workmanager_apple:
@@ -54,7 +49,6 @@ SPEC CHECKSUMS:
   flutter_inappwebview_ios: b89ba3482b96fb25e00c967aae065701b66e9b99
   in_app_review: 8efcf4a4d3ba72d5d776d29e5a268f1abf64d184
   OrderedSet: e539b66b644ff081c73a262d24ad552a69be3a94
-  receive_sharing_intent: 222384f00ffe7e952bbfabaa9e3967cb87e5fe00
   synced_shared_preferences: 90a2b479df93a2f6b68e08443f865ed1633dbe6a
   workmanager_apple: 904529ae31e97fc5be632cf628507652294a0778
 
