@@ -20,7 +20,7 @@ dependencies:
   connectivity_plus: ^7.3.1
   device_info_plus: ^13.2.0
   dio: ^5.11.0
-  dynamic_color: ^1.8.1
+  dynamic_color: ^1.9.0
   dio_smart_retry: ^7.0.1
   equatable: ^2.1.0
   fast_gbk: ^1.0.0
