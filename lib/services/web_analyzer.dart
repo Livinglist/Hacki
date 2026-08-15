@@ -379,7 +379,7 @@ ${info.toJson()}
           }
           count++;
           client.close();
-          return _requestUrl(url, count: count, cookie: cookie);
+          return await _requestUrl(url, count: count, cookie: cookie);
         }
       } else if (stream.statusCode == HttpStatus.ok) {
         res = await Response.fromStream(stream);
@@ -390,7 +390,7 @@ ${info.toJson()}
           if (match != null) {
             final String? newUrl = match.group(1);
             if (newUrl != null) {
-              return _requestUrl(newUrl, count: count, cookie: cookie);
+              return await _requestUrl(newUrl, count: count, cookie: cookie);
             }
           }
         }

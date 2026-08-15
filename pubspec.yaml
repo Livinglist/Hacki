@@ -5,7 +5,7 @@ publish_to: none
 
 environment:
   sdk: ">=3.11.0 <4.0.0"
-  flutter: "3.44.9"
+  flutter: "3.47.0"
 
 dependencies:
   adaptive_theme: ^3.7.2
@@ -20,8 +20,8 @@ dependencies:
   connectivity_plus: ^7.3.1
   device_info_plus: ^13.2.0
   dio: ^5.11.0
-  dynamic_color: ^1.9.0
   dio_smart_retry: ^7.0.1
+  dynamic_color: ^1.9.0
   equatable: ^2.1.0
   fast_gbk: ^1.0.0
   feature_discovery: ^0.14.2
@@ -36,7 +36,7 @@ dependencies:
     git:
       url: https://github.com/Livinglist/flutter_feather_icons
       ref: master
-  flutter_inappwebview: ^6.1.5
+  flutter_inappwebview: ^6.2.0-beta.3
   flutter_local_notifications: ^22.2.0
   flutter_material_color_picker: ^1.2.0
   flutter_native_splash: ^2.4.8

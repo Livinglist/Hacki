@@ -32,7 +32,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.jiaqifeng.hacki"
-    compileSdkVersion 36
+    compileSdkVersion 37
     ndkVersion = "28.2.13676358"
 
     compileOptions {

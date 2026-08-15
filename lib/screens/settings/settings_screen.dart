@@ -298,52 +298,74 @@ class _SettingsViewState extends State<SettingsView>
                         selected: <bool>{
                           preferenceState.isOn(preference as BooleanPreference),
                         },
-                        onSelectionChanged: (Set<bool> val) {
-                          HapticFeedbackUtils.light();
-                          if (!preference.dependencies.satisfy(
-                            preferenceState.preferences,
-                          )) {
-                            showDependencyError(preference);
-                            return;
-                          }
-                          context.read<PreferenceCubit>().update(
-                            preference.copyWith(val: val.single),
-                          );
-                        },
+                        onSelectionChanged:
+                            preference.dependencies.satisfy(
+                              preferenceState.preferences,
+                            )
+                            ? (Set<bool> val) {
+                                HapticFeedbackUtils.light();
+                                if (!preference.dependencies.satisfy(
+                                  preferenceState.preferences,
+                                )) {
+                                  showDependencyError(preference);
+                                  return;
+                                }
+                                context.read<PreferenceCubit>().update(
+                                  preference.copyWith(val: val.single),
+                                );
+                              }
+                            : null,
                       ),
                     ),
                   )
                 else
-                  SwitchListTile(
-                    key: ValueKey<String>(preference.key),
-                    title: Text(preference.title),
-                    subtitle: preference.subtitle.isNotEmpty
-                        ? Text(preference.subtitle)
-                        : null,
-                    value: preferenceState.isOn(
-                      preference as BooleanPreference,
-                    ),
-                    onChanged: (bool val) {
-                      HapticFeedbackUtils.light();
-
-                      if (val &&
-                          !preference.dependencies.satisfy(
+                  InkWell(
+                    onTap:
+                        preference.dependencies.satisfy(
+                          preferenceState.preferences,
+                        )
+                        ? null
+                        : () {
+                            showDependencyError(preference);
+                          },
+                    child: SwitchListTile(
+                      key: ValueKey<String>(preference.key),
+                      title: Text(preference.title),
+                      subtitle: preference.subtitle.isNotEmpty
+                          ? Text(preference.subtitle)
+                          : null,
+                      value: preferenceState.isOn(
+                        preference as BooleanPreference,
+                      ),
+                      onChanged:
+                          preference.dependencies.satisfy(
                             preferenceState.preferences,
-                          )) {
-                        showDependencyError(preference);
-                        return;
-                      }
+                          )
+                          ? (bool val) {
+                              HapticFeedbackUtils.light();
 
-                      context.read<PreferenceCubit>().update(
-                        preference.copyWith(val: val),
-                      );
+                              if (val &&
+                                  !preference.dependencies.satisfy(
+                                    preferenceState.preferences,
+                                  )) {
+                                showDependencyError(preference);
+                                return;
+                              }
 
-                      if (preference is MarkReadStoriesModePreference &&
-                          val == false) {
-                        context.read<StoriesBloc>().add(ClearAllReadStories());
-                      }
-                    },
-                    activeThumbColor: Theme.of(context).colorScheme.primary,
+                              context.read<PreferenceCubit>().update(
+                                preference.copyWith(val: val),
+                              );
+
+                              if (preference is MarkReadStoriesModePreference &&
+                                  val == false) {
+                                context.read<StoriesBloc>().add(
+                                  ClearAllReadStories(),
+                                );
+                              }
+                            }
+                          : null,
+                      activeThumbColor: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                 if (preference is MarkReadStoriesModePreference) ...<Widget>[
                   Padding(
