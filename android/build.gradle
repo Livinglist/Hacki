@@ -11,6 +11,20 @@ subprojects {
     project.evaluationDependsOn(':app')
 }
 
+// AGP 9's lint worker (AndroidLintWorkAction) crashes with
+// ExceptionInInitializerError on several Flutter plugin library modules that
+// still apply the Kotlin Gradle Plugin (e.g. advanced_haptics) when run as
+// part of a full release build. lintVital analysis is release-only lint and
+// doesn't affect the built APK, so disable it on all subprojects to let
+// assembleRelease finish.
+subprojects { project ->
+    project.tasks.configureEach { task ->
+        if (task.name.startsWith('lintVital')) {
+            task.enabled = false
+        }
+    }
+}
+
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
