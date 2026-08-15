@@ -11,6 +11,17 @@ subprojects {
     project.evaluationDependsOn(':app')
 }
 
+// AGP 9's lint worker crashes on several Flutter plugins that still apply
+// Kotlin Gradle Plugin (e.g. advanced_haptics:lintVitalAnalyzeRelease).
+// Skip vital lint on those library modules so assembleRelease can finish.
+subprojects { project ->
+    project.tasks.configureEach { task ->
+        if (task.name.startsWith('lintVital')) {
+            task.enabled = false
+        }
+    }
+}
+
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }

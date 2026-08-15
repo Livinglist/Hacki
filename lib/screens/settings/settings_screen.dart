@@ -1062,15 +1062,9 @@ class _SettingsViewState extends State<SettingsView>
       case ImportSource.qrCode:
         data = await router.push(Paths.qrCode.scanner) as String?;
       case ImportSource.file:
-        final FilePickerResult? result = await FilePicker.pickFiles(
-          withData: true,
-        );
-        if (result == null) return;
-        final List<int>? bytes = result.files.first.bytes;
-        if (bytes == null) {
-          showSnackBar(content: 'Could not read file.');
-          return;
-        }
+        final PlatformFile? file = await FilePicker.pickFile();
+        if (file == null) return;
+        final Uint8List bytes = await file.readAsBytes();
         data = String.fromCharCodes(bytes).trim();
     }
 

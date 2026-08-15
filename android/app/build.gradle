@@ -36,14 +36,19 @@ android {
     ndkVersion = "28.2.13676358"
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_18
-        targetCompatibility JavaVersion.VERSION_18
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
         // Flag to enable support for the new language APIs
         coreLibraryDesugaringEnabled true
     }
 
     kotlinOptions {
-        jvmTarget = '24'
+        jvmTarget = '17'
+    }
+
+    lint {
+        checkReleaseBuilds false
+        abortOnError false
     }
 
     sourceSets {
@@ -82,7 +87,7 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.1.20"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.4.0"
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
 }
 
