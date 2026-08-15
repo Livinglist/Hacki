@@ -1065,10 +1065,6 @@ class _SettingsViewState extends State<SettingsView>
         final PlatformFile? file = await FilePicker.pickFile();
         if (file == null) return;
         final Uint8List bytes = await file.readAsBytes();
-        if (bytes.isEmpty) {
-          showErrorSnackBar('Cannot read the file :(');
-          return;
-        }
         data = String.fromCharCodes(bytes).trim();
     }
 

@@ -77,10 +77,7 @@ android {
             signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
-            // Do not use getDefaultProguardFile(): Flutter redirects buildDir to
-            // ../../build/app, so AGP 9 never writes the generated default file
-            // where R8 looks (android/app/build/intermediates/...).
-            proguardFiles 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
