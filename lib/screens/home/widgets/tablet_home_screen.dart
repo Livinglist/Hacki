@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart' hide Badge;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:material_ui/material_ui.dart' hide Badge;
 import 'package:responsive_builder/responsive_builder.dart';
 
 class TabletHomeScreen extends StatelessWidget {

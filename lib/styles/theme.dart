@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:hacki/models/font.dart';
 import 'package:hacki/styles/dimens.dart';
 import 'package:hacki/styles/palette.dart';
+import 'package:material_ui/material_ui.dart';
 
 extension ThemeDataExtension on ThemeData {
   Color get readGrey => hintColor;

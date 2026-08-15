@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/repositories/repositories.dart';
@@ -8,6 +7,7 @@ import 'package:hacki/services/services.dart';
 import 'package:hacki/utils/logger/custom_log_filter.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:logger/logger.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Global [GetIt.instance].
 final GetIt locator = GetIt.instance;

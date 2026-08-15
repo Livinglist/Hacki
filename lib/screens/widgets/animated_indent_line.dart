@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:hacki/screens/widgets/painters/indent_line_painter.dart';
+import 'package:material_ui/material_ui.dart';
 
 class AnimatedIndentLine extends StatefulWidget {
   const AnimatedIndentLine({

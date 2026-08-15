@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Circular progress indicator with color.
 /// Changing `colorScheme`'s `primary` color doesn't work because it changes

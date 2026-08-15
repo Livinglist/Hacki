@@ -8,7 +8,7 @@ environment:
   flutter: "3.47.0"
 
 dependencies:
-  adaptive_theme: ^3.7.2
+  adaptive_theme: ^3.8.0
   advanced_haptics: ^1.0.8
   animations: ^2.2.0
   app_links: ^7.2.1
@@ -21,7 +21,11 @@ dependencies:
   device_info_plus: ^13.2.0
   dio: ^5.11.0
   dio_smart_retry: ^7.0.1
-  dynamic_color: ^1.9.0
+  dynamic_color:
+    git:
+      url: https://github.com/Livinglist/flutter-packages.git
+      ref: main
+      path: packages/dynamic_color
   equatable: ^2.1.0
   fast_gbk: ^1.0.0
   feature_discovery: ^0.14.2
@@ -38,7 +42,10 @@ dependencies:
       ref: master
   flutter_inappwebview: ^6.2.0-beta.3
   flutter_local_notifications: ^22.2.0
-  flutter_material_color_picker: ^1.2.0
+  flutter_material_color_picker:
+    git:
+      url: https://github.com/Livinglist/flutter_material_color_picker
+      ref: master
   flutter_native_splash: ^2.4.8
   flutter_secure_storage: ^11.0.0
   flutter_slidable: ^4.0.3
@@ -55,6 +62,7 @@ dependencies:
   intl: ^0.20.3
   linkify: ^5.0.0
   logger: ^2.7.0
+  material_ui: ^1.0.0
   memoize: ^3.0.0
   package_info_plus: ^10.2.1
   path: ^1.9.1
@@ -65,7 +73,7 @@ dependencies:
   pull_to_refresh:
     git:
       url: https://github.com/livinglist/flutter_pulltorefresh
-      ref: master
+      ref: f3238eb1bd615bf727a79b10121f098738877295
   qr_code_scanner_plus: ^2.2.0
   qr_flutter: ^4.1.0
   receive_sharing_intent: 1.9.0
@@ -84,7 +92,7 @@ dependencies:
     path: components/synced_shared_preferences
   universal_platform: ^1.1.0
   url_launcher: ^6.3.2
-  video_player: ^2.13.0
+  video_player: ^2.14.0
   visibility_detector: ^0.4.0+2
   wakelock_plus: ^1.7.0
   webview_flutter: ^4.14.1

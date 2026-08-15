@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/config/locator.dart';
@@ -8,6 +7,7 @@ import 'package:hacki/models/item/item.dart';
 import 'package:hacki/repositories/hacker_news_repository.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/styles/dimens.dart';
+import 'package:material_ui/material_ui.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 

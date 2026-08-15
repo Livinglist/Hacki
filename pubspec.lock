@@ -13,10 +13,10 @@ packages:
     dependency: "direct main"
     description:
       name: adaptive_theme
-      sha256: "5caccff82e40ef6d3ebb28caaa091ab1865b0e35bd2ab2ddccf49cd336331012"
+      sha256: "9baacd7ddde29d2b5745640c3c2456ec6a8a7017b1d8bb0e8375259216a92f4a"
       url: "https://pub.dev"
     source: hosted
-    version: "3.7.2"
+    version: "3.8.0"
   advanced_haptics:
     dependency: "direct main"
     description:
@@ -265,6 +265,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.2"
+  cupertino_ui:
+    dependency: transitive
+    description:
+      name: cupertino_ui
+      sha256: "7ed8ce4159d342eec4c65f4ea6eec57adaf9365404378541f38efc1da20a5b3d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   dbus:
     dependency: transitive
     description:
@@ -324,10 +332,11 @@ packages:
   dynamic_color:
     dependency: "direct main"
     description:
-      name: dynamic_color
-      sha256: "4aeb76de323e8eb660bab5557d826ad7ebbf1434a598f0c6aa8a11a9696a6757"
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/dynamic_color"
+      ref: main
+      resolved-ref: "5b45a5786d649c35f76933c6f6542064fb5662a9"
+      url: "https://github.com/Livinglist/flutter-packages.git"
+    source: git
     version: "1.9.0"
   equatable:
     dependency: "direct main"
@@ -588,13 +597,19 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.1"
+  flutter_localizations:
+    dependency: transitive
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   flutter_material_color_picker:
     dependency: "direct main"
     description:
-      name: flutter_material_color_picker
-      sha256: ca1e7749d228c9155ea24bce98e647cdbffa350e6f334f6c001f841cd3d9c987
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: master
+      resolved-ref: d6c33796e7f7b0b4097aba8e660ea6a2b1d1c863
+      url: "https://github.com/Livinglist/flutter_material_color_picker"
+    source: git
     version: "1.2.0"
   flutter_native_splash:
     dependency: "direct main"
@@ -943,6 +958,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.13.0"
+  material_ui:
+    dependency: "direct main"
+    description:
+      name: material_ui
+      sha256: d9b4f6c69b80bc83d0a14357c86e4c14c8076e807ae73cf2960c8560f623995f
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   memoize:
     dependency: "direct main"
     description:
@@ -1179,8 +1202,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: "6d7fbdd5b3cde242a474d66da312aac4aa892b9b"
+      ref: f3238eb1bd615bf727a79b10121f098738877295
+      resolved-ref: f3238eb1bd615bf727a79b10121f098738877295
       url: "https://github.com/livinglist/flutter_pulltorefresh"
     source: git
     version: "2.0.0"
@@ -1656,10 +1679,10 @@ packages:
     dependency: "direct main"
     description:
       name: video_player
-      sha256: "20ef311160e2ced020a62f38e4cc399a1bf289e722fc5fe37c9d7b18e44c9e8d"
+      sha256: "8c837b570dccb9ae6ff73d2e0b03c7e708bfefd3bd1194faa7f3e7f200dfc399"
       url: "https://pub.dev"
     source: hosted
-    version: "2.13.0"
+    version: "2.14.0"
   video_player_android:
     dependency: transitive
     description:

@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
+import 'package:material_ui/material_ui.dart';
 
 class OnboardingView extends StatefulWidget {
   const OnboardingView({super.key});

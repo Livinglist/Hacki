@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewScreen extends StatefulWidget {

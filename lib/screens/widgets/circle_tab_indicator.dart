@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class CircleTabIndicator extends Decoration {
   CircleTabIndicator({required Color color, required double radius})

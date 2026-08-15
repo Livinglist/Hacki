@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:material_ui/material_ui.dart';
 
 class OfflineBanner extends StatelessWidget {
   const OfflineBanner({super.key, this.shouldShowExitButton = false});

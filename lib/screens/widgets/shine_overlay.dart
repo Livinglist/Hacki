@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/screens/widgets/painters/shine_painter.dart';
+import 'package:material_ui/material_ui.dart';
 
 class ShineOverlay extends StatefulWidget {
   const ShineOverlay({required this.rect, required this.onDone, super.key});
