@@ -80,7 +80,7 @@ class _CountDownReminderState extends State<CountdownReminder>
     return BlocBuilder<ReminderCubit, ReminderState>(
       builder: (BuildContext context, ReminderState state) {
         return Visibility(
-          visible: isVisible && state.storyId != null,
+          visible: isVisible && !state.hasShown && state.storyId != null,
           child: AnimatedBuilder(
             animation: animationController,
             child: FadeIn(

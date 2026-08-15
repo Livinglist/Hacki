@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
@@ -56,11 +57,12 @@ class ItemScreen extends StatefulWidget {
     super.key,
     this.splitViewEnabled = false,
     this.shouldMarkNewComment = false,
+    this.showBackButton = false,
   });
 
   static const String routeName = 'item';
 
-  static Widget phone(ItemScreenArgs args) {
+  static Widget phone(ItemScreenArgs args, {bool showBackButton = false}) {
     return MultiBlocProvider(
       providers: <BlocProvider<dynamic>>[
         BlocProvider<CommentsCubit>(
@@ -94,6 +96,7 @@ class ItemScreen extends StatefulWidget {
         item: args.item,
         parentComments: args.targetComments ?? <Comment>[],
         shouldMarkNewComment: args.shouldMarkNewComment,
+        showBackButton: showBackButton,
       ),
     );
   }
@@ -149,6 +152,7 @@ class ItemScreen extends StatefulWidget {
 
   final bool splitViewEnabled;
   final bool shouldMarkNewComment;
+  final bool showBackButton;
   final Item item;
   final List<Comment> parentComments;
 
@@ -192,6 +196,15 @@ class _ItemScreenState extends State<ItemScreen>
   void didPushNext() {
     super.didPushNext();
     focusNode.unfocus();
+  }
+
+  void onBackTapped() {
+    final NavigatorState navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+    } else {
+      unawaited(SystemNavigator.pop());
+    }
   }
 
   @override
@@ -345,6 +358,9 @@ class _ItemScreenState extends State<ItemScreen>
                           onZoomTap: context.read<SplitViewCubit>().zoom,
                           onFontSizeTap: onFontSizeTapped,
                           fontSizeIconButtonKey: fontSizeIconButtonKey,
+                          onBackTap: widget.showBackButton
+                              ? onBackTapped
+                              : null,
                         ),
                       );
                     },
@@ -394,6 +410,7 @@ class _ItemScreenState extends State<ItemScreen>
                         ).canvasColor.withValues(alpha: 0.6),
                         foregroundColor: Theme.of(context).iconTheme.color,
                         item: widget.item,
+                        onBackTap: widget.showBackButton ? onBackTapped : null,
                         onFontSizeTap: onFontSizeTapped,
                         fontSizeIconButtonKey: fontSizeIconButtonKey,
                       ),
