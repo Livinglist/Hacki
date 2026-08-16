@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/custom_linkify/custom_linkify.dart';
 import 'package:hacki/services/dialog_proxy.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
+import 'package:material_ui/material_ui.dart';
 
 extension ContextMenuBuilder on Widget {
   Widget contextMenuBuilder(

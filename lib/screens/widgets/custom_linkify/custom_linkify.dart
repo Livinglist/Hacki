@@ -1,5 +1,4 @@
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/router.dart';
@@ -10,6 +9,7 @@ import 'package:hacki/screens/widgets/custom_linkify/linkifiers/linkifiers.dart'
 import 'package:hacki/styles/palette.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:linkify/linkify.dart' hide UrlLinkifier;
+import 'package:material_ui/material_ui.dart';
 
 export 'package:hacki/screens/widgets/custom_linkify/linkifiers/linkifiers.dart';
 export 'package:linkify/linkify.dart'

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/auth/auth_bloc.dart';
@@ -13,6 +12,7 @@ import 'package:hacki/screens/screens.dart'
     show ItemScreenArgs, ShareScreenArgs;
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:share_plus/share_plus.dart';
 
 @optionalTypeArgs

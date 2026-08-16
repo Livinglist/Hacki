@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show IconData, Icons;
+import 'package:material_ui/material_ui.dart' show IconData, Icons;
 
 enum ExportDestination {
   qrCode('QR code', icon: Icons.qr_code),

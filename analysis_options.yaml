@@ -12,3 +12,10 @@ analyzer:
   exclude:
     - "submodules/**"
     - "scripts/**"
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**

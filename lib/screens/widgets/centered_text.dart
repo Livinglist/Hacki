@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:material_ui/material_ui.dart';
 
 class CenteredText extends StatelessWidget {
   const CenteredText({

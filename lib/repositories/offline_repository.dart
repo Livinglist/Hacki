@@ -100,7 +100,7 @@ class OfflineRepository with Loggable {
   Future<String?> getHtml({required String url}) async {
     try {
       final LazyBox<String> box = await _webPageBox;
-      return box.get(url);
+      return await box.get(url);
     } catch (e) {
       logError(e);
       await Hive.deleteBoxFromDisk(_webPageBoxName);
@@ -230,7 +230,7 @@ class OfflineRepository with Loggable {
   Future<int> deleteAllStoryIds() async {
     try {
       final Box<List<int>> box = await _storyIdBox;
-      return box.clear();
+      return await box.clear();
     } catch (e) {
       logError(e);
       await Hive.deleteBoxFromDisk(_storyIdBoxName);
@@ -241,7 +241,7 @@ class OfflineRepository with Loggable {
   Future<int> deleteAllStories() async {
     try {
       final Box<Map<dynamic, dynamic>> box = await _storyBox;
-      return box.clear();
+      return await box.clear();
     } catch (e) {
       logError(e);
       await Hive.deleteBoxFromDisk(_storyBoxName);
@@ -252,7 +252,7 @@ class OfflineRepository with Loggable {
   Future<int> deleteAllComments() async {
     try {
       final LazyBox<Map<dynamic, dynamic>> box = await _commentBox;
-      return box.clear();
+      return await box.clear();
     } catch (e) {
       logError(e);
       await Hive.deleteBoxFromDisk(_commentBoxName);
@@ -263,7 +263,7 @@ class OfflineRepository with Loggable {
   Future<int> deleteAllWebPages() async {
     try {
       final LazyBox<String> box = await _webPageBox;
-      return box.clear();
+      return await box.clear();
     } catch (e) {
       logError(e);
       await Hive.deleteBoxFromDisk(_webPageBoxName);

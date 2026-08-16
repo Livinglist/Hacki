@@ -1,9 +1,9 @@
 import 'dart:math';
 
 import 'package:animations/animations.dart';
-import 'package:flutter/material.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:material_ui/material_ui.dart';
 
 class ShareScreenTips extends StatelessWidget {
   const ShareScreenTips({super.key});

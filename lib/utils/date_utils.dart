@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' as date_utils;
+import 'package:material_ui/material_ui.dart' as date_utils;
 
 abstract final class DateUtils {
   static final DateTime _hackiAnniversary = DateTime(

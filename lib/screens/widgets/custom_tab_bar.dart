@@ -1,5 +1,4 @@
 import 'package:badges/badges.dart';
-import 'package:flutter/material.dart' hide Badge;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
@@ -7,6 +6,7 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/haptic_feedback_utils.dart';
+import 'package:material_ui/material_ui.dart' hide Badge;
 
 class CustomTabBar extends StatefulWidget {
   const CustomTabBar({required this.tabController, super.key});

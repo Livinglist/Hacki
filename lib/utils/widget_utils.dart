@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:logger/logger.dart';
+import 'package:material_ui/material_ui.dart';
 
 abstract final class WidgetUtils {
   static double? _cachedPreferredCacheExtent;

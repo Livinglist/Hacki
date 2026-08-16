@@ -2,55 +2,32 @@ PODS:
   - advanced_haptics (0.0.1):
     - Flutter
   - Flutter (1.0.0)
-  - flutter_inappwebview_ios (0.0.1):
-    - Flutter
-    - flutter_inappwebview_ios/Core (= 0.0.1)
-    - OrderedSet (~> 6.0.3)
-  - flutter_inappwebview_ios/Core (0.0.1):
-    - Flutter
-    - OrderedSet (~> 6.0.3)
   - in_app_review (0.2.0):
     - Flutter
-  - OrderedSet (6.0.3)
   - synced_shared_preferences (0.0.1):
-    - Flutter
-  - workmanager_apple (0.0.1):
     - Flutter
 
 DEPENDENCIES:
   - advanced_haptics (from `.symlinks/plugins/advanced_haptics/ios`)
   - Flutter (from `Flutter`)
-  - flutter_inappwebview_ios (from `.symlinks/plugins/flutter_inappwebview_ios/ios`)
   - in_app_review (from `.symlinks/plugins/in_app_review/ios`)
   - synced_shared_preferences (from `.symlinks/plugins/synced_shared_preferences/ios`)
-  - workmanager_apple (from `.symlinks/plugins/workmanager_apple/ios`)
-
-SPEC REPOS:
-  trunk:
-    - OrderedSet
 
 EXTERNAL SOURCES:
   advanced_haptics:
     :path: ".symlinks/plugins/advanced_haptics/ios"
   Flutter:
     :path: Flutter
-  flutter_inappwebview_ios:
-    :path: ".symlinks/plugins/flutter_inappwebview_ios/ios"
   in_app_review:
     :path: ".symlinks/plugins/in_app_review/ios"
   synced_shared_preferences:
     :path: ".symlinks/plugins/synced_shared_preferences/ios"
-  workmanager_apple:
-    :path: ".symlinks/plugins/workmanager_apple/ios"
 
 SPEC CHECKSUMS:
   advanced_haptics: 67b3cb2895dc34d46bcd4fdbf9ac53b2592dd34c
-  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
-  flutter_inappwebview_ios: b89ba3482b96fb25e00c967aae065701b66e9b99
+  Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
   in_app_review: 8efcf4a4d3ba72d5d776d29e5a268f1abf64d184
-  OrderedSet: e539b66b644ff081c73a262d24ad552a69be3a94
   synced_shared_preferences: 90a2b479df93a2f6b68e08443f865ed1633dbe6a
-  workmanager_apple: 904529ae31e97fc5be632cf628507652294a0778
 
 PODFILE CHECKSUM: f36aa047befc0bec38bdafe9b1aa9864afd26d31
 

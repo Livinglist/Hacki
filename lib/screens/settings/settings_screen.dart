@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,6 +28,7 @@ import 'package:hacki/screens/settings/widgets/widgets.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -298,52 +298,74 @@ class _SettingsViewState extends State<SettingsView>
                         selected: <bool>{
                           preferenceState.isOn(preference as BooleanPreference),
                         },
-                        onSelectionChanged: (Set<bool> val) {
-                          HapticFeedbackUtils.light();
-                          if (!preference.dependencies.satisfy(
-                            preferenceState.preferences,
-                          )) {
-                            showDependencyError(preference);
-                            return;
-                          }
-                          context.read<PreferenceCubit>().update(
-                            preference.copyWith(val: val.single),
-                          );
-                        },
+                        onSelectionChanged:
+                            preference.dependencies.satisfy(
+                              preferenceState.preferences,
+                            )
+                            ? (Set<bool> val) {
+                                HapticFeedbackUtils.light();
+                                if (!preference.dependencies.satisfy(
+                                  preferenceState.preferences,
+                                )) {
+                                  showDependencyError(preference);
+                                  return;
+                                }
+                                context.read<PreferenceCubit>().update(
+                                  preference.copyWith(val: val.single),
+                                );
+                              }
+                            : null,
                       ),
                     ),
                   )
                 else
-                  SwitchListTile(
-                    key: ValueKey<String>(preference.key),
-                    title: Text(preference.title),
-                    subtitle: preference.subtitle.isNotEmpty
-                        ? Text(preference.subtitle)
-                        : null,
-                    value: preferenceState.isOn(
-                      preference as BooleanPreference,
-                    ),
-                    onChanged: (bool val) {
-                      HapticFeedbackUtils.light();
-
-                      if (val &&
-                          !preference.dependencies.satisfy(
+                  InkWell(
+                    onTap:
+                        preference.dependencies.satisfy(
+                          preferenceState.preferences,
+                        )
+                        ? null
+                        : () {
+                            showDependencyError(preference);
+                          },
+                    child: SwitchListTile(
+                      key: ValueKey<String>(preference.key),
+                      title: Text(preference.title),
+                      subtitle: preference.subtitle.isNotEmpty
+                          ? Text(preference.subtitle)
+                          : null,
+                      value: preferenceState.isOn(
+                        preference as BooleanPreference,
+                      ),
+                      onChanged:
+                          preference.dependencies.satisfy(
                             preferenceState.preferences,
-                          )) {
-                        showDependencyError(preference);
-                        return;
-                      }
+                          )
+                          ? (bool val) {
+                              HapticFeedbackUtils.light();
 
-                      context.read<PreferenceCubit>().update(
-                        preference.copyWith(val: val),
-                      );
+                              if (val &&
+                                  !preference.dependencies.satisfy(
+                                    preferenceState.preferences,
+                                  )) {
+                                showDependencyError(preference);
+                                return;
+                              }
 
-                      if (preference is MarkReadStoriesModePreference &&
-                          val == false) {
-                        context.read<StoriesBloc>().add(ClearAllReadStories());
-                      }
-                    },
-                    activeThumbColor: Theme.of(context).colorScheme.primary,
+                              context.read<PreferenceCubit>().update(
+                                preference.copyWith(val: val),
+                              );
+
+                              if (preference is MarkReadStoriesModePreference &&
+                                  val == false) {
+                                context.read<StoriesBloc>().add(
+                                  ClearAllReadStories(),
+                                );
+                              }
+                            }
+                          : null,
+                      activeThumbColor: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                 if (preference is MarkReadStoriesModePreference) ...<Widget>[
                   Padding(

@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hacki/extensions/context_extension.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/haptic_feedback_utils.dart';
 import 'package:hacki/utils/log_utils.dart';
+import 'package:material_ui/material_ui.dart';
 
 class LogsScreen extends StatefulWidget {
   const LogsScreen({super.key});

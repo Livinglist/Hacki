@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/config/constants.dart';
@@ -9,6 +8,7 @@ import 'package:hacki/screens/widgets/comment_tile.dart';
 import 'package:hacki/screens/widgets/story_tile.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/link_utils.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 class TimeMachineDialog extends StatelessWidget {

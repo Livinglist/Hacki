@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class SpindlePainter extends CustomPainter {
   SpindlePainter({required this.color, super.repaint});
