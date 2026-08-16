@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/config/constants.dart';
@@ -9,6 +8,7 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:material_ui/material_ui.dart';
 
 class CountdownReminder extends StatefulWidget {
   const CountdownReminder({super.key});

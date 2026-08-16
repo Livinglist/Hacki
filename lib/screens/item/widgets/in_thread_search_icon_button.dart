@@ -1,6 +1,5 @@
 import 'package:animations/animations.dart';
 import 'package:feature_discovery/feature_discovery.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/blocs/auth/auth_bloc.dart';
@@ -12,6 +11,7 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/debouncer.dart';
 import 'package:hacki/utils/haptic_feedback_utils.dart';
+import 'package:material_ui/material_ui.dart';
 
 class InThreadSearchIconButton extends StatelessWidget {
   const InThreadSearchIconButton({super.key});
@@ -21,6 +21,7 @@ class InThreadSearchIconButton extends StatelessWidget {
     return OpenContainer(
       closedColor: Palette.transparent,
       openColor: Theme.of(context).canvasColor,
+      middleColor: Theme.of(context).canvasColor.withAlpha(120),
       closedShape: const CircleBorder(),
       closedElevation: Dimens.zero,
       openElevation: Dimens.zero,

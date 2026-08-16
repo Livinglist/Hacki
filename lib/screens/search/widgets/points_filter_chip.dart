@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/models/models.dart' show NumericCondition, PointsFilter;
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/haptic_feedback_utils.dart';
+import 'package:material_ui/material_ui.dart';
 
 class PointsFilterChip extends StatelessWidget {
   const PointsFilterChip({

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
@@ -6,6 +5,7 @@ import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/services/dialog_proxy.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/haptic_feedback_utils.dart';
+import 'package:material_ui/material_ui.dart';
 
 class DownloadProgressReminder extends StatefulWidget {
   const DownloadProgressReminder({this.isDockedAtBottom = false, super.key});

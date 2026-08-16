@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/blocs/auth/auth_bloc.dart';
@@ -8,6 +7,7 @@ import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
+import 'package:material_ui/material_ui.dart';
 
 class PollView extends StatefulWidget {
   const PollView({super.key});

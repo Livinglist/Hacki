@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Controls the visibility of an [ItemScreenWebView].
 ///

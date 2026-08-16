@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart' hide DateUtils;
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
@@ -15,6 +14,7 @@ import 'package:hacki/screens/item/widgets/widgets.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
+import 'package:material_ui/material_ui.dart' hide DateUtils;
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class MainView extends StatelessWidget {

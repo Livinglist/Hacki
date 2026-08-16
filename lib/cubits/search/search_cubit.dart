@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart' show TextEditingController;
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/extensions/buildable_mixin.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/utils/haptic_feedback_utils.dart';
+import 'package:material_ui/material_ui.dart' show TextEditingController;
 import 'package:rxdart/rxdart.dart';
 
 part 'search_state.dart';

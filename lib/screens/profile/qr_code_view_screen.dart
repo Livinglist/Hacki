@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class QrCodeViewScreen extends StatelessWidget {

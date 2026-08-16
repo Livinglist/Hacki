@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:hacki/screens/widgets/shine_overlay.dart';
 import 'package:hacki/styles/palette.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Used with [ShineOverlay] to highlight a widget on the screen.
 class ShinePainter extends CustomPainter {

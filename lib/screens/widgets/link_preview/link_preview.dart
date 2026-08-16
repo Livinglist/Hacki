@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/extensions/extensions.dart';
@@ -11,6 +10,7 @@ import 'package:hacki/screens/widgets/link_preview/link_view.dart';
 import 'package:hacki/screens/widgets/tap_down_wrapper.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
+import 'package:material_ui/material_ui.dart';
 
 class LinkPreview extends StatefulWidget {
   const LinkPreview({

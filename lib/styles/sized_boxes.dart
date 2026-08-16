@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:hacki/styles/dimens.dart';
+import 'package:material_ui/material_ui.dart';
 
 final class SizedBoxes {
   static const SizedBox pt2 = SizedBox(height: Dimens.pt2, width: Dimens.pt2);

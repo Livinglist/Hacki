@@ -1,5 +1,5 @@
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A walk-around for [SelectableText] not responding to swipe gestures
 /// while wrapped in a [Dismissible].

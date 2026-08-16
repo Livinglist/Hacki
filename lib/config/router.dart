@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/config/locator.dart';
@@ -8,6 +7,7 @@ import 'package:hacki/models/item/item.dart';
 import 'package:hacki/repositories/hacker_news_repository.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/styles/dimens.dart';
+import 'package:material_ui/material_ui.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -20,94 +20,104 @@ final GoRouter router = GoRouter(
   routes: <RouteBase>[
     GoRoute(
       path: HomeScreen.routeName,
-      builder: (_, __) => const HomeScreen(),
+      pageBuilder: (_, __) => const MaterialPage<void>(child: HomeScreen()),
       routes: <RouteBase>[
         GoRoute(
           path: ItemScreen.routeName,
-          builder: (_, GoRouterState state) {
+          pageBuilder: (_, GoRouterState state) {
             final ItemScreenArgs? args = state.extra as ItemScreenArgs?;
             if (args == null) {
               throw GoError("args can't be null");
             }
-            return ItemScreen.phone(args);
+            return MaterialPage<void>(child: ItemScreen.phone(args));
           },
           routes: <RouteBase>[
             GoRoute(
               path: SettingsScreen.routeName,
-              builder: (_, __) => const SettingsScreen(),
+              pageBuilder: (_, __) =>
+                  const MaterialPage<void>(child: SettingsScreen()),
             ),
           ],
         ),
         GoRoute(
           path: '${ItemScreen.routeName}/:itemId',
-          builder: (BuildContext context, GoRouterState state) {
+          pageBuilder: (BuildContext context, GoRouterState state) {
             final String? itemIdStr = state.pathParameters['itemId'];
             final int? itemId = itemIdStr?.itemId;
             if (itemId == null) {
               throw GoError("item id can't be null");
             }
-            return FutureBuilder<Item?>(
-              future: locator.get<HackerNewsRepository>().fetchItem(id: itemId),
-              builder: (BuildContext context, AsyncSnapshot<Item?> snapshot) {
-                if (snapshot.hasData) {
-                  final ItemScreenArgs args = ItemScreenArgs(
-                    item: snapshot.data!,
-                  );
-                  return ItemScreen.phone(args);
-                } else {
-                  return const Scaffold(
-                    body: Center(
-                      child: CircularProgressIndicator(strokeWidth: Dimens.pt2),
-                    ),
-                  );
-                }
-              },
+            return MaterialPage<void>(
+              child: FutureBuilder<Item?>(
+                future: locator.get<HackerNewsRepository>().fetchItem(
+                  id: itemId,
+                ),
+                builder: (BuildContext context, AsyncSnapshot<Item?> snapshot) {
+                  if (snapshot.hasData) {
+                    final ItemScreenArgs args = ItemScreenArgs(
+                      item: snapshot.data!,
+                    );
+                    return ItemScreen.phone(args);
+                  } else {
+                    return const Scaffold(
+                      body: Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: Dimens.pt2,
+                        ),
+                      ),
+                    );
+                  }
+                },
+              ),
             );
           },
         ),
         GoRoute(
           path: ShareScreen.routeName,
-          builder: (_, GoRouterState state) {
+          pageBuilder: (_, GoRouterState state) {
             final ShareScreenArgs? args = state.extra as ShareScreenArgs?;
             if (args == null) {
               throw GoError("args can't be null");
             }
-            return ShareScreen(args);
+            return MaterialPage<void>(child: ShareScreen(args));
           },
         ),
         GoRoute(
           path: LogsScreen.routeName,
-          builder: (_, __) => const LogsScreen(),
+          pageBuilder: (_, __) => const MaterialPage<void>(child: LogsScreen()),
         ),
         GoRoute(
           path: WebViewScreen.routeName,
-          builder: (_, GoRouterState state) {
+          pageBuilder: (_, GoRouterState state) {
             final String? link = state.extra as String?;
             if (link == null) {
               throw GoError("link can't be null");
             }
-            return WebViewScreen(url: link);
+            return MaterialPage<void>(child: WebViewScreen(url: link));
           },
         ),
         GoRoute(
           path: SubmitScreen.routeName,
-          builder: (_, __) => BlocProvider<SubmitCubit>(
-            create: (_) => SubmitCubit(),
-            child: const SubmitScreen(),
+          pageBuilder: (_, __) => MaterialPage<void>(
+            child: BlocProvider<SubmitCubit>(
+              create: (_) => SubmitCubit(),
+              child: const SubmitScreen(),
+            ),
           ),
         ),
         GoRoute(
           path: QrCodeScannerScreen.routeName,
-          builder: (_, __) => const QrCodeScannerScreen(),
+          pageBuilder: (_, __) =>
+              const MaterialPage<void>(child: QrCodeScannerScreen()),
         ),
         GoRoute(
           path: QrCodeViewScreen.routeName,
-          builder: (_, GoRouterState state) {
+          pageBuilder: (_, GoRouterState state) {
             final String? data = state.extra as String?;
             if (data == null) {
               throw GoError("data can't be null");
             }
-            return QrCodeViewScreen(data: data);
+            return MaterialPage<void>(child: QrCodeViewScreen(data: data));
           },
         ),
       ],

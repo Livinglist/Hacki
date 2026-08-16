@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
@@ -13,6 +12,7 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/haptic_feedback_utils.dart';
 import 'package:hacki/utils/image_saver.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';

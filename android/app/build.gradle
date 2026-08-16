@@ -32,7 +32,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.jiaqifeng.hacki"
-    compileSdkVersion 36
+    compileSdkVersion 37
     ndkVersion = "28.2.13676358"
 
     compileOptions {
@@ -84,6 +84,24 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.1.20"
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
+}
+
+// --- AGP 9 + Flutter build-dir bridge --------------------------------------
+// Flutter's root build.gradle redirects each module's buildDir to
+// <root>/build/<module> so `flutter` tooling can locate the built APK. Under
+// AGP 9 the ExtractProguardFiles task honors that redirect and writes the
+// generated default proguard files to <root>/build/app/intermediates/..., but
+// the R8 task resolves those same files against the module's *default*
+// projectDir/build (android/app/build/intermediates/...) and fails because
+// nothing wrote them there. Copy them into place just before R8 runs.
+tasks.matching { it.name == "minifyReleaseWithR8" }.configureEach { r8Task ->
+    r8Task.doFirst {
+        def defaultsDir = "intermediates/default_proguard_files/global"
+        copy {
+            from "${project.buildDir}/${defaultsDir}"
+            into "${project.projectDir}/build/${defaultsDir}"
+        }
+    }
 }
 
 ext.abiCodes = ["x86_64": 1, "armeabi-v7a": 2, "arm64-v8a": 3]
