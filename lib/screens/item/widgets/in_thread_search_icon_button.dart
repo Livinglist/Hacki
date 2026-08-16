@@ -21,6 +21,7 @@ class InThreadSearchIconButton extends StatelessWidget {
     return OpenContainer(
       closedColor: Palette.transparent,
       openColor: Theme.of(context).canvasColor,
+      middleColor: Theme.of(context).canvasColor.withAlpha(120),
       closedShape: const CircleBorder(),
       closedElevation: Dimens.zero,
       openElevation: Dimens.zero,
