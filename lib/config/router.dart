@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/config/constants.dart';
@@ -18,6 +20,7 @@ final GoRouter router = GoRouter(
   observers: <NavigatorObserver>[
     locator.get<RouteObserver<ModalRoute<dynamic>>>(),
   ],
+  initialLocation: Platform.isIOS ? HomeScreen.routeName : null,
   routes: <RouteBase>[
     GoRoute(
       path: '/${ItemScreen.routeName}/${SettingsScreen.routeName}',
