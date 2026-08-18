@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/config/paths.dart';
+import 'package:hacki/config/updatify.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/main.dart';
@@ -90,6 +91,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     SchedulerBinding.instance
       ..addPostFrameCallback((_) => showFeatureDiscoveryDialog())
+      ..addPostFrameCallback((_) => showWhatsNewIfNeeded(context))
       ..addPostFrameCallback((_) {
         final ModalRoute<dynamic>? route = ModalRoute.of(context);
 
