@@ -249,7 +249,7 @@ class ShareViewController: SLComposeServiceViewController {
     private func redirectToHostApp(itemId: String) {
         // ids may not loaded yet so we need loadIds here too
         loadIds()
-        let url = URL(string: "hacki:///item/id=\(itemId)")
+        let url = URL(string: "hacki:///item?id=\(itemId)")
         var responder = self as UIResponder?
         
         if #available(iOS 18.0, *) {
