@@ -15,6 +15,48 @@ import 'package:material_ui/material_ui.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 final Map<int, Future<Item?>> deepLinkItemFutures = <int, Future<Item?>>{};
 
+final GoRoute itemRoute = GoRoute(
+  path: '/${ItemScreen.routeName}',
+  pageBuilder: (BuildContext context, GoRouterState state) {
+    final ItemScreenArgs? args = state.extra as ItemScreenArgs?;
+    if (args != null) {
+      return MaterialPage<void>(child: ItemScreen.phone(args));
+    }
+
+    final int? itemId = state.uri.queryParameters['id']?.itemId;
+    if (itemId == null) {
+      throw GoError("item args or item id can't be null");
+    }
+
+    return MaterialPage<void>(
+      child: FutureBuilder<Item?>(
+        future: deepLinkItemFutures.putIfAbsent(
+          itemId,
+          () => locator.get<HackerNewsRepository>().fetchItem(id: itemId),
+        ),
+        builder: (BuildContext context, AsyncSnapshot<Item?> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(strokeWidth: Dimens.pt2),
+              ),
+            );
+          }
+
+          if (snapshot.hasError || !snapshot.hasData) {
+            return Scaffold(body: Center(child: Text(Constants.errorMessage)));
+          }
+
+          return ItemScreen.phone(
+            ItemScreenArgs(item: snapshot.data!),
+            showBackButton: true,
+          );
+        },
+      ),
+    );
+  },
+);
+
 final GoRouter router = GoRouter(
   navigatorKey: navigatorKey,
   observers: <NavigatorObserver>[
@@ -26,53 +68,12 @@ final GoRouter router = GoRouter(
       path: '/${ItemScreen.routeName}/${SettingsScreen.routeName}',
       pageBuilder: (_, __) => const MaterialPage<void>(child: SettingsScreen()),
     ),
-    GoRoute(
-      path: '/${ItemScreen.routeName}',
-      pageBuilder: (BuildContext context, GoRouterState state) {
-        final ItemScreenArgs? args = state.extra as ItemScreenArgs?;
-        if (args != null) {
-          return MaterialPage<void>(child: ItemScreen.phone(args));
-        }
-
-        final int? itemId = state.uri.queryParameters['id']?.itemId;
-        if (itemId == null) {
-          throw GoError("item args or item id can't be null");
-        }
-
-        return MaterialPage<void>(
-          child: FutureBuilder<Item?>(
-            future: deepLinkItemFutures.putIfAbsent(
-              itemId,
-              () => locator.get<HackerNewsRepository>().fetchItem(id: itemId),
-            ),
-            builder: (BuildContext context, AsyncSnapshot<Item?> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Scaffold(
-                  body: Center(
-                    child: CircularProgressIndicator(strokeWidth: Dimens.pt2),
-                  ),
-                );
-              }
-
-              if (snapshot.hasError || !snapshot.hasData) {
-                return Scaffold(
-                  body: Center(child: Text(Constants.errorMessage)),
-                );
-              }
-
-              return ItemScreen.phone(
-                ItemScreenArgs(item: snapshot.data!),
-                showBackButton: true,
-              );
-            },
-          ),
-        );
-      },
-    ),
+    if (!Platform.isIOS) itemRoute,
     GoRoute(
       path: HomeScreen.routeName,
       pageBuilder: (_, __) => const MaterialPage<void>(child: HomeScreen()),
       routes: <RouteBase>[
+        if (Platform.isIOS) itemRoute,
         GoRoute(
           path: ShareScreen.routeName,
           pageBuilder: (_, GoRouterState state) {
