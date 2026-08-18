@@ -106,7 +106,7 @@
 	<key>AppGroupId</key>
 	<string>group.com.jiaqi.hacki</string>
 	<key>FlutterDeepLinkingEnabled</key>
-	<false/>
+	<true/>
 	<key>NSPhotoLibraryAddUsageDescription</key>
     <string>Hacki needs access to save images to your photo library.</string>
     <key>NSPhotoLibraryUsageDescription</key>
