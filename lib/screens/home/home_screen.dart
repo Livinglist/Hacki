@@ -241,7 +241,6 @@ class _HomeScreenState extends State<HomeScreen>
         .state
         .enabled;
     final bool isMarkReadStoriesEnabled = prefState.isMarkReadStoriesEnabled;
-    context.read<ReminderCubit>().onDismiss();
 
     // If a story is a job story and it has a link to the job posting,
     // it would be better to just navigate to the web page.
@@ -263,9 +262,8 @@ class _HomeScreenState extends State<HomeScreen>
       if (isSplitViewEnabled) {
         context.read<SplitViewCubit>().updateItemScreenArgs(args);
       } else {
-        context
-            .push(Paths.item.landing, extra: args)
-            .whenComplete(context.read<ReminderCubit>().onDismiss);
+        context.push(Paths.item.landing, extra: args);
+        context.read<ReminderCubit>().onDismiss();
       }
     }
 
