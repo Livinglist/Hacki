@@ -6,6 +6,7 @@ import 'package:collection/collection.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/config/paths.dart';
@@ -112,6 +113,11 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   static int _lockedCommentId = 0;
   Map<int, Comment>? _previousCommentStates;
   double inThreadSearchOffset = 0;
+
+  /// Incremented at the start of each [scrollTo] (and on [close]) so a
+  /// superseded scroll does not [ItemScrollController.jumpTo] after a newer
+  /// one has already begun.
+  int _scrollGeneration = 0;
 
   bool get hasNewComment => state.comments.any((Comment c) => c.isNew);
 
@@ -819,7 +825,7 @@ comments length is ${state.comments.length}
             if (kDebugMode) {
               debugPrint('scrolling another time to ${index + 1}');
             }
-            await itemScrollController.scrollTo(
+            await scrollTo(
               index: index + 1,
               alignment: 0.2,
               duration: AppDurations.ms300,
@@ -872,6 +878,11 @@ comments length is ${state.comments.length}
     Curve curve = Curves.linear,
     List<double> opacityAnimationWeights = const <double>[40, 20, 40],
   }) async {
+    if (!itemScrollController.isAttached) {
+      return;
+    }
+
+    final int generation = ++_scrollGeneration;
     debugPrint('scrolling to: $index, alignment: $alignment');
     await itemScrollController.scrollTo(
       index: index,
@@ -880,6 +891,47 @@ comments length is ${state.comments.length}
       curve: curve,
       opacityAnimationWeights: opacityAnimationWeights,
     );
+    if (generation != _scrollGeneration || isClosed) {
+      return;
+    }
+    await _reanchorToTopMostVisibleItem(generation);
+  }
+
+  /// After [ItemScrollController.scrollTo], [ScrollablePositionedList] may
+  /// pin a mid-list item as its layout center. Collapse then changes item
+  /// heights in the reverse sliver, and the viewport fights the animation.
+  /// Jumping to the topmost visible item keeps later size changes in the
+  /// trailing sliver so collapse stays smooth.
+  Future<void> _reanchorToTopMostVisibleItem(int generation) async {
+    await SchedulerBinding.instance.endOfFrame;
+    if (generation != _scrollGeneration ||
+        isClosed ||
+        !itemScrollController.isAttached) {
+      return;
+    }
+
+    final ItemPosition? anchor = topMostVisibleItem(
+      itemPositionsListener.itemPositions.value,
+    );
+    if (anchor == null || !anchor.itemLeadingEdge.isFinite) {
+      return;
+    }
+
+    itemScrollController.jumpTo(
+      index: anchor.index,
+      alignment: anchor.itemLeadingEdge,
+    );
+  }
+
+  @visibleForTesting
+  static ItemPosition? topMostVisibleItem(Iterable<ItemPosition> positions) {
+    ItemPosition? topMost;
+    for (final ItemPosition position in positions) {
+      if (topMost == null || position.index < topMost.index) {
+        topMost = position;
+      }
+    }
+    return topMost;
   }
 
   /// Scroll to next root level comment.
@@ -901,10 +953,8 @@ comments length is ${state.comments.length}
         .toList();
 
     if (onScreenComments.isEmpty && state.comments.isNotEmpty) {
-      itemScrollController.scrollTo(
-        index: 1,
-        alignment: 0.15,
-        duration: AppDurations.ms400,
+      unawaited(
+        scrollTo(index: 1, alignment: 0.15, duration: AppDurations.ms400),
       );
       return;
     }
@@ -931,10 +981,8 @@ comments length is ${state.comments.length}
       final Comment cmt = state.comments.elementAt(i);
 
       if (cmt.isRoot && (cmt.deleted || cmt.dead) == false) {
-        itemScrollController.scrollTo(
-          index: i + 1,
-          alignment: 0.15,
-          duration: AppDurations.ms400,
+        unawaited(
+          scrollTo(index: i + 1, alignment: 0.15, duration: AppDurations.ms400),
         );
         return;
       }
@@ -972,10 +1020,8 @@ comments length is ${state.comments.length}
       final Comment cmt = state.comments.elementAt(i);
 
       if (cmt.isRoot && (cmt.deleted || cmt.dead) == false) {
-        itemScrollController.scrollTo(
-          index: i + 1,
-          alignment: 0.15,
-          duration: AppDurations.ms400,
+        unawaited(
+          scrollTo(index: i + 1, alignment: 0.15, duration: AppDurations.ms400),
         );
         return;
       }
@@ -1229,6 +1275,7 @@ comments length is ${state.comments.length}
     }
     await _searchStreamSubscription?.cancel();
     await _appStateSubscription.cancel();
+    _scrollGeneration++;
     _preserveCollapseState();
     await super.close();
   }

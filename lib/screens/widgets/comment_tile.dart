@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -527,10 +529,12 @@ class CommentTile extends StatelessWidget {
 
       if (willBeOutsideOfScreen) {
         Future<void>.delayed(AppDurations.ms200, () {
-          commentsCubit.itemScrollController.scrollTo(
-            index: indexOfComment + 1,
-            alignment: 0.15,
-            duration: AppDurations.ms300,
+          unawaited(
+            commentsCubit.scrollTo(
+              index: indexOfComment + 1,
+              alignment: 0.15,
+              duration: AppDurations.ms300,
+            ),
           );
         });
       }
