@@ -263,7 +263,9 @@ class _HomeScreenState extends State<HomeScreen>
       if (isSplitViewEnabled) {
         context.read<SplitViewCubit>().updateItemScreenArgs(args);
       } else {
-        context.push(Paths.item.landing, extra: args);
+        context
+            .push(Paths.item.landing, extra: args)
+            .whenComplete(context.read<ReminderCubit>().onDismiss);
       }
     }
 
