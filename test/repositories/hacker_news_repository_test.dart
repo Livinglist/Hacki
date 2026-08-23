@@ -19,7 +19,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(
-      Comment.fromJson(<String, dynamic>{
+      Comment.fromJson(const <String, dynamic>{
         'id': 0,
         'type': 'comment',
         'by': 'tester',
