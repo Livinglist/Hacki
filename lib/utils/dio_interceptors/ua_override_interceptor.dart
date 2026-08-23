@@ -10,10 +10,7 @@ class UAOverrideInterceptor extends Interceptor with Loggable {
           userAgent ??
           (Platform.isIOS || Platform.isMacOS
               ? Constants.iphoneUserAgent
-              : _androidUserAgent);
-
-  static const String _androidUserAgent =
-      'Mozilla/5.0 (Linux; Android 16) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7680.178 Mobile Safari/537.36';
+              : Constants.androidUserAgent);
 
   final String _userAgent;
 
