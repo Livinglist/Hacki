@@ -184,10 +184,7 @@ class CommentTile extends StatelessWidget {
                               confirmDismiss: () async {
                                 DialogProxy.showTimeMachineDialog(
                                   context,
-                                  rootItem: context
-                                      .read<CommentsCubit>()
-                                      .state
-                                      .item,
+                                  commentsCubit: context.read<CommentsCubit>(),
                                   comment: comment,
                                 );
                                 return false;

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/stories/stories_bloc.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/config/router.dart';
+import 'package:hacki/cubits/comments/comments_cubit.dart';
 import 'package:hacki/cubits/search/search_cubit.dart';
 import 'package:hacki/models/item/item.dart';
 import 'package:hacki/screens/item/widgets/time_machine_dialog.dart';
@@ -57,7 +58,7 @@ abstract final class DialogProxy {
 
   static void showTimeMachineDialog(
     BuildContext context, {
-    required Item rootItem,
+    required CommentsCubit commentsCubit,
     required Comment comment,
   }) {
     final Size size = MediaQuery.of(context).size;
@@ -74,7 +75,7 @@ abstract final class DialogProxy {
               Expanded(
                 child: TimeMachineDialog(
                   comment: comment,
-                  rootItem: rootItem,
+                  commentsCubit: commentsCubit,
                   deviceType: deviceType,
                 ),
               ),

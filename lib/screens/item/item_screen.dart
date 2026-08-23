@@ -552,8 +552,8 @@ class _ItemScreenState extends State<ItemScreen>
                   context.pop();
                   DialogProxy.showTimeMachineDialog(
                     context,
-                    rootItem: rootItem,
                     comment: comment,
+                    commentsCubit: context.read<CommentsCubit>(),
                   );
                 },
                 enabled:
