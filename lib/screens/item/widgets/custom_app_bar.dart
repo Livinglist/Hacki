@@ -17,10 +17,17 @@ class CustomAppBar extends AppBar {
     required VoidCallback onFontSizeTap,
     required GlobalKey fontSizeIconButtonKey,
     super.key,
+    VoidCallback? onBackTap,
     bool splitViewEnabled = false,
     VoidCallback? onZoomTap,
     bool? expanded,
   }) : super(
+         leading: onBackTap == null
+             ? null
+             : IconButton(
+                 icon: const Icon(Icons.arrow_back),
+                 onPressed: onBackTap,
+               ),
          elevation: Dimens.zero,
          actions: <Widget>[
            if (splitViewEnabled) ...<Widget>[

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:app_links/app_links.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -42,7 +41,6 @@ class _HomeScreenState extends State<HomeScreen>
   late final StreamSubscription<String?> siriSuggestionStreamSubscription;
   late final StreamSubscription<StoriesDownloadStatus>
   downloadStreamSubscription;
-  final AppLinks appLinks = AppLinks();
 
   static final int tabLength = StoryType.values.length + 1;
 
@@ -60,13 +58,6 @@ class _HomeScreenState extends State<HomeScreen>
             DialogProxy.showDownloadCompletedDialog();
           }
         });
-
-    appLinks.uriLinkStream.listen((Uri uri) {
-      logInfo('deeplink uri received: ${uri.path}');
-      if (mounted) {
-        context.push(uri.path);
-      }
-    });
 
     ReceiveSharingIntent.instance.getInitialMedia().then(
       onShareExtensionTapped,
@@ -250,6 +241,7 @@ class _HomeScreenState extends State<HomeScreen>
         .state
         .enabled;
     final bool isMarkReadStoriesEnabled = prefState.isMarkReadStoriesEnabled;
+    context.read<ReminderCubit>().onDismiss();
 
     // If a story is a job story and it has a link to the job posting,
     // it would be better to just navigate to the web page.
