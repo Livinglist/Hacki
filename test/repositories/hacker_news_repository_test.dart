@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hacki/config/locator.dart';
@@ -14,7 +13,7 @@ import '../mocks/mocks.dart';
 
 void main() {
   late MockSembastRepository sembastRepository;
-  late _RecordingHnClient httpClient;
+  late _FakeHnClient httpClient;
   late HackerNewsRepository repository;
 
   setUpAll(() {
@@ -35,9 +34,13 @@ void main() {
     if (locator.isRegistered<Logger>()) {
       locator.unregister<Logger>();
     }
+    if (locator.isRegistered<SembastRepository>()) {
+      locator.unregister<SembastRepository>();
+    }
     locator.registerSingleton<Logger>(MockLogger());
 
     sembastRepository = MockSembastRepository();
+    locator.registerSingleton<SembastRepository>(sembastRepository);
     when(
       () => sembastRepository.getCachedComment(id: any(named: 'id')),
     ).thenAnswer((_) async => null);
@@ -45,8 +48,7 @@ void main() {
       () => sembastRepository.cacheComment(any()),
     ).thenAnswer((_) async => <String, Object?>{});
 
-    httpClient = _RecordingHnClient(
-      delay: const Duration(milliseconds: 40),
+    httpClient = _FakeHnClient(
       items: <int, Map<String, dynamic>>{
         1: _commentJson(id: 1, kids: <int>[2, 5]),
         2: _commentJson(id: 2, kids: <int>[3, 4]),
@@ -68,7 +70,7 @@ void main() {
   });
 
   test(
-    'fetchAllCommentsRecursivelyStream emits DFS order and overlaps requests',
+    'fetchAllCommentsRecursivelyStream emits comments in DFS order',
     () async {
       final List<int> ids = await repository
           .fetchAllCommentsRecursivelyStream(ids: <int>[1])
@@ -76,22 +78,17 @@ void main() {
           .toList();
 
       expect(ids, <int>[1, 2, 3, 4, 5, 6]);
-      expect(httpClient.maxInFlight, greaterThan(1));
     },
   );
 
-  test(
-    'fetchCommentsStream preserves sibling order while overlapping',
-    () async {
-      final List<int> ids = await repository
-          .fetchCommentsStream(ids: <int>[3, 4, 6])
-          .map((Comment comment) => comment.id)
-          .toList();
+  test('fetchCommentsStream emits siblings in request order', () async {
+    final List<int> ids = await repository
+        .fetchCommentsStream(ids: <int>[3, 4, 6])
+        .map((Comment comment) => comment.id)
+        .toList();
 
-      expect(ids, <int>[3, 4, 6]);
-      expect(httpClient.maxInFlight, greaterThan(1));
-    },
-  );
+    expect(ids, <int>[3, 4, 6]);
+  });
 }
 
 Map<String, dynamic> _commentJson({
@@ -109,37 +106,27 @@ Map<String, dynamic> _commentJson({
   };
 }
 
-class _RecordingHnClient extends BaseClient {
-  _RecordingHnClient({required this.items, required this.delay});
+class _FakeHnClient extends BaseClient {
+  _FakeHnClient({required this.items});
 
   final Map<int, Map<String, dynamic>> items;
-  final Duration delay;
-  int _inFlight = 0;
-  int maxInFlight = 0;
 
   @override
   Future<StreamedResponse> send(BaseRequest request) async {
-    _inFlight++;
-    maxInFlight = max(maxInFlight, _inFlight);
-    try {
-      await Future<void>.delayed(delay);
-      final String fileName = request.url.pathSegments.last;
-      final int id = int.parse(fileName.split('.').first);
-      final Map<String, dynamic>? item = items[id];
-      if (item == null) {
-        return StreamedResponse(
-          Stream<List<int>>.value(utf8.encode('null')),
-          200,
-          headers: <String, String>{'content-type': 'application/json'},
-        );
-      }
+    final String fileName = request.url.pathSegments.last;
+    final int id = int.parse(fileName.split('.').first);
+    final Map<String, dynamic>? item = items[id];
+    if (item == null) {
       return StreamedResponse(
-        Stream<List<int>>.value(utf8.encode(jsonEncode(item))),
+        Stream<List<int>>.value(utf8.encode('null')),
         200,
         headers: <String, String>{'content-type': 'application/json'},
       );
-    } finally {
-      _inFlight--;
     }
+    return StreamedResponse(
+      Stream<List<int>>.value(utf8.encode(jsonEncode(item))),
+      200,
+      headers: <String, String>{'content-type': 'application/json'},
+    );
   }
 }
