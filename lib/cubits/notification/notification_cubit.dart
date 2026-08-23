@@ -162,52 +162,40 @@ class NotificationCubit extends Cubit<NotificationState> with Loggable {
             );
 
             for (final int id in subscribedItems) {
-              await _hackerNewsRepository.fetchItem(id: id).then((
-                Item? item,
-              ) async {
-                final List<int> kids = item?.kids ?? <int>[];
-                final List<int> previousKids =
-                    (await _sembastRepository.kids(of: id)) ?? <int>[];
+              final Item? item = await _hackerNewsRepository.fetchItem(id: id);
+              // A failed fetch must not wipe the stored kids snapshot,
+              // otherwise the next successful fetch treats every reply as new.
+              if (item == null) continue;
 
-                await _sembastRepository.updateKidsOf(id: id, kids: kids);
+              final List<int> kids = item.kids;
+              final List<int>? previousKids = await _sembastRepository.kids(
+                of: id,
+              );
 
-                final Set<int> diff = <int>{
-                  ...kids,
-                }.difference(<int>{...previousKids});
+              // An empty kids list after we already had replies is more likely
+              // a bad payload than every child disappearing at once.
+              if (previousKids != null &&
+                  previousKids.isNotEmpty &&
+                  kids.isEmpty) {
+                continue;
+              }
 
-                if (diff.isNotEmpty) {
-                  for (final int newCommentId in diff) {
-                    final bool hasPushed = await _preferenceRepository
-                        .hasPushed(newCommentId);
+              await _sembastRepository.updateKidsOf(id: id, kids: kids);
 
-                    if (!hasPushed) {
-                      await _preferenceRepository.updateUnreadCommentsIds(
-                        <int>[newCommentId, ...state.unreadCommentsIds]
-                          ..sort((int lhs, int rhs) => rhs.compareTo(lhs)),
-                      );
-                      await _hackerNewsRepository
-                          .fetchComment(id: newCommentId)
-                          .then((Comment? comment) {
-                            if (comment != null &&
-                                !comment.dead &&
-                                !comment.deleted) {
-                              _sembastRepository
-                                ..saveComment(comment)
-                                ..updateIdsOfCommentsRepliedToMe(comment.id);
+              // `null` means there is no snapshot yet (first run or cache
+              // cleared). Record the current kids as the baseline instead of
+              // marking every existing reply unread.
+              final bool isFirstSnapshot = previousKids == null;
+              final Set<int> diff = <int>{
+                ...kids,
+              }.difference(<int>{...?previousKids});
 
-                              // Add comment fetched to comments and its id to
-                              // unreadCommentsIds and allCommentsIds,
-                              emit(
-                                state.copyWithNewUnreadComment(
-                                  comment: comment,
-                                ),
-                              );
-                            }
-                          });
-                    }
-                  }
-                }
-              });
+              for (final int newCommentId in diff) {
+                await _processReply(
+                  commentId: newCommentId,
+                  markUnread: !isFirstSnapshot,
+                );
+              }
             }
           }
         })
@@ -215,6 +203,43 @@ class NotificationCubit extends Cubit<NotificationState> with Loggable {
           logInfo('${state.allCommentsIds.length} replies were fetched.');
           emit(state.copyWith(status: Status.success));
         });
+  }
+
+  Future<void> _processReply({
+    required int commentId,
+    required bool markUnread,
+  }) async {
+    if (state.allCommentsIds.contains(commentId)) return;
+
+    final bool hasPushed = await _preferenceRepository.hasPushed(commentId);
+
+    final Comment? comment = await _hackerNewsRepository.fetchComment(
+      id: commentId,
+    );
+    if (comment == null || comment.dead || comment.deleted) return;
+    if (comment.by == _authBloc.state.username) return;
+
+    await _sembastRepository.saveComment(comment);
+    await _sembastRepository.updateIdsOfCommentsRepliedToMe(comment.id);
+
+    final bool alreadyUnread = state.unreadCommentsIds.contains(comment.id);
+    final bool shouldMarkUnread = markUnread && !hasPushed && !alreadyUnread;
+
+    if (shouldMarkUnread) {
+      await _preferenceRepository.updateUnreadCommentsIds(
+        <int>[comment.id, ...state.unreadCommentsIds]
+          ..sort((int lhs, int rhs) => rhs.compareTo(lhs)),
+      );
+      emit(state.copyWithNewUnreadComment(comment: comment));
+    } else {
+      emit(state.copyWithNewComment(comment: comment));
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _timer?.cancel();
+    return super.close();
   }
 
   void onCommentTapped(
