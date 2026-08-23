@@ -34,7 +34,10 @@ class CustomDescribedFeatureOverlay extends StatelessWidget {
       tapTarget: tapTarget,
       title: Text(
         feature.title,
-        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onSurface,
+          fontFamily: TextTheme.of(context).bodyMedium?.fontFamily,
+        ),
       ),
       description: Column(
         mainAxisSize: MainAxisSize.min,
@@ -45,6 +48,7 @@ class CustomDescribedFeatureOverlay extends StatelessWidget {
             style: TextStyle(
               fontSize: TextDimens.pt16,
               color: Theme.of(context).colorScheme.onSurface,
+              fontFamily: TextTheme.of(context).bodyMedium?.fontFamily,
             ),
           ),
           SizedBoxes.pt6,
@@ -53,6 +57,7 @@ class CustomDescribedFeatureOverlay extends StatelessWidget {
             style: TextStyle(
               fontSize: TextDimens.pt12,
               color: Theme.of(context).hintColor,
+              fontFamily: TextTheme.of(context).bodyMedium?.fontFamily,
             ),
           ),
         ],
