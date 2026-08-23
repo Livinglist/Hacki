@@ -73,7 +73,6 @@ class HackerNewsWebRepository with Loggable {
 
   static final List<Interceptor> _interceptors = <Interceptor>[
     if (kDebugMode) LoggerInterceptor(),
-    UAOverrideInterceptor(),
     RefererInterceptor(),
   ];
 

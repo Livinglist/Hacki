@@ -16,7 +16,6 @@ class UAOverrideInterceptor extends Interceptor with Loggable {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    logInfo('user agent: $_userAgent');
     options.headers[HttpHeaders.userAgentHeader] = _userAgent;
     super.onRequest(options, handler);
   }
