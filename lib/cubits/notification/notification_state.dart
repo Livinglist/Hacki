@@ -68,6 +68,23 @@ class NotificationState extends Equatable {
   }
 
   NotificationState copyWithNewUnreadComment({required Comment comment}) {
+    final NotificationState added = copyWithNewComment(comment: comment);
+    return NotificationState(
+      comments: added.comments,
+      allCommentsIds: added.allCommentsIds,
+      unreadCommentsIds: (<int>[
+        comment.id,
+        ...unreadCommentsIds,
+      ]..sort()).reversed.toList(),
+      currentPage: added.currentPage,
+      offset: added.offset,
+      status: added.status,
+      commentFetchingStatus: added.commentFetchingStatus,
+      tappedCommentId: added.tappedCommentId,
+    );
+  }
+
+  NotificationState copyWithNewComment({required Comment comment}) {
     return NotificationState(
       comments: <Comment>[comment, ...comments]
         ..sort((Comment lhs, Comment rhs) => rhs.time.compareTo(lhs.time)),
@@ -75,10 +92,7 @@ class NotificationState extends Equatable {
         comment.id,
         ...allCommentsIds,
       ]..sort()).reversed.toList(),
-      unreadCommentsIds: (<int>[
-        comment.id,
-        ...unreadCommentsIds,
-      ]..sort()).reversed.toList(),
+      unreadCommentsIds: unreadCommentsIds,
       currentPage: currentPage,
       offset: offset + 1,
       status: status,
