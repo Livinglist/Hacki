@@ -49,7 +49,20 @@ class HackerNewsWebRepository with Loggable {
        _hackerNewsRepository =
            hackerNewsRepository ?? locator.get<HackerNewsRepository>() {
     _dio
-      ..interceptors.add(RetryInterceptor(dio: _dio))
+      ..interceptors.add(
+        RetryInterceptor(
+          dio: _dio,
+          retryEvaluator: (DioException error, int attempt) {
+            final int? statusCode = error.response?.statusCode;
+            if (statusCode == HttpStatus.tooManyRequests ||
+                statusCode == HttpStatus.forbidden ||
+                statusCode == HttpStatus.serviceUnavailable) {
+              return false;
+            }
+            return RetryInterceptor.defaultRetryEvaluator(error, attempt);
+          },
+        ),
+      )
       ..httpClientAdapter = IOHttpClientAdapter(
         createHttpClient: () => _httpClient,
       );
@@ -60,7 +73,7 @@ class HackerNewsWebRepository with Loggable {
 
   static final List<Interceptor> _interceptors = <Interceptor>[
     if (kDebugMode) LoggerInterceptor(),
-    UARotationInterceptor(),
+    UAOverrideInterceptor(),
     RefererInterceptor(),
   ];
 
@@ -84,10 +97,6 @@ class HackerNewsWebRepository with Loggable {
     HttpHeaders.acceptLanguageHeader: 'en-US,en;q=0.9',
     HttpHeaders.acceptEncodingHeader: 'gzip, deflate, br',
     HttpHeaders.connectionHeader: 'keep-alive',
-    'Sec-Fetch-Dest': 'document',
-    'Sec-Fetch-Mode': 'navigate',
-    'Sec-Fetch-Site': 'same-origin',
-    'Sec-Fetch-User': '?1',
   };
 
   static const String _storiesBaseUrl = 'https://news.ycombinator.com';
