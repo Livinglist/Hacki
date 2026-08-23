@@ -201,7 +201,14 @@ class _StoriesListViewState extends State<StoriesListView>
                                 size: Dimens.pt24,
                               ),
                             if (!preferenceState.isRichStoryTileEnabled)
-                              const Text('Pin'),
+                              Text(
+                                'Pin',
+                                style: TextStyle(
+                                  fontFamily: Theme.of(
+                                    context,
+                                  ).textTheme.bodyMedium?.fontFamily,
+                                ),
+                              ),
                           ],
                         ),
                       ),
@@ -219,7 +226,14 @@ class _StoriesListViewState extends State<StoriesListView>
                             if (preferenceState.isRichStoryTileEnabled)
                               const Icon(Icons.more_horiz, size: Dimens.pt24),
                             if (!preferenceState.isRichStoryTileEnabled)
-                              const Text('More'),
+                              Text(
+                                'More',
+                                style: TextStyle(
+                                  fontFamily: Theme.of(
+                                    context,
+                                  ).textTheme.bodyMedium?.fontFamily,
+                                ),
+                              ),
                           ],
                         ),
                       ),

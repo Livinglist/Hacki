@@ -153,65 +153,35 @@ class StoryTile extends StatelessWidget {
         child: Semantics(
           label: story.screenReaderLabel,
           excludeSemantics: true,
-          child: TapDownWrapper(
-            onTap: onTap,
-            onLongPress: () {
-              if (story.url.isNotEmpty) {
-                LinkUtils.launch(
-                  story.url,
-                  context,
-                  shouldUseReader: context
-                      .read<PreferenceCubit>()
-                      .state
-                      .isReaderEnabled,
-                  isOfflineReading: context
-                      .read<StoriesBloc>()
-                      .state
-                      .isOfflineReading,
-                );
-              }
-            },
-            child: Padding(
-              padding: const EdgeInsets.only(
-                left: Dimens.pt12,
-                right: Dimens.pt10,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  if (shouldShowFavicon) ...<Widget>[
-                    if (story.url.isNotEmpty)
-                      SizedBox(
-                        height: Dimens.pt20,
-                        width: Dimens.pt24,
-                        child: Center(
-                          child: CachedNetworkImage(
-                            fit: BoxFit.fitHeight,
-                            imageUrl: Constants.favicon(story.url),
-                            errorWidget: (_, __, ___) {
-                              return const FadeIn(
-                                child: Icon(Icons.public, size: Dimens.pt20),
-                              );
-                            },
-                          ),
-                        ),
-                      )
-                    else
-                      SizedBox(
-                        height: Dimens.pt20,
-                        width: Dimens.pt24,
-                        child: Center(
-                          child: Image.asset(
-                            Constants.hackerNewsLogoPath,
-                            fit: BoxFit.fitWidth,
-                            height: Dimens.pt20,
-                            width: Dimens.pt20,
-                          ),
-                        ),
-                      ),
-                    const SizedBox(width: Dimens.pt8),
-                  ],
-                  Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(
+              left: Dimens.pt12,
+              right: Dimens.pt10,
+            ),
+            child: Stack(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: shouldShowFavicon ? Dimens.pt32 : Dimens.zero,
+                  ),
+                  child: TapDownWrapper(
+                    onTap: onTap,
+                    onLongPress: () {
+                      if (story.url.isNotEmpty) {
+                        LinkUtils.launch(
+                          story.url,
+                          context,
+                          shouldUseReader: context
+                              .read<PreferenceCubit>()
+                              .state
+                              .isReaderEnabled,
+                          isOfflineReading: context
+                              .read<StoriesBloc>()
+                              .state
+                              .isOfflineReading,
+                        );
+                      }
+                    },
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
@@ -290,8 +260,61 @@ class StoryTile extends StatelessWidget {
                       ],
                     ),
                   ),
-                ],
-              ),
+                ),
+                if (shouldShowFavicon)
+                  Positioned(
+                    left: Dimens.zero,
+                    top: Dimens.zero,
+                    bottom: Dimens.zero,
+                    width: Dimens.pt24,
+                    child: story.url.isNotEmpty
+                        ? GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () {
+                              LinkUtils.launch(
+                                story.url,
+                                context,
+                                shouldUseReader: context
+                                    .read<PreferenceCubit>()
+                                    .state
+                                    .isReaderEnabled,
+                                isOfflineReading: context
+                                    .read<StoriesBloc>()
+                                    .state
+                                    .isOfflineReading,
+                              );
+                            },
+                            child: Center(
+                              child: CachedNetworkImage(
+                                fit: BoxFit.fitHeight,
+                                height: Dimens.pt20,
+                                width: Dimens.pt20,
+                                imageUrl: Constants.favicon(story.url),
+                                errorWidget: (_, __, ___) {
+                                  return const FadeIn(
+                                    child: Icon(
+                                      Icons.public,
+                                      size: Dimens.pt20,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          )
+                        : GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: onTap,
+                            child: Center(
+                              child: Image.asset(
+                                Constants.hackerNewsLogoPath,
+                                fit: BoxFit.fitWidth,
+                                height: Dimens.pt20,
+                                width: Dimens.pt20,
+                              ),
+                            ),
+                          ),
+                  ),
+              ],
             ),
           ),
         ),

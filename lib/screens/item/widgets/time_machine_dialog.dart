@@ -12,14 +12,15 @@ import 'package:material_ui/material_ui.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 class TimeMachineDialog extends StatelessWidget {
-  const TimeMachineDialog({
+  TimeMachineDialog({
     required this.comment,
-    required this.rootItem,
+    required this.commentsCubit,
     required this.deviceType,
     super.key,
-  });
+  }) : rootItem = commentsCubit.state.item;
 
   final Comment comment;
+  final CommentsCubit commentsCubit;
   final Item rootItem;
   final DeviceScreenType deviceType;
 
@@ -89,9 +90,10 @@ class TimeMachineDialog extends StatelessWidget {
                             ),
                             Item() => const SizedBox.shrink(),
                           },
-                          for (final int i in 0.to(
-                            state.ancestors.length,
-                          )) ...<Widget>[
+                          for (final (int i, Comment cmt) in <Comment>[
+                            ...state.ancestors,
+                            comment,
+                          ].indexed) ...<Widget>[
                             Row(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,10 +117,15 @@ class TimeMachineDialog extends StatelessWidget {
                                   child: CommentTile(
                                     comment: i == state.ancestors.length
                                         ? comment
-                                        : state.ancestors.elementAt(i),
+                                        : cmt,
                                     isActionable: false,
                                     isCollapsable: false,
+                                    isSelectable: false,
                                     fetchMode: FetchMode.eager,
+                                    onTap: () {
+                                      context.pop();
+                                      commentsCubit.scrollToComment(cmt);
+                                    },
                                   ),
                                 ),
                               ],

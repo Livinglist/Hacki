@@ -47,10 +47,16 @@ abstract final class HtmlUtils {
           RegExp(r'\<i\>(.*?)\<\/i\>'),
           (Match match) => '*${match[1]}*',
         )
-        .replaceAllMapped(
-          RegExp(r'\<a href=\"(.*?)\".*?\>.*?\<\/a\>'),
-          (Match match) => match[1] ?? '',
-        )
+        .replaceAllMapped(RegExp(r'\<a href=\"(.*?)\".*?\>.*?\<\/a\>(\w)?'), (
+          Match match,
+        ) {
+          final String url = match[1] ?? '';
+          final String? gluedChar = match[2];
+          if (gluedChar == null) {
+            return url;
+          }
+          return '$url $gluedChar';
+        })
         .replaceAll('\n', '\n\n')
         .replaceAll('<p>', '\n\n')
         .replaceAll('[break]', '\n');

@@ -16,6 +16,7 @@ abstract class Dimens {
   static const double pt24 = 24;
   static const double pt28 = 28;
   static const double pt30 = 30;
+  static const double pt32 = 32;
   static const double pt36 = 36;
   static const double pt40 = 40;
   static const double pt48 = 48;
