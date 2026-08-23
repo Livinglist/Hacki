@@ -4,14 +4,13 @@ import 'package:dio/dio.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/extensions/extensions.dart';
 
-/// Uses one stable browser UA for the process.
-/// Rotating UAs per request looks like a bot to HN/Cloudflare and
-/// is a common cause of extra 429s compared with URLSession.
-class UARotationInterceptor extends Interceptor with Loggable {
-  UARotationInterceptor()
-    : _userAgent = Platform.isIOS || Platform.isMacOS
-          ? Constants.iphoneUserAgent
-          : _androidUserAgent;
+class UAOverrideInterceptor extends Interceptor with Loggable {
+  UAOverrideInterceptor({String? userAgent})
+    : _userAgent =
+          userAgent ??
+          (Platform.isIOS || Platform.isMacOS
+              ? Constants.iphoneUserAgent
+              : _androidUserAgent);
 
   static const String _androidUserAgent =
       'Mozilla/5.0 (Linux; Android 16) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7680.178 Mobile Safari/537.36';
@@ -26,5 +25,5 @@ class UARotationInterceptor extends Interceptor with Loggable {
   }
 
   @override
-  String get logIdentifier => 'UARotationInterceptor';
+  String get logIdentifier => 'UAOverrideInterceptor';
 }
