@@ -13,7 +13,7 @@ Shared preferences that is synced using iCloud.
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Your Company' => 'email@example.com' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
+  s.source_files = 'synced_shared_preferences/Sources/synced_shared_preferences/**/*.swift'
   s.dependency 'Flutter'
   s.platform = :ios, '9.0'
 
