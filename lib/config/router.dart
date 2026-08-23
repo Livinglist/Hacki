@@ -67,7 +67,8 @@ String? itemLocationFromDeepLink(String url) {
   }
 
   final bool isItemPath =
-      uri.path == '/${ItemScreen.routeName}' || uri.path == ItemScreen.routeName;
+      uri.path == '/${ItemScreen.routeName}' ||
+      uri.path == ItemScreen.routeName;
   if (!isItemPath) {
     return null;
   }
