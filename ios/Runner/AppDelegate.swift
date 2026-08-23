@@ -18,9 +18,33 @@ import Photos
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     
+    override func application(
+        _ application: UIApplication,
+        configurationForConnecting connectingSceneSession: UISceneSession,
+        options: UIScene.ConnectionOptions
+    ) -> UISceneConfiguration {
+        PendingDeepLink.capture(from: options)
+        return UISceneConfiguration(
+            name: "flutter",
+            sessionRole: connectingSceneSession.role
+        )
+    }
+
     func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
         GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
         WorkmanagerPlugin.register(with: engineBridge.pluginRegistry.registrar(forPlugin: "be.tramckrijte.workmanager.WorkmanagerPlugin")!)
+
+        let deepLinkChannel = FlutterMethodChannel(
+            name: "hacki.deep_link",
+            binaryMessenger: engineBridge.applicationRegistrar.messenger()
+        )
+        deepLinkChannel.setMethodCallHandler { call, result in
+            if call.method == "getLaunchUrl" {
+                result(PendingDeepLink.consume())
+            } else {
+                result(FlutterMethodNotImplemented)
+            }
+        }
 
         WorkmanagerPlugin.registerBGProcessingTask(withIdentifier: "workmanager.background.task")
         

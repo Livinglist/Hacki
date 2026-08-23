@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/config/constants.dart';
@@ -55,6 +56,56 @@ Page<dynamic> _itemScreenPageBuilder(
       },
     ),
   );
+}
+
+const MethodChannel _iosDeepLinkChannel = MethodChannel('hacki.deep_link');
+
+String? itemLocationFromDeepLink(String url) {
+  final Uri? uri = Uri.tryParse(url);
+  if (uri == null) {
+    return null;
+  }
+
+  final bool isItemPath =
+      uri.path == '/${ItemScreen.routeName}' ||
+      uri.path == ItemScreen.routeName;
+  if (!isItemPath) {
+    return null;
+  }
+
+  final String? id = uri.queryParameters['id'];
+  if (id == null || id.isEmpty) {
+    return null;
+  }
+
+  return '/${ItemScreen.routeName}?id=$id';
+}
+
+Future<void> applyIosLaunchDeepLink() async {
+  if (!Platform.isIOS) {
+    return;
+  }
+
+  final String? url = await _iosDeepLinkChannel.invokeMethod<String>(
+    'getLaunchUrl',
+  );
+  if (url == null) {
+    return;
+  }
+
+  final String? location = itemLocationFromDeepLink(url);
+  if (location == null) {
+    return;
+  }
+
+  final Uri current = router.state.uri;
+  final Uri target = Uri.parse(location);
+  if (current.path == target.path &&
+      current.queryParameters['id'] == target.queryParameters['id']) {
+    return;
+  }
+
+  router.go(location);
 }
 
 final GoRouter router = GoRouter(
