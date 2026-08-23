@@ -1,29 +1,27 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/extensions/extensions.dart';
 
+/// Uses one stable browser UA for the process.
+/// Rotating UAs per request looks like a bot to HN/Cloudflare and
+/// is a common cause of extra 429s compared with URLSession.
 class UARotationInterceptor extends Interceptor with Loggable {
-  static const List<String> _iosUserAgents = <String>[
-    'Mozilla/5.0 (iPhone; CPU iPhone OS 26_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Brave/1 Mobile/15E148 Safari/604.1',
-    'Mozilla/5.0 (iPhone; CPU iPhone OS 18_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Mobile/15E148 Safari/604.1',
-  ];
-  static const List<String> _androidUserAgents = <String>[
-    'Mozilla/5.0 (Linux; Android 16) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7680.178 Mobile Safari/537.36',
-    'Mozilla/5.0 (Linux; Android 16; LM-Q710(FGN)) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7680.178 Mobile Safari/537.36',
-    'Mozilla/5.0 (Linux; Android 16; LM-X420) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7680.178 Mobile Safari/537.36',
-    'Mozilla/5.0 (Android 16; Mobile; rv:68.0) Gecko/68.0 Firefox/149.0',
-    'Mozilla/5.0 (Android 16; Mobile; LG-M255; rv:149.0) Gecko/149.0 Firefox/149.0',
-    'Mozilla/5.0 (Linux; Android 15; SM-S931B Build/AP3A.240905.015.A2; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/127.0.6533.103 Mobile Safari/537.36',
-  ];
+  UARotationInterceptor()
+    : _userAgent = Platform.isIOS || Platform.isMacOS
+          ? Constants.iphoneUserAgent
+          : _androidUserAgent;
+
+  static const String _androidUserAgent =
+      'Mozilla/5.0 (Linux; Android 16) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7680.178 Mobile Safari/537.36';
+
+  final String _userAgent;
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    final String? userAgent = Platform.isIOS || Platform.isMacOS
-        ? _iosUserAgents.randomlyPicked
-        : _androidUserAgents.randomlyPicked;
-    logInfo('user agent: $userAgent');
-    options.headers[HttpHeaders.userAgentHeader] = userAgent;
+    logInfo('user agent: $_userAgent');
+    options.headers[HttpHeaders.userAgentHeader] = _userAgent;
     super.onRequest(options, handler);
   }
 
