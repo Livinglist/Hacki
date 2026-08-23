@@ -747,7 +747,6 @@ class _SettingsViewState extends State<SettingsView>
                 locator.get<SembastRepository>()
                   ..deleteAllCachedItems()
                   ..deleteCachedComments()
-                  ..deleteCachedMetadata()
                   ..deleteCachedMetadata();
                 locator.get<CollapseStateCacheRepository>().clear();
 
