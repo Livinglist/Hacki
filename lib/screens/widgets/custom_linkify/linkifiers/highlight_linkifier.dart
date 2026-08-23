@@ -3,7 +3,10 @@ import 'package:material_ui/material_ui.dart';
 
 class HighlightLinkifier extends Linkifier {
   HighlightLinkifier({required String highlightedText})
-    : highlightRegExp = RegExp(highlightedText, caseSensitive: false);
+    : highlightRegExp = RegExp(
+        RegExp.escape(highlightedText),
+        caseSensitive: false,
+      );
 
   final RegExp highlightRegExp;
 
@@ -19,36 +22,35 @@ class HighlightLinkifier extends Linkifier {
     final List<LinkifyElement> list = <LinkifyElement>[];
 
     for (final LinkifyElement element in elements) {
-      if (element is TextElement) {
-        final RegExpMatch? match = highlightRegExp.firstMatch(
-          element.text.trimLeft(),
-        );
-        if (match == null || match.group(0) == null) {
-          list.add(element);
-        } else {
-          final String matchedText = match.group(0)!;
-          final num pos = (element.text.indexOf(matchedText) - 1).clamp(
-            0,
-            double.infinity,
-          );
-          final List<String> splitTexts = element.text.split(matchedText);
-
-          int curPos = 0;
-          bool added = false;
-
-          for (final String text in splitTexts) {
-            list.addAll(parse(<LinkifyElement>[TextElement(text)], options));
-
-            curPos += text.length;
-
-            if (!added && curPos >= pos) {
-              added = true;
-              list.add(HighlightElement(matchedText));
-            }
-          }
-        }
-      } else {
+      if (element is! TextElement) {
         list.add(element);
+        continue;
+      }
+
+      final String text = element.text;
+      int start = 0;
+      bool foundMatch = false;
+
+      for (final RegExpMatch match in highlightRegExp.allMatches(text)) {
+        final String? matchedText = match.group(0);
+        if (matchedText == null || matchedText.isEmpty) {
+          continue;
+        }
+
+        foundMatch = true;
+
+        if (match.start > start) {
+          list.add(TextElement(text.substring(start, match.start)));
+        }
+
+        list.add(HighlightElement(matchedText));
+        start = match.end;
+      }
+
+      if (!foundMatch) {
+        list.add(element);
+      } else if (start < text.length) {
+        list.add(TextElement(text.substring(start)));
       }
     }
 
