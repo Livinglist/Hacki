@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:hacki/cubits/cubits.dart';
@@ -22,7 +24,7 @@ class CustomAppBar extends AppBar {
     VoidCallback? onZoomTap,
     bool? expanded,
   }) : super(
-         leading: onBackTap == null
+         leading: onBackTap == null || !Platform.isAndroid
              ? null
              : IconButton(
                  icon: const Icon(Icons.arrow_back),

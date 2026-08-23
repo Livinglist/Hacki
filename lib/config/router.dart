@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/config/constants.dart';
@@ -11,7 +13,49 @@ import 'package:hacki/styles/dimens.dart';
 import 'package:material_ui/material_ui.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-final Map<int, Future<Item?>> deepLinkItemFutures = <int, Future<Item?>>{};
+final Map<int, Future<Item?>> _deepLinkItemFutures = <int, Future<Item?>>{};
+
+Page<dynamic> _itemScreenPageBuilder(
+  BuildContext context,
+  GoRouterState state,
+) {
+  final ItemScreenArgs? args = state.extra as ItemScreenArgs?;
+  if (args != null) {
+    return MaterialPage<void>(child: ItemScreen.phone(args));
+  }
+
+  final int? itemId = state.uri.queryParameters['id']?.itemId;
+  if (itemId == null) {
+    throw GoError("item args or item id can't be null");
+  }
+
+  return MaterialPage<void>(
+    child: FutureBuilder<Item?>(
+      future: _deepLinkItemFutures.putIfAbsent(
+        itemId,
+        () => locator.get<HackerNewsRepository>().fetchItem(id: itemId),
+      ),
+      builder: (BuildContext context, AsyncSnapshot<Item?> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(strokeWidth: Dimens.pt2),
+            ),
+          );
+        }
+
+        if (snapshot.hasError || !snapshot.hasData) {
+          return Scaffold(body: Center(child: Text(Constants.errorMessage)));
+        }
+
+        return ItemScreen.phone(
+          ItemScreenArgs(item: snapshot.data!),
+          showBackButton: true,
+        );
+      },
+    ),
+  );
+}
 
 final GoRouter router = GoRouter(
   navigatorKey: navigatorKey,
@@ -23,53 +67,25 @@ final GoRouter router = GoRouter(
       path: '/${ItemScreen.routeName}/${SettingsScreen.routeName}',
       pageBuilder: (_, __) => const MaterialPage<void>(child: SettingsScreen()),
     ),
-    GoRoute(
-      path: '/${ItemScreen.routeName}',
-      pageBuilder: (BuildContext context, GoRouterState state) {
-        final ItemScreenArgs? args = state.extra as ItemScreenArgs?;
-        if (args != null) {
-          return MaterialPage<void>(child: ItemScreen.phone(args));
-        }
 
-        final int? itemId = state.uri.queryParameters['id']?.itemId;
-        if (itemId == null) {
-          throw GoError("item args or item id can't be null");
-        }
+    ///
+    /// This is so that Android user deep linked to Hacki can go back to the
+    /// previous app by tapping on the back button.
+    ///
+    if (Platform.isAndroid)
+      GoRoute(
+        path: '/${ItemScreen.routeName}',
+        pageBuilder: _itemScreenPageBuilder,
+      ),
 
-        return MaterialPage<void>(
-          child: FutureBuilder<Item?>(
-            future: deepLinkItemFutures.putIfAbsent(
-              itemId,
-              () => locator.get<HackerNewsRepository>().fetchItem(id: itemId),
-            ),
-            builder: (BuildContext context, AsyncSnapshot<Item?> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Scaffold(
-                  body: Center(
-                    child: CircularProgressIndicator(strokeWidth: Dimens.pt2),
-                  ),
-                );
-              }
-
-              if (snapshot.hasError || !snapshot.hasData) {
-                return Scaffold(
-                  body: Center(child: Text(Constants.errorMessage)),
-                );
-              }
-
-              return ItemScreen.phone(
-                ItemScreenArgs(item: snapshot.data!),
-                showBackButton: true,
-              );
-            },
-          ),
-        );
-      },
-    ),
     GoRoute(
       path: HomeScreen.routeName,
       pageBuilder: (_, __) => const MaterialPage<void>(child: HomeScreen()),
       routes: <RouteBase>[
+        GoRoute(
+          path: ItemScreen.routeName,
+          pageBuilder: _itemScreenPageBuilder,
+        ),
         GoRoute(
           path: ShareScreen.routeName,
           pageBuilder: (_, GoRouterState state) {
