@@ -954,11 +954,7 @@ comments length is ${state.comments.length}
 
     if (onScreenComments.isEmpty && state.comments.isNotEmpty) {
       unawaited(
-        scrollTo(
-          index: 1,
-          alignment: 0.15,
-          duration: AppDurations.ms400,
-        ),
+        scrollTo(index: 1, alignment: 0.15, duration: AppDurations.ms400),
       );
       return;
     }
@@ -986,11 +982,7 @@ comments length is ${state.comments.length}
 
       if (cmt.isRoot && (cmt.deleted || cmt.dead) == false) {
         unawaited(
-          scrollTo(
-            index: i + 1,
-            alignment: 0.15,
-            duration: AppDurations.ms400,
-          ),
+          scrollTo(index: i + 1, alignment: 0.15, duration: AppDurations.ms400),
         );
         return;
       }
@@ -1029,11 +1021,7 @@ comments length is ${state.comments.length}
 
       if (cmt.isRoot && (cmt.deleted || cmt.dead) == false) {
         unawaited(
-          scrollTo(
-            index: i + 1,
-            alignment: 0.15,
-            duration: AppDurations.ms400,
-          ),
+          scrollTo(index: i + 1, alignment: 0.15, duration: AppDurations.ms400),
         );
         return;
       }
