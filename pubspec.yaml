@@ -95,7 +95,7 @@ dependencies:
   visibility_detector: ^0.4.0+2
   wakelock_plus: ^1.7.0
   webview_flutter: ^4.14.1
-  workmanager: ^0.10.7
+  workmanager: ^0.10.9
 
 dev_dependencies:
   bloc_test: ^10.0.0
