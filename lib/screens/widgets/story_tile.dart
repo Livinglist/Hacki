@@ -63,58 +63,68 @@ class StoryTile extends StatelessWidget {
             children: <Widget>[
               TapDownWrapper(
                 onTap: onTap,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
                   children: <Widget>[
-                    Text.rich(
-                      TextSpan(
-                        children: <TextSpan>[
-                          if (isIndexedStoryTileEnabled && index != null)
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text.rich(
                             TextSpan(
-                              text: '#${index! + 1} ',
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onSurface,
-                                    fontWeight: FontWeight.bold,
+                              children: <TextSpan>[
+                                if (isIndexedStoryTileEnabled && index != null)
+                                  TextSpan(
+                                    text: '#${index! + 1} ',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                   ),
-                            ),
-                          TextSpan(
-                            text: story.title,
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(
-                                  color: hasRead
-                                      ? Theme.of(context).readGrey
-                                      : null,
-                                  fontWeight: FontWeight.bold,
+                                TextSpan(
+                                  text: story.title,
+                                  style: Theme.of(context).textTheme.titleMedium
+                                      ?.copyWith(
+                                        color: hasRead
+                                            ? Theme.of(context).readGrey
+                                            : null,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                 ),
+                                if (shouldShowUrl &&
+                                    story.readableUrl.isNotEmpty)
+                                  TextSpan(
+                                    text: ' (${story.readableUrl})',
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(
+                                          color: hasRead
+                                              ? Theme.of(context).readGrey
+                                              : null,
+                                        ),
+                                  ),
+                              ],
+                            ),
                           ),
-                          if (shouldShowUrl && story.readableUrl.isNotEmpty)
-                            TextSpan(
-                              text: ' (${story.readableUrl})',
+                          if (shouldShowMetadata)
+                            Text(
+                              story.metadata,
                               style: Theme.of(context).textTheme.bodySmall
                                   ?.copyWith(
                                     color: hasRead
                                         ? Theme.of(context).readGrey
-                                        : null,
+                                        : Theme.of(context).metadataColor,
                                   ),
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
                             ),
                         ],
                       ),
                     ),
-                    if (shouldShowMetadata)
-                      Text(
-                        story.metadata,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: hasRead
-                              ? Theme.of(context).readGrey
-                              : Theme.of(context).metadataColor,
-                        ),
-                        textAlign: TextAlign.left,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
                   ],
                 ),
               ),
