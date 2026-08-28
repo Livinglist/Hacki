@@ -82,8 +82,18 @@ class WebAnalyzer {
     dotAll: true,
   );
   static final RegExp _titleReg = RegExp(
-    '(title|icon|description|image)',
+    '(title|icon|description|image|thumbnail)',
     caseSensitive: false,
+  );
+  static final RegExp _imgReg = RegExp(
+    r'''<img\b[^>]*?\bsrc\s*=\s*["']([^"']+)["'][^>]*>''',
+    caseSensitive: false,
+    dotAll: true,
+  );
+  static final RegExp _bgImgReg = RegExp(
+    r'''background(?:-image)?\s*:\s*url\(\s*["']?([^"')]+)["']?\s*\)''',
+    caseSensitive: false,
+    dotAll: true,
   );
   static final RegExp _lineReg = RegExp(r'[\n\r]|&nbsp;|&gt;');
   static final RegExp _spaceReg = RegExp(r'\s+');
@@ -443,7 +453,7 @@ ${info.toJson()}
         title: _analyzeTitle(document),
         icon: await _analyzeIcon(document, uri),
         description: _analyzeDescription(document, html),
-        image: _analyzeImage(document, uri),
+        image: _analyzeImage(document, uri, html),
       );
       return info;
     }
@@ -611,9 +621,88 @@ ${info.toJson()}
     return _handleUrl(uri, icon);
   }
 
-  static String? _analyzeImage(Document document, Uri uri) {
-    final String? image = _getMetaContent(document, 'property', 'og:image');
-    return _handleUrl(uri, image);
+  static String? _analyzeImage(Document document, Uri uri, String html) {
+    // Reject data URIs, svgs and obvious tracking/placeholder/icon assets.
+    bool isUsable(String? src) {
+      if (!isNotEmpty(src)) return false;
+      final String lower = src!.toLowerCase().trim();
+      if (lower.startsWith('data:')) return false;
+      if (lower.endsWith('.svg')) return false;
+      if (lower.contains('spacer') ||
+          lower.contains('blank.gif') ||
+          lower.contains('1x1') ||
+          lower.contains('pixel') ||
+          lower.contains('sprite') ||
+          lower.contains('favicon') ||
+          lower.contains('logo') ||
+          lower.contains('avatar') ||
+          lower.contains('icon')) {
+        return false;
+      }
+      return true;
+    }
+
+    // 1. Open Graph image (the canonical preview image), including its
+    //    secure/url variants that some sites use instead of the base property.
+    final List<String?> ogCandidates = <String?>[
+      _getMetaContent(document, 'property', 'og:image'),
+      _getMetaContent(document, 'property', 'og:image:secure_url'),
+      _getMetaContent(document, 'property', 'og:image:url'),
+      _getMetaContent(document, 'name', 'og:image'),
+    ];
+    for (final String? candidate in ogCandidates) {
+      if (isUsable(candidate)) return _handleUrl(uri, candidate);
+    }
+
+    // 2. Twitter card image (property and name variants, plus legacy :src).
+    final List<String?> twitterCandidates = <String?>[
+      _getMetaContent(document, 'property', 'twitter:image'),
+      _getMetaContent(document, 'name', 'twitter:image'),
+      _getMetaContent(document, 'property', 'twitter:image:src'),
+      _getMetaContent(document, 'name', 'twitter:image:src'),
+    ];
+    for (final String? candidate in twitterCandidates) {
+      if (isUsable(candidate)) return _handleUrl(uri, candidate);
+    }
+
+    // 3. Schema.org / itemprop and Microsoft tile image meta tags.
+    final List<String?> metaCandidates = <String?>[
+      _getMetaContent(document, 'itemprop', 'image'),
+      _getMetaContent(document, 'name', 'msapplication-TileImage'),
+      _getMetaContent(document, 'name', 'thumbnail'),
+    ];
+    for (final String? candidate in metaCandidates) {
+      if (isUsable(candidate)) return _handleUrl(uri, candidate);
+    }
+
+    // 4. <link rel="image_src"> preview hint.
+    final Element? linkImage = document.head
+        ?.getElementsByTagName('link')
+        .firstWhereOrNull(
+          (Element e) =>
+              (e.attributes['rel'] ?? '').toLowerCase() == 'image_src',
+        );
+    final String? linkHref = linkImage?.attributes['href'];
+    if (isUsable(linkHref)) return _handleUrl(uri, linkHref);
+
+    // 5. Last resort: scan the raw HTML body for the first usable <img>.
+    //    Many minimal/legacy pages ship no preview metadata at all, so a
+    //    real content image is better than no preview.
+    for (final RegExpMatch match in _imgReg.allMatches(html)) {
+      final String? src = match.group(1)?.trim();
+      if (isUsable(src)) return _handleUrl(uri, src);
+    }
+
+    // 6. Still nothing: many modern themes render hero images via CSS
+    //    `background-image: url(...)` rather than <img> tags. Scan inline
+    //    styles and <style> blocks for the first usable one.
+    for (final RegExpMatch match in _bgImgReg.allMatches(html)) {
+      final String? src = match.group(1)?.trim();
+      if (isUsable(src)) return _handleUrl(uri, src);
+    }
+
+    // 7. Nothing usable found.
+    return null;
   }
 
   static String? _handleUrl(Uri uri, String? source) {
