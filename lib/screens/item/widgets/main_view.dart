@@ -573,6 +573,7 @@ class _ParentItemSection extends StatelessWidget {
                       selector: (CommentsState state) =>
                           state.fetchParentStatus,
                       builder: (BuildContext context, CommentsStatus status) {
+                        if (item.parent == -1) return const SizedBox.shrink();
                         return TextButton(
                           onPressed: context
                               .read<CommentsCubit>()
