@@ -64,7 +64,7 @@ class StoryTile extends StatelessWidget {
               TapDownWrapper(
                 onTap: onTap,
                 child: Row(
-                  children: [
+                  children: <Widget>[
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
