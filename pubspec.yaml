@@ -40,7 +40,7 @@ dependencies:
       url: https://github.com/Livinglist/flutter_feather_icons
       ref: master
   flutter_inappwebview: ^6.2.0-beta.3
-  flutter_local_notifications: ^22.2.0
+  flutter_local_notifications: ^22.3.0
   flutter_material_color_picker:
     git:
       url: https://github.com/Livinglist/flutter_material_color_picker
