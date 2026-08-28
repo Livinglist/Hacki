@@ -1093,7 +1093,7 @@ class _SettingsViewState extends State<SettingsView>
       showSnackBar(content: "You don't have any favorite item.");
       return;
     }
-    final String allFavoritesStr = allFavorites.join('\n');
+    final String allFavoritesStr = allFavorites.take(100).join('\n');
 
     switch (destination) {
       case ExportDestination.qrCode:

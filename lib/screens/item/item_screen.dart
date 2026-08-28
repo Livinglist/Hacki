@@ -329,10 +329,8 @@ class _ItemScreenState extends State<ItemScreen>
                             ..openInThreadSearch?.call();
                         },
                       ),
-                      onRightMoreTapped: (Comment cmt) => onRightMoreTapped(
-                        cmt,
-                        context.read<CommentsCubit>().state.item,
-                      ),
+                      onRightMoreTapped: (Comment cmt) =>
+                          onRightMoreTapped(cmt, context.read<CommentsCubit>()),
                       onStoryUrlTapped: _webViewController.show,
                       shouldMarkNewComment: widget.shouldMarkNewComment,
                     ),
@@ -449,7 +447,7 @@ class _ItemScreenState extends State<ItemScreen>
                               onRightMoreTapped: (Comment cmt) =>
                                   onRightMoreTapped(
                                     cmt,
-                                    context.read<CommentsCubit>().state.item,
+                                    context.read<CommentsCubit>(),
                                   ),
                               onStoryUrlTapped: _webViewController.show,
                               shouldMarkNewComment: widget.shouldMarkNewComment,
@@ -553,7 +551,7 @@ class _ItemScreenState extends State<ItemScreen>
     );
   }
 
-  void onRightMoreTapped(Comment comment, Item rootItem) {
+  void onRightMoreTapped(Comment comment, CommentsCubit cubit) {
     HapticFeedbackUtils.light();
     showModalBottomSheet<void>(
       context: context,
@@ -570,7 +568,7 @@ class _ItemScreenState extends State<ItemScreen>
                   DialogProxy.showTimeMachineDialog(
                     context,
                     comment: comment,
-                    commentsCubit: context.read<CommentsCubit>(),
+                    commentsCubit: cubit,
                   );
                 },
                 enabled:
