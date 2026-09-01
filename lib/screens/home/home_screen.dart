@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:app_links/app_links.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,6 +9,7 @@ import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/config/paths.dart';
 import 'package:hacki/config/updatify.dart';
+import 'package:hacki/config/router.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/main.dart';
@@ -43,7 +43,6 @@ class _HomeScreenState extends State<HomeScreen>
   late final StreamSubscription<String?> siriSuggestionStreamSubscription;
   late final StreamSubscription<StoriesDownloadStatus>
   downloadStreamSubscription;
-  final AppLinks appLinks = AppLinks();
 
   static final int tabLength = StoryType.values.length + 1;
 
@@ -61,13 +60,6 @@ class _HomeScreenState extends State<HomeScreen>
             DialogProxy.showDownloadCompletedDialog();
           }
         });
-
-    appLinks.uriLinkStream.listen((Uri uri) {
-      logInfo('deeplink uri received: ${uri.path}');
-      if (mounted) {
-        context.push(uri.path);
-      }
-    });
 
     ReceiveSharingIntent.instance.getInitialMedia().then(
       onShareExtensionTapped,
@@ -90,6 +82,7 @@ class _HomeScreenState extends State<HomeScreen>
     }
 
     SchedulerBinding.instance
+      ..addPostFrameCallback((_) => unawaited(applyIosLaunchDeepLink()))
       ..addPostFrameCallback((_) => showFeatureDiscoveryDialog())
       ..addPostFrameCallback((_) => showWhatsNewIfNeeded(context))
       ..addPostFrameCallback((_) {
@@ -273,7 +266,9 @@ class _HomeScreenState extends State<HomeScreen>
       if (isSplitViewEnabled) {
         context.read<SplitViewCubit>().updateItemScreenArgs(args);
       } else {
-        context.push(Paths.item.landing, extra: args);
+        context
+          ..push(Paths.item.landing, extra: args)
+          ..read<ReminderCubit>().onDismiss();
       }
     }
 

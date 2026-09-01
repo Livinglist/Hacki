@@ -42,7 +42,14 @@ class PinnedStories extends StatelessWidget {
                           children: <Widget>[
                             if (preferenceState.isRichStoryTileEnabled)
                               const Icon(Icons.close, size: Dimens.pt24),
-                            const Text('Unpin'),
+                            Text(
+                              'Unpin',
+                              style: TextStyle(
+                                fontFamily: Theme.of(
+                                  context,
+                                ).textTheme.bodyMedium?.fontFamily,
+                              ),
+                            ),
                           ],
                         ),
                       ),

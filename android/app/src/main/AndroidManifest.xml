@@ -28,7 +28,7 @@
         android:enableOnBackInvokedCallback="true">
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleTask"
+            android:launchMode="standard"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
@@ -42,7 +42,7 @@
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
               />
-            <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />
+            <meta-data android:name="flutter_deeplinking_enabled" android:value="true" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

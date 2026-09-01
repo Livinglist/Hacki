@@ -748,7 +748,6 @@ class _SettingsViewState extends State<SettingsView>
                 locator.get<SembastRepository>()
                   ..deleteAllCachedItems()
                   ..deleteCachedComments()
-                  ..deleteCachedMetadata()
                   ..deleteCachedMetadata();
                 locator.get<CollapseStateCacheRepository>().clear();
 
@@ -1063,12 +1062,10 @@ class _SettingsViewState extends State<SettingsView>
       case ImportSource.qrCode:
         data = await router.push(Paths.qrCode.scanner) as String?;
       case ImportSource.file:
-        final FilePickerResult? result = await FilePicker.pickFiles(
-          withData: true,
-        );
+        final PlatformFile? result = await FilePicker.pickFile();
         if (result == null) return;
-        final List<int>? bytes = result.files.first.bytes;
-        if (bytes == null) {
+        final List<int> bytes = await result.readAsBytes();
+        if (bytes.isEmpty) {
           showSnackBar(content: 'Could not read file.');
           return;
         }
@@ -1097,7 +1094,7 @@ class _SettingsViewState extends State<SettingsView>
       showSnackBar(content: "You don't have any favorite item.");
       return;
     }
-    final String allFavoritesStr = allFavorites.join('\n');
+    final String allFavoritesStr = allFavorites.take(100).join('\n');
 
     switch (destination) {
       case ExportDestination.qrCode:

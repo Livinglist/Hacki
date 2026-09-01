@@ -1,35 +1,30 @@
 name: hacki
 description: A Hacker News client.
-version: 3.7.0+370
+version: 3.7.1+372
 publish_to: none
 
 environment:
   sdk: ">=3.11.0 <4.0.0"
-  flutter: "3.47.0"
+  flutter: "3.47.2"
 
 dependencies:
   adaptive_theme: ^3.8.0
   advanced_haptics: ^1.0.8
-  animations: ^2.2.0
-  app_links: ^7.2.1
+  animations: ^3.0.0
   badges: ^3.2.0
   bloc: ^9.2.1
   bloc_concurrency: ^0.3.0
-  cached_network_image: ^3.4.1
+  cached_network_image: ^4.0.0
   collection: ^1.19.1
   connectivity_plus: ^7.3.1
   device_info_plus: ^13.2.0
   dio: ^5.11.0
   dio_smart_retry: ^7.0.1
-  dynamic_color:
-    git:
-      url: https://github.com/Livinglist/flutter-packages.git
-      ref: main
-      path: packages/dynamic_color
+  dynamic_color: ^2.1.0
   equatable: ^2.1.0
   fast_gbk: ^1.0.0
   feature_discovery: ^0.14.2
-  file_picker: ^12.0.0-beta.3
+  file_picker: ^12.1.2
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
@@ -41,7 +36,7 @@ dependencies:
       url: https://github.com/Livinglist/flutter_feather_icons
       ref: master
   flutter_inappwebview: ^6.2.0-beta.3
-  flutter_local_notifications: ^22.2.0
+  flutter_local_notifications: ^22.3.0
   flutter_material_color_picker:
     git:
       url: https://github.com/Livinglist/flutter_material_color_picker
@@ -51,7 +46,7 @@ dependencies:
   flutter_slidable: ^4.0.3
   font_awesome_flutter: ^11.0.0
   get_it: ^9.2.1
-  go_router: ^17.5.0
+  go_router: ^18.0.0
   hive: ^2.2.3
   html: ^0.15.6
   html_unescape: ^2.0.0
@@ -62,7 +57,7 @@ dependencies:
   intl: ^0.20.3
   linkify: ^5.0.0
   logger: ^2.7.0
-  material_ui: ^1.0.0
+  material_ui: ^1.1.0
   memoize: ^3.0.0
   package_info_plus: ^10.2.1
   path: ^1.9.1
@@ -87,7 +82,7 @@ dependencies:
   shared_preferences: ^2.5.5
   shared_preferences_android: ^2.4.27
   shared_preferences_foundation: ^2.5.6
-  shimmer: ^3.0.0
+  shimmer: ^4.0.0
   synced_shared_preferences:
     path: components/synced_shared_preferences
   universal_platform: ^1.1.0
@@ -97,7 +92,7 @@ dependencies:
   visibility_detector: ^0.4.0+2
   wakelock_plus: ^1.7.0
   webview_flutter: ^4.14.1
-  workmanager: ^0.10.7
+  workmanager: ^0.10.9
 
 dev_dependencies:
   bloc_test: ^10.0.0

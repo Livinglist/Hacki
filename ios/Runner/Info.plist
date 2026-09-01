@@ -14,7 +14,7 @@
 					<key>UISceneClassName</key>
 					<string>UIWindowScene</string>
 					<key>UISceneDelegateClassName</key>
-					<string>FlutterSceneDelegate</string>
+					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
 					<key>UISceneConfigurationName</key>
 					<string>flutter</string>
 					<key>UISceneStoryboardFile</key>
@@ -89,10 +89,6 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>com.apple.developer.associated-domains</key>
-	<array>
-		<string>applinks:example.com</string>
-	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
@@ -106,7 +102,7 @@
 	<key>AppGroupId</key>
 	<string>group.com.jiaqi.hacki</string>
 	<key>FlutterDeepLinkingEnabled</key>
-	<false/>
+	<true/>
 	<key>NSPhotoLibraryAddUsageDescription</key>
     <string>Hacki needs access to save images to your photo library.</string>
     <key>NSPhotoLibraryUsageDescription</key>

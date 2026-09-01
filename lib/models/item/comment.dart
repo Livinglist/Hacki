@@ -17,7 +17,13 @@ class Comment extends Item {
     this.isHiddenByUser = false,
     this.isCollapsedByUser = false,
     this.isNew = false,
-  }) : super(descendants: 0, parts: <int>[], title: '', url: '', type: '');
+  }) : super(
+         descendants: 0,
+         parts: <int>[],
+         title: '',
+         url: '',
+         type: 'comment',
+       );
 
   Comment.fromJson(super.json, {this.level = 0})
     : isFromCache = json['fromCache'] == true,

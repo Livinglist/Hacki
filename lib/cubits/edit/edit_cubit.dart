@@ -65,9 +65,12 @@ class EditCubit extends HydratedCubit<EditState> {
     final String text = json['text'] as String? ?? '';
     final Map<String, dynamic>? itemJson =
         json['item'] as Map<String, dynamic>?;
-    final Item? replyingTo = itemJson == null ? null : Item.fromJson(itemJson);
 
-    if (replyingTo != null && text.isNotEmpty) {
+    if (itemJson != null && text.isNotEmpty) {
+      final bool isComment = itemJson['type'] == 'comment';
+      final Item replyingTo = isComment
+          ? Comment.fromJson(itemJson)
+          : Item.fromJson(itemJson);
       _draftCache.cacheDraft(text: text, replyingTo: replyingTo.id);
 
       final EditState state = EditState(text: text, replyingTo: replyingTo);
@@ -82,23 +85,21 @@ class EditCubit extends HydratedCubit<EditState> {
 
   @override
   Map<String, dynamic>? toJson(EditState state) {
-    EditState selected = state;
-
     // Override previous draft only when current draft is not empty.
     if (state.replyingTo == null ||
         (state.replyingTo?.id != _cachedState.replyingTo?.id &&
             state.text.isNullOrEmpty)) {
-      selected = _cachedState;
+      state = _cachedState;
     }
 
-    if (selected.text.isNullOrEmpty) {
+    if (state.text.isNullOrEmpty) {
       clear();
       return null;
     }
 
     return <String, dynamic>{
-      'text': selected.text ?? '',
-      'item': selected.replyingTo?.toJson(),
+      'text': state.text ?? '',
+      'item': state.replyingTo?.toJson(),
     };
   }
 

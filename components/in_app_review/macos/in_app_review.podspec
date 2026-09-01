@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Britannio Jarrett' => 'britanniojarrett@gmail.com' }
   s.source           = { :path => '.' }
-  s.source_files     = 'Classes/**/*'
+  s.source_files     = 'in_app_review/Sources/in_app_review/**/*.swift'
   s.dependency 'FlutterMacOS'
 
   s.platform = :osx, '10.11'

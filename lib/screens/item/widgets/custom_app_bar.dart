@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:hacki/cubits/cubits.dart';
@@ -17,10 +19,17 @@ class CustomAppBar extends AppBar {
     required VoidCallback onFontSizeTap,
     required GlobalKey fontSizeIconButtonKey,
     super.key,
+    VoidCallback? onBackTap,
     bool splitViewEnabled = false,
     VoidCallback? onZoomTap,
     bool? expanded,
   }) : super(
+         leading: onBackTap == null || !Platform.isAndroid
+             ? null
+             : IconButton(
+                 icon: const Icon(Icons.arrow_back),
+                 onPressed: onBackTap,
+               ),
          elevation: Dimens.zero,
          actions: <Widget>[
            if (splitViewEnabled) ...<Widget>[
