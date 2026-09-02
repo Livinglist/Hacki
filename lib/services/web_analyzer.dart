@@ -12,6 +12,7 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:html/dom.dart' hide Comment, Text;
 import 'package:html/parser.dart' as parser;
+import 'package:html_unescape/html_unescape.dart';
 import 'package:http/http.dart';
 import 'package:http/io_client.dart';
 import 'package:logger/logger.dart';
@@ -73,7 +74,7 @@ class WebAnalyzer {
     caseSensitive: false,
   );
   static final RegExp _htmlReg = RegExp(
-    r'(<head[^>]*>([\s\S]*?)<\/head>)|(<script[^>]*>([\s\S]*?)<\/script>)|(<style[^>]*>([\s\S]*?)<\/style>)|(<[^>]+>)|(<link[^>]*>([\s\S]*?)<\/link>)|(<[^>]+>)',
+    r'(<!--[\s\S]*?-->)|(<head[^>]*>([\s\S]*?)<\/head>)|(<script[^>]*>([\s\S]*?)<\/script>)|(<style[^>]*>([\s\S]*?)<\/style>)|(<[^>]+>)|(<link[^>]*>([\s\S]*?)<\/link>)|(<[^>]+>)',
     caseSensitive: false,
   );
   static final RegExp _metaReg = RegExp(
@@ -95,9 +96,34 @@ class WebAnalyzer {
     caseSensitive: false,
     dotAll: true,
   );
-  static final RegExp _lineReg = RegExp(r'[\n\r]|&nbsp;|&gt;');
+  static final RegExp _lineReg = RegExp(r'[\n\r\u00a0]|&nbsp;|&gt;');
   static final RegExp _spaceReg = RegExp(r'\s+');
+
+  /// Matches html comments and anything that looks like a real tag (`<` has to
+  /// be followed by a tag name), so that plain text such as `if a < b > c` is
+  /// left alone.
+  static final RegExp _markupReg = RegExp(
+    r'<!--[\s\S]*?-->|</?[a-zA-Z][^>]*>',
+    dotAll: true,
+  );
+  static final HtmlUnescape _htmlUnescape = HtmlUnescape();
   static const String _logPrefix = '[WebAnalyzer]';
+
+  /// Turns a chunk of html into something that can be shown as plain preview
+  /// text: strips comments and leftover tags, decodes html entities
+  /// (`&#39;`, `&#8981;`, `&amp;`, ...) and collapses whitespace.
+  ///
+  /// Entities have to be decoded after the markup is removed, otherwise an
+  /// escaped `&lt;b&gt;` would turn into a tag and get stripped as well.
+  static String sanitizeText(String? text) {
+    if (text == null || text.isEmpty) return '';
+
+    return _htmlUnescape
+        .convert(text.replaceAll(_markupReg, ' '))
+        .replaceAll(_lineReg, ' ')
+        .replaceAll(_spaceReg, ' ')
+        .trim();
+  }
 
   static bool isEmpty(String? str) {
     return !isNotEmpty(str);
@@ -142,7 +168,7 @@ ${info.toJson()}
     /// [2] If story doesn't have a url and text is not empty,
     /// just use story title and text.
     if (story.url.isEmpty && story.text.isNotEmpty) {
-      info = WebInfo(title: story.title, description: story.text)
+      info = WebInfo(title: story.title, description: sanitizeText(story.text))
         .._shouldRetry = false;
 
       cacheMap[key] = info;
@@ -164,7 +190,9 @@ ${info.toJson()}
 
       info = WebInfo(
         title: story.title,
-        description: comment != null ? '${comment.by}: ${comment.text}' : null,
+        description: comment != null
+            ? sanitizeText('${comment.by}: ${comment.text}')
+            : null,
       ).._shouldRetry = false;
 
       cacheMap[key] = info;
@@ -174,10 +202,23 @@ ${info.toJson()}
 
     try {
       /// [4] Try to fetch from file cache.
-      info = await locator.get<SembastRepository>().getCachedMetadata(key: key);
+      final WebInfo? cachedInfo = await locator
+          .get<SembastRepository>()
+          .getCachedMetadata(key: key);
 
       /// [5] If there is file cache, move it to mem cache for later retrieval.
-      if (info != null) {
+      if (cachedInfo != null) {
+        /// Metadata cached by an older version can still contain raw html
+        /// entities, so sanitize on read instead of dropping the cache.
+        info = WebInfo(
+          title: cachedInfo.title,
+          icon: cachedInfo.icon,
+          image: cachedInfo.image,
+          description: sanitizeText(cachedInfo.description)
+              .removeAllEmojis()
+              .trim(),
+        ).._shouldRetry = false;
+
         locator.get<Logger>().d('''
 $_logPrefix fetched file cached metadata using key $key for $story:
 ${info.toJson()}
@@ -212,7 +253,7 @@ ${info.toJson()}
 
       return info;
     } catch (e) {
-      return WebInfo(title: story.title, description: story.text)
+      return WebInfo(title: story.title, description: sanitizeText(story.text))
         .._shouldRetry = true;
     }
   }
@@ -249,15 +290,19 @@ ${info.toJson()}
 
     late final bool shouldRetry;
     InfoBase? info;
-    String description =
-        (res?[2] as String?)?.removeAllEmojis().trim() ?? story.text;
+    String description = sanitizeText(
+      (res?[2] as String?) ?? story.text,
+    ).removeAllEmojis().trim();
 
     // If description is empty, use one of the comments under the story.
     if (res == null || description.isEmpty) {
       final List<int> ids = <int>[story.id, ...story.kids];
       final String? commentText = await _fetchInfoFromStory(ids);
       shouldRetry = commentText == null;
-      description = commentText ?? 'no comment yet';
+      final String sanitizedCommentText = sanitizeText(commentText);
+      description = sanitizedCommentText.isEmpty
+          ? 'no comment yet'
+          : sanitizedCommentText;
     } else {
       shouldRetry = false;
     }
@@ -334,7 +379,9 @@ ${info.toJson()}
       comment = await hackerNewsRepository.fetchComment(id: kidId);
       final String text = comment?.text.trim() ?? '';
       if (text.isNotEmpty && text.isValidCommentText) {
-        return comment != null ? '${comment.by}: ${comment.text}' : null;
+        return comment != null
+            ? sanitizeText('${comment.by}: ${comment.text}')
+            : null;
       } else {
         continue;
       }
@@ -522,39 +569,39 @@ ${info.toJson()}
         !text.contains('You need to enable JavaScript');
 
     // 1. Try og:description first
-    final String? ogDesc = _getMetaContent(
-      document,
-      'property',
-      'og:description',
+    final String ogDesc = sanitizeText(
+      _getMetaContent(document, 'property', 'og:description'),
     );
-    if (isUsable(ogDesc)) return ogDesc!.trim();
+    if (isUsable(ogDesc)) return ogDesc;
 
     // 2. Try twitter:description as additional fallback
-    final String? twitterDesc =
-        _getMetaContent(document, 'property', 'twitter:description') ??
-        _getMetaContent(document, 'name', 'twitter:description');
-    if (isUsable(twitterDesc)) return twitterDesc!.trim();
+    final String twitterDesc = sanitizeText(
+      _getMetaContent(document, 'property', 'twitter:description') ??
+          _getMetaContent(document, 'name', 'twitter:description'),
+    );
+    if (isUsable(twitterDesc)) return twitterDesc;
 
     // 3. Try standard meta description (case variations)
-    final String? metaDesc =
-        _getMetaContent(document, 'name', 'description') ??
-        _getMetaContent(document, 'name', 'Description');
-    if (isUsable(metaDesc)) return metaDesc!.trim();
+    final String metaDesc = sanitizeText(
+      _getMetaContent(document, 'name', 'description') ??
+          _getMetaContent(document, 'name', 'Description'),
+    );
+    if (isUsable(metaDesc)) return metaDesc;
 
     // 4. Try article:section or other semantic meta tags
-    final String? articleDesc =
-        _getMetaContent(document, 'property', 'article:section') ??
-        _getMetaContent(document, 'name', 'abstract') ??
-        _getMetaContent(document, 'name', 'summary');
-    if (isUsable(articleDesc)) return articleDesc!.trim();
+    final String articleDesc = sanitizeText(
+      _getMetaContent(document, 'property', 'article:section') ??
+          _getMetaContent(document, 'name', 'abstract') ??
+          _getMetaContent(document, 'name', 'summary'),
+    );
+    if (isUsable(articleDesc)) return articleDesc;
 
     // 5. Try extracting from semantic HTML elements
     final String? semanticText = _extractSemanticText(document);
-    if (isUsable(semanticText)) return semanticText!.trim();
+    if (isUsable(semanticText)) return semanticText;
 
     // 6. Last resort: strip HTML tags from raw html
-    String body = html.replaceAll(_htmlReg, '');
-    body = body.trim().replaceAll(_lineReg, ' ').replaceAll(_spaceReg, ' ');
+    final String body = sanitizeText(html.replaceAll(_htmlReg, ' '));
     if (!isUsable(body)) return null; // return null instead of empty string
     return body.length > 300 ? body.substring(0, 300) : body;
   }
@@ -576,7 +623,7 @@ ${info.toJson()}
       final List<Element> elements = document.querySelectorAll(selector);
       // Find the first paragraph with meaningful content
       for (final Element el in elements) {
-        final String text = el.text.trim();
+        final String text = sanitizeText(el.text);
         if (text.length >= 50) {
           // skip short/nav paragraphs
           return text.length > 300 ? text.substring(0, 300) : text;
