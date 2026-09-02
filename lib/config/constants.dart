@@ -27,6 +27,8 @@ abstract class Constants {
   static const String hackerNewsItemLinkPrefix =
       'https://news.ycombinator.com/item?id=';
   static const String supportEmail = 'georgefung98@gmail.com';
+  static const String updatifyProjectId =
+      '6bd53821-c2c7-426e-befa-a8d6a6707d1d';
 
   static const String _imagePath = 'assets/images';
   static const String _videoPath = 'assets/videos';
