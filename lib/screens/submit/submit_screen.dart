@@ -190,6 +190,9 @@ class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
                     maxLines: 200,
                     decoration: const InputDecoration(
                       hintText: 'Text',
+                      enabledBorder: .none,
+                      disabledBorder: .none,
+                      errorBorder: .none,
                       focusedBorder: .none,
                       border: .none,
                     ),
