@@ -16,6 +16,7 @@ class TimeMachineDialog extends StatelessWidget {
     required this.comment,
     required this.commentsCubit,
     required this.deviceType,
+    required this.scrollController,
     super.key,
   }) : rootItem = commentsCubit.state.item;
 
@@ -23,11 +24,12 @@ class TimeMachineDialog extends StatelessWidget {
   final CommentsCubit commentsCubit;
   final Item rootItem;
   final DeviceScreenType deviceType;
+  final ScrollController scrollController;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TimeMachineCubit>.value(
-      value: TimeMachineCubit()..activateTimeMachine(comment),
+      value: TimeMachineCubit()..activateTimeMachine(comment, rootItem),
       child: BlocBuilder<TimeMachineCubit, TimeMachineState>(
         builder: (BuildContext context, TimeMachineState state) {
           return Material(
@@ -36,107 +38,109 @@ class TimeMachineDialog extends StatelessWidget {
               decoration: const BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(Dimens.pt4)),
               ),
-              child: Padding(
-                padding: const EdgeInsets.only(right: Dimens.pt4),
-                child: Column(
-                  children: <Widget>[
-                    Row(
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      const SizedBox(width: Dimens.pt12),
+                      Text(
+                        'Ancestors:',
+                        style: TextTheme.of(context).titleMedium,
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        icon: const Icon(Icons.close, size: Dimens.pt24),
+                        onPressed: () => context.pop(),
+                        padding: EdgeInsets.zero,
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child: ListView(
+                      controller: scrollController,
                       children: <Widget>[
-                        const SizedBox(width: Dimens.pt8),
-                        Text(
-                          'Ancestors:',
-                          style: TextTheme.of(context).titleMedium,
-                        ),
-                        const Spacer(),
-                        IconButton(
-                          icon: const Icon(Icons.close, size: Dimens.pt24),
-                          onPressed: () => context.pop(),
-                          padding: EdgeInsets.zero,
-                        ),
-                      ],
-                    ),
-                    Expanded(
-                      child: ListView(
-                        children: <Widget>[
-                          switch (rootItem) {
-                            Story() => StoryTile(
-                              shouldShowWebPreview: false,
-                              shouldShowPreviewImage: false,
-                              shouldShowMetadata: true,
-                              shouldShowFavicon: true,
-                              shouldShowUrl: true,
-                              isExpandedTileEnabled: false,
-                              isImageLeftAligned: context
-                                  .read<PreferenceCubit>()
-                                  .state
-                                  .isPreviewImageLeftAligned,
-                              story: rootItem as Story,
-                              onTap: () {
-                                final String url = rootItem.url.isNotEmpty
-                                    ? rootItem.url
-                                    : '''${Constants.hackerNewsItemLinkPrefix}${rootItem.id}''';
-                                LinkUtils.launch(
-                                  url,
-                                  context,
-                                  shouldUseHackiForHnLink: false,
-                                );
-                              },
-                            ),
-                            Comment() => CommentTile(
+                        switch (rootItem) {
+                          Story() => StoryTile(
+                            shouldShowWebPreview: false,
+                            shouldShowPreviewImage: false,
+                            shouldShowMetadata: true,
+                            shouldShowFavicon: true,
+                            shouldShowUrl: true,
+                            isExpandedTileEnabled: false,
+                            isImageLeftAligned: context
+                                .read<PreferenceCubit>()
+                                .state
+                                .isPreviewImageLeftAligned,
+                            story: rootItem as Story,
+                            onTap: () {
+                              final String url = rootItem.url.isNotEmpty
+                                  ? rootItem.url
+                                  : '''${Constants.hackerNewsItemLinkPrefix}${rootItem.id}''';
+                              LinkUtils.launch(
+                                url,
+                                context,
+                                shouldUseHackiForHnLink: false,
+                              );
+                            },
+                          ),
+                          Comment() => Padding(
+                            padding: const EdgeInsets.only(right: Dimens.pt4),
+                            child: CommentTile(
                               comment: rootItem as Comment,
                               isActionable: false,
                               isCollapsable: false,
                               fetchMode: FetchMode.eager,
                             ),
-                            Item() => const SizedBox.shrink(),
-                          },
-                          for (final (int i, Comment cmt) in <Comment>[
-                            ...state.ancestors,
-                            comment,
-                          ].indexed) ...<Widget>[
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                for (final int _ in 0.to(i, inclusive: false))
-                                  SizedBoxes.pt6,
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    top: Dimens.pt6,
-                                    left: Dimens.pt6,
-                                  ),
-                                  child: Icon(
-                                    Icons.subdirectory_arrow_right_rounded,
-                                    size: TextDimens.pt18,
-                                    color: i == state.ancestors.length
-                                        ? Theme.of(context).colorScheme.primary
-                                        : null,
-                                  ),
+                          ),
+                          Item() => const SizedBox.shrink(),
+                        },
+                        for (final (int i, Comment cmt) in <Comment>[
+                          ...state.ancestors,
+                          comment,
+                        ].indexed) ...<Widget>[
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              for (final int _ in 0.to(i, inclusive: false))
+                                SizedBoxes.pt6,
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  top: Dimens.pt6,
+                                  left: Dimens.pt6,
                                 ),
-                                Expanded(
-                                  child: CommentTile(
-                                    comment: i == state.ancestors.length
-                                        ? comment
-                                        : cmt,
-                                    isActionable: false,
-                                    isCollapsable: false,
-                                    isSelectable: false,
-                                    fetchMode: FetchMode.eager,
-                                    onTap: () {
-                                      context.pop();
-                                      commentsCubit.scrollToComment(cmt);
-                                    },
-                                  ),
+                                child: Icon(
+                                  Icons.subdirectory_arrow_right_rounded,
+                                  size: TextDimens.pt18,
+                                  color: i == state.ancestors.length
+                                      ? Theme.of(context).colorScheme.primary
+                                      : null,
                                 ),
-                              ],
-                            ),
-                            const Divider(height: Dimens.zero),
-                          ],
+                              ),
+                              Expanded(
+                                child: CommentTile(
+                                  comment: i == state.ancestors.length
+                                      ? comment
+                                      : cmt,
+                                  isActionable: false,
+                                  isCollapsable: false,
+                                  isSelectable: false,
+                                  fetchMode: FetchMode.eager,
+                                  onTap: () {
+                                    context.pop();
+                                    commentsCubit.scrollToComment(cmt);
+                                  },
+                                ),
+                              ),
+                              SizedBoxes.pt4,
+                            ],
+                          ),
+                          const Divider(height: Dimens.zero),
                         ],
-                      ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           );
