@@ -39,7 +39,11 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
 
   @override
   Widget build(BuildContext context) {
-    expandedHeight ??= MediaQuery.of(context).size.height;
+    expandedHeight = MediaQuery.of(context).size.height;
+    final bool isSplitViewEnabled = context
+        .read<SplitViewCubit>()
+        .state
+        .enabled;
     return BlocConsumer<EditCubit, EditState>(
       listenWhen: (EditState previous, EditState current) =>
           previous.showReplyBox != current.showReplyBox,
@@ -59,7 +63,6 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
           builder: (BuildContext context, PostState postState) {
             final Item? replyingTo = editState.replyingTo;
             final bool isLoading = postState.status.isLoading;
-
             return Padding(
               padding: EdgeInsets.only(
                 bottom: expanded
@@ -73,8 +76,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                 duration: AppDurations.ms200,
                 decoration: BoxDecoration(
                   boxShadow: <BoxShadow>[
-                    if (!context.read<SplitViewCubit>().state.enabled &&
-                        !Theme.of(context).useMaterial3)
+                    if (!isSplitViewEnabled && !Theme.of(context).useMaterial3)
                       BoxShadow(
                         color: expanded ? Palette.transparent : Palette.black26,
                         blurRadius: Dimens.pt40,
@@ -88,10 +90,12 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      if (context.read<SplitViewCubit>().state.enabled)
+                      if (isSplitViewEnabled)
                         const Divider(height: Dimens.zero),
                       AnimatedContainer(
-                        height: expanded ? Dimens.pt64 : Dimens.zero,
+                        height: expanded
+                            ? (isSplitViewEnabled ? Dimens.pt24 : Dimens.pt64)
+                            : Dimens.zero,
                         duration: AppDurations.ms300,
                       ),
                       Row(
