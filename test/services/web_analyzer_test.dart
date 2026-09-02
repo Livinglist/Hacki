@@ -96,9 +96,9 @@ void main() {
     test('decodes entities in the extracted paragraph', () {
       expect(
         WebAnalyzer.extractSemanticText(
-          '''<html><body><article><p>Foo&#39;s Bar, and foo bar.</p></article></body></html>''',
+          '''<html><body><article><p>Foo&#39;s Bar, and foo bar, in a sentence long enough to be meaningful.</p></article></body></html>''',
         ),
-        "Foo's Bar, and foo bar.",
+        "Foo's Bar, and foo bar, in a sentence long enough to be meaningful.",
       );
     });
 

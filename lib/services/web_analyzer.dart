@@ -309,10 +309,9 @@ ${info.toJson()}
       final List<int> ids = <int>[story.id, ...story.kids];
       final String? commentText = await _fetchInfoFromStory(ids);
       shouldRetry = commentText == null;
-      final String sanitizedCommentText = commentText ?? '';
-      description = sanitizedCommentText.isEmpty
+      description = commentText.isNullOrEmpty
           ? 'no comment yet'
-          : sanitizedCommentText;
+          : (commentText ?? '');
     } else {
       shouldRetry = false;
     }
