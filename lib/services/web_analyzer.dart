@@ -214,9 +214,9 @@ ${info.toJson()}
           title: cachedInfo.title,
           icon: cachedInfo.icon,
           image: cachedInfo.image,
-          description: sanitizeText(cachedInfo.description)
-              .removeAllEmojis()
-              .trim(),
+          description: sanitizeText(
+            cachedInfo.description,
+          ).removeAllEmojis().trim(),
         ).._shouldRetry = false;
 
         locator.get<Logger>().d('''
