@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:equatable/equatable.dart';
-import 'package:hacki/extensions/extensions.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 part 'thread_navigation_button_state.dart';

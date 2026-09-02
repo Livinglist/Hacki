@@ -1,6 +1,5 @@
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/context_extension.dart';
 import 'package:hacki/models/discoverable_feature.dart';
