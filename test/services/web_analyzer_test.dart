@@ -96,8 +96,7 @@ void main() {
     test('decodes entities in the extracted paragraph', () {
       expect(
         WebAnalyzer.extractSemanticText(
-          '<html><body><article><p>Foo&#39;s Bar, '
-          'and foo bar.</p></article></body></html>',
+          '''<html><body><article><p>Foo&#39;s Bar, and foo bar.</p></article></body></html>''',
         ),
         "Foo's Bar, and foo bar.",
       );
@@ -114,8 +113,7 @@ void main() {
 
     test('truncates long paragraphs to 300 characters', () {
       final String text = WebAnalyzer.extractSemanticText(
-        '<html><body><article><p>${'foo bar foobar' * 100}</p></article>'
-        '</body></html>',
+        '''<html><body><article><p>${'foo bar foobar' * 100}</p></article></body></html>''',
       )!;
 
       expect(text.length, 300);
