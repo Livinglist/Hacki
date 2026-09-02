@@ -5,6 +5,8 @@ abstract class Palette {
 
   static const Color black26 = Colors.black26;
 
+  static const Color black12 = Colors.black12;
+
   static const Color white = Colors.white;
 
   static const MaterialColor grey = Colors.grey;
