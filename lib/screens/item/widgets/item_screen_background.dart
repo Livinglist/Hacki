@@ -70,6 +70,8 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
         .read<PreferenceCubit>()
         .state
         .isEyeCandyEnabled;
+    final bool isDarkModeEnabled =
+        Theme.of(context).brightness == Brightness.dark;
     return BlocConsumer<CommentsCubit, CommentsState>(
       listenWhen: (CommentsState previous, CommentsState current) =>
           previous.status != current.status,
@@ -162,6 +164,7 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
                                 color: ColorUtils.getRainbowColor(
                                   i,
                                   Theme.of(context).canvasColor,
+                                  isDarkModeEnabled: isDarkModeEnabled,
                                 ).$1,
                                 width: widget.indentLineWidth,
                                 isShining: _shineIndex == i,
@@ -169,17 +172,11 @@ class _ItemScreenBackgroundState extends State<ItemScreenBackground> {
                             : Container(
                                 width: widget.indentLineWidth,
                                 height: MediaQuery.of(context).size.height,
-                                color:
-                                    ColorUtils.getRainbowColor(
-                                      i,
-                                      Theme.of(context).canvasColor,
-                                    ).$1.withValues(
-                                      alpha:
-                                          Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? 0.6
-                                          : 1,
-                                    ),
+                                color: ColorUtils.getRainbowColor(
+                                  i,
+                                  Theme.of(context).canvasColor,
+                                  isDarkModeEnabled: isDarkModeEnabled,
+                                ).$1,
                               ),
                       ),
                     ),

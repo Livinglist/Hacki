@@ -68,19 +68,19 @@ abstract final class DialogProxy {
       isScrollControlled: true,
       showDragHandle: true,
       builder: (BuildContext context) {
-        return SizedBox(
-          height: MediaQuery.of(context).size.height - Dimens.pt120,
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                child: TimeMachineDialog(
-                  comment: comment,
-                  commentsCubit: commentsCubit,
-                  deviceType: deviceType,
-                ),
-              ),
-            ],
-          ),
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.9,
+          maxChildSize: 0.9,
+          minChildSize: 0.85,
+          builder: (BuildContext context, ScrollController scrollController) {
+            return TimeMachineDialog(
+              comment: comment,
+              commentsCubit: commentsCubit,
+              deviceType: deviceType,
+              scrollController: scrollController,
+            );
+          },
         );
       },
     );
