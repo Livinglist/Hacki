@@ -57,6 +57,9 @@ class PreferenceState extends Equatable {
 
   bool get areSkipButtonsEnabled => _isOn<SkipButtonsPreference>();
 
+  bool get areCollapsedCommentsIgnored =>
+      _isOn<SkipButtonsIgnoreCollapsedCommentsPreference>();
+
   bool get isNotificationEnabled => _isOn<NotificationModePreference>();
 
   bool get isRichStoryTileEnabled => _isOn<RichStoryTilePreference>();
