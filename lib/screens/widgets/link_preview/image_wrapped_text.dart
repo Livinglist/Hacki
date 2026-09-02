@@ -90,7 +90,7 @@ class ImageWrapText extends StatelessWidget {
             child: Container(
               color: Theme.of(context).colorScheme.surfaceContainerLow,
               width: imageWidth,
-              height: imageHeight - 8,
+              height: imageHeight - 10,
               child: image,
             ),
           ),

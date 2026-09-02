@@ -244,20 +244,24 @@ class _SettingsViewState extends State<SettingsView>
               const TabBarSettings(),
               const TextScaleFactorSettings(),
               const Divider(),
-              StoryTile(
-                shouldShowWebPreview: preferenceState.isRichStoryTileEnabled,
-                shouldShowMetadata: preferenceState.isMetadataEnabled,
-                shouldShowUrl: preferenceState.isUrlEnabled,
-                shouldShowFavicon: preferenceState.isFaviconEnabled,
-                shouldShowPreviewImage:
-                    preferenceState.isStoryTilePreviewImageEnabled,
-                isExpandedTileEnabled: preferenceState.isExpandedTileEnabled,
-                isIndexedStoryTileEnabled:
-                    preferenceState.isIndexedStoryTileEnabled,
-                isImageLeftAligned: preferenceState.isPreviewImageLeftAligned,
-                index: 0,
-                story: Story.placeholder(),
-                onTap: () => LinkUtils.launch(Constants.guidelineLink, context),
+              AnimatedSize(
+                duration: AppDurations.ms300,
+                child: StoryTile(
+                  shouldShowWebPreview: preferenceState.isRichStoryTileEnabled,
+                  shouldShowMetadata: preferenceState.isMetadataEnabled,
+                  shouldShowUrl: preferenceState.isUrlEnabled,
+                  shouldShowFavicon: preferenceState.isFaviconEnabled,
+                  shouldShowPreviewImage:
+                      preferenceState.isStoryTilePreviewImageEnabled,
+                  isExpandedTileEnabled: preferenceState.isExpandedTileEnabled,
+                  isIndexedStoryTileEnabled:
+                      preferenceState.isIndexedStoryTileEnabled,
+                  isImageLeftAligned: preferenceState.isPreviewImageLeftAligned,
+                  index: 0,
+                  story: Story.placeholder(),
+                  onTap: () =>
+                      LinkUtils.launch(Constants.guidelineLink, context),
+                ),
               ),
               const Divider(),
               for (final Preference<dynamic> preference
