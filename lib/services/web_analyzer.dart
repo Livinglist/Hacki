@@ -189,7 +189,7 @@ ${info.toJson()}
     /// [2] If story doesn't have a url and text is not empty,
     /// just use story title and text.
     if (story.url.isEmpty && story.text.isNotEmpty) {
-      info = WebInfo(title: story.title, description: sanitizeText(story.text))
+      info = WebInfo(title: story.title, description: story.text)
         .._shouldRetry = false;
 
       cacheMap[key] = info;
@@ -263,7 +263,7 @@ ${info.toJson()}
 
       return info;
     } catch (e) {
-      return WebInfo(title: story.title, description: sanitizeText(story.text))
+      return WebInfo(title: story.title, description: story.text)
         .._shouldRetry = true;
     }
   }
