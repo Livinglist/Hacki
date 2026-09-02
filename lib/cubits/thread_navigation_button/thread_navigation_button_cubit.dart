@@ -7,15 +7,11 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 part 'thread_navigation_button_state.dart';
 
 class ThreadNavigationButtonCubit
-    extends HydratedCubit<ThreadNavigationButtonState>
-    with Loggable {
+    extends HydratedCubit<ThreadNavigationButtonState> {
   ThreadNavigationButtonCubit() : super(ThreadNavigationButtonState.init());
 
   void updateButtonPosition(double dx, double dy) =>
       emit(state.copyWith(dx: dx, dy: dy));
-
-  @override
-  String get logIdentifier => 'ThreadNavigationButtonCubit';
 
   static const String _buttonPositionDxKey = 'buttonPositionDx';
   static const String _buttonPositionDyKey = 'buttonPositionDy';

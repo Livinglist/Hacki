@@ -50,122 +50,102 @@ class _FloatingSkipButtonsState extends State<FloatingSkipButtons> {
             );
           },
           onPanEnd: (_) => setState(() => _isDragging = false),
-          child: BlocBuilder<EditCubit, EditState>(
-            buildWhen: (EditState previous, EditState current) =>
-                previous.showReplyBox != current.showReplyBox,
-            builder: (BuildContext context, EditState editState) {
-              return AnimatedPadding(
-                padding: editState.showReplyBox
-                    ? const EdgeInsets.only(
-                        bottom: Dimens.replyBoxCollapsedHeight,
-                      )
-                    : EdgeInsets.zero,
-                duration: AppDurations.ms200,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    CustomDescribedFeatureOverlay(
-                      feature: DiscoverableFeature.jumpUpButton,
-                      contentLocation: ContentLocation.above,
-                      tapTarget: Icon(
-                        Icons.keyboard_arrow_up,
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      ),
-                      child: TapDownWrapper(
-                        child: AnimatedScale(
-                          scale: _isDragging ? 1.1 : 1.0,
-                          duration: const Duration(milliseconds: 150),
-                          child: InkWell(
-                            enableFeedback: false,
-                            onLongPress: () {
-                              HapticFeedbackUtils.light();
-                              context.read<CommentsCubit>().scrollTo(index: 0);
-                            },
-                            child: FloatingActionButton(
-                              enableFeedback: false,
-                              backgroundColor: Theme.of(
-                                context,
-                              ).colorScheme.primaryContainer.withAlpha(200),
-
-                              /// Randomly generated string as heroTag to
-                              /// prevent default [FloatingActionButton]
-                              /// animation.
-                              heroTag: UniqueKey().hashCode,
-                              onPressed: () {
-                                HapticFeedbackUtils.selection();
-                                context
-                                    .read<CommentsCubit>()
-                                    .scrollToPreviousRoot();
-                              },
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.padded,
-                              child: Icon(
-                                Icons.keyboard_arrow_up,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onPrimaryContainer,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBoxes.pt12,
-                    CustomDescribedFeatureOverlay(
-                      feature: DiscoverableFeature.jumpDownButton,
-                      tapTarget: Icon(
-                        Icons.keyboard_arrow_down,
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      ),
-                      contentLocation: ContentLocation.above,
-                      child: TapDownWrapper(
-                        child: AnimatedScale(
-                          scale: _isDragging ? 1.1 : 1.0,
-                          duration: const Duration(milliseconds: 150),
-                          child: InkWell(
-                            enableFeedback: false,
-                            onLongPress: () {
-                              HapticFeedbackUtils.light();
-                              final CommentsCubit cubit = context
-                                  .read<CommentsCubit>();
-                              cubit.scrollTo(
-                                index: cubit.state.comments.length - 1,
-                              );
-                            },
-                            child: FloatingActionButton(
-                              enableFeedback: false,
-                              backgroundColor: Theme.of(
-                                context,
-                              ).colorScheme.primaryContainer.withAlpha(200),
-
-                              /// Same as above.
-                              heroTag: UniqueKey().hashCode,
-                              onPressed: () {
-                                HapticFeedbackUtils.selection();
-                                context.read<CommentsCubit>().scrollToNextRoot(
-                                  onError: () => context.showSnackBar(
-                                    content:
-                                        '''No more root level comment below.''',
-                                  ),
-                                );
-                              },
-                              child: Icon(
-                                Icons.keyboard_arrow_down,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onPrimaryContainer,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    if (isWebViewBottomSheetEnabled)
-                      const SizedBox(height: Dimens.pt64),
-                  ],
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              CustomDescribedFeatureOverlay(
+                feature: DiscoverableFeature.jumpUpButton,
+                contentLocation: ContentLocation.above,
+                tapTarget: Icon(
+                  Icons.keyboard_arrow_up,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
-              );
-            },
+                child: TapDownWrapper(
+                  child: AnimatedScale(
+                    scale: _isDragging ? 1.1 : 1.0,
+                    duration: const Duration(milliseconds: 150),
+                    child: InkWell(
+                      enableFeedback: false,
+                      onLongPress: () {
+                        HapticFeedbackUtils.light();
+                        context.read<CommentsCubit>().scrollTo(index: 0);
+                      },
+                      child: FloatingActionButton(
+                        enableFeedback: false,
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.primaryContainer.withAlpha(200),
+
+                        /// Randomly generated string as heroTag to
+                        /// prevent default [FloatingActionButton]
+                        /// animation.
+                        heroTag: UniqueKey().hashCode,
+                        onPressed: () {
+                          HapticFeedbackUtils.selection();
+                          context.read<CommentsCubit>().scrollToPreviousRoot();
+                        },
+                        materialTapTargetSize: MaterialTapTargetSize.padded,
+                        child: Icon(
+                          Icons.keyboard_arrow_up,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBoxes.pt12,
+              CustomDescribedFeatureOverlay(
+                feature: DiscoverableFeature.jumpDownButton,
+                tapTarget: Icon(
+                  Icons.keyboard_arrow_down,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
+                contentLocation: ContentLocation.above,
+                child: TapDownWrapper(
+                  child: AnimatedScale(
+                    scale: _isDragging ? 1.1 : 1.0,
+                    duration: const Duration(milliseconds: 150),
+                    child: InkWell(
+                      enableFeedback: false,
+                      onLongPress: () {
+                        HapticFeedbackUtils.light();
+                        final CommentsCubit cubit = context
+                            .read<CommentsCubit>();
+                        cubit.scrollTo(index: cubit.state.comments.length - 1);
+                      },
+                      child: FloatingActionButton(
+                        enableFeedback: false,
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.primaryContainer.withAlpha(200),
+
+                        /// Same as above.
+                        heroTag: UniqueKey().hashCode,
+                        onPressed: () {
+                          HapticFeedbackUtils.selection();
+                          context.read<CommentsCubit>().scrollToNextRoot(
+                            onError: () => context.showSnackBar(
+                              content: '''No more root level comment below.''',
+                            ),
+                          );
+                        },
+                        child: Icon(
+                          Icons.keyboard_arrow_down,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              if (isWebViewBottomSheetEnabled)
+                const SizedBox(height: Dimens.pt64),
+            ],
           ),
         ),
       ),
