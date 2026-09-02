@@ -12,6 +12,7 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:html/dom.dart' hide Comment, Text;
 import 'package:html/parser.dart' as parser;
+import 'package:html_unescape/html_unescape.dart';
 import 'package:http/http.dart';
 import 'package:http/io_client.dart';
 import 'package:logger/logger.dart';
@@ -73,7 +74,7 @@ class WebAnalyzer {
     caseSensitive: false,
   );
   static final RegExp _htmlReg = RegExp(
-    r'(<head[^>]*>([\s\S]*?)<\/head>)|(<script[^>]*>([\s\S]*?)<\/script>)|(<style[^>]*>([\s\S]*?)<\/style>)|(<[^>]+>)|(<link[^>]*>([\s\S]*?)<\/link>)|(<[^>]+>)',
+    r'(<!--[\s\S]*?-->)|(<head[^>]*>([\s\S]*?)<\/head>)|(<script[^>]*>([\s\S]*?)<\/script>)|(<style[^>]*>([\s\S]*?)<\/style>)|(<[^>]+>)|(<link[^>]*>([\s\S]*?)<\/link>)|(<[^>]+>)',
     caseSensitive: false,
   );
   static final RegExp _metaReg = RegExp(
@@ -95,9 +96,55 @@ class WebAnalyzer {
     caseSensitive: false,
     dotAll: true,
   );
-  static final RegExp _lineReg = RegExp(r'[\n\r]|&nbsp;|&gt;');
+  static final RegExp _lineReg = RegExp(r'[\n\r\u00a0]|&nbsp;|&gt;');
   static final RegExp _spaceReg = RegExp(r'\s+');
+
+  /// Matches html comments and anything that looks like a real tag (`<` has to
+  /// be followed by a tag name), so that plain text such as `if a < b > c` is
+  /// left alone.
+  static final RegExp _markupReg = RegExp(
+    r'<!--[\s\S]*?-->|</?[a-zA-Z][^>]*>',
+    dotAll: true,
+  );
+  static final HtmlUnescape _htmlUnescape = HtmlUnescape();
+
+  /// Interstitial text that tells the reader nothing about the story: script
+  /// nags, cookie/consent walls, paywall and bot check prompts.
+  static final RegExp _junkTextReg = RegExp(
+    'JavaScript is disabled'
+    '|(Please |You need to )enable JavaScript'
+    '|(accept|manage|reject)( all)? cookies'
+    '|(we|this (site|website)) uses? cookies'
+    '|cookie (policy|preferences|consent|settings)'
+    '|subscribe to (read|continue)'
+    '|(sign|log) in to (read|continue)'
+    '|(are you a human|verify you are (a )?human|checking your browser)',
+    caseSensitive: false,
+  );
+
+  /// Page chrome that never makes for a useful preview.
+  static const String _boilerplateSelectors =
+      'script, style, noscript, template, nav, header, footer, aside, form';
+
+  /// Above this the full page parse in [extractSemanticText] is skipped.
+  static const int _maxParseableHtmlLength = 2 * 1024 * 1024;
   static const String _logPrefix = '[WebAnalyzer]';
+
+  /// Turns a chunk of html into something that can be shown as plain preview
+  /// text: strips comments and leftover tags, decodes html entities
+  /// (`&#39;`, `&#8981;`, `&amp;`, ...) and collapses whitespace.
+  ///
+  /// Entities have to be decoded after the markup is removed, otherwise an
+  /// escaped `&lt;b&gt;` would turn into a tag and get stripped as well.
+  static String sanitizeText(String? text) {
+    if (text == null || text.isEmpty) return '';
+
+    return _htmlUnescape
+        .convert(text.replaceAll(_markupReg, ' '))
+        .replaceAll(_lineReg, ' ')
+        .replaceAll(_spaceReg, ' ')
+        .trim();
+  }
 
   static bool isEmpty(String? str) {
     return !isNotEmpty(str);
@@ -174,10 +221,14 @@ ${info.toJson()}
 
     try {
       /// [4] Try to fetch from file cache.
-      info = await locator.get<SembastRepository>().getCachedMetadata(key: key);
+      final WebInfo? cachedInfo = await locator
+          .get<SembastRepository>()
+          .getCachedMetadata(key: key);
 
       /// [5] If there is file cache, move it to mem cache for later retrieval.
-      if (info != null) {
+      if (cachedInfo != null) {
+        info = cachedInfo;
+
         locator.get<Logger>().d('''
 $_logPrefix fetched file cached metadata using key $key for $story:
 ${info.toJson()}
@@ -249,15 +300,18 @@ ${info.toJson()}
 
     late final bool shouldRetry;
     InfoBase? info;
-    String description =
-        (res?[2] as String?)?.removeAllEmojis().trim() ?? story.text;
+    String description = sanitizeText(
+      (res?[2] as String?) ?? story.text,
+    ).removeAllEmojis().trim();
 
     // If description is empty, use one of the comments under the story.
     if (res == null || description.isEmpty) {
       final List<int> ids = <int>[story.id, ...story.kids];
       final String? commentText = await _fetchInfoFromStory(ids);
       shouldRetry = commentText == null;
-      description = commentText ?? 'no comment yet';
+      description = commentText.isNullOrEmpty
+          ? 'no comment yet'
+          : (commentText ?? '');
     } else {
       shouldRetry = false;
     }
@@ -515,51 +569,71 @@ ${info.toJson()}
   static String? _analyzeDescription(Document document, String html) {
     // Helper to validate extracted text
     bool isUsable(String? text) =>
-        text != null &&
-        text.trim().isNotEmpty &&
-        !text.contains('JavaScript is disabled') &&
-        !text.contains('Please enable JavaScript') &&
-        !text.contains('You need to enable JavaScript');
+        text != null && text.trim().isNotEmpty && !_junkTextReg.hasMatch(text);
 
     // 1. Try og:description first
-    final String? ogDesc = _getMetaContent(
-      document,
-      'property',
-      'og:description',
+    final String ogDesc = sanitizeText(
+      _getMetaContent(document, 'property', 'og:description'),
     );
-    if (isUsable(ogDesc)) return ogDesc!.trim();
+    if (isUsable(ogDesc)) return ogDesc;
 
     // 2. Try twitter:description as additional fallback
-    final String? twitterDesc =
-        _getMetaContent(document, 'property', 'twitter:description') ??
-        _getMetaContent(document, 'name', 'twitter:description');
-    if (isUsable(twitterDesc)) return twitterDesc!.trim();
+    final String twitterDesc = sanitizeText(
+      _getMetaContent(document, 'property', 'twitter:description') ??
+          _getMetaContent(document, 'name', 'twitter:description'),
+    );
+    if (isUsable(twitterDesc)) return twitterDesc;
 
     // 3. Try standard meta description (case variations)
-    final String? metaDesc =
-        _getMetaContent(document, 'name', 'description') ??
-        _getMetaContent(document, 'name', 'Description');
-    if (isUsable(metaDesc)) return metaDesc!.trim();
+    final String metaDesc = sanitizeText(
+      _getMetaContent(document, 'name', 'description') ??
+          _getMetaContent(document, 'name', 'Description'),
+    );
+    if (isUsable(metaDesc)) return metaDesc;
 
     // 4. Try article:section or other semantic meta tags
-    final String? articleDesc =
-        _getMetaContent(document, 'property', 'article:section') ??
-        _getMetaContent(document, 'name', 'abstract') ??
-        _getMetaContent(document, 'name', 'summary');
-    if (isUsable(articleDesc)) return articleDesc!.trim();
+    final String articleDesc = sanitizeText(
+      _getMetaContent(document, 'property', 'article:section') ??
+          _getMetaContent(document, 'name', 'abstract') ??
+          _getMetaContent(document, 'name', 'summary'),
+    );
+    if (isUsable(articleDesc)) return articleDesc;
 
-    // 5. Try extracting from semantic HTML elements
-    final String? semanticText = _extractSemanticText(document);
-    if (isUsable(semanticText)) return semanticText!.trim();
+    // 5. Try extracting from semantic HTML elements. Parsing the whole page is
+    // expensive, so it only happens once the metadata lookups above failed.
+    final String? semanticText = extractSemanticText(html);
+    if (isUsable(semanticText)) return semanticText;
 
-    // 6. Last resort: strip HTML tags from raw html
-    String body = html.replaceAll(_htmlReg, '');
-    body = body.trim().replaceAll(_lineReg, ' ').replaceAll(_spaceReg, ' ');
-    if (!isUsable(body)) return null; // return null instead of empty string
-    return body.length > 300 ? body.substring(0, 300) : body;
+    // 6. Last resort: strip HTML tags from raw html. Only the part that ends
+    // up on screen is validated, otherwise a cookie notice buried in some
+    // footer would disqualify the whole page.
+    final String body = sanitizeText(html.replaceAll(_htmlReg, ' '));
+    final String preview = body.length > 300 ? body.substring(0, 300) : body;
+    if (!isUsable(preview)) return null; // return null instead of empty string
+    return preview;
   }
 
-  static String? _extractSemanticText(Document document) {
+  /// Finds the first meaningful paragraph in the page body.
+  ///
+  /// Takes the raw html rather than a [Document] on purpose: the document used
+  /// for the metadata lookups is built from [_getHeadHtml] and has an empty
+  /// body, so none of the selectors below could ever match it.
+  @visibleForTesting
+  static String? extractSemanticText(String html) {
+    // Guard against pathological pages: parsing those costs more than the
+    // preview is worth, and the raw strip fallback still has a go at them.
+    if (html.length > _maxParseableHtmlLength) return null;
+
+    final Element? body = parser.parse(html).body;
+
+    if (body == null) return null;
+
+    // Drop chrome that surrounds the content. Without this the last resort
+    // `p` selector happily returns a nav blurb or a footer bio.
+    for (final Element el in body.querySelectorAll(_boilerplateSelectors)) {
+      el.remove();
+    }
+
     // Priority-ordered list of semantic selectors to try
     const List<String> selectors = <String>[
       'article p',
@@ -573,10 +647,10 @@ ${info.toJson()}
     ];
 
     for (final String selector in selectors) {
-      final List<Element> elements = document.querySelectorAll(selector);
+      final List<Element> elements = body.querySelectorAll(selector);
       // Find the first paragraph with meaningful content
       for (final Element el in elements) {
-        final String text = el.text.trim();
+        final String text = sanitizeText(el.text);
         if (text.length >= 50) {
           // skip short/nav paragraphs
           return text.length > 300 ? text.substring(0, 300) : text;
