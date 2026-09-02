@@ -229,16 +229,7 @@ ${info.toJson()}
 
       /// [5] If there is file cache, move it to mem cache for later retrieval.
       if (cachedInfo != null) {
-        /// Metadata cached by an older version can still contain raw html
-        /// entities, so sanitize on read instead of dropping the cache.
-        info = WebInfo(
-          title: cachedInfo.title,
-          icon: cachedInfo.icon,
-          image: cachedInfo.image,
-          description: sanitizeText(
-            cachedInfo.description,
-          ).removeAllEmojis().trim(),
-        ).._shouldRetry = false;
+        info = cachedInfo;
 
         locator.get<Logger>().d('''
 $_logPrefix fetched file cached metadata using key $key for $story:
@@ -320,7 +311,7 @@ ${info.toJson()}
       final List<int> ids = <int>[story.id, ...story.kids];
       final String? commentText = await _fetchInfoFromStory(ids);
       shouldRetry = commentText == null;
-      final String sanitizedCommentText = sanitizeText(commentText);
+      final String sanitizedCommentText = commentText ?? '';
       description = sanitizedCommentText.isEmpty
           ? 'no comment yet'
           : sanitizedCommentText;
@@ -400,9 +391,7 @@ ${info.toJson()}
       comment = await hackerNewsRepository.fetchComment(id: kidId);
       final String text = comment?.text.trim() ?? '';
       if (text.isNotEmpty && text.isValidCommentText) {
-        return comment != null
-            ? sanitizeText('${comment.by}: ${comment.text}')
-            : null;
+        return comment != null ? '${comment.by}: ${comment.text}' : null;
       } else {
         continue;
       }
