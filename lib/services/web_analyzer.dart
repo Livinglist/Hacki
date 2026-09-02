@@ -211,9 +211,7 @@ ${info.toJson()}
 
       info = WebInfo(
         title: story.title,
-        description: comment != null
-            ? sanitizeText('${comment.by}: ${comment.text}')
-            : null,
+        description: comment != null ? '${comment.by}: ${comment.text}' : null,
       ).._shouldRetry = false;
 
       cacheMap[key] = info;
