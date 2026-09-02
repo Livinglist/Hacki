@@ -107,6 +107,27 @@ class WebAnalyzer {
     dotAll: true,
   );
   static final HtmlUnescape _htmlUnescape = HtmlUnescape();
+
+  /// Interstitial text that tells the reader nothing about the story: script
+  /// nags, cookie/consent walls, paywall and bot check prompts.
+  static final RegExp _junkTextReg = RegExp(
+    'JavaScript is disabled'
+    '|(Please |You need to )enable JavaScript'
+    '|(accept|manage|reject)( all)? cookies'
+    '|(we|this (site|website)) uses? cookies'
+    '|cookie (policy|preferences|consent|settings)'
+    '|subscribe to (read|continue)'
+    '|(sign|log) in to (read|continue)'
+    '|(are you a human|verify you are (a )?human|checking your browser)',
+    caseSensitive: false,
+  );
+
+  /// Page chrome that never makes for a useful preview.
+  static const String _boilerplateSelectors =
+      'script, style, noscript, template, nav, header, footer, aside, form';
+
+  /// Above this the full page parse in [extractSemanticText] is skipped.
+  static const int _maxParseableHtmlLength = 2 * 1024 * 1024;
   static const String _logPrefix = '[WebAnalyzer]';
 
   /// Turns a chunk of html into something that can be shown as plain preview
@@ -562,11 +583,7 @@ ${info.toJson()}
   static String? _analyzeDescription(Document document, String html) {
     // Helper to validate extracted text
     bool isUsable(String? text) =>
-        text != null &&
-        text.trim().isNotEmpty &&
-        !text.contains('JavaScript is disabled') &&
-        !text.contains('Please enable JavaScript') &&
-        !text.contains('You need to enable JavaScript');
+        text != null && text.trim().isNotEmpty && !_junkTextReg.hasMatch(text);
 
     // 1. Try og:description first
     final String ogDesc = sanitizeText(
@@ -596,17 +613,41 @@ ${info.toJson()}
     );
     if (isUsable(articleDesc)) return articleDesc;
 
-    // 5. Try extracting from semantic HTML elements
-    final String? semanticText = _extractSemanticText(document);
+    // 5. Try extracting from semantic HTML elements. Parsing the whole page is
+    // expensive, so it only happens once the metadata lookups above failed.
+    final String? semanticText = extractSemanticText(html);
     if (isUsable(semanticText)) return semanticText;
 
-    // 6. Last resort: strip HTML tags from raw html
+    // 6. Last resort: strip HTML tags from raw html. Only the part that ends
+    // up on screen is validated, otherwise a cookie notice buried in some
+    // footer would disqualify the whole page.
     final String body = sanitizeText(html.replaceAll(_htmlReg, ' '));
-    if (!isUsable(body)) return null; // return null instead of empty string
-    return body.length > 300 ? body.substring(0, 300) : body;
+    final String preview = body.length > 300 ? body.substring(0, 300) : body;
+    if (!isUsable(preview)) return null; // return null instead of empty string
+    return preview;
   }
 
-  static String? _extractSemanticText(Document document) {
+  /// Finds the first meaningful paragraph in the page body.
+  ///
+  /// Takes the raw html rather than a [Document] on purpose: the document used
+  /// for the metadata lookups is built from [_getHeadHtml] and has an empty
+  /// body, so none of the selectors below could ever match it.
+  @visibleForTesting
+  static String? extractSemanticText(String html) {
+    // Guard against pathological pages: parsing those costs more than the
+    // preview is worth, and the raw strip fallback still has a go at them.
+    if (html.length > _maxParseableHtmlLength) return null;
+
+    final Element? body = parser.parse(html).body;
+
+    if (body == null) return null;
+
+    // Drop chrome that surrounds the content. Without this the last resort
+    // `p` selector happily returns a nav blurb or a footer bio.
+    for (final Element el in body.querySelectorAll(_boilerplateSelectors)) {
+      el.remove();
+    }
+
     // Priority-ordered list of semantic selectors to try
     const List<String> selectors = <String>[
       'article p',
@@ -620,7 +661,7 @@ ${info.toJson()}
     ];
 
     for (final String selector in selectors) {
-      final List<Element> elements = document.querySelectorAll(selector);
+      final List<Element> elements = body.querySelectorAll(selector);
       // Find the first paragraph with meaningful content
       for (final Element el in elements) {
         final String text = sanitizeText(el.text);

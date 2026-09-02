@@ -50,4 +50,88 @@ void main() {
       expect(WebAnalyzer.sanitizeText(''), '');
     });
   });
+
+  group('WebAnalyzer.extractSemanticText', () {
+    const String articleParagraph =
+        'This is the real opening paragraph of the story, easily long '
+        'enough to be considered meaningful content.';
+    const String navParagraph =
+        'Home Explore Books Projects Links About RSS Contact me Search';
+    const String footerParagraph =
+        'The site is run by someone who is a writer, designer and web coder '
+        'living somewhere beautiful.';
+
+    test('returns the first meaningful article paragraph', () {
+      expect(
+        WebAnalyzer.extractSemanticText('''
+<html><head><title>t</title></head><body>
+<nav><p>$navParagraph</p></nav>
+<article><p>Short.</p><p>$articleParagraph</p></article>
+<footer><p>$footerParagraph</p></footer>
+</body></html>
+'''),
+        articleParagraph,
+      );
+    });
+
+    test('ignores paragraphs in page chrome', () {
+      expect(
+        WebAnalyzer.extractSemanticText('''
+<html><body>
+<header><p>$navParagraph</p></header>
+<footer><p>$footerParagraph</p></footer>
+</body></html>
+'''),
+        isNull,
+      );
+    });
+
+    test('falls back to any paragraph outside of the chrome', () {
+      expect(
+        WebAnalyzer.extractSemanticText('''
+<html><body>
+<nav><p>$navParagraph</p></nav>
+<div><p>$articleParagraph</p></div>
+</body></html>
+'''),
+        articleParagraph,
+      );
+    });
+
+    test('decodes entities in the extracted paragraph', () {
+      expect(
+        WebAnalyzer.extractSemanticText(
+          '<html><body><article><p>Ed Zitron&#39;s AI skeptic predictions, '
+          'and how accurate they turned out to be.</p></article></body></html>',
+        ),
+        "Ed Zitron's AI skeptic predictions, and how accurate they turned "
+        'out to be.',
+      );
+    });
+
+    test('skips short paragraphs', () {
+      expect(
+        WebAnalyzer.extractSemanticText(
+          '<html><body><article><p>Too short.</p></article></body></html>',
+        ),
+        isNull,
+      );
+    });
+
+    test('truncates long paragraphs to 300 characters', () {
+      final String text = WebAnalyzer.extractSemanticText(
+        '<html><body><article><p>${'lorem ipsum ' * 100}</p></article>'
+        '</body></html>',
+      )!;
+
+      expect(text.length, 300);
+    });
+
+    test('returns null when there is no body content', () {
+      expect(
+        WebAnalyzer.extractSemanticText('<html><head></head></html>'),
+        isNull,
+      );
+    });
+  });
 }
