@@ -252,6 +252,9 @@ class _ItemScreenState extends State<ItemScreen>
         isWebViewBottomSheetEnabled &&
         widget.item is Story &&
         widget.item.url.isNotEmpty;
+
+    /// Read here instead of inside [FloatingSkipButtons] since [Scaffold]
+    /// strips the bottom view inset from the [MediaQuery] of its body.
     return MultiBlocListener(
       listeners: <BlocListener<dynamic, dynamic>>[
         BlocListener<PostCubit, PostState>(
@@ -367,11 +370,7 @@ class _ItemScreenState extends State<ItemScreen>
                       .read<PreferenceCubit>()
                       .state
                       .areSkipButtonsEnabled)
-                    const Positioned(
-                      right: Dimens.pt12,
-                      bottom: Dimens.pt36,
-                      child: FloatingSkipButtons(),
-                    ),
+                    const FloatingSkipButtons(),
                   if (shouldShowWebViewBottomSheet)
                     ItemScreenWebView(
                       url: widget.item.url,
@@ -383,7 +382,6 @@ class _ItemScreenState extends State<ItemScreen>
                     right: Dimens.zero,
                     child: Material(
                       child: ReplyBox(
-                        splitViewEnabled: true,
                         focusNode: focusNode,
                         textEditingController: commentEditingController,
                         onSendTapped: onSendTapped,
@@ -400,7 +398,7 @@ class _ItemScreenState extends State<ItemScreen>
                   child: ScrollsToTop(
                     child: Scaffold(
                       extendBodyBehindAppBar: true,
-                      resizeToAvoidBottomInset: true,
+                      resizeToAvoidBottomInset: false,
                       appBar: CustomAppBar(
                         context: context,
                         backgroundColor: Theme.of(
@@ -453,15 +451,6 @@ class _ItemScreenState extends State<ItemScreen>
                               shouldMarkNewComment: widget.shouldMarkNewComment,
                             ),
                           ),
-                          if (context
-                              .read<PreferenceCubit>()
-                              .state
-                              .areSkipButtonsEnabled)
-                            const Positioned(
-                              right: Dimens.pt12,
-                              bottom: Dimens.pt48,
-                              child: FloatingSkipButtons(),
-                            ),
                           const Positioned(
                             left: Dimens.zero,
                             right: Dimens.zero,
@@ -473,22 +462,43 @@ class _ItemScreenState extends State<ItemScreen>
                           ),
                         ],
                       ),
-                      bottomSheet: ReplyBox(
-                        textEditingController: commentEditingController,
-                        focusNode: focusNode,
-                        onSendTapped: onSendTapped,
-                        onChanged: context.read<EditCubit>().onTextChanged,
-                      ),
                     ),
                     onScrollsToTop: (_) =>
                         context.read<CommentsCubit>().scrollTo(index: 0),
                   ),
                 ),
+                if (context.read<PreferenceCubit>().state.areSkipButtonsEnabled)
+                  const FloatingSkipButtons(),
                 if (shouldShowWebViewBottomSheet)
                   ItemScreenWebView(
                     url: widget.item.url,
                     controller: _webViewController,
                   ),
+                Positioned(
+                  bottom: Dimens.zero,
+                  left: Dimens.zero,
+                  right: Dimens.zero,
+                  child: DecoratedBox(
+                    decoration: const BoxDecoration(
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          color: Palette.black12,
+                          blurRadius: Dimens.pt24,
+                          offset: Offset(0, -6), // push the shadow upward
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Theme.of(context).colorScheme.surfaceContainerLow,
+                      child: ReplyBox(
+                        focusNode: focusNode,
+                        textEditingController: commentEditingController,
+                        onSendTapped: onSendTapped,
+                        onChanged: context.read<EditCubit>().onTextChanged,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
     );

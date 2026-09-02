@@ -221,6 +221,10 @@ class HackiApp extends StatelessWidget {
           lazy: false,
           create: (BuildContext context) => TipsCubit(),
         ),
+        BlocProvider<ThreadNavigationButtonCubit>(
+          lazy: false,
+          create: (_) => ThreadNavigationButtonCubit(),
+        ),
       ],
       child: BlocConsumer<PreferenceCubit, PreferenceState>(
         listenWhen: (PreferenceState previous, PreferenceState current) =>
@@ -344,9 +348,17 @@ class HackiApp extends StatelessWidget {
                                               Positioned.fill(child: child!),
                                               DraggableFloatingButton(
                                                 onTap: () {
-                                                  router.push(
-                                                    Paths.logs.landing,
-                                                  );
+                                                  final bool isOnLogsScreen =
+                                                      router.state.fullPath
+                                                          ?.contains(
+                                                            Paths.logs.landing,
+                                                          ) ??
+                                                      false;
+                                                  if (!isOnLogsScreen) {
+                                                    router.push(
+                                                      Paths.logs.landing,
+                                                    );
+                                                  }
                                                 },
                                                 child: Icon(
                                                   Icons.bug_report,

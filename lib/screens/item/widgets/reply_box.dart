@@ -20,10 +20,8 @@ class ReplyBox extends StatefulWidget {
     required this.onSendTapped,
     required this.onChanged,
     super.key,
-    this.splitViewEnabled = false,
   });
 
-  final bool splitViewEnabled;
   final FocusNode focusNode;
   final TextEditingController textEditingController;
   final VoidCallback onSendTapped;
@@ -66,9 +64,7 @@ class _ReplyBoxState extends State<ReplyBox> with ItemActionMixin {
               padding: EdgeInsets.only(
                 bottom: expanded
                     ? Dimens.zero
-                    : widget.splitViewEnabled
-                    ? MediaQuery.of(context).viewInsets.bottom
-                    : Dimens.zero,
+                    : MediaQuery.of(context).viewInsets.bottom,
               ),
               child: AnimatedContainer(
                 height: editState.showReplyBox

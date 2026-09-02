@@ -14,6 +14,7 @@ export 'custom_tab_bar.dart';
 export 'device_gesture_wrapper.dart';
 export 'download_progress_reminder.dart';
 export 'draggable_floating_button.dart';
+export 'helpers/helpers.dart';
 export 'item_text.dart';
 export 'items_list_view.dart';
 export 'link_preview/link_preview.dart';
