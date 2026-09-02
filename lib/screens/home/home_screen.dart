@@ -6,6 +6,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/config/paths.dart';
 import 'package:hacki/config/router.dart';
@@ -19,7 +20,6 @@ import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
-import 'package:hacki/utils/utils.dart';
 import 'package:material_ui/material_ui.dart' hide Badge;
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:responsive_builder/responsive_builder.dart';
@@ -120,6 +120,8 @@ class _HomeScreenState extends State<HomeScreen>
               current.isStoryTilePreviewImageEnabled ||
           previous.isHackerNewsThemeEnabled != current.isHackerNewsThemeEnabled,
       builder: (BuildContext context, PreferenceState preferenceState) {
+        final PinState pinState = context.watch<PinCubit>().state;
+        final bool hasPins = pinState.pinnedStories.isNotEmpty;
         return DefaultTabController(
           length: tabLength,
           child: Scaffold(
@@ -152,11 +154,22 @@ class _HomeScreenState extends State<HomeScreen>
                       StoriesListView(
                         key: ValueKey<StoryType>(type),
                         storyType: type,
-                        header: PinnedStories(
-                          preferenceState: preferenceState,
-                          onStoryTapped: onStoryTapped,
+                        header: AnimatedSize(
+                          duration: AppDurations.ms300,
+                          child: hasPins
+                              ? ListTile(
+                                  leading: const Icon(Icons.push_pin),
+                                  title: Text(
+                                    '''${pinState.pinnedStories.length} Pin${pinState.pinnedStories.length > 1 ? 's' : ''}''',
+                                  ),
+                                  trailing: const Icon(Icons.chevron_right),
+                                  onTap: () {
+                                    context.go(Paths.pins.landing);
+                                  },
+                                )
+                              : const SizedBox.shrink(),
                         ),
-                        onStoryTapped: onStoryTapped,
+                        onStoryTapped: context.onStoryTapped,
                       ),
                     const ProfileScreen(),
                   ],
@@ -227,60 +240,6 @@ class _HomeScreenState extends State<HomeScreen>
           ],
         ),
       );
-    }
-  }
-
-  void onStoryTapped(Story story) {
-    final PreferenceState prefState = context.read<PreferenceCubit>().state;
-    final bool shouldUseReader = prefState.isReaderEnabled;
-    final StoryMarkingMode storyMarkingMode = prefState.storyMarkingMode;
-    final bool isOfflineReading = context
-        .read<StoriesBloc>()
-        .state
-        .isOfflineReading;
-    final bool isSplitViewEnabled = context
-        .read<SplitViewCubit>()
-        .state
-        .enabled;
-    final bool isMarkReadStoriesEnabled = prefState.isMarkReadStoriesEnabled;
-
-    // If a story is a job story and it has a link to the job posting,
-    // it would be better to just navigate to the web page.
-    final bool isJobWithLink = story.isJob && story.url.isNotEmpty;
-
-    if (isJobWithLink) {
-      context.read<ReminderCubit>().removeLastReadStoryId();
-    } else {
-      final bool shouldMarkNewComment =
-          isMarkReadStoriesEnabled &&
-          context.read<StoriesBloc>().state.readStoriesIds.contains(story.id);
-      final ItemScreenArgs args = ItemScreenArgs(
-        item: story,
-        shouldMarkNewComment: shouldMarkNewComment,
-      );
-
-      context.read<ReminderCubit>().updateLastReadStoryId(story.id);
-
-      if (isSplitViewEnabled) {
-        context.read<SplitViewCubit>().updateItemScreenArgs(args);
-      } else {
-        context
-          ..push(Paths.item.landing, extra: args)
-          ..read<ReminderCubit>().onDismiss();
-      }
-    }
-
-    if (story.url.isNotEmpty && isJobWithLink) {
-      LinkUtils.launch(
-        story.url,
-        context,
-        shouldUseReader: shouldUseReader,
-        isOfflineReading: isOfflineReading,
-      );
-    }
-
-    if (isMarkReadStoriesEnabled && storyMarkingMode.shouldDetectTapping) {
-      context.read<StoriesBloc>().add(StoryRead(story: story));
     }
   }
 
