@@ -81,7 +81,7 @@ dependencies:
   share_plus: ^13.3.0
   shared_preferences: ^2.5.5
   shared_preferences_android: ^2.4.28
-  shared_preferences_foundation: ^2.5.6
+  shared_preferences_foundation: ^2.5.7
   shimmer: ^4.0.0
   synced_shared_preferences:
     path: components/synced_shared_preferences
