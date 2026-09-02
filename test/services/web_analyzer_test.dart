@@ -4,10 +4,7 @@ import 'package:hacki/services/services.dart';
 void main() {
   group('WebAnalyzer.sanitizeText', () {
     test('decodes numeric html entities', () {
-      expect(
-        WebAnalyzer.sanitizeText('Foo&#39;s'),
-        "Foo's",
-      );
+      expect(WebAnalyzer.sanitizeText('Foo&#39;s'), "Foo's");
       expect(WebAnalyzer.sanitizeText('RSS &#8981;'), 'RSS ⌕');
       expect(WebAnalyzer.sanitizeText('a &#x27;b&#x27;'), "a 'b'");
     });
@@ -53,13 +50,11 @@ void main() {
 
   group('WebAnalyzer.extractSemanticText', () {
     const String articleParagraph =
-        'This is the real opening paragraph of the story, easily long '
-        'enough to be considered meaningful content.';
+        '''This is the real opening paragraph of the story, easily long enough to be considered meaningful content.''';
     const String navParagraph =
         'Home Explore Books Projects Links About RSS Contact me Search';
     const String footerParagraph =
-        'The site is run by someone who is a writer, designer and web coder '
-        'living somewhere beautiful.';
+        '''The site is run by someone who is a writer, designer and web coder living somewhere beautiful.''';
 
     test('returns the first meaningful article paragraph', () {
       expect(
@@ -101,11 +96,10 @@ void main() {
     test('decodes entities in the extracted paragraph', () {
       expect(
         WebAnalyzer.extractSemanticText(
-          '<html><body><article><p>Ed Zitron&#39;s AI skeptic predictions, '
-          'and how accurate they turned out to be.</p></article></body></html>',
+          '<html><body><article><p>Foo&#39;s Bar, '
+          'and foo bar.</p></article></body></html>',
         ),
-        "Ed Zitron's AI skeptic predictions, and how accurate they turned "
-        'out to be.',
+        "Foo's Bar, and foo bar.",
       );
     });
 
@@ -120,7 +114,7 @@ void main() {
 
     test('truncates long paragraphs to 300 characters', () {
       final String text = WebAnalyzer.extractSemanticText(
-        '<html><body><article><p>${'lorem ipsum ' * 100}</p></article>'
+        '<html><body><article><p>${'foo bar foobar' * 100}</p></article>'
         '</body></html>',
       )!;
 
