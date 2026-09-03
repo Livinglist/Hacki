@@ -223,7 +223,9 @@ class HackiApp extends StatelessWidget {
         ),
         BlocProvider<ThreadNavigationButtonCubit>(
           lazy: false,
-          create: (_) => ThreadNavigationButtonCubit(),
+          create: (BuildContext context) => ThreadNavigationButtonCubit(
+            preferenceCubit: context.read<PreferenceCubit>(),
+          ),
         ),
       ],
       child: BlocConsumer<PreferenceCubit, PreferenceState>(
