@@ -30,5 +30,9 @@ class ReviewRequestState extends Equatable {
   }
 
   @override
-  List<Object?> get props => <Object?>[launchCounter, firstRecordedLaunchDate];
+  List<Object?> get props => <Object?>[
+    launchCounter,
+    firstRecordedLaunchDate,
+    hasShown,
+  ];
 }
