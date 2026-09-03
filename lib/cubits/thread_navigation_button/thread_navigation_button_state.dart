@@ -1,6 +1,6 @@
 part of 'thread_navigation_button_cubit.dart';
 
-const Offset defaultOffset = Offset(16, 180);
+const Offset defaultOffset = Offset(16, 120);
 
 class ThreadNavigationButtonState extends Equatable {
   const ThreadNavigationButtonState({required this.dx, required this.dy});
