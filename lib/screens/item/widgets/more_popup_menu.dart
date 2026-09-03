@@ -278,7 +278,7 @@ class MorePopupMenu extends StatelessWidget {
           expand: false,
           initialChildSize: 0.9,
           maxChildSize: 0.9,
-          minChildSize: 0.4,
+          minChildSize: 0.7,
           builder: (BuildContext context, ScrollController scrollController) {
             return BlocProvider<SearchCubit>(
               create: (_) =>

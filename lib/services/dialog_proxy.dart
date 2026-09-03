@@ -45,7 +45,7 @@ abstract final class DialogProxy {
           expand: false,
           initialChildSize: 0.9,
           maxChildSize: 0.9,
-          minChildSize: 0.4,
+          minChildSize: 0.7,
           builder: (BuildContext context, ScrollController scrollController) {
             return BlocProvider<SearchCubit>(
               create: (_) => SearchCubit()..search(text),
@@ -76,7 +76,7 @@ abstract final class DialogProxy {
           expand: false,
           initialChildSize: 0.9,
           maxChildSize: 0.9,
-          minChildSize: 0.4,
+          minChildSize: 0.7,
           builder: (BuildContext context, ScrollController scrollController) {
             return TimeMachineDialog(
               comment: comment,

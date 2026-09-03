@@ -88,6 +88,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
               children: <Widget>[
                 Expanded(
                   child: SmartRefresher(
+                    physics: const ClampingScrollPhysics(),
                     scrollController: scrollController,
                     enablePullDown: false,
                     enablePullUp: true,
@@ -125,7 +126,7 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
                     child: ListView(
                       physics: state.results.isEmpty
                           ? const NeverScrollableScrollPhysics()
-                          : null,
+                          : const ClampingScrollPhysics(),
                       children: <Widget>[
                         Column(
                           children: <Widget>[
