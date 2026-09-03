@@ -274,17 +274,30 @@ class MorePopupMenu extends StatelessWidget {
       isScrollControlled: true,
       showDragHandle: true,
       builder: (BuildContext context) {
-        return BlocProvider<SearchCubit>(
-          create: (_) =>
-              SearchCubit()..addFilter(PostedByFilter(author: item.by)),
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height - Dimens.pt120,
-            child: const Column(
-              children: <Widget>[
-                Expanded(child: SearchScreen(isInBottomSheet: true)),
-              ],
-            ),
-          ),
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.9,
+          maxChildSize: 0.9,
+          minChildSize: 0.4,
+          builder: (BuildContext context, ScrollController scrollController) {
+            return BlocProvider<SearchCubit>(
+              create: (_) =>
+                  SearchCubit()..addFilter(PostedByFilter(author: item.by)),
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height - Dimens.pt120,
+                child: Column(
+                  children: <Widget>[
+                    Expanded(
+                      child: SearchScreen(
+                        isInBottomSheet: true,
+                        scrollController: scrollController,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
     );

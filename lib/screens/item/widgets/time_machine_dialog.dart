@@ -58,6 +58,7 @@ class TimeMachineDialog extends StatelessWidget {
                   Expanded(
                     child: ListView(
                       controller: scrollController,
+                      physics: const ClampingScrollPhysics(),
                       children: <Widget>[
                         switch (rootItem) {
                           Story() => StoryTile(

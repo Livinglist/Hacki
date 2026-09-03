@@ -14,12 +14,20 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:scrolls_to_top/scrolls_to_top.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key, this.isInBottomSheet = false});
+  const SearchScreen({
+    super.key,
+    this.isInBottomSheet = false,
+    this.scrollController,
+  }) : assert(
+         !isInBottomSheet || scrollController != null,
+         '''ScrollController should be assigned when search screen is presented inside a sheet.''',
+       );
 
   /// If user is viewing [SearchScreen] in bottom sheet,
   /// we navigate to [ItemScreen] directly instead of injecting the
   /// item into [SplitViewCubit].
   final bool isInBottomSheet;
+  final ScrollController? scrollController;
 
   @override
   _SearchScreenState createState() => _SearchScreenState();
@@ -27,7 +35,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
   final RefreshController refreshController = RefreshController();
-  final ScrollController scrollController = ScrollController();
+  late final ScrollController scrollController;
   final FocusNode focusNode = FocusNode();
   final Debouncer debouncer = Debouncer(delay: AppDurations.oneSecond);
 
@@ -36,13 +44,22 @@ class _SearchScreenState extends State<SearchScreen> with ItemActionMixin {
   @override
   void initState() {
     super.initState();
+    scrollController = widget.scrollController ?? ScrollController();
     scrollController.addListener(onScroll);
   }
 
   @override
   void dispose() {
+    scrollController.removeListener(onScroll);
+
+    /// Do not dispose the scroll controller if it is being passed in from
+    /// the builder func of draggable scrollable sheet. It will be disposed
+    /// by the sheet.
+    if (!widget.isInBottomSheet) {
+      scrollController.dispose();
+    }
+
     refreshController.dispose();
-    scrollController.dispose();
     focusNode
       ..unfocus()
       ..dispose();
