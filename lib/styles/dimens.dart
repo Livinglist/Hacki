@@ -47,6 +47,8 @@ abstract class TextDimens {
   static const double pt24 = 24;
   static const double pt26 = 26;
   static const double pt36 = 36;
+  static const double pt48 = 48;
+  static const double pt64 = 64;
 }
 
 abstract class NumSwitch {

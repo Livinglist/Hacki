@@ -95,6 +95,22 @@ class _HomeScreenState extends State<HomeScreen>
       });
 
     tabController = TabController(length: tabLength, vsync: this);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final ReviewRequestCubit reviewRequestCubit = context
+          .read<ReviewRequestCubit>();
+      if (!reviewRequestCubit.state.hasShown &&
+          reviewRequestCubit.feelingLucky) {
+        reviewRequestCubit.markAsShown();
+        showModalBottomSheet<bool>(
+          context: context,
+          isDismissible: false,
+          builder: (BuildContext context) {
+            return const ReviewRequestBottomSheet();
+          },
+        );
+      }
+    });
   }
 
   @override
