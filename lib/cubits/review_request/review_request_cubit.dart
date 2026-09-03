@@ -20,6 +20,8 @@ class ReviewRequestCubit extends HydratedCubit<ReviewRequestState> {
 
   void markAsShown() => emit(state.copyWith(hasShown: true));
 
+  void reset() => emit(state.copyWith(launchCounter: _askWhen));
+
   @override
   ReviewRequestState? fromJson(Map<String, dynamic> json) {
     return state.copyWith(
