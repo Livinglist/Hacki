@@ -48,18 +48,17 @@ class _OnboardingViewState extends State<OnboardingView> {
                 children: const <Widget>[
                   _PageViewChild(
                     path: Constants.commentTileRightSlidePath,
-                    description:
-                        '''Swipe right to leave a comment, vote, and more.''',
+                    description: '''Swipe right to reply, vote, and more.''',
                   ),
                   _PageViewChild(
                     path: Constants.commentTileLeftSlidePath,
                     description:
-                        '''Swipe left to view all the ancestor comments.''',
+                        '''Swipe left to view all ancestor comments.''',
                   ),
                   _PageViewChild(
                     path: Constants.commentTileTopTapPath,
                     description:
-                        '''Tap on anywhere inside a comment tile to collapse. Long press any link to copy.''',
+                        '''Tap anywhere on a comment to collapse it. Long press any link to copy it.''',
                   ),
                 ],
               ),

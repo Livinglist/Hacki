@@ -7,31 +7,38 @@ enum DiscoverableFeature {
   settingsShortcutOnItemScreen(
     featureId: 'settings_shortcut_on_item_screen',
     title: 'Go to Settings',
-    description: '''You can now go to settings page directly from a thread.''',
+    description: '''Tap to adjust thread appearance in Settings.''',
   ),
   login(
     featureId: 'log_in',
     title: 'Log in for more',
     description:
-        '''Log in using your Hacker News account to check out stories and comments you have posted in the past, and get in-app notification when there is new reply to your comments or stories.''',
+        '''Log in with your Hacker News account to view your past stories and comments and receive in-app notifications when someone replies to them.''',
   ),
   pinToTop(
     featureId: 'pin_to_top',
     title: 'Pin a Story',
-    description:
-        '''Pin this story to the top of your home screen so that you can come back later.''',
+    description: '''Pin this story to the top of your home screen.''',
   ),
   jumpUpButton(
     featureId: 'jump_up_button_with_long_press',
     title: 'Shortcut',
-    description:
-        '''Tapping on this button will take you to the previous root level comment.\n\nLong press on it to jump to the very beginning of this thread.''',
+    description: '''
+Tap this button to go to the previous root-level comment.
+
+Long press to jump to the beginning of the thread.
+
+Drag to move the button around.''',
   ),
   jumpDownButton(
     featureId: 'jump_down_button_with_long_press',
     title: 'Shortcut',
-    description:
-        '''Tapping on this button will take you to the next root level comment.\n\nLong press on it to jump to the end of this thread.''',
+    description: '''
+Tap this button to go to the next root-level comment.
+
+Long press to jump to the end of the thread.
+
+Drag to move the button around.''',
   ),
   searchInThread(
     featureId: 'search_in_thread',
