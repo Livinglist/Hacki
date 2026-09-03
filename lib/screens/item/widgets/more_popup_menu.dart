@@ -283,18 +283,9 @@ class MorePopupMenu extends StatelessWidget {
             return BlocProvider<SearchCubit>(
               create: (_) =>
                   SearchCubit()..addFilter(PostedByFilter(author: item.by)),
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height - Dimens.pt120,
-                child: Column(
-                  children: <Widget>[
-                    Expanded(
-                      child: SearchScreen(
-                        isInBottomSheet: true,
-                        scrollController: scrollController,
-                      ),
-                    ),
-                  ],
-                ),
+              child: SearchScreen(
+                isInBottomSheet: true,
+                scrollController: scrollController,
               ),
             );
           },
