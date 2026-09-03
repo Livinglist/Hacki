@@ -12,6 +12,7 @@ export 'post/post_cubit.dart';
 export 'preference/preference_cubit.dart';
 export 'reminder/reminder_cubit.dart';
 export 'remote_config/remote_config_cubit.dart';
+export 'review_request/review_request_cubit.dart';
 export 'search/search_cubit.dart';
 export 'split_view/split_view_cubit.dart';
 export 'submit/submit_cubit.dart';
