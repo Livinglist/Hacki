@@ -467,19 +467,6 @@ class _SettingsViewState extends State<SettingsView>
                   },
                 ),
                 ListTile(
-                  title: const Text('Reset Feature Discovery'),
-                  onTap: () {
-                    HapticFeedbackUtils.light();
-                    locator.get<PreferenceRepository>().resetTourStatus();
-                    FeatureDiscovery.clearPreferences(
-                      context,
-                      DiscoverableFeature.values.map(
-                        (DiscoverableFeature f) => f.featureId,
-                      ),
-                    );
-                  },
-                ),
-                ListTile(
                   title: const Text('Reset Feedback Request'),
                   onTap: () {
                     HapticFeedbackUtils.light();
