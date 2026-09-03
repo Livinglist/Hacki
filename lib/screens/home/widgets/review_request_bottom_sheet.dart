@@ -97,13 +97,13 @@ class _ReviewRequestBottomSheetState extends State<ReviewRequestBottomSheet> {
                     pageController.animateToPage(
                       Stage.reviewRequest.index,
                       duration: AppDurations.ms300,
-                      curve: Curves.bounceInOut,
+                      curve: Curves.easeIn,
                     );
                   } else {
                     pageController.animateToPage(
                       Stage.issueSubmission.index,
                       duration: AppDurations.ms300,
-                      curve: Curves.bounceInOut,
+                      curve: Curves.easeIn,
                     );
                   }
                 },
@@ -127,10 +127,17 @@ class _ReviewRequestBottomSheetState extends State<ReviewRequestBottomSheet> {
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: Dimens.pt12),
                 child: Text(
+                  '(๑•̀ㅂ•́)و✧',
+                  style: TextStyle(fontSize: TextDimens.pt20),
+                  textAlign: .center,
+                ),
+              ),
+              SizedBoxes.pt12,
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: Dimens.pt12),
+                child: Text(
                   '''
-(๑•̀ㅂ•́)و✧
-
-Hacki is completely free and open source. Your feedback keeps me motivated to make it even better. : )''',
+Hacki is completely free and open source. Your feedback keeps me motivated to make it even better.''',
                   style: TextStyle(fontSize: TextDimens.pt16),
                   textAlign: .center,
                 ),
