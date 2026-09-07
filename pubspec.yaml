@@ -102,7 +102,7 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   mocktail: ^1.0.5
-  very_good_analysis: ^10.3.0
+  very_good_analysis: ^11.0.0
 
 flutter:
   uses-material-design: true
