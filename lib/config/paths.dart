@@ -8,6 +8,7 @@ abstract final class Paths {
   static const QrCodePaths qrCode = QrCodePaths._();
   static const WebViewPaths webView = WebViewPaths._();
   static const SettingsPaths settings = SettingsPaths._();
+  static const PinsPaths pins = PinsPaths._();
 }
 
 class HomePaths with RootPaths {
@@ -26,6 +27,12 @@ class ItemPaths with RootPaths {
   String get settings => '$landing$settingsSegment';
 
   static const String settingsSegment = '/${SettingsScreen.routeName}';
+}
+
+class PinsPaths with RootPaths {
+  const PinsPaths._();
+
+  String get landing => rootPath(PinsScreen.routeName);
 }
 
 class SettingsPaths with RootPaths {

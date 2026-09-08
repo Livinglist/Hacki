@@ -979,8 +979,10 @@ comments length is ${state.comments.length}
 
     for (int i = startIndex; i < totalComments; i++) {
       final Comment cmt = state.comments.elementAt(i);
-
-      if (cmt.isRoot && (cmt.deleted || cmt.dead) == false) {
+      final bool isIgnored =
+          _preferenceCubit.state.areCollapsedCommentsIgnored &&
+          cmt.isCollapsedByUser;
+      if (!isIgnored && cmt.isRoot && (cmt.deleted || cmt.dead) == false) {
         unawaited(
           scrollTo(index: i + 1, alignment: 0.15, duration: AppDurations.ms400),
         );
@@ -1018,8 +1020,10 @@ comments length is ${state.comments.length}
 
     for (int i = startIndex; i >= 0; i--) {
       final Comment cmt = state.comments.elementAt(i);
-
-      if (cmt.isRoot && (cmt.deleted || cmt.dead) == false) {
+      final bool isIgnored =
+          _preferenceCubit.state.areCollapsedCommentsIgnored &&
+          cmt.isCollapsedByUser;
+      if (!isIgnored && cmt.isRoot && (cmt.deleted || cmt.dead) == false) {
         unawaited(
           scrollTo(index: i + 1, alignment: 0.15, duration: AppDurations.ms400),
         );

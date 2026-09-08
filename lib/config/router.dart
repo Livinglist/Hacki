@@ -176,6 +176,10 @@ final GoRouter router = GoRouter(
               const MaterialPage<void>(child: QrCodeScannerScreen()),
         ),
         GoRoute(
+          path: PinsScreen.routeName,
+          pageBuilder: (_, __) => const MaterialPage<void>(child: PinsScreen()),
+        ),
+        GoRoute(
           path: QrCodeViewScreen.routeName,
           pageBuilder: (_, GoRouterState state) {
             final String? data = state.extra as String?;

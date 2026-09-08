@@ -190,10 +190,11 @@ class _SubmitScreenState extends State<SubmitScreen> with ItemActionMixin {
                     maxLines: 200,
                     decoration: const InputDecoration(
                       hintText: 'Text',
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide.none,
-                      ),
-                      border: UnderlineInputBorder(borderSide: BorderSide.none),
+                      enabledBorder: .none,
+                      disabledBorder: .none,
+                      errorBorder: .none,
+                      focusedBorder: .none,
+                      border: .none,
                     ),
                     onChanged: context.read<SubmitCubit>().onTextChanged,
                     textCapitalization: TextCapitalization.sentences,

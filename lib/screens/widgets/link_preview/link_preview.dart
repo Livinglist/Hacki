@@ -125,10 +125,7 @@ class _LinkPreviewState extends State<LinkPreview> {
     _errorTitle = widget.errorTitle ?? Constants.errorMessage;
     _errorBody =
         widget.errorBody ??
-        'Oops! Unable to parse the url. We have '
-            'sent feedback to our developers & '
-            'we will try to fix this in our next release. Thanks!';
-
+        'T_T Oops... Unable to parse the url, please try again later.';
     _loading = true;
     _getInfo();
 

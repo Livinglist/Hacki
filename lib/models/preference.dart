@@ -78,11 +78,13 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
         const PersistCollapseStateAcrossSessions(),
         const PreserveCollapseStateAfterScreenExit(),
         const ReaderModePreference(),
-        const SkipButtonsPreference(),
         const SplitViewPreference(),
         const CollapseModePreference(),
         const CustomTabPreference(),
         const WebViewBottomSheetPreference(),
+        const DividerPlaceholder(label: 'Thread Navigation'),
+        const SkipButtonsPreference(),
+        const SkipButtonsIgnoreCollapsedCommentsPreference(),
         const DividerPlaceholder(label: 'Look And Feel'),
         const EyeCandyPreference(),
         const DynamicColorPreference(),
@@ -199,7 +201,32 @@ final class SkipButtonsPreference extends BooleanPreference {
 
   @override
   String get subtitle =>
-      '''display floating buttons on the thread screen that let you jump to the previous or next root comment.''';
+      '''show floating buttons on the thread screen to navigate to the previous or next root comment.''';
+}
+
+final class SkipButtonsIgnoreCollapsedCommentsPreference
+    extends BooleanPreference {
+  const SkipButtonsIgnoreCollapsedCommentsPreference({bool? val})
+    : super(
+        val: val ?? _skipButtonsIgnoreCollapsedCommentsPreferenceDefaultValue,
+      );
+
+  static const bool _skipButtonsIgnoreCollapsedCommentsPreferenceDefaultValue =
+      true;
+
+  @override
+  SkipButtonsIgnoreCollapsedCommentsPreference copyWith({required bool? val}) {
+    return SkipButtonsIgnoreCollapsedCommentsPreference(val: val);
+  }
+
+  @override
+  String get key => 'skipButtonsIgnoreCollapsedCommentsPreference';
+
+  @override
+  String get title => 'Skip over Collapsed Comments';
+
+  @override
+  String get subtitle => '''skip over collapsed comments during navigation.''';
 }
 
 final class SplitViewPreference extends BooleanPreference {
@@ -615,7 +642,7 @@ final class MarkReadStoriesModePreference extends BooleanPreference {
   String get key => 'markReadStoriesMode';
 
   @override
-  String get title => 'Mark Read Stories';
+  String get title => 'Gray Out Read Stories';
 
   @override
   String get subtitle => 'grey out stories you have read.';
@@ -638,7 +665,7 @@ final class HideStoryInsteadOfMarkingGray extends BooleanPreference {
   String get key => 'hideStoryInsteadOfMarkingGray';
 
   @override
-  String get title => 'Hide Story Instead Of Marking Gray';
+  String get title => 'Hide Read Stories';
 
   @override
   String get subtitle =>

@@ -59,6 +59,11 @@ class PinCubit extends Cubit<PinState> {
     onDone?.call();
   }
 
+  void removeAll() {
+    emit(state.copyWith(pinnedStoriesIds: <int>[], pinnedStories: <Story>[]));
+    _preferenceRepository.updatePinnedStoriesIds(<int>[]);
+  }
+
   void refresh() {
     if (state.status.isLoading) return;
     init();

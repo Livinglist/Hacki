@@ -85,22 +85,19 @@ class CommentTile extends StatelessWidget {
             PreferenceState prefState,
             BlocklistState blocklistState,
           ) {
+            final bool isDarkModeEnabled =
+                Theme.of(context).brightness == Brightness.dark;
             final (Color, Color) slidableColors = level > 0
                 ? ColorUtils.getRainbowColor(
                     level,
                     Theme.of(context).canvasColor,
+                    isDarkModeEnabled: isDarkModeEnabled,
                   )
                 : (
                     Theme.of(context).colorScheme.primaryContainer,
                     Theme.of(context).colorScheme.onPrimaryContainer,
                   );
-            final double backgroundColorAlpha =
-                Theme.of(context).brightness == Brightness.dark && level > 0
-                ? 0.6
-                : 1;
-            final Color backgroundColor = slidableColors.$1.withValues(
-              alpha: backgroundColorAlpha,
-            );
+            final Color backgroundColor = slidableColors.$1;
             final Color foregroundColor = slidableColors.$2;
 
             int newCommentsCount = 0;
@@ -130,7 +127,15 @@ class CommentTile extends StatelessWidget {
                     ),
                     startActionPane: isActionable
                         ? ActionPane(
-                            motion: const StretchMotion(),
+                            motion: const BehindMotion(),
+                            dismissible: DismissiblePane(
+                              closeOnCancel: true,
+                              confirmDismiss: () async {
+                                onUpvoteTapped?.call(comment);
+                                return false;
+                              },
+                              onDismissed: () {},
+                            ),
                             children: <Widget>[
                               if (onUpvoteTapped != null &&
                                   context.read<AuthBloc>().state.user.id !=
@@ -180,9 +185,10 @@ class CommentTile extends StatelessWidget {
                         : null,
                     endActionPane: isActionable
                         ? ActionPane(
-                            motion: const StretchMotion(),
+                            motion: const BehindMotion(),
                             dismissible: DismissiblePane(
                               closeOnCancel: true,
+                              dismissThreshold: 0.01,
                               confirmDismiss: () async {
                                 DialogProxy.showTimeMachineDialog(
                                   context,

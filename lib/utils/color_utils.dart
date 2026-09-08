@@ -5,7 +5,11 @@ abstract final class ColorUtils {
   static final Map<int, (Color, Color)> levelToRainbowBorderColors =
       <int, (Color, Color)>{};
 
-  static (Color, Color) getRainbowColor(int level, Color background) {
+  static (Color, Color) getRainbowColor(
+    int level,
+    Color background, {
+    required bool isDarkModeEnabled,
+  }) {
     const int colorCount = 6;
 
     // If id is larger than 6, take modulo
@@ -28,12 +32,15 @@ abstract final class ColorUtils {
     final bool isDarkBg = background.computeLuminance() < 0.5;
     const double saturation = 0.85;
     final double lightness = isDarkBg ? 0.60 : 0.45;
-    final Color color = HSLColor.fromAHSL(
+    Color color = HSLColor.fromAHSL(
       1, // Fully opaque
       hue,
       saturation,
       lightness,
     ).toColor();
+    color = isDarkModeEnabled
+        ? Color.alphaBlend(color.withValues(alpha: 0.6), background)
+        : color;
 
     final bool isDarkColor = color.computeLuminance() < 0.5;
     final Color foregroundColor = isDarkColor ? Palette.white : Palette.black;

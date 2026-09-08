@@ -353,8 +353,17 @@ class _ParentItemSection extends StatelessWidget {
             ),
           DeviceGestureWrapper(
             child: Slidable(
+              key: ValueKey<String>('root_item_tile_slidable_${item.id}'),
               startActionPane: ActionPane(
                 motion: const BehindMotion(),
+                dismissible: DismissiblePane(
+                  closeOnCancel: true,
+                  confirmDismiss: () async {
+                    onUpvoteTapped.call(item);
+                    return false;
+                  },
+                  onDismissed: () {},
+                ),
                 children: <Widget>[
                   if (context.read<AuthBloc>().state.user.id != item.by)
                     CustomSlidableAction(

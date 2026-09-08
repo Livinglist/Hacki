@@ -41,16 +41,20 @@ abstract final class DialogProxy {
       isScrollControlled: true,
       showDragHandle: true,
       builder: (BuildContext context) {
-        return BlocProvider<SearchCubit>(
-          create: (_) => SearchCubit()..search(text),
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height - Dimens.pt120,
-            child: const Column(
-              children: <Widget>[
-                Expanded(child: SearchScreen(isInBottomSheet: true)),
-              ],
-            ),
-          ),
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.9,
+          maxChildSize: 0.9,
+          minChildSize: 0.7,
+          builder: (BuildContext context, ScrollController scrollController) {
+            return BlocProvider<SearchCubit>(
+              create: (_) => SearchCubit()..search(text),
+              child: SearchScreen(
+                isInBottomSheet: true,
+                scrollController: scrollController,
+              ),
+            );
+          },
         );
       },
     );
@@ -68,19 +72,19 @@ abstract final class DialogProxy {
       isScrollControlled: true,
       showDragHandle: true,
       builder: (BuildContext context) {
-        return SizedBox(
-          height: MediaQuery.of(context).size.height - Dimens.pt120,
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                child: TimeMachineDialog(
-                  comment: comment,
-                  commentsCubit: commentsCubit,
-                  deviceType: deviceType,
-                ),
-              ),
-            ],
-          ),
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.9,
+          maxChildSize: 0.9,
+          minChildSize: 0.7,
+          builder: (BuildContext context, ScrollController scrollController) {
+            return TimeMachineDialog(
+              comment: comment,
+              commentsCubit: commentsCubit,
+              deviceType: deviceType,
+              scrollController: scrollController,
+            );
+          },
         );
       },
     );
