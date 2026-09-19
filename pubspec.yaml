@@ -1,11 +1,11 @@
 name: hacki
 description: A Hacker News client.
-version: 3.8.1+381
+version: 3.8.2+382
 publish_to: none
 
 environment:
   sdk: ">=3.11.0 <4.0.0"
-  flutter: "3.47.2"
+  flutter: "3.47.5"
 
 dependencies:
   adaptive_theme: ^3.8.0
@@ -42,7 +42,7 @@ dependencies:
       url: https://github.com/Livinglist/flutter_material_color_picker
       ref: master
   flutter_native_splash: ^2.4.8
-  flutter_secure_storage: ^11.0.0
+  flutter_secure_storage: ^11.2.0
   flutter_slidable: ^4.0.3
   font_awesome_flutter: ^11.0.0
   get_it: ^9.2.1
@@ -57,7 +57,7 @@ dependencies:
   intl: ^0.20.3
   linkify: ^5.0.0
   logger: ^2.8.0
-  material_ui: ^1.2.0
+  material_ui: ^1.3.0
   memoize: ^3.0.0
   package_info_plus: ^10.2.1
   path: ^1.9.1
@@ -69,7 +69,7 @@ dependencies:
     git:
       url: https://github.com/livinglist/flutter_pulltorefresh
       ref: f3238eb1bd615bf727a79b10121f098738877295
-  qr_code_scanner_plus: ^2.2.0
+  qr_code_scanner_plus: ^2.3.0
   qr_flutter: ^4.1.0
   receive_sharing_intent: 1.9.0
   responsive_builder: ^0.7.1
