@@ -57,7 +57,7 @@ dependencies:
   intl: ^0.20.3
   linkify: ^5.0.0
   logger: ^2.7.0
-  material_ui: ^1.1.0
+  material_ui: ^1.2.0
   memoize: ^3.0.0
   package_info_plus: ^10.2.1
   path: ^1.9.1
