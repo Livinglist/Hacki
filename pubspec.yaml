@@ -9,7 +9,7 @@ environment:
 
 dependencies:
   adaptive_theme: ^3.8.0
-  advanced_haptics: ^1.0.8
+  advanced_haptics: ^1.2.0
   animations: ^3.0.0
   badges: ^3.2.0
   bloc: ^9.2.1

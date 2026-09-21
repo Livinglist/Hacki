@@ -21,10 +21,10 @@ packages:
     dependency: "direct main"
     description:
       name: advanced_haptics
-      sha256: "8537e3f27cb87e7775c29ab2ece12e9cd283b29f668e4d0d3a7e6dbdbb1d1aba"
+      sha256: b1f56c65a3171733fd3dc5a3e7c2828dc2970c1a4c4677fb7506c7775db16626
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.8"
+    version: "1.2.0"
   analyzer:
     dependency: transitive
     description:
