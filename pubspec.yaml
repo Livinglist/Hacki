@@ -69,7 +69,7 @@ dependencies:
     git:
       url: https://github.com/livinglist/flutter_pulltorefresh
       ref: f3238eb1bd615bf727a79b10121f098738877295
-  qr_code_scanner_plus: ^2.2.0
+  qr_code_scanner_plus: ^2.3.0
   qr_flutter: ^4.1.0
   receive_sharing_intent: 1.9.0
   responsive_builder: ^0.7.1
