@@ -21,7 +21,7 @@ dependencies:
   dio: ^5.11.1
   dio_smart_retry: ^7.0.1
   dynamic_color: ^2.1.0
-  equatable: ^2.1.0
+  equatable: ^3.0.0
   fast_gbk: ^1.0.0
   feature_discovery: ^0.14.2
   file_picker: ^12.2.0
