@@ -24,7 +24,7 @@ dependencies:
   equatable: ^2.1.0
   fast_gbk: ^1.0.0
   feature_discovery: ^0.14.2
-  file_picker: ^12.2.0
+  file_picker: ^13.1.0
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
