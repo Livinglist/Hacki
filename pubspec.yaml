@@ -1,15 +1,15 @@
 name: hacki
 description: A Hacker News client.
-version: 3.8.1+381
+version: 3.8.2+382
 publish_to: none
 
 environment:
   sdk: ">=3.11.0 <4.0.0"
-  flutter: "3.47.2"
+  flutter: "3.47.5"
 
 dependencies:
   adaptive_theme: ^3.8.0
-  advanced_haptics: ^1.0.8
+  advanced_haptics: ^1.2.0
   animations: ^3.0.0
   badges: ^3.2.0
   bloc: ^9.2.1
@@ -21,14 +21,14 @@ dependencies:
   dio: ^5.11.1
   dio_smart_retry: ^7.0.1
   dynamic_color: ^2.1.0
-  equatable: ^2.1.0
+  equatable: ^3.0.0
   fast_gbk: ^1.0.0
   feature_discovery: ^0.14.2
-  file_picker: ^12.2.0
+  file_picker: ^13.1.0
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
-  flutter_cache_manager: ^3.4.2
+  flutter_cache_manager: ^3.4.5
   flutter_email_sender: ^10.0.1
   flutter_fadein: ^2.0.0
   flutter_feather_icons:
@@ -36,13 +36,13 @@ dependencies:
       url: https://github.com/Livinglist/flutter_feather_icons
       ref: master
   flutter_inappwebview: ^6.2.0-beta.3
-  flutter_local_notifications: ^22.3.0
+  flutter_local_notifications: ^22.3.1
   flutter_material_color_picker:
     git:
       url: https://github.com/Livinglist/flutter_material_color_picker
       ref: master
   flutter_native_splash: ^2.4.8
-  flutter_secure_storage: ^11.0.0
+  flutter_secure_storage: ^11.2.0
   flutter_slidable: ^4.0.3
   font_awesome_flutter: ^11.0.0
   get_it: ^9.2.1
@@ -57,7 +57,7 @@ dependencies:
   intl: ^0.20.3
   linkify: ^5.0.0
   logger: ^2.8.0
-  material_ui: ^1.2.0
+  material_ui: ^1.3.0
   memoize: ^3.0.0
   package_info_plus: ^10.2.1
   path: ^1.9.1
@@ -69,7 +69,7 @@ dependencies:
     git:
       url: https://github.com/livinglist/flutter_pulltorefresh
       ref: f3238eb1bd615bf727a79b10121f098738877295
-  qr_code_scanner_plus: ^2.2.0
+  qr_code_scanner_plus: ^2.3.0
   qr_flutter: ^4.1.0
   receive_sharing_intent: 1.9.0
   responsive_builder: ^0.7.1
