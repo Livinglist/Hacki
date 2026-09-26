@@ -233,6 +233,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
         ? item
         : await _hackerNewsRepository
                   .fetchItem(id: item.id)
+                  .timeout(AppDurations.oneSecond)
                   .then(toBuildable)
                   .onError((_, __) => item) ??
               item;
@@ -373,7 +374,10 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
 
     final Item item = state.item;
     final Item updatedItem =
-        await _hackerNewsRepository.fetchItem(id: item.id) ?? item;
+        await _hackerNewsRepository
+            .fetchItem(id: item.id)
+            .timeout(AppDurations.oneSecond) ??
+        item;
 
     /// If descendants has not changed, abort fetching.
     if (item is Story && item.descendants == updatedItem.descendants) {
