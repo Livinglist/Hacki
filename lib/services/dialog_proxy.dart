@@ -133,13 +133,7 @@ abstract final class DialogProxy {
       builder: (BuildContext context) => AlertDialog(
         title: const Text('Download completed'),
         actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              context.pop();
-              locator.get<AppReviewService>().requestReview();
-            },
-            child: const Text('Noooice!'),
-          ),
+          TextButton(onPressed: context.pop, child: const Text('Noooice!')),
         ],
       ),
     );
