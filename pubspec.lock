@@ -961,10 +961,10 @@ packages:
     dependency: "direct main"
     description:
       name: material_ui
-      sha256: "6d056d60ce745335fcf1c726a4fc46a481a62229f202b65dbc2db5edbbabc7e2"
+      sha256: "134ab2f0843545c4e661e4ba2753fe1bcf0753cb690d5a9ee4870638a40411e9"
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.0"
+    version: "1.4.0"
   memoize:
     dependency: "direct main"
     description:
