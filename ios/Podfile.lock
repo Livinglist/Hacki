@@ -1,20 +1,14 @@
 PODS:
-  - advanced_haptics (0.0.1):
-    - Flutter
   - Flutter (1.0.0)
 
 DEPENDENCIES:
-  - advanced_haptics (from `.symlinks/plugins/advanced_haptics/ios`)
   - Flutter (from `Flutter`)
 
 EXTERNAL SOURCES:
-  advanced_haptics:
-    :path: ".symlinks/plugins/advanced_haptics/ios"
   Flutter:
     :path: Flutter
 
 SPEC CHECKSUMS:
-  advanced_haptics: 67b3cb2895dc34d46bcd4fdbf9ac53b2592dd34c
   Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
 
 PODFILE CHECKSUM: f36aa047befc0bec38bdafe9b1aa9864afd26d31
