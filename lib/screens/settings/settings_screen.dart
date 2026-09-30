@@ -92,6 +92,7 @@ class _SettingsViewState extends State<SettingsView>
                   }
                 },
               ),
+              const WhatsNewListTile(),
               const EnterOfflineModeListTile(),
               const OfflineListTile(),
               const SizedBox(height: Dimens.pt8),

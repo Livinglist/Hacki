@@ -86,6 +86,7 @@ dependencies:
   synced_shared_preferences:
     path: components/synced_shared_preferences
   universal_platform: ^1.1.0
+  updatify_flutter: ^1.6.0
   url_launcher: ^6.3.2
   video_player: ^2.14.0
   visibility_detector: ^0.4.0+2
