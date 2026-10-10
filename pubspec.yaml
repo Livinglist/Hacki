@@ -59,7 +59,7 @@ dependencies:
   logger: ^2.8.0
   material_ui: ^1.3.0
   memoize: ^3.0.0
-  package_info_plus: ^10.2.1
+  package_info_plus: ^10.2.2
   path: ^1.9.1
   path_provider: ^2.1.6
   path_provider_android: ^2.3.1
