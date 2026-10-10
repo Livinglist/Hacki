@@ -1,14 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/stories/stories_bloc.dart';
-import 'package:hacki/config/locator.dart';
 import 'package:hacki/config/router.dart';
 import 'package:hacki/cubits/comments/comments_cubit.dart';
 import 'package:hacki/cubits/search/search_cubit.dart';
 import 'package:hacki/models/item/item.dart';
 import 'package:hacki/screens/item/widgets/time_machine_dialog.dart';
 import 'package:hacki/screens/screens.dart';
-import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/haptic_feedback_utils.dart';
 import 'package:material_ui/material_ui.dart';
@@ -133,13 +131,7 @@ abstract final class DialogProxy {
       builder: (BuildContext context) => AlertDialog(
         title: const Text('Download completed'),
         actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              context.pop();
-              locator.get<AppReviewService>().requestReview();
-            },
-            child: const Text('Noooice!'),
-          ),
+          TextButton(onPressed: context.pop, child: const Text('Noooice!')),
         ],
       ),
     );

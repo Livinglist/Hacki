@@ -3,14 +3,12 @@ import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
-import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/item/models/models.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
-import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:material_ui/material_ui.dart';
@@ -137,21 +135,13 @@ class MorePopupMenu extends StatelessWidget {
                               actions: <Widget>[
                                 TextButton(
                                   onPressed: () {
-                                    locator
-                                        .get<AppReviewService>()
-                                        .requestReview();
                                     context.pop();
                                     onSearchUserTapped(context);
                                   },
                                   child: const Text('Search'),
                                 ),
                                 TextButton(
-                                  onPressed: () {
-                                    locator
-                                        .get<AppReviewService>()
-                                        .requestReview();
-                                    context.pop();
-                                  },
+                                  onPressed: context.pop,
                                   child: const Text('Okay'),
                                 ),
                               ],

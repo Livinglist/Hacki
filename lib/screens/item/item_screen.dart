@@ -551,7 +551,6 @@ class _ItemScreenState extends State<ItemScreen>
             ),
             onTap: () {
               HapticFeedbackUtils.light();
-              locator.get<AppReviewService>().requestReview();
               context.read<PreferenceCubit>().update(
                 FontSizePreference(val: fontSize.index),
               );
@@ -588,7 +587,6 @@ class _ItemScreenState extends State<ItemScreen>
                 leading: const Icon(Icons.list),
                 title: const Text('View in separate thread'),
                 onTap: () {
-                  locator.get<AppReviewService>().requestReview();
                   context.pop();
                   goToItemScreen(
                     args: ItemScreenArgs(
