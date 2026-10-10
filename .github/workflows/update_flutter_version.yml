@@ -237,7 +237,7 @@ jobs:
             exit 1
           fi
 
-          git add -A -- pubspec.yaml pubspec.lock submodules/flutter ios/Podfile ios/Podfile.lock
+          git add -A -- pubspec.yaml pubspec.lock submodules/flutter
 
           mode="$(git ls-files -s -- submodules/flutter | awk '{print $1}')"
           if [ "${mode}" != "160000" ]; then
@@ -372,7 +372,6 @@ jobs:
           - Pin Flutter \`${FLUTTER_VERSION}\` in \`pubspec.yaml\`.
           - Point \`submodules/flutter\` at tag \`${FLUTTER_VERSION}\`.
           - Refresh \`pubspec.lock\` with \`flutter pub get\`.
-          - Refresh \`ios/Podfile\` and \`ios/Podfile.lock\` with \`flutter build ios --config-only\`.
 
           EOF
           )"
