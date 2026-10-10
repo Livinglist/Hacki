@@ -1,8 +1,12 @@
 name: Update Flutter Version
 
-# Manual Flutter bump. Leave "flutter version" empty to use the newest stable
-# tag linked from https://github.com/flutter/flutter/blob/master/CHANGELOG.md.
+# Bump Flutter to the newest stable tag in
+# https://github.com/flutter/flutter/blob/master/CHANGELOG.md.
+# Runs every day at 15:00 UTC, and can also be started by hand.
+# Leave "flutter version" empty to use that changelog tag.
 on:
+  schedule:
+    - cron: "0 15 * * *"
   workflow_dispatch:
     inputs:
       flutter_version:
@@ -20,8 +24,94 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  check:
+    name: Check Flutter version
+    runs-on: ubuntu-latest
+    outputs:
+      up_to_date: ${{ steps.compare.outputs.up_to_date }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Compare pubspec.yaml with the Flutter changelog
+        id: compare
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          changelog="$(curl -fsSL --retry 3 https://raw.githubusercontent.com/flutter/flutter/master/CHANGELOG.md)"
+          changelog_version="$(printf '%s\n' "${changelog}" | grep -oE 'releases/tag/[0-9]+\.[0-9]+\.[0-9]+' | head -n 1 | sed 's|.*/||' || true)"
+          if [ -z "${changelog_version}" ]; then
+            changelog_version="$(printf '%s\n' "${changelog}" | grep -oE '^### \[[0-9]+\.[0-9]+\.[0-9]+\]' | head -n 1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || true)"
+          fi
+          if ! [[ "${changelog_version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Could not read a Flutter version from the changelog." >&2
+            exit 1
+          fi
+
+          pubspec_version="$(python3 - << 'PY'
+          import re
+          import sys
+          from pathlib import Path
+
+          text = Path("pubspec.yaml").read_text()
+          pattern = re.compile(
+              "^(\\s*flutter:\\s*[\"'])(\\d+\\.\\d+\\.\\d+)([\"'])\\s*$",
+              re.MULTILINE,
+          )
+          match = pattern.search(text)
+          if match is None:
+              sys.exit("flutter pin not found in pubspec.yaml")
+          print(match.group(2))
+          PY
+          )"
+
+          echo "pubspec.yaml pins Flutter ${pubspec_version}; changelog latest is ${changelog_version}."
+          if [ "${pubspec_version}" = "${changelog_version}" ]; then
+            echo "up_to_date=true" >> "${GITHUB_OUTPUT}"
+            echo "Flutter ${pubspec_version} already matches the latest changelog tag." | tee -a "${GITHUB_STEP_SUMMARY}"
+            exit 0
+          fi
+
+          existing_pr="$(CHANGELOG_VERSION="${changelog_version}" python3 - << 'PY'
+          import json
+          import os
+          import re
+          import subprocess
+
+          target = os.environ["CHANGELOG_VERSION"]
+          pattern = re.compile(
+              r"^chore(?:\(flutter\))?: bump Flutter version to (\d+\.\d+\.\d+)$"
+          )
+          prs = json.loads(
+              subprocess.check_output(
+                  [
+                      "gh", "pr", "list",
+                      "--state", "open",
+                      "--limit", "100",
+                      "--json", "number,title",
+                  ],
+                  text=True,
+              )
+          )
+          for pr in prs:
+              match = pattern.match(pr["title"].strip())
+              if match and match.group(1) == target:
+                  print(pr["number"])
+                  break
+          PY
+          )"
+          if [ -n "${existing_pr}" ]; then
+            echo "up_to_date=true" >> "${GITHUB_OUTPUT}"
+            echo "Pull request #${existing_pr} already bumps Flutter to ${changelog_version}." | tee -a "${GITHUB_STEP_SUMMARY}"
+          else
+            echo "up_to_date=false" >> "${GITHUB_OUTPUT}"
+          fi
+
   update:
     name: Update Flutter version
+    needs: check
+    if: needs.check.outputs.up_to_date != 'true'
     runs-on: macos-latest
     timeout-minutes: 60
     env:
@@ -173,27 +263,28 @@ jobs:
           EOF
           )"
 
-          branch="chore/flutter-${FLUTTER_VERSION}"
+          pacific_date="$(TZ=America/Los_Angeles date +%m%d%Y)"
+          branch="chore/flutter-${FLUTTER_VERSION}-${pacific_date}"
           action_file="${RUNNER_TEMP}/flutter_pr_action"
           ACTION_FILE="${action_file}" BRANCH="${branch}" python3 - << 'PY'
           import json
           import os
+          import re
           import subprocess
           import sys
 
           target_text = os.environ["FLUTTER_VERSION"]
           target = tuple(int(part) for part in target_text.split("."))
           preferred_branch = os.environ["BRANCH"]
-          prefix = "chore: bump Flutter version to "
+          title_pattern = re.compile(
+              r"^chore(?:\(flutter\))?: bump Flutter version to (\d+\.\d+\.\d+)$"
+          )
 
           def version_of(title):
-              if not title.startswith(prefix):
+              match = title_pattern.match(title.strip())
+              if match is None:
                   return None
-              raw = title[len(prefix):].strip()
-              parts = raw.split(".")
-              if len(parts) != 3 or not all(part.isdigit() for part in parts):
-                  return None
-              return tuple(int(part) for part in parts)
+              return tuple(int(part) for part in match.group(1).split("."))
 
           prs = json.loads(
               subprocess.check_output(
