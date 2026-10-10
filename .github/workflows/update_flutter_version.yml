@@ -1,8 +1,12 @@
 name: Update Flutter Version
 
-# Manual Flutter bump. Leave "flutter version" empty to use the newest stable
-# tag linked from https://github.com/flutter/flutter/blob/master/CHANGELOG.md.
+# Bump Flutter to the newest stable tag in
+# https://github.com/flutter/flutter/blob/master/CHANGELOG.md.
+# Runs every day at 15:00 UTC, and can also be started by hand.
+# Leave "flutter version" empty to use that changelog tag.
 on:
+  schedule:
+    - cron: "0 15 * * *"
   workflow_dispatch:
     inputs:
       flutter_version:
@@ -20,8 +24,58 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  check:
+    name: Check Flutter version
+    runs-on: ubuntu-latest
+    outputs:
+      up_to_date: ${{ steps.compare.outputs.up_to_date }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Compare pubspec.yaml with the Flutter changelog
+        id: compare
+        run: |
+          set -euo pipefail
+          changelog="$(curl -fsSL --retry 3 https://raw.githubusercontent.com/flutter/flutter/master/CHANGELOG.md)"
+          changelog_version="$(printf '%s\n' "${changelog}" | grep -oE 'releases/tag/[0-9]+\.[0-9]+\.[0-9]+' | head -n 1 | sed 's|.*/||' || true)"
+          if [ -z "${changelog_version}" ]; then
+            changelog_version="$(printf '%s\n' "${changelog}" | grep -oE '^### \[[0-9]+\.[0-9]+\.[0-9]+\]' | head -n 1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || true)"
+          fi
+          if ! [[ "${changelog_version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Could not read a Flutter version from the changelog." >&2
+            exit 1
+          fi
+
+          pubspec_version="$(python3 - << 'PY'
+          import re
+          import sys
+          from pathlib import Path
+
+          text = Path("pubspec.yaml").read_text()
+          pattern = re.compile(
+              "^(\\s*flutter:\\s*[\"'])(\\d+\\.\\d+\\.\\d+)([\"'])\\s*$",
+              re.MULTILINE,
+          )
+          match = pattern.search(text)
+          if match is None:
+              sys.exit("flutter pin not found in pubspec.yaml")
+          print(match.group(2))
+          PY
+          )"
+
+          echo "pubspec.yaml pins Flutter ${pubspec_version}; changelog latest is ${changelog_version}."
+          if [ "${pubspec_version}" = "${changelog_version}" ]; then
+            echo "up_to_date=true" >> "${GITHUB_OUTPUT}"
+            echo "Flutter ${pubspec_version} already matches the latest changelog tag." | tee -a "${GITHUB_STEP_SUMMARY}"
+          else
+            echo "up_to_date=false" >> "${GITHUB_OUTPUT}"
+          fi
+
   update:
     name: Update Flutter version
+    needs: check
+    if: needs.check.outputs.up_to_date != 'true'
     runs-on: macos-latest
     timeout-minutes: 60
     env:
