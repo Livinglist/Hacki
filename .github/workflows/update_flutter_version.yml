@@ -285,9 +285,5 @@ jobs:
           - Refresh \`pubspec.lock\` with \`flutter pub get\`.
           - Refresh tracked iOS package files with \`flutter build ios --config-only\`.
 
-          ## Test plan
-          - [ ] CI passes on this pull request
-          - [ ] The iOS project still configures and builds
-
           EOF
           )"
