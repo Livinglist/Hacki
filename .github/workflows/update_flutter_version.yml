@@ -115,7 +115,6 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          working-directory: ios
           bundler-cache: true
 
       - name: Expose CocoaPods from the iOS Gemfile
