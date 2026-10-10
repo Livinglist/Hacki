@@ -277,7 +277,7 @@ jobs:
           gh pr create \
             --base "${BASE_BRANCH}" \
             --head "${branch}" \
-            --title "chore: bump Flutter version to ${FLUTTER_VERSION}" \
+            --title "chore(flutter): bump Flutter version to ${FLUTTER_VERSION}" \
             --body "$(cat <<EOF
           ## Summary
           - Pin Flutter \`${FLUTTER_VERSION}\` in \`pubspec.yaml\`.
