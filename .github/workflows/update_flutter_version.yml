@@ -35,6 +35,8 @@ jobs:
 
       - name: Compare pubspec.yaml with the Flutter changelog
         id: compare
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           changelog="$(curl -fsSL --retry 3 https://raw.githubusercontent.com/flutter/flutter/master/CHANGELOG.md)"
@@ -68,6 +70,40 @@ jobs:
           if [ "${pubspec_version}" = "${changelog_version}" ]; then
             echo "up_to_date=true" >> "${GITHUB_OUTPUT}"
             echo "Flutter ${pubspec_version} already matches the latest changelog tag." | tee -a "${GITHUB_STEP_SUMMARY}"
+            exit 0
+          fi
+
+          existing_pr="$(CHANGELOG_VERSION="${changelog_version}" python3 - << 'PY'
+          import json
+          import os
+          import re
+          import subprocess
+
+          target = os.environ["CHANGELOG_VERSION"]
+          pattern = re.compile(
+              r"^chore(?:\(flutter\))?: bump Flutter version to (\d+\.\d+\.\d+)$"
+          )
+          prs = json.loads(
+              subprocess.check_output(
+                  [
+                      "gh", "pr", "list",
+                      "--state", "open",
+                      "--limit", "100",
+                      "--json", "number,title",
+                  ],
+                  text=True,
+              )
+          )
+          for pr in prs:
+              match = pattern.match(pr["title"].strip())
+              if match and match.group(1) == target:
+                  print(pr["number"])
+                  break
+          PY
+          )"
+          if [ -n "${existing_pr}" ]; then
+            echo "up_to_date=true" >> "${GITHUB_OUTPUT}"
+            echo "Pull request #${existing_pr} already bumps Flutter to ${changelog_version}." | tee -a "${GITHUB_STEP_SUMMARY}"
           else
             echo "up_to_date=false" >> "${GITHUB_OUTPUT}"
           fi
@@ -227,27 +263,28 @@ jobs:
           EOF
           )"
 
-          branch="chore/flutter-${FLUTTER_VERSION}"
+          pacific_date="$(TZ=America/Los_Angeles date +%m%d%Y)"
+          branch="chore/flutter-${FLUTTER_VERSION}-${pacific_date}"
           action_file="${RUNNER_TEMP}/flutter_pr_action"
           ACTION_FILE="${action_file}" BRANCH="${branch}" python3 - << 'PY'
           import json
           import os
+          import re
           import subprocess
           import sys
 
           target_text = os.environ["FLUTTER_VERSION"]
           target = tuple(int(part) for part in target_text.split("."))
           preferred_branch = os.environ["BRANCH"]
-          prefix = "chore: bump Flutter version to "
+          title_pattern = re.compile(
+              r"^chore(?:\(flutter\))?: bump Flutter version to (\d+\.\d+\.\d+)$"
+          )
 
           def version_of(title):
-              if not title.startswith(prefix):
+              match = title_pattern.match(title.strip())
+              if match is None:
                   return None
-              raw = title[len(prefix):].strip()
-              parts = raw.split(".")
-              if len(parts) != 3 or not all(part.isdigit() for part in parts):
-                  return None
-              return tuple(int(part) for part in parts)
+              return tuple(int(part) for part in match.group(1).split("."))
 
           prs = json.loads(
               subprocess.check_output(
