@@ -137,21 +137,13 @@ class MorePopupMenu extends StatelessWidget {
                               actions: <Widget>[
                                 TextButton(
                                   onPressed: () {
-                                    locator
-                                        .get<AppReviewService>()
-                                        .requestReview();
                                     context.pop();
                                     onSearchUserTapped(context);
                                   },
                                   child: const Text('Search'),
                                 ),
                                 TextButton(
-                                  onPressed: () {
-                                    locator
-                                        .get<AppReviewService>()
-                                        .requestReview();
-                                    context.pop();
-                                  },
+                                  onPressed: context.pop,
                                   child: const Text('Okay'),
                                 ),
                               ],
