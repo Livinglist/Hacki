@@ -85,7 +85,7 @@ dependencies:
   synced_shared_preferences:
     path: components/synced_shared_preferences
   universal_platform: ^1.1.0
-  url_launcher: ^6.3.2
+  url_launcher: ^6.3.3
   video_player: ^2.14.0
   visibility_detector: ^0.4.0+2
   wakelock_plus: ^1.8.1
