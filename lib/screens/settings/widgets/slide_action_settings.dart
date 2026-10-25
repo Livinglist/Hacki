@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
@@ -12,6 +13,8 @@ class SlideActionSettings extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<PreferenceCubit, PreferenceState>(
       builder: (BuildContext context, PreferenceState preferenceState) {
+        final bool swapped = preferenceState.areSlidePanesSwapped;
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -23,54 +26,40 @@ class SlideActionSettings extends StatelessWidget {
                     top: Dimens.pt36,
                     left: Dimens.zero,
                     right: Dimens.zero,
-                    child: Flex(
-                      mainAxisAlignment: .center,
-                      direction: .horizontal,
+                    child: Row(
                       children: <Widget>[
-                        Flexible(
-                          flex: 2,
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: Dimens.pt16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                _SlideActionMenu(
-                                  current: preferenceState.leadingAction,
-                                  onChanged: (SlideAction action) {
-                                    context.read<PreferenceCubit>().update(
-                                      LeadingActionPreference(
-                                        val: action.index,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
+                        SizedBoxes.pt16,
+                        _SlideActionMenu(
+                          current: preferenceState.leadingAction,
+                          onChanged: (SlideAction action) {
+                            context.read<PreferenceCubit>().update(
+                              LeadingActionPreference(val: action.index),
+                            );
+                          },
                         ),
                         SizedBoxes.pt16,
-                        Flexible(
-                          flex: 2,
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: Dimens.pt16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                _SlideActionMenu(
-                                  current: preferenceState.trailingAction,
-                                  onChanged: (SlideAction action) {
-                                    context.read<PreferenceCubit>().update(
-                                      TrailingActionPreference(
-                                        val: action.index,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
+                        _SlideActionMenu(
+                          current: preferenceState.secondaryAction,
+                          onChanged: (SlideAction action) {
+                            context.read<PreferenceCubit>().update(
+                              SecondaryActionPreference(val: action.index),
+                            );
+                          },
                         ),
-                      ],
+                        SizedBoxes.pt16,
+                        const Icon(Icons.more_horiz),
+                        SizedBoxes.pt16,
+                        const Spacer(),
+                        _SlideActionMenu(
+                          current: preferenceState.trailingAction,
+                          onChanged: (SlideAction action) {
+                            context.read<PreferenceCubit>().update(
+                              TrailingActionPreference(val: action.index),
+                            );
+                          },
+                        ),
+                        SizedBoxes.pt16,
+                      ].reversedIf(condition: swapped),
                     ),
                   ),
                   Row(
@@ -89,9 +78,7 @@ class SlideActionSettings extends StatelessWidget {
                           onPressed: () {
                             HapticFeedbackUtils.selection();
                             context.read<PreferenceCubit>().update(
-                              SwappedSlidePanesPreference(
-                                val: !preferenceState.areSlidePanesSwapped,
-                              ),
+                              SwappedSlidePanesPreference(val: !swapped),
                             );
                           },
                         ),
@@ -103,23 +90,6 @@ class SlideActionSettings extends StatelessWidget {
                       ),
                       SizedBoxes.pt16,
                     ],
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: Dimens.pt16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  const Text('Secondary slide action'),
-                  _SlideActionMenu(
-                    current: preferenceState.secondaryAction,
-                    onChanged: (SlideAction action) {
-                      context.read<PreferenceCubit>().update(
-                        SecondaryActionPreference(val: action.index),
-                      );
-                    },
                   ),
                 ],
               ),
