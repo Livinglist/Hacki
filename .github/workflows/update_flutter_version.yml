@@ -374,15 +374,25 @@ jobs:
             exit 0
           fi
 
-          gh pr create \
-            --base "${BASE_BRANCH}" \
-            --head "${branch}" \
-            --title "chore(flutter): bump Flutter version to ${FLUTTER_VERSION}" \
-            --body "$(cat <<EOF
+          # GitHub's API can briefly lag behind a just-pushed ref, so retry
+          # a few times before giving up.
+          for attempt in 1 2 3 4 5; do
+            if gh pr create \
+              --base "${BASE_BRANCH}" \
+              --head "${branch}" \
+              --title "chore(flutter): bump Flutter version to ${FLUTTER_VERSION}" \
+              --body "$(cat <<EOF
           ## Summary
           - Pin Flutter \`${FLUTTER_VERSION}\` in \`pubspec.yaml\`.
           - Point \`submodules/flutter\` at tag \`${FLUTTER_VERSION}\`.
           - Refresh \`pubspec.lock\` with \`flutter pub get\`.
 
           EOF
-          )"
+          )"; then
+              exit 0
+            fi
+            echo "gh pr create failed (attempt ${attempt}/5); retrying in 5s..." >&2
+            sleep 5
+          done
+          echo "gh pr create failed after 5 attempts" >&2
+          exit 1
