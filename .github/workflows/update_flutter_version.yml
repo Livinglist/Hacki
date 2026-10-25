@@ -3,7 +3,8 @@ name: Update Flutter Version
 # Bump Flutter to the newest stable tag in
 # https://github.com/flutter/flutter/blob/master/CHANGELOG.md.
 # Runs every day at 15:00 UTC, and can also be started by hand.
-# Leave "flutter version" empty to use that changelog tag.
+# Leave "flutter_version" empty to use that changelog tag, or set it
+# to pin a specific version instead (bypasses the changelog check).
 on:
   schedule:
     - cron: "0 15 * * *"
@@ -33,19 +34,29 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
 
-      - name: Compare pubspec.yaml with the Flutter changelog
+      - name: Compare pubspec.yaml with the requested Flutter version
         id: compare
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FLUTTER_VERSION_INPUT: ${{ inputs.flutter_version }}
         run: |
           set -euo pipefail
-          changelog="$(curl -fsSL --retry 3 https://raw.githubusercontent.com/flutter/flutter/master/CHANGELOG.md)"
-          changelog_version="$(printf '%s\n' "${changelog}" | grep -oE 'releases/tag/[0-9]+\.[0-9]+\.[0-9]+' | head -n 1 | sed 's|.*/||' || true)"
-          if [ -z "${changelog_version}" ]; then
-            changelog_version="$(printf '%s\n' "${changelog}" | grep -oE '^### \[[0-9]+\.[0-9]+\.[0-9]+\]' | head -n 1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || true)"
+          input="$(printf '%s' "${FLUTTER_VERSION_INPUT}" | tr -d '[:space:]')"
+          input="${input#v}"
+          input="${input#V}"
+
+          if [ -n "${input}" ]; then
+            changelog_version="${input}"
+            echo "Using manually requested Flutter version ${changelog_version}."
+          else
+            changelog="$(curl -fsSL --retry 3 https://raw.githubusercontent.com/flutter/flutter/master/CHANGELOG.md)"
+            changelog_version="$(printf '%s\n' "${changelog}" | grep -oE 'releases/tag/[0-9]+\.[0-9]+\.[0-9]+' | head -n 1 | sed 's|.*/||' || true)"
+            if [ -z "${changelog_version}" ]; then
+              changelog_version="$(printf '%s\n' "${changelog}" | grep -oE '^### \[[0-9]+\.[0-9]+\.[0-9]+\]' | head -n 1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || true)"
+            fi
           fi
           if ! [[ "${changelog_version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Could not read a Flutter version from the changelog." >&2
+            echo "Could not determine a target Flutter version." >&2
             exit 1
           fi
 
@@ -66,10 +77,10 @@ jobs:
           PY
           )"
 
-          echo "pubspec.yaml pins Flutter ${pubspec_version}; changelog latest is ${changelog_version}."
+          echo "pubspec.yaml pins Flutter ${pubspec_version}; target is ${changelog_version}."
           if [ "${pubspec_version}" = "${changelog_version}" ]; then
             echo "up_to_date=true" >> "${GITHUB_OUTPUT}"
-            echo "Flutter ${pubspec_version} already matches the latest changelog tag." | tee -a "${GITHUB_STEP_SUMMARY}"
+            echo "Flutter ${pubspec_version} already matches the target version." | tee -a "${GITHUB_STEP_SUMMARY}"
             exit 0
           fi
 
