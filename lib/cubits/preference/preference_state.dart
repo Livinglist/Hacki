@@ -106,6 +106,8 @@ class PreferenceState extends Equatable {
 
   bool get isDevModeEnabled => _isOn<DevMode>();
 
+  bool get areSlidePanesSwapped => _isOn<SwappedSlidePanesPreference>();
+
   bool get isDynamicColorEnabled => _isOn<DynamicColorPreference>();
 
   bool get isHackerNewsThemeEnabled => _isOn<HackerNewsThemePreference>();
@@ -180,6 +182,18 @@ class PreferenceState extends Equatable {
 
   DateDisplayFormat get displayDateFormat => DateDisplayFormat.values.elementAt(
     preferences.singleWhereType<DateFormatPreference>().val,
+  );
+
+  SlideAction get leadingAction => SlideAction.values.elementAt(
+    preferences.singleWhereType<LeadingActionPreference>().val,
+  );
+
+  SlideAction get secondaryAction => SlideAction.values.elementAt(
+    preferences.singleWhereType<SecondaryActionPreference>().val,
+  );
+
+  SlideAction get trailingAction => SlideAction.values.elementAt(
+    preferences.singleWhereType<TrailingActionPreference>().val,
   );
 
   @override

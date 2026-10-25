@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
@@ -12,10 +14,12 @@ import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:material_ui/material_ui.dart' hide DateUtils;
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:share_plus/share_plus.dart';
 
 class MainView extends StatelessWidget {
   const MainView({
@@ -24,7 +28,6 @@ class MainView extends StatelessWidget {
     required this.preferenceState,
     required this.splitViewEnabled,
     required this.onMoreTapped,
-    required this.onRightMoreTapped,
     required this.onStoryUrlTapped,
     required this.shouldMarkNewComment,
     required this.indentPadding,
@@ -39,7 +42,6 @@ class MainView extends StatelessWidget {
   final bool splitViewEnabled;
   final bool shouldMarkNewComment;
   final void Function(Item item, Rect? rect) onMoreTapped;
-  final ValueChanged<Comment> onRightMoreTapped;
   final VoidCallback onStoryUrlTapped;
   final double indentPadding;
   final double indentLineWidth;
@@ -220,14 +222,27 @@ class MainView extends StatelessWidget {
                           isDev: preferenceState.isDevModeEnabled,
                           isNew: shouldMarkNewComment && !comment.isFromCache,
                           isEyeCandyEnabled: preferenceState.isEyeCandyEnabled,
-                          onUpvoteTapped: (Comment cmt) =>
-                              onUpvoteTapped(context, cmt),
-                          onReplyTapped: (Comment cmt) =>
-                              onReplyTapped(context, cmt),
+                          onLeadingActionTapped: (Comment cmt) =>
+                              onCommentSlideActionTapped(
+                                context,
+                                cmt,
+                                preferenceState.leadingAction,
+                              ),
+                          onTrailingActionTapped: (Comment cmt) =>
+                              onCommentSlideActionTapped(
+                                context,
+                                cmt,
+                                preferenceState.trailingAction,
+                              ),
+                          onSecondaryActionTapped: (Comment cmt) =>
+                              onCommentSlideActionTapped(
+                                context,
+                                cmt,
+                                preferenceState.secondaryAction,
+                              ),
                           onEditTapped: (Comment cmt) =>
                               onEditTapped(context, cmt),
                           onMoreTapped: onMoreTapped,
-                          onRightMoreTapped: onRightMoreTapped,
                         ),
                       );
                     }
@@ -292,6 +307,171 @@ class MainView extends StatelessWidget {
         label: 'Log in',
       );
     }
+  }
+
+  Future<void> onDownvoteTapped(BuildContext context, Item item) async {
+    final AuthBloc authBloc = context.read<AuthBloc>();
+    if (authBloc.state.isLoggedIn) {
+      final VoteCubit cubit = VoteCubit(
+        item: item,
+        authBloc: authBloc,
+        shouldInitialize: false,
+      );
+      await cubit.downvote();
+      if (context.mounted) {
+        switch (cubit.state.status) {
+          case VoteStatus.submitted:
+            context.showSnackBar(content: SnackBarMessages.voteSubmitted);
+          case VoteStatus.canceled:
+            context.showSnackBar(content: SnackBarMessages.voteCanceled);
+          case VoteStatus.failureKarmaBelowThreshold:
+            context.showSnackBar(content: SnackBarMessages.karmalyBroke);
+          case VoteStatus.failureBeHumble:
+            context.showSnackBar(
+              content: SnackBarMessages.noVotingOnYourOwnComment,
+            );
+          case VoteStatus.idle:
+          case VoteStatus.failure:
+          case VoteStatus.failureNotLoggedIn:
+            break;
+        }
+      }
+    } else {
+      HapticFeedbackUtils.error();
+      context.showSnackBar(
+        content: SnackBarMessages.notLoggedInNoVoting,
+        persist: false,
+        action: () {
+          showDialog<void>(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return const LoginDialog();
+            },
+          );
+        },
+        label: 'Log in',
+      );
+    }
+  }
+
+  /// Executes whichever [SlideAction] the user has configured for the
+  /// leading, secondary, or trailing slidable action on a [CommentTile].
+  Future<void> onCommentSlideActionTapped(
+    BuildContext context,
+    Comment comment,
+    SlideAction action,
+  ) async {
+    HapticFeedbackUtils.light();
+
+    switch (action) {
+      case SlideAction.upvote:
+        await onUpvoteTapped(context, comment);
+      case SlideAction.downvote:
+        await onDownvoteTapped(context, comment);
+      case SlideAction.timeMachine:
+        DialogProxy.showTimeMachineDialog(
+          context,
+          commentsCubit: context.read<CommentsCubit>(),
+          comment: comment,
+        );
+      case SlideAction.goToParent:
+        final CommentsCubit commentsCubit = context.read<CommentsCubit>();
+        final Comment? parent = commentsCubit.state.comments.singleWhereOrNull(
+          (Comment c) => c.id == comment.parent,
+        );
+        if (parent != null) {
+          unawaited(commentsCubit.scrollToComment(parent));
+        }
+      case SlideAction.viewProfile:
+        _showProfileDialog(context, comment.by);
+      case SlideAction.searchOnHackerNews:
+        DialogProxy.showHackerNewsSearchBottomSheet(context, comment.by);
+      case SlideAction.searchInThread:
+        final CommentsCubit commentsCubit = context.read<CommentsCubit>();
+        unawaited(commentsCubit.search(comment.by));
+        commentsCubit.openInThreadSearch?.call();
+      case SlideAction.favorite:
+        _onFavoriteTapped(context, comment);
+      case SlideAction.share:
+        await SharePlus.instance.share(
+          ShareParams(
+            uri: Uri.parse(
+              '${Constants.hackerNewsItemLinkPrefix}${comment.id}',
+            ),
+          ),
+        );
+      case SlideAction.viewInBrowser:
+        LinkUtils.launch(
+          '${Constants.hackerNewsItemLinkPrefix}${comment.id}',
+          context,
+          shouldUseHackiForHnLink: false,
+        );
+      case SlideAction.reply:
+        onReplyTapped(context, comment);
+    }
+  }
+
+  void _onFavoriteTapped(BuildContext context, Comment comment) {
+    final FavCubit favCubit = context.read<FavCubit>();
+    final bool isFav = favCubit.state.favIds.contains(comment.id);
+    if (isFav) {
+      favCubit.removeFav(comment.id);
+      context.showSnackBar(content: 'Removed from favorites.');
+    } else {
+      favCubit.addFav(comment.id);
+      context.showSnackBar(content: 'Added to favorites.');
+    }
+    HapticFeedbackUtils.success();
+  }
+
+  void _showProfileDialog(BuildContext context, String username) {
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return BlocProvider<UserCubit>(
+          create: (_) => UserCubit()..init(userId: username),
+          child: BlocBuilder<UserCubit, UserState>(
+            builder: (BuildContext context, UserState state) {
+              final double fontSize = context
+                  .read<PreferenceCubit>()
+                  .state
+                  .fontSize
+                  .fontSize;
+              return AlertDialog(
+                title: Text('About $username'),
+                content: state.status == Status.inProgress
+                    ? const SizedBox(
+                        height: Dimens.pt40,
+                        child: Center(child: CustomCircularProgressIndicator()),
+                      )
+                    : state.user.about.isEmpty
+                    ? const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text('empty', style: TextStyle(color: Palette.grey)),
+                        ],
+                      )
+                    : SelectableLinkify(
+                        text: HtmlUtils.parseHtml(state.user.about),
+                        style: TextStyle(fontSize: fontSize),
+                        linkStyle: TextStyle(
+                          fontSize: fontSize,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        onOpen: (LinkableElement link) =>
+                            LinkUtils.launch(link.url, context),
+                        semanticsLabel: state.user.about,
+                      ),
+                actions: <Widget>[
+                  TextButton(onPressed: context.pop, child: const Text('Okay')),
+                ],
+              );
+            },
+          ),
+        );
+      },
+    );
   }
 
   void onReplyTapped(BuildContext context, Comment cmt) {
