@@ -377,8 +377,9 @@ class MainView extends StatelessWidget {
         );
       case SlideAction.goToParent:
         final CommentsCubit commentsCubit = context.read<CommentsCubit>();
-        final Comment? parent = commentsCubit.state.comments
-            .singleWhereOrNull((Comment c) => c.id == comment.parent);
+        final Comment? parent = commentsCubit.state.comments.singleWhereOrNull(
+          (Comment c) => c.id == comment.parent,
+        );
         if (parent != null) {
           unawaited(commentsCubit.scrollToComment(parent));
         }
@@ -448,10 +449,7 @@ class MainView extends StatelessWidget {
                     ? const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          Text(
-                            'empty',
-                            style: TextStyle(color: Palette.grey),
-                          ),
+                          Text('empty', style: TextStyle(color: Palette.grey)),
                         ],
                       )
                     : SelectableLinkify(

@@ -189,10 +189,7 @@ class CommentTile extends StatelessWidget {
                             onMoreTapped?.call(comment, context.rect),
                         backgroundColor: backgroundColor,
                         foregroundColor: foregroundColor,
-                        child: const Icon(
-                          Icons.more_horiz,
-                          size: Dimens.pt24,
-                        ),
+                        child: const Icon(Icons.more_horiz, size: Dimens.pt24),
                       ),
                     ].reversedIf(condition: arePanesSwapped),
                   )
@@ -206,8 +203,7 @@ class CommentTile extends StatelessWidget {
             final ActionPane? trailingGroupPane =
                 isActionable &&
                     onTrailingActionTapped != null &&
-                    !(_isVoteAction(prefState.trailingAction) &&
-                        isOwnComment)
+                    !(_isVoteAction(prefState.trailingAction) && isOwnComment)
                 ? ActionPane(
                     motion: const BehindMotion(),
                     dismissible: DismissiblePane(
@@ -221,8 +217,7 @@ class CommentTile extends StatelessWidget {
                     ),
                     children: <Widget>[
                       CustomSlidableAction(
-                        onPressed: (_) =>
-                            onTrailingActionTapped?.call(comment),
+                        onPressed: (_) => onTrailingActionTapped?.call(comment),
                         backgroundColor: backgroundColor,
                         foregroundColor: foregroundColor,
                         child: Icon(
