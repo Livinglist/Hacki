@@ -182,6 +182,14 @@ class PreferenceState extends Equatable {
     preferences.singleWhereType<DateFormatPreference>().val,
   );
 
+  SlideAction get leadingAction => SlideAction.values.elementAt(
+    preferences.singleWhereType<LeadingActionPreference>().val,
+  );
+
+  SlideAction get trailingAction => SlideAction.values.elementAt(
+    preferences.singleWhereType<TrailingActionPreference>().val,
+  );
+
   @override
   List<Object?> get props => <Object?>[
     ...preferences.map<dynamic>((Preference<dynamic> e) => e.val),

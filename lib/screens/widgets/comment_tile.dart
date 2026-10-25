@@ -12,7 +12,6 @@ import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/item/widgets/lazy_fetch_load_button.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
-import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:material_ui/material_ui.dart';
@@ -26,8 +25,8 @@ class CommentTile extends StatelessWidget {
     this.onReplyTapped,
     this.onMoreTapped,
     this.onEditTapped,
-    this.onRightMoreTapped,
-    this.onUpvoteTapped,
+    this.onTrailingActionTapped,
+    this.onLeadingActionTapped,
     this.opUsername,
     this.isDev = false,
     this.isActionable = true,
@@ -65,8 +64,14 @@ class CommentTile extends StatelessWidget {
   final void Function(Comment)? onReplyTapped;
   final void Function(Comment, Rect?)? onMoreTapped;
   final void Function(Comment)? onEditTapped;
-  final void Function(Comment)? onRightMoreTapped;
-  final void Function(Comment)? onUpvoteTapped;
+
+  /// Triggered by the single action on the trailing (right) slidable pane,
+  /// whichever [SlideAction] the user has configured as the trailing action.
+  final void Function(Comment)? onTrailingActionTapped;
+
+  /// Triggered by the leftmost action on the leading (left) slidable pane,
+  /// whichever [SlideAction] the user has configured as the leading action.
+  final void Function(Comment)? onLeadingActionTapped;
 
   /// Override for search screen.
   final VoidCallback? onTap;
@@ -131,22 +136,23 @@ class CommentTile extends StatelessWidget {
                             dismissible: DismissiblePane(
                               closeOnCancel: true,
                               confirmDismiss: () async {
-                                onUpvoteTapped?.call(comment);
+                                onLeadingActionTapped?.call(comment);
                                 return false;
                               },
                               onDismissed: () {},
                             ),
                             children: <Widget>[
-                              if (onUpvoteTapped != null &&
-                                  context.read<AuthBloc>().state.user.id !=
-                                      comment.by)
+                              if (onLeadingActionTapped != null &&
+                                  !(_isVoteAction(prefState.leadingAction) &&
+                                      context.read<AuthBloc>().state.user.id ==
+                                          comment.by))
                                 CustomSlidableAction(
                                   onPressed: (_) =>
-                                      onUpvoteTapped?.call(comment),
+                                      onLeadingActionTapped?.call(comment),
                                   backgroundColor: backgroundColor,
                                   foregroundColor: foregroundColor,
-                                  child: const Icon(
-                                    Icons.thumb_up,
+                                  child: Icon(
+                                    prefState.leadingAction.icon,
                                     size: Dimens.pt24,
                                   ),
                                 ),
@@ -183,18 +189,19 @@ class CommentTile extends StatelessWidget {
                             ],
                           )
                         : null,
-                    endActionPane: isActionable
+                    endActionPane:
+                        isActionable &&
+                            onTrailingActionTapped != null &&
+                            !(_isVoteAction(prefState.trailingAction) &&
+                                context.read<AuthBloc>().state.user.id ==
+                                    comment.by)
                         ? ActionPane(
                             motion: const BehindMotion(),
                             dismissible: DismissiblePane(
                               closeOnCancel: true,
                               dismissThreshold: 0.01,
                               confirmDismiss: () async {
-                                DialogProxy.showTimeMachineDialog(
-                                  context,
-                                  commentsCubit: context.read<CommentsCubit>(),
-                                  comment: comment,
-                                );
+                                onTrailingActionTapped?.call(comment);
                                 return false;
                               },
                               onDismissed: () {},
@@ -202,11 +209,11 @@ class CommentTile extends StatelessWidget {
                             children: <Widget>[
                               CustomSlidableAction(
                                 onPressed: (_) =>
-                                    onRightMoreTapped?.call(comment),
+                                    onTrailingActionTapped?.call(comment),
                                 backgroundColor: backgroundColor,
                                 foregroundColor: foregroundColor,
-                                child: const Icon(
-                                  Icons.av_timer,
+                                child: Icon(
+                                  prefState.trailingAction.icon,
                                   size: Dimens.pt24,
                                 ),
                               ),
@@ -546,6 +553,9 @@ class CommentTile extends StatelessWidget {
       }
     }
   }
+
+  bool _isVoteAction(SlideAction action) =>
+      action == SlideAction.upvote || action == SlideAction.downvote;
 
   bool _shouldShowLoadButton(BuildContext context) {
     final CommentsState? commentsState = context

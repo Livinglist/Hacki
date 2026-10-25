@@ -48,6 +48,8 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
         DateFormatPreference(),
         HackerNewsDataSourcePreference(),
         const TextScaleFactorPreference(),
+        LeadingActionPreference(),
+        TrailingActionPreference(),
 
         ///
         /// !!! NOTE !!!
@@ -1085,4 +1087,40 @@ final class HackerNewsDataSourcePreference extends IntPreference {
 
   @override
   String get title => 'Date Source';
+}
+
+final class LeadingActionPreference extends IntPreference {
+  LeadingActionPreference({int? val})
+    : super(val: val ?? _leadingActionDefaultValue);
+
+  static final int _leadingActionDefaultValue = SlideAction.upvote.index;
+
+  @override
+  LeadingActionPreference copyWith({required int? val}) {
+    return LeadingActionPreference(val: val);
+  }
+
+  @override
+  String get key => 'leadingAction';
+
+  @override
+  String get title => 'Leading slide action';
+}
+
+final class TrailingActionPreference extends IntPreference {
+  TrailingActionPreference({int? val})
+    : super(val: val ?? _trailingActionDefaultValue);
+
+  static final int _trailingActionDefaultValue = SlideAction.timeMachine.index;
+
+  @override
+  TrailingActionPreference copyWith({required int? val}) {
+    return TrailingActionPreference(val: val);
+  }
+
+  @override
+  String get key => 'trailingAction';
+
+  @override
+  String get title => 'Trailing slide action';
 }
