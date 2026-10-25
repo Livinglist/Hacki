@@ -568,10 +568,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_local_notifications
-      sha256: "6c3ebe2ba8e9c968eb13c34d3af500f3173c1c1b633c145b4eadfe1fdf8afabb"
+      sha256: "98329e5d9fb69e20fa816067e89fb7c44b8547434cf2177a939bcbd6c010b9e8"
       url: "https://pub.dev"
     source: hosted
-    version: "23.0.0-dev.3"
+    version: "23.0.0-dev.4"
   flutter_local_notifications_linux:
     dependency: transitive
     description:
