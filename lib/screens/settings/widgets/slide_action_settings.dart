@@ -12,97 +12,119 @@ class SlideActionSettings extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<PreferenceCubit, PreferenceState>(
       builder: (BuildContext context, PreferenceState preferenceState) {
-        return SizedBox(
-          height: Dimens.pt80,
-          child: Stack(
-            children: <Widget>[
-              Positioned(
-                top: Dimens.pt36,
-                left: Dimens.zero,
-                right: Dimens.zero,
-                child: Flex(
-                  mainAxisAlignment: .center,
-                  direction: .horizontal,
-                  children: <Widget>[
-                    Flexible(
-                      flex: 2,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: Dimens.pt16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            _SlideActionMenu(
-                              current: preferenceState.leadingAction,
-                              onChanged: (SlideAction action) {
-                                context.read<PreferenceCubit>().update(
-                                  LeadingActionPreference(val: action.index),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBoxes.pt16,
-                    Flexible(
-                      flex: 2,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: Dimens.pt16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            _SlideActionMenu(
-                              current: preferenceState.trailingAction,
-                              onChanged: (SlideAction action) {
-                                context.read<PreferenceCubit>().update(
-                                  TrailingActionPreference(val: action.index),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Row(
-                mainAxisAlignment: .center,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(
+              height: Dimens.pt80,
+              child: Stack(
                 children: <Widget>[
-                  SizedBoxes.pt16,
-                  const Column(
-                    mainAxisSize: .min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[Text('Leading slide action')],
-                  ),
-                  Expanded(
-                    child: IconButton(
-                      icon: const Icon(Icons.swap_horiz),
-                      tooltip: 'Swap leading and trailing actions',
-                      onPressed: () {
-                        HapticFeedbackUtils.selection();
-                        final SlideAction leading =
-                            preferenceState.leadingAction;
-                        final SlideAction trailing =
-                            preferenceState.trailingAction;
-                        context.read<PreferenceCubit>()
-                          ..update(LeadingActionPreference(val: trailing.index))
-                          ..update(
-                            TrailingActionPreference(val: leading.index),
-                          );
-                      },
+                  Positioned(
+                    top: Dimens.pt36,
+                    left: Dimens.zero,
+                    right: Dimens.zero,
+                    child: Flex(
+                      mainAxisAlignment: .center,
+                      direction: .horizontal,
+                      children: <Widget>[
+                        Flexible(
+                          flex: 2,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: Dimens.pt16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                _SlideActionMenu(
+                                  current: preferenceState.leadingAction,
+                                  onChanged: (SlideAction action) {
+                                    context.read<PreferenceCubit>().update(
+                                      LeadingActionPreference(
+                                        val: action.index,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBoxes.pt16,
+                        Flexible(
+                          flex: 2,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: Dimens.pt16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                _SlideActionMenu(
+                                  current: preferenceState.trailingAction,
+                                  onChanged: (SlideAction action) {
+                                    context.read<PreferenceCubit>().update(
+                                      TrailingActionPreference(
+                                        val: action.index,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const Column(
-                    mainAxisSize: .min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[Text('Trailing slide action')],
+                  Row(
+                    mainAxisAlignment: .center,
+                    children: <Widget>[
+                      SizedBoxes.pt16,
+                      const Column(
+                        mainAxisSize: .min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[Text('Leading slide action')],
+                      ),
+                      Expanded(
+                        child: IconButton(
+                          icon: const Icon(Icons.swap_horiz),
+                          tooltip: 'Swap leading and trailing panes',
+                          onPressed: () {
+                            HapticFeedbackUtils.selection();
+                            context.read<PreferenceCubit>().update(
+                              SwappedSlidePanesPreference(
+                                val: !preferenceState.areSlidePanesSwapped,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const Column(
+                        mainAxisSize: .min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[Text('Trailing slide action')],
+                      ),
+                      SizedBoxes.pt16,
+                    ],
                   ),
-                  SizedBoxes.pt16,
                 ],
               ),
-            ],
-          ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: Dimens.pt16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const Text('Secondary slide action'),
+                  _SlideActionMenu(
+                    current: preferenceState.secondaryAction,
+                    onChanged: (SlideAction action) {
+                      context.read<PreferenceCubit>().update(
+                        SecondaryActionPreference(val: action.index),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
         );
       },
     );

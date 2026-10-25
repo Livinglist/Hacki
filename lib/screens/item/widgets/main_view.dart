@@ -234,8 +234,12 @@ class MainView extends StatelessWidget {
                                 cmt,
                                 preferenceState.trailingAction,
                               ),
-                          onReplyTapped: (Comment cmt) =>
-                              onReplyTapped(context, cmt),
+                          onSecondaryActionTapped: (Comment cmt) =>
+                              onCommentSlideActionTapped(
+                                context,
+                                cmt,
+                                preferenceState.secondaryAction,
+                              ),
                           onEditTapped: (Comment cmt) =>
                               onEditTapped(context, cmt),
                           onMoreTapped: onMoreTapped,
@@ -351,8 +355,8 @@ class MainView extends StatelessWidget {
     }
   }
 
-  /// Executes whichever [SlideAction] the user has configured for either
-  /// the leading or the trailing slidable action on a [CommentTile].
+  /// Executes whichever [SlideAction] the user has configured for the
+  /// leading, secondary, or trailing slidable action on a [CommentTile].
   Future<void> onCommentSlideActionTapped(
     BuildContext context,
     Comment comment,
@@ -402,6 +406,8 @@ class MainView extends StatelessWidget {
           context,
           shouldUseHackiForHnLink: false,
         );
+      case SlideAction.reply:
+        onReplyTapped(context, comment);
     }
   }
 

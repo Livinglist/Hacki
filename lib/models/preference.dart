@@ -49,7 +49,9 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
         HackerNewsDataSourcePreference(),
         const TextScaleFactorPreference(),
         LeadingActionPreference(),
+        SecondaryActionPreference(),
         TrailingActionPreference(),
+        const SwappedSlidePanesPreference(),
 
         ///
         /// !!! NOTE !!!
@@ -1107,6 +1109,24 @@ final class LeadingActionPreference extends IntPreference {
   String get title => 'Leading slide action';
 }
 
+final class SecondaryActionPreference extends IntPreference {
+  SecondaryActionPreference({int? val})
+    : super(val: val ?? _secondaryActionDefaultValue);
+
+  static final int _secondaryActionDefaultValue = SlideAction.reply.index;
+
+  @override
+  SecondaryActionPreference copyWith({required int? val}) {
+    return SecondaryActionPreference(val: val);
+  }
+
+  @override
+  String get key => 'secondaryAction';
+
+  @override
+  String get title => 'Secondary slide action';
+}
+
 final class TrailingActionPreference extends IntPreference {
   TrailingActionPreference({int? val})
     : super(val: val ?? _trailingActionDefaultValue);
@@ -1123,4 +1143,32 @@ final class TrailingActionPreference extends IntPreference {
 
   @override
   String get title => 'Trailing slide action';
+}
+
+/// Whether the leading/secondary pane and the trailing pane on a comment
+/// tile's slidable have been swapped to the opposite side.
+/// Not displayed as a standalone switch; toggled via the swap button in
+/// the slide action settings.
+final class SwappedSlidePanesPreference extends BooleanPreference {
+  const SwappedSlidePanesPreference({bool? val})
+    : super(val: val ?? _swappedSlidePanesDefaultValue);
+
+  static const bool _swappedSlidePanesDefaultValue = false;
+
+  @override
+  SwappedSlidePanesPreference copyWith({required bool? val}) {
+    return SwappedSlidePanesPreference(val: val);
+  }
+
+  @override
+  String get key => 'swappedSlidePanes';
+
+  @override
+  String get title => 'Swap slidable panes';
+
+  @override
+  String get subtitle => '';
+
+  @override
+  bool get isDisplayable => false;
 }

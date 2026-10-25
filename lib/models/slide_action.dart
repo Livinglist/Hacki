@@ -10,7 +10,8 @@ enum SlideAction {
   searchInThread('Search in Thread', icon: Icons.manage_search),
   favorite('Favorite', icon: Icons.favorite),
   share('Share', icon: Icons.share),
-  viewInBrowser('View in Browser', icon: Icons.open_in_browser);
+  viewInBrowser('View in Browser', icon: Icons.open_in_browser),
+  reply('Reply', icon: Icons.message);
 
   const SlideAction(this.description, {required this.icon});
 
