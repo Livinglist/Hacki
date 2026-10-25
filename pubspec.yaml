@@ -28,14 +28,14 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^9.1.1
   flutter_cache_manager: ^3.4.5
-  flutter_email_sender: ^10.0.1
+  flutter_email_sender: ^11.2.0
   flutter_fadein: ^2.0.0
   flutter_feather_icons:
     git:
       url: https://github.com/Livinglist/flutter_feather_icons
       ref: master
   flutter_inappwebview: ^6.2.0-beta.3
-  flutter_local_notifications: ^23.0.0-dev.3
+  flutter_local_notifications: ^23.0.0-dev.4
   flutter_material_color_picker:
     git:
       url: https://github.com/Livinglist/flutter_material_color_picker
@@ -45,7 +45,7 @@ dependencies:
   flutter_slidable: ^4.0.3
   font_awesome_flutter: ^11.0.0
   get_it: ^9.3.0
-  go_router: ^18.0.2
+  go_router: ^18.1.0
   hive: ^2.2.3
   html: ^0.15.7
   html_unescape: ^2.0.0
@@ -56,7 +56,7 @@ dependencies:
   intl: ^0.20.3
   linkify: ^5.0.0
   logger: ^2.8.0
-  material_ui: ^1.5.0
+  material_ui: ^1.7.0
   memoize: ^3.0.0
   package_info_plus: ^10.2.2
   path: ^1.9.1
@@ -76,16 +76,16 @@ dependencies:
   screenshot: ^3.0.0
   scrollable_positioned_list: ^0.3.8
   scrolls_to_top: ^2.1.1
-  sembast: ^3.8.11
+  sembast: ^3.9.0
   share_plus: ^13.3.1
-  shared_preferences: ^2.5.5
+  shared_preferences: ^2.5.6
   shared_preferences_android: ^2.4.28
   shared_preferences_foundation: ^2.5.7
   shimmer: ^4.0.0
   synced_shared_preferences:
     path: components/synced_shared_preferences
   universal_platform: ^1.1.0
-  url_launcher: ^6.3.2
+  url_launcher: ^6.3.3
   video_player: ^2.14.1
   visibility_detector: ^0.4.0+2
   wakelock_plus: ^1.8.1
