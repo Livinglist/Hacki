@@ -31,10 +31,9 @@ class TabCubit extends Cubit<TabState> with Loggable {
 
   void update(int startIndex, int endIndex) {
     logDebug('updating ${state.tabs} by moving $startIndex to $endIndex');
-    final StoryType tab = state.tabs.elementAt(startIndex);
-    final List<StoryType> updatedTabs = List<StoryType>.from(state.tabs)
-      ..insert(endIndex, tab)
-      ..removeAt(startIndex < endIndex ? startIndex : startIndex + 1);
+    final List<StoryType> updatedTabs = List<StoryType>.from(state.tabs);
+    final StoryType tab = updatedTabs.removeAt(startIndex);
+    updatedTabs.insert(endIndex, tab);
 
     // Check to make sure there's no duplicate.
     if (updatedTabs.toSet().length == StoryType.values.length) {

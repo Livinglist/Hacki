@@ -1,6 +1,6 @@
 name: hacki
 description: A Hacker News client.
-version: 3.8.2+382
+version: 3.9.0+390
 publish_to: none
 
 environment:
