@@ -12,86 +12,142 @@ class SlideActionSettings extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<PreferenceCubit, PreferenceState>(
       builder: (BuildContext context, PreferenceState preferenceState) {
-        return OverflowBar(
-          alignment: MainAxisAlignment.spaceBetween,
-          overflowSpacing: Dimens.pt12,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(left: Dimens.pt16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        return SizedBox(
+          height: Dimens.pt80,
+          child: Stack(
+            children: <Widget>[
+              Positioned(
+                top: Dimens.pt36,
+                left: Dimens.zero,
+                right: Dimens.zero,
+                child: Flex(
+                  mainAxisAlignment: .center,
+                  direction: .horizontal,
+                  children: <Widget>[
+                    Flexible(
+                      flex: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: Dimens.pt16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            _SlideActionMenu(
+                              current: preferenceState.leadingAction,
+                              onChanged: (SlideAction action) {
+                                context.read<PreferenceCubit>().update(
+                                  LeadingActionPreference(val: action.index),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBoxes.pt16,
+                    Flexible(
+                      flex: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: Dimens.pt16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            _SlideActionMenu(
+                              current: preferenceState.trailingAction,
+                              onChanged: (SlideAction action) {
+                                context.read<PreferenceCubit>().update(
+                                  TrailingActionPreference(val: action.index),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                mainAxisAlignment: .center,
                 children: <Widget>[
-                  const Text('Leading slide action'),
-                  DropdownMenu<SlideAction>(
-                    key: ValueKey<SlideAction>(preferenceState.leadingAction),
-                    initialSelection: preferenceState.leadingAction,
-                    dropdownMenuEntries: SlideAction.values
-                        .map(
-                          (SlideAction val) => DropdownMenuEntry<SlideAction>(
-                            value: val,
-                            label: val.description,
-                          ),
-                        )
-                        .toList(),
-                    onSelected: (SlideAction? action) {
-                      if (action != null) {
-                        HapticFeedbackUtils.selection();
-                        context.read<PreferenceCubit>().update(
-                          LeadingActionPreference(val: action.index),
-                        );
-                      }
-                    },
+                  SizedBoxes.pt16,
+                  const Column(
+                    mainAxisSize: .min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[Text('Leading slide action')],
                   ),
+                  Expanded(
+                    child: IconButton(
+                      icon: const Icon(Icons.swap_horiz),
+                      tooltip: 'Swap leading and trailing actions',
+                      onPressed: () {
+                        HapticFeedbackUtils.selection();
+                        final SlideAction leading =
+                            preferenceState.leadingAction;
+                        final SlideAction trailing =
+                            preferenceState.trailingAction;
+                        context.read<PreferenceCubit>()
+                          ..update(LeadingActionPreference(val: trailing.index))
+                          ..update(
+                            TrailingActionPreference(val: leading.index),
+                          );
+                      },
+                    ),
+                  ),
+                  const Column(
+                    mainAxisSize: .min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[Text('Trailing slide action')],
+                  ),
+                  SizedBoxes.pt16,
                 ],
               ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.swap_horiz),
-              tooltip: 'Swap leading and trailing actions',
-              onPressed: () {
-                HapticFeedbackUtils.selection();
-                final SlideAction leading = preferenceState.leadingAction;
-                final SlideAction trailing = preferenceState.trailingAction;
-                context.read<PreferenceCubit>()
-                  ..update(LeadingActionPreference(val: trailing.index))
-                  ..update(TrailingActionPreference(val: leading.index));
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: Dimens.pt16,
-                right: Dimens.pt16,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  const Text('Trailing slide action'),
-                  DropdownMenu<SlideAction>(
-                    key: ValueKey<SlideAction>(preferenceState.trailingAction),
-                    initialSelection: preferenceState.trailingAction,
-                    dropdownMenuEntries: SlideAction.values
-                        .map(
-                          (SlideAction val) => DropdownMenuEntry<SlideAction>(
-                            value: val,
-                            label: val.description,
-                          ),
-                        )
-                        .toList(),
-                    onSelected: (SlideAction? action) {
-                      if (action != null) {
-                        HapticFeedbackUtils.selection();
-                        context.read<PreferenceCubit>().update(
-                          TrailingActionPreference(val: action.index),
-                        );
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         );
       },
+    );
+  }
+}
+
+class _SlideActionMenu extends StatelessWidget {
+  const _SlideActionMenu({required this.current, required this.onChanged});
+
+  final SlideAction current;
+  final ValueChanged<SlideAction> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<SlideAction>(
+      key: ValueKey<SlideAction>(current),
+      initialValue: current,
+      onSelected: (SlideAction action) {
+        HapticFeedbackUtils.selection();
+        onChanged(action);
+      },
+      itemBuilder: (BuildContext context) => SlideAction.values
+          .map(
+            (SlideAction val) => PopupMenuItem<SlideAction>(
+              value: val,
+              child: Row(
+                children: <Widget>[
+                  Icon(val.icon),
+                  SizedBoxes.pt12,
+                  Text(val.description),
+                ],
+              ),
+            ),
+          )
+          .toList(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: Dimens.pt12),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Icon(current.icon),
+            const Icon(Icons.arrow_drop_down),
+          ],
+        ),
+      ),
     );
   }
 }
