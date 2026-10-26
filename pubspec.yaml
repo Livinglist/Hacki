@@ -13,7 +13,7 @@ dependencies:
   badges: ^4.0.1
   bloc: ^9.2.1
   bloc_concurrency: ^0.3.0
-  cached_network_image: ^4.0.4
+  cached_network_image: ^4.0.5
   collection: ^1.19.1
   connectivity_plus: ^7.3.2
   device_info_plus: ^13.3.0
