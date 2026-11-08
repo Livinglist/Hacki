@@ -88,7 +88,7 @@ dependencies:
   url_launcher: ^6.3.3
   video_player: ^2.14.1
   visibility_detector: ^0.4.0+2
-  wakelock_plus: ^1.8.1
+  wakelock_plus: ^1.8.2
   webview_flutter: ^4.14.1
   workmanager: ^0.10.10
 
