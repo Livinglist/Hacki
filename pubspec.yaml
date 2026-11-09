@@ -42,7 +42,7 @@ dependencies:
       ref: master
   flutter_native_splash: ^2.4.8
   flutter_secure_storage: ^11.2.0
-  flutter_slidable: ^4.0.3
+  flutter_slidable: ^5.2.0
   font_awesome_flutter: ^11.0.0
   get_it: ^9.3.0
   go_router: ^18.1.2
