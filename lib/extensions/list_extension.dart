@@ -7,4 +7,7 @@ extension ListExtension<T> on List<T> {
     final int luckyNumber = random.nextInt(length);
     return this[luckyNumber];
   }
+
+  List<T> reversedIf({required bool condition}) =>
+      condition ? List<T>.from(reversed) : this;
 }

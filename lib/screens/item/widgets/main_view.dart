@@ -1,21 +1,26 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/config/paths.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/screens/item/item_screen.dart' show ItemScreenArgs;
 import 'package:hacki/screens/item/widgets/widgets.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:material_ui/material_ui.dart' hide DateUtils;
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:share_plus/share_plus.dart';
 
 class MainView extends StatelessWidget {
   const MainView({
@@ -24,7 +29,6 @@ class MainView extends StatelessWidget {
     required this.preferenceState,
     required this.splitViewEnabled,
     required this.onMoreTapped,
-    required this.onRightMoreTapped,
     required this.onStoryUrlTapped,
     required this.shouldMarkNewComment,
     required this.indentPadding,
@@ -39,7 +43,6 @@ class MainView extends StatelessWidget {
   final bool splitViewEnabled;
   final bool shouldMarkNewComment;
   final void Function(Item item, Rect? rect) onMoreTapped;
-  final ValueChanged<Comment> onRightMoreTapped;
   final VoidCallback onStoryUrlTapped;
   final double indentPadding;
   final double indentLineWidth;
@@ -97,14 +100,14 @@ class MainView extends StatelessWidget {
                         child: Padding(
                           padding: EdgeInsets.only(top: topPadding),
                           child: _ParentItemSection(
-                            commentEditingController: commentEditingController,
                             state: state,
                             authState: authState,
                             preferenceState: preferenceState,
                             splitViewEnabled: splitViewEnabled,
                             onMoreTapped: onMoreTapped,
-                            onUpvoteTapped: (Item item) =>
-                                onUpvoteTapped(context, item),
+                            onSlideActionTapped:
+                                (Item item, SlideAction action) =>
+                                    onSlideActionTapped(context, item, action),
                             onStoryUrlTapped: onStoryUrlTapped,
                           ),
                         ),
@@ -220,14 +223,36 @@ class MainView extends StatelessWidget {
                           isDev: preferenceState.isDevModeEnabled,
                           isNew: shouldMarkNewComment && !comment.isFromCache,
                           isEyeCandyEnabled: preferenceState.isEyeCandyEnabled,
-                          onUpvoteTapped: (Comment cmt) =>
-                              onUpvoteTapped(context, cmt),
-                          onReplyTapped: (Comment cmt) =>
-                              onReplyTapped(context, cmt),
+                          onLeadingActionTapped: (Comment cmt) =>
+                              onSlideActionTapped(
+                                context,
+                                cmt,
+                                context
+                                    .read<PreferenceCubit>()
+                                    .state
+                                    .leadingAction,
+                              ),
+                          onTrailingActionTapped: (Comment cmt) =>
+                              onSlideActionTapped(
+                                context,
+                                cmt,
+                                context
+                                    .read<PreferenceCubit>()
+                                    .state
+                                    .trailingAction,
+                              ),
+                          onSecondaryActionTapped: (Comment cmt) =>
+                              onSlideActionTapped(
+                                context,
+                                cmt,
+                                context
+                                    .read<PreferenceCubit>()
+                                    .state
+                                    .secondaryAction,
+                              ),
                           onEditTapped: (Comment cmt) =>
                               onEditTapped(context, cmt),
                           onMoreTapped: onMoreTapped,
-                          onRightMoreTapped: onRightMoreTapped,
                         ),
                       );
                     }
@@ -294,17 +319,197 @@ class MainView extends StatelessWidget {
     }
   }
 
-  void onReplyTapped(BuildContext context, Comment cmt) {
+  Future<void> onDownvoteTapped(BuildContext context, Item item) async {
+    final AuthBloc authBloc = context.read<AuthBloc>();
+    if (authBloc.state.isLoggedIn) {
+      final VoteCubit cubit = VoteCubit(
+        item: item,
+        authBloc: authBloc,
+        shouldInitialize: false,
+      );
+      await cubit.downvote();
+      if (context.mounted) {
+        switch (cubit.state.status) {
+          case VoteStatus.submitted:
+            context.showSnackBar(content: SnackBarMessages.voteSubmitted);
+          case VoteStatus.canceled:
+            context.showSnackBar(content: SnackBarMessages.voteCanceled);
+          case VoteStatus.failureKarmaBelowThreshold:
+            context.showSnackBar(content: SnackBarMessages.karmalyBroke);
+          case VoteStatus.failureBeHumble:
+            context.showSnackBar(
+              content: SnackBarMessages.noVotingOnYourOwnComment,
+            );
+          case VoteStatus.idle:
+          case VoteStatus.failure:
+          case VoteStatus.failureNotLoggedIn:
+            break;
+        }
+      }
+    } else {
+      HapticFeedbackUtils.error();
+      context.showSnackBar(
+        content: SnackBarMessages.notLoggedInNoVoting,
+        persist: false,
+        action: () {
+          showDialog<void>(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return const LoginDialog();
+            },
+          );
+        },
+        label: 'Log in',
+      );
+    }
+  }
+
+  /// Executes whichever [SlideAction] the user has configured for the
+  /// leading, secondary, or trailing slidable action on the root item or
+  /// on a [CommentTile].
+  Future<void> onSlideActionTapped(
+    BuildContext context,
+    Item item,
+    SlideAction action,
+  ) async {
     HapticFeedbackUtils.light();
-    if (cmt.deleted || cmt.dead) {
+
+    switch (action) {
+      case SlideAction.upvote:
+        await onUpvoteTapped(context, item);
+      case SlideAction.downvote:
+        await onDownvoteTapped(context, item);
+      case SlideAction.timeMachine:
+        if (item is Comment) {
+          DialogProxy.showTimeMachineDialog(
+            context,
+            commentsCubit: context.read<CommentsCubit>(),
+            comment: item,
+          );
+        }
+      case SlideAction.goToParent:
+        final CommentsCubit commentsCubit = context.read<CommentsCubit>();
+        if (item.id == commentsCubit.state.item.id) {
+          if (item is Comment) {
+            unawaited(commentsCubit.loadParentThread());
+          }
+        } else {
+          final Comment? parent = commentsCubit.state.comments
+              .singleWhereOrNull((Comment c) => c.id == item.parent);
+          if (parent != null) {
+            unawaited(commentsCubit.scrollToComment(parent));
+          }
+        }
+      case SlideAction.viewProfile:
+        _showProfileDialog(context, item.by);
+      case SlideAction.searchOnHackerNews:
+        DialogProxy.showHackerNewsSearchBottomSheet(context, item.by);
+      case SlideAction.searchInThread:
+        final CommentsCubit commentsCubit = context.read<CommentsCubit>();
+        unawaited(commentsCubit.search(item.by));
+        commentsCubit.openInThreadSearch?.call();
+      case SlideAction.favorite:
+        _onFavoriteTapped(context, item);
+      case SlideAction.share:
+        await SharePlus.instance.share(
+          ShareParams(
+            uri: Uri.parse('${Constants.hackerNewsItemLinkPrefix}${item.id}'),
+          ),
+        );
+      case SlideAction.viewInBrowser:
+        LinkUtils.launch(
+          '${Constants.hackerNewsItemLinkPrefix}${item.id}',
+          context,
+          shouldUseHackiForHnLink: false,
+        );
+      case SlideAction.reply:
+        onReplyTapped(context, item);
+      case SlideAction.viewInSeparateThread:
+        if (item is Comment) {
+          unawaited(
+            context.push(
+              Paths.item.landing,
+              extra: ItemScreenArgs(item: item, shouldUseCommentCache: true),
+            ),
+          );
+        }
+    }
+  }
+
+  void _onFavoriteTapped(BuildContext context, Item item) {
+    final FavCubit favCubit = context.read<FavCubit>();
+    final bool isFav = favCubit.state.favIds.contains(item.id);
+    if (isFav) {
+      favCubit.removeFav(item.id);
+      context.showSnackBar(content: 'Removed from favorites.');
+    } else {
+      favCubit.addFav(item.id);
+      context.showSnackBar(content: 'Added to favorites.');
+    }
+    HapticFeedbackUtils.success();
+  }
+
+  void _showProfileDialog(BuildContext context, String username) {
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return BlocProvider<UserCubit>(
+          create: (_) => UserCubit()..init(userId: username),
+          child: BlocBuilder<UserCubit, UserState>(
+            builder: (BuildContext context, UserState state) {
+              final double fontSize = context
+                  .read<PreferenceCubit>()
+                  .state
+                  .fontSize
+                  .fontSize;
+              return AlertDialog(
+                title: Text('About $username'),
+                content: state.status == Status.inProgress
+                    ? const SizedBox(
+                        height: Dimens.pt40,
+                        child: Center(child: CustomCircularProgressIndicator()),
+                      )
+                    : state.user.about.isEmpty
+                    ? const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text('empty', style: TextStyle(color: Palette.grey)),
+                        ],
+                      )
+                    : SelectableLinkify(
+                        text: HtmlUtils.parseHtml(state.user.about),
+                        style: TextStyle(fontSize: fontSize),
+                        linkStyle: TextStyle(
+                          fontSize: fontSize,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        onOpen: (LinkableElement link) =>
+                            LinkUtils.launch(link.url, context),
+                        semanticsLabel: state.user.about,
+                      ),
+                actions: <Widget>[
+                  TextButton(onPressed: context.pop, child: const Text('Okay')),
+                ],
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  void onReplyTapped(BuildContext context, Item item) {
+    HapticFeedbackUtils.light();
+    if (item.deleted || item.dead) {
       return;
     }
 
-    if (cmt.id != context.read<EditCubit>().state.replyingTo?.id) {
+    if (item.id != context.read<EditCubit>().state.replyingTo?.id) {
       commentEditingController.clear();
     }
 
-    context.read<EditCubit>().onReplyTapped(cmt);
+    context.read<EditCubit>().onReplyTapped(item);
   }
 
   void onEditTapped(BuildContext context, Comment cmt) {
@@ -319,23 +524,21 @@ class MainView extends StatelessWidget {
 
 class _ParentItemSection extends StatelessWidget {
   const _ParentItemSection({
-    required this.commentEditingController,
     required this.state,
     required this.authState,
     required this.preferenceState,
     required this.splitViewEnabled,
     required this.onMoreTapped,
-    required this.onUpvoteTapped,
+    required this.onSlideActionTapped,
     required this.onStoryUrlTapped,
   });
 
-  final TextEditingController commentEditingController;
   final CommentsState state;
   final AuthState authState;
   final PreferenceState preferenceState;
   final bool splitViewEnabled;
   final void Function(Item item, Rect? rect) onMoreTapped;
-  final void Function(Item) onUpvoteTapped;
+  final void Function(Item item, SlideAction action) onSlideActionTapped;
   final VoidCallback onStoryUrlTapped;
 
   @override
@@ -352,61 +555,28 @@ class _ParentItemSection extends StatelessWidget {
               child: OfflineBanner(),
             ),
           DeviceGestureWrapper(
-            child: Slidable(
-              key: ValueKey<String>('root_item_tile_slidable_${item.id}'),
-              startActionPane: ActionPane(
-                motion: const BehindMotion(),
-                dismissible: DismissiblePane(
-                  closeOnCancel: true,
-                  confirmDismiss: () async {
-                    onUpvoteTapped.call(item);
-                    return false;
-                  },
-                  onDismissed: () {},
-                ),
-                children: <Widget>[
-                  if (context.read<AuthBloc>().state.user.id != item.by)
-                    CustomSlidableAction(
-                      onPressed: (_) => onUpvoteTapped.call(item),
-                      backgroundColor: Theme.of(
-                        context,
-                      ).colorScheme.primaryContainer,
-                      foregroundColor: Theme.of(
-                        context,
-                      ).colorScheme.onPrimaryContainer,
-                      child: const Icon(Icons.thumb_up, size: Dimens.pt24),
-                    ),
-                  CustomSlidableAction(
-                    onPressed: (_) {
-                      HapticFeedbackUtils.light();
-
-                      if (item.id !=
-                          context.read<EditCubit>().state.replyingTo?.id) {
-                        commentEditingController.clear();
-                      }
-                      context.read<EditCubit>().onReplyTapped(item);
-                    },
-                    backgroundColor: Theme.of(
-                      context,
-                    ).colorScheme.primaryContainer,
-                    foregroundColor: Theme.of(
-                      context,
-                    ).colorScheme.onPrimaryContainer,
-                    child: const Icon(Icons.message, size: Dimens.pt24),
-                  ),
-                  CustomSlidableAction(
-                    onPressed: (BuildContext context) =>
-                        onMoreTapped(item, context.rect),
-                    backgroundColor: Theme.of(
-                      context,
-                    ).colorScheme.primaryContainer,
-                    foregroundColor: Theme.of(
-                      context,
-                    ).colorScheme.onPrimaryContainer,
-                    child: const Icon(Icons.more_horiz, size: Dimens.pt24),
-                  ),
-                ],
+            child: ItemSlidable(
+              item: item,
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+              unavailableActions: <SlideAction>{
+                SlideAction.timeMachine,
+                SlideAction.viewInSeparateThread,
+                if (item is Story) SlideAction.goToParent,
+              },
+              onLeadingActionTapped: () => onSlideActionTapped(
+                item,
+                context.read<PreferenceCubit>().state.leadingAction,
               ),
+              onSecondaryActionTapped: () => onSlideActionTapped(
+                item,
+                context.read<PreferenceCubit>().state.secondaryAction,
+              ),
+              onTrailingActionTapped: () => onSlideActionTapped(
+                item,
+                context.read<PreferenceCubit>().state.trailingAction,
+              ),
+              onMoreTapped: (Rect? rect) => onMoreTapped(item, rect),
               child: Column(
                 children: <Widget>[
                   Padding(

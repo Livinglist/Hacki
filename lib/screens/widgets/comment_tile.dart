@@ -4,7 +4,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
@@ -12,7 +11,6 @@ import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/item/widgets/lazy_fetch_load_button.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
-import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:material_ui/material_ui.dart';
@@ -23,11 +21,11 @@ class CommentTile extends StatelessWidget {
     required this.comment,
     required this.fetchMode,
     super.key,
-    this.onReplyTapped,
     this.onMoreTapped,
     this.onEditTapped,
-    this.onRightMoreTapped,
-    this.onUpvoteTapped,
+    this.onTrailingActionTapped,
+    this.onLeadingActionTapped,
+    this.onSecondaryActionTapped,
     this.opUsername,
     this.isDev = false,
     this.isActionable = true,
@@ -62,11 +60,24 @@ class CommentTile extends StatelessWidget {
   final FetchMode fetchMode;
   final Color commentBackgroundColor;
 
-  final void Function(Comment)? onReplyTapped;
   final void Function(Comment, Rect?)? onMoreTapped;
   final void Function(Comment)? onEditTapped;
-  final void Function(Comment)? onRightMoreTapped;
-  final void Function(Comment)? onUpvoteTapped;
+
+  /// Triggered by the single action on the trailing pane, whichever
+  /// [SlideAction] the user has configured as the trailing action. This
+  /// pane renders on the right by default, or on the left when the user
+  /// has swapped the slidable panes in settings.
+  final void Function(Comment)? onTrailingActionTapped;
+
+  /// Triggered by the first action on the leading pane, whichever
+  /// [SlideAction] the user has configured as the leading action. This
+  /// pane renders on the left by default, or on the right when the user
+  /// has swapped the slidable panes in settings.
+  final void Function(Comment)? onLeadingActionTapped;
+
+  /// Triggered by the second action on the leading pane, whichever
+  /// [SlideAction] the user has configured as the secondary action.
+  final void Function(Comment)? onSecondaryActionTapped;
 
   /// Override for search screen.
   final VoidCallback? onTap;
@@ -121,98 +132,25 @@ class CommentTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Slidable(
-                    key: ValueKey<String>(
-                      'comment_tile_slidable_${comment.id}',
-                    ),
-                    startActionPane: isActionable
-                        ? ActionPane(
-                            motion: const BehindMotion(),
-                            dismissible: DismissiblePane(
-                              closeOnCancel: true,
-                              confirmDismiss: () async {
-                                onUpvoteTapped?.call(comment);
-                                return false;
-                              },
-                              onDismissed: () {},
-                            ),
-                            children: <Widget>[
-                              if (onUpvoteTapped != null &&
-                                  context.read<AuthBloc>().state.user.id !=
-                                      comment.by)
-                                CustomSlidableAction(
-                                  onPressed: (_) =>
-                                      onUpvoteTapped?.call(comment),
-                                  backgroundColor: backgroundColor,
-                                  foregroundColor: foregroundColor,
-                                  child: const Icon(
-                                    Icons.thumb_up,
-                                    size: Dimens.pt24,
-                                  ),
-                                ),
-                              CustomSlidableAction(
-                                onPressed: (_) => onReplyTapped?.call(comment),
-                                backgroundColor: backgroundColor,
-                                foregroundColor: foregroundColor,
-                                child: const Icon(
-                                  Icons.message,
-                                  size: Dimens.pt24,
-                                ),
-                              ),
-                              if (context.read<AuthBloc>().state.user.id ==
-                                  comment.by)
-                                CustomSlidableAction(
-                                  onPressed: (_) => onEditTapped?.call(comment),
-                                  backgroundColor: backgroundColor,
-                                  foregroundColor: foregroundColor,
-                                  child: const Icon(
-                                    Icons.edit,
-                                    size: Dimens.pt24,
-                                  ),
-                                ),
-                              CustomSlidableAction(
-                                onPressed: (BuildContext context) =>
-                                    onMoreTapped?.call(comment, context.rect),
-                                backgroundColor: backgroundColor,
-                                foregroundColor: foregroundColor,
-                                child: const Icon(
-                                  Icons.more_horiz,
-                                  size: Dimens.pt24,
-                                ),
-                              ),
-                            ],
-                          )
-                        : null,
-                    endActionPane: isActionable
-                        ? ActionPane(
-                            motion: const BehindMotion(),
-                            dismissible: DismissiblePane(
-                              closeOnCancel: true,
-                              dismissThreshold: 0.01,
-                              confirmDismiss: () async {
-                                DialogProxy.showTimeMachineDialog(
-                                  context,
-                                  commentsCubit: context.read<CommentsCubit>(),
-                                  comment: comment,
-                                );
-                                return false;
-                              },
-                              onDismissed: () {},
-                            ),
-                            children: <Widget>[
-                              CustomSlidableAction(
-                                onPressed: (_) =>
-                                    onRightMoreTapped?.call(comment),
-                                backgroundColor: backgroundColor,
-                                foregroundColor: foregroundColor,
-                                child: const Icon(
-                                  Icons.av_timer,
-                                  size: Dimens.pt24,
-                                ),
-                              ),
-                            ],
-                          )
-                        : null,
+                  ItemSlidable(
+                    item: comment,
+                    enabled: isActionable,
+                    backgroundColor: backgroundColor,
+                    foregroundColor: foregroundColor,
+                    onLeadingActionTapped: onLeadingActionTapped == null
+                        ? null
+                        : () => onLeadingActionTapped?.call(comment),
+                    onSecondaryActionTapped: onSecondaryActionTapped == null
+                        ? null
+                        : () => onSecondaryActionTapped?.call(comment),
+                    onTrailingActionTapped: onTrailingActionTapped == null
+                        ? null
+                        : () => onTrailingActionTapped?.call(comment),
+                    onEditTapped: onEditTapped == null
+                        ? null
+                        : () => onEditTapped?.call(comment),
+                    onMoreTapped: (Rect? rect) =>
+                        onMoreTapped?.call(comment, rect),
                     child: InkWell(
                       splashFactory: NoSplash.splashFactory,
                       onTap: () {

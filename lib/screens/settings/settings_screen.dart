@@ -371,6 +371,9 @@ class _SettingsViewState extends State<SettingsView>
                       activeThumbColor: Theme.of(context).colorScheme.primary,
                     ),
                   ),
+                if (preference is DividerPlaceholder &&
+                    preference.label == 'Thread')
+                  const SlideActionSettings(),
                 if (preference is MarkReadStoriesModePreference) ...<Widget>[
                   Padding(
                     padding: const EdgeInsets.symmetric(

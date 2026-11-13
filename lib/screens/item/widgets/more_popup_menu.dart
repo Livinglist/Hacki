@@ -19,6 +19,8 @@ class MorePopupMenu extends StatelessWidget {
     required this.isBlocked,
     required this.onLoginTapped,
     this.onSearchInThreadTapped,
+    this.onReplyTapped,
+    this.onViewInSeparateThreadTapped,
     super.key,
   });
 
@@ -26,6 +28,8 @@ class MorePopupMenu extends StatelessWidget {
   final bool isBlocked;
   final VoidCallback onLoginTapped;
   final VoidCallback? onSearchInThreadTapped;
+  final VoidCallback? onReplyTapped;
+  final VoidCallback? onViewInSeparateThreadTapped;
 
   @override
   Widget build(BuildContext context) {
@@ -167,6 +171,15 @@ class MorePopupMenu extends StatelessWidget {
                   title: const Text('Search in thread'),
                   onTap: onSearchInThreadTapped,
                 ),
+              if (onReplyTapped != null)
+                ListTile(
+                  leading: const Icon(Icons.message),
+                  title: const Text('Reply'),
+                  onTap: () {
+                    context.pop();
+                    onReplyTapped?.call();
+                  },
+                ),
               ListTile(
                 leading: Icon(
                   upvoted
@@ -232,6 +245,15 @@ class MorePopupMenu extends StatelessWidget {
                 title: Text(isBlocked ? 'Unblock' : 'Block'),
                 onTap: () => context.pop(MenuAction.block),
               ),
+              if (onViewInSeparateThreadTapped != null && item is Comment)
+                ListTile(
+                  leading: const Icon(Icons.list),
+                  title: const Text('View In Separate Thread'),
+                  onTap: () {
+                    context.pop();
+                    onViewInSeparateThreadTapped?.call();
+                  },
+                ),
               ListTile(
                 leading: const Icon(Icons.open_in_browser),
                 title: const Text('View in Browser'),

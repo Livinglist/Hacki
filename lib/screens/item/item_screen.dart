@@ -331,9 +331,8 @@ class _ItemScreenState extends State<ItemScreen>
                             ..search(item.by)
                             ..openInThreadSearch?.call();
                         },
+                        onReplyTapped: () => onReplyTapped(item),
                       ),
-                      onRightMoreTapped: (Comment cmt) =>
-                          onRightMoreTapped(cmt, context.read<CommentsCubit>()),
                       onStoryUrlTapped: _webViewController.show,
                       shouldMarkNewComment: widget.shouldMarkNewComment,
                     ),
@@ -441,11 +440,7 @@ class _ItemScreenState extends State<ItemScreen>
                                         ..search(item.by)
                                         ..openInThreadSearch?.call();
                                     },
-                                  ),
-                              onRightMoreTapped: (Comment cmt) =>
-                                  onRightMoreTapped(
-                                    cmt,
-                                    context.read<CommentsCubit>(),
+                                    onReplyTapped: () => onReplyTapped(item),
                                   ),
                               onStoryUrlTapped: _webViewController.show,
                               shouldMarkNewComment: widget.shouldMarkNewComment,
@@ -511,6 +506,14 @@ class _ItemScreenState extends State<ItemScreen>
     }
   }
 
+  void onReplyTapped(Item item) {
+    final EditCubit editCubit = context.read<EditCubit>();
+    if (item.id != editCubit.state.replyingTo?.id) {
+      commentEditingController.clear();
+    }
+    editCubit.onReplyTapped(item);
+  }
+
   void onFontSizeTapped() {
     const Offset offset = Offset.zero;
     final RenderBox overlay =
@@ -557,51 +560,6 @@ class _ItemScreenState extends State<ItemScreen>
             },
           ),
       ],
-    );
-  }
-
-  void onRightMoreTapped(Comment comment, CommentsCubit cubit) {
-    HapticFeedbackUtils.light();
-    showModalBottomSheet<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: const Icon(Icons.av_timer),
-                title: const Text('View ancestors'),
-                onTap: () {
-                  context.pop();
-                  DialogProxy.showTimeMachineDialog(
-                    context,
-                    comment: comment,
-                    commentsCubit: cubit,
-                  );
-                },
-                enabled:
-                    comment.level > 0 && !(comment.dead || comment.deleted),
-              ),
-              ListTile(
-                leading: const Icon(Icons.list),
-                title: const Text('View in separate thread'),
-                onTap: () {
-                  context.pop();
-                  goToItemScreen(
-                    args: ItemScreenArgs(
-                      item: comment,
-                      shouldUseCommentCache: true,
-                    ),
-                    forceNewScreen: true,
-                  );
-                },
-                enabled: !(comment.dead || comment.deleted),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 

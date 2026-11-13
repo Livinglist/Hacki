@@ -15,6 +15,7 @@ export 'post_data.dart';
 export 'preference.dart';
 export 'search/search.dart';
 export 'search/search_params.dart';
+export 'slide_action.dart';
 export 'status.dart';
 export 'story_marking_mode.dart';
 export 'story_type.dart';
