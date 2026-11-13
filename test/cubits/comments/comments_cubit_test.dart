@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/models/models.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 void main() {
@@ -29,6 +30,177 @@ void main() {
         CommentsCubit.topMostVisibleItem(<ItemPosition>[lower, top, below]),
         top,
       );
+    });
+  });
+
+  group('CommentsCubit.currentAnchorItem', () {
+    test('returns null when nothing is visible', () {
+      expect(
+        CommentsCubit.currentAnchorItem(const <ItemPosition>[], lastIndex: 5),
+        isNull,
+      );
+    });
+
+    test('prefers the item a jump landed on over the one above it', () {
+      const ItemPosition above = ItemPosition(
+        index: 3,
+        itemLeadingEdge: -0.2,
+        itemTrailingEdge: 0.15,
+      );
+      const ItemPosition landed = ItemPosition(
+        index: 4,
+        itemLeadingEdge: 0.15,
+        itemTrailingEdge: 0.6,
+      );
+
+      expect(
+        CommentsCubit.currentAnchorItem(<ItemPosition>[
+          landed,
+          above,
+        ], lastIndex: 5),
+        landed,
+      );
+    });
+
+    test('falls back to the topmost visible item', () {
+      const ItemPosition offScreen = ItemPosition(
+        index: 1,
+        itemLeadingEdge: -0.9,
+        itemTrailingEdge: -0.3,
+      );
+      const ItemPosition top = ItemPosition(
+        index: 2,
+        itemLeadingEdge: -0.3,
+        itemTrailingEdge: 0.5,
+      );
+      const ItemPosition below = ItemPosition(
+        index: 3,
+        itemLeadingEdge: 0.5,
+        itemTrailingEdge: 0.9,
+      );
+
+      expect(
+        CommentsCubit.currentAnchorItem(<ItemPosition>[
+          below,
+          top,
+          offScreen,
+        ], lastIndex: 5),
+        top,
+      );
+    });
+
+    test('ignores the footer after the last comment', () {
+      const ItemPosition footer = ItemPosition(
+        index: 6,
+        itemLeadingEdge: 0.1,
+        itemTrailingEdge: 1.1,
+      );
+
+      expect(
+        CommentsCubit.currentAnchorItem(<ItemPosition>[footer], lastIndex: 5),
+        isNull,
+      );
+    });
+  });
+
+  group('CommentsState navigation stack', () {
+    const NavigationAnchor a = NavigationAnchor(itemId: 1, alignment: 0);
+    const NavigationAnchor b = NavigationAnchor(itemId: 2, alignment: 0.15);
+    const NavigationAnchor c = NavigationAnchor(itemId: 3, alignment: 0.15);
+    const NavigationAnchor d = NavigationAnchor(itemId: 4, alignment: 0.15);
+
+    late CommentsState state;
+
+    setUp(() {
+      state = CommentsState.init(
+        isOfflineReading: false,
+        item: Story.placeholder(),
+        fetchMode: FetchMode.eager,
+        order: CommentsOrder.natural,
+      );
+    });
+
+    test('starts empty with nowhere to navigate', () {
+      expect(state.navigationStack, isEmpty);
+      expect(state.canNavigateBack, isFalse);
+      expect(state.canNavigateForward, isFalse);
+    });
+
+    test('a jump records where the user was and where they went', () {
+      state = state.copyWithNavigation(from: a, to: b);
+
+      expect(state.navigationStack, <NavigationAnchor>[a, b]);
+      expect(state.navigationIndex, 1);
+      expect(state.canNavigateBack, isTrue);
+      expect(state.canNavigateForward, isFalse);
+    });
+
+    test('consecutive jumps do not duplicate the position in between', () {
+      state = state
+          .copyWithNavigation(from: a, to: b)
+          .copyWithNavigation(from: b, to: c);
+
+      expect(state.navigationStack, <NavigationAnchor>[a, b, c]);
+      expect(state.navigationIndex, 2);
+    });
+
+    test('remembers how far the user scrolled before jumping again', () {
+      const NavigationAnchor scrolledB = NavigationAnchor(
+        itemId: 2,
+        alignment: -0.4,
+      );
+
+      state = state
+          .copyWithNavigation(from: a, to: b)
+          .copyWithNavigation(from: scrolledB, to: c);
+
+      expect(state.navigationStack, <NavigationAnchor>[a, scrolledB, c]);
+    });
+
+    test('a jump after going back drops the forward positions', () {
+      state = state
+          .copyWithNavigation(from: a, to: b)
+          .copyWithNavigation(from: b, to: c)
+          .copyWith(navigationIndex: 0);
+      expect(state.canNavigateForward, isTrue);
+
+      state = state.copyWithNavigation(from: a, to: d);
+
+      expect(state.navigationStack, <NavigationAnchor>[a, d]);
+      expect(state.navigationIndex, 1);
+      expect(state.canNavigateForward, isFalse);
+    });
+
+    test('a jump to the current position is not recorded', () {
+      state = state.copyWithNavigation(from: a, to: a);
+
+      expect(state.navigationStack, isEmpty);
+    });
+
+    test('a jump from an unknown position only records the destination', () {
+      state = state.copyWithNavigation(to: b);
+
+      expect(state.navigationStack, <NavigationAnchor>[b]);
+      expect(state.canNavigateBack, isFalse);
+    });
+
+    test('drops the oldest positions past the size limit', () {
+      for (int i = 0; i < CommentsState.maxNavigationStackSize + 10; i++) {
+        state = state.copyWithNavigation(
+          from: NavigationAnchor(itemId: i, alignment: 0),
+          to: NavigationAnchor(itemId: i + 1, alignment: 0.15),
+        );
+      }
+
+      expect(
+        state.navigationStack.length,
+        CommentsState.maxNavigationStackSize,
+      );
+      expect(
+        state.navigationStack.last.itemId,
+        CommentsState.maxNavigationStackSize + 10,
+      );
+      expect(state.navigationIndex, state.navigationStack.length - 1);
     });
   });
 }
