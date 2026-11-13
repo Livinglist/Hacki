@@ -39,3 +39,9 @@ jobs:
         run: go test -race ./...
       - name: Build static binary
         run: CGO_ENABLED=0 go build -trimpath -o hacki-server ./cmd/hacki-server
+      - name: Check deployment configuration
+        run: |
+          bash -n deploy/ci-deploy.sh deploy/deploy.sh
+          HACKI_API_KEY=ci-validation docker compose -f compose.yaml config --quiet
+          HACKI_API_KEY=ci-validation HACKI_IMAGE=hacki-server:ci \
+            docker compose -f deploy/compose.production.yaml config --quiet

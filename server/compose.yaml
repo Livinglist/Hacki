@@ -1,3 +1,5 @@
+name: hacki-server
+
 services:
   hacki-server:
     build: .
