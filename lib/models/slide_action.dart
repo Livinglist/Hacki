@@ -1,3 +1,4 @@
+import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:material_ui/material_ui.dart' show IconData, Icons;
 
 enum SlideAction {
@@ -9,7 +10,7 @@ enum SlideAction {
   searchOnHackerNews('Search on HN', icon: Icons.search),
   searchInThread('Search in Thread', icon: Icons.manage_search),
   favorite('Favorite', icon: Icons.favorite),
-  share('Share', icon: Icons.share),
+  share('Share', icon: FeatherIcons.share),
   viewInBrowser('View in Browser', icon: Icons.open_in_browser),
   reply('Reply', icon: Icons.message),
   viewInSeparateThread('View In Separate Thread', icon: Icons.list);

@@ -354,6 +354,8 @@ class _ItemScreenState extends State<ItemScreen>
                         },
                         onReplyTapped: () => onReplyTapped(item),
                       ),
+                      onShareTapped: (Item item, Rect? rect) =>
+                          onShareTapped(item, rect, parent: item),
                       onStoryUrlTapped: _webViewController.show,
                       shouldMarkNewComment: widget.shouldMarkNewComment,
                     ),
@@ -464,6 +466,12 @@ class _ItemScreenState extends State<ItemScreen>
                                         ..openInThreadSearch?.call();
                                     },
                                     onReplyTapped: () => onReplyTapped(item),
+                                  ),
+                              onShareTapped: (Item item, Rect? rect) =>
+                                  onShareTapped(
+                                    item,
+                                    rect,
+                                    parent: widget.item,
                                   ),
                               onStoryUrlTapped: _webViewController.show,
                               shouldMarkNewComment: widget.shouldMarkNewComment,
