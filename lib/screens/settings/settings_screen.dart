@@ -449,6 +449,7 @@ class _SettingsViewState extends State<SettingsView>
                 title: const Text('Restore Default Settings'),
                 onTap: showRestoreDefaultSettingsDialog,
               ),
+              const ProxyListTile(),
               if (preferenceState.isDevModeEnabled) ...<Widget>[
                 ListTile(
                   title: const Text('Logs'),

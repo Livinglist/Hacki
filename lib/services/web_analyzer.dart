@@ -10,6 +10,7 @@ import 'package:hacki/config/locator.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
+import 'package:hacki/utils/proxy_http_overrides.dart';
 import 'package:html/dom.dart' hide Comment, Text;
 import 'package:html/parser.dart' as parser;
 import 'package:html_unescape/html_unescape.dart';
@@ -293,10 +294,10 @@ ${info.toJson()}
     String? url,
   }) async {
     if (url == null) return null;
-    final List<dynamic>? res = await compute(_fetchInfoFromUrl, <dynamic>[
-      url,
-      multimedia,
-    ]);
+    final List<dynamic>? res = await computeWithProxy(
+      _fetchInfoFromUrl,
+      <dynamic>[url, multimedia],
+    );
 
     late final bool shouldRetry;
     InfoBase? info;

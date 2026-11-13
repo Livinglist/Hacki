@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hacki/extensions/extensions.dart';
+import 'package:hacki/models/network_proxy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:synced_shared_preferences/synced_shared_preferences.dart';
 
@@ -25,6 +26,9 @@ class PreferenceRepository with Loggable {
   static const String _lastReadStoryIdKey = 'lastReadStoryId';
   static const String _downloadTimestampKey = 'downloadTimestamp';
   static const String _tourKey = 'tour';
+  static const String _proxyEnabledKey = 'proxyEnabled';
+  static const String _proxyHostKey = 'proxyHost';
+  static const String _proxyPortKey = 'proxyPort';
 
   final SyncedSharedPreferences _syncedPrefs;
   final Future<SharedPreferences> _prefs;
@@ -371,6 +375,35 @@ class PreferenceRepository with Loggable {
   Future<void> updateLastReadStoryId(int? id) async {
     final SharedPreferences prefs = await _prefs;
     await prefs.setString(_lastReadStoryIdKey, id.toString());
+  }
+
+  //#endregion
+
+  //#region proxy
+
+  /// The proxy as it is stored right now. The values are read again from
+  /// disk because the background isolate would otherwise keep using the
+  /// ones it saw first.
+  Future<NetworkProxy> get networkProxy async {
+    final SharedPreferences prefs = await _prefs;
+    await prefs.reload();
+    return NetworkProxy(
+      isEnabled: prefs.getBool(_proxyEnabledKey) ?? false,
+      host: prefs.getString(_proxyHostKey) ?? '',
+      port: prefs.getInt(_proxyPortKey),
+    );
+  }
+
+  Future<void> updateNetworkProxy(NetworkProxy proxy) async {
+    final SharedPreferences prefs = await _prefs;
+    final int? port = proxy.port;
+    await prefs.setBool(_proxyEnabledKey, proxy.isEnabled);
+    await prefs.setString(_proxyHostKey, proxy.host);
+    if (port == null) {
+      await prefs.remove(_proxyPortKey);
+    } else {
+      await prefs.setInt(_proxyPortKey, port);
+    }
   }
 
   //#endregion

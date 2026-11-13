@@ -24,13 +24,19 @@ Future<void> setUpLocator() async {
         output: LogUtils.logOutput(logOutputFile),
       ),
     )
+    ..registerSingleton<PreferenceRepository>(PreferenceRepository())
+    ..registerSingleton<NetworkProxyService>(NetworkProxyService());
+
+  // The proxy has to be in place before anything below makes a request.
+  await locator.get<NetworkProxyService>().init();
+
+  locator
     ..registerSingleton<SembastRepository>(SembastRepository())
     ..registerSingleton<RemoteConfigRepository>(RemoteConfigRepository())
     ..registerSingleton<RemoteConfigCubit>(RemoteConfigCubit())
     ..registerSingleton<HackerNewsRepository>(HackerNewsRepository())
     ..registerSingleton<HackerNewsWebRepository>(HackerNewsWebRepository())
     ..registerSingleton<HistoryRepository>(HistoryRepository())
-    ..registerSingleton<PreferenceRepository>(PreferenceRepository())
     ..registerSingleton<SearchRepository>(SearchRepository())
     ..registerSingleton<AuthRepository>(AuthRepository())
     ..registerSingleton<PostRepository>(PostRepository())

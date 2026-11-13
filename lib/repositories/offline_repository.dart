@@ -1,8 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/extensions/loggable.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/utils/proxy_http_overrides.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
@@ -81,7 +81,7 @@ class OfflineRepository with Loggable {
       box = await _webPageBox;
     }
 
-    final String html = await compute(_downloadWebPage, url)
+    final String html = await computeWithProxy(_downloadWebPage, url)
         .timeout(
           AppDurations.tenSeconds,
           onTimeout: () {
