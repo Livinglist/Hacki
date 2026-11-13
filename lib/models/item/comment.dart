@@ -49,6 +49,11 @@ class Comment extends Item {
 
   bool get isRoot => level == 0;
 
+  /// Whether this is a reply the user has just posted that Hacker News has
+  /// not returned yet. It stands in for the real comment and has no id of
+  /// its own, so it can't be voted on, replied to or edited.
+  bool get isPending => id < 0;
+
   Comment copyWith({
     int? level,
     int? kid,

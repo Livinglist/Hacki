@@ -223,6 +223,8 @@ class MainView extends StatelessWidget {
                           isDev: preferenceState.isDevModeEnabled,
                           isNew: shouldMarkNewComment && !comment.isFromCache,
                           isEyeCandyEnabled: preferenceState.isEyeCandyEnabled,
+                          isActionable: !comment.isPending,
+                          isCollapsable: !comment.isPending,
                           onLeadingActionTapped: (Comment cmt) =>
                               onSlideActionTapped(
                                 context,

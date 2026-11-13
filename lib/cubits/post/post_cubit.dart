@@ -22,7 +22,7 @@ class PostCubit extends Cubit<PostState> {
     );
 
     if (successful) {
-      emit(state.copyWith(status: Status.success));
+      emit(PostState(status: Status.success, parentId: to, text: text));
     } else {
       emit(state.copyWith(status: Status.failure));
     }
@@ -33,14 +33,14 @@ class PostCubit extends Cubit<PostState> {
     final bool successful = await _postRepository.edit(id: id, text: text);
 
     if (successful) {
-      emit(state.copyWith(status: Status.success));
+      emit(PostState(status: Status.success, editedId: id, text: text));
     } else {
       emit(state.copyWith(status: Status.failure));
     }
   }
 
   void reset() {
-    emit(state.copyWith(status: Status.idle));
+    emit(const PostState.init());
   }
 
   @Deprecated('For debugging only')

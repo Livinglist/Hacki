@@ -223,6 +223,15 @@ class CommentTile extends StatelessWidget {
                                       color: Palette.grey,
                                     ),
                                   ),
+                                if (comment.isPending)
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: Dimens.pt4),
+                                    child: Icon(
+                                      Icons.schedule,
+                                      size: Dimens.pt16,
+                                      color: Palette.grey,
+                                    ),
+                                  ),
                                 if (shouldHighlightNewComments && comment.isNew)
                                   Padding(
                                     padding: const EdgeInsets.only(

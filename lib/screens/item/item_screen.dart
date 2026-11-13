@@ -267,6 +267,27 @@ class _ItemScreenState extends State<ItemScreen>
               final String msg = 'Comment $verb! ${Constants.happyFace}';
               HapticFeedbackUtils.success();
               showSnackBar(content: msg);
+
+              final String? text = postState.text;
+              final int? parentId = postState.parentId;
+              final int? editedId = postState.editedId;
+              if (text != null && parentId != null) {
+                unawaited(
+                  context.read<CommentsCubit>().addPendingReply(
+                    parentId: parentId,
+                    text: text,
+                    author: context.read<AuthBloc>().state.username,
+                  ),
+                );
+              } else if (text != null && editedId != null) {
+                unawaited(
+                  context.read<CommentsCubit>().updateCommentText(
+                    id: editedId,
+                    text: text,
+                  ),
+                );
+              }
+
               context.read<EditCubit>().onReplySubmittedSuccessfully();
               context.read<PostCubit>().reset();
             } else if (postState.status == Status.failure) {

@@ -79,6 +79,13 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   /// that user tapped on on [ItemScreen].
   final Map<int, GlobalKey> globalKeys = <int, GlobalKey>{};
 
+  /// The id given to the next placeholder for a reply the user has posted.
+  /// Placeholders have negative ids so they never clash with real comments.
+  static int _nextPendingReplyId = -1;
+
+  /// The ids of the placeholders created by this cubit.
+  final Set<int> _pendingReplyIds = <int>{};
+
   final FilterCubit _filterCubit;
   final PreferenceCubit _preferenceCubit;
   final CommentCache _commentCache;
@@ -645,6 +652,157 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
       }
     }
     return (count, newCommentsCount);
+  }
+
+  /// Shows a reply the user has just posted right away, as a placeholder.
+  ///
+  /// The placeholder only lives in this cubit: it is never cached, a reload
+  /// of the thread replaces it with whatever Hacker News returns, and it is
+  /// discarded when this cubit is closed.
+  ///
+  /// Does nothing if [parentId] is not part of this thread.
+  Future<void> addPendingReply({
+    required int parentId,
+    required String text,
+    required String author,
+  }) async {
+    if (state.isOfflineReading) return;
+
+    final bool isReplyToRoot = parentId == state.item.id;
+    Comment? parent = state.comments.firstWhereOrNull(
+      (Comment c) => c.id == parentId,
+    );
+    if (parent == null && !isReplyToRoot) return;
+
+    if (parent != null && parent.isCollapsedByUser) {
+      uncollapse(parent);
+    }
+
+    final BuildableComment? placeholder = await toBuildableComment(
+      Comment(
+        id: _nextPendingReplyId--,
+        time: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        parent: parentId,
+        score: 0,
+        by: author,
+        text: text,
+        kids: const <int>[],
+        dead: false,
+        deleted: false,
+        hidden: false,
+        level: parent == null ? 0 : parent.level + 1,
+        isFromCache: false,
+      ),
+    );
+    if (placeholder == null || isClosed) return;
+
+    /// The thread may have changed while the placeholder was being built.
+    final int parentIndex = state.comments.indexWhere(
+      (Comment c) => c.id == parentId,
+    );
+    if (parentIndex == -1 && !isReplyToRoot) return;
+    parent = isReplyToRoot ? null : state.comments.elementAt(parentIndex);
+
+    /// A new reply comes first among its siblings, unless the thread is
+    /// sorted oldest first, in which case it comes after all of them.
+    int index = parentIndex + 1;
+    if (state.order == CommentsOrder.oldestFirst) {
+      while (index < state.comments.length &&
+          state.comments.elementAt(index).level >= placeholder.level) {
+        index++;
+      }
+    }
+
+    _pendingReplyIds.add(placeholder.id);
+    globalKeys[placeholder.id] = GlobalKey(
+      debugLabel: 'comment_tile_key_${placeholder.id}_under_${state.item.id}',
+    );
+
+    emit(
+      state.copyWith(
+        comments: <Comment>[...state.comments]
+          ..insert(
+            index,
+            placeholder.copyWith(
+              isHiddenByUser:
+                  parent != null &&
+                  (parent.isHiddenByUser || parent.isCollapsedByUser),
+            ),
+          ),
+        maxLevel: state.maxLevel < placeholder.level ? placeholder.level : null,
+      ),
+    );
+
+    unawaited(scrollToComment(placeholder));
+  }
+
+  /// Discards every placeholder so that none of them outlives this cubit.
+  void _purgePendingReplies() {
+    if (_pendingReplyIds.isEmpty) return;
+
+    for (final int id in _pendingReplyIds) {
+      globalKeys.remove(id);
+      CommentsState._isResponseCache.remove(id);
+    }
+    _pendingReplyIds.clear();
+
+    emit(
+      state.copyWith(
+        comments: state.comments.where((Comment c) => !c.isPending).toList(),
+        matchedComments: state.matchedComments
+            .where((Comment c) => !c.isPending)
+            .toList(),
+      ),
+    );
+  }
+
+  /// Shows the new text of a comment the user has just edited.
+  Future<void> updateCommentText({
+    required int id,
+    required String text,
+  }) async {
+    final Comment? comment = state.comments.firstWhereOrNull(
+      (Comment c) => c.id == id,
+    );
+    if (comment == null) return;
+
+    final BuildableComment? updatedComment = await toBuildableComment(
+      Comment(
+        id: comment.id,
+        time: comment.time,
+        parent: comment.parent,
+        score: comment.score,
+        by: comment.by,
+        text: text,
+        kids: comment.kids,
+        dead: comment.dead,
+        deleted: comment.deleted,
+        hidden: comment.hidden,
+        level: comment.level,
+        isFromCache: comment.isFromCache,
+      ),
+    );
+    if (updatedComment == null || isClosed) return;
+
+    final int index = state.comments.indexWhere((Comment c) => c.id == id);
+    if (index == -1) return;
+
+    final Comment current = state.comments.elementAt(index);
+    final Comment replacement = updatedComment.copyWith(
+      isHiddenByUser: current.isHiddenByUser,
+      isCollapsedByUser: current.isCollapsedByUser,
+      isNew: current.isNew,
+    );
+
+    emit(
+      state.copyWith(
+        comments: <Comment>[...state.comments]..[index] = replacement,
+        idToCommentMap: <int, Comment>{
+          ...state.idToCommentMap,
+          id: replacement,
+        },
+      ),
+    );
   }
 
   Future<void> loadParentThread() async {
@@ -1231,6 +1389,7 @@ comments length is ${state.comments.length}
     _previousCommentStates ??= <int, Comment>{};
 
     for (final Comment e in state.comments) {
+      if (e.isPending) continue;
       _previousCommentStates?[e.id] = e.copyWithOnlyCollapseState();
     }
 
@@ -1387,6 +1546,7 @@ comments length is ${state.comments.length}
     await _searchStreamSubscription?.cancel();
     await _appStateSubscription.cancel();
     _scrollGeneration++;
+    _purgePendingReplies();
     _preserveCollapseState();
     await super.close();
   }
