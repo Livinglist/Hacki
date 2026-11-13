@@ -41,6 +41,7 @@ type flight struct {
 	response *cachedResponse
 	state    string
 	err      error
+	callers  int // Calls registered with this flight; guarded by Handler.mu.
 }
 
 type Handler struct {
@@ -216,13 +217,16 @@ func (h *Handler) cached(ctx context.Context, key string, request *http.Request)
 			h.mu.Unlock()
 		}()
 	}
+	f.callers++
 	h.mu.Unlock()
 	select {
 	case <-f.done:
 		// A response that turned out to be personalized (Set-Cookie, no-store,
 		// unsupported Vary) belongs only to the caller which fetched it.
 		// Waiters must make independent requests rather than share its session.
-		if exists && f.err == nil && f.state == "BYPASS" {
+		// Public errors can be shared with the current waiters even though
+		// they are not successful snapshots and must not be persisted.
+		if exists && f.err == nil && f.state == "BYPASS" && !shareableResponse(f.response) {
 			response, err := h.fetch(request)
 			return response, "BYPASS", err
 		}
@@ -332,7 +336,11 @@ func cacheableRequest(request *http.Request, bodyLength int) bool {
 }
 
 func cacheableResponse(response *cachedResponse) bool {
-	if response.status != http.StatusOK || len(response.header.Values("Set-Cookie")) != 0 ||
+	return response.status == http.StatusOK && shareableResponse(response)
+}
+
+func shareableResponse(response *cachedResponse) bool {
+	if len(response.header.Values("Set-Cookie")) != 0 ||
 		disallowsCaching(strings.Join(response.header.Values("Cache-Control"), ","), true) {
 		return false
 	}

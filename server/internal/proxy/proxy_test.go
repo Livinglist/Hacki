@@ -437,6 +437,87 @@ func TestConcurrentPublicGetsShareOneUpstreamFetch(t *testing.T) {
 	}
 }
 
+func TestConcurrentRateLimitedMissesShareOneResponseWithoutCaching(t *testing.T) {
+	for _, status := range []int{http.StatusForbidden, http.StatusTooManyRequests, http.StatusServiceUnavailable} {
+		t.Run(fmt.Sprint(status), func(t *testing.T) {
+			var calls atomic.Int32
+			entered := make(chan struct{})
+			release := make(chan struct{})
+			var releaseOnce sync.Once
+			defer releaseOnce.Do(func() { close(release) })
+			p := newTestProxy(t, func(w http.ResponseWriter, _ *http.Request) {
+				if calls.Add(1) == 1 {
+					close(entered)
+				}
+				<-release
+				w.Header().Set("Retry-After", "60")
+				w.WriteHeader(status)
+				io.WriteString(w, "slow down")
+			})
+			const clients = 24
+			path := "/v1/hn/item?id=123"
+			responses := make(chan *httptest.ResponseRecorder, clients)
+			go func() { responses <- p.request("GET", path, nil, nil) }()
+			select {
+			case <-entered:
+			case <-time.After(5 * time.Second):
+				t.Fatal("origin was not reached")
+			}
+			for range clients - 1 {
+				go func() { responses <- p.request("GET", path, nil, nil) }()
+			}
+			waitForFlightCallers(t, p.handler, clients)
+			releaseOnce.Do(func() { close(release) })
+			for range clients {
+				select {
+				case w := <-responses:
+					assertResponse(t, w, status, "slow down", "BYPASS")
+					if w.Header().Get("Retry-After") != "60" {
+						t.Fatal("lost Retry-After header")
+					}
+				case <-time.After(5 * time.Second):
+					t.Fatal("coalesced rate-limited request did not finish")
+				}
+			}
+			if calls.Load() != 1 {
+				t.Fatalf("concurrent rate-limited requests generated %d upstream calls", calls.Load())
+			}
+			var count int
+			if err := p.cache.db.QueryRowContext(context.Background(), "SELECT COUNT(*) FROM responses").Scan(&count); err != nil || count != 0 {
+				t.Fatalf("rate-limit response cached: rows %d error %v", count, err)
+			}
+			assertResponse(t, p.request("GET", path, nil, nil), status, "slow down", "BYPASS")
+			if calls.Load() != 2 {
+				t.Fatalf("a later request did not retry upstream: calls %d", calls.Load())
+			}
+		})
+	}
+}
+
+func waitForFlightCallers(t *testing.T, h *Handler, want int) {
+	t.Helper()
+	timer := time.NewTimer(5 * time.Second)
+	defer timer.Stop()
+	ticker := time.NewTicker(time.Millisecond)
+	defer ticker.Stop()
+	for {
+		h.mu.Lock()
+		joined := false
+		for _, f := range h.flights {
+			joined = f.callers == want
+		}
+		h.mu.Unlock()
+		if joined {
+			return
+		}
+		select {
+		case <-ticker.C:
+		case <-timer.C:
+			t.Fatalf("%d callers did not join the upstream flight", want)
+		}
+	}
+}
+
 func TestCompressedResponseBytesRemainUnchangedAcrossCacheHit(t *testing.T) {
 	var compressed bytes.Buffer
 	gz := gzip.NewWriter(&compressed)
@@ -459,54 +540,58 @@ func TestCompressedResponseBytesRemainUnchangedAcrossCacheHit(t *testing.T) {
 }
 
 func TestConcurrentUncacheableResponsesNeverShareSessionCookies(t *testing.T) {
-	var calls atomic.Int32
-	entered := make(chan struct{})
-	release := make(chan struct{})
-	p := newTestProxy(t, func(w http.ResponseWriter, _ *http.Request) {
-		id := calls.Add(1)
-		if id == 1 {
-			close(entered)
-		}
-		<-release
-		w.Header().Set("Set-Cookie", fmt.Sprintf("session=%d; HttpOnly", id))
-		fmt.Fprintf(w, "private response %d", id)
-	})
-	const clients = 24
-	responses := make(chan *httptest.ResponseRecorder, clients)
-	go func() { responses <- p.request("GET", "/v1/hn/item?id=1", nil, nil) }()
-	select {
-	case <-entered:
-	case <-time.After(5 * time.Second):
-		t.Fatal("origin was not reached")
-	}
-	var started sync.WaitGroup
-	started.Add(clients - 1)
-	for range clients - 1 {
-		go func() {
-			started.Done()
-			responses <- p.request("GET", "/v1/hn/item?id=1", nil, nil)
-		}()
-	}
-	started.Wait()
-	close(release)
-	cookies := make(map[string]bool)
-	for range clients {
-		select {
-		case w := <-responses:
-			if w.Code != 200 || w.Header().Get("X-Hacki-Cache") != "BYPASS" {
-				t.Fatalf("uncacheable response: %d %v", w.Code, w.Header())
+	for _, status := range []int{http.StatusOK, http.StatusTooManyRequests} {
+		t.Run(fmt.Sprint(status), func(t *testing.T) {
+			var calls atomic.Int32
+			entered := make(chan struct{})
+			release := make(chan struct{})
+			var releaseOnce sync.Once
+			defer releaseOnce.Do(func() { close(release) })
+			p := newTestProxy(t, func(w http.ResponseWriter, _ *http.Request) {
+				id := calls.Add(1)
+				if id == 1 {
+					close(entered)
+				}
+				<-release
+				w.Header().Set("Set-Cookie", fmt.Sprintf("session=%d; HttpOnly", id))
+				w.WriteHeader(status)
+				fmt.Fprintf(w, "private response %d", id)
+			})
+			const clients = 24
+			responses := make(chan *httptest.ResponseRecorder, clients)
+			go func() { responses <- p.request("GET", "/v1/hn/item?id=1", nil, nil) }()
+			select {
+			case <-entered:
+			case <-time.After(5 * time.Second):
+				t.Fatal("origin was not reached")
 			}
-			cookie := w.Header().Get("Set-Cookie")
-			if cookie == "" || cookies[cookie] {
-				t.Fatalf("session cookie was shared between callers: %q", cookie)
+			for range clients - 1 {
+				go func() {
+					responses <- p.request("GET", "/v1/hn/item?id=1", nil, nil)
+				}()
 			}
-			cookies[cookie] = true
-		case <-time.After(5 * time.Second):
-			t.Fatal("uncacheable request did not finish")
-		}
-	}
-	if calls.Load() != clients {
-		t.Fatalf("%d clients generated %d upstream calls", clients, calls.Load())
+			waitForFlightCallers(t, p.handler, clients)
+			releaseOnce.Do(func() { close(release) })
+			cookies := make(map[string]bool)
+			for range clients {
+				select {
+				case w := <-responses:
+					if w.Code != status || w.Header().Get("X-Hacki-Cache") != "BYPASS" {
+						t.Fatalf("uncacheable response: %d %v", w.Code, w.Header())
+					}
+					cookie := w.Header().Get("Set-Cookie")
+					if cookie == "" || cookies[cookie] {
+						t.Fatalf("session cookie was shared between callers: %q", cookie)
+					}
+					cookies[cookie] = true
+				case <-time.After(5 * time.Second):
+					t.Fatal("uncacheable request did not finish")
+				}
+			}
+			if calls.Load() != clients {
+				t.Fatalf("%d clients generated %d upstream calls", clients, calls.Load())
+			}
+		})
 	}
 }
 

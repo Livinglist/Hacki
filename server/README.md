@@ -332,12 +332,17 @@ and TLS private keys on the VPS or in GitHub Actions secrets.
 Deployments are serialized, and a lock on the VPS also protects against
 concurrent manual deployments. The script verifies the running image ID and
 health. If startup or health fails, it restores the previous exact image ID and
-fails the workflow. On an unsuccessful first deployment it stops the unhealthy
-service. The previous image must remain available locally for rollback.
+last-known-good Compose configuration, then checks health using that restored
+configuration and fails the workflow. On an unsuccessful first deployment it
+stops the unhealthy service. Keep the previous image locally for rollback.
 
 Both manual Compose and CI use project `hacki-server` and volume
 `hacki-server_cache`, so deployments preserve SQLite. If an older manual install
 used a different project name, migrate its cache volume before switching.
+Before migrating a running manual service, save its working Compose configuration
+as `/opt/hacki-server/compose.production.yaml` (or the configured deployment path).
+Resolve any relative resource paths against that deployment directory. The script
+refuses to replace an existing service without a saved configuration to restore.
 The deployment saves the current exact image ID in `.deployed-image` and its Compose
 file in the deployment directory. To inspect logs on the VPS:
 
@@ -623,6 +628,9 @@ the path and complete query in each cache key, so pages/items do not collide.
 It also varies entries by `Accept`, `Accept-Encoding`, `Accept-Language`, and
 `User-Agent`, so distinct representations do not share response bytes.
 Concurrent requests for the same cacheable resource share one upstream fetch.
+Anonymous rate-limit responses can also be shared with callers already waiting
+for that fetch, without being saved to SQLite. Responses that set session cookies
+or otherwise cannot safely be shared still receive independent fetches.
 
 * Entries younger than 30 minutes are returned directly.
 * An expired entry triggers a new upstream request. A successful cacheable
@@ -665,4 +673,5 @@ CGO_ENABLED=0 go build ./cmd/hacki-server
 ```
 
 The server workflow runs formatting, vet, race-enabled tests, and a static build
-on server changes. Tests use a local upstream stub and temporary SQLite files.
+on server changes. Tests use a local upstream stub, temporary SQLite files, and
+isolated command stubs to exercise deployment rollback without contacting a VPS.

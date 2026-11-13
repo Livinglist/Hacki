@@ -162,6 +162,103 @@ void main() {
     expect(response.data, <int>[0, 255, 127]);
   });
 
+  test('tries the backend when the original rate-limit body fails', () async {
+    primary.respond = () => ResponseBody(
+      Stream<Uint8List>.error(const SocketException('HN body truncated')),
+      429,
+    );
+
+    final Response<String> response = await dio.get<String>(
+      'https://news.ycombinator.com/item?id=1',
+    );
+
+    expect(response.data, '<html>from the VPS</html>');
+    expect(primary.requests, hasLength(1));
+    expect(backend.requests, hasLength(1));
+  });
+
+  test('tries the backend when the original rate-limit body stalls', () async {
+    bool cancelled = false;
+    final StreamController<Uint8List> body = StreamController<Uint8List>(
+      onCancel: () => cancelled = true,
+    );
+    primary.respond = () => ResponseBody(body.stream, 503);
+    addTearDown(body.close);
+
+    final Response<String> response = await dio.get<String>(
+      'https://news.ycombinator.com/item?id=1',
+      options: Options(receiveTimeout: const Duration(milliseconds: 20)),
+    );
+
+    expect(response.data, '<html>from the VPS</html>');
+    expect(cancelled, isTrue);
+    expect(primary.requests, hasLength(1));
+    expect(backend.requests, hasLength(1));
+  });
+
+  test(
+    'retains original headers and stream error when both sources fail',
+    () async {
+      const SocketException error = SocketException('HN body truncated');
+      final StackTrace stackTrace = StackTrace.current;
+      primary.respond = () => ResponseBody(
+        Stream<Uint8List>.error(error, stackTrace),
+        429,
+        headers: <String, List<String>>{
+          'retry-after': <String>['30'],
+        },
+      );
+      backend.respond = () => throw const SocketException('VPS unavailable');
+      final RequestOptions options = RequestOptions(
+        path: 'https://news.ycombinator.com/item?id=1',
+      );
+
+      final ResponseBody response = await dio.httpClientAdapter.fetch(
+        options,
+        null,
+        null,
+      );
+
+      expect(response.statusCode, 429);
+      expect(response.headers['retry-after'], <String>['30']);
+      Object? actualError;
+      StackTrace? actualStackTrace;
+      try {
+        await response.stream.drain<void>();
+      } on Object catch (caughtError, caughtStackTrace) {
+        actualError = caughtError;
+        actualStackTrace = caughtStackTrace;
+      }
+      expect(actualError, same(error));
+      expect(actualStackTrace, same(stackTrace));
+      expect(backend.requests, hasLength(1));
+    },
+  );
+
+  test('Dio retains the original stream error if the backend fails', () async {
+    const SocketException error = SocketException('HN body truncated');
+    primary.respond = () => ResponseBody(Stream<Uint8List>.error(error), 429);
+    backend.respond = () => ResponseBody.fromString('VPS rate limited', 503);
+
+    await expectLater(
+      dio.get<String>('https://news.ycombinator.com/item?id=1'),
+      throwsA(
+        isA<DioException>()
+            .having(
+              (DioException e) => e.error,
+              'original stream error',
+              same(error),
+            )
+            .having(
+              (DioException e) => e.requestOptions.uri.host,
+              'original host',
+              'news.ycombinator.com',
+            ),
+      ),
+    );
+    expect(backend.requests, hasLength(1));
+  });
+
   test(
     'keeps the original error if the backend fails or is rate limited',
     () async {
@@ -329,6 +426,33 @@ void main() {
 
     await expectLater(
       dio.get<String>('https://news.ycombinator.com/', cancelToken: token),
+      throwsA(
+        isA<DioException>().having(
+          (DioException e) => e.type,
+          'type',
+          DioExceptionType.cancel,
+        ),
+      ),
+    );
+    expect(backend.requests, isEmpty);
+  });
+
+  test('honors cancellation when the original response body fails', () async {
+    final CancelToken token = CancelToken();
+    primary.respond = () {
+      token.cancel('stopped');
+      return ResponseBody(
+        Stream<Uint8List>.error(const SocketException('HN body truncated')),
+        429,
+      );
+    };
+    final RequestOptions options = RequestOptions(
+      path: 'https://news.ycombinator.com/',
+      cancelToken: token,
+    );
+
+    await expectLater(
+      dio.httpClientAdapter.fetch(options, null, token.whenCancel),
       throwsA(
         isA<DioException>().having(
           (DioException e) => e.type,

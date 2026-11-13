@@ -33,10 +33,25 @@ exec 9>"$deploy_path/.deploy.lock"
 flock -n 9 || { echo "Another deployment holds the VPS lock" >&2; exit 1; }
 chmod 600 -- "$deploy_path/.env"
 new_image="hacki-server:$commit_sha"
-compose=(docker compose --project-name hacki-server --env-file "$deploy_path/.env" --file "$bundle_path/compose.production.yaml")
-previous_container=$(HACKI_IMAGE="$new_image" "${compose[@]}" ps -aq hacki-server)
+incoming_config="$bundle_path/compose.production.yaml"
+saved_config="$deploy_path/compose.production.yaml"
+previous_config="$bundle_path/previous.compose.yaml"
+# Resolve relative mounts consistently even while using a snapshot in the bundle.
+compose=(docker compose --project-name hacki-server --project-directory "$deploy_path" --env-file "$deploy_path/.env")
+lookup_config="$incoming_config"
+if [[ -f $saved_config ]]; then
+  cp -- "$saved_config" "$previous_config"
+  lookup_config="$previous_config"
+fi
+previous_container=$(HACKI_IMAGE="$new_image" "${compose[@]}" --file "$lookup_config" ps -aq hacki-server)
 previous_image=
 if [[ -n $previous_container ]]; then
+  # Do not replace an existing service unless its working configuration can
+  # also be restored. This includes migrations from a manual installation.
+  if [[ ! -f $previous_config ]]; then
+    echo "Save the existing service's working Compose configuration at $saved_config before deploying" >&2
+    exit 1
+  fi
   previous_image=$(docker inspect --format '{{.Image}}' "$previous_container")
 fi
 
@@ -44,9 +59,9 @@ gzip -dc -- "$bundle_path/image.tar.gz" | docker load >/dev/null
 expected_image=$(docker image inspect --format '{{.Id}}' "$new_image")
 
 healthy() {
-  local image=$1 container actual running attempt
+  local image=$1 config=$2 container actual running attempt
   for attempt in {1..15}; do
-    container=$(HACKI_IMAGE="$image" "${compose[@]}" ps -q hacki-server)
+    container=$(HACKI_IMAGE="$image" "${compose[@]}" --file "$config" ps -q hacki-server)
     if [[ -n $container ]]; then
       actual=$(docker inspect --format '{{.Image}}' "$container" 2>/dev/null) || actual=
       running=$(docker inspect --format '{{.State.Running}}' "$container" 2>/dev/null) || running=false
@@ -62,29 +77,30 @@ healthy() {
 
 rollback() {
   if [[ -n $previous_image ]]; then
-    echo "Deployment failed; restoring the previous image" >&2
-    if HACKI_IMAGE="$previous_image" "${compose[@]}" up --detach --no-build --pull never --remove-orphans &&
-       healthy "$previous_image"; then
+    echo "Deployment failed; restoring the previous image and Compose configuration" >&2
+    if HACKI_IMAGE="$previous_image" "${compose[@]}" --file "$previous_config" up --detach --no-build --pull never --remove-orphans &&
+       healthy "$previous_image" "$previous_config"; then
+      install -m 0644 "$previous_config" "$saved_config"
       printf '%s\n' "$previous_image" >"$deploy_path/.deployed-image"
-      echo "Previous image restored" >&2
+      echo "Previous image and Compose configuration restored" >&2
     else
       echo "Rollback failed; inspect the service on the VPS" >&2
     fi
   else
     echo "Initial deployment failed; stopping the unhealthy service" >&2
-    HACKI_IMAGE="$new_image" "${compose[@]}" stop hacki-server || true
+    HACKI_IMAGE="$new_image" "${compose[@]}" --file "$incoming_config" stop hacki-server || true
   fi
 }
 
-if ! HACKI_IMAGE="$new_image" "${compose[@]}" up --detach --no-build --pull never --remove-orphans; then
+if ! HACKI_IMAGE="$new_image" "${compose[@]}" --file "$incoming_config" up --detach --no-build --pull never --remove-orphans; then
   rollback
   exit 1
 fi
-if ! healthy "$expected_image"; then
+if ! healthy "$expected_image" "$incoming_config"; then
   rollback
   exit 1
 fi
 
-install -m 0644 "$bundle_path/compose.production.yaml" "$deploy_path/compose.production.yaml"
+install -m 0644 "$incoming_config" "$saved_config"
 printf '%s\n' "$expected_image" >"$deploy_path/.deployed-image"
 echo "Deployed $new_image; health check passed"

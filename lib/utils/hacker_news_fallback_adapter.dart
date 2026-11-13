@@ -92,11 +92,17 @@ class HackerNewsFallbackAdapter implements HttpClientAdapter {
 
     // Retain the original error response so existing API fallbacks and error
     // handling still work if the backend is unavailable or rate limited too.
-    final Uint8List originalBytes = await _readBytes(
-      original.stream,
-      timeout: _effectiveTimeout(options.receiveTimeout),
-    );
-    original.stream = Stream<Uint8List>.value(originalBytes);
+    try {
+      final Uint8List originalBytes = await _readBytes(
+        original.stream,
+        timeout: _effectiveTimeout(options.receiveTimeout),
+      );
+      original.stream = Stream<Uint8List>.value(originalBytes);
+    } on Object catch (error, stackTrace) {
+      // A broken rate-limit body must not prevent trying the VPS. Preserve its
+      // stream error for the caller if the backend also fails.
+      original.stream = Stream<Uint8List>.error(error, stackTrace);
+    }
     if (options.cancelToken?.isCancelled ?? false) {
       throw options.cancelToken!.cancelError!;
     }
