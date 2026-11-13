@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
+import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/config/constants.dart';
@@ -73,7 +74,7 @@ class _PinsScreenState extends State<PinsScreen> {
           ),
           IconButton(
             icon: Icon(
-              Icons.share,
+              FeatherIcons.share,
               color: pinnedStories.isEmpty ? Palette.grey : null,
             ),
             onPressed: () async {
