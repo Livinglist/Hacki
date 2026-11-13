@@ -5,7 +5,7 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hacki/utils/hacker_news_fallback_adapter.dart';
+import 'package:hacki/utils/dio/adapters/hacker_news_fallback_adapter.dart';
 
 void main() {
   late _RecordingAdapter primary;

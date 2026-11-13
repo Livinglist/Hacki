@@ -14,7 +14,6 @@ import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/hacker_news_repository.dart';
-import 'package:hacki/utils/hacker_news_fallback_adapter.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:html/dom.dart' hide Comment;
 import 'package:html/parser.dart';

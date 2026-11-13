@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/auth_repository.dart';
 import 'package:hacki/repositories/post_repository.dart';
-import 'package:hacki/utils/hacker_news_fallback_adapter.dart';
+import 'package:hacki/utils/dio/adapters/hacker_news_fallback_adapter.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// [PostableRepository] is solely for hosting functionalities shared between
