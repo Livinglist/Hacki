@@ -4,13 +4,18 @@ import 'package:dio/dio.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/auth_repository.dart';
 import 'package:hacki/repositories/post_repository.dart';
+import 'package:hacki/utils/hacker_news_fallback_adapter.dart';
 import 'package:material_ui/material_ui.dart';
 
 /// [PostableRepository] is solely for hosting functionalities shared between
 /// [AuthRepository] and [PostRepository].
 class PostableRepository {
   PostableRepository({Dio? dio, this.authority = 'news.ycombinator.com'})
-    : _dio = dio ?? Dio();
+    : _dio = dio ?? Dio() {
+    _dio.httpClientAdapter = HackerNewsFallbackAdapter(
+      primary: _dio.httpClientAdapter,
+    );
+  }
 
   final Dio _dio;
 

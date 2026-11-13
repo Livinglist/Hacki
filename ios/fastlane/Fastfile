@@ -46,11 +46,19 @@ latest_testflight_build_number
     new_build_number = ( + 1)
 
     # Prep the xcodeproject from Flutter without building (`--config-only`)
-    sh(
+    flutter_args = [
       "/Users/runner/work/Hacki/Hacki/submodules/flutter/bin/flutter", "build", "ios", "--config-only",
       "--release", "--no-pub", "--no-codesign",
       "--build-number", new_build_number.to_s
-    )
+    ]
+    backend_url = ENV.fetch('HACKI_BACKEND_URL', '')
+    backend_api_key = ENV.fetch('HACKI_BACKEND_API_KEY', '')
+    unless backend_url.empty? || backend_api_key.empty?
+      flutter_args << "--dart-define=HACKI_BACKEND_URL=#{backend_url}"
+      flutter_args << "--dart-define=HACKI_BACKEND_API_KEY=#{backend_api_key}"
+    end
+    # Fastlane's command log would otherwise expose the embedded API key.
+    sh(*flutter_args, log: false)
 
     version = get_version_number(xcodeproj: "Runner.xcodeproj", target: 'Runner')
 

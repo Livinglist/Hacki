@@ -1,0 +1,24 @@
+services:
+  hacki-server:
+    build: .
+    restart: unless-stopped
+    environment:
+      HACKI_API_KEY: ${HACKI_API_KEY:?Set HACKI_API_KEY in .env}
+      HACKI_LISTEN_ADDR: 0.0.0.0:8080
+      HACKI_CACHE_PATH: /data/cache.sqlite
+      HACKI_CACHE_TTL: ${HACKI_CACHE_TTL:-30m}
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - cache:/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    stop_grace_period: 30s
+
+volumes:
+  cache:
