@@ -11,6 +11,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
@@ -132,109 +133,120 @@ Future<void> main({bool testing = false}) async {
 }
 
 class HackiApp extends StatelessWidget {
-  const HackiApp({super.key, this.savedThemeMode});
+  const HackiApp({
+    super.key,
+    this.savedThemeMode,
+    this.blocProviders,
+    this.routerConfig,
+  });
 
   final AdaptiveThemeMode? savedThemeMode;
+  final List<BlocProvider<dynamic>>? blocProviders;
+  final GoRouter? routerConfig;
 
   @override
   Widget build(BuildContext context) {
+    final GoRouter appRouter = routerConfig ?? router;
     return MultiBlocProvider(
-      providers: <BlocProvider<dynamic>>[
-        BlocProvider<RemoteConfigCubit>.value(
-          value: locator.get<RemoteConfigCubit>(),
-        ),
-        BlocProvider<PreferenceCubit>(
-          lazy: false,
-          create: (BuildContext context) => PreferenceCubit(),
-        ),
-        BlocProvider<FilterCubit>(
-          lazy: false,
-          create: (BuildContext context) => FilterCubit(),
-        ),
-        BlocProvider<HideCubit>(
-          create: (BuildContext context) =>
-              HideCubit(preferenceCubit: context.read<PreferenceCubit>()),
-        ),
-        BlocProvider<StoriesBloc>(
-          create: (BuildContext context) => StoriesBloc(
-            preferenceCubit: context.read<PreferenceCubit>(),
-            filterCubit: context.read<FilterCubit>(),
-            hideCubit: context.read<HideCubit>(),
-          ),
-        ),
-        BlocProvider<AuthBloc>(
-          lazy: false,
-          create: (BuildContext context) => AuthBloc(),
-        ),
-        BlocProvider<HistoryCubit>(
-          lazy: false,
-          create: (BuildContext context) =>
-              HistoryCubit(authBloc: context.read<AuthBloc>()),
-        ),
-        BlocProvider<FavCubit>(
-          lazy: false,
-          create: (BuildContext context) =>
-              FavCubit(authBloc: context.read<AuthBloc>()),
-        ),
-        BlocProvider<BlocklistCubit>(
-          lazy: false,
-          create: (BuildContext context) => BlocklistCubit(),
-        ),
-        BlocProvider<SearchCubit>(
-          lazy: false,
-          create: (BuildContext context) => SearchCubit(),
-        ),
-        BlocProvider<NotificationCubit>(
-          lazy: false,
-          create: (BuildContext context) => NotificationCubit(
-            authBloc: context.read<AuthBloc>(),
-            preferenceCubit: context.read<PreferenceCubit>(),
-          ),
-        ),
-        BlocProvider<PinCubit>(
-          lazy: false,
-          create: (BuildContext context) => PinCubit(),
-        ),
-        BlocProvider<SplitViewCubit>(
-          lazy: false,
-          create: (BuildContext context) =>
-              SplitViewCubit(preferenceCubit: context.read<PreferenceCubit>()),
-        ),
-        BlocProvider<ReminderCubit>(
-          lazy: false,
-          create: (BuildContext context) => ReminderCubit(),
-        ),
-        BlocProvider<PostCubit>(
-          lazy: false,
-          create: (BuildContext context) => PostCubit(),
-        ),
-        BlocProvider<EditCubit>(
-          lazy: false,
-          create: (BuildContext context) => EditCubit(),
-        ),
-        BlocProvider<TabCubit>(
-          lazy: false,
-          create: (BuildContext context) =>
-              TabCubit(preferenceCubit: context.read<PreferenceCubit>()),
-        ),
-        BlocProvider<TipsCubit>(
-          lazy: false,
-          create: (BuildContext context) => TipsCubit(),
-        ),
-        BlocProvider<ThreadNavigationButtonCubit>(
-          lazy: false,
-          create: (BuildContext context) => ThreadNavigationButtonCubit(
-            preferenceCubit: context.read<PreferenceCubit>(),
-          ),
-        ),
-        BlocProvider<ReviewRequestCubit>(
-          lazy: false,
-          create: (BuildContext context) => ReviewRequestCubit(),
-        ),
-        BlocProvider<NetworkProxyCubit>(
-          create: (BuildContext context) => NetworkProxyCubit(),
-        ),
-      ],
+      providers:
+          blocProviders ??
+          <BlocProvider<dynamic>>[
+            BlocProvider<RemoteConfigCubit>.value(
+              value: locator.get<RemoteConfigCubit>(),
+            ),
+            BlocProvider<PreferenceCubit>(
+              lazy: false,
+              create: (BuildContext context) => PreferenceCubit(),
+            ),
+            BlocProvider<FilterCubit>(
+              lazy: false,
+              create: (BuildContext context) => FilterCubit(),
+            ),
+            BlocProvider<HideCubit>(
+              create: (BuildContext context) =>
+                  HideCubit(preferenceCubit: context.read<PreferenceCubit>()),
+            ),
+            BlocProvider<StoriesBloc>(
+              create: (BuildContext context) => StoriesBloc(
+                preferenceCubit: context.read<PreferenceCubit>(),
+                filterCubit: context.read<FilterCubit>(),
+                hideCubit: context.read<HideCubit>(),
+              ),
+            ),
+            BlocProvider<AuthBloc>(
+              lazy: false,
+              create: (BuildContext context) => AuthBloc(),
+            ),
+            BlocProvider<HistoryCubit>(
+              lazy: false,
+              create: (BuildContext context) =>
+                  HistoryCubit(authBloc: context.read<AuthBloc>()),
+            ),
+            BlocProvider<FavCubit>(
+              lazy: false,
+              create: (BuildContext context) =>
+                  FavCubit(authBloc: context.read<AuthBloc>()),
+            ),
+            BlocProvider<BlocklistCubit>(
+              lazy: false,
+              create: (BuildContext context) => BlocklistCubit(),
+            ),
+            BlocProvider<SearchCubit>(
+              lazy: false,
+              create: (BuildContext context) => SearchCubit(),
+            ),
+            BlocProvider<NotificationCubit>(
+              lazy: false,
+              create: (BuildContext context) => NotificationCubit(
+                authBloc: context.read<AuthBloc>(),
+                preferenceCubit: context.read<PreferenceCubit>(),
+              ),
+            ),
+            BlocProvider<PinCubit>(
+              lazy: false,
+              create: (BuildContext context) => PinCubit(),
+            ),
+            BlocProvider<SplitViewCubit>(
+              lazy: false,
+              create: (BuildContext context) => SplitViewCubit(
+                preferenceCubit: context.read<PreferenceCubit>(),
+              ),
+            ),
+            BlocProvider<ReminderCubit>(
+              lazy: false,
+              create: (BuildContext context) => ReminderCubit(),
+            ),
+            BlocProvider<PostCubit>(
+              lazy: false,
+              create: (BuildContext context) => PostCubit(),
+            ),
+            BlocProvider<EditCubit>(
+              lazy: false,
+              create: (BuildContext context) => EditCubit(),
+            ),
+            BlocProvider<TabCubit>(
+              lazy: false,
+              create: (BuildContext context) =>
+                  TabCubit(preferenceCubit: context.read<PreferenceCubit>()),
+            ),
+            BlocProvider<TipsCubit>(
+              lazy: false,
+              create: (BuildContext context) => TipsCubit(),
+            ),
+            BlocProvider<ThreadNavigationButtonCubit>(
+              lazy: false,
+              create: (BuildContext context) => ThreadNavigationButtonCubit(
+                preferenceCubit: context.read<PreferenceCubit>(),
+              ),
+            ),
+            BlocProvider<ReviewRequestCubit>(
+              lazy: false,
+              create: (BuildContext context) => ReviewRequestCubit(),
+            ),
+            BlocProvider<NetworkProxyCubit>(
+              create: (BuildContext context) => NetworkProxyCubit(),
+            ),
+          ],
       child: BlocConsumer<PreferenceCubit, PreferenceState>(
         listenWhen: (PreferenceState previous, PreferenceState current) =>
             previous.isHapticFeedbackEnabled != current.isHapticFeedbackEnabled,
@@ -347,7 +359,7 @@ class HackiApp extends StatelessWidget {
                                             isTrueDarkModeEnabled:
                                                 state.isTrueDarkModeEnabled,
                                           ),
-                                    routerConfig: router,
+                                    routerConfig: appRouter,
                                     builder: state.isDevModeEnabled
                                         ? (
                                             BuildContext context,
@@ -358,13 +370,13 @@ class HackiApp extends StatelessWidget {
                                               DraggableFloatingButton(
                                                 onTap: () {
                                                   final bool isOnLogsScreen =
-                                                      router.state.fullPath
+                                                      appRouter.state.fullPath
                                                           ?.contains(
                                                             Paths.logs.landing,
                                                           ) ??
                                                       false;
                                                   if (!isOnLogsScreen) {
-                                                    router.push(
+                                                    appRouter.push(
                                                       Paths.logs.landing,
                                                     );
                                                   }

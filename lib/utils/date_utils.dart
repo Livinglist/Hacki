@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:material_ui/material_ui.dart' as date_utils;
 
 abstract final class DateUtils {
@@ -8,17 +9,17 @@ abstract final class DateUtils {
   );
 
   static final int yearsSinceFirstCommit = () {
-    final DateTime now = DateTime.now();
+    final DateTime now = clock.now();
     final int year = now.year;
     return year - _hackiAnniversary.year;
   }();
 
   static final bool isTodayAnniversary = () {
-    return date_utils.DateUtils.isSameDay(DateTime.now(), _hackiAnniversary);
+    return date_utils.DateUtils.isSameDay(clock.now(), _hackiAnniversary);
   }();
 
   static final bool isMidnight = () {
-    final DateTime now = DateTime.now();
+    final DateTime now = clock.now();
     final int hour = now.hour;
     return hour >= 0 && hour < 4;
   }();

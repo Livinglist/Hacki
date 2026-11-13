@@ -1,0 +1,63 @@
+name: Golden Tests
+
+on:
+  pull_request:
+    paths:
+      - 'lib/**'
+      - 'test/goldens/**'
+      - 'assets/**'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - 'submodules/flutter'
+      - '.github/workflows/goldens.yml'
+      - 'dart_test.yaml'
+  push:
+    branches: [master]
+    paths:
+      - 'lib/**'
+      - 'test/goldens/**'
+      - 'assets/**'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - 'submodules/flutter'
+      - '.github/workflows/goldens.yml'
+      - 'dart_test.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: goldens-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  goldens:
+    name: Android and iOS layout goldens
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      TZ: UTC
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+    steps:
+      - name: Check out repository and pinned Flutter SDK
+        uses: actions/checkout@v7
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: submodules/flutter/bin/flutter pub get
+
+      - name: Verify coverage and compare goldens
+        run: submodules/flutter/bin/flutter test test/goldens --concurrency=2
+
+      - name: Upload golden differences
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: golden-differences
+          path: test/goldens/**/failures/**
+          if-no-files-found: ignore
+          retention-days: 14

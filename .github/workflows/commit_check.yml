@@ -54,4 +54,4 @@ jobs:
 
       - name: Flutter test
         if: steps.changes.outputs.flutter == 'true' || steps.changes.outputs.unitTests == 'true'
-        run: submodules/flutter/bin/flutter test
+        run: submodules/flutter/bin/flutter test --exclude-tags=golden
