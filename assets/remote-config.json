@@ -8,7 +8,7 @@
   "subtextSelector": "#hnmain > tbody > tr > td > table > tbody > tr > .subtext",
   "titlelineSelector": ".title > .titleline > a",
   "pointSelector": ".subline > .score",
-  "userSelector": ".subline > .hnuser",
+  "userSelector": ".subline > a[href^=\"user?id=\"]",
   "ageSelector": ".subline > .age",
   "cmtCountSelector": ".subline > a",
   "moreLinkSelector": "#hnmain > tbody > tr:nth-child(3) > td > table > tbody > tr > td.title > a"
