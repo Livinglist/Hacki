@@ -4,7 +4,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
@@ -129,120 +128,29 @@ class CommentTile extends StatelessWidget {
               hasNewReplies = newCommentsCount > 0;
             }
 
-            final bool isOwnComment =
-                context.read<AuthBloc>().state.user.id == comment.by;
-            final bool arePanesSwapped = prefState.areSlidePanesSwapped;
-
-            /// The pane holding the leading action, secondary action, the
-            /// conditional edit action, and the more action. When the panes
-            /// are swapped, this pane's children are reversed so that the
-            /// leading action is still revealed first with a small swipe
-            /// and the more action still needs the fullest swipe, even
-            /// though this pane now renders on the opposite side.
-            final ActionPane? leadingGroupPane = isActionable
-                ? ActionPane(
-                    motion: const BehindMotion(),
-                    dismissible: DismissiblePane(
-                      closeOnCancel: true,
-                      confirmDismiss: () async {
-                        onLeadingActionTapped?.call(comment);
-                        return false;
-                      },
-                      onDismissed: () {},
-                    ),
-                    children: <Widget>[
-                      if (onLeadingActionTapped != null &&
-                          !(_isVoteAction(prefState.leadingAction) &&
-                              isOwnComment))
-                        CustomSlidableAction(
-                          onPressed: (_) =>
-                              onLeadingActionTapped?.call(comment),
-                          backgroundColor: backgroundColor,
-                          foregroundColor: foregroundColor,
-                          child: Icon(
-                            prefState.leadingAction.icon,
-                            size: Dimens.pt24,
-                          ),
-                        ),
-                      if (onSecondaryActionTapped != null &&
-                          !(_isVoteAction(prefState.secondaryAction) &&
-                              isOwnComment))
-                        CustomSlidableAction(
-                          onPressed: (_) =>
-                              onSecondaryActionTapped?.call(comment),
-                          backgroundColor: backgroundColor,
-                          foregroundColor: foregroundColor,
-                          child: Icon(
-                            prefState.secondaryAction.icon,
-                            size: Dimens.pt24,
-                          ),
-                        ),
-                      if (isOwnComment)
-                        CustomSlidableAction(
-                          onPressed: (_) => onEditTapped?.call(comment),
-                          backgroundColor: backgroundColor,
-                          foregroundColor: foregroundColor,
-                          child: const Icon(Icons.edit, size: Dimens.pt24),
-                        ),
-                      CustomSlidableAction(
-                        onPressed: (BuildContext context) =>
-                            onMoreTapped?.call(comment, context.rect),
-                        backgroundColor: backgroundColor,
-                        foregroundColor: foregroundColor,
-                        child: const Icon(Icons.more_horiz, size: Dimens.pt24),
-                      ),
-                    ].reversedIf(condition: arePanesSwapped),
-                  )
-                : null;
-
-            /// The pane holding the single trailing action. Its low
-            /// [DismissiblePane.dismissThreshold] belongs to this pane, not
-            /// to a screen side, so it keeps applying correctly after
-            /// [PreferenceState.areSlidePanesSwapped] moves this pane to the
-            /// other side.
-            final ActionPane? trailingGroupPane =
-                isActionable &&
-                    onTrailingActionTapped != null &&
-                    !(_isVoteAction(prefState.trailingAction) && isOwnComment)
-                ? ActionPane(
-                    motion: const BehindMotion(),
-                    dismissible: DismissiblePane(
-                      closeOnCancel: true,
-                      dismissThreshold: 0.01,
-                      confirmDismiss: () async {
-                        onTrailingActionTapped?.call(comment);
-                        return false;
-                      },
-                      onDismissed: () {},
-                    ),
-                    children: <Widget>[
-                      CustomSlidableAction(
-                        onPressed: (_) => onTrailingActionTapped?.call(comment),
-                        backgroundColor: backgroundColor,
-                        foregroundColor: foregroundColor,
-                        child: Icon(
-                          prefState.trailingAction.icon,
-                          size: Dimens.pt24,
-                        ),
-                      ),
-                    ],
-                  )
-                : null;
-
             final Widget child = DeviceGestureWrapper(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Slidable(
-                    key: ValueKey<String>(
-                      'comment_tile_slidable_${comment.id}',
-                    ),
-                    startActionPane: arePanesSwapped
-                        ? trailingGroupPane
-                        : leadingGroupPane,
-                    endActionPane: arePanesSwapped
-                        ? leadingGroupPane
-                        : trailingGroupPane,
+                  ItemSlidable(
+                    item: comment,
+                    enabled: isActionable,
+                    backgroundColor: backgroundColor,
+                    foregroundColor: foregroundColor,
+                    onLeadingActionTapped: onLeadingActionTapped == null
+                        ? null
+                        : () => onLeadingActionTapped?.call(comment),
+                    onSecondaryActionTapped: onSecondaryActionTapped == null
+                        ? null
+                        : () => onSecondaryActionTapped?.call(comment),
+                    onTrailingActionTapped: onTrailingActionTapped == null
+                        ? null
+                        : () => onTrailingActionTapped?.call(comment),
+                    onEditTapped: onEditTapped == null
+                        ? null
+                        : () => onEditTapped?.call(comment),
+                    onMoreTapped: (Rect? rect) =>
+                        onMoreTapped?.call(comment, rect),
                     child: InkWell(
                       splashFactory: NoSplash.splashFactory,
                       onTap: () {
@@ -576,9 +484,6 @@ class CommentTile extends StatelessWidget {
       }
     }
   }
-
-  bool _isVoteAction(SlideAction action) =>
-      action == SlideAction.upvote || action == SlideAction.downvote;
 
   bool _shouldShowLoadButton(BuildContext context) {
     final CommentsState? commentsState = context

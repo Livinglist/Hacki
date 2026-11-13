@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
-import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
@@ -26,40 +26,74 @@ class SlideActionSettings extends StatelessWidget {
                     top: Dimens.pt36,
                     left: Dimens.zero,
                     right: Dimens.zero,
-                    child: Row(
-                      children: <Widget>[
-                        SizedBoxes.pt16,
-                        _SlideActionMenu(
-                          current: preferenceState.leadingAction,
-                          onChanged: (SlideAction action) {
-                            context.read<PreferenceCubit>().update(
-                              LeadingActionPreference(val: action.index),
-                            );
-                          },
-                        ),
-                        SizedBoxes.pt16,
-                        _SlideActionMenu(
-                          current: preferenceState.secondaryAction,
-                          onChanged: (SlideAction action) {
-                            context.read<PreferenceCubit>().update(
-                              SecondaryActionPreference(val: action.index),
-                            );
-                          },
-                        ),
-                        SizedBoxes.pt16,
-                        const Icon(Icons.more_horiz),
-                        SizedBoxes.pt16,
-                        const Spacer(),
-                        _SlideActionMenu(
-                          current: preferenceState.trailingAction,
-                          onChanged: (SlideAction action) {
-                            context.read<PreferenceCubit>().update(
-                              TrailingActionPreference(val: action.index),
-                            );
-                          },
-                        ),
-                        SizedBoxes.pt16,
-                      ].reversedIf(condition: swapped),
+                    child: SizedBox(
+                      height: Dimens.pt48,
+                      child: Stack(
+                        children: <Widget>[
+                          AnimatedAlign(
+                            duration: AppDurations.ms600,
+                            curve: Curves.elasticOut,
+                            alignment: swapped
+                                ? Alignment.centerRight
+                                : Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: Dimens.pt16,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  _SlideActionMenu(
+                                    current: preferenceState.leadingAction,
+                                    onChanged: (SlideAction action) {
+                                      context.read<PreferenceCubit>().update(
+                                        LeadingActionPreference(
+                                          val: action.index,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  SizedBoxes.pt16,
+                                  _SlideActionMenu(
+                                    current: preferenceState.secondaryAction,
+                                    onChanged: (SlideAction action) {
+                                      context.read<PreferenceCubit>().update(
+                                        SecondaryActionPreference(
+                                          val: action.index,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  SizedBoxes.pt16,
+                                  const Icon(Icons.more_horiz),
+                                ],
+                              ),
+                            ),
+                          ),
+                          AnimatedAlign(
+                            duration: AppDurations.ms600,
+                            curve: Curves.elasticOut,
+                            alignment: swapped
+                                ? Alignment.centerLeft
+                                : Alignment.centerRight,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: Dimens.pt16,
+                              ),
+                              child: _SlideActionMenu(
+                                current: preferenceState.trailingAction,
+                                onChanged: (SlideAction action) {
+                                  context.read<PreferenceCubit>().update(
+                                    TrailingActionPreference(
+                                      val: action.index,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   Row(
@@ -109,9 +143,18 @@ class _SlideActionMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    final InputBorder? enabledBorder = Theme.of(
+      context,
+    ).inputDecorationTheme.enabledBorder;
+    final BorderSide borderSide = enabledBorder is UnderlineInputBorder
+        ? enabledBorder.borderSide
+        : BorderSide(color: Theme.of(context).dividerColor);
+
     return PopupMenuButton<SlideAction>(
       key: ValueKey<SlideAction>(current),
       initialValue: current,
+      color: colorScheme.surfaceContainer,
       onSelected: (SlideAction action) {
         HapticFeedbackUtils.selection();
         onChanged(action);
@@ -122,21 +165,33 @@ class _SlideActionMenu extends StatelessWidget {
               value: val,
               child: Row(
                 children: <Widget>[
-                  Icon(val.icon),
+                  Icon(
+                    val.icon,
+                    color: val == current ? colorScheme.primary : null,
+                  ),
                   SizedBoxes.pt12,
-                  Text(val.description),
+                  Text(
+                    val.description,
+                    style: TextStyle(
+                      color: val == current ? colorScheme.primary : null,
+                    ),
+                  ),
                 ],
               ),
             ),
           )
           .toList(),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: Dimens.pt12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: Dimens.pt4,
+          vertical: Dimens.pt12,
+        ),
+        decoration: BoxDecoration(border: Border(bottom: borderSide)),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Icon(current.icon),
-            const Icon(Icons.arrow_drop_down),
+            Icon(current.icon, color: colorScheme.primary),
+            Icon(Icons.arrow_drop_down, color: Theme.of(context).hintColor),
           ],
         ),
       ),

@@ -331,6 +331,7 @@ class _ItemScreenState extends State<ItemScreen>
                             ..search(item.by)
                             ..openInThreadSearch?.call();
                         },
+                        onReplyTapped: () => onReplyTapped(item),
                       ),
                       onStoryUrlTapped: _webViewController.show,
                       shouldMarkNewComment: widget.shouldMarkNewComment,
@@ -439,6 +440,7 @@ class _ItemScreenState extends State<ItemScreen>
                                         ..search(item.by)
                                         ..openInThreadSearch?.call();
                                     },
+                                    onReplyTapped: () => onReplyTapped(item),
                                   ),
                               onStoryUrlTapped: _webViewController.show,
                               shouldMarkNewComment: widget.shouldMarkNewComment,
@@ -502,6 +504,14 @@ class _ItemScreenState extends State<ItemScreen>
     if (commentEditingController.text.isEmpty) {
       context.read<EditCubit>().reset();
     }
+  }
+
+  void onReplyTapped(Item item) {
+    final EditCubit editCubit = context.read<EditCubit>();
+    if (item.id != editCubit.state.replyingTo?.id) {
+      commentEditingController.clear();
+    }
+    editCubit.onReplyTapped(item);
   }
 
   void onFontSizeTapped() {

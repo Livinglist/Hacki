@@ -54,6 +54,7 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
     Rect? rect, {
     Item? parent,
     VoidCallback? onSearchInThreadTapped,
+    VoidCallback? onReplyTapped,
   }) {
     HapticFeedbackUtils.light();
 
@@ -76,6 +77,11 @@ mixin ItemActionMixin<T extends StatefulWidget> on State<T> {
             isBlocked: isBlocked,
             onLoginTapped: onLoginTapped,
             onSearchInThreadTapped: onSearchInThreadTapped,
+            onReplyTapped: onReplyTapped,
+            onViewInSeparateThreadTapped: () => goToItemScreen(
+              args: ItemScreenArgs(item: item, shouldUseCommentCache: true),
+              forceNewScreen: true,
+            ),
           ),
         );
       },
