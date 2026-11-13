@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
@@ -66,7 +67,7 @@ class SlideActionSettings extends StatelessWidget {
                                   ),
                                   SizedBoxes.pt16,
                                   const Icon(Icons.more_horiz),
-                                ],
+                                ].reversedIf(condition: swapped),
                               ),
                             ),
                           ),
