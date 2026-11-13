@@ -593,6 +593,7 @@ class _SettingsViewState extends State<SettingsView>
               previous.font != current.font,
           builder: (BuildContext context, PreferenceState state) {
             return AlertDialog(
+              scrollable: true,
               content: RadioGroup<Font>(
                 groupValue: state.font,
                 onChanged: (Font? val) {

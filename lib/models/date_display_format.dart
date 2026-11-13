@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:clock/clock.dart';
 import 'package:hacki/extensions/date_time_extension.dart';
 import 'package:intl/intl.dart';
 
@@ -11,9 +12,7 @@ enum DateDisplayFormat {
   yMMMEd;
 
   String get description {
-    final DateTime exampleDate = DateTime.now().subtract(
-      const Duration(days: 5),
-    );
+    final DateTime exampleDate = clock.now().subtract(const Duration(days: 5));
     return switch (this) {
       timeAgo => exampleDate.toTimeAgoString(),
       yMd || yMEd || yMMMd || yMMMEd => () {

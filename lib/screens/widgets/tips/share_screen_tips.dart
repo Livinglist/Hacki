@@ -29,88 +29,92 @@ class ShareScreenTips extends StatelessWidget {
         );
         return Scaffold(
           appBar: AppBar(title: const Text('Tips')),
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: Dimens.pt12),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                SizedBox(height: MediaQuery.of(context).padding.top),
-                SizedBoxes.pt48,
-                SizedBoxes.pt48,
-                SizedBoxes.pt48,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Card(
-                      elevation: Dimens.pt4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(Dimens.pt6),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(Dimens.pt6),
-                        child: Image.asset(
-                          Constants.shareImageHintsFirstPath,
-                          width: imageWidth,
-                          fit: BoxFit.fitWidth,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(Dimens.pt12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  SizedBoxes.pt24,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Card(
+                        elevation: Dimens.pt4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(Dimens.pt6),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(Dimens.pt6),
+                          child: Image.asset(
+                            Constants.shareImageHintsFirstPath,
+                            width: imageWidth,
+                            fit: BoxFit.fitWidth,
+                          ),
                         ),
                       ),
-                    ),
-                    Icon(
-                      Icons.arrow_forward_rounded,
-                      color: Theme.of(context).colorScheme.onSecondaryContainer,
-                    ),
-                    Card(
-                      elevation: Dimens.pt4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(Dimens.pt6),
+                      Icon(
+                        Icons.arrow_forward_rounded,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSecondaryContainer,
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(Dimens.pt6),
-                        child: Image.asset(
-                          Constants.shareImageHintsSecondPath,
-                          width: imageWidth,
-                          fit: BoxFit.fitWidth,
+                      Card(
+                        elevation: Dimens.pt4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(Dimens.pt6),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(Dimens.pt6),
+                          child: Image.asset(
+                            Constants.shareImageHintsSecondPath,
+                            width: imageWidth,
+                            fit: BoxFit.fitWidth,
+                          ),
                         ),
                       ),
+                    ],
+                  ),
+                  SizedBoxes.pt24,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: Dimens.pt12,
                     ),
-                  ],
-                ),
-                SizedBoxes.pt24,
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: Dimens.pt12),
-                  child: Text(
-                    '''You can select text in the comment before tapping on Share button and the text will be highlighted in resulted screenshot.''',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSecondaryContainer,
-                      fontSize: TextDimens.pt16,
+                    child: Text(
+                      '''You can select text in the comment before tapping on Share button and the text will be highlighted in resulted screenshot.''',
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSecondaryContainer,
+                        fontSize: TextDimens.pt16,
+                      ),
                     ),
                   ),
-                ),
-                const Spacer(),
-                Row(
-                  children: <Widget>[
-                    const Spacer(),
-                    TextButton(
-                      onPressed: action,
-                      child: const Text(
-                        'Dismiss',
-                        style: TextStyle(fontSize: TextDimens.pt16),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: action,
-                      child: const Text(
-                        'Interesting',
-                        style: TextStyle(
-                          fontSize: TextDimens.pt16,
-                          fontWeight: FontWeight.bold,
+                  SizedBoxes.pt24,
+                  OverflowBar(
+                    alignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      TextButton(
+                        onPressed: action,
+                        child: const Text(
+                          'Dismiss',
+                          style: TextStyle(fontSize: TextDimens.pt16),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBoxes.pt100,
-              ],
+                      TextButton(
+                        onPressed: action,
+                        child: const Text(
+                          'Interesting',
+                          style: TextStyle(
+                            fontSize: TextDimens.pt16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );

@@ -130,12 +130,14 @@ class ItemsListView<T extends Item> extends StatelessWidget {
                             children: <Widget>[
                               Row(
                                 children: <Widget>[
-                                  Text(
-                                    shouldShowAuthor
-                                        ? '''${e.timeAgo} by ${e.by}'''
-                                        : e.timeAgo,
-                                    style: TextStyle(
-                                      color: Theme.of(context).metadataColor,
+                                  Expanded(
+                                    child: Text(
+                                      shouldShowAuthor
+                                          ? '''${e.timeAgo} by ${e.by}'''
+                                          : e.timeAgo,
+                                      style: TextStyle(
+                                        color: Theme.of(context).metadataColor,
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(width: Dimens.pt12),

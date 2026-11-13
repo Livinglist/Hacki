@@ -176,16 +176,16 @@ class _ShareScreenState extends State<ShareScreen> {
                   ),
                 ),
                 SizedBoxes.pt12,
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: Dimens.pt24,
+                  runSpacing: Dimens.pt12,
                   children: <Widget>[
                     ElevatedButton.icon(
                       onPressed: _save,
                       icon: const Icon(Icons.save),
                       label: const Text('Save to album'),
                     ),
-                    SizedBoxes.pt24,
                     ElevatedButton.icon(
                       onPressed: _share,
                       icon: const Icon(Icons.share),

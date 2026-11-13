@@ -1,6 +1,8 @@
+import 'package:clock/clock.dart';
+
 extension DateTimeExtension on DateTime {
   String toTimeAgoString({bool shouldUseAbbreviations = false}) {
-    final DateTime now = DateTime.now();
+    final DateTime now = clock.now();
     final Duration diff = now.difference(this);
     final String hourStr = shouldUseAbbreviations ? 'hr' : 'hour';
     final String dayStr = shouldUseAbbreviations ? 'day' : 'day';

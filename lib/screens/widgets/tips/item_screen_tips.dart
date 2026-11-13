@@ -30,8 +30,16 @@ class _ItemScreenTipsState extends State<ItemScreenTips> {
           ..setLooping(true)
           ..initialize().then((_) {
             /// Ensure the first frame is shown after the video is initialized.
-            setState(() {});
+            if (mounted) {
+              setState(() {});
+            }
           });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -40,83 +48,96 @@ class _ItemScreenTipsState extends State<ItemScreenTips> {
       closedElevation: Dimens.zero,
       closedColor: Palette.transparent,
       openColor: Theme.of(context).colorScheme.surface,
+      onClosed: (_) async {
+        if (!context.mounted) return;
+        await _controller.pause();
+        if (context.mounted) {
+          context.read<TipsCubit>().completeTips(Tips.itemScreen);
+        }
+      },
       closedBuilder: (BuildContext context, void Function() action) {
         return IconButton(
-          onPressed: action,
+          onPressed: () {
+            _controller.play();
+            action();
+          },
           icon: const Icon(Icons.tips_and_updates_outlined),
         );
       },
       openBuilder: (BuildContext context, void Function() action) {
-        _controller.play();
-        context.read<TipsCubit>().completeTips(Tips.itemScreen);
         return Scaffold(
           appBar: AppBar(title: const Text('Tips')),
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: Dimens.pt12),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                      height:
-                          MediaQuery.of(context).size.height *
-                          _videoHeightFactor,
-                      child: Card(
-                        elevation: Dimens.pt4,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(Dimens.pt6),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(Dimens.pt6),
-                          child: _controller.value.isInitialized
-                              ? AspectRatio(
-                                  aspectRatio: _controller.value.aspectRatio,
-                                  child: VideoPlayer(_controller),
-                                )
-                              : Container(),
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(Dimens.pt12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(
+                        height:
+                            MediaQuery.of(context).size.height *
+                            _videoHeightFactor,
+                        child: Card(
+                          elevation: Dimens.pt4,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(Dimens.pt6),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(Dimens.pt6),
+                            child: _controller.value.isInitialized
+                                ? AspectRatio(
+                                    aspectRatio: _controller.value.aspectRatio,
+                                    child: VideoPlayer(_controller),
+                                  )
+                                : Container(),
+                          ),
                         ),
                       ),
+                    ],
+                  ),
+                  SizedBoxes.pt24,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: Dimens.pt12,
                     ),
-                  ],
-                ),
-                SizedBoxes.pt24,
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: Dimens.pt12),
-                  child: Text(
-                    '''When you find yourself too deep in a thread, you can swipe left on a comment to see all its ancestors including the root story (or comment).''',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSecondaryContainer,
-                      fontSize: TextDimens.pt16,
+                    child: Text(
+                      '''When you find yourself too deep in a thread, you can swipe left on a comment to see all its ancestors including the root story (or comment).''',
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSecondaryContainer,
+                        fontSize: TextDimens.pt16,
+                      ),
                     ),
                   ),
-                ),
-                const Spacer(),
-                Row(
-                  children: <Widget>[
-                    const Spacer(),
-                    TextButton(
-                      onPressed: action,
-                      child: const Text(
-                        'Dismiss',
-                        style: TextStyle(fontSize: TextDimens.pt16),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: action,
-                      child: const Text(
-                        'LGTM',
-                        style: TextStyle(
-                          fontSize: TextDimens.pt16,
-                          fontWeight: FontWeight.bold,
+                  SizedBoxes.pt24,
+                  OverflowBar(
+                    alignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      TextButton(
+                        onPressed: action,
+                        child: const Text(
+                          'Dismiss',
+                          style: TextStyle(fontSize: TextDimens.pt16),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBoxes.pt100,
-              ],
+                      TextButton(
+                        onPressed: action,
+                        child: const Text(
+                          'LGTM',
+                          style: TextStyle(
+                            fontSize: TextDimens.pt16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         );

@@ -15,10 +15,120 @@ class SlideActionSettings extends StatelessWidget {
       builder: (BuildContext context, PreferenceState preferenceState) {
         final bool swapped = preferenceState.areSlidePanesSwapped;
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            SizedBox(
+        return LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            final bool needsWrapping =
+                constraints.maxWidth < 390 ||
+                MediaQuery.textScalerOf(context).scale(14) > 14;
+            final Widget swapButton = IconButton(
+              icon: const Icon(Icons.swap_horiz),
+              tooltip: 'Swap leading and trailing panes',
+              onPressed: () {
+                HapticFeedbackUtils.selection();
+                context.read<PreferenceCubit>().update(
+                  SwappedSlidePanesPreference(val: !swapped),
+                );
+              },
+            );
+            final Widget labels = Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                SizedBoxes.pt16,
+                if (needsWrapping)
+                  const Expanded(child: Text('Leading slide action'))
+                else
+                  const Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[Text('Leading slide action')],
+                  ),
+                if (needsWrapping) swapButton else Expanded(child: swapButton),
+                if (needsWrapping)
+                  const Expanded(
+                    child: Text(
+                      'Trailing slide action',
+                      textAlign: TextAlign.end,
+                    ),
+                  )
+                else
+                  const Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[Text('Trailing slide action')],
+                  ),
+                SizedBoxes.pt16,
+              ],
+            );
+            final Widget menus = SizedBox(
+              height: Dimens.pt48,
+              child: Stack(
+                children: <Widget>[
+                  AnimatedAlign(
+                    duration: AppDurations.ms600,
+                    curve: Curves.elasticOut,
+                    alignment: swapped
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Dimens.pt16,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          _SlideActionMenu(
+                            current: preferenceState.leadingAction,
+                            onChanged: (SlideAction action) {
+                              context.read<PreferenceCubit>().update(
+                                LeadingActionPreference(val: action.index),
+                              );
+                            },
+                          ),
+                          SizedBoxes.pt16,
+                          _SlideActionMenu(
+                            current: preferenceState.secondaryAction,
+                            onChanged: (SlideAction action) {
+                              context.read<PreferenceCubit>().update(
+                                SecondaryActionPreference(val: action.index),
+                              );
+                            },
+                          ),
+                          SizedBoxes.pt16,
+                          const Icon(Icons.more_horiz),
+                        ],
+                      ),
+                    ),
+                  ),
+                  AnimatedAlign(
+                    duration: AppDurations.ms600,
+                    curve: Curves.elasticOut,
+                    alignment: swapped
+                        ? Alignment.centerLeft
+                        : Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: Dimens.pt16,
+                      ),
+                      child: _SlideActionMenu(
+                        current: preferenceState.trailingAction,
+                        onChanged: (SlideAction action) {
+                          context.read<PreferenceCubit>().update(
+                            TrailingActionPreference(val: action.index),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+            if (needsWrapping) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[labels, menus],
+              );
+            }
+            return SizedBox(
               height: Dimens.pt80,
               child: Stack(
                 children: <Widget>[
@@ -26,107 +136,13 @@ class SlideActionSettings extends StatelessWidget {
                     top: Dimens.pt36,
                     left: Dimens.zero,
                     right: Dimens.zero,
-                    child: SizedBox(
-                      height: Dimens.pt48,
-                      child: Stack(
-                        children: <Widget>[
-                          AnimatedAlign(
-                            duration: AppDurations.ms600,
-                            curve: Curves.elasticOut,
-                            alignment: swapped
-                                ? Alignment.centerRight
-                                : Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: Dimens.pt16,
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  _SlideActionMenu(
-                                    current: preferenceState.leadingAction,
-                                    onChanged: (SlideAction action) {
-                                      context.read<PreferenceCubit>().update(
-                                        LeadingActionPreference(
-                                          val: action.index,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  SizedBoxes.pt16,
-                                  _SlideActionMenu(
-                                    current: preferenceState.secondaryAction,
-                                    onChanged: (SlideAction action) {
-                                      context.read<PreferenceCubit>().update(
-                                        SecondaryActionPreference(
-                                          val: action.index,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  SizedBoxes.pt16,
-                                  const Icon(Icons.more_horiz),
-                                ],
-                              ),
-                            ),
-                          ),
-                          AnimatedAlign(
-                            duration: AppDurations.ms600,
-                            curve: Curves.elasticOut,
-                            alignment: swapped
-                                ? Alignment.centerLeft
-                                : Alignment.centerRight,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: Dimens.pt16,
-                              ),
-                              child: _SlideActionMenu(
-                                current: preferenceState.trailingAction,
-                                onChanged: (SlideAction action) {
-                                  context.read<PreferenceCubit>().update(
-                                    TrailingActionPreference(val: action.index),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    child: menus,
                   ),
-                  Row(
-                    mainAxisAlignment: .center,
-                    children: <Widget>[
-                      SizedBoxes.pt16,
-                      const Column(
-                        mainAxisSize: .min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[Text('Leading slide action')],
-                      ),
-                      Expanded(
-                        child: IconButton(
-                          icon: const Icon(Icons.swap_horiz),
-                          tooltip: 'Swap leading and trailing panes',
-                          onPressed: () {
-                            HapticFeedbackUtils.selection();
-                            context.read<PreferenceCubit>().update(
-                              SwappedSlidePanesPreference(val: !swapped),
-                            );
-                          },
-                        ),
-                      ),
-                      const Column(
-                        mainAxisSize: .min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[Text('Trailing slide action')],
-                      ),
-                      SizedBoxes.pt16,
-                    ],
-                  ),
+                  labels,
                 ],
               ),
-            ),
-          ],
+            );
+          },
         );
       },
     );
@@ -168,10 +184,12 @@ class _SlideActionMenu extends StatelessWidget {
                     color: val == current ? colorScheme.primary : null,
                   ),
                   SizedBoxes.pt12,
-                  Text(
-                    val.description,
-                    style: TextStyle(
-                      color: val == current ? colorScheme.primary : null,
+                  Flexible(
+                    child: Text(
+                      val.description,
+                      style: TextStyle(
+                        color: val == current ? colorScheme.primary : null,
+                      ),
                     ),
                   ),
                 ],

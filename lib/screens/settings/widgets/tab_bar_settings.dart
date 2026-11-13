@@ -18,6 +18,12 @@ class _TabBarSettingsState extends State<TabBarSettings> {
 
   @override
   Widget build(BuildContext context) {
+    final double fontSize = DefaultTextStyle.of(context).style.fontSize ?? 14;
+    final double textScale =
+        (MediaQuery.textScalerOf(context).scale(fontSize) / fontSize).clamp(
+          1,
+          double.infinity,
+        );
     return Column(
       children: <Widget>[
         const Row(
@@ -31,11 +37,10 @@ class _TabBarSettingsState extends State<TabBarSettings> {
           builder: (BuildContext context, TabState state) {
             return Center(
               child: SizedBox(
-                height: height,
-                width: width,
+                height: height * textScale,
+                width: width * textScale,
                 child: ReorderableListView(
                   scrollDirection: Axis.horizontal,
-                  physics: const NeverScrollableScrollPhysics(),
                   onReorderItem: context.read<TabCubit>().update,
                   onReorderStart: (_) => HapticFeedbackUtils.light(),
                   children: <Widget>[
@@ -43,7 +48,7 @@ class _TabBarSettingsState extends State<TabBarSettings> {
                       InkWell(
                         key: ValueKey<StoryType>(tab),
                         child: SizedBox(
-                          width: 60,
+                          width: 60 * textScale,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[

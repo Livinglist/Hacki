@@ -38,7 +38,7 @@ jobs:
       - run: submodules/flutter/bin/flutter pub get
       - run: submodules/flutter/bin/dart format --set-exit-if-changed lib test integration_test
       - run: submodules/flutter/bin/flutter analyze lib test integration_test
-      - run: submodules/flutter/bin/flutter test
+      - run: submodules/flutter/bin/flutter test --exclude-tags=golden
 
       - name: Decode keystore
         run: |
