@@ -21,6 +21,8 @@ class CommentsState extends Equatable {
     required this.inThreadSearchStatus,
     required this.isNewInSearchSelected,
     required this.maxLevel,
+    required this.navigationStack,
+    required this.navigationIndex,
   });
 
   CommentsState.init({
@@ -40,7 +42,9 @@ class CommentsState extends Equatable {
        inThreadSearchAuthor = '',
        inThreadSearchStatus = Status.idle,
        isNewInSearchSelected = false,
-       maxLevel = 0;
+       maxLevel = 0,
+       navigationStack = <NavigationAnchor>[],
+       navigationIndex = -1;
 
   final Item item;
   final List<Comment> comments;
@@ -58,6 +62,21 @@ class CommentsState extends Equatable {
   final Status inThreadSearchStatus;
   final bool isNewInSearchSelected;
   final int maxLevel;
+
+  /// The positions the user has jumped from and to in this thread, oldest
+  /// first.
+  final List<NavigationAnchor> navigationStack;
+
+  /// The index in [navigationStack] of the position the user is currently
+  /// at, or -1 when nothing has been recorded.
+  final int navigationIndex;
+
+  static const int maxNavigationStackSize = 50;
+
+  bool get canNavigateBack => navigationIndex > 0;
+
+  bool get canNavigateForward =>
+      navigationIndex >= 0 && navigationIndex < navigationStack.length - 1;
 
   /// Indexes of comments that matches the query for in-thread search.
   final List<Comment> matchedComments;
@@ -80,6 +99,8 @@ class CommentsState extends Equatable {
     Status? inThreadSearchStatus,
     bool? isNewInSearchSelected,
     int? maxLevel,
+    List<NavigationAnchor>? navigationStack,
+    int? navigationIndex,
   }) {
     return CommentsState(
       item: item ?? this.item,
@@ -101,7 +122,44 @@ class CommentsState extends Equatable {
       isNewInSearchSelected:
           isNewInSearchSelected ?? this.isNewInSearchSelected,
       maxLevel: maxLevel ?? this.maxLevel,
+      navigationStack: navigationStack ?? this.navigationStack,
+      navigationIndex: navigationIndex ?? this.navigationIndex,
     );
+  }
+
+  /// Records a jump from [from], where the user currently is, to [to].
+  ///
+  /// Any positions ahead of the current one are dropped, the same way a
+  /// browser drops forward history when a new page is visited.
+  CommentsState copyWithNavigation({
+    required NavigationAnchor to,
+    NavigationAnchor? from,
+  }) {
+    if (from?.itemId == to.itemId) {
+      return this;
+    }
+
+    final List<NavigationAnchor> stack = navigationStack
+        .take(navigationIndex + 1)
+        .toList();
+
+    if (from != null) {
+      if (stack.isNotEmpty && stack.last.itemId == from.itemId) {
+        stack.last = from;
+      } else {
+        stack.add(from);
+      }
+    }
+
+    if (stack.isEmpty || stack.last.itemId != to.itemId) {
+      stack.add(to);
+    }
+
+    if (stack.length > maxNavigationStackSize) {
+      stack.removeRange(0, stack.length - maxNavigationStackSize);
+    }
+
+    return copyWith(navigationStack: stack, navigationIndex: stack.length - 1);
   }
 
   Set<int> get commentIds => comments.map((Comment e) => e.id).toSet();
@@ -152,5 +210,7 @@ class CommentsState extends Equatable {
     idToCommentMap,
     isNewInSearchSelected,
     maxLevel,
+    navigationStack,
+    navigationIndex,
   ];
 }
