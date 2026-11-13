@@ -37,6 +37,8 @@ A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
 - [x] [True dark mode](#true-dark-mode)
 - [x] [Tablet support](#tablet-support)
 - [x] [Accent color](#thread) and [font customization](#accent-color-and-font-customization)
+- [x] Optional [self-hosted Go fallback API](server/README.md) with persistent
+  30-minute SQLite caching when Hacker News rate limits HTML requests
 - [x] And more...
 
 ## Home page and story tile customization
