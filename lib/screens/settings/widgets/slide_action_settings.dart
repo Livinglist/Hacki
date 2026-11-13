@@ -84,9 +84,7 @@ class SlideActionSettings extends StatelessWidget {
                                 current: preferenceState.trailingAction,
                                 onChanged: (SlideAction action) {
                                   context.read<PreferenceCubit>().update(
-                                    TrailingActionPreference(
-                                      val: action.index,
-                                    ),
+                                    TrailingActionPreference(val: action.index),
                                   );
                                 },
                               ),
