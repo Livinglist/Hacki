@@ -26,8 +26,10 @@ final class RemoteConfigState extends Equatable {
   String get pointSelector =>
       getString(key: 'pointSelector', fallback: '''.subline > .score''');
 
-  String get userSelector =>
-      getString(key: 'userSelector', fallback: '''.subline > .hnuser''');
+  String get userSelector => getString(
+    key: 'userSelector',
+    fallback: '''.subline > a[href^="user?id="]''',
+  );
 
   String get ageSelector =>
       getString(key: 'ageSelector', fallback: '''.subline > .age''');

@@ -207,10 +207,11 @@ class HackerNewsWebRepository with Loggable {
         final int? id = int.tryParse(idStr ?? '');
 
         /// Get user.
-        final Element? userElement = subtextElement.querySelector(
-          _userSelector,
-        );
-        final String? user = userElement?.nodes.firstOrNull?.text;
+        // Fall back to the profile link if a cached selector still uses hnuser.
+        final Element? userElement =
+            subtextElement.querySelector(_userSelector) ??
+            subtextElement.querySelector('a[href^="user?id="]');
+        final String? user = userElement?.text.trim();
 
         /// Get post date.
         final Element? postDateElement =
