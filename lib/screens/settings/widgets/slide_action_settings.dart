@@ -159,7 +159,7 @@ class _SlideActionMenu extends StatelessWidget {
         HapticFeedbackUtils.selection();
         onChanged(action);
       },
-      itemBuilder: (BuildContext context) => SlideAction.values
+      itemBuilder: (BuildContext context) => SlideAction.displayOrder
           .map(
             (SlideAction val) => PopupMenuItem<SlideAction>(
               value: val,

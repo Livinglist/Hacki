@@ -8,9 +8,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/config/paths.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/screens/item/item_screen.dart' show ItemScreenArgs;
 import 'package:hacki/screens/item/widgets/widgets.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
@@ -423,6 +425,15 @@ class MainView extends StatelessWidget {
         );
       case SlideAction.reply:
         onReplyTapped(context, item);
+      case SlideAction.viewInSeparateThread:
+        if (item is Comment) {
+          unawaited(
+            context.push(
+              Paths.item.landing,
+              extra: ItemScreenArgs(item: item, shouldUseCommentCache: true),
+            ),
+          );
+        }
     }
   }
 
@@ -550,6 +561,7 @@ class _ParentItemSection extends StatelessWidget {
               foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
               unavailableActions: <SlideAction>{
                 SlideAction.timeMachine,
+                SlideAction.viewInSeparateThread,
                 if (item is Story) SlideAction.goToParent,
               },
               onLeadingActionTapped: () => onSlideActionTapped(

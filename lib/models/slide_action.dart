@@ -11,9 +11,28 @@ enum SlideAction {
   favorite('Favorite', icon: Icons.favorite),
   share('Share', icon: Icons.share),
   viewInBrowser('View in Browser', icon: Icons.open_in_browser),
-  reply('Reply', icon: Icons.message);
+  reply('Reply', icon: Icons.message),
+  viewInSeparateThread('View In Separate Thread', icon: Icons.list);
 
   const SlideAction(this.description, {required this.icon});
+
+  /// The order in which actions are offered to the user, following the
+  /// "more" bottom sheet. Preferences store [index], so the declaration
+  /// order above must stay append-only.
+  static const List<SlideAction> displayOrder = <SlideAction>[
+    viewProfile,
+    searchOnHackerNews,
+    searchInThread,
+    reply,
+    upvote,
+    downvote,
+    favorite,
+    share,
+    viewInSeparateThread,
+    viewInBrowser,
+    timeMachine,
+    goToParent,
+  ];
 
   final String description;
   final IconData icon;
