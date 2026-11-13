@@ -230,6 +230,9 @@ and TLS private keys on the VPS or in GitHub Actions secrets.
    | `VPS_DEPLOY_PATH` | `/opt/hacki-server` by default; use an absolute path without spaces. |
    | `VPS_PLATFORM` | `linux/amd64` by default, or `linux/arm64`, from step 1. |
 
+   Linux usernames are case-sensitive; set `VPS_USER` to exactly the account
+   created above (`hacki-deploy`).
+
    Add these **environment secrets**:
 
    | Name | Value |
