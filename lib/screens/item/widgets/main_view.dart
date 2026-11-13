@@ -20,7 +20,6 @@ import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:material_ui/material_ui.dart' hide DateUtils;
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
-import 'package:share_plus/share_plus.dart';
 
 class MainView extends StatelessWidget {
   const MainView({
@@ -29,6 +28,7 @@ class MainView extends StatelessWidget {
     required this.preferenceState,
     required this.splitViewEnabled,
     required this.onMoreTapped,
+    required this.onShareTapped,
     required this.onStoryUrlTapped,
     required this.shouldMarkNewComment,
     required this.indentPadding,
@@ -43,6 +43,7 @@ class MainView extends StatelessWidget {
   final bool splitViewEnabled;
   final bool shouldMarkNewComment;
   final void Function(Item item, Rect? rect) onMoreTapped;
+  final Future<void> Function(Item item, Rect? rect) onShareTapped;
   final VoidCallback onStoryUrlTapped;
   final double indentPadding;
   final double indentLineWidth;
@@ -414,11 +415,7 @@ class MainView extends StatelessWidget {
       case SlideAction.favorite:
         _onFavoriteTapped(context, item);
       case SlideAction.share:
-        await SharePlus.instance.share(
-          ShareParams(
-            uri: Uri.parse('${Constants.hackerNewsItemLinkPrefix}${item.id}'),
-          ),
-        );
+        await onShareTapped(item, context.rect);
       case SlideAction.viewInBrowser:
         LinkUtils.launch(
           '${Constants.hackerNewsItemLinkPrefix}${item.id}',
