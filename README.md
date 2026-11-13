@@ -240,3 +240,75 @@ A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
    <img width="400" alt="ipad-03" src="assets/screenshots/selected/hacki_tablet_03.png"> 
    <img width="400" alt="ipad-04" src="assets/screenshots/selected/hacki_tablet_04.png"> 
 </p>
+
+# Architecture
+Hacki is layered: screens read state from blocs and cubits ([flutter_bloc](https://pub.dev/packages/flutter_bloc)), which get their data from repositories and a few services. Dependencies are registered in a [get_it](https://pub.dev/packages/get_it) locator (`lib/config/locator.dart`) and navigation is handled by [go_router](https://pub.dev/packages/go_router) (`lib/config/router.dart`).
+
+```mermaid
+flowchart TB
+    subgraph UI["UI · lib/screens"]
+        Screens["Screens<br/>Home · Thread · Search · Profile<br/>Settings · Submit · Share · Pins"]
+        Widgets["Shared widgets<br/>StoryTile · CommentTile<br/>ItemText · LinkPreview"]
+    end
+
+    subgraph State["State · lib/blocs, lib/cubits"]
+        Blocs["Blocs<br/>AuthBloc · StoriesBloc"]
+        Cubits["Cubits<br/>Comments · Preference · Fav · Pin<br/>History · Notification · Search<br/>Post · Edit · Vote · Filter · ..."]
+    end
+
+    subgraph Data["Data · lib/repositories"]
+        Remote["Remote repositories<br/>HackerNews · HackerNewsWeb<br/>Auth · Post · Search · RemoteConfig"]
+        Local["Local repositories<br/>Preference · Sembast · Offline<br/>History · CollapseStateCache"]
+    end
+
+    subgraph Services["Services · lib/services"]
+        Caches["CommentCache<br/>DraftCache"]
+        Fetcher["Fetcher<br/>background reply check"]
+        WebAnalyzer["WebAnalyzer<br/>link previews"]
+    end
+
+    subgraph External["External"]
+        HN(["Hacker News<br/>API · website"])
+        Other(["Algolia search<br/>GitHub remote config"])
+        Web(["Linked web pages"])
+    end
+
+    subgraph Device["On device"]
+        Stores[("Sembast · Hive<br/>SharedPreferences<br/>Secure storage")]
+        Notifications(["Local notifications"])
+    end
+
+    Screens --> Blocs
+    Screens --> Cubits
+    Widgets --> WebAnalyzer
+
+    Blocs --> Remote
+    Blocs --> Local
+    Cubits --> Remote
+    Cubits --> Local
+    Cubits --> Caches
+
+    Fetcher --> Remote
+    Fetcher --> Notifications
+
+    Remote --> HN
+    Remote --> Other
+    Local --> Stores
+    WebAnalyzer --> Web
+```
+
+- **UI** goes through blocs and cubits. A few screens also call repositories directly: Home for opening items shared into the app, Settings for clearing caches, and the offline web view.
+- **State** holds the app logic. `StoriesBloc` and `CommentsCubit` choose between the Hacker News API and the parsed website, or read from the offline cache in offline mode.
+- **Data** hides where things come from; see the table below.
+- **Services** cover the rest: in-memory caches, the background job that checks for new replies and posts a local notification, and link preview extraction.
+
+| Repository | Backed by |
+| --- | --- |
+| `HackerNewsRepository` | [Hacker News API](https://github.com/HackerNews/API); caches comments through `SembastRepository` |
+| `HackerNewsWebRepository` | news.ycombinator.com, parsed from HTML (stories, comments, favorites) |
+| `AuthRepository`, `PostRepository` | news.ycombinator.com forms (login, vote, flag, favorite, comment, submit, edit); credentials come from `PreferenceRepository` |
+| `SearchRepository` | [Algolia HN Search API](https://hn.algolia.com/api) |
+| `RemoteConfigRepository` | Config file in this repository, fetched from GitHub |
+| `PreferenceRepository` | SharedPreferences (synced through iCloud on iOS) and secure storage for credentials |
+| `SembastRepository` | Sembast database |
+| `OfflineRepository`, `HistoryRepository`, `CollapseStateCacheRepository` | Hive boxes |
