@@ -1,17 +1,16 @@
 name: Update Flutter Version
 
-# Bump Flutter to the newest stable tag in
-# https://github.com/flutter/flutter/blob/master/CHANGELOG.md.
+# Bump Flutter to the newest stable (major.minor.patch) upstream Git tag.
 # Runs every day at 15:00 UTC, and can also be started by hand.
-# Leave "flutter_version" empty to use that changelog tag, or set it
-# to pin a specific version instead (bypasses the changelog check).
+# Leave "flutter_version" empty to upgrade automatically, or set it
+# to pin a specific version instead (allows an explicit downgrade).
 on:
   schedule:
     - cron: "0 15 * * *"
   workflow_dispatch:
     inputs:
       flutter_version:
-        description: flutter version (leave empty for the latest changelog tag)
+        description: flutter version (leave empty for the latest stable Git tag)
         required: false
         type: string
         default: ""
@@ -30,6 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       up_to_date: ${{ steps.compare.outputs.up_to_date }}
+      flutter_version: ${{ steps.compare.outputs.flutter_version }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
@@ -46,19 +46,20 @@ jobs:
           input="${input#V}"
 
           if [ -n "${input}" ]; then
-            changelog_version="${input}"
-            echo "Using manually requested Flutter version ${changelog_version}."
+            target_version="${input}"
+            echo "Using manually requested Flutter version ${target_version}."
           else
-            changelog="$(curl -fsSL --retry 3 https://raw.githubusercontent.com/flutter/flutter/master/CHANGELOG.md)"
-            changelog_version="$(printf '%s\n' "${changelog}" | grep -oE 'releases/tag/[0-9]+\.[0-9]+\.[0-9]+' | head -n 1 | sed 's|.*/||' || true)"
-            if [ -z "${changelog_version}" ]; then
-              changelog_version="$(printf '%s\n' "${changelog}" | grep -oE '^### \[[0-9]+\.[0-9]+\.[0-9]+\]' | head -n 1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || true)"
-            fi
+            # Read tags directly: the changelog can lag behind stable releases.
+            # --refs excludes peeled annotated tags; the pattern excludes prereleases.
+            target_version="$(git ls-remote --tags --refs https://github.com/flutter/flutter.git 'refs/tags/[0-9]*' |
+              sed -nE 's@^[[:xdigit:]]+[[:space:]]+refs/tags/([0-9]+\.[0-9]+\.[0-9]+)$@\1@p' |
+              sort -V | tail -n 1)"
           fi
-          if ! [[ "${changelog_version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          if ! [[ "${target_version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "Could not determine a target Flutter version." >&2
             exit 1
           fi
+          echo "flutter_version=${target_version}" >> "${GITHUB_OUTPUT}"
 
           pubspec_version="$(python3 - << 'PY'
           import re
@@ -77,20 +78,29 @@ jobs:
           PY
           )"
 
-          echo "pubspec.yaml pins Flutter ${pubspec_version}; target is ${changelog_version}."
-          if [ "${pubspec_version}" = "${changelog_version}" ]; then
+          echo "pubspec.yaml pins Flutter ${pubspec_version}; target is ${target_version}."
+          if [ "${pubspec_version}" = "${target_version}" ]; then
             echo "up_to_date=true" >> "${GITHUB_OUTPUT}"
             echo "Flutter ${pubspec_version} already matches the target version." | tee -a "${GITHUB_STEP_SUMMARY}"
             exit 0
           fi
 
-          existing_pr="$(CHANGELOG_VERSION="${changelog_version}" python3 - << 'PY'
+          if [ -z "${input}" ]; then
+            newest_version="$(printf '%s\n' "${pubspec_version}" "${target_version}" | sort -V | tail -n 1)"
+            if [ "${newest_version}" = "${pubspec_version}" ]; then
+              echo "up_to_date=true" >> "${GITHUB_OUTPUT}"
+              echo "Flutter ${pubspec_version} is newer than the latest stable tag ${target_version}; skipping automatic downgrade." | tee -a "${GITHUB_STEP_SUMMARY}"
+              exit 0
+            fi
+          fi
+
+          existing_pr="$(TARGET_VERSION="${target_version}" python3 - << 'PY'
           import json
           import os
           import re
           import subprocess
 
-          target = os.environ["CHANGELOG_VERSION"]
+          target = os.environ["TARGET_VERSION"]
           pattern = re.compile(
               r"^chore(?:\(flutter\))?: bump Flutter version to (\d+\.\d+\.\d+)$"
           )
@@ -114,7 +124,7 @@ jobs:
           )"
           if [ -n "${existing_pr}" ]; then
             echo "up_to_date=true" >> "${GITHUB_OUTPUT}"
-            echo "Pull request #${existing_pr} already bumps Flutter to ${changelog_version}." | tee -a "${GITHUB_STEP_SUMMARY}"
+            echo "Pull request #${existing_pr} already bumps Flutter to ${target_version}." | tee -a "${GITHUB_STEP_SUMMARY}"
           else
             echo "up_to_date=false" >> "${GITHUB_OUTPUT}"
           fi
@@ -122,7 +132,7 @@ jobs:
   update:
     name: Update Flutter version
     needs: check
-    if: needs.check.outputs.up_to_date != 'true'
+    if: needs.check.outputs.up_to_date == 'false'
     runs-on: macos-latest
     timeout-minutes: 60
     env:
@@ -134,38 +144,9 @@ jobs:
         with:
           submodules: true
 
-      - name: Resolve Flutter version
-        id: flutter_version
-        env:
-          FLUTTER_VERSION_INPUT: ${{ inputs.flutter_version }}
-        run: |
-          set -euo pipefail
-          input="$(printf '%s' "${FLUTTER_VERSION_INPUT}" | tr -d '[:space:]')"
-          input="${input#v}"
-          input="${input#V}"
-
-          if [ -n "${input}" ]; then
-            version="${input}"
-          else
-            changelog="$(curl -fsSL --retry 3 https://raw.githubusercontent.com/flutter/flutter/master/CHANGELOG.md)"
-            version="$(printf '%s\n' "${changelog}" | grep -oE 'releases/tag/[0-9]+\.[0-9]+\.[0-9]+' | head -n 1 | sed 's|.*/||' || true)"
-            if [ -z "${version}" ]; then
-              version="$(printf '%s\n' "${changelog}" | grep -oE '^### \[[0-9]+\.[0-9]+\.[0-9]+\]' | head -n 1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || true)"
-            fi
-          fi
-
-          if ! [[ "${version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Invalid Flutter version: '${version:-}'" >&2
-            exit 1
-          fi
-
-          echo "version=${version}" >> "${GITHUB_OUTPUT}"
-          echo "Using Flutter ${version}"
-          echo "### Flutter ${version}" >> "${GITHUB_STEP_SUMMARY}"
-
       - name: Point submodules/flutter at the tag
         env:
-          FLUTTER_VERSION: ${{ steps.flutter_version.outputs.version }}
+          FLUTTER_VERSION: ${{ needs.check.outputs.flutter_version }}
         run: |
           set -euo pipefail
           # Drop the checkout credential header so this public fetch is anonymous.
@@ -181,7 +162,7 @@ jobs:
 
       - name: Update pubspec.yaml
         env:
-          FLUTTER_VERSION: ${{ steps.flutter_version.outputs.version }}
+          FLUTTER_VERSION: ${{ needs.check.outputs.flutter_version }}
         run: |
           set -euo pipefail
           python3 - << 'PY'
@@ -237,7 +218,7 @@ jobs:
 
       - name: Open pull request
         env:
-          FLUTTER_VERSION: ${{ steps.flutter_version.outputs.version }}
+          FLUTTER_VERSION: ${{ needs.check.outputs.flutter_version }}
           BASE_BRANCH: ${{ github.ref_name }}
           REF_TYPE: ${{ github.ref_type }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
