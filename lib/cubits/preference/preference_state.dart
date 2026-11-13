@@ -57,6 +57,14 @@ class PreferenceState extends Equatable {
 
   bool get areSkipButtonsEnabled => _isOn<SkipButtonsPreference>();
 
+  bool get areHistoryButtonsEnabled => _isOn<HistoryButtonsPreference>();
+
+  bool get areHistoryButtonsCombined =>
+      areHistoryButtonsEnabled && _isOn<CombineHistoryButtonsPreference>();
+
+  bool get areHistoryButtonsSeparate =>
+      areHistoryButtonsEnabled && !_isOn<CombineHistoryButtonsPreference>();
+
   bool get areCollapsedCommentsIgnored =>
       _isOn<SkipButtonsIgnoreCollapsedCommentsPreference>();
 

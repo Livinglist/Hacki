@@ -389,8 +389,10 @@ class _ItemScreenState extends State<ItemScreen>
                   if (context
                       .read<PreferenceCubit>()
                       .state
-                      .areSkipButtonsEnabled)
+                      .areSkipButtonsEnabled) ...<Widget>[
                     const FloatingSkipButtons(),
+                    const FloatingHistoryButtons(),
+                  ],
                   if (shouldShowWebViewBottomSheet)
                     ItemScreenWebView(
                       url: widget.item.url,
@@ -483,8 +485,13 @@ class _ItemScreenState extends State<ItemScreen>
                         context.read<CommentsCubit>().scrollTo(index: 0),
                   ),
                 ),
-                if (context.read<PreferenceCubit>().state.areSkipButtonsEnabled)
+                if (context
+                    .read<PreferenceCubit>()
+                    .state
+                    .areSkipButtonsEnabled) ...<Widget>[
                   const FloatingSkipButtons(),
+                  const FloatingHistoryButtons(),
+                ],
                 if (shouldShowWebViewBottomSheet)
                   ItemScreenWebView(
                     url: widget.item.url,

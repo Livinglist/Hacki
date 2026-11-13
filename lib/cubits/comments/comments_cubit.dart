@@ -934,6 +934,10 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     if (matchedComment == null) return;
     final int index = state.comments.indexOf(matchedComment);
 
+    if (!isRetrying) {
+      _recordNavigationTo(matchedComment);
+    }
+
     /// If index if found, scroll to the comment.
     if (index != -1) {
       await scrollTo(index: index, duration: AppDurations.ms300);
@@ -1092,6 +1096,115 @@ comments length is ${state.comments.length}
     return topMost;
   }
 
+  /// The alignment a comment is scrolled to when the user jumps to it.
+  static const double _jumpAlignment = 0.15;
+
+  /// Picks the item that best describes where the user currently is: the
+  /// first visible item starting near the top of the viewport, where jumps
+  /// land, falling back to the topmost visible item.
+  @visibleForTesting
+  static ItemPosition? currentAnchorItem(
+    Iterable<ItemPosition> positions, {
+    required int lastIndex,
+  }) {
+    final List<ItemPosition> visible = positions
+        .where(
+          (ItemPosition e) =>
+              e.index <= lastIndex &&
+              e.itemTrailingEdge > 0 &&
+              e.itemLeadingEdge < 1,
+        )
+        .sorted((ItemPosition a, ItemPosition b) => a.index.compareTo(b.index));
+
+    return visible.firstWhereOrNull(
+          (ItemPosition e) =>
+              e.itemLeadingEdge >= -0.02 &&
+              e.itemLeadingEdge <= _jumpAlignment + 0.02,
+        ) ??
+        visible.firstOrNull;
+  }
+
+  /// Where the user currently is in the thread, or null if nothing is laid
+  /// out yet.
+  NavigationAnchor? get _currentAnchor {
+    final ItemPosition? position = currentAnchorItem(
+      itemPositionsListener.itemPositions.value,
+      lastIndex: state.comments.length,
+    );
+    if (position == null || !position.itemLeadingEdge.isFinite) {
+      return null;
+    }
+
+    return NavigationAnchor(
+      itemId: position.index == 0
+          ? state.item.id
+          : state.comments.elementAt(position.index - 1).id,
+      alignment: position.itemLeadingEdge,
+    );
+  }
+
+  /// Records the user's current position and [comment], which they are
+  /// about to jump to, so that they can navigate back and forward between
+  /// the two.
+  void _recordNavigationTo(Comment comment) {
+    emit(
+      state.copyWithNavigation(
+        from: _currentAnchor,
+        to: NavigationAnchor(itemId: comment.id, alignment: _jumpAlignment),
+      ),
+    );
+  }
+
+  /// Jumps to the comment at [index] in [CommentsState.comments].
+  void _jumpToComment(int index) {
+    _recordNavigationTo(state.comments.elementAt(index));
+    unawaited(
+      scrollTo(
+        index: index + 1,
+        alignment: _jumpAlignment,
+        duration: AppDurations.ms400,
+      ),
+    );
+  }
+
+  /// Go back to where the user was before their last jump.
+  void navigateBack() {
+    if (state.canNavigateBack) {
+      _navigateTo(state.navigationIndex - 1);
+    }
+  }
+
+  /// Redo the jump undone by [navigateBack].
+  void navigateForward() {
+    if (state.canNavigateForward) {
+      _navigateTo(state.navigationIndex + 1);
+    }
+  }
+
+  void _navigateTo(int navigationIndex) {
+    emit(state.copyWith(navigationIndex: navigationIndex));
+
+    final NavigationAnchor anchor = state.navigationStack.elementAt(
+      navigationIndex,
+    );
+    final int index = anchor.itemId == state.item.id
+        ? 0
+        : state.comments.indexWhere((Comment c) => c.id == anchor.itemId) + 1;
+
+    /// The comment may be gone after a refresh.
+    if (index == 0 && anchor.itemId != state.item.id) {
+      return;
+    }
+
+    unawaited(
+      scrollTo(
+        index: index,
+        alignment: anchor.alignment,
+        duration: AppDurations.ms400,
+      ),
+    );
+  }
+
   /// Scroll to next root level comment.
   void scrollToNextRoot({VoidCallback? onError}) {
     final int totalComments = state.comments.length;
@@ -1111,9 +1224,7 @@ comments length is ${state.comments.length}
         .toList();
 
     if (onScreenComments.isEmpty && state.comments.isNotEmpty) {
-      unawaited(
-        scrollTo(index: 1, alignment: 0.15, duration: AppDurations.ms400),
-      );
+      _jumpToComment(0);
       return;
     }
 
@@ -1141,9 +1252,7 @@ comments length is ${state.comments.length}
           _preferenceCubit.state.areCollapsedCommentsIgnored &&
           cmt.isCollapsedByUser;
       if (!isIgnored && cmt.isRoot && (cmt.deleted || cmt.dead) == false) {
-        unawaited(
-          scrollTo(index: i + 1, alignment: 0.15, duration: AppDurations.ms400),
-        );
+        _jumpToComment(i);
         return;
       }
     }
@@ -1182,9 +1291,7 @@ comments length is ${state.comments.length}
           _preferenceCubit.state.areCollapsedCommentsIgnored &&
           cmt.isCollapsedByUser;
       if (!isIgnored && cmt.isRoot && (cmt.deleted || cmt.dead) == false) {
-        unawaited(
-          scrollTo(index: i + 1, alignment: 0.15, duration: AppDurations.ms400),
-        );
+        _jumpToComment(i);
         return;
       }
     }

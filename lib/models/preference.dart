@@ -88,6 +88,8 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
         const WebViewBottomSheetPreference(),
         const DividerPlaceholder(label: 'Thread Navigation'),
         const SkipButtonsPreference(),
+        const HistoryButtonsPreference(),
+        const CombineHistoryButtonsPreference(),
         const SkipButtonsIgnoreCollapsedCommentsPreference(),
         const DividerPlaceholder(label: 'Look And Feel'),
         const EyeCandyPreference(),
@@ -206,6 +208,61 @@ final class SkipButtonsPreference extends BooleanPreference {
   @override
   String get subtitle =>
       '''show floating buttons on the thread screen to navigate to the previous or next root comment.''';
+}
+
+final class HistoryButtonsPreference extends BooleanPreference {
+  const HistoryButtonsPreference({bool? val})
+    : super(val: val ?? _historyButtonsPreferenceDefaultValue);
+
+  static const bool _historyButtonsPreferenceDefaultValue = true;
+
+  @override
+  HistoryButtonsPreference copyWith({required bool? val}) {
+    return HistoryButtonsPreference(val: val);
+  }
+
+  @override
+  Set<Preference<dynamic>> get dependencies => <Preference<dynamic>>{
+    const SkipButtonsPreference(val: true),
+  };
+
+  @override
+  String get key => 'historyButtonsPreference';
+
+  @override
+  String get title => 'Back and Forward Buttons';
+
+  @override
+  String get subtitle =>
+      '''show floating buttons on the thread screen to go back or forward between the positions you jumped from.''';
+}
+
+final class CombineHistoryButtonsPreference extends BooleanPreference {
+  const CombineHistoryButtonsPreference({bool? val})
+    : super(val: val ?? _combineHistoryButtonsPreferenceDefaultValue);
+
+  static const bool _combineHistoryButtonsPreferenceDefaultValue = true;
+
+  @override
+  CombineHistoryButtonsPreference copyWith({required bool? val}) {
+    return CombineHistoryButtonsPreference(val: val);
+  }
+
+  @override
+  Set<Preference<dynamic>> get dependencies => <Preference<dynamic>>{
+    const SkipButtonsPreference(val: true),
+    const HistoryButtonsPreference(val: true),
+  };
+
+  @override
+  String get key => 'combineHistoryButtonsPreference';
+
+  @override
+  String get title => 'Combine Navigation Buttons';
+
+  @override
+  String get subtitle =>
+      '''keep the back and forward buttons together with the skip buttons. If disabled, they can be dragged around on their own.''';
 }
 
 final class SkipButtonsIgnoreCollapsedCommentsPreference
