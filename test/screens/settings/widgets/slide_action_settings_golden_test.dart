@@ -7,6 +7,15 @@ import '../../golden_test_utils.dart';
 
 const Size _size = Size(390, 96);
 
+void expectActionOrder(WidgetTester tester, List<IconData> icons) {
+  for (int i = 0; i < icons.length - 1; i++) {
+    expect(
+      tester.getCenter(find.byIcon(icons[i])).dx,
+      lessThan(tester.getCenter(find.byIcon(icons[i + 1])).dx),
+    );
+  }
+}
+
 void main() {
   group('SlideActionSettings', () {
     testWidgets('default actions', (WidgetTester tester) async {
@@ -16,23 +25,34 @@ void main() {
         size: _size,
       );
 
+      expectActionOrder(tester, <IconData>[
+        SlideAction.upvote.icon,
+        SlideAction.reply.icon,
+        Icons.more_horiz,
+        SlideAction.timeMachine.icon,
+      ]);
+
       await expectLater(
         find.byKey(goldenKey),
         matchesGoldenFile('goldens/slide_action_settings_default.png'),
       );
     });
 
-    testWidgets('swapped panes', (WidgetTester tester) async {
+    testWidgets('swapped panes reverse the three-button action order', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpGolden(
         const SlideActionSettings(),
         preferenceState: slidePreferenceState(swapped: true),
         size: _size,
       );
 
-      await expectLater(
-        find.byKey(goldenKey),
-        matchesGoldenFile('goldens/slide_action_settings_swapped.png'),
-      );
+      expectActionOrder(tester, <IconData>[
+        SlideAction.timeMachine.icon,
+        Icons.more_horiz,
+        SlideAction.reply.icon,
+        SlideAction.upvote.icon,
+      ]);
     });
 
     testWidgets('custom actions', (WidgetTester tester) async {
