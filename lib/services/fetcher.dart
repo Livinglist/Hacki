@@ -37,6 +37,11 @@ abstract class Fetcher {
 
   static Future<void> fetchReplies() async {
     final PreferenceRepository preferenceRepository = PreferenceRepository();
+
+    // This runs in its own isolate, which does not share the proxy of the
+    // app.
+    ProxyHttpOverrides.install(await preferenceRepository.networkProxy);
+
     final AuthRepository authRepository = AuthRepository(
       preferenceRepository: preferenceRepository,
     );

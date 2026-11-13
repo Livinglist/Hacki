@@ -1,6 +1,8 @@
 import 'dart:io';
 
-class DebugHttpOverrides extends HttpOverrides {
+import 'package:hacki/utils/proxy_http_overrides.dart';
+
+class DebugHttpOverrides extends ProxyHttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)

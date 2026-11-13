@@ -9,6 +9,7 @@ export 'image_saver.dart';
 export 'link_utils.dart';
 export 'linkifier_utils.dart';
 export 'log_utils.dart';
+export 'proxy_http_overrides.dart';
 export 'theme_utils.dart';
 export 'throttle.dart';
 export 'widget_utils.dart';

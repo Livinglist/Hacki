@@ -45,9 +45,9 @@ void notificationReceiver(NotificationResponse details) =>
     selectNotificationSubject.add(details.payload);
 
 Future<void> main({bool testing = false}) async {
-  if (kDebugMode) {
-    HttpOverrides.global = DebugHttpOverrides();
-  }
+  HttpOverrides.global = kDebugMode
+      ? DebugHttpOverrides()
+      : ProxyHttpOverrides();
 
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -230,6 +230,9 @@ class HackiApp extends StatelessWidget {
         BlocProvider<ReviewRequestCubit>(
           lazy: false,
           create: (BuildContext context) => ReviewRequestCubit(),
+        ),
+        BlocProvider<NetworkProxyCubit>(
+          create: (BuildContext context) => NetworkProxyCubit(),
         ),
       ],
       child: BlocConsumer<PreferenceCubit, PreferenceState>(

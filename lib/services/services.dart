@@ -7,4 +7,6 @@ export 'fetcher.dart';
 export 'firebase_client.dart';
 export 'image_ratio_provider.dart';
 export 'local_notification_service.dart';
+export 'network_proxy_service.dart';
 export 'web_analyzer.dart';
+export 'web_view_proxy.dart';
