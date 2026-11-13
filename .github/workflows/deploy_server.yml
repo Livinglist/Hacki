@@ -1,0 +1,66 @@
+name: Deploy Server
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'server/**'
+      - '.github/workflows/deploy_server.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hacki-server-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 30
+    env:
+      VPS_PLATFORM: ${{ vars.VPS_PLATFORM || 'linux/amd64' }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: server/go.mod
+          cache-dependency-path: server/go.sum
+      - name: Check server
+        working-directory: server
+        run: |
+          test -z "$(gofmt -l .)"
+          go vet ./...
+          go test -race ./...
+          bash -n deploy/ci-deploy.sh deploy/deploy.sh
+          HACKI_IMAGE=hacki-server:validation HACKI_API_KEY=validation-only \
+            docker compose -f deploy/compose.production.yaml config --quiet
+      - name: Validate target architecture
+        run: |
+          case "$VPS_PLATFORM" in
+            linux/amd64|linux/arm64) ;;
+            *) echo 'Set VPS_PLATFORM to linux/amd64 or linux/arm64' >&2; exit 1 ;;
+          esac
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - name: Build VPS image
+        uses: docker/build-push-action@v6
+        with:
+          context: server
+          platforms: ${{ env.VPS_PLATFORM }}
+          load: true
+          tags: hacki-server:${{ github.sha }}
+      - name: Save image
+        run: docker save "hacki-server:$GITHUB_SHA" | gzip -1 > "$RUNNER_TEMP/hacki-server-image.tar.gz"
+      - name: Transfer and deploy
+        env:
+          VPS_HOST: ${{ vars.VPS_HOST }}
+          VPS_USER: ${{ vars.VPS_USER }}
+          VPS_PORT: ${{ vars.VPS_PORT || '22' }}
+          VPS_DEPLOY_PATH: ${{ vars.VPS_DEPLOY_PATH || '/opt/hacki-server' }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_SSH_KNOWN_HOSTS: ${{ secrets.VPS_SSH_KNOWN_HOSTS }}
+        run: HACKI_IMAGE_ARCHIVE="$RUNNER_TEMP/hacki-server-image.tar.gz" bash server/deploy/ci-deploy.sh

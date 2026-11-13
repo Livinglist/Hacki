@@ -1,0 +1,47 @@
+name: Server Check
+
+on:
+  push:
+    paths:
+      - 'server/**'
+      - '.github/workflows/server_check.yml'
+  pull_request:
+    paths:
+      - 'server/**'
+      - '.github/workflows/server_check.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: server/go.mod
+          cache-dependency-path: server/go.sum
+      - name: Check formatting
+        run: test -z "$(gofmt -l .)"
+      - name: Vet
+        run: go vet ./...
+      - name: Test with race detector
+        run: go test -race ./...
+      - name: Build static binary
+        run: CGO_ENABLED=0 go build -trimpath -o hacki-server ./cmd/hacki-server
+      - name: Check deployment configuration
+        run: |
+          bash -n deploy/ci-deploy.sh deploy/deploy.sh
+          HACKI_API_KEY=ci-validation docker compose -f compose.yaml config --quiet
+          HACKI_API_KEY=ci-validation HACKI_IMAGE=hacki-server:ci \
+            docker compose -f deploy/compose.production.yaml config --quiet

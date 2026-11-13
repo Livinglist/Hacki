@@ -1,0 +1,31 @@
+[Unit]
+Description=Hacki Hacker News fallback API
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+DynamicUser=yes
+StateDirectory=hacki-server
+StateDirectoryMode=0700
+EnvironmentFile=/etc/hacki-server.env
+Environment=HACKI_LISTEN_ADDR=127.0.0.1:8080
+Environment=HACKI_CACHE_PATH=/var/lib/hacki-server/cache.sqlite
+WorkingDirectory=/var/lib/hacki-server
+ExecStart=/usr/local/bin/hacki-server
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=30s
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+CapabilityBoundingSet=
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

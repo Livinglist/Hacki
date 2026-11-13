@@ -63,15 +63,15 @@ class HackerNewsWebRepository with Loggable {
           },
         ),
       )
-      ..httpClientAdapter = IOHttpClientAdapter(
-        createHttpClient: () => _httpClient,
+      ..httpClientAdapter = HackerNewsFallbackAdapter(
+        primary: IOHttpClientAdapter(createHttpClient: () => _httpClient),
       );
-    _dioForComments.httpClientAdapter = IOHttpClientAdapter(
-      createHttpClient: () => _httpClient,
+    _dioForComments.httpClientAdapter = HackerNewsFallbackAdapter(
+      primary: IOHttpClientAdapter(createHttpClient: () => _httpClient),
     );
   }
 
-  static final List<Interceptor> _interceptors = <Interceptor>[
+  static List<Interceptor> get _interceptors => <Interceptor>[
     if (kDebugMode) LoggerInterceptor(),
     RefererInterceptor(),
   ];
@@ -417,8 +417,7 @@ class HackerNewsWebRepository with Loggable {
 
         if (statusCode == HttpStatus.tooManyRequests) {
           final String retryAfter =
-              e.response?.headers[HttpHeaders.retryAfterHeader] as String? ??
-              '';
+              e.response?.headers.value(HttpHeaders.retryAfterHeader) ?? '';
           final int retryAfterInSeconds = int.tryParse(retryAfter) ?? 0;
           final DateTime retryAfterDate = DateTime.now().add(
             Duration(seconds: retryAfterInSeconds),
