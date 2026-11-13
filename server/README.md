@@ -10,11 +10,18 @@ The service requires one shared API key and only connects to
 
 ## Run on a VPS with Docker
 
-Requirements: Docker Engine with Compose, a domain pointing to the VPS, and ports
-80/443 available for HTTPS. Run these commands from `server/`:
+Requirements: Docker Engine with Compose and a public HTTPS endpoint. A domain
+name is optional: use the Caddy hostname example below, or follow
+[HTTPS with a public IP address](#https-with-a-public-ip-address).
+For automated deployment, follow the complete
+[GitHub Actions setup guide](#deploy-automatically-from-github-actions).
+
+For a manual deployment, run these commands from `server/`:
 
 ```sh
-cp .env.example .env
+if [ ! -e .env ]; then
+    cp .env.example .env
+fi
 chmod 600 .env
 openssl rand -hex 32
 # Edit .env and replace HACKI_API_KEY with the generated value.
@@ -27,8 +34,9 @@ and stores SQLite in the `cache` named volume. Restarting or rebuilding the
 container preserves the cache. `docker compose down` preserves the volume;
 `docker compose down -v` deletes it.
 
-Install Caddy on the host using its official instructions, then add this to
-`/etc/caddy/Caddyfile`, substituting your domain:
+If using a hostname, point its DNS record at the VPS and make TCP ports 80/443
+available. Install Caddy on the host using its official instructions, then add
+this to `/etc/caddy/Caddyfile`, substituting your hostname:
 
 ```caddyfile
 hacki-api.example.com {
@@ -73,80 +81,259 @@ to `server/**` on `master` and can also be started with **Run workflow**. No ima
 registry or GitHub package token is needed. It does not provision the VPS,
 overwrite its `.env`, or configure the HTTPS reverse proxy.
 
-Prepare the VPS once:
+The steps below assume an Ubuntu 24.04 VPS and a macOS/Linux terminal on your
+computer. Run commands labelled **VPS** as root; if you log in as a different
+administrator, start a root shell with `sudo -i`. Run commands labelled
+**your computer** in a separate local terminal.
 
-1. Install Docker Engine with Compose, Bash, `curl`, `gzip`, and `flock`
-   (`util-linux` on Debian/Ubuntu). Use Docker's official installation guide.
-2. Create a deployment user and writable deployment directory, for example:
+Replace `YOUR_VPS_IP` with your public IPv4 address. Examples use SSH port 22;
+substitute your actual SSH port throughout. Use placeholders in shared
+documentation: keep real API keys, populated `.env` files, SSH private keys,
+and TLS private keys on the VPS or in GitHub Actions secrets.
 
-   ```sh
-   sudo useradd --create-home --shell /bin/bash hacki-deploy
-   sudo usermod -aG docker hacki-deploy
-   sudo install -d -m 0750 -o hacki-deploy -g hacki-deploy /opt/hacki-server
-   sudo install -m 0600 -o hacki-deploy -g hacki-deploy /dev/null /opt/hacki-server/.env
-   sudoedit /opt/hacki-server/.env
-   ```
-
-   Put `HACKI_API_KEY=<your-random-key>` and `HACKI_CACHE_TTL=30m` in that file.
-   Use the same key as the app's `HACKI_BACKEND_API_KEY` secret. Docker group
-   membership gives root-equivalent control of the VPS; dedicate this account
-   and SSH key to deployment. Start a new login session after changing groups.
-3. Generate a dedicated SSH key on a trusted machine:
+1. **VPS: install prerequisites and check architecture.**
 
    ```sh
-   ssh-keygen -t ed25519 -f ~/.ssh/hacki-deploy-github -N ''
+   uname -m
+   docker --version
+   docker compose version
    ```
 
-   Install the public key in the deployment user's `~/.ssh/authorized_keys`
-   with directory mode 0700 and file mode 0600, owned by that user. Prefixing
-   the key with `restrict` disables forwarding and PTY allocation while still
-   allowing the deployment's SSH commands and file transfers.
-4. Collect the VPS SSH host key, then verify its fingerprint against a trusted
-   VPS console or your provider's published fingerprint before using it:
+   | Architecture | `VPS_PLATFORM` |
+   | --- | --- |
+   | `x86_64` | `linux/amd64` |
+   | `aarch64` | `linux/arm64` |
+
+   Install the supporting tools even if Docker is already present:
 
    ```sh
-   ssh-keyscan -t ed25519 -p 22 your-vps.example.com > /tmp/hacki-vps-known-hosts
-   ssh-keygen -lf /tmp/hacki-vps-known-hosts
-   # On the VPS console, compare with:
-   # ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub
+   apt-get update
+   apt-get install -y curl gzip util-linux openssl nano
    ```
 
-   `ssh-keyscan` alone does not authenticate the key. For a custom SSH port,
-   scan that port; known-host entries must use `[hostname]:port` for non-22
-   ports. Keep the verified lines for the next step.
-5. Configure Caddy and DNS using the earlier HTTPS example. Keep HTTP port 8080
-   private. Allow the configured SSH port from GitHub's hosted runners; an SSH
-   allowlist must account for their changing outbound addresses.
+   If Docker is missing on Ubuntu 24.04, install Docker Engine and Compose:
 
-In GitHub **Settings → Environments**, create `production`. Restrict its
-deployment branches to `master`; add required reviewers if you want an approval
-before production deploys. Add these Actions variables and secrets at repository
-or `production` environment scope:
+   ```sh
+   apt-get install -y docker.io docker-compose-v2
+   systemctl enable --now docker
+   ```
 
-| Type | Name | Value |
-| --- | --- | --- |
-| Variable | `VPS_HOST` | VPS DNS hostname or IPv4 address; do not include `ssh://`. |
-| Variable | `VPS_USER` | Deployment user, for example `hacki-deploy`. |
-| Variable | `VPS_PORT` | SSH port; optional, defaults to `22`. |
-| Variable | `VPS_DEPLOY_PATH` | Absolute path without spaces, for example `/opt/hacki-server`; this is the default. |
-| Variable | `VPS_PLATFORM` | `linux/amd64` by default, or `linux/arm64` for an ARM VPS. Check `uname -m` on the VPS. |
-| Secret | `VPS_SSH_KEY` | Complete dedicated private key, including its header/footer. |
-| Secret | `VPS_SSH_KNOWN_HOSTS` | The verified known-host lines for `VPS_HOST` and `VPS_PORT`. |
+   Confirm that the daemon and Compose are available:
 
-The deployment account must be able to run `docker` without `sudo`, write the
-deployment directory, and read its `.env`. IPv6-only servers can use a DNS
-hostname; literal IPv6 addresses are not accepted by the transport script.
-The backend key stays on the VPS during deployment and is never copied into the
-image or an Actions artifact.
+   ```sh
+   docker info --format 'Docker server: {{.ServerVersion}}'
+   docker compose version
+   ```
 
-Run **Actions → Deploy Server → Run workflow**, selecting `master`, for the
-initial deployment. Subsequent matching pushes deploy automatically. Deployments
-are serialized, and a lock on the VPS also protects against concurrent manual
-deployments. The script checks that the running container uses the image just
-loaded, then checks `http://127.0.0.1:8080/healthz`. If startup or health fails,
-it restores the previous exact image ID and fails the workflow. On an unsuccessful
-first deployment it stops the unhealthy service. The previous image must remain
-available locally for rollback.
+   Keep an existing working Docker installation. For other distributions, use
+   [Docker's official installation guide](https://docs.docker.com/engine/install/).
+   If OpenVPN is already running, check its connection after installing Docker,
+   which adds network/firewall rules. Inspect existing listeners with
+   `ss -lntup` and choose an available HTTPS port. The IP-only example below
+   uses TCP 8443 for the API and TCP 80 for certificate validation.
+
+2. **VPS: create the account and shared API key.**
+
+   Create a dedicated deployment user, or reuse it if already created:
+
+   ```sh
+   useradd --create-home --shell /bin/bash hacki-deploy
+   usermod -aG docker hacki-deploy
+   install -d -m 0750 -o hacki-deploy -g hacki-deploy /opt/hacki-server
+   ```
+
+   Docker group membership gives root-equivalent control of the VPS; dedicate
+   this account and its SSH key to deployment.
+
+   Generate one API key, or reuse your existing key when updating a deployment:
+
+   ```sh
+   openssl rand -hex 32
+   ```
+
+   Save the generated value privately. The VPS and mobile build must use the
+   same value. Prepare the file without overwriting an existing configuration:
+
+   ```sh
+   touch /opt/hacki-server/.env
+   chown hacki-deploy:hacki-deploy /opt/hacki-server/.env
+   chmod 600 /opt/hacki-server/.env
+   nano /opt/hacki-server/.env
+   ```
+
+   Enter the following, replacing the placeholder with your generated key:
+
+   ```dotenv
+   HACKI_API_KEY=PASTE_YOUR_GENERATED_KEY_HERE
+   HACKI_CACHE_TTL=30m
+   ```
+
+   In Nano, save with Ctrl+O, Enter, then exit with Ctrl+X.
+
+3. **Your computer: generate a deployment SSH key.**
+
+   ```sh
+   mkdir -p ~/.ssh
+   ssh-keygen -t ed25519 -f ~/.ssh/hacki-deploy-github \
+     -C 'Hacki GitHub deployment' -N ''
+   cat ~/.ssh/hacki-deploy-github.pub
+   ```
+
+   The file without `.pub` is the private key for GitHub's `VPS_SSH_KEY`
+   secret. The `.pub` file is the public key to authorize on the VPS. The
+   dedicated key has no passphrase so the workflow can use it unattended.
+
+   **VPS:** prepare the deployment account's authorized keys:
+
+   ```sh
+   install -d -m 0700 -o hacki-deploy -g hacki-deploy /home/hacki-deploy/.ssh
+   touch /home/hacki-deploy/.ssh/authorized_keys
+   chown hacki-deploy:hacki-deploy /home/hacki-deploy/.ssh/authorized_keys
+   chmod 0600 /home/hacki-deploy/.ssh/authorized_keys
+   nano /home/hacki-deploy/.ssh/authorized_keys
+   ```
+
+   Append `restrict ` followed by the entire public-key line from your computer,
+   on one line. Preserve any existing entries. The `restrict` prefix disables
+   forwarding and PTY allocation while allowing commands and file transfers.
+
+4. **Your computer: collect and verify the VPS host key.**
+
+   ```sh
+   ssh-keyscan -t ed25519 -p 22 YOUR_VPS_IP > ~/.ssh/hacki-vps-known-hosts
+   ssh-keygen -lf ~/.ssh/hacki-vps-known-hosts
+   ```
+
+   Through your provider's trusted **VPS console**, compare the fingerprint with:
+
+   ```sh
+   ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub
+   ```
+
+   The SHA256 fingerprints must match. `ssh-keyscan` alone does not authenticate
+   the key. Use the same host and SSH port here as in the workflow settings.
+   For a custom SSH port, scan that port; known-host entries use
+   `[hostname]:port` for non-22 ports. The verified file becomes the
+   `VPS_SSH_KNOWN_HOSTS` secret.
+
+5. **GitHub: create the production environment.**
+
+   In the repository's **Settings → Environments**, create `production`.
+   Under deployment branches, allow `master`. Required reviewers are optional.
+   Add these **environment variables**:
+
+   | Name | Value |
+   | --- | --- |
+   | `VPS_HOST` | Your public IPv4 address or DNS hostname, without `ssh://`. |
+   | `VPS_USER` | `hacki-deploy` |
+   | `VPS_PORT` | Your SSH port; defaults to `22`. This is separate from the API's HTTPS port. |
+   | `VPS_DEPLOY_PATH` | `/opt/hacki-server` by default; use an absolute path without spaces. |
+   | `VPS_PLATFORM` | `linux/amd64` by default, or `linux/arm64`, from step 1. |
+
+   Add these **environment secrets**:
+
+   | Name | Value |
+   | --- | --- |
+   | `VPS_SSH_KEY` | Entire contents of your computer's `~/.ssh/hacki-deploy-github`, including the private-key header and footer. |
+   | `VPS_SSH_KNOWN_HOSTS` | Entire contents of the verified `~/.ssh/hacki-vps-known-hosts` file. |
+
+   IPv6-only servers can use a DNS hostname; literal IPv6 addresses are not
+   accepted by the transport script. Allow the configured SSH port from
+   GitHub's hosted runners through your existing firewall; their outbound
+   addresses can change.
+
+6. **GitHub: configure the mobile app at repository scope.**
+
+   Under **Settings → Secrets and variables → Actions → Variables**, add:
+
+   | Repository variable | Value |
+   | --- | --- |
+   | `HACKI_BACKEND_URL` | Your public HTTPS base URL, such as `https://YOUR_VPS_IP:8443` or `https://hacki-api.example.com`. Leave off `/v1/hn`. |
+
+   Under **Actions → Secrets**, add:
+
+   | Repository secret | Value |
+   | --- | --- |
+   | `HACKI_BACKEND_API_KEY` | The exact value stored as `HACKI_API_KEY` in the VPS `.env` file. |
+
+   These two settings must be repository-level settings: the Android and iOS
+   release jobs do not select the `production` environment. Keep your existing
+   mobile signing secrets. Deployment needs no GitHub personal access token,
+   registry credentials, VPS root password, or Hacker News credentials.
+
+7. **VPS: configure public HTTPS.**
+
+   Choose the [Caddy hostname example](#run-on-a-vps-with-docker) or the complete
+   [IP-only Nginx and Certbot guide](#https-with-a-public-ip-address) below.
+   Both forward to `127.0.0.1:8080`. TLS certificate files stay on the VPS and
+   do not need GitHub secrets. Keep port 8080 private and preserve your existing
+   SSH/OpenVPN firewall rules when allowing certificate-validation and HTTPS
+   traffic. The workflow does not install or configure the reverse proxy.
+
+8. **Your computer: test deployment access.**
+
+   ```sh
+   ssh -i ~/.ssh/hacki-deploy-github -p 22 \
+     -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
+     -o UserKnownHostsFile="$HOME/.ssh/hacki-vps-known-hosts" \
+     hacki-deploy@YOUR_VPS_IP \
+     'docker info >/dev/null &&
+      docker compose version &&
+      test -r /opt/hacki-server/.env &&
+      test -w /opt/hacki-server'
+   ```
+
+   This fresh SSH session picks up the account's Docker group membership.
+   The command should finish successfully without requesting a password.
+
+9. **GitHub: deploy and verify.**
+
+   The workflow must exist on `master`. Merging a change to the server or its
+   deployment workflow into `master` triggers deployment automatically. For
+   a manual deployment, select **Actions → Deploy Server → Run workflow**
+   and choose `master`.
+
+   After the workflow succeeds, check health on the **VPS**:
+
+   ```sh
+   curl --fail http://127.0.0.1:8080/healthz
+   ```
+
+   Expected response:
+
+   ```json
+   {"status":"ok"}
+   ```
+
+   Check authentication and caching using the key in your own VPS configuration:
+
+   ```sh
+   (
+       . /opt/hacki-server/.env
+       curl -i -H "X-API-Key: $HACKI_API_KEY" \
+         'http://127.0.0.1:8080/v1/hn/item?id=1'
+       curl -i -H "X-API-Key: $HACKI_API_KEY" \
+         'http://127.0.0.1:8080/v1/hn/item?id=1'
+   )
+   ```
+
+   A successful initial fetch reports `X-Hacki-Cache: MISS`; a cached response
+   reports `HIT`. **From your computer**, also verify the public HTTPS endpoint,
+   substituting your configured URL:
+
+   ```sh
+   curl --fail https://YOUR_VPS_IP:8443/healthz
+   ```
+
+   Finally, run the Android or iOS release workflow with the repository backend
+   settings configured. Install the new app build to enable fallback; existing
+   installed builds need updating.
+
+Deployments are serialized, and a lock on the VPS also protects against
+concurrent manual deployments. The script verifies the running image ID and
+health. If startup or health fails, it restores the previous exact image ID and
+fails the workflow. On an unsuccessful first deployment it stops the unhealthy
+service. The previous image must remain available locally for rollback.
 
 Both manual Compose and CI use project `hacki-server` and volume
 `hacki-server_cache`, so deployments preserve SQLite. If an older manual install
@@ -165,7 +352,149 @@ Successful transfers remove their temporary bundle. Images remain on the VPS
 for rollback; monitor disk usage and remove obsolete images deliberately while
 retaining the current and previous image. Deleting the Compose volume deletes
 the cache. The workflow has no VPS credentials until you configure them, and
-does not deploy merely by opening a pull request.
+does not deploy merely by opening a pull request. The backend API key stays in
+the VPS configuration during server deployment and is never copied into the
+server image or its deployment archive. Mobile release builds embed the key
+as described under [Configure Hacki](#configure-hacki).
+
+## HTTPS with a public IP address
+
+A domain is optional. This Ubuntu example uses Nginx on TCP 8443 and a publicly
+trusted Let's Encrypt certificate for your public IPv4 address. Use a stable
+public IP, replace `YOUR_VPS_IP` throughout, and run these commands as root on
+the VPS. If HTTPS already works, keep your existing reverse proxy configuration.
+
+1. **Check ports and install Nginx and Certbot.**
+
+   ```sh
+   ss -lntup
+   apt-get update
+   apt-get install -y nginx snapd
+   snap install --classic certbot
+   /snap/bin/certbot --version
+   ```
+
+   TCP 80 must be available for Nginx and reachable from the internet for
+   validation. TCP 8443 must be available for the API. Add any required rules
+   to your existing provider/VPS firewall, preserving SSH and OpenVPN access.
+   If UFW is already active, allow these ports with:
+
+   ```sh
+   ufw allow 80/tcp
+   ufw allow 8443/tcp
+   ```
+
+   Certbot must be version 5.4 or newer for IP certificates with webroot
+   validation. Keep an existing current installation; the absolute snap path
+   above avoids accidentally using an older apt-installed executable. See
+   [Certbot's installation instructions](https://certbot.eff.org/instructions?os=snap&ws=nginx).
+
+2. **Configure HTTP validation first.**
+
+   ```sh
+   mkdir -p /var/www/letsencrypt/.well-known/acme-challenge
+   nano /etc/nginx/sites-available/hacki-api
+   ```
+
+   Enter this configuration, replacing the IP placeholder:
+
+   ```nginx
+   server {
+       listen 80;
+       server_name YOUR_VPS_IP;
+
+       location ^~ /.well-known/acme-challenge/ {
+           root /var/www/letsencrypt;
+       }
+
+       location / {
+           return 404;
+       }
+   }
+   ```
+
+   Enable and load the site:
+
+   ```sh
+   ln -s /etc/nginx/sites-available/hacki-api /etc/nginx/sites-enabled/hacki-api
+   nginx -t
+   systemctl enable --now nginx
+   systemctl reload nginx
+   ```
+
+   If the link already exists, check its target with
+   `readlink -f /etc/nginx/sites-enabled/hacki-api`. A link already pointing at
+   the configuration above can be reused. A successful `nginx -t` confirms
+   configuration syntax; external port-80 reachability is still required.
+
+3. **Obtain a trusted IP certificate.**
+
+   ```sh
+   /snap/bin/certbot certonly \
+     --webroot \
+     --webroot-path /var/www/letsencrypt \
+     --preferred-profile shortlived \
+     --ip-address YOUR_VPS_IP \
+     --cert-name hacki-api
+   ```
+
+   Follow the email and terms prompts. This uses Let's Encrypt's production
+   service; staging certificates are not publicly trusted. IP certificates
+   use the short-lived profile and expire after roughly six days, so automated
+   renewal is essential. See
+   [Let's Encrypt's IP certificate guide](https://letsencrypt.org/2026/03/11/shorter-certs-certbot.html).
+
+4. **Add HTTPS after certificate issuance succeeds.**
+
+   Edit `/etc/nginx/sites-available/hacki-api` again. Keep the HTTP validation
+   block and append the following, replacing the IP placeholder:
+
+   ```nginx
+   server {
+       listen 8443 ssl;
+       server_name YOUR_VPS_IP;
+
+       ssl_certificate /etc/letsencrypt/live/hacki-api/fullchain.pem;
+       ssl_certificate_key /etc/letsencrypt/live/hacki-api/privkey.pem;
+       ssl_protocols TLSv1.2 TLSv1.3;
+
+       location / {
+           proxy_pass http://127.0.0.1:8080;
+       }
+   }
+   ```
+
+   ```sh
+   nginx -t
+   systemctl reload nginx
+   ```
+
+   Nginx's root master can read the certificate files; keep private-key
+   permissions restricted. The public API URL is now
+   `https://YOUR_VPS_IP:8443`. The backend health endpoint becomes available
+   after the server deployment succeeds.
+
+5. **Configure and test renewal.**
+
+   Create an executable hook so Nginx loads renewed certificates:
+
+   ```sh
+   mkdir -p /etc/letsencrypt/renewal-hooks/deploy
+   cat > /etc/letsencrypt/renewal-hooks/deploy/reload-nginx <<'EOF'
+   #!/bin/sh
+   /usr/bin/systemctl reload nginx
+   EOF
+   chmod 750 /etc/letsencrypt/renewal-hooks/deploy/reload-nginx
+
+   systemctl list-timers --all '*certbot*'
+   /snap/bin/certbot renew --dry-run --run-deploy-hooks
+   ```
+
+   The snap installation normally schedules renewal automatically. Confirm
+   that a renewal timer is listed and the dry run succeeds. Keep the HTTP
+   challenge location on port 80 working for future renewals. The deploy hook
+   reloads only Nginx; it does not restart OpenVPN. See
+   [Certbot's renewal documentation](https://eff-certbot.readthedocs.io/en/stable/using.html#renewing-certificates).
 
 ## Run as a native systemd service
 
@@ -177,7 +506,9 @@ CGO_ENABLED=0 go build -trimpath -o hacki-server ./cmd/hacki-server
 sudo install -m 0755 hacki-server /usr/local/bin/hacki-server
 sudo install -m 0644 deploy/hacki-server.service \
   /etc/systemd/system/hacki-server.service
-sudo install -m 0600 .env.example /etc/hacki-server.env
+if ! sudo test -e /etc/hacki-server.env; then
+    sudo install -m 0600 .env.example /etc/hacki-server.env
+fi
 # Edit /etc/hacki-server.env and set a random HACKI_API_KEY.
 sudo systemctl daemon-reload
 sudo systemctl enable --now hacki-server
