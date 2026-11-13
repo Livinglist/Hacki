@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
+import 'package:hacki/config/app_environment.dart';
 
 /// Retries rate limited HTML requests through Hacki's optional VPS backend.
 ///
@@ -14,8 +15,8 @@ class HackerNewsFallbackAdapter implements HttpClientAdapter {
   HackerNewsFallbackAdapter({
     required HttpClientAdapter primary,
     HttpClientAdapter? backend,
-    String backendUrl = const String.fromEnvironment('HACKI_BACKEND_URL'),
-    String apiKey = const String.fromEnvironment('HACKI_BACKEND_API_KEY'),
+    String backendUrl = AppEnvironment.backendUrl,
+    String apiKey = AppEnvironment.backendApiKey,
   }) : _primary = primary,
        _backend = backend ?? IOHttpClientAdapter(),
        _backendUri = _parseBackend(backendUrl),
