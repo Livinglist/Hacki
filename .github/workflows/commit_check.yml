@@ -55,12 +55,3 @@ jobs:
       - name: Flutter test
         if: steps.changes.outputs.flutter == 'true' || steps.changes.outputs.unitTests == 'true'
         run: submodules/flutter/bin/flutter test
-
-      - name: Capture macOS golden failure images
-        if: failure()
-        uses: actions/upload-artifact@v7
-        with:
-          name: golden-failures-macos
-          path: test/**/failures/*.png
-          if-no-files-found: error
-          retention-days: 1
