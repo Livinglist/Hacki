@@ -1,12 +1,26 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/screens/settings/widgets/item_menu_preview.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:material_ui/material_ui.dart';
 
 class ItemMenuSettingsScreen extends StatelessWidget {
   const ItemMenuSettingsScreen({super.key});
+
+  void _showPreview(BuildContext context) {
+    HapticFeedbackUtils.selection();
+    final PreferenceCubit preferenceCubit = context.read<PreferenceCubit>();
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => BlocProvider<PreferenceCubit>.value(
+        value: preferenceCubit,
+        child: const SafeArea(child: ItemMenuPreview()),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,12 +45,13 @@ class ItemMenuSettingsScreen extends StatelessWidget {
             final List<ItemMenuAction> actions = state.itemMenuActions;
             return ReorderableListView.builder(
               buildDefaultDragHandles: false,
-              header: const Padding(
-                padding: EdgeInsets.all(Dimens.pt16),
-                child: Text(
-                  'Drag the handles to reorder the item menu. '
-                  'Turn off actions to hide them. Changes are saved '
-                  'automatically. Cancel always stays at the bottom.',
+              footer: Padding(
+                padding: const EdgeInsets.all(Dimens.pt16),
+                child: Center(
+                  child: TextButton(
+                    onPressed: () => _showPreview(context),
+                    child: const Text('Preview'),
+                  ),
                 ),
               ),
               itemCount: actions.length,

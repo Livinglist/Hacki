@@ -82,7 +82,9 @@ class SlideActionSettings extends StatelessWidget {
                                   SizedBoxes.pt4,
                                   IconButton(
                                     tooltip: 'Customize item actions',
-                                    color: IconTheme.of(context).color,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                     constraints: const BoxConstraints.tightFor(
                                       width: Dimens.pt48,
                                       height: Dimens.pt48,
@@ -129,15 +131,25 @@ class SlideActionSettings extends StatelessWidget {
                         children: <Widget>[Text('Leading slide action')],
                       ),
                       Expanded(
-                        child: IconButton(
-                          icon: const Icon(Icons.swap_horiz),
-                          tooltip: 'Swap leading and trailing panes',
-                          onPressed: () {
-                            HapticFeedbackUtils.selection();
-                            context.read<PreferenceCubit>().update(
-                              SwappedSlidePanesPreference(val: !swapped),
-                            );
-                          },
+                        child: Center(
+                          heightFactor: 1,
+                          child: IconButton(
+                            icon: const Icon(Icons.swap_horiz),
+                            tooltip: 'Swap leading and trailing panes',
+                            constraints: const BoxConstraints.tightFor(
+                              width: Dimens.pt48,
+                              height: Dimens.pt48,
+                            ),
+                            style: IconButton.styleFrom(
+                              shape: const CircleBorder(),
+                            ),
+                            onPressed: () {
+                              HapticFeedbackUtils.selection();
+                              context.read<PreferenceCubit>().update(
+                                SwappedSlidePanesPreference(val: !swapped),
+                              );
+                            },
+                          ),
                         ),
                       ),
                       const Column(

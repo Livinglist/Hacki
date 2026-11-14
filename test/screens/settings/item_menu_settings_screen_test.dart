@@ -4,6 +4,7 @@ import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/settings/item_menu_settings_screen.dart';
+import 'package:hacki/screens/settings/widgets/item_menu_preview.dart';
 import 'package:hacki/screens/settings/widgets/slide_action_settings.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
@@ -66,6 +67,125 @@ void main() {
 
   Finder actionSwitch(ItemMenuAction action) =>
       find.descendant(of: actionRow(action), matching: find.byType(Switch));
+
+  Future<void> openPreview(WidgetTester tester) async {
+    await tester.scrollUntilVisible(find.text('Preview'), 200);
+    await tester.tap(find.text('Preview'));
+    await tester.pumpAndSettle();
+  }
+
+  List<String?> previewLabels(WidgetTester tester) => tester
+      .widgetList<ListTile>(
+        find.descendant(
+          of: find.byType(ItemMenuPreview),
+          matching: find.byType(ListTile),
+        ),
+      )
+      .map((ListTile tile) => (tile.title! as Text).data)
+      .toList();
+
+  testWidgets('swap has a circular, fixed-size tap area', (
+    WidgetTester tester,
+  ) async {
+    await pumpSettings(
+      tester,
+      child: const Scaffold(body: SlideActionSettings()),
+    );
+
+    final Finder swap = find.widgetWithIcon(IconButton, Icons.swap_horiz);
+    final IconButton button = tester.widget<IconButton>(swap);
+    expect(tester.getSize(swap), const Size(48, 48));
+    expect(button.style!.shape!.resolve(<WidgetState>{}), isA<CircleBorder>());
+
+    await tester.tapAt(tester.getCenter(swap) + const Offset(30, 0));
+    await tester.pumpAndSettle();
+    expect(cubit.state.areSlidePanesSwapped, isFalse);
+
+    await tester.tap(swap);
+    await tester.pumpAndSettle();
+    expect(cubit.state.areSlidePanesSwapped, isTrue);
+  });
+
+  testWidgets('Preview is centered below the list without description text', (
+    WidgetTester tester,
+  ) async {
+    await pumpSettings(tester);
+    await tester.scrollUntilVisible(find.text('Preview'), 200);
+
+    final Finder button = find.widgetWithText(TextButton, 'Preview');
+    expect(tester.getCenter(button).dx, 195);
+    expect(
+      tester.getTopLeft(button).dy,
+      greaterThan(
+        tester.getBottomLeft(actionRow(ItemMenuAction.viewInBrowser)).dy,
+      ),
+    );
+    expect(find.textContaining('Drag the handles'), findsNothing);
+  });
+
+  testWidgets('preview reflects edits and never performs item actions', (
+    WidgetTester tester,
+  ) async {
+    cubit
+      ..updateItemMenuActions(<ItemMenuAction>[
+        ItemMenuAction.share,
+        ItemMenuAction.reply,
+        ...ItemMenuAction.values,
+      ])
+      ..setItemMenuActionEnabled(ItemMenuAction.viewProfile, enabled: false)
+      ..setItemMenuActionEnabled(ItemMenuAction.downvote, enabled: false);
+    await pumpSettings(tester);
+    await openPreview(tester);
+
+    expect(previewLabels(tester), <String>[
+      ...cubit.state.enabledItemMenuActions.map(
+        (ItemMenuAction action) => action.description,
+      ),
+      'Cancel',
+    ]);
+    expect(find.text('example_user'), findsNothing);
+
+    final PreferenceState before = cubit.state;
+    await tester.tap(find.text('Upvote').last);
+    await tester.pumpAndSettle();
+    expect(cubit.state, before);
+    expect(find.byType(ItemMenuPreview), findsOneWidget);
+
+    await tester.ensureVisible(find.text('Cancel'));
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+    expect(find.byType(ItemMenuPreview), findsNothing);
+    expect(find.byType(ItemMenuSettingsScreen), findsOneWidget);
+
+    cubit.setItemMenuActionEnabled(ItemMenuAction.share, enabled: false);
+    await tester.pumpAndSettle();
+    await openPreview(tester);
+    expect(previewLabels(tester), isNot(contains('Share')));
+  });
+
+  testWidgets(
+    'preview includes sample profile details and supports all hidden',
+    (WidgetTester tester) async {
+      await pumpSettings(tester);
+      await openPreview(tester);
+
+      expect(find.text('example_user'), findsOneWidget);
+      expect(find.textContaining('3520 karma, created on'), findsOneWidget);
+
+      await tester.ensureVisible(find.text('Cancel'));
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      for (final ItemMenuAction action in ItemMenuAction.values) {
+        cubit.setItemMenuActionEnabled(action, enabled: false);
+      }
+      await tester.pumpAndSettle();
+      await openPreview(tester);
+      expect(previewLabels(tester), <String>['Cancel']);
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ItemMenuPreview), findsNothing);
+    },
+  );
 
   testWidgets('more opens customization and retains changes when reopened', (
     WidgetTester tester,
@@ -158,6 +278,11 @@ void main() {
       200,
     );
     expect(actionSwitch(ItemMenuAction.viewInBrowser), findsOneWidget);
+    await openPreview(tester);
+    await tester.ensureVisible(find.text('Cancel'));
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+    expect(find.byType(ItemMenuPreview), findsNothing);
     expect(tester.takeException(), isNull);
   });
 }
