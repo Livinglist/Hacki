@@ -226,7 +226,7 @@ void main() {
 
   for (final bool jumpToTop in <bool>[true, false]) {
     testWidgets('a long-press jump to the ${jumpToTop ? 'top' : 'bottom'} '
-        'after Back preserves all positions', (WidgetTester tester) async {
+        'after Back clears forward history', (WidgetTester tester) async {
       await pumpThread(tester);
       cubit.scrollToNextRoot();
       await settleScroll(tester);
@@ -249,9 +249,9 @@ void main() {
           (NavigationAnchor anchor) => anchor.itemId,
         ),
         // The short reply above root 3 anchors the same reading position.
-        <int>[_storyId, 2, destinationId, 5],
+        <int>[_storyId, 2, destinationId],
       );
-      expect(cubit.state.canNavigateForward, isTrue);
+      expect(cubit.state.canNavigateForward, isFalse);
 
       await tester.tap(find.byIcon(Icons.turn_left));
       await settleScroll(tester);
@@ -266,15 +266,12 @@ void main() {
       await tester.tap(find.byIcon(Icons.turn_right));
       await settleScroll(tester);
       expectPosition(destination, 0);
-      await tester.tap(find.byIcon(Icons.turn_right));
-      await settleScroll(tester);
-      expectPosition(5, 0.15);
       expect(cubit.state.canNavigateForward, isFalse);
-      expect(cubit.state.navigationStack, hasLength(4));
+      expect(cubit.state.navigationStack, hasLength(3));
     });
   }
 
-  testWidgets('a search-result jump after Back preserves all positions', (
+  testWidgets('a search-result jump after Back clears forward history', (
     WidgetTester tester,
   ) async {
     await pumpThread(tester);
@@ -293,9 +290,9 @@ void main() {
       cubit.state.navigationStack.map(
         (NavigationAnchor anchor) => anchor.itemId,
       ),
-      <int>[_storyId, 2, 7, 5],
+      <int>[_storyId, 2, 7],
     );
-    expect(cubit.state.canNavigateForward, isTrue);
+    expect(cubit.state.canNavigateForward, isFalse);
 
     cubit.navigateBack();
     await settleScroll(tester);
@@ -310,13 +307,11 @@ void main() {
     cubit.navigateForward();
     await settleScroll(tester);
     expectPosition(7, 0.15);
-    cubit.navigateForward();
-    await settleScroll(tester);
-    expectPosition(5, 0.15);
-    expect(cubit.state.navigationStack, hasLength(4));
+    expect(cubit.state.canNavigateForward, isFalse);
+    expect(cubit.state.navigationStack, hasLength(3));
   });
 
-  testWidgets('repeating the next root skip after Back reuses its position', (
+  testWidgets('repeating the next root skip after Back replaces its future', (
     WidgetTester tester,
   ) async {
     await pumpThread(tester);
@@ -336,6 +331,64 @@ void main() {
     cubit.navigateBack();
     await settleScroll(tester);
     expectPosition(3, 0.15);
+  });
+
+  for (final bool skipUp in <bool>[true, false]) {
+    testWidgets(
+      'tapping skip ${skipUp ? 'up' : 'down'} clears forward history',
+      (WidgetTester tester) async {
+        await pumpThread(tester);
+        for (int i = 0; i < 3; i++) {
+          cubit.scrollToNextRoot();
+          await settleScroll(tester);
+        }
+        cubit.navigateBack();
+        await settleScroll(tester);
+        if (!skipUp) {
+          cubit.navigateBack();
+          await settleScroll(tester);
+        }
+        final int origin = skipUp ? 5 : 3;
+        expectPosition(origin, 0.15);
+        expect(cubit.state.canNavigateForward, isTrue);
+
+        await tester.tap(
+          find.byIcon(
+            skipUp ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+          ),
+        );
+        await settleScroll(tester);
+        final int destination = skipUp ? 3 : 5;
+        expectPosition(destination, 0.15);
+        expect(cubit.state.canNavigateForward, isFalse);
+        expect(cubit.state.navigationStack, hasLength(skipUp ? 4 : 3));
+
+        cubit.navigateBack();
+        await settleScroll(tester);
+        expectPosition(origin, 0.15);
+        cubit.navigateForward();
+        await settleScroll(tester);
+        expectPosition(destination, 0.15);
+        expect(cubit.state.canNavigateForward, isFalse);
+      },
+    );
+  }
+
+  testWidgets('long pressing at the current endpoint clears forward history', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    await tester.longPress(find.byIcon(Icons.keyboard_arrow_down));
+    await settleScroll(tester);
+    cubit.navigateBack();
+    await settleScroll(tester);
+    expect(cubit.state.canNavigateForward, isTrue);
+
+    await tester.longPress(find.byIcon(Icons.keyboard_arrow_up));
+    await settleScroll(tester);
+    expectPosition(0, 0);
+    expect(cubit.state.navigationStack, hasLength(1));
+    expect(cubit.state.canNavigateForward, isFalse);
   });
 
   for (final bool arriveWithForward in <bool>[false, true]) {
@@ -506,8 +559,9 @@ void main() {
     await tester.longPress(find.byIcon(Icons.keyboard_arrow_down));
     await settleScroll(tester);
     expectPosition(7, 0);
-    expect(cubit.state.navigationStack, hasLength(5));
-    expect(cubit.state.navigationStack.last.itemId, 5);
+    expect(cubit.state.navigationStack, hasLength(4));
+    expect(cubit.state.navigationStack.last.itemId, 7);
+    expect(cubit.state.canNavigateForward, isFalse);
     cubit.navigateBack();
     await settleScroll(tester);
     expectPosition(3, scrolledAlignment);

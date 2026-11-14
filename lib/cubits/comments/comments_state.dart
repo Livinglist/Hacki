@@ -138,20 +138,23 @@ class CommentsState extends Equatable {
   /// The measured origin refreshes the current stop. Manual scrolling is
   /// recorded separately before the next jump so its starting stop survives.
   ///
-  /// New jumps are inserted after the current position, keeping all previous
-  /// back and forward positions available.
+  /// A new jump keeps earlier stops and discards forward positions. Replaying
+  /// history or recording manual scrolling does not use this method.
   CommentsState copyWithNavigation({
     required NavigationAnchor to,
     NavigationAnchor? from,
   }) {
-    if (from?.itemId == to.itemId) {
-      return this;
-    }
-
-    final List<NavigationAnchor> stack = List<NavigationAnchor>.of(
-      navigationStack,
-    );
+    final List<NavigationAnchor> stack = navigationStack
+        .take(navigationIndex + 1)
+        .toList();
     int index = navigationIndex;
+
+    // Even an explicit jump to the current comment clears forward history.
+    if (from?.itemId == to.itemId) {
+      return stack.length == navigationStack.length
+          ? this
+          : copyWith(navigationStack: stack);
+    }
 
     if (from != null) {
       if (index < 0) {
@@ -172,10 +175,7 @@ class CommentsState extends Equatable {
 
     if (index < 0 || stack.elementAt(index).itemId != to.itemId) {
       index++;
-      // Repeating the next recorded jump simply moves forward to that stop.
-      if (index == stack.length || stack.elementAt(index) != to) {
-        stack.insert(index, to);
-      }
+      stack.insert(index, to);
     }
 
     return copyWith(navigationStack: stack, navigationIndex: index);
