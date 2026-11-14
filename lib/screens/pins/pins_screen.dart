@@ -75,6 +75,7 @@ class _PinsScreenState extends State<PinsScreen> {
           IconButton(
             icon: Icon(
               FeatherIcons.share,
+              size: Dimens.pt20,
               color: pinnedStories.isEmpty ? Palette.grey : null,
             ),
             onPressed: () async {
