@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hacki/cubits/cubits.dart';
-import 'package:hacki/screens/home/widgets/home_reminder.dart';
+import 'package:hacki/screens/home/widgets/widgets.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';

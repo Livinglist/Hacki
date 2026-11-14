@@ -1,4 +1,4 @@
-import 'package:hacki/screens/home/widgets/home_reminder.dart';
+import 'package:hacki/screens/home/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:material_ui/material_ui.dart' hide Badge;
 
