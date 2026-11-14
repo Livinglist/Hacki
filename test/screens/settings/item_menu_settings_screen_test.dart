@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hacki/config/locator.dart';
@@ -216,16 +217,46 @@ void main() {
     );
   });
 
-  testWidgets('dragging a handle changes the action order', (
+  testWidgets('long pressing a handle starts dragging without a tooltip', (
     WidgetTester tester,
   ) async {
     await pumpSettings(tester);
 
-    await tester.timedDrag(
-      find.byTooltip('Reorder View Profile'),
-      const Offset(0, 70),
-      const Duration(milliseconds: 600),
+    final Finder row = actionRow(ItemMenuAction.viewProfile);
+    final Finder handle = find.descendant(
+      of: row,
+      matching: find.byType(ReorderableDelayedDragStartListener),
     );
+    final Rect tileRect = tester.getRect(row);
+    final Rect leadingRect = tester.getRect(
+      find.descendant(
+        of: row,
+        matching: find.byIcon(ItemMenuAction.viewProfile.icon),
+      ),
+    );
+    final Rect dragIconRect = tester.getRect(
+      find.descendant(of: handle, matching: find.byIcon(Icons.drag_handle)),
+    );
+    expect(
+      tileRect.right - dragIconRect.right,
+      closeTo(leadingRect.left - tileRect.left, 0.01),
+    );
+    expect(
+      find.descendant(of: handle, matching: find.byType(Tooltip)),
+      findsNothing,
+    );
+
+    // The blank part of the handle remains a usable touch target.
+    final TestGesture gesture = await tester.startGesture(
+      tester.getRect(handle).centerLeft + const Offset(6, 0),
+    );
+    await tester.pump(kLongPressTimeout + const Duration(milliseconds: 100));
+    expect(find.text('Reorder View Profile'), findsNothing);
+    for (int step = 0; step < 7; step++) {
+      await gesture.moveBy(const Offset(0, 10));
+      await tester.pump(const Duration(milliseconds: 50));
+    }
+    await gesture.up();
     await tester.pumpAndSettle();
 
     expect(cubit.state.itemMenuActions[0], ItemMenuAction.searchOnHackerNews);

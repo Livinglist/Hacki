@@ -69,6 +69,9 @@ class ItemMenuSettingsScreen extends StatelessWidget {
                 final ItemMenuAction action = actions[index];
                 return ListTile(
                   key: ValueKey<ItemMenuAction>(action),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: Dimens.pt16,
+                  ),
                   leading: Icon(action.icon),
                   title: Text(action.description),
                   trailing: Row(
@@ -88,14 +91,16 @@ class ItemMenuSettingsScreen extends StatelessWidget {
                           },
                         ),
                       ),
-                      ReorderableDragStartListener(
+                      ReorderableDelayedDragStartListener(
                         index: index,
-                        child: Tooltip(
-                          message: 'Reorder ${action.description}',
-                          child: const SizedBox(
+                        child: Semantics(
+                          label: 'Reorder ${action.description}',
+                          child: Container(
                             width: Dimens.pt48,
                             height: Dimens.pt48,
-                            child: Icon(Icons.drag_handle),
+                            color: Palette.transparent,
+                            alignment: AlignmentDirectional.centerEnd,
+                            child: const Icon(Icons.drag_handle),
                           ),
                         ),
                       ),
