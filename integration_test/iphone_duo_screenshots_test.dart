@@ -13,7 +13,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   final IntegrationTestWidgetsFlutterBinding binding =
-      IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+      IntegrationTestWidgetsFlutterBinding.ensureInitialized()
+        ..framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
 
   testWidgets('Capture actual iPhone Duo display transitions', (
     WidgetTester tester,
@@ -94,11 +95,17 @@ void main() {
       () => stories.evaluate().isNotEmpty,
       'Public HN stories should load',
     );
+    final SplitViewCubit splitView = tester
+        .element(stories.first)
+        .read<SplitViewCubit>();
     expect(windowSize().width, lessThan(SplitViewCubit.minimumSplitViewWidth));
+    expect(splitView.state.enabled, isFalse);
     await capture('01-folded-feed', nextPose: 'open');
 
     await waitFor(
-      () => windowSize().width >= SplitViewCubit.minimumSplitViewWidth,
+      () =>
+          windowSize().width >= SplitViewCubit.minimumSplitViewWidth &&
+          splitView.state.enabled,
       'Opening the physical simulator should resize the actual app window',
     );
     final Finder storyWithComments = find.byWidgetPredicate(
@@ -124,7 +131,9 @@ void main() {
     await capture('03-unfolded-rotated-thread', nextPose: 'close');
 
     await waitFor(
-      () => windowSize().width < SplitViewCubit.minimumSplitViewWidth,
+      () =>
+          windowSize().width < SplitViewCubit.minimumSplitViewWidth &&
+          !splitView.state.enabled,
       'Closing the simulator should return to the outer display',
     );
     expect(find.byTooltip('Back to stories'), findsOneWidget);

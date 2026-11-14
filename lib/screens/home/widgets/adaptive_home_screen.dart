@@ -40,20 +40,23 @@ class _AdaptiveHomeScreenState extends State<AdaptiveHomeScreen> {
     final bool preferred = context.select<PreferenceCubit, bool>(
       (PreferenceCubit cubit) => cubit.state.isSplitViewEnabled,
     );
-    return SafeArea(
-      top: false,
-      bottom: false,
-      child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          _updateWindowWidth(constraints.maxWidth);
-          return TabletHomeScreen(
-            homeScreen: widget.homeScreen,
-            splitViewEnabled:
-                preferred &&
-                constraints.maxWidth >= SplitViewCubit.minimumSplitViewWidth,
-            detailBuilder: widget.detailBuilder,
-          );
-        },
+    return ColoredBox(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: SafeArea(
+        top: false,
+        bottom: false,
+        child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            _updateWindowWidth(constraints.maxWidth);
+            return TabletHomeScreen(
+              homeScreen: widget.homeScreen,
+              splitViewEnabled:
+                  preferred &&
+                  constraints.maxWidth >= SplitViewCubit.minimumSplitViewWidth,
+              detailBuilder: widget.detailBuilder,
+            );
+          },
+        ),
       ),
     );
   }

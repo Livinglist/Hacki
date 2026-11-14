@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -114,6 +116,8 @@ void main() {
     Size size = const Size(890, 626),
     bool splitView = true,
     bool asPushedRoute = false,
+    bool withScaffold = true,
+    Color? backgroundColor,
     double? contentWidth,
     EdgeInsets padding = EdgeInsets.zero,
     Widget Function(BuildContext, ItemScreenArgs)? detailBuilder,
@@ -134,23 +138,22 @@ void main() {
     });
 
     final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-    final Widget home = Scaffold(
-      body: Align(
-        alignment: Alignment.topLeft,
-        child: SizedBox(
-          width: contentWidth,
-          child: AdaptiveHomeScreen(
-            homeScreen: const _ReadingPane(label: 'feed', key: _feedKey),
-            detailBuilder:
-                detailBuilder ??
-                (_, ItemScreenArgs args) => _ReadingPane(
-                  label: 'thread ${args.item.id}',
-                  key: _detailKey,
-                ),
-          ),
+    final Widget content = Align(
+      alignment: Alignment.topLeft,
+      child: SizedBox(
+        width: contentWidth,
+        child: AdaptiveHomeScreen(
+          homeScreen: const _ReadingPane(label: 'feed', key: _feedKey),
+          detailBuilder:
+              detailBuilder ??
+              (_, ItemScreenArgs args) => _ReadingPane(
+                label: 'thread ${args.item.id}',
+                key: _detailKey,
+              ),
         ),
       ),
     );
+    final Widget home = withScaffold ? Scaffold(body: content) : content;
 
     await tester.pumpWidget(
       MultiBlocProvider(
@@ -167,7 +170,7 @@ void main() {
             Font.robotoSlab,
             isDarkModeEnabled: false,
             isTrueDarkModeEnabled: false,
-          ),
+          ).copyWith(scaffoldBackgroundColor: backgroundColor),
           builder: (BuildContext context, Widget? child) => MediaQuery(
             data: MediaQuery.of(
               context,
@@ -432,4 +435,54 @@ void main() {
     expect(feed.overlaps(detail), isFalse);
     expect(tester.takeException(), isNull);
   });
+
+  for (final Color background in <Color>[
+    const Color(0xFFF1E3D5),
+    const Color(0xFF251B15),
+  ]) {
+    testWidgets('paints horizontal safe areas with theme color $background', (
+      WidgetTester tester,
+    ) async {
+      await pumpHome(
+        tester,
+        size: const Size(466, 678),
+        withScaffold: false,
+        backgroundColor: background,
+        padding: const EdgeInsets.only(left: 32, right: 84),
+      );
+
+      for (final Size size in <Size>[
+        const Size(466, 678),
+        const Size(951, 669),
+      ]) {
+        await resize(tester, size);
+        final List<int> pixels = (await tester.runAsync<List<int>>(() async {
+          final ui.Image image = await captureImage(
+            tester.element(find.byType(AdaptiveHomeScreen)),
+          );
+          try {
+            final ByteData? data = await image.toByteData();
+            return data!.buffer.asUint8List();
+          } finally {
+            image.dispose();
+          }
+        }))!;
+        final int color = background.toARGB32();
+        final List<int> expected = <int>[
+          (color >> 16) & 255,
+          (color >> 8) & 255,
+          color & 255,
+          (color >> 24) & 255,
+        ];
+        for (final int x in <int>[12, size.width.toInt() - 12]) {
+          final int offset = (size.height ~/ 2 * size.width.toInt() + x) * 4;
+          expect(
+            pixels.sublist(offset, offset + 4),
+            expected,
+            reason: 'The reserved edge should be painted at $size, x=$x',
+          );
+        }
+      }
+    });
+  }
 }
