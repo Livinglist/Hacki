@@ -24,7 +24,6 @@ jobs:
       DUO_CAPTURE_DIR: ${{ github.workspace }}/build/iphone-duo-simulator
       DUO_CAPTURE_PORT: '8765'
       COCOAPODS_DISABLE_STATS: 'true'
-      XDG_CACHE_HOME: ${{ runner.temp }}/duo-cache
     steps:
       - uses: actions/checkout@v7
         with:
@@ -44,6 +43,7 @@ jobs:
         env:
           HINGE_REVISION: 06cb720276281da7f1aadd3874acb0d0ae5eb2b5
         run: |
+          echo "XDG_CACHE_HOME=$RUNNER_TEMP/duo-cache" >> "$GITHUB_ENV"
           git clone https://github.com/artemnovichkov/hinge.git "$RUNNER_TEMP/hinge"
           git -C "$RUNNER_TEMP/hinge" checkout --detach "$HINGE_REVISION"
           echo "HINGE_BIN=$RUNNER_TEMP/hinge/bin/hinge" >> "$GITHUB_ENV"
