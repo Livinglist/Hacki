@@ -121,7 +121,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   Map<int, Comment>? _previousCommentStates;
   double inThreadSearchOffset = 0;
 
-  /// Incremented at the start of each [scrollTo] (and on [close]) so a
+  /// Incremented at the start of each programmatic scroll (and on [close]) so a
   /// superseded scroll does not [ItemScrollController.jumpTo] after a newer
   /// one has already begun.
   int _scrollGeneration = 0;
@@ -733,7 +733,57 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
       ),
     );
 
-    unawaited(scrollToComment(placeholder));
+    unawaited(_revealPendingReply(placeholder));
+  }
+
+  Future<void> _revealPendingReply(Comment reply) async {
+    if (!itemScrollController.isAttached) return;
+
+    final int generation = ++_scrollGeneration;
+    final Set<int> ancestors = <int>{};
+    Comment? ancestor = state.comments.firstWhereOrNull(
+      (Comment c) => c.id == reply.parent,
+    );
+    while (ancestor != null && ancestors.add(ancestor.id)) {
+      if (ancestor.isCollapsedByUser) uncollapse(ancestor);
+      final int parentId = ancestor.parent;
+      ancestor = state.comments.firstWhereOrNull(
+        (Comment c) => c.id == parentId,
+      );
+    }
+
+    // Let the list rebuild with the inserted row before using its indices.
+    await SchedulerBinding.instance.endOfFrame;
+    if (isClosed ||
+        generation != _scrollGeneration ||
+        !itemScrollController.isAttached) {
+      return;
+    }
+
+    final int index = state.comments.indexWhere(
+      (Comment c) => c.id == reply.id,
+    );
+    if (index == -1) return;
+
+    _recordNavigationTo(reply);
+
+    // An animated offscreen scroll builds a second copy of the list, which
+    // cannot share the comment GlobalKeys. Jump using the updated list instead.
+    // Index zero is the thread header.
+    itemScrollController.jumpTo(index: index + 1, alignment: _jumpAlignment);
+
+    await SchedulerBinding.instance.endOfFrame;
+    if (isClosed ||
+        generation != _scrollGeneration ||
+        !itemScrollController.isAttached) {
+      return;
+    }
+
+    final GlobalKey? key = globalKeys[reply.id];
+    final BuildContext? context = key?.currentContext;
+    if (key != null && context != null && context.mounted) {
+      _startShine(context, key);
+    }
   }
 
   /// Discards every placeholder so that none of them outlives this cubit.
@@ -903,8 +953,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
         .where(
           (ItemPosition e) =>
               e.index >= 1 &&
-                  (e.itemLeadingEdge > 0.12 && e.itemLeadingEdge < 0.48) ||
-              (e.itemLeadingEdge >= 0.48 && e.itemTrailingEdge < 1),
+              ((e.itemLeadingEdge > 0.12 && e.itemLeadingEdge < 0.48) ||
+                  (e.itemLeadingEdge >= 0.48 && e.itemTrailingEdge < 1)),
         )
         .map(
           (ItemPosition e) => e.index <= state.comments.length
