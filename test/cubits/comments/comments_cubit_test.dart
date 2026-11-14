@@ -157,6 +157,57 @@ void main() {
       expect(state.navigationStack, <NavigationAnchor>[a, scrolledB, c]);
     });
 
+    test(
+      'updates the current stop when another comment anchors the viewport',
+      () {
+        const NavigationAnchor aboveB = NavigationAnchor(
+          itemId: 22,
+          alignment: 0.08,
+        );
+
+        state = state
+            .copyWithNavigation(from: a, to: b)
+            .copyWithNavigation(from: aboveB, to: c);
+
+        expect(state.navigationStack, <NavigationAnchor>[a, aboveB, c]);
+        expect(state.navigationIndex, 2);
+      },
+    );
+
+    test('coalesces a return to the preceding stop with its latest offset', () {
+      const NavigationAnchor scrolledA = NavigationAnchor(
+        itemId: 1,
+        alignment: -0.1,
+      );
+
+      state = state
+          .copyWithNavigation(from: a, to: b)
+          .copyWithNavigation(from: scrolledA, to: c);
+
+      expect(state.navigationStack, <NavigationAnchor>[scrolledA, c]);
+      expect(state.navigationIndex, 1);
+    });
+
+    test(
+      'refreshes the origin and drops forward positions after going back',
+      () {
+        const NavigationAnchor scrolledB = NavigationAnchor(
+          itemId: 22,
+          alignment: -0.4,
+        );
+
+        state = state
+            .copyWithNavigation(from: a, to: b)
+            .copyWithNavigation(from: b, to: c)
+            .copyWith(navigationIndex: 1)
+            .copyWithNavigation(from: scrolledB, to: d);
+
+        expect(state.navigationStack, <NavigationAnchor>[a, scrolledB, d]);
+        expect(state.navigationIndex, 2);
+        expect(state.canNavigateForward, isFalse);
+      },
+    );
+
     test('a jump after going back drops the forward positions', () {
       state = state
           .copyWithNavigation(from: a, to: b)
