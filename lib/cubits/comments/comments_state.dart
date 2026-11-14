@@ -23,6 +23,7 @@ class CommentsState extends Equatable {
     required this.maxLevel,
     required this.navigationStack,
     required this.navigationIndex,
+    required this.hasScrolledFromNavigation,
   });
 
   CommentsState.init({
@@ -44,7 +45,8 @@ class CommentsState extends Equatable {
        isNewInSearchSelected = false,
        maxLevel = 0,
        navigationStack = <NavigationAnchor>[],
-       navigationIndex = -1;
+       navigationIndex = -1,
+       hasScrolledFromNavigation = false;
 
   final Item item;
   final List<Comment> comments;
@@ -63,17 +65,18 @@ class CommentsState extends Equatable {
   final bool isNewInSearchSelected;
   final int maxLevel;
 
-  /// The positions the user has jumped from and to in this thread, oldest
-  /// first.
+  /// The positions the user has jumped from and to in this thread, in
+  /// navigation order.
   final List<NavigationAnchor> navigationStack;
 
   /// The index in [navigationStack] of the position the user is currently
   /// at, or -1 when nothing has been recorded.
   final int navigationIndex;
 
-  static const int maxNavigationStackSize = 50;
+  /// Manual scrolling has moved away from the current recorded stop.
+  final bool hasScrolledFromNavigation;
 
-  bool get canNavigateBack => navigationIndex > 0;
+  bool get canNavigateBack => navigationIndex > 0 || hasScrolledFromNavigation;
 
   bool get canNavigateForward =>
       navigationIndex >= 0 && navigationIndex < navigationStack.length - 1;
@@ -101,6 +104,7 @@ class CommentsState extends Equatable {
     int? maxLevel,
     List<NavigationAnchor>? navigationStack,
     int? navigationIndex,
+    bool? hasScrolledFromNavigation,
   }) {
     return CommentsState(
       item: item ?? this.item,
@@ -124,50 +128,67 @@ class CommentsState extends Equatable {
       maxLevel: maxLevel ?? this.maxLevel,
       navigationStack: navigationStack ?? this.navigationStack,
       navigationIndex: navigationIndex ?? this.navigationIndex,
+      hasScrolledFromNavigation:
+          hasScrolledFromNavigation ?? this.hasScrolledFromNavigation,
     );
   }
 
   /// Records a jump from [from], where the user currently is, to [to].
   ///
-  /// Scrolling refreshes the current stop; only a jump adds a new stop.
+  /// The measured origin refreshes reading-position stops, while explicit
+  /// comment destinations are retained. Manual scrolling is recorded separately
+  /// before the next jump so its starting stop survives.
   ///
-  /// Any positions ahead of the current one are dropped, the same way a
-  /// browser drops forward history when a new page is visited.
+  /// A new jump keeps earlier stops and discards forward positions. Replaying
+  /// history or recording manual scrolling does not use this method.
   CommentsState copyWithNavigation({
     required NavigationAnchor to,
     NavigationAnchor? from,
   }) {
-    if (from?.itemId == to.itemId) {
-      return this;
-    }
-
     final List<NavigationAnchor> stack = navigationStack
         .take(navigationIndex + 1)
         .toList();
+    int index = navigationIndex;
+
+    // Even an explicit jump to the current comment clears forward history.
+    if (from?.isSamePosition(to) ?? false) {
+      if (to.targetComment != null) {
+        if (index < 0) {
+          stack.add(to);
+          index = 0;
+        } else {
+          stack[index] = to;
+        }
+        return copyWith(navigationStack: stack, navigationIndex: index);
+      }
+      return stack.length == navigationStack.length
+          ? this
+          : copyWith(navigationStack: stack);
+    }
 
     if (from != null) {
-      if (stack.isEmpty) {
-        stack.add(from);
-      } else {
-        // Scrolling or layout can change which comment anchors the same
-        // viewport. Refresh this stop instead of adding another history entry.
-        stack.last = from;
-        if (stack.length > 1 &&
-            stack.elementAt(stack.length - 2).itemId == from.itemId) {
-          stack.removeAt(stack.length - 2);
+      if (index < 0) {
+        stack.insert(0, from);
+        index = 0;
+      } else if (stack.elementAt(index).targetComment == null) {
+        if (index > 0 &&
+            stack.elementAt(index - 1).itemId == from.itemId &&
+            stack.elementAt(index).itemId != from.itemId) {
+          // Keep the earlier stop when the user scrolled back to it.
+          stack.insert(++index, from);
+        } else {
+          // Refresh reading-position stops, keeping explicit targets intact.
+          stack[index] = from;
         }
       }
     }
 
-    if (stack.isEmpty || stack.last.itemId != to.itemId) {
-      stack.add(to);
+    if (index < 0 || !stack.elementAt(index).isSamePosition(to)) {
+      index++;
+      stack.insert(index, to);
     }
 
-    if (stack.length > maxNavigationStackSize) {
-      stack.removeRange(0, stack.length - maxNavigationStackSize);
-    }
-
-    return copyWith(navigationStack: stack, navigationIndex: stack.length - 1);
+    return copyWith(navigationStack: stack, navigationIndex: index);
   }
 
   Set<int> get commentIds => comments.map((Comment e) => e.id).toSet();
@@ -220,5 +241,6 @@ class CommentsState extends Equatable {
     maxLevel,
     navigationStack,
     navigationIndex,
+    hasScrolledFromNavigation,
   ];
 }

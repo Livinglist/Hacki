@@ -6,6 +6,7 @@ import 'package:collection/collection.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart' show ScrollDirection;
 import 'package:flutter/scheduler.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
@@ -49,6 +50,9 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     AppLifecycleService? appLifecycleService,
   }) : _filterCubit = filterCubit,
        _preferenceCubit = preferenceCubit,
+       _isNavigationHistoryEnabled = _historyButtonsEnabled(
+         preferenceCubit.state,
+       ),
        _commentCache = commentCache ?? locator.get<CommentCache>(),
        _offlineRepository =
            offlineRepository ?? locator.get<OfflineRepository>(),
@@ -72,6 +76,10 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     _appStateSubscription = _appLifecycleService.stream
         .where((AppLifecycleState s) => s == AppLifecycleState.inactive)
         .listen(_onAppHidden);
+    _historyPreferenceSubscription = _preferenceCubit.stream
+        .map(_historyButtonsEnabled)
+        .distinct()
+        .listen(_onHistoryButtonsChanged);
   }
 
   /// Global keys mapped to comment ids, this is used primarily in
@@ -95,6 +103,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   final CollapseStateCacheRepository _collapseStateCacheRepository;
   final AppLifecycleService _appLifecycleService;
   late final StreamSubscription<AppLifecycleState> _appStateSubscription;
+  late final StreamSubscription<bool> _historyPreferenceSubscription;
   void Function()? openInThreadSearch;
 
   final ItemScrollController itemScrollController = ItemScrollController();
@@ -125,6 +134,49 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   /// superseded scroll does not [ItemScrollController.jumpTo] after a newer
   /// one has already begun.
   int _scrollGeneration = 0;
+  int? _activeScrollGeneration;
+  bool _isNavigationHistoryEnabled;
+  int _historyTrackingGeneration = 0;
+  NavigationAnchor? _navigationViewport;
+  int? _navigationViewportIndex;
+  bool _isUserScrolling = false;
+  bool _isManualScrollCheckScheduled = false;
+
+  static bool _historyButtonsEnabled(PreferenceState state) =>
+      state.areSkipButtonsEnabled && state.areHistoryButtonsEnabled;
+
+  void _onHistoryButtonsChanged(bool enabled) {
+    if (isClosed || enabled == _isNavigationHistoryEnabled) return;
+    _isNavigationHistoryEnabled = enabled;
+    _resetManualScrollTracking();
+    if (enabled) _establishCurrentHistoryPosition();
+  }
+
+  /// Re-enabling history starts from where the user is now, keeping any
+  /// positions saved before the controls were disabled.
+  void _establishCurrentHistoryPosition() {
+    if (!_isNavigationHistoryEnabled ||
+        !itemScrollController.isAttached ||
+        _activeScrollGeneration != null) {
+      return;
+    }
+    final NavigationAnchor? position = _currentAnchor;
+    if (position == null) return;
+    if (state.navigationIndex < 0) {
+      emit(
+        state.copyWith(
+          navigationStack: <NavigationAnchor>[position],
+          navigationIndex: 0,
+        ),
+      );
+    } else if (!_isAtNavigationAnchor(
+      state.navigationStack.elementAt(state.navigationIndex),
+    )) {
+      emit(state.copyWith(hasScrolledFromNavigation: true));
+      _recordScrolledPosition();
+    }
+    _rememberNavigationViewport();
+  }
 
   bool get hasNewComment => state.comments.any((Comment c) => c.isNew);
 
@@ -770,6 +822,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     // An animated offscreen scroll builds a second copy of the list, which
     // cannot share the comment GlobalKeys. Jump using the updated list instead.
     // Index zero is the thread header.
+    if (_isNavigationHistoryEnabled) _resetManualScrollTracking();
     itemScrollController.jumpTo(index: index + 1, alignment: _jumpAlignment);
 
     await SchedulerBinding.instance.endOfFrame;
@@ -778,6 +831,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
         !itemScrollController.isAttached) {
       return;
     }
+
+    if (_isNavigationHistoryEnabled) _rememberNavigationViewport();
 
     final GlobalKey? key = globalKeys[reply.id];
     final BuildContext? context = key?.currentContext;
@@ -944,38 +999,23 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     init();
   }
 
-  bool _isCommentOnScreen(Comment comment) {
-    final Iterable<Comment> onScreenComments = itemPositionsListener
-        .itemPositions
-        .value
-        // The header is also a part of the list view,
-        // thus ignoring it here.
-        .where(
-          (ItemPosition e) =>
-              e.index >= 1 &&
-              ((e.itemLeadingEdge > 0.12 && e.itemLeadingEdge < 0.48) ||
-                  (e.itemLeadingEdge >= 0.48 && e.itemTrailingEdge < 1)),
-        )
-        .map(
-          (ItemPosition e) => e.index <= state.comments.length
-              ? state.comments.elementAt(e.index - 1)
-              : null,
-        )
-        .nonNulls;
-    if (kDebugMode) {
-      debugPrint(
-        '''on screen comments are ${onScreenComments.map((Comment e) => e.id)}''',
-      );
-    }
-    final bool isTargetCommentInRange = onScreenComments.any(
-      (Comment c) => c.id == comment.id,
+  bool _isCommentOnScreen(Comment comment, {required double alignment}) {
+    return itemPositionsListener.itemPositions.value.any(
+      (ItemPosition position) =>
+          position.index >= 1 &&
+          position.index <= state.comments.length &&
+          state.comments.elementAt(position.index - 1).id == comment.id &&
+          !state.comments.elementAt(position.index - 1).isHiddenByUser &&
+          (position.itemLeadingEdge - alignment).abs() <=
+              NavigationAnchor.alignmentTolerance,
     );
-    return isTargetCommentInRange;
   }
 
   Future<void> scrollToComment(
     Comment comment, {
     bool isRetrying = false,
+    bool recordNavigation = true,
+    double alignment = _jumpAlignment,
   }) async {
     /// Find out the index of the comment in the thread.
     final Comment? matchedComment = state.comments.singleWhereOrNull(
@@ -984,27 +1024,57 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     if (matchedComment == null) return;
     final int index = state.comments.indexOf(matchedComment);
 
-    if (!isRetrying) {
-      _recordNavigationTo(matchedComment);
+    if (!isRetrying && recordNavigation) {
+      _recordNavigationTo(matchedComment, alignment: alignment);
     }
 
-    /// If index if found, scroll to the comment.
-    if (index != -1) {
-      await scrollTo(index: index, duration: AppDurations.ms300);
-    }
+    final Future<void> initialScroll = scrollTo(
+      index: index + 1,
+      alignment: alignment,
+      duration: AppDurations.ms300,
+    );
+    int generation = _scrollGeneration;
+    await initialScroll;
+    if (isClosed || generation != _scrollGeneration) return;
 
     /// Find out all of its ancestors, uncollapse them if they
     /// are collapsed.
-    Comment? curComment = matchedComment;
+    Comment? curComment = state.comments.singleWhereOrNull(
+      (Comment current) => current.id == matchedComment.id,
+    );
+    if (curComment == null) return;
+    bool unfolded = false;
     while (curComment != null) {
       if (curComment.isCollapsedByUser) {
         uncollapse(curComment);
+        unfolded = true;
       }
       curComment = state.comments.singleWhereOrNull(
         (Comment c) => c.id == curComment?.parent,
       );
 
       if (curComment == null) break;
+    }
+
+    if (unfolded) {
+      await SchedulerBinding.instance.endOfFrame;
+      if (isClosed || generation != _scrollGeneration) return;
+      if (!_isCommentOnScreen(comment, alignment: alignment)) {
+        // Unfolding ancestors can move the target. Resolve it again by id;
+        // positioning must also work before a rendered GlobalKey exists.
+        final int targetIndex = state.comments.indexWhere(
+          (Comment target) => target.id == matchedComment.id,
+        );
+        if (targetIndex < 0) return;
+        final Future<void> correction = scrollTo(
+          index: targetIndex + 1,
+          alignment: alignment,
+          duration: AppDurations.ms300,
+        );
+        generation = _scrollGeneration;
+        await correction;
+        if (isClosed || generation != _scrollGeneration) return;
+      }
     }
 
     final GlobalKey<State<StatefulWidget>>? targetCommentGlobalKey =
@@ -1019,9 +1089,14 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     if (targetCommentContext != null) {
       /// Delay here so `itemPositionsListener` can be up to date.
       await Future<void>.delayed(AppDurations.ms300, () async {
+        if (isClosed || generation != _scrollGeneration) return;
+
         /// Make sure the comment tile's leading edge is within an
         /// acceptable view point.
-        final bool isCommentOnScreen = _isCommentOnScreen(comment);
+        final bool isCommentOnScreen = _isCommentOnScreen(
+          comment,
+          alignment: alignment,
+        );
 
         if (kDebugMode) {
           debugPrint('''
@@ -1033,44 +1108,36 @@ comments length is ${state.comments.length}
         }
 
         if (!isCommentOnScreen) {
-          if (index != -1) {
-            if (kDebugMode) {
-              debugPrint('scrolling another time to ${index + 1}');
-            }
-            await scrollTo(
-              index: index + 1,
-              alignment: 0.2,
-              duration: AppDurations.ms300,
-            );
+          final int targetIndex = state.comments.indexWhere(
+            (Comment target) => target.id == matchedComment.id,
+          );
+          if (targetIndex < 0) return;
+          final Future<void> correction = scrollTo(
+            index: targetIndex + 1,
+            alignment: alignment,
+            duration: AppDurations.ms300,
+          );
+          generation = _scrollGeneration;
+          await correction;
+          if (isClosed || generation != _scrollGeneration) return;
 
-            final bool isCommentOnScreen = _isCommentOnScreen(comment);
-            if (!isCommentOnScreen && !isRetrying) {
-              await scrollToComment(comment, isRetrying: true);
-              return;
-            }
-          } else {
-            if (kDebugMode) {
-              debugPrint('attempting to ensure visible');
-            }
-            final BuildContext? newTargetCommentContext =
-                targetCommentGlobalKey?.currentContext;
-            if (newTargetCommentContext != null &&
-                newTargetCommentContext.mounted) {
-              if (kDebugMode) {
-                debugPrint('ensure visible');
-              }
-              await Scrollable.ensureVisible(
-                newTargetCommentContext,
-                alignment: 0.15,
-                duration: AppDurations.ms300,
-                alignmentPolicy:
-                    ScrollPositionAlignmentPolicy.keepVisibleAtStart,
-              );
-            }
+          final bool isCommentOnScreen = _isCommentOnScreen(
+            comment,
+            alignment: alignment,
+          );
+          if (!isCommentOnScreen && !isRetrying) {
+            await scrollToComment(
+              comment,
+              isRetrying: true,
+              recordNavigation: recordNavigation,
+              alignment: alignment,
+            );
+            return;
           }
         }
 
         await Future<void>.delayed(AppDurations.ms300, () {
+          if (isClosed || generation != _scrollGeneration) return;
           final BuildContext? newTargetCommentContext =
               targetCommentGlobalKey?.currentContext;
           if (targetCommentGlobalKey != null &&
@@ -1097,33 +1164,53 @@ comments length is ${state.comments.length}
 
     // Only user-initiated jumps opt in; history replay and layout corrections
     // must not add new stops. Index zero is the thread header.
-    if (recordNavigation && index >= 0 && index <= state.comments.length) {
-      emit(
-        state.copyWithNavigation(
-          from: _currentAnchor,
-          to: NavigationAnchor(
-            itemId: index == 0
-                ? state.item.id
-                : state.comments.elementAt(index - 1).id,
-            alignment: alignment,
-          ),
-        ),
+    if (_isNavigationHistoryEnabled &&
+        recordNavigation &&
+        index >= 0 &&
+        index <= state.comments.length) {
+      _recordJump(
+        index == 0
+            ? NavigationAnchor(itemId: state.item.id, alignment: alignment)
+            : NavigationAnchor.forComment(
+                state.comments.elementAt(index - 1),
+                alignment: alignment,
+              ),
       );
     }
 
+    if (_isNavigationHistoryEnabled) _resetManualScrollTracking();
+    final int historyGeneration = _historyTrackingGeneration;
     final int generation = ++_scrollGeneration;
+    _activeScrollGeneration = generation;
     debugPrint('scrolling to: $index, alignment: $alignment');
-    await itemScrollController.scrollTo(
-      index: index,
-      alignment: alignment,
-      duration: duration ?? AppDurations.ms400,
-      curve: curve,
-      opacityAnimationWeights: opacityAnimationWeights,
-    );
-    if (generation != _scrollGeneration || isClosed) {
-      return;
+    try {
+      await itemScrollController.scrollTo(
+        index: index,
+        alignment: alignment,
+        duration: duration ?? AppDurations.ms400,
+        curve: curve,
+        opacityAnimationWeights: opacityAnimationWeights,
+      );
+      if (generation != _scrollGeneration || isClosed) return;
+      await _reanchorToTopMostVisibleItem(generation);
+    } finally {
+      if (_activeScrollGeneration == generation) {
+        _activeScrollGeneration = null;
+      }
     }
-    await _reanchorToTopMostVisibleItem(generation);
+    if (!_isNavigationHistoryEnabled) return;
+    await SchedulerBinding.instance.endOfFrame;
+    if (generation == _scrollGeneration &&
+        _isNavigationHistoryEnabled &&
+        !isClosed) {
+      // Store the measured landing viewport: a short reply above the target
+      // can anchor the same position as the target comment itself.
+      if (historyGeneration != _historyTrackingGeneration) {
+        _establishCurrentHistoryPosition();
+      } else {
+        _rememberNavigationViewport();
+      }
+    }
   }
 
   /// After [ItemScrollController.scrollTo], [ScrollablePositionedList] may
@@ -1193,11 +1280,14 @@ comments length is ${state.comments.length}
 
   /// Where the user currently is in the thread, or null if nothing is laid
   /// out yet.
-  NavigationAnchor? get _currentAnchor {
-    final ItemPosition? position = currentAnchorItem(
+  NavigationAnchor? get _currentAnchor => _anchorAt(
+    currentAnchorItem(
       itemPositionsListener.itemPositions.value,
       lastIndex: state.comments.length,
-    );
+    ),
+  );
+
+  NavigationAnchor? _anchorAt(ItemPosition? position) {
     if (position == null || !position.itemLeadingEdge.isFinite) {
       return null;
     }
@@ -1210,16 +1300,162 @@ comments length is ${state.comments.length}
     );
   }
 
+  void _rememberNavigationViewport() {
+    if (!_isNavigationHistoryEnabled) return;
+    final ItemPosition? position = currentAnchorItem(
+      itemPositionsListener.itemPositions.value,
+      lastIndex: state.comments.length,
+    );
+    _navigationViewport = _anchorAt(position);
+    _navigationViewportIndex = position?.index;
+  }
+
   /// Records the user's current position and [comment], which they are
   /// about to jump to, so that they can navigate back and forward between
   /// the two.
-  void _recordNavigationTo(Comment comment) {
+  void _recordNavigationTo(
+    Comment comment, {
+    double alignment = _jumpAlignment,
+  }) {
+    if (!_isNavigationHistoryEnabled) return;
+    _recordJump(NavigationAnchor.forComment(comment, alignment: alignment));
+  }
+
+  void _recordJump(NavigationAnchor destination) {
+    if (!_isNavigationHistoryEnabled) return;
+    _recordScrolledPosition();
     emit(
       state.copyWithNavigation(
-        from: _currentAnchor,
-        to: NavigationAnchor(itemId: comment.id, alignment: _jumpAlignment),
+        // Different comments can describe the same viewport. A jump that is
+        // already at its destination retains that target without another stop.
+        from: _isAtNavigationAnchor(destination) ? destination : _currentAnchor,
+        to: destination,
       ),
     );
+  }
+
+  /// Observes manual thread scrolling without treating animated jumps or
+  /// layout corrections as new reading positions.
+  bool onThreadScrollNotification(ScrollNotification notification) {
+    if (!_isNavigationHistoryEnabled ||
+        notification.depth != 0 ||
+        notification.metrics.axis != Axis.vertical ||
+        state.navigationIndex < 0) {
+      return false;
+    }
+
+    if ((notification is ScrollStartNotification &&
+            notification.dragDetails != null) ||
+        (notification is ScrollUpdateNotification &&
+            notification.dragDetails != null) ||
+        (notification is UserScrollNotification &&
+            notification.direction != ScrollDirection.idle)) {
+      _isUserScrolling = true;
+    }
+
+    if (_isUserScrolling) _scheduleManualScrollCheck();
+
+    if (notification is ScrollEndNotification ||
+        (notification is UserScrollNotification &&
+            notification.direction == ScrollDirection.idle)) {
+      _isUserScrolling = false;
+    }
+    return false;
+  }
+
+  void _scheduleManualScrollCheck() {
+    if (!_isNavigationHistoryEnabled ||
+        _isManualScrollCheckScheduled ||
+        _navigationViewport == null) {
+      return;
+    }
+    _isManualScrollCheckScheduled = true;
+    final int generation = _scrollGeneration;
+    final int historyGeneration = _historyTrackingGeneration;
+    unawaited(
+      SchedulerBinding.instance.endOfFrame.then((_) {
+        if (historyGeneration != _historyTrackingGeneration) return;
+        _isManualScrollCheckScheduled = false;
+        if (isClosed ||
+            !_isNavigationHistoryEnabled ||
+            generation != _scrollGeneration) {
+          return;
+        }
+        final NavigationAnchor? viewport = _navigationViewport;
+        if (viewport == null) return;
+
+        int? index = _navigationViewportIndex;
+        // Appending comments leaves this index valid. Only search again if
+        // an insertion or removal has moved the saved comment.
+        if (viewport.itemId == state.item.id) {
+          index = 0;
+        } else if (index == null ||
+            index < 1 ||
+            index > state.comments.length ||
+            state.comments.elementAt(index - 1).id != viewport.itemId) {
+          final int commentIndex = state.comments.indexWhere(
+            (Comment comment) => comment.id == viewport.itemId,
+          );
+          if (commentIndex < 0) {
+            _resetManualScrollTracking();
+            return;
+          }
+          index = commentIndex + 1;
+        }
+        _navigationViewportIndex = index;
+        final ItemPosition? position = itemPositionsListener.itemPositions.value
+            .firstWhereOrNull(
+              (ItemPosition position) => position.index == index,
+            );
+        final bool hasScrolled =
+            position == null ||
+            (position.itemLeadingEdge - viewport.alignment).abs() >
+                NavigationAnchor.alignmentTolerance;
+        if (hasScrolled != state.hasScrolledFromNavigation) {
+          emit(state.copyWith(hasScrolledFromNavigation: hasScrolled));
+        }
+      }),
+    );
+  }
+
+  void _resetManualScrollTracking() {
+    _historyTrackingGeneration++;
+    _isManualScrollCheckScheduled = false;
+    _isUserScrolling = false;
+    _navigationViewport = null;
+    _navigationViewportIndex = null;
+    if (state.hasScrolledFromNavigation) {
+      emit(state.copyWith(hasScrolledFromNavigation: false));
+    }
+  }
+
+  /// Preserve the stop the user scrolled away from as well as where they
+  /// scrolled to, retaining any existing forward positions.
+  bool _recordScrolledPosition() {
+    if (!_isNavigationHistoryEnabled ||
+        !state.hasScrolledFromNavigation ||
+        state.navigationIndex < 0) {
+      return false;
+    }
+    final NavigationAnchor? position = _currentAnchor;
+    if (position == null) return false;
+
+    final List<NavigationAnchor> stack = List<NavigationAnchor>.of(
+      state.navigationStack,
+    );
+    final int index = state.navigationIndex + 1;
+    if (index == stack.length ||
+        !_isAtNavigationAnchor(stack.elementAt(index))) {
+      stack.insert(index, position);
+    }
+    emit(
+      state.copyWith(
+        navigationStack: stack,
+        navigationIndex: index,
+        hasScrolledFromNavigation: false,
+      ),
+    );
+    return true;
   }
 
   /// Jumps to the comment at [index] in [CommentsState.comments].
@@ -1236,30 +1472,113 @@ comments length is ${state.comments.length}
 
   /// Go back to where the user was before their last jump.
   void navigateBack() {
+    if (!_isNavigationHistoryEnabled) return;
+    if (state.hasScrolledFromNavigation && !_recordScrolledPosition()) {
+      // The footer may be the only visible item, with no comment to anchor it.
+      _navigateTo(state.navigationIndex);
+      return;
+    }
     if (state.canNavigateBack) {
-      _navigateTo(state.navigationIndex - 1);
+      _navigateHistory(-1);
     }
   }
 
-  /// Redo the jump undone by [navigateBack].
+  /// Go to the next recorded position.
   void navigateForward() {
+    if (!_isNavigationHistoryEnabled) return;
+    _recordScrolledPosition();
     if (state.canNavigateForward) {
-      _navigateTo(state.navigationIndex + 1);
+      _navigateHistory(1);
+    }
+  }
+
+  /// Resolves saved comment ids after the thread has changed.
+  int? _indexOfNavigationAnchor(NavigationAnchor anchor) {
+    if (anchor.itemId == state.item.id) return 0;
+    final int index = state.comments.indexWhere(
+      (Comment comment) => comment.id == anchor.itemId,
+    );
+    return index < 0 ? null : index + 1;
+  }
+
+  bool _isAtNavigationAnchor(NavigationAnchor anchor, {int? index}) {
+    // A new navigation action must supersede an in-flight jump, even if its
+    // destination still happens to be visible at the start of that animation.
+    if (_activeScrollGeneration != null) return false;
+    index ??= _indexOfNavigationAnchor(anchor);
+    if (index == null) return false;
+    if (anchor.targetComment != null && index > 0) {
+      final Comment target = state.comments.elementAt(index - 1);
+      if (target.isHiddenByUser || target.isCollapsedByUser) return false;
+    }
+    final ItemPosition? position = itemPositionsListener.itemPositions.value
+        .firstWhereOrNull((ItemPosition position) => position.index == index);
+    return position != null &&
+        (position.itemLeadingEdge - anchor.alignment).abs() <=
+            NavigationAnchor.alignmentTolerance;
+  }
+
+  /// Skip entries that would leave the viewport unchanged, including a
+  /// different comment anchoring the same reading position.
+  void _navigateHistory(int direction) {
+    List<NavigationAnchor> stack = state.navigationStack;
+    int currentIndex = state.navigationIndex;
+    int index = currentIndex + direction;
+    int lastSkipped = currentIndex;
+    bool removedMissing = false;
+    while (index >= 0 && index < stack.length) {
+      final NavigationAnchor anchor = stack.elementAt(index);
+      final int? itemIndex = _indexOfNavigationAnchor(anchor);
+      if (itemIndex == null) {
+        // A refreshed thread can remove every remaining candidate. Discard
+        // these unusable stops while keeping the cursor on a valid anchor.
+        if (!removedMissing) stack = List<NavigationAnchor>.of(stack);
+        removedMissing = true;
+        stack.removeAt(index);
+        if (index < currentIndex) currentIndex--;
+        if (index < lastSkipped) lastSkipped--;
+        if (direction < 0) index--;
+        continue;
+      }
+      if (!_isAtNavigationAnchor(anchor, index: itemIndex)) {
+        if (removedMissing) {
+          emit(
+            state.copyWith(
+              navigationStack: stack,
+              navigationIndex: currentIndex,
+            ),
+          );
+        }
+        _navigateTo(index);
+        return;
+      }
+      lastSkipped = index;
+      index += direction;
+    }
+    if (removedMissing || lastSkipped != state.navigationIndex) {
+      emit(
+        state.copyWith(navigationStack: stack, navigationIndex: lastSkipped),
+      );
     }
   }
 
   void _navigateTo(int navigationIndex) {
-    emit(state.copyWith(navigationIndex: navigationIndex));
-
     final NavigationAnchor anchor = state.navigationStack.elementAt(
       navigationIndex,
     );
-    final int index = anchor.itemId == state.item.id
-        ? 0
-        : state.comments.indexWhere((Comment c) => c.id == anchor.itemId) + 1;
+    final int? index = _indexOfNavigationAnchor(anchor);
+    if (index == null) return;
+    emit(state.copyWith(navigationIndex: navigationIndex));
 
-    /// The comment may be gone after a refresh.
-    if (index == 0 && anchor.itemId != state.item.id) {
+    final Comment? target = anchor.targetComment;
+    if (target != null && index > 0) {
+      unawaited(
+        scrollToComment(
+          target,
+          recordNavigation: false,
+          alignment: anchor.alignment,
+        ),
+      );
       return;
     }
 
@@ -1606,6 +1925,8 @@ comments length is ${state.comments.length}
 
   @override
   Future<void> close() async {
+    _historyTrackingGeneration++;
+    await _historyPreferenceSubscription.cancel();
     await _streamSubscription?.cancel();
     for (final StreamSubscription<Comment> s in _streamSubscriptions.values) {
       await s.cancel();
