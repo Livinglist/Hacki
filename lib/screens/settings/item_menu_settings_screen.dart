@@ -48,7 +48,7 @@ class ItemMenuSettingsScreen extends StatelessWidget {
               footer: Padding(
                 padding: const EdgeInsets.all(Dimens.pt16),
                 child: Center(
-                  child: TextButton(
+                  child: ElevatedButton(
                     onPressed: () => _showPreview(context),
                     child: const Text('Preview'),
                   ),

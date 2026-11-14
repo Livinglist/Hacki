@@ -112,7 +112,7 @@ void main() {
     await pumpSettings(tester);
     await tester.scrollUntilVisible(find.text('Preview'), 200);
 
-    final Finder button = find.widgetWithText(TextButton, 'Preview');
+    final Finder button = find.widgetWithText(ElevatedButton, 'Preview');
     expect(tester.getCenter(button).dx, 195);
     expect(
       tester.getTopLeft(button).dy,
