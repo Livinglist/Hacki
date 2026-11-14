@@ -129,6 +129,8 @@ class CommentsState extends Equatable {
 
   /// Records a jump from [from], where the user currently is, to [to].
   ///
+  /// Scrolling refreshes the current stop; only a jump adds a new stop.
+  ///
   /// Any positions ahead of the current one are dropped, the same way a
   /// browser drops forward history when a new page is visited.
   CommentsState copyWithNavigation({
@@ -144,10 +146,16 @@ class CommentsState extends Equatable {
         .toList();
 
     if (from != null) {
-      if (stack.isNotEmpty && stack.last.itemId == from.itemId) {
-        stack.last = from;
-      } else {
+      if (stack.isEmpty) {
         stack.add(from);
+      } else {
+        // Scrolling or layout can change which comment anchors the same
+        // viewport. Refresh this stop instead of adding another history entry.
+        stack.last = from;
+        if (stack.length > 1 &&
+            stack.elementAt(stack.length - 2).itemId == from.itemId) {
+          stack.removeAt(stack.length - 2);
+        }
       }
     }
 
