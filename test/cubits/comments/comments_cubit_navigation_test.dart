@@ -1,11 +1,14 @@
 import 'dart:async';
 
 import 'package:bloc_test/bloc_test.dart';
+import 'package:feature_discovery/feature_discovery.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
+import 'package:hacki/screens/item/widgets/widgets.dart';
 import 'package:hacki/services/services.dart';
 import 'package:logger/logger.dart';
 import 'package:material_ui/material_ui.dart';
@@ -29,6 +32,10 @@ class _MockCollapseStateCacheRepository extends Mock
 
 class _MockAppLifecycleService extends Mock implements AppLifecycleService {}
 
+class _MockThreadNavigationButtonCubit
+    extends MockCubit<ThreadNavigationButtonState>
+    implements ThreadNavigationButtonCubit {}
+
 const int _storyId = 100;
 
 Comment _comment(int id, {int? parent}) => Comment.fromJson(<String, dynamic>{
@@ -40,6 +47,8 @@ Comment _comment(int id, {int? parent}) => Comment.fromJson(<String, dynamic>{
 
 void main() {
   late CommentsCubit cubit;
+  late _MockPreferenceCubit preferenceCubit;
+  late _MockThreadNavigationButtonCubit buttonCubit;
   late StreamController<AppLifecycleState> lifecycle;
 
   setUp(() {
@@ -47,8 +56,12 @@ void main() {
     lifecycle = StreamController<AppLifecycleState>.broadcast();
     final _MockFilterCubit filterCubit = _MockFilterCubit();
     when(() => filterCubit.state).thenReturn(FilterState.init());
-    final _MockPreferenceCubit preferenceCubit = _MockPreferenceCubit();
+    preferenceCubit = _MockPreferenceCubit();
     when(() => preferenceCubit.state).thenReturn(PreferenceState.init());
+    buttonCubit = _MockThreadNavigationButtonCubit();
+    when(
+      () => buttonCubit.state,
+    ).thenReturn(ThreadNavigationButtonState.init());
     final _MockAppLifecycleService appLifecycle = _MockAppLifecycleService();
     when(() => appLifecycle.stream).thenAnswer((_) => lifecycle.stream);
     final _MockCollapseStateCacheRepository collapseStates =
@@ -101,23 +114,38 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(390, 600));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: ScrollablePositionedList.builder(
-            itemScrollController: cubit.itemScrollController,
-            itemPositionsListener: cubit.itemPositionsListener,
-            itemCount: cubit.state.comments.length + 2,
-            itemBuilder: (BuildContext context, int index) {
-              if (index == 0) return const SizedBox(height: 100);
-              if (index > cubit.state.comments.length) {
-                return const SizedBox(height: 600);
-              }
-              final Comment comment = cubit.state.comments[index - 1];
-              return SizedBox(
-                height: comment.isRoot ? 240 : 40,
-                child: Text(comment.text),
-              );
-            },
+      MultiBlocProvider(
+        providers: <BlocProvider<dynamic>>[
+          BlocProvider<CommentsCubit>.value(value: cubit),
+          BlocProvider<PreferenceCubit>.value(value: preferenceCubit),
+          BlocProvider<ThreadNavigationButtonCubit>.value(value: buttonCubit),
+        ],
+        child: FeatureDiscovery(
+          child: MaterialApp(
+            home: Scaffold(
+              body: Stack(
+                children: <Widget>[
+                  ScrollablePositionedList.builder(
+                    itemScrollController: cubit.itemScrollController,
+                    itemPositionsListener: cubit.itemPositionsListener,
+                    itemCount: cubit.state.comments.length + 2,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == 0) return const SizedBox(height: 100);
+                      if (index > cubit.state.comments.length) {
+                        return const SizedBox(height: 600);
+                      }
+                      final Comment comment = cubit.state.comments[index - 1];
+                      return SizedBox(
+                        height: comment.isRoot ? 240 : 40,
+                        child: Text(comment.text),
+                      );
+                    },
+                  ),
+                  const FloatingSkipButtons(),
+                  const FloatingHistoryButtons(),
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -145,6 +173,101 @@ void main() {
     );
     expect(positions.single.itemLeadingEdge, closeTo(alignment, 0.01));
   }
+
+  for (final bool jumpToTop in <bool>[true, false]) {
+    testWidgets('Back and Forward retrace a long-press jump to the '
+        '${jumpToTop ? 'top' : 'bottom'}', (WidgetTester tester) async {
+      await pumpThread(tester);
+      cubit.itemScrollController.jumpTo(index: 3, alignment: -0.1);
+      await settleScroll(tester);
+      expectPosition(3, -0.1);
+
+      await tester.longPress(
+        find.byIcon(
+          jumpToTop ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+        ),
+      );
+      await settleScroll(tester);
+      final int destination = jumpToTop ? 0 : cubit.state.comments.length;
+      final int destinationId = jumpToTop ? _storyId : 7;
+      expectPosition(destination, 0);
+      expect(
+        cubit.state.navigationStack.map(
+          (NavigationAnchor anchor) => anchor.itemId,
+        ),
+        <int>[3, destinationId],
+      );
+      expect(cubit.state.navigationStack.first.alignment, closeTo(-0.1, 0.01));
+      expect(cubit.state.navigationStack.last.alignment, 0);
+
+      await tester.tap(find.byIcon(Icons.turn_left));
+      await settleScroll(tester);
+      expectPosition(3, -0.1);
+      expect(cubit.state.canNavigateBack, isFalse);
+
+      await tester.tap(find.byIcon(Icons.turn_right));
+      await settleScroll(tester);
+      expectPosition(destination, 0);
+      expect(cubit.state.canNavigateForward, isFalse);
+      expect(cubit.state.navigationStack, hasLength(2));
+    });
+  }
+
+  testWidgets('a long-press jump after Back replaces forward history', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    cubit.navigateBack();
+    await settleScroll(tester);
+
+    await tester.longPress(find.byIcon(Icons.keyboard_arrow_down));
+    await settleScroll(tester);
+    expectPosition(7, 0);
+    expect(
+      cubit.state.navigationStack.map(
+        (NavigationAnchor anchor) => anchor.itemId,
+      ),
+      // The short reply above root 3 anchors the same reading position.
+      <int>[_storyId, 2, 7],
+    );
+    expect(cubit.state.canNavigateForward, isFalse);
+
+    cubit.navigateBack();
+    await settleScroll(tester);
+    expectPosition(3, 0.15);
+    cubit.navigateBack();
+    await settleScroll(tester);
+    expectPosition(0, 0);
+  });
+
+  testWidgets('ordinary scrolling does not record navigation', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    unawaited(cubit.scrollTo(index: 3));
+    await settleScroll(tester);
+    expectPosition(3, 0);
+    expect(cubit.state.navigationStack, isEmpty);
+  });
+
+  testWidgets('jumping to the current endpoint does not add history', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    await tester.longPress(find.byIcon(Icons.keyboard_arrow_up));
+    await settleScroll(tester);
+    expectPosition(0, 0);
+    expect(cubit.state.navigationStack, isEmpty);
+  });
+
+  test('an unattached scroll does not record navigation', () async {
+    await cubit.scrollTo(index: 0, recordNavigation: true);
+    expect(cubit.state.navigationStack, isEmpty);
+  });
 
   testWidgets('Back returns one prior position per root skip', (
     WidgetTester tester,

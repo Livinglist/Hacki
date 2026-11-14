@@ -20,10 +20,12 @@ class _MockThreadNavigationButtonCubit
 
 void main() {
   late _MockThreadNavigationButtonCubit buttonCubit;
+  late _MockCommentsCubit commentsCubit;
 
   Future<void> pumpButtons(
     WidgetTester tester, {
     required PreferenceState preferenceState,
+    List<Comment> comments = const <Comment>[],
   }) async {
     final _MockPreferenceCubit preferenceCubit = _MockPreferenceCubit();
     when(() => preferenceCubit.state).thenReturn(preferenceState);
@@ -33,15 +35,21 @@ void main() {
       () => buttonCubit.state,
     ).thenReturn(ThreadNavigationButtonState.init());
 
-    final _MockCommentsCubit commentsCubit = _MockCommentsCubit();
+    commentsCubit = _MockCommentsCubit();
     when(() => commentsCubit.state).thenReturn(
       CommentsState.init(
         isOfflineReading: false,
         item: Story.placeholder(),
         fetchMode: FetchMode.eager,
         order: CommentsOrder.natural,
-      ),
+      ).copyWith(comments: comments),
     );
+    when(
+      () => commentsCubit.scrollTo(
+        index: any(named: 'index'),
+        recordNavigation: any(named: 'recordNavigation'),
+      ),
+    ).thenAnswer((_) async {});
 
     await tester.pumpWidget(
       MultiBlocProvider(
@@ -54,6 +62,7 @@ void main() {
           child: const MaterialApp(
             home: Scaffold(
               body: Stack(
+                fit: StackFit.expand,
                 children: <Widget>[
                   FloatingSkipButtons(),
                   FloatingHistoryButtons(),
@@ -68,6 +77,75 @@ void main() {
   }
 
   group('FloatingSkipButtons', () {
+    testWidgets('long presses record jumps to the header and last comment', (
+      WidgetTester tester,
+    ) async {
+      final List<Comment> comments = <Comment>[
+        Comment.fromJson(const <String, dynamic>{'id': 1}),
+        Comment.fromJson(const <String, dynamic>{'id': 2}),
+        Comment.fromJson(const <String, dynamic>{'id': 3}),
+      ];
+      await pumpButtons(
+        tester,
+        preferenceState: PreferenceState.init(),
+        comments: comments,
+      );
+
+      await tester.longPress(find.byIcon(Icons.keyboard_arrow_up));
+      await tester.pumpAndSettle();
+      verify(
+        () => commentsCubit.scrollTo(index: 0, recordNavigation: true),
+      ).called(1);
+
+      await tester.longPress(find.byIcon(Icons.keyboard_arrow_down));
+      await tester.pumpAndSettle();
+      verify(
+        () => commentsCubit.scrollTo(
+          index: comments.length,
+          recordNavigation: true,
+        ),
+      ).called(1);
+      verifyNever(() => commentsCubit.scrollToPreviousRoot());
+      verifyNever(
+        () => commentsCubit.scrollToNextRoot(onError: any(named: 'onError')),
+      );
+    });
+
+    testWidgets('long pressing down with no comments targets the header', (
+      WidgetTester tester,
+    ) async {
+      await pumpButtons(tester, preferenceState: PreferenceState.init());
+
+      await tester.longPress(find.byIcon(Icons.keyboard_arrow_down));
+      await tester.pumpAndSettle();
+
+      verify(
+        () => commentsCubit.scrollTo(index: 0, recordNavigation: true),
+      ).called(1);
+    });
+
+    testWidgets('taps still skip to the previous and next root', (
+      WidgetTester tester,
+    ) async {
+      await pumpButtons(tester, preferenceState: PreferenceState.init());
+
+      await tester.tap(find.byIcon(Icons.keyboard_arrow_up));
+      await tester.pumpAndSettle();
+      verify(() => commentsCubit.scrollToPreviousRoot()).called(1);
+
+      await tester.tap(find.byIcon(Icons.keyboard_arrow_down));
+      await tester.pumpAndSettle();
+      verify(
+        () => commentsCubit.scrollToNextRoot(onError: any(named: 'onError')),
+      ).called(1);
+      verifyNever(
+        () => commentsCubit.scrollTo(
+          index: any(named: 'index'),
+          recordNavigation: any(named: 'recordNavigation'),
+        ),
+      );
+    });
+
     testWidgets('shows the back and forward buttons by default', (
       WidgetTester tester,
     ) async {
