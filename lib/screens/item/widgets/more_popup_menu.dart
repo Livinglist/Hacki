@@ -8,6 +8,7 @@ import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/item/models/models.dart';
 import 'package:hacki/screens/screens.dart';
+import 'package:hacki/screens/widgets/item_menu_sheet.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
@@ -278,20 +279,10 @@ class MorePopupMenu extends StatelessWidget {
                   },
                 ),
               };
-              return SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    for (final ItemMenuAction action
-                        in preferenceState.enabledItemMenuActions)
-                      if (actions[action] case final Widget widget) widget,
-                    ListTile(
-                      leading: const Icon(Icons.close),
-                      title: const Text('Cancel'),
-                      onTap: () => context.pop(MenuAction.cancel),
-                    ),
-                  ],
-                ),
+              return ItemMenuSheet(
+                enabledActions: preferenceState.enabledItemMenuActions,
+                actions: actions,
+                onCancel: () => context.pop(MenuAction.cancel),
               );
             },
           );
