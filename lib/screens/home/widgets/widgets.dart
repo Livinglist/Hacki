@@ -1,3 +1,4 @@
+export 'adaptive_home_screen.dart';
 export 'home_reminder.dart';
 export 'mobile_home_screen.dart';
 export 'pinned_stories.dart';

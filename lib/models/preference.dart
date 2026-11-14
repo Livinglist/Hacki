@@ -3,11 +3,8 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
-import 'package:hacki/config/router.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/styles/palette.dart';
-import 'package:material_ui/material_ui.dart';
-import 'package:responsive_builder/responsive_builder.dart';
 
 extension PreferenceDependenciesExtension on Set<Preference<dynamic>> {
   bool satisfy(Iterable<Preference<dynamic>> preferences) {
@@ -315,28 +312,7 @@ final class SplitViewPreference extends BooleanPreference {
 
   @override
   String get subtitle =>
-      '''enable split view on large screen. Relaunch the app to see effect.''';
-
-  static bool? _cachedDisplayableResult;
-
-  @override
-  bool get isDisplayable {
-    if (_cachedDisplayableResult == null) {
-      final BuildContext? context = navigatorKey.currentContext;
-      if (context != null) {
-        final Size size = MediaQuery.of(context).size;
-        final DeviceScreenType deviceType = getDeviceType(size);
-        if (deviceType == DeviceScreenType.mobile) {
-          _cachedDisplayableResult = false;
-          return false;
-        }
-      }
-      _cachedDisplayableResult = true;
-      return true;
-    }
-
-    return _cachedDisplayableResult!;
-  }
+      'show stories and comments side by side when there is enough space.';
 }
 
 final class EyeCandyPreference extends BooleanPreference {

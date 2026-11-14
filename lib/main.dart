@@ -95,11 +95,13 @@ Future<void> main({bool testing = false}) async {
       onDidReceiveNotificationResponse: notificationReceiver,
       settings: initializationSettings,
     );
-    await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin
-        >()
-        ?.requestPermissions(alert: true, badge: true, sound: true);
+    if (!testing) {
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin
+          >()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
+    }
   } else if (Platform.isAndroid) {
     final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
     final AndroidDeviceInfo androidInfo = await deviceInfoPlugin.androidInfo;
