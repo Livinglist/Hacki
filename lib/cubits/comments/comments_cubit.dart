@@ -1086,12 +1086,29 @@ comments length is ${state.comments.length}
   Future<void> scrollTo({
     required int index,
     double alignment = 0.0,
+    bool recordNavigation = false,
     Duration? duration,
     Curve curve = Curves.linear,
     List<double> opacityAnimationWeights = const <double>[40, 20, 40],
   }) async {
     if (!itemScrollController.isAttached) {
       return;
+    }
+
+    // Only user-initiated jumps opt in; history replay and layout corrections
+    // must not add new stops. Index zero is the thread header.
+    if (recordNavigation && index >= 0 && index <= state.comments.length) {
+      emit(
+        state.copyWithNavigation(
+          from: _currentAnchor,
+          to: NavigationAnchor(
+            itemId: index == 0
+                ? state.item.id
+                : state.comments.elementAt(index - 1).id,
+            alignment: alignment,
+          ),
+        ),
+      );
     }
 
     final int generation = ++_scrollGeneration;

@@ -55,7 +55,10 @@ class FloatingSkipButtons extends StatelessWidget {
                   enableFeedback: false,
                   onLongPress: () {
                     HapticFeedbackUtils.light();
-                    context.read<CommentsCubit>().scrollTo(index: 0);
+                    context.read<CommentsCubit>().scrollTo(
+                      index: 0,
+                      recordNavigation: true,
+                    );
                   },
                   child: FloatingActionButton(
                     enableFeedback: false,
@@ -98,7 +101,10 @@ class FloatingSkipButtons extends StatelessWidget {
                   onLongPress: () {
                     HapticFeedbackUtils.light();
                     final CommentsCubit cubit = context.read<CommentsCubit>();
-                    cubit.scrollTo(index: cubit.state.comments.length - 1);
+                    cubit.scrollTo(
+                      index: cubit.state.comments.length,
+                      recordNavigation: true,
+                    );
                   },
                   child: FloatingActionButton(
                     enableFeedback: false,
