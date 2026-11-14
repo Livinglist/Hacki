@@ -23,6 +23,7 @@ class CommentsState extends Equatable {
     required this.maxLevel,
     required this.navigationStack,
     required this.navigationIndex,
+    required this.hasScrolledFromNavigation,
   });
 
   CommentsState.init({
@@ -44,7 +45,8 @@ class CommentsState extends Equatable {
        isNewInSearchSelected = false,
        maxLevel = 0,
        navigationStack = <NavigationAnchor>[],
-       navigationIndex = -1;
+       navigationIndex = -1,
+       hasScrolledFromNavigation = false;
 
   final Item item;
   final List<Comment> comments;
@@ -71,7 +73,10 @@ class CommentsState extends Equatable {
   /// at, or -1 when nothing has been recorded.
   final int navigationIndex;
 
-  bool get canNavigateBack => navigationIndex > 0;
+  /// Manual scrolling has moved away from the current recorded stop.
+  final bool hasScrolledFromNavigation;
+
+  bool get canNavigateBack => navigationIndex > 0 || hasScrolledFromNavigation;
 
   bool get canNavigateForward =>
       navigationIndex >= 0 && navigationIndex < navigationStack.length - 1;
@@ -99,6 +104,7 @@ class CommentsState extends Equatable {
     int? maxLevel,
     List<NavigationAnchor>? navigationStack,
     int? navigationIndex,
+    bool? hasScrolledFromNavigation,
   }) {
     return CommentsState(
       item: item ?? this.item,
@@ -122,12 +128,15 @@ class CommentsState extends Equatable {
       maxLevel: maxLevel ?? this.maxLevel,
       navigationStack: navigationStack ?? this.navigationStack,
       navigationIndex: navigationIndex ?? this.navigationIndex,
+      hasScrolledFromNavigation:
+          hasScrolledFromNavigation ?? this.hasScrolledFromNavigation,
     );
   }
 
   /// Records a jump from [from], where the user currently is, to [to].
   ///
-  /// Scrolling refreshes the current stop; only a jump adds a new stop.
+  /// The measured origin refreshes the current stop. Manual scrolling is
+  /// recorded separately before the next jump so its starting stop survives.
   ///
   /// New jumps are inserted after the current position, keeping all previous
   /// back and forward positions available.
@@ -222,5 +231,6 @@ class CommentsState extends Equatable {
     maxLevel,
     navigationStack,
     navigationIndex,
+    hasScrolledFromNavigation,
   ];
 }

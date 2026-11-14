@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc_test/bloc_test.dart';
 import 'package:feature_discovery/feature_discovery.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hacki/config/locator.dart';
@@ -125,21 +126,24 @@ void main() {
             home: Scaffold(
               body: Stack(
                 children: <Widget>[
-                  ScrollablePositionedList.builder(
-                    itemScrollController: cubit.itemScrollController,
-                    itemPositionsListener: cubit.itemPositionsListener,
-                    itemCount: cubit.state.comments.length + 2,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index == 0) return const SizedBox(height: 100);
-                      if (index > cubit.state.comments.length) {
-                        return const SizedBox(height: 600);
-                      }
-                      final Comment comment = cubit.state.comments[index - 1];
-                      return SizedBox(
-                        height: comment.isRoot ? 240 : 40,
-                        child: Text(comment.text),
-                      );
-                    },
+                  NotificationListener<ScrollNotification>(
+                    onNotification: cubit.onThreadScrollNotification,
+                    child: ScrollablePositionedList.builder(
+                      itemScrollController: cubit.itemScrollController,
+                      itemPositionsListener: cubit.itemPositionsListener,
+                      itemCount: cubit.state.comments.length + 2,
+                      itemBuilder: (BuildContext context, int index) {
+                        if (index == 0) return const SizedBox(height: 100);
+                        if (index > cubit.state.comments.length) {
+                          return const SizedBox(height: 600);
+                        }
+                        final Comment comment = cubit.state.comments[index - 1];
+                        return SizedBox(
+                          height: comment.isRoot ? 240 : 40,
+                          child: Text(comment.text),
+                        );
+                      },
+                    ),
                   ),
                   const FloatingSkipButtons(),
                   const FloatingHistoryButtons(),
@@ -173,6 +177,13 @@ void main() {
     );
     expect(positions.single.itemLeadingEdge, closeTo(alignment, 0.01));
   }
+
+  double alignmentOf(int index) => cubit
+      .itemPositionsListener
+      .itemPositions
+      .value
+      .singleWhere((ItemPosition position) => position.index == index)
+      .itemLeadingEdge;
 
   for (final bool jumpToTop in <bool>[true, false]) {
     testWidgets('Back and Forward retrace a long-press jump to the '
@@ -325,6 +336,248 @@ void main() {
     cubit.navigateBack();
     await settleScroll(tester);
     expectPosition(3, 0.15);
+  });
+
+  for (final bool arriveWithForward in <bool>[false, true]) {
+    for (final double dragDy in <double>[-90, 90]) {
+      testWidgets(
+        'Back returns to the ${arriveWithForward ? 'Forward' : 'Back'} '
+        'landing before older history after scrolling '
+        '${dragDy < 0 ? 'down' : 'up'}',
+        (WidgetTester tester) async {
+          await pumpThread(tester);
+          cubit.scrollToNextRoot();
+          await settleScroll(tester);
+          cubit.scrollToNextRoot();
+          await settleScroll(tester);
+          cubit.navigateBack();
+          await settleScroll(tester);
+          if (arriveWithForward) {
+            cubit.navigateBack();
+            await settleScroll(tester);
+            cubit.navigateForward();
+            await settleScroll(tester);
+          }
+          expectPosition(3, 0.15);
+          expect(cubit.state.hasScrolledFromNavigation, isFalse);
+
+          await tester.drag(
+            find.byType(ScrollablePositionedList),
+            Offset(0, dragDy),
+          );
+          await settleScroll(tester);
+          final double scrolledAlignment = alignmentOf(3);
+          expect(scrolledAlignment, isNot(closeTo(0.15, 0.01)));
+          expect(cubit.state.hasScrolledFromNavigation, isTrue);
+          expect(cubit.state.navigationStack, hasLength(3));
+
+          await tester.tap(find.byIcon(Icons.turn_left));
+          await settleScroll(tester);
+          expectPosition(3, 0.15);
+          expect(cubit.state.navigationIndex, 1);
+          expect(cubit.state.navigationStack, hasLength(4));
+          expect(cubit.state.hasScrolledFromNavigation, isFalse);
+
+          await tester.tap(find.byIcon(Icons.turn_left));
+          await settleScroll(tester);
+          expectPosition(0, 0);
+          await tester.tap(find.byIcon(Icons.turn_right));
+          await settleScroll(tester);
+          expectPosition(3, 0.15);
+          await tester.tap(find.byIcon(Icons.turn_right));
+          await settleScroll(tester);
+          expectPosition(3, scrolledAlignment);
+          await tester.tap(find.byIcon(Icons.turn_right));
+          await settleScroll(tester);
+          expectPosition(5, 0.15);
+          expect(cubit.state.navigationStack, hasLength(4));
+        },
+      );
+    }
+  }
+
+  testWidgets('scrolling away from the earliest stop enables Back to it', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    cubit.navigateBack();
+    await settleScroll(tester);
+    expect(cubit.state.navigationIndex, 0);
+    expect(cubit.state.canNavigateBack, isFalse);
+
+    await tester.drag(
+      find.byType(ScrollablePositionedList),
+      const Offset(0, -80),
+    );
+    await settleScroll(tester);
+    final double scrolledAlignment = alignmentOf(0);
+    expect(cubit.state.canNavigateBack, isTrue);
+
+    await tester.tap(find.byIcon(Icons.turn_left));
+    await settleScroll(tester);
+    expectPosition(0, 0);
+    expect(cubit.state.navigationIndex, 0);
+    expect(cubit.state.canNavigateBack, isFalse);
+    expect(cubit.state.navigationStack, hasLength(3));
+    cubit.navigateForward();
+    await settleScroll(tester);
+    expectPosition(0, scrolledAlignment);
+    cubit.navigateForward();
+    await settleScroll(tester);
+    expectPosition(3, 0.15);
+  });
+
+  testWidgets('Back preserves different offsets within the same comment', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    unawaited(
+      cubit.scrollTo(index: 7, alignment: 0.15, recordNavigation: true),
+    );
+    await settleScroll(tester);
+    cubit.navigateBack();
+    await settleScroll(tester);
+    cubit.navigateForward();
+    await settleScroll(tester);
+
+    await tester.drag(
+      find.byType(ScrollablePositionedList),
+      const Offset(0, -90),
+    );
+    await settleScroll(tester);
+    final double scrolledAlignment = alignmentOf(7);
+    expect(cubit.state.hasScrolledFromNavigation, isTrue);
+    cubit.navigateBack();
+    await settleScroll(tester);
+    expectPosition(7, 0.15);
+    expect(cubit.state.navigationStack, hasLength(3));
+    expect(cubit.state.navigationStack[1].itemId, 7);
+    expect(cubit.state.navigationStack[2].itemId, 7);
+    cubit.navigateForward();
+    await settleScroll(tester);
+    expectPosition(7, scrolledAlignment);
+  });
+
+  testWidgets('manually returning to the landing adds no history stop', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    await tester.drag(
+      find.byType(ScrollablePositionedList),
+      const Offset(0, -90),
+    );
+    await settleScroll(tester);
+    expect(cubit.state.hasScrolledFromNavigation, isTrue);
+    await tester.drag(
+      find.byType(ScrollablePositionedList),
+      const Offset(0, 90),
+    );
+    await settleScroll(tester);
+    expectPosition(3, 0.15);
+    expect(cubit.state.hasScrolledFromNavigation, isFalse);
+
+    cubit.navigateBack();
+    await settleScroll(tester);
+    expectPosition(0, 0);
+    expect(cubit.state.navigationStack, hasLength(2));
+  });
+
+  testWidgets('a new jump after manual scrolling retains its landing', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    cubit.navigateBack();
+    await settleScroll(tester);
+    await tester.drag(
+      find.byType(ScrollablePositionedList),
+      const Offset(0, -90),
+    );
+    await settleScroll(tester);
+    final double scrolledAlignment = alignmentOf(3);
+
+    await tester.longPress(find.byIcon(Icons.keyboard_arrow_down));
+    await settleScroll(tester);
+    expectPosition(7, 0);
+    expect(cubit.state.navigationStack, hasLength(5));
+    expect(cubit.state.navigationStack.last.itemId, 5);
+    cubit.navigateBack();
+    await settleScroll(tester);
+    expectPosition(3, scrolledAlignment);
+    cubit.navigateBack();
+    await settleScroll(tester);
+    expectPosition(3, 0.15);
+    cubit.navigateBack();
+    await settleScroll(tester);
+    expectPosition(0, 0);
+  });
+
+  testWidgets(
+    'Forward retains the landing and manual position before its tail',
+    (WidgetTester tester) async {
+      await pumpThread(tester);
+      cubit.scrollToNextRoot();
+      await settleScroll(tester);
+      cubit.scrollToNextRoot();
+      await settleScroll(tester);
+      cubit.navigateBack();
+      await settleScroll(tester);
+      await tester.drag(
+        find.byType(ScrollablePositionedList),
+        const Offset(0, -90),
+      );
+      await settleScroll(tester);
+      final double scrolledAlignment = alignmentOf(3);
+
+      await tester.tap(find.byIcon(Icons.turn_right));
+      await settleScroll(tester);
+      expectPosition(5, 0.15);
+      expect(cubit.state.navigationStack, hasLength(4));
+      expect(cubit.state.hasScrolledFromNavigation, isFalse);
+      await tester.tap(find.byIcon(Icons.turn_left));
+      await settleScroll(tester);
+      expectPosition(3, scrolledAlignment);
+      await tester.tap(find.byIcon(Icons.turn_left));
+      await settleScroll(tester);
+      expectPosition(3, 0.15);
+      await tester.tap(find.byIcon(Icons.turn_left));
+      await settleScroll(tester);
+      expectPosition(0, 0);
+    },
+  );
+
+  testWidgets('Back returns to the landing after mouse wheel scrolling', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+
+    await tester.sendEventToBinding(
+      PointerScrollEvent(
+        position: tester.getCenter(find.byType(ScrollablePositionedList)),
+        scrollDelta: const Offset(0, 90),
+      ),
+    );
+    await settleScroll(tester);
+    final double scrolledAlignment = alignmentOf(3);
+    expect(scrolledAlignment, isNot(closeTo(0.15, 0.01)));
+    expect(cubit.state.hasScrolledFromNavigation, isTrue);
+
+    await tester.tap(find.byIcon(Icons.turn_left));
+    await settleScroll(tester);
+    expectPosition(3, 0.15);
+    expect(cubit.state.navigationStack, hasLength(3));
+    await tester.tap(find.byIcon(Icons.turn_right));
+    await settleScroll(tester);
+    expectPosition(3, scrolledAlignment);
   });
 
   testWidgets('ordinary scrolling does not record navigation', (

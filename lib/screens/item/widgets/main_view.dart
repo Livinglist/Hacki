@@ -54,7 +54,7 @@ class MainView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthState authState = context.watch<AuthBloc>().state;
-    return Stack(
+    final Widget threadView = Stack(
       children: <Widget>[
         Positioned.fill(
           child: BlocBuilder<CommentsCubit, CommentsState>(
@@ -288,6 +288,10 @@ class MainView extends StatelessWidget {
             ),
           ),
       ],
+    );
+    return NotificationListener<ScrollNotification>(
+      onNotification: context.read<CommentsCubit>().onThreadScrollNotification,
+      child: threadView,
     );
   }
 

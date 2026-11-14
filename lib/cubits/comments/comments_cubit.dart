@@ -6,6 +6,7 @@ import 'package:collection/collection.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart' show ScrollDirection;
 import 'package:flutter/scheduler.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/config/locator.dart';
@@ -125,6 +126,10 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   /// superseded scroll does not [ItemScrollController.jumpTo] after a newer
   /// one has already begun.
   int _scrollGeneration = 0;
+  NavigationAnchor? _navigationViewport;
+  int? _navigationViewportIndex;
+  bool _isUserScrolling = false;
+  bool _isManualScrollCheckScheduled = false;
 
   bool get hasNewComment => state.comments.any((Comment c) => c.isNew);
 
@@ -770,6 +775,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     // An animated offscreen scroll builds a second copy of the list, which
     // cannot share the comment GlobalKeys. Jump using the updated list instead.
     // Index zero is the thread header.
+    _resetManualScrollTracking();
     itemScrollController.jumpTo(index: index + 1, alignment: _jumpAlignment);
 
     await SchedulerBinding.instance.endOfFrame;
@@ -778,6 +784,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
         !itemScrollController.isAttached) {
       return;
     }
+
+    _rememberNavigationViewport();
 
     final GlobalKey? key = globalKeys[reply.id];
     final BuildContext? context = key?.currentContext;
@@ -1098,6 +1106,7 @@ comments length is ${state.comments.length}
     // Only user-initiated jumps opt in; history replay and layout corrections
     // must not add new stops. Index zero is the thread header.
     if (recordNavigation && index >= 0 && index <= state.comments.length) {
+      _recordScrolledPosition();
       emit(
         state.copyWithNavigation(
           from: _currentAnchor,
@@ -1111,6 +1120,7 @@ comments length is ${state.comments.length}
       );
     }
 
+    _resetManualScrollTracking();
     final int generation = ++_scrollGeneration;
     debugPrint('scrolling to: $index, alignment: $alignment');
     await itemScrollController.scrollTo(
@@ -1124,6 +1134,12 @@ comments length is ${state.comments.length}
       return;
     }
     await _reanchorToTopMostVisibleItem(generation);
+    await SchedulerBinding.instance.endOfFrame;
+    if (generation == _scrollGeneration && !isClosed) {
+      // Store the measured landing viewport: a short reply above the target
+      // can anchor the same position as the target comment itself.
+      _rememberNavigationViewport();
+    }
   }
 
   /// After [ItemScrollController.scrollTo], [ScrollablePositionedList] may
@@ -1193,11 +1209,14 @@ comments length is ${state.comments.length}
 
   /// Where the user currently is in the thread, or null if nothing is laid
   /// out yet.
-  NavigationAnchor? get _currentAnchor {
-    final ItemPosition? position = currentAnchorItem(
+  NavigationAnchor? get _currentAnchor => _anchorAt(
+    currentAnchorItem(
       itemPositionsListener.itemPositions.value,
       lastIndex: state.comments.length,
-    );
+    ),
+  );
+
+  NavigationAnchor? _anchorAt(ItemPosition? position) {
     if (position == null || !position.itemLeadingEdge.isFinite) {
       return null;
     }
@@ -1210,16 +1229,133 @@ comments length is ${state.comments.length}
     );
   }
 
+  void _rememberNavigationViewport() {
+    final ItemPosition? position = currentAnchorItem(
+      itemPositionsListener.itemPositions.value,
+      lastIndex: state.comments.length,
+    );
+    _navigationViewport = _anchorAt(position);
+    _navigationViewportIndex = position?.index;
+  }
+
   /// Records the user's current position and [comment], which they are
   /// about to jump to, so that they can navigate back and forward between
   /// the two.
   void _recordNavigationTo(Comment comment) {
+    _recordScrolledPosition();
     emit(
       state.copyWithNavigation(
         from: _currentAnchor,
         to: NavigationAnchor(itemId: comment.id, alignment: _jumpAlignment),
       ),
     );
+  }
+
+  /// Observes manual thread scrolling without treating animated jumps or
+  /// layout corrections as new reading positions.
+  bool onThreadScrollNotification(ScrollNotification notification) {
+    if (notification.depth != 0 ||
+        notification.metrics.axis != Axis.vertical ||
+        state.navigationIndex < 0) {
+      return false;
+    }
+
+    if ((notification is ScrollStartNotification &&
+            notification.dragDetails != null) ||
+        (notification is ScrollUpdateNotification &&
+            notification.dragDetails != null) ||
+        (notification is UserScrollNotification &&
+            notification.direction != ScrollDirection.idle)) {
+      _isUserScrolling = true;
+    }
+
+    if (_isUserScrolling) _scheduleManualScrollCheck();
+
+    if (notification is ScrollEndNotification ||
+        (notification is UserScrollNotification &&
+            notification.direction == ScrollDirection.idle)) {
+      _isUserScrolling = false;
+    }
+    return false;
+  }
+
+  void _scheduleManualScrollCheck() {
+    if (_isManualScrollCheckScheduled || _navigationViewport == null) return;
+    _isManualScrollCheckScheduled = true;
+    final int generation = _scrollGeneration;
+    unawaited(
+      SchedulerBinding.instance.endOfFrame.then((_) {
+        _isManualScrollCheckScheduled = false;
+        if (isClosed || generation != _scrollGeneration) return;
+        final NavigationAnchor? viewport = _navigationViewport;
+        if (viewport == null) return;
+
+        int? index = _navigationViewportIndex;
+        // Appending comments leaves this index valid. Only search again if
+        // an insertion or removal has moved the saved comment.
+        if (viewport.itemId == state.item.id) {
+          index = 0;
+        } else if (index == null ||
+            index < 1 ||
+            index > state.comments.length ||
+            state.comments.elementAt(index - 1).id != viewport.itemId) {
+          final int commentIndex = state.comments.indexWhere(
+            (Comment comment) => comment.id == viewport.itemId,
+          );
+          if (commentIndex < 0) {
+            _resetManualScrollTracking();
+            return;
+          }
+          index = commentIndex + 1;
+        }
+        _navigationViewportIndex = index;
+        final ItemPosition? position = itemPositionsListener.itemPositions.value
+            .firstWhereOrNull(
+              (ItemPosition position) => position.index == index,
+            );
+        final bool hasScrolled =
+            position == null ||
+            (position.itemLeadingEdge - viewport.alignment).abs() > 0.01;
+        if (hasScrolled != state.hasScrolledFromNavigation) {
+          emit(state.copyWith(hasScrolledFromNavigation: hasScrolled));
+        }
+      }),
+    );
+  }
+
+  void _resetManualScrollTracking() {
+    _isUserScrolling = false;
+    _navigationViewport = null;
+    _navigationViewportIndex = null;
+    if (state.hasScrolledFromNavigation) {
+      emit(state.copyWith(hasScrolledFromNavigation: false));
+    }
+  }
+
+  /// Preserve the stop the user scrolled away from as well as where they
+  /// scrolled to, retaining any existing forward positions.
+  bool _recordScrolledPosition() {
+    if (!state.hasScrolledFromNavigation || state.navigationIndex < 0) {
+      return false;
+    }
+    final NavigationAnchor? position = _currentAnchor;
+    if (position == null) return false;
+
+    final List<NavigationAnchor> stack = List<NavigationAnchor>.of(
+      state.navigationStack,
+    );
+    final int index = state.navigationIndex + 1;
+    if (index == stack.length || stack.elementAt(index) != position) {
+      stack.insert(index, position);
+    }
+    emit(
+      state.copyWith(
+        navigationStack: stack,
+        navigationIndex: index,
+        hasScrolledFromNavigation: false,
+      ),
+    );
+    return true;
   }
 
   /// Jumps to the comment at [index] in [CommentsState.comments].
@@ -1236,6 +1372,11 @@ comments length is ${state.comments.length}
 
   /// Go back to where the user was before their last jump.
   void navigateBack() {
+    if (state.hasScrolledFromNavigation && !_recordScrolledPosition()) {
+      // The footer may be the only visible item, with no comment to anchor it.
+      _navigateTo(state.navigationIndex);
+      return;
+    }
     if (state.canNavigateBack) {
       _navigateTo(state.navigationIndex - 1);
     }
@@ -1243,6 +1384,7 @@ comments length is ${state.comments.length}
 
   /// Go to the next recorded position.
   void navigateForward() {
+    _recordScrolledPosition();
     if (state.canNavigateForward) {
       _navigateTo(state.navigationIndex + 1);
     }
