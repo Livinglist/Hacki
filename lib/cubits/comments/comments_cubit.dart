@@ -1241,7 +1241,7 @@ comments length is ${state.comments.length}
     }
   }
 
-  /// Redo the jump undone by [navigateBack].
+  /// Go to the next recorded position.
   void navigateForward() {
     if (state.canNavigateForward) {
       _navigateTo(state.navigationIndex + 1);

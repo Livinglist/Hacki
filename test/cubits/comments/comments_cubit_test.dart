@@ -174,7 +174,7 @@ void main() {
       },
     );
 
-    test('coalesces a return to the preceding stop with its latest offset', () {
+    test('preserves earlier stops when returning to a preceding origin', () {
       const NavigationAnchor scrolledA = NavigationAnchor(
         itemId: 1,
         alignment: -0.1,
@@ -184,12 +184,12 @@ void main() {
           .copyWithNavigation(from: a, to: b)
           .copyWithNavigation(from: scrolledA, to: c);
 
-      expect(state.navigationStack, <NavigationAnchor>[scrolledA, c]);
-      expect(state.navigationIndex, 1);
+      expect(state.navigationStack, <NavigationAnchor>[a, b, scrolledA, c]);
+      expect(state.navigationIndex, 3);
     });
 
     test(
-      'refreshes the origin and drops forward positions after going back',
+      'refreshes the current origin and retains forward positions after Back',
       () {
         const NavigationAnchor scrolledB = NavigationAnchor(
           itemId: 22,
@@ -202,13 +202,14 @@ void main() {
             .copyWith(navigationIndex: 1)
             .copyWithNavigation(from: scrolledB, to: d);
 
-        expect(state.navigationStack, <NavigationAnchor>[a, scrolledB, d]);
+        expect(state.navigationStack, <NavigationAnchor>[a, scrolledB, d, c]);
         expect(state.navigationIndex, 2);
-        expect(state.canNavigateForward, isFalse);
+        expect(state.canNavigateBack, isTrue);
+        expect(state.canNavigateForward, isTrue);
       },
     );
 
-    test('a jump after going back drops the forward positions', () {
+    test('a jump from the first stop preserves every forward position', () {
       state = state
           .copyWithNavigation(from: a, to: b)
           .copyWithNavigation(from: b, to: c)
@@ -217,15 +218,101 @@ void main() {
 
       state = state.copyWithNavigation(from: a, to: d);
 
-      expect(state.navigationStack, <NavigationAnchor>[a, d]);
+      expect(state.navigationStack, <NavigationAnchor>[a, d, b, c]);
       expect(state.navigationIndex, 1);
-      expect(state.canNavigateForward, isFalse);
+      expect(state.canNavigateBack, isTrue);
+      expect(state.canNavigateForward, isTrue);
     });
+
+    test('a jump to the next forward position reuses that recorded stop', () {
+      state = state
+          .copyWithNavigation(from: a, to: b)
+          .copyWithNavigation(from: b, to: c)
+          .copyWithNavigation(from: c, to: d)
+          .copyWith(navigationIndex: 1)
+          .copyWithNavigation(from: b, to: c);
+
+      expect(state.navigationStack, <NavigationAnchor>[a, b, c, d]);
+      expect(state.navigationIndex, 2);
+      expect(state.canNavigateBack, isTrue);
+      expect(state.canNavigateForward, isTrue);
+    });
+
+    test('keeps the same forward comment at its different recorded offset', () {
+      const NavigationAnchor shiftedC = NavigationAnchor(
+        itemId: 3,
+        alignment: -0.2,
+      );
+      state = state
+          .copyWithNavigation(from: a, to: b)
+          .copyWithNavigation(from: b, to: shiftedC)
+          .copyWithNavigation(from: shiftedC, to: d)
+          .copyWith(navigationIndex: 1)
+          .copyWithNavigation(from: b, to: c);
+
+      expect(state.navigationStack, <NavigationAnchor>[a, b, c, shiftedC, d]);
+      expect(state.navigationIndex, 2);
+      expect(state.canNavigateForward, isTrue);
+    });
+
+    test('a returning origin after Back preserves stops on both sides', () {
+      const NavigationAnchor scrolledA = NavigationAnchor(
+        itemId: 1,
+        alignment: -0.1,
+      );
+      state = state
+          .copyWithNavigation(from: a, to: b)
+          .copyWithNavigation(from: b, to: c)
+          .copyWith(navigationIndex: 1)
+          .copyWithNavigation(from: scrolledA, to: d);
+
+      expect(state.navigationStack, <NavigationAnchor>[a, b, scrolledA, d, c]);
+      expect(state.navigationIndex, 3);
+      expect(state.canNavigateBack, isTrue);
+      expect(state.canNavigateForward, isTrue);
+    });
+
+    test(
+      'repeated jumps after Back keep all previously recorded positions',
+      () {
+        const NavigationAnchor e = NavigationAnchor(itemId: 5, alignment: 0.15);
+        const NavigationAnchor f = NavigationAnchor(itemId: 6, alignment: 0.15);
+        state = state
+            .copyWithNavigation(from: a, to: b)
+            .copyWithNavigation(from: b, to: c)
+            .copyWith(navigationIndex: 0)
+            .copyWithNavigation(from: a, to: d)
+            .copyWith(navigationIndex: 0)
+            .copyWithNavigation(from: a, to: e)
+            .copyWith(navigationIndex: 2)
+            .copyWithNavigation(from: d, to: f);
+
+        expect(state.navigationStack, <NavigationAnchor>[a, e, d, f, b, c]);
+        expect(state.navigationIndex, 3);
+        expect(state.canNavigateBack, isTrue);
+        expect(state.canNavigateForward, isTrue);
+      },
+    );
 
     test('a jump to the current position is not recorded', () {
       state = state.copyWithNavigation(from: a, to: a);
 
       expect(state.navigationStack, isEmpty);
+    });
+
+    test('a jump to the current position leaves forward history untouched', () {
+      state = state
+          .copyWithNavigation(from: a, to: b)
+          .copyWithNavigation(from: b, to: c)
+          .copyWith(navigationIndex: 1);
+      final CommentsState beforeJump = state;
+
+      state = state.copyWithNavigation(from: b, to: b);
+
+      expect(state, same(beforeJump));
+      expect(state.navigationStack, <NavigationAnchor>[a, b, c]);
+      expect(state.navigationIndex, 1);
+      expect(state.canNavigateForward, isTrue);
     });
 
     test('a jump from an unknown position only records the destination', () {
@@ -235,21 +322,37 @@ void main() {
       expect(state.canNavigateBack, isFalse);
     });
 
-    test('drops the oldest positions past the size limit', () {
-      for (int i = 0; i < CommentsState.maxNavigationStackSize + 10; i++) {
+    test(
+      'a jump from an unknown origin after Back retains forward history',
+      () {
+        state = state
+            .copyWithNavigation(from: a, to: b)
+            .copyWithNavigation(from: b, to: c)
+            .copyWith(navigationIndex: 0)
+            .copyWithNavigation(to: d);
+
+        expect(state.navigationStack, <NavigationAnchor>[a, d, b, c]);
+        expect(state.navigationIndex, 1);
+        expect(state.canNavigateBack, isTrue);
+        expect(state.canNavigateForward, isTrue);
+      },
+    );
+
+    test('retains every position beyond the former 50-position limit', () {
+      const int jumps = 100;
+      for (int i = 0; i < jumps; i++) {
         state = state.copyWithNavigation(
           from: NavigationAnchor(itemId: i, alignment: 0),
           to: NavigationAnchor(itemId: i + 1, alignment: 0.15),
         );
       }
 
+      expect(state.navigationStack, hasLength(jumps + 1));
+      expect(state.navigationStack.first.itemId, 0);
+      expect(state.navigationStack.last.itemId, jumps);
       expect(
-        state.navigationStack.length,
-        CommentsState.maxNavigationStackSize,
-      );
-      expect(
-        state.navigationStack.last.itemId,
-        CommentsState.maxNavigationStackSize + 10,
+        state.navigationStack.map((NavigationAnchor anchor) => anchor.itemId),
+        List<int>.generate(jumps + 1, (int index) => index),
       );
       expect(state.navigationIndex, state.navigationStack.length - 1);
     });

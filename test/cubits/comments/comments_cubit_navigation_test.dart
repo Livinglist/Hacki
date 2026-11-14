@@ -213,7 +213,57 @@ void main() {
     });
   }
 
-  testWidgets('a long-press jump after Back replaces forward history', (
+  for (final bool jumpToTop in <bool>[true, false]) {
+    testWidgets('a long-press jump to the ${jumpToTop ? 'top' : 'bottom'} '
+        'after Back preserves all positions', (WidgetTester tester) async {
+      await pumpThread(tester);
+      cubit.scrollToNextRoot();
+      await settleScroll(tester);
+      cubit.scrollToNextRoot();
+      await settleScroll(tester);
+      await tester.tap(find.byIcon(Icons.turn_left));
+      await settleScroll(tester);
+
+      await tester.longPress(
+        find.byIcon(
+          jumpToTop ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+        ),
+      );
+      await settleScroll(tester);
+      final int destination = jumpToTop ? 0 : cubit.state.comments.length;
+      final int destinationId = jumpToTop ? _storyId : 7;
+      expectPosition(destination, 0);
+      expect(
+        cubit.state.navigationStack.map(
+          (NavigationAnchor anchor) => anchor.itemId,
+        ),
+        // The short reply above root 3 anchors the same reading position.
+        <int>[_storyId, 2, destinationId, 5],
+      );
+      expect(cubit.state.canNavigateForward, isTrue);
+
+      await tester.tap(find.byIcon(Icons.turn_left));
+      await settleScroll(tester);
+      expectPosition(3, 0.15);
+      await tester.tap(find.byIcon(Icons.turn_left));
+      await settleScroll(tester);
+      expectPosition(0, 0);
+
+      await tester.tap(find.byIcon(Icons.turn_right));
+      await settleScroll(tester);
+      expectPosition(3, 0.15);
+      await tester.tap(find.byIcon(Icons.turn_right));
+      await settleScroll(tester);
+      expectPosition(destination, 0);
+      await tester.tap(find.byIcon(Icons.turn_right));
+      await settleScroll(tester);
+      expectPosition(5, 0.15);
+      expect(cubit.state.canNavigateForward, isFalse);
+      expect(cubit.state.navigationStack, hasLength(4));
+    });
+  }
+
+  testWidgets('a search-result jump after Back preserves all positions', (
     WidgetTester tester,
   ) async {
     await pumpThread(tester);
@@ -224,17 +274,17 @@ void main() {
     cubit.navigateBack();
     await settleScroll(tester);
 
-    await tester.longPress(find.byIcon(Icons.keyboard_arrow_down));
+    // Search results use scrollToComment to jump within the existing thread.
+    final Future<void> jump = cubit.scrollToComment(cubit.state.comments.last);
     await settleScroll(tester);
-    expectPosition(7, 0);
+    await jump;
     expect(
       cubit.state.navigationStack.map(
         (NavigationAnchor anchor) => anchor.itemId,
       ),
-      // The short reply above root 3 anchors the same reading position.
-      <int>[_storyId, 2, 7],
+      <int>[_storyId, 2, 7, 5],
     );
-    expect(cubit.state.canNavigateForward, isFalse);
+    expect(cubit.state.canNavigateForward, isTrue);
 
     cubit.navigateBack();
     await settleScroll(tester);
@@ -242,6 +292,39 @@ void main() {
     cubit.navigateBack();
     await settleScroll(tester);
     expectPosition(0, 0);
+
+    cubit.navigateForward();
+    await settleScroll(tester);
+    expectPosition(3, 0.15);
+    cubit.navigateForward();
+    await settleScroll(tester);
+    expectPosition(7, 0.15);
+    cubit.navigateForward();
+    await settleScroll(tester);
+    expectPosition(5, 0.15);
+    expect(cubit.state.navigationStack, hasLength(4));
+  });
+
+  testWidgets('repeating the next root skip after Back reuses its position', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    cubit.navigateBack();
+    await settleScroll(tester);
+
+    await tester.tap(find.byIcon(Icons.keyboard_arrow_down));
+    await settleScroll(tester);
+    expectPosition(5, 0.15);
+    expect(cubit.state.navigationStack, hasLength(3));
+    expect(cubit.state.canNavigateForward, isFalse);
+
+    cubit.navigateBack();
+    await settleScroll(tester);
+    expectPosition(3, 0.15);
   });
 
   testWidgets('ordinary scrolling does not record navigation', (

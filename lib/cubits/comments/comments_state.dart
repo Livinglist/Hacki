@@ -63,15 +63,13 @@ class CommentsState extends Equatable {
   final bool isNewInSearchSelected;
   final int maxLevel;
 
-  /// The positions the user has jumped from and to in this thread, oldest
-  /// first.
+  /// The positions the user has jumped from and to in this thread, in
+  /// navigation order.
   final List<NavigationAnchor> navigationStack;
 
   /// The index in [navigationStack] of the position the user is currently
   /// at, or -1 when nothing has been recorded.
   final int navigationIndex;
-
-  static const int maxNavigationStackSize = 50;
 
   bool get canNavigateBack => navigationIndex > 0;
 
@@ -131,8 +129,8 @@ class CommentsState extends Equatable {
   ///
   /// Scrolling refreshes the current stop; only a jump adds a new stop.
   ///
-  /// Any positions ahead of the current one are dropped, the same way a
-  /// browser drops forward history when a new page is visited.
+  /// New jumps are inserted after the current position, keeping all previous
+  /// back and forward positions available.
   CommentsState copyWithNavigation({
     required NavigationAnchor to,
     NavigationAnchor? from,
@@ -141,33 +139,37 @@ class CommentsState extends Equatable {
       return this;
     }
 
-    final List<NavigationAnchor> stack = navigationStack
-        .take(navigationIndex + 1)
-        .toList();
+    final List<NavigationAnchor> stack = List<NavigationAnchor>.of(
+      navigationStack,
+    );
+    int index = navigationIndex;
 
     if (from != null) {
-      if (stack.isEmpty) {
-        stack.add(from);
+      if (index < 0) {
+        stack.insert(0, from);
+        index = 0;
+      } else if (index > 0 &&
+          stack.elementAt(index - 1).itemId == from.itemId &&
+          stack.elementAt(index).itemId != from.itemId) {
+        // The user scrolled back to an earlier stop. Record the return visit
+        // without replacing the stop they scrolled away from.
+        stack.insert(++index, from);
       } else {
         // Scrolling or layout can change which comment anchors the same
         // viewport. Refresh this stop instead of adding another history entry.
-        stack.last = from;
-        if (stack.length > 1 &&
-            stack.elementAt(stack.length - 2).itemId == from.itemId) {
-          stack.removeAt(stack.length - 2);
-        }
+        stack[index] = from;
       }
     }
 
-    if (stack.isEmpty || stack.last.itemId != to.itemId) {
-      stack.add(to);
+    if (index < 0 || stack.elementAt(index).itemId != to.itemId) {
+      index++;
+      // Repeating the next recorded jump simply moves forward to that stop.
+      if (index == stack.length || stack.elementAt(index) != to) {
+        stack.insert(index, to);
+      }
     }
 
-    if (stack.length > maxNavigationStackSize) {
-      stack.removeRange(0, stack.length - maxNavigationStackSize);
-    }
-
-    return copyWith(navigationStack: stack, navigationIndex: stack.length - 1);
+    return copyWith(navigationStack: stack, navigationIndex: index);
   }
 
   Set<int> get commentIds => comments.map((Comment e) => e.id).toSet();
