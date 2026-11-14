@@ -49,6 +49,12 @@ class PreferenceRepository with Loggable {
   Future<double?> getDouble(String key) =>
       _prefs.then((SharedPreferences prefs) => prefs.getDouble(key));
 
+  Future<String?> getString(String key) =>
+      _prefs.then((SharedPreferences prefs) => prefs.getString(key));
+
+  void setString(String key, String val) =>
+      _prefs.then((SharedPreferences prefs) => prefs.setString(key, val));
+
   //ignore: avoid_positional_boolean_parameters
   void setBool(String key, bool val) =>
       _prefs.then((SharedPreferences prefs) => prefs.setBool(key, val));

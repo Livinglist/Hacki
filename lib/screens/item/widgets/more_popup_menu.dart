@@ -68,212 +68,232 @@ class MorePopupMenu extends StatelessWidget {
         builder: (BuildContext context, VoteState voteState) {
           final bool upvoted = voteState.vote == Vote.up;
           final bool downvoted = voteState.vote == Vote.down;
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              BlocProvider<UserCubit>(
-                create: (BuildContext context) =>
-                    UserCubit()..init(userId: item.by),
-                child: BlocBuilder<UserCubit, UserState>(
-                  builder: (BuildContext context, UserState state) {
-                    return Semantics(
-                      excludeSemantics: state.status == Status.inProgress,
-                      child: ListTile(
-                        leading: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            AnimatedCrossFade(
-                              alignment: Alignment.center,
-                              duration: AppDurations.ms300,
-                              crossFadeState: state.status.isLoading
-                                  ? CrossFadeState.showFirst
-                                  : CrossFadeState.showSecond,
-                              firstChild: const Icon(
-                                Icons.account_circle_outlined,
+          return BlocBuilder<PreferenceCubit, PreferenceState>(
+            builder: (BuildContext context, PreferenceState preferenceState) {
+              final Map<ItemMenuAction, Widget>
+              actions = <ItemMenuAction, Widget>{
+                ItemMenuAction.viewProfile: BlocProvider<UserCubit>(
+                  create: (BuildContext context) =>
+                      UserCubit()..init(userId: item.by),
+                  child: BlocBuilder<UserCubit, UserState>(
+                    builder: (BuildContext context, UserState state) {
+                      return Semantics(
+                        excludeSemantics: state.status == Status.inProgress,
+                        child: ListTile(
+                          leading: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              AnimatedCrossFade(
+                                alignment: Alignment.center,
+                                duration: AppDurations.ms300,
+                                crossFadeState: state.status.isLoading
+                                    ? CrossFadeState.showFirst
+                                    : CrossFadeState.showSecond,
+                                firstChild: const Icon(
+                                  Icons.account_circle_outlined,
+                                ),
+                                secondChild: const Icon(Icons.account_circle),
                               ),
-                              secondChild: const Icon(Icons.account_circle),
-                            ),
-                          ],
-                        ),
-                        title: Text(item.by),
-                        subtitle: Text(state.user.description),
-                        onTap: () {
-                          context.pop();
-                          final double fontSize = context
-                              .read<PreferenceCubit>()
-                              .state
-                              .fontSize
-                              .fontSize;
-                          showDialog<void>(
-                            context: context,
-                            builder: (BuildContext context) => AlertDialog(
-                              semanticLabel:
-                                  '''About ${state.user.id}. ${state.user.about}''',
-                              title: Text('About ${state.user.id}'),
-                              content: state.user.about.isEmpty
-                                  ? const Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Text(
-                                          'empty',
-                                          style: TextStyle(color: Palette.grey),
+                            ],
+                          ),
+                          title: Text(item.by),
+                          subtitle: Text(state.user.description),
+                          onTap: () {
+                            context.pop();
+                            final double fontSize = context
+                                .read<PreferenceCubit>()
+                                .state
+                                .fontSize
+                                .fontSize;
+                            showDialog<void>(
+                              context: context,
+                              builder: (BuildContext context) => AlertDialog(
+                                semanticLabel:
+                                    '''About ${state.user.id}. ${state.user.about}''',
+                                title: Text('About ${state.user.id}'),
+                                content: state.user.about.isEmpty
+                                    ? const Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          Text(
+                                            'empty',
+                                            style: TextStyle(
+                                              color: Palette.grey,
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    : SelectableLinkify(
+                                        text: HtmlUtils.parseHtml(
+                                          state.user.about,
                                         ),
-                                      ],
-                                    )
-                                  : SelectableLinkify(
-                                      text: HtmlUtils.parseHtml(
-                                        state.user.about,
+                                        style: TextStyle(fontSize: fontSize),
+                                        linkStyle: TextStyle(
+                                          fontSize: fontSize,
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.primary,
+                                        ),
+                                        onOpen: (LinkableElement link) =>
+                                            LinkUtils.launch(link.url, context),
+                                        semanticsLabel: state.user.about,
                                       ),
-                                      style: TextStyle(fontSize: fontSize),
-                                      linkStyle: TextStyle(
-                                        fontSize: fontSize,
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.primary,
-                                      ),
-                                      onOpen: (LinkableElement link) =>
-                                          LinkUtils.launch(link.url, context),
-                                      semanticsLabel: state.user.about,
-                                    ),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () {
-                                    context.pop();
-                                    onSearchUserTapped(context);
-                                  },
-                                  child: const Text('Search'),
-                                ),
-                                TextButton(
-                                  onPressed: context.pop,
-                                  child: const Text('Okay'),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () {
+                                      context.pop();
+                                      onSearchUserTapped(context);
+                                    },
+                                    child: const Text('Search'),
+                                  ),
+                                  TextButton(
+                                    onPressed: context.pop,
+                                    child: const Text('Okay'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                ItemMenuAction.searchOnHackerNews: ListTile(
+                  leading: const Icon(Icons.search),
+                  title: const Text('Search on HN'),
+                  onTap: () {
+                    context.pop();
+                    onSearchUserTapped(context);
+                  },
+                ),
+                if (onSearchInThreadTapped != null)
+                  ItemMenuAction.searchInThread: ListTile(
+                    leading: const Icon(Icons.manage_search),
+                    title: const Text('Search in thread'),
+                    onTap: onSearchInThreadTapped,
+                  ),
+                if (onReplyTapped != null)
+                  ItemMenuAction.reply: ListTile(
+                    leading: const Icon(Icons.message),
+                    title: const Text('Reply'),
+                    onTap: () {
+                      context.pop();
+                      onReplyTapped?.call();
+                    },
+                  ),
+                ItemMenuAction.upvote: ListTile(
+                  leading: Icon(
+                    upvoted
+                        ? Icons.thumb_up_rounded
+                        : Icons.thumb_up_off_alt_outlined,
+                    color: upvoted
+                        ? Theme.of(context).colorScheme.primary
+                        : null,
+                  ),
+                  title: Text(
+                    upvoted ? 'Upvoted' : 'Upvote',
+                    style: upvoted
+                        ? TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                          )
+                        : null,
+                  ),
+                  subtitle: item is Story ? Text(item.score.toString()) : null,
+                  onTap: context.read<VoteCubit>().upvote,
+                ),
+                ItemMenuAction.downvote: ListTile(
+                  leading: Icon(
+                    downvoted
+                        ? Icons.thumb_down_rounded
+                        : Icons.thumb_down_off_alt_outlined,
+                    color: downvoted
+                        ? Theme.of(context).colorScheme.primary
+                        : null,
+                  ),
+                  title: Text(
+                    downvoted ? 'Downvoted' : 'Downvote',
+                    style: downvoted
+                        ? TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                          )
+                        : null,
+                  ),
+                  onTap: context.read<VoteCubit>().downvote,
+                ),
+                ItemMenuAction.favorite: BlocBuilder<FavCubit, FavState>(
+                  builder: (BuildContext context, FavState state) {
+                    final bool isFav = state.favIds.contains(item.id);
+                    return ListTile(
+                      leading: Icon(
+                        isFav ? Icons.favorite : Icons.favorite_border,
+                        color: isFav
+                            ? Theme.of(context).colorScheme.primary
+                            : null,
                       ),
+                      title: Text(isFav ? 'Unfavorite' : 'Favorite'),
+                      onTap: () => context.pop(MenuAction.fav),
                     );
                   },
                 ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.search),
-                title: const Text('Search on HN'),
-                onTap: () {
-                  context.pop();
-                  onSearchUserTapped(context);
-                },
-              ),
-              if (onSearchInThreadTapped != null)
-                ListTile(
-                  leading: const Icon(Icons.manage_search),
-                  title: const Text('Search in thread'),
-                  onTap: onSearchInThreadTapped,
+                ItemMenuAction.share: ListTile(
+                  leading: const Icon(FeatherIcons.share),
+                  title: const Text('Share'),
+                  onTap: () => context.pop(MenuAction.share),
                 ),
-              if (onReplyTapped != null)
-                ListTile(
-                  leading: const Icon(Icons.message),
-                  title: const Text('Reply'),
+                ItemMenuAction.flag: ListTile(
+                  leading: const Icon(Icons.local_police),
+                  title: const Text('Flag'),
+                  onTap: () => context.pop(MenuAction.flag),
+                ),
+                ItemMenuAction.block: ListTile(
+                  leading: Icon(
+                    isBlocked ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  title: Text(isBlocked ? 'Unblock' : 'Block'),
+                  onTap: () => context.pop(MenuAction.block),
+                ),
+                if (onViewInSeparateThreadTapped != null && item is Comment)
+                  ItemMenuAction.viewInSeparateThread: ListTile(
+                    leading: const Icon(Icons.list),
+                    title: const Text('View In Separate Thread'),
+                    onTap: () {
+                      context.pop();
+                      onViewInSeparateThreadTapped?.call();
+                    },
+                  ),
+                ItemMenuAction.viewInBrowser: ListTile(
+                  leading: const Icon(Icons.open_in_browser),
+                  title: const Text('View in Browser'),
                   onTap: () {
                     context.pop();
-                    onReplyTapped?.call();
+                    final String url =
+                        '${Constants.hackerNewsItemLinkPrefix}${item.id}';
+                    LinkUtils.launch(
+                      url,
+                      context,
+                      shouldUseHackiForHnLink: false,
+                    );
                   },
                 ),
-              ListTile(
-                leading: Icon(
-                  upvoted
-                      ? Icons.thumb_up_rounded
-                      : Icons.thumb_up_off_alt_outlined,
-                  color: upvoted ? Theme.of(context).colorScheme.primary : null,
-                ),
-                title: Text(
-                  upvoted ? 'Upvoted' : 'Upvote',
-                  style: upvoted
-                      ? TextStyle(color: Theme.of(context).colorScheme.primary)
-                      : null,
-                ),
-                subtitle: item is Story ? Text(item.score.toString()) : null,
-                onTap: context.read<VoteCubit>().upvote,
-              ),
-              ListTile(
-                leading: Icon(
-                  downvoted
-                      ? Icons.thumb_down_rounded
-                      : Icons.thumb_down_off_alt_outlined,
-                  color: downvoted
-                      ? Theme.of(context).colorScheme.primary
-                      : null,
-                ),
-                title: Text(
-                  downvoted ? 'Downvoted' : 'Downvote',
-                  style: downvoted
-                      ? TextStyle(color: Theme.of(context).colorScheme.primary)
-                      : null,
-                ),
-                onTap: context.read<VoteCubit>().downvote,
-              ),
-              BlocBuilder<FavCubit, FavState>(
-                builder: (BuildContext context, FavState state) {
-                  final bool isFav = state.favIds.contains(item.id);
-                  return ListTile(
-                    leading: Icon(
-                      isFav ? Icons.favorite : Icons.favorite_border,
-                      color: isFav
-                          ? Theme.of(context).colorScheme.primary
-                          : null,
+              };
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    for (final ItemMenuAction action
+                        in preferenceState.enabledItemMenuActions)
+                      if (actions[action] case final Widget widget) widget,
+                    ListTile(
+                      leading: const Icon(Icons.close),
+                      title: const Text('Cancel'),
+                      onTap: () => context.pop(MenuAction.cancel),
                     ),
-                    title: Text(isFav ? 'Unfavorite' : 'Favorite'),
-                    onTap: () => context.pop(MenuAction.fav),
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(FeatherIcons.share),
-                title: const Text('Share'),
-                onTap: () => context.pop(MenuAction.share),
-              ),
-              ListTile(
-                leading: const Icon(Icons.local_police),
-                title: const Text('Flag'),
-                onTap: () => context.pop(MenuAction.flag),
-              ),
-              ListTile(
-                leading: Icon(
-                  isBlocked ? Icons.visibility : Icons.visibility_off,
+                  ],
                 ),
-                title: Text(isBlocked ? 'Unblock' : 'Block'),
-                onTap: () => context.pop(MenuAction.block),
-              ),
-              if (onViewInSeparateThreadTapped != null && item is Comment)
-                ListTile(
-                  leading: const Icon(Icons.list),
-                  title: const Text('View In Separate Thread'),
-                  onTap: () {
-                    context.pop();
-                    onViewInSeparateThreadTapped?.call();
-                  },
-                ),
-              ListTile(
-                leading: const Icon(Icons.open_in_browser),
-                title: const Text('View in Browser'),
-                onTap: () {
-                  context.pop();
-                  final String url =
-                      '${Constants.hackerNewsItemLinkPrefix}${item.id}';
-                  LinkUtils.launch(
-                    url,
-                    context,
-                    shouldUseHackiForHnLink: false,
-                  );
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.close),
-                title: const Text('Cancel'),
-                onTap: () => context.pop(MenuAction.cancel),
-              ),
-            ],
+              );
+            },
           );
         },
       ),

@@ -10,6 +10,7 @@ export 'font_size.dart';
 export 'hacker_news_data_source.dart';
 export 'import_source.dart';
 export 'item/item.dart';
+export 'item_menu_action.dart';
 export 'max_offline_stories_count.dart';
 export 'navigation_anchor.dart';
 export 'network_proxy.dart';
