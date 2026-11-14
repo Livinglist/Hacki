@@ -174,6 +174,85 @@ void main() {
       },
     );
 
+    test('keeps the selected comment when the measured viewport changes', () {
+      final Comment target = Comment.fromJson(const <String, dynamic>{
+        'id': 2,
+        'text': 'Selected comment',
+      });
+      final NavigationAnchor destination = NavigationAnchor.forComment(
+        target,
+        alignment: 0.15,
+      );
+      const NavigationAnchor aboveTarget = NavigationAnchor(
+        itemId: 22,
+        alignment: 0.08,
+      );
+
+      state = state
+          .copyWithNavigation(from: a, to: destination)
+          .copyWithNavigation(from: aboveTarget, to: c);
+
+      expect(state.navigationStack, <NavigationAnchor>[a, destination, c]);
+      expect(state.navigationStack[1].targetComment, same(target));
+    });
+
+    test('a target comment survives a new jump after Back', () {
+      final Comment target = Comment.fromJson(const <String, dynamic>{'id': 2});
+      final NavigationAnchor destination = NavigationAnchor.forComment(
+        target,
+        alignment: 0.15,
+      );
+
+      state = state
+          .copyWithNavigation(from: a, to: destination)
+          .copyWithNavigation(from: b, to: c)
+          .copyWith(navigationIndex: 1)
+          .copyWithNavigation(
+            from: const NavigationAnchor(itemId: 22, alignment: 0.08),
+            to: d,
+          );
+
+      expect(state.navigationStack, <NavigationAnchor>[a, destination, d]);
+      expect(state.navigationStack[1].targetComment, same(target));
+      expect(state.canNavigateForward, isFalse);
+    });
+
+    test(
+      'selecting the current position attaches its target without a stop',
+      () {
+        final Comment target = Comment.fromJson(const <String, dynamic>{
+          'id': 2,
+        });
+        final NavigationAnchor destination = NavigationAnchor.forComment(
+          target,
+          alignment: 0.15,
+        );
+        state = state
+            .copyWithNavigation(from: a, to: b)
+            .copyWithNavigation(from: b, to: c)
+            .copyWith(navigationIndex: 1)
+            .copyWithNavigation(from: destination, to: destination);
+
+        expect(state.navigationStack, <NavigationAnchor>[a, destination]);
+        expect(state.navigationStack.last.targetComment, same(target));
+        expect(state.canNavigateForward, isFalse);
+      },
+    );
+
+    test('selecting an already visible comment retains the first target', () {
+      final Comment target = Comment.fromJson(const <String, dynamic>{'id': 2});
+      final NavigationAnchor destination = NavigationAnchor.forComment(
+        target,
+        alignment: 0.15,
+      );
+
+      state = state.copyWithNavigation(from: destination, to: destination);
+
+      expect(state.navigationStack, <NavigationAnchor>[destination]);
+      expect(state.navigationStack.single.targetComment, same(target));
+      expect(state.canNavigateBack, isFalse);
+    });
+
     test('preserves earlier stops when returning to a preceding origin', () {
       const NavigationAnchor scrolledA = NavigationAnchor(
         itemId: 1,

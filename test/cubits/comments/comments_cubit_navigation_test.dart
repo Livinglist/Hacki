@@ -54,6 +54,7 @@ void main() {
   late StreamController<PreferenceState> preferenceChanges;
   late PreferenceState preferenceState;
   late CommentsCubit Function() createCubit;
+  late Map<int, double> commentHeights;
 
   void seedComments() {
     cubit.emit(
@@ -77,6 +78,7 @@ void main() {
     lifecycle = StreamController<AppLifecycleState>.broadcast();
     preferenceChanges = StreamController<PreferenceState>.broadcast();
     preferenceState = PreferenceState.init();
+    commentHeights = <int, double>{};
     final _MockFilterCubit filterCubit = _MockFilterCubit();
     when(() => filterCubit.state).thenReturn(FilterState.init());
     preferenceCubit = _MockPreferenceCubit();
@@ -157,19 +159,34 @@ void main() {
                 children: <Widget>[
                   NotificationListener<ScrollNotification>(
                     onNotification: cubit.onThreadScrollNotification,
-                    child: ScrollablePositionedList.builder(
-                      itemScrollController: cubit.itemScrollController,
-                      itemPositionsListener: cubit.itemPositionsListener,
-                      itemCount: cubit.state.comments.length + 2,
-                      itemBuilder: (BuildContext context, int index) {
-                        if (index == 0) return const SizedBox(height: 100);
-                        if (index > cubit.state.comments.length) {
-                          return const SizedBox(height: 600);
-                        }
-                        final Comment comment = cubit.state.comments[index - 1];
-                        return SizedBox(
-                          height: comment.isRoot ? 240 : 40,
-                          child: Text(comment.text),
+                    child: BlocBuilder<CommentsCubit, CommentsState>(
+                      buildWhen:
+                          (CommentsState previous, CommentsState current) =>
+                              previous.comments != current.comments,
+                      builder: (BuildContext context, CommentsState state) {
+                        return ScrollablePositionedList.builder(
+                          itemScrollController: cubit.itemScrollController,
+                          itemPositionsListener: cubit.itemPositionsListener,
+                          itemCount: state.comments.length + 2,
+                          itemBuilder: (BuildContext context, int index) {
+                            if (index == 0) return const SizedBox(height: 100);
+                            if (index > state.comments.length) {
+                              return const SizedBox(height: 600);
+                            }
+                            final Comment comment = state.comments[index - 1];
+                            final GlobalKey? key = cubit.globalKeys[comment.id];
+                            if (comment.isHiddenByUser) {
+                              return SizedBox.shrink(key: key);
+                            }
+                            return SizedBox(
+                              key: key,
+                              height: comment.isCollapsedByUser
+                                  ? 40
+                                  : commentHeights[comment.id] ??
+                                        (comment.isRoot ? 240 : 40),
+                              child: Text(comment.text),
+                            );
+                          },
                         );
                       },
                     ),
@@ -190,6 +207,13 @@ void main() {
     await tester.pump();
     await tester.pumpAndSettle();
     await tester.pumpAndSettle();
+  }
+
+  Future<void> settleCommentJump(WidgetTester tester) async {
+    for (int i = 0; i < 5; i++) {
+      await tester.pump(const Duration(milliseconds: 350));
+      await tester.pumpAndSettle();
+    }
   }
 
   void expectPosition(int index, double alignment) {
@@ -512,6 +536,12 @@ void main() {
       );
       expect(cubit.state.navigationStack.first.alignment, closeTo(-0.1, 0.01));
       expect(cubit.state.navigationStack.last.alignment, 0);
+      if (!jumpToTop) {
+        expect(
+          cubit.state.navigationStack.last.targetComment,
+          same(cubit.state.comments.last),
+        );
+      }
 
       await tester.tap(find.byIcon(Icons.turn_left));
       await settleScroll(tester);
@@ -550,8 +580,7 @@ void main() {
         cubit.state.navigationStack.map(
           (NavigationAnchor anchor) => anchor.itemId,
         ),
-        // The short reply above root 3 anchors the same reading position.
-        <int>[_storyId, 2, destinationId],
+        <int>[_storyId, 3, destinationId],
       );
       expect(cubit.state.canNavigateForward, isFalse);
 
@@ -592,9 +621,13 @@ void main() {
       cubit.state.navigationStack.map(
         (NavigationAnchor anchor) => anchor.itemId,
       ),
-      <int>[_storyId, 2, 7],
+      <int>[_storyId, 3, 7],
     );
     expect(cubit.state.canNavigateForward, isFalse);
+    expect(
+      cubit.state.navigationStack.last.targetComment,
+      same(cubit.state.comments.last),
+    );
 
     cubit.navigateBack();
     await settleScroll(tester);
@@ -1199,6 +1232,247 @@ void main() {
     await tester.tap(find.byIcon(Icons.turn_left));
     await settleScroll(tester);
     expectPosition(0, 0);
+  });
+
+  testWidgets('later jumps retain the selected comment in each history item', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    final Comment firstTarget = cubit.state.comments[2];
+    final Comment secondTarget = cubit.state.comments[4];
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+
+    expect(
+      cubit.state.navigationStack.map((NavigationAnchor item) => item.itemId),
+      <int>[_storyId, 3, 5],
+    );
+    expect(cubit.state.navigationStack[1].targetComment, same(firstTarget));
+    expect(cubit.state.navigationStack[2].targetComment, same(secondTarget));
+    final List<NavigationAnchor> saved = cubit.state.navigationStack;
+
+    cubit.navigateBack();
+    await settleScroll(tester);
+    expectPosition(3, 0.15);
+    expect(cubit.state.canNavigateForward, isTrue);
+    expect(cubit.state.navigationStack, same(saved));
+    cubit.navigateForward();
+    await settleScroll(tester);
+    expectPosition(5, 0.15);
+    expect(cubit.state.navigationStack, same(saved));
+  });
+
+  testWidgets(
+    'Back targets the selected comment after nearby row heights change',
+    (WidgetTester tester) async {
+      await pumpThread(tester);
+      cubit.scrollToNextRoot();
+      await settleScroll(tester);
+      cubit.scrollToNextRoot();
+      await settleScroll(tester);
+
+      commentHeights[2] = 160;
+      cubit.emit(
+        cubit.state.copyWith(
+          comments: cubit.state.comments
+              .map(
+                (Comment comment) =>
+                    comment.id == 2 ? comment.copyWith(isNew: true) : comment,
+              )
+              .toList(),
+        ),
+      );
+      await settleScroll(tester);
+      unawaited(cubit.scrollTo(index: 5, alignment: 0.15));
+      await settleScroll(tester);
+
+      cubit.navigateBack();
+      await settleScroll(tester);
+      expectPosition(3, 0.15);
+      expect(cubit.state.navigationStack[1].targetComment?.id, 3);
+      cubit.navigateForward();
+      await settleScroll(tester);
+      expectPosition(5, 0.15);
+    },
+  );
+
+  testWidgets('history resolves its target comment after comments move', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    final List<NavigationAnchor> saved = cubit.state.navigationStack;
+    final Map<int, Comment> comments = <int, Comment>{
+      for (final Comment comment in cubit.state.comments) comment.id: comment,
+    };
+    comments[3] = comments[3]!.copyWith(isNew: true);
+    cubit.emit(
+      cubit.state.copyWith(
+        comments: <int>[
+          1,
+          2,
+          5,
+          6,
+          3,
+          4,
+          7,
+        ].map((int id) => comments[id]!).toList(),
+      ),
+    );
+    await settleScroll(tester);
+    unawaited(cubit.scrollTo(index: 3, alignment: 0.15));
+    await settleScroll(tester);
+
+    cubit.navigateBack();
+    await settleScroll(tester);
+    expect(cubit.state.comments[4].id, 3);
+    expect(cubit.state.comments[4].isNew, isTrue);
+    expectPosition(5, 0.15);
+    expect(cubit.state.navigationStack, same(saved));
+    cubit.navigateForward();
+    await settleScroll(tester);
+    expect(cubit.state.comments[2].id, 5);
+    expectPosition(3, 0.15);
+    expect(cubit.state.navigationStack, same(saved));
+  });
+
+  for (final bool hasTargetKey in <bool>[false, true]) {
+    testWidgets('Back reveals a saved target hidden by its collapsed parent '
+        '${hasTargetKey ? 'with' : 'without'} a target key', (
+      WidgetTester tester,
+    ) async {
+      await pumpThread(tester);
+      final Future<void> jump = cubit.scrollToComment(cubit.state.comments[3]);
+      await settleScroll(tester);
+      await jump;
+      unawaited(
+        cubit.scrollTo(index: 7, alignment: 0.15, recordNavigation: true),
+      );
+      await settleScroll(tester);
+      final List<NavigationAnchor> saved = cubit.state.navigationStack;
+      expect(saved[1].targetComment?.id, 4);
+      if (hasTargetKey) cubit.globalKeys[4] = GlobalKey();
+      cubit.collapse(cubit.state.comments[2]);
+      await settleScroll(tester);
+      expect(cubit.state.comments[3].isHiddenByUser, isTrue);
+      unawaited(cubit.scrollTo(index: 7, alignment: 0.15));
+      await settleScroll(tester);
+
+      await tester.tap(find.byIcon(Icons.turn_left));
+      await settleCommentJump(tester);
+      expect(cubit.state.comments[2].isCollapsedByUser, isFalse);
+      expect(cubit.state.comments[3].isHiddenByUser, isFalse);
+      expectPosition(4, 0.15);
+      expect(cubit.state.navigationStack, same(saved));
+      expect(cubit.state.canNavigateForward, isTrue);
+      await tester.tap(find.byIcon(Icons.turn_right));
+      await settleCommentJump(tester);
+      expectPosition(7, 0.15);
+      expect(cubit.state.navigationStack, same(saved));
+    });
+  }
+
+  testWidgets('rapid Forward cancels an unfinished Back comment jump', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    final Future<void> jump = cubit.scrollToComment(cubit.state.comments[3]);
+    await settleScroll(tester);
+    await jump;
+    unawaited(
+      cubit.scrollTo(index: 7, alignment: 0.15, recordNavigation: true),
+    );
+    await settleScroll(tester);
+    final List<NavigationAnchor> saved = cubit.state.navigationStack;
+
+    cubit
+      ..navigateBack()
+      ..navigateForward();
+    await settleCommentJump(tester);
+    expectPosition(7, 0.15);
+    expect(cubit.state.navigationIndex, 2);
+    expect(cubit.state.navigationStack, same(saved));
+  });
+
+  testWidgets(
+    'a target removed during its jump does not unfold a stale comment',
+    (WidgetTester tester) async {
+      cubit.emit(
+        cubit.state.copyWith(
+          comments: cubit.state.comments
+              .map(
+                (Comment comment) => comment.id == 4
+                    ? comment.copyWith(isCollapsedByUser: true)
+                    : comment,
+              )
+              .toList(),
+        ),
+      );
+      await pumpThread(tester);
+      final Future<void> jump = cubit.scrollToComment(cubit.state.comments[3]);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      cubit.emit(
+        cubit.state.copyWith(
+          comments: cubit.state.comments
+              .where((Comment comment) => comment.id != 4)
+              .toList(),
+        ),
+      );
+      await settleScroll(tester);
+      await jump;
+      expect(
+        cubit.state.comments.any((Comment comment) => comment.id == 4),
+        isFalse,
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('a target replaced during its jump keeps its latest state', (
+    WidgetTester tester,
+  ) async {
+    cubit.emit(
+      cubit.state.copyWith(
+        comments: cubit.state.comments
+            .map(
+              (Comment comment) => comment.id == 4
+                  ? comment.copyWith(isCollapsedByUser: true)
+                  : comment,
+            )
+            .toList(),
+      ),
+    );
+    await pumpThread(tester);
+    final Future<void> jump = cubit.scrollToComment(cubit.state.comments[3]);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    cubit.emit(
+      cubit.state.copyWith(
+        comments: cubit.state.comments.map((Comment comment) {
+          if (comment.id == 4) {
+            return comment.copyWith(
+              isCollapsedByUser: false,
+              isHiddenByUser: true,
+              isNew: true,
+            );
+          }
+          return comment.id == 3
+              ? comment.copyWith(isCollapsedByUser: true)
+              : comment;
+        }).toList(),
+      ),
+    );
+    await settleScroll(tester);
+    await jump;
+    expect(cubit.state.comments[2].isCollapsedByUser, isFalse);
+    expect(cubit.state.comments[3].isHiddenByUser, isFalse);
+    expect(cubit.state.comments[3].isNew, isTrue);
   });
 
   testWidgets('Back returns one prior position per root skip', (

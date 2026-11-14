@@ -999,38 +999,23 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     init();
   }
 
-  bool _isCommentOnScreen(Comment comment) {
-    final Iterable<Comment> onScreenComments = itemPositionsListener
-        .itemPositions
-        .value
-        // The header is also a part of the list view,
-        // thus ignoring it here.
-        .where(
-          (ItemPosition e) =>
-              e.index >= 1 &&
-              ((e.itemLeadingEdge > 0.12 && e.itemLeadingEdge < 0.48) ||
-                  (e.itemLeadingEdge >= 0.48 && e.itemTrailingEdge < 1)),
-        )
-        .map(
-          (ItemPosition e) => e.index <= state.comments.length
-              ? state.comments.elementAt(e.index - 1)
-              : null,
-        )
-        .nonNulls;
-    if (kDebugMode) {
-      debugPrint(
-        '''on screen comments are ${onScreenComments.map((Comment e) => e.id)}''',
-      );
-    }
-    final bool isTargetCommentInRange = onScreenComments.any(
-      (Comment c) => c.id == comment.id,
+  bool _isCommentOnScreen(Comment comment, {required double alignment}) {
+    return itemPositionsListener.itemPositions.value.any(
+      (ItemPosition position) =>
+          position.index >= 1 &&
+          position.index <= state.comments.length &&
+          state.comments.elementAt(position.index - 1).id == comment.id &&
+          !state.comments.elementAt(position.index - 1).isHiddenByUser &&
+          (position.itemLeadingEdge - alignment).abs() <=
+              NavigationAnchor.alignmentTolerance,
     );
-    return isTargetCommentInRange;
   }
 
   Future<void> scrollToComment(
     Comment comment, {
     bool isRetrying = false,
+    bool recordNavigation = true,
+    double alignment = _jumpAlignment,
   }) async {
     /// Find out the index of the comment in the thread.
     final Comment? matchedComment = state.comments.singleWhereOrNull(
@@ -1039,31 +1024,57 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     if (matchedComment == null) return;
     final int index = state.comments.indexOf(matchedComment);
 
-    if (!isRetrying) {
-      _recordNavigationTo(matchedComment);
+    if (!isRetrying && recordNavigation) {
+      _recordNavigationTo(matchedComment, alignment: alignment);
     }
 
-    /// If index if found, scroll to the comment.
-    if (index != -1) {
-      await scrollTo(
-        index: index + 1,
-        alignment: _jumpAlignment,
-        duration: AppDurations.ms300,
-      );
-    }
+    final Future<void> initialScroll = scrollTo(
+      index: index + 1,
+      alignment: alignment,
+      duration: AppDurations.ms300,
+    );
+    int generation = _scrollGeneration;
+    await initialScroll;
+    if (isClosed || generation != _scrollGeneration) return;
 
     /// Find out all of its ancestors, uncollapse them if they
     /// are collapsed.
-    Comment? curComment = matchedComment;
+    Comment? curComment = state.comments.singleWhereOrNull(
+      (Comment current) => current.id == matchedComment.id,
+    );
+    if (curComment == null) return;
+    bool unfolded = false;
     while (curComment != null) {
       if (curComment.isCollapsedByUser) {
         uncollapse(curComment);
+        unfolded = true;
       }
       curComment = state.comments.singleWhereOrNull(
         (Comment c) => c.id == curComment?.parent,
       );
 
       if (curComment == null) break;
+    }
+
+    if (unfolded) {
+      await SchedulerBinding.instance.endOfFrame;
+      if (isClosed || generation != _scrollGeneration) return;
+      if (!_isCommentOnScreen(comment, alignment: alignment)) {
+        // Unfolding ancestors can move the target. Resolve it again by id;
+        // positioning must also work before a rendered GlobalKey exists.
+        final int targetIndex = state.comments.indexWhere(
+          (Comment target) => target.id == matchedComment.id,
+        );
+        if (targetIndex < 0) return;
+        final Future<void> correction = scrollTo(
+          index: targetIndex + 1,
+          alignment: alignment,
+          duration: AppDurations.ms300,
+        );
+        generation = _scrollGeneration;
+        await correction;
+        if (isClosed || generation != _scrollGeneration) return;
+      }
     }
 
     final GlobalKey<State<StatefulWidget>>? targetCommentGlobalKey =
@@ -1078,9 +1089,14 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     if (targetCommentContext != null) {
       /// Delay here so `itemPositionsListener` can be up to date.
       await Future<void>.delayed(AppDurations.ms300, () async {
+        if (isClosed || generation != _scrollGeneration) return;
+
         /// Make sure the comment tile's leading edge is within an
         /// acceptable view point.
-        final bool isCommentOnScreen = _isCommentOnScreen(comment);
+        final bool isCommentOnScreen = _isCommentOnScreen(
+          comment,
+          alignment: alignment,
+        );
 
         if (kDebugMode) {
           debugPrint('''
@@ -1092,44 +1108,36 @@ comments length is ${state.comments.length}
         }
 
         if (!isCommentOnScreen) {
-          if (index != -1) {
-            if (kDebugMode) {
-              debugPrint('scrolling another time to ${index + 1}');
-            }
-            await scrollTo(
-              index: index + 1,
-              alignment: _jumpAlignment,
-              duration: AppDurations.ms300,
-            );
+          final int targetIndex = state.comments.indexWhere(
+            (Comment target) => target.id == matchedComment.id,
+          );
+          if (targetIndex < 0) return;
+          final Future<void> correction = scrollTo(
+            index: targetIndex + 1,
+            alignment: alignment,
+            duration: AppDurations.ms300,
+          );
+          generation = _scrollGeneration;
+          await correction;
+          if (isClosed || generation != _scrollGeneration) return;
 
-            final bool isCommentOnScreen = _isCommentOnScreen(comment);
-            if (!isCommentOnScreen && !isRetrying) {
-              await scrollToComment(comment, isRetrying: true);
-              return;
-            }
-          } else {
-            if (kDebugMode) {
-              debugPrint('attempting to ensure visible');
-            }
-            final BuildContext? newTargetCommentContext =
-                targetCommentGlobalKey?.currentContext;
-            if (newTargetCommentContext != null &&
-                newTargetCommentContext.mounted) {
-              if (kDebugMode) {
-                debugPrint('ensure visible');
-              }
-              await Scrollable.ensureVisible(
-                newTargetCommentContext,
-                alignment: 0.15,
-                duration: AppDurations.ms300,
-                alignmentPolicy:
-                    ScrollPositionAlignmentPolicy.keepVisibleAtStart,
-              );
-            }
+          final bool isCommentOnScreen = _isCommentOnScreen(
+            comment,
+            alignment: alignment,
+          );
+          if (!isCommentOnScreen && !isRetrying) {
+            await scrollToComment(
+              comment,
+              isRetrying: true,
+              recordNavigation: recordNavigation,
+              alignment: alignment,
+            );
+            return;
           }
         }
 
         await Future<void>.delayed(AppDurations.ms300, () {
+          if (isClosed || generation != _scrollGeneration) return;
           final BuildContext? newTargetCommentContext =
               targetCommentGlobalKey?.currentContext;
           if (targetCommentGlobalKey != null &&
@@ -1161,12 +1169,12 @@ comments length is ${state.comments.length}
         index >= 0 &&
         index <= state.comments.length) {
       _recordJump(
-        NavigationAnchor(
-          itemId: index == 0
-              ? state.item.id
-              : state.comments.elementAt(index - 1).id,
-          alignment: alignment,
-        ),
+        index == 0
+            ? NavigationAnchor(itemId: state.item.id, alignment: alignment)
+            : NavigationAnchor.forComment(
+                state.comments.elementAt(index - 1),
+                alignment: alignment,
+              ),
       );
     }
 
@@ -1305,11 +1313,12 @@ comments length is ${state.comments.length}
   /// Records the user's current position and [comment], which they are
   /// about to jump to, so that they can navigate back and forward between
   /// the two.
-  void _recordNavigationTo(Comment comment) {
+  void _recordNavigationTo(
+    Comment comment, {
+    double alignment = _jumpAlignment,
+  }) {
     if (!_isNavigationHistoryEnabled) return;
-    _recordJump(
-      NavigationAnchor(itemId: comment.id, alignment: _jumpAlignment),
-    );
+    _recordJump(NavigationAnchor.forComment(comment, alignment: alignment));
   }
 
   void _recordJump(NavigationAnchor destination) {
@@ -1318,7 +1327,7 @@ comments length is ${state.comments.length}
     emit(
       state.copyWithNavigation(
         // Different comments can describe the same viewport. A jump that is
-        // already at its destination clears forward history without a stop.
+        // already at its destination retains that target without another stop.
         from: _isAtNavigationAnchor(destination) ? destination : _currentAnchor,
         to: destination,
       ),
@@ -1493,8 +1502,15 @@ comments length is ${state.comments.length}
   }
 
   bool _isAtNavigationAnchor(NavigationAnchor anchor, {int? index}) {
+    // A new navigation action must supersede an in-flight jump, even if its
+    // destination still happens to be visible at the start of that animation.
+    if (_activeScrollGeneration != null) return false;
     index ??= _indexOfNavigationAnchor(anchor);
     if (index == null) return false;
+    if (anchor.targetComment != null && index > 0) {
+      final Comment target = state.comments.elementAt(index - 1);
+      if (target.isHiddenByUser || target.isCollapsedByUser) return false;
+    }
     final ItemPosition? position = itemPositionsListener.itemPositions.value
         .firstWhereOrNull((ItemPosition position) => position.index == index);
     return position != null &&
@@ -1553,6 +1569,18 @@ comments length is ${state.comments.length}
     final int? index = _indexOfNavigationAnchor(anchor);
     if (index == null) return;
     emit(state.copyWith(navigationIndex: navigationIndex));
+
+    final Comment? target = anchor.targetComment;
+    if (target != null && index > 0) {
+      unawaited(
+        scrollToComment(
+          target,
+          recordNavigation: false,
+          alignment: anchor.alignment,
+        ),
+      );
+      return;
+    }
 
     unawaited(
       scrollTo(

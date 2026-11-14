@@ -135,8 +135,9 @@ class CommentsState extends Equatable {
 
   /// Records a jump from [from], where the user currently is, to [to].
   ///
-  /// The measured origin refreshes the current stop. Manual scrolling is
-  /// recorded separately before the next jump so its starting stop survives.
+  /// The measured origin refreshes reading-position stops, while explicit
+  /// comment destinations are retained. Manual scrolling is recorded separately
+  /// before the next jump so its starting stop survives.
   ///
   /// A new jump keeps earlier stops and discards forward positions. Replaying
   /// history or recording manual scrolling does not use this method.
@@ -151,6 +152,15 @@ class CommentsState extends Equatable {
 
     // Even an explicit jump to the current comment clears forward history.
     if (from?.isSamePosition(to) ?? false) {
+      if (to.targetComment != null) {
+        if (index < 0) {
+          stack.add(to);
+          index = 0;
+        } else {
+          stack[index] = to;
+        }
+        return copyWith(navigationStack: stack, navigationIndex: index);
+      }
       return stack.length == navigationStack.length
           ? this
           : copyWith(navigationStack: stack);
@@ -160,16 +170,16 @@ class CommentsState extends Equatable {
       if (index < 0) {
         stack.insert(0, from);
         index = 0;
-      } else if (index > 0 &&
-          stack.elementAt(index - 1).itemId == from.itemId &&
-          stack.elementAt(index).itemId != from.itemId) {
-        // The user scrolled back to an earlier stop. Record the return visit
-        // without replacing the stop they scrolled away from.
-        stack.insert(++index, from);
-      } else {
-        // Scrolling or layout can change which comment anchors the same
-        // viewport. Refresh this stop instead of adding another history entry.
-        stack[index] = from;
+      } else if (stack.elementAt(index).targetComment == null) {
+        if (index > 0 &&
+            stack.elementAt(index - 1).itemId == from.itemId &&
+            stack.elementAt(index).itemId != from.itemId) {
+          // Keep the earlier stop when the user scrolled back to it.
+          stack.insert(++index, from);
+        } else {
+          // Refresh reading-position stops, keeping explicit targets intact.
+          stack[index] = from;
+        }
       }
     }
 
