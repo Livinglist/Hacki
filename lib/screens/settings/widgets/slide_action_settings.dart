@@ -3,12 +3,26 @@ import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/screens/settings/item_menu_settings_screen.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:material_ui/material_ui.dart';
 
 class SlideActionSettings extends StatelessWidget {
   const SlideActionSettings({super.key});
+
+  void _showItemMenuSettings(BuildContext context) {
+    HapticFeedbackUtils.selection();
+    final PreferenceCubit preferenceCubit = context.read<PreferenceCubit>();
+    Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => BlocProvider<PreferenceCubit>.value(
+          value: preferenceCubit,
+          child: const ItemMenuSettingsScreen(),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,8 +79,18 @@ class SlideActionSettings extends StatelessWidget {
                                       );
                                     },
                                   ),
-                                  SizedBoxes.pt16,
-                                  const Icon(Icons.more_horiz),
+                                  SizedBoxes.pt4,
+                                  IconButton(
+                                    tooltip: 'Customize item actions',
+                                    color: IconTheme.of(context).color,
+                                    constraints: const BoxConstraints.tightFor(
+                                      width: Dimens.pt48,
+                                      height: Dimens.pt48,
+                                    ),
+                                    icon: const Icon(Icons.more_horiz),
+                                    onPressed: () =>
+                                        _showItemMenuSettings(context),
+                                  ),
                                 ].reversedIf(condition: swapped),
                               ),
                             ),

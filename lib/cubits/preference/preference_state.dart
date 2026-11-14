@@ -204,6 +204,16 @@ class PreferenceState extends Equatable {
     preferences.singleWhereType<TrailingActionPreference>().val,
   );
 
+  ItemMenuConfiguration get itemMenuConfiguration =>
+      ItemMenuConfiguration.fromString(
+        preferences.singleWhereType<ItemMenuActionsPreference>().val,
+      );
+
+  List<ItemMenuAction> get itemMenuActions => itemMenuConfiguration.order;
+
+  List<ItemMenuAction> get enabledItemMenuActions =>
+      itemMenuConfiguration.enabledActions;
+
   @override
   List<Object?> get props => <Object?>[
     ...preferences.map<dynamic>((Preference<dynamic> e) => e.val),

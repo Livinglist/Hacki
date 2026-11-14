@@ -52,6 +52,7 @@ abstract final class Preference<T> extends Equatable with SettingsDisplayable {
         SecondaryActionPreference(),
         TrailingActionPreference(),
         const SwappedSlidePanesPreference(),
+        const ItemMenuActionsPreference(),
 
         ///
         /// !!! NOTE !!!
@@ -159,6 +160,10 @@ abstract final class BooleanPreference extends Preference<bool> {
 
 abstract final class IntPreference extends Preference<int> {
   const IntPreference({required super.val});
+}
+
+abstract final class StringPreference extends Preference<String> {
+  const StringPreference({required super.val});
 }
 
 abstract final class DoublePreference extends Preference<double> {
@@ -1225,6 +1230,24 @@ final class SwappedSlidePanesPreference extends BooleanPreference {
 
   @override
   String get subtitle => '';
+
+  @override
+  bool get isDisplayable => false;
+}
+
+/// The item bottom sheet has its own editor rather than a settings switch.
+final class ItemMenuActionsPreference extends StringPreference {
+  const ItemMenuActionsPreference({String? val}) : super(val: val ?? '{}');
+
+  @override
+  ItemMenuActionsPreference copyWith({required String? val}) =>
+      ItemMenuActionsPreference(val: val);
+
+  @override
+  String get key => 'itemMenuActions';
+
+  @override
+  String get title => 'Item Menu Actions';
 
   @override
   bool get isDisplayable => false;

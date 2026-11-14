@@ -53,6 +53,12 @@ class PreferenceCubit extends Cubit<PreferenceState> with Loggable {
       });
     }
 
+    for (final StringPreference p
+        in Preference.allPreferences.whereType<StringPreference>()) {
+      final String? value = await initPreference<String>(p);
+      emit(state.copyWithPreference(p.copyWith(val: value)));
+    }
+
     logInfo('preferences initialization completed.');
     emit(state.copyWith(status: Status.success));
   }
@@ -64,6 +70,11 @@ class PreferenceCubit extends Cubit<PreferenceState> with Loggable {
         return value as T?;
       case double:
         final double? value = await _preferenceRepository.getDouble(
+          preference.key,
+        );
+        return value as T?;
+      case String:
+        final String? value = await _preferenceRepository.getString(
           preference.key,
         );
         return value as T?;
@@ -92,12 +103,40 @@ class PreferenceCubit extends Cubit<PreferenceState> with Loggable {
           preference.key,
           preference.val as double,
         );
+      case String():
+        _preferenceRepository.setString(
+          preference.key,
+          preference.val as String,
+        );
       case bool():
         _preferenceRepository.setBool(preference.key, preference.val as bool);
       default:
         throw UnimplementedError();
     }
   }
+
+  void updateItemMenuActions(List<ItemMenuAction> actions) {
+    update(
+      ItemMenuActionsPreference(
+        val: state.itemMenuConfiguration.withOrder(actions).encode(),
+      ),
+    );
+  }
+
+  void setItemMenuActionEnabled(
+    ItemMenuAction action, {
+    required bool enabled,
+  }) {
+    update(
+      ItemMenuActionsPreference(
+        val: state.itemMenuConfiguration
+            .withEnabled(action, enabled: enabled)
+            .encode(),
+      ),
+    );
+  }
+
+  void resetItemMenuActions() => update(const ItemMenuActionsPreference());
 
   void restoreDefaultSettings() {
     for (final Preference<dynamic> p in Preference.allPreferences) {
