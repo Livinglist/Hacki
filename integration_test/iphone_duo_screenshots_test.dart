@@ -13,12 +13,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   final IntegrationTestWidgetsFlutterBinding binding =
-      IntegrationTestWidgetsFlutterBinding.ensureInitialized()
-        ..framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
+      IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('Capture actual iPhone Duo display transitions', (
     WidgetTester tester,
   ) async {
+    int nativeCaptures = 0;
+    binding.reportData = <String, dynamic>{'nativeCaptures': nativeCaptures};
     // Native preferences only dismiss first-run UI. Content and window metrics
     // come from the running app and the real simulator, without fixtures.
     final SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -37,6 +38,9 @@ void main() {
       }
       expect(ready(), isTrue, reason: reason);
       await tester.pump(const Duration(seconds: 2));
+      // A resize updates SplitViewCubit after layout; paint its new state too.
+      await tester.pump();
+      await tester.pump();
     }
 
     Size windowSize() =>
@@ -85,6 +89,12 @@ void main() {
         );
         final String body = await utf8.decoder.bind(response).join();
         expect(response.statusCode, HttpStatus.ok, reason: body);
+        nativeCaptures++;
+        binding.reportData = <String, dynamic>{
+          ...binding.reportData!,
+          'nativeCaptures': nativeCaptures,
+          'lastCapture': name,
+        };
       } finally {
         client.close(force: true);
       }
@@ -120,6 +130,10 @@ void main() {
     final BuildContext detailContext = tester.element(find.byType(ItemScreen));
     final CommentsCubit comments = detailContext.read<CommentsCubit>();
     final int selectedStoryId = comments.state.item.id;
+    binding.reportData = <String, dynamic>{
+      ...binding.reportData!,
+      'selectedStoryId': selectedStoryId,
+    };
     final Size unfoldedSize = windowSize();
     await capture('02-unfolded-thread', nextPose: 'rotate');
 
@@ -152,9 +166,6 @@ void main() {
       'Returning from the selected thread should reveal the feed',
     );
     await capture('05-refolded-feed');
-    binding.reportData = <String, Object>{
-      'selectedStoryId': selectedStoryId,
-      'nativeCaptures': 5,
-    };
+    expect(nativeCaptures, 5);
   }, timeout: const Timeout(Duration(minutes: 8)));
 }

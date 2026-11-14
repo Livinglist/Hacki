@@ -68,13 +68,15 @@ Future<void> main({bool testing = false}) async {
 
   EquatableConfig.stringify = true;
 
-  FlutterError.onError = (FlutterErrorDetails details) {
-    locator.get<Logger>().e(
-      details.summary,
-      error: details.exceptionAsString(),
-      stackTrace: details.stack,
-    );
-  };
+  if (!testing) {
+    FlutterError.onError = (FlutterErrorDetails details) {
+      locator.get<Logger>().e(
+        details.summary,
+        error: details.exceptionAsString(),
+        stackTrace: details.stack,
+      );
+    };
+  }
 
   if (Platform.isIOS) {
     unawaited(Workmanager().initialize(fetcherCallbackDispatcher));

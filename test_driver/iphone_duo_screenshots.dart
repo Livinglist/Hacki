@@ -4,6 +4,37 @@ import 'dart:io';
 
 import 'package:integration_test/integration_test_driver.dart';
 
+const List<String> _captureNames = <String>[
+  '01-folded-feed',
+  '02-unfolded-thread',
+  '03-unfolded-rotated-thread',
+  '04-refolded-thread',
+  '05-refolded-feed',
+];
+
+Future<void> validateCaptureOutput(
+  Map<String, dynamic>? data,
+  Directory output,
+) async {
+  if (data == null || data['nativeCaptures'] != _captureNames.length) {
+    throw StateError('Incomplete native capture report: $data');
+  }
+  for (final String name in _captureNames) {
+    for (final String suffix in <String>[
+      '.png',
+      '-window.json',
+      '-posture.json',
+    ]) {
+      final File file = File('${output.path}/$name$suffix');
+      if (!file.existsSync() || await file.length() == 0) {
+        throw StateError(
+          'Missing or empty native capture artifact: ${file.path}',
+        );
+      }
+    }
+  }
+}
+
 // iOS integration_test screenshot callbacks run after the tests finish. A
 // localhost handshake lets the app wait while the host captures and folds the
 // real simulator; no viewport override or reconstructed image is involved.
@@ -44,14 +75,7 @@ Future<void> main() async {
           jsonDecode(await utf8.decoder.bind(request).join())
               as Map<String, dynamic>;
       final String name = data['name'] as String;
-      const Set<String> names = <String>{
-        '01-folded-feed',
-        '02-unfolded-thread',
-        '03-unfolded-rotated-thread',
-        '04-refolded-thread',
-        '05-refolded-feed',
-      };
-      if (!names.contains(name)) throw ArgumentError.value(name);
+      if (!_captureNames.contains(name)) throw ArgumentError.value(name);
       await File(
         '${output.path}/$name-window.json',
       ).writeAsString(const JsonEncoder.withIndent('  ').convert(data));
@@ -74,8 +98,11 @@ Future<void> main() async {
   await integrationDriver(
     timeout: const Duration(minutes: 10),
     writeResponseOnFailure: true,
-    responseDataCallback: (Map<String, dynamic>? data) => File(
-      '${output.path}/integration-results.json',
-    ).writeAsString(const JsonEncoder.withIndent('  ').convert(data)),
+    responseDataCallback: (Map<String, dynamic>? data) async {
+      await File(
+        '${output.path}/integration-results.json',
+      ).writeAsString(const JsonEncoder.withIndent('  ').convert(data));
+      await validateCaptureOutput(data, output);
+    },
   );
 }
