@@ -1,6 +1,4 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hacki/cubits/cubits.dart';
-import 'package:hacki/screens/widgets/widgets.dart';
+import 'package:hacki/screens/home/widgets/home_reminder.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:material_ui/material_ui.dart' hide Badge;
 
@@ -14,22 +12,13 @@ class MobileHomeScreen extends StatelessWidget {
     return Stack(
       children: <Widget>[
         Positioned.fill(child: homeScreen),
-        if (!context.read<ReminderCubit>().state.hasShown)
-          const Positioned(
-            left: Dimens.pt24,
-            right: Dimens.pt24,
-            bottom: Dimens.pt36,
-            height: Dimens.pt40,
-            child: CountdownReminder(),
-          )
-        else
-          const Positioned(
-            left: Dimens.pt24,
-            right: Dimens.pt24,
-            bottom: Dimens.pt36,
-            height: Dimens.pt40,
-            child: DownloadProgressReminder(),
-          ),
+        const Positioned(
+          left: Dimens.pt24,
+          right: Dimens.pt24,
+          bottom: Dimens.pt36,
+          height: Dimens.pt40,
+          child: HomeReminder(),
+        ),
       ],
     );
   }

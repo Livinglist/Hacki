@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hacki/cubits/cubits.dart';
+import 'package:hacki/screens/home/widgets/home_reminder.dart';
 import 'package:hacki/screens/screens.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
@@ -51,22 +52,13 @@ class TabletHomeScreen extends StatelessWidget {
                   curve: Curves.elasticOut,
                   child: homeScreen,
                 ),
-                if (!context.read<ReminderCubit>().state.hasShown)
-                  Positioned(
-                    left: Dimens.pt24,
-                    bottom: Dimens.pt36,
-                    height: Dimens.pt40,
-                    width: submissionPanelWidth - Dimens.pt48,
-                    child: const CountdownReminder(),
-                  )
-                else
-                  Positioned(
-                    left: Dimens.pt24,
-                    bottom: Dimens.pt36,
-                    height: Dimens.pt40,
-                    width: submissionPanelWidth - Dimens.pt48,
-                    child: const DownloadProgressReminder(),
-                  ),
+                Positioned(
+                  left: Dimens.pt24,
+                  bottom: Dimens.pt36,
+                  height: Dimens.pt40,
+                  width: submissionPanelWidth - Dimens.pt48,
+                  child: const HomeReminder(),
+                ),
                 AnimatedPositioned(
                   right: Dimens.zero,
                   top: Dimens.zero,
