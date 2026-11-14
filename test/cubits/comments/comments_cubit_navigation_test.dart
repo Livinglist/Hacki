@@ -51,14 +51,39 @@ void main() {
   late _MockPreferenceCubit preferenceCubit;
   late _MockThreadNavigationButtonCubit buttonCubit;
   late StreamController<AppLifecycleState> lifecycle;
+  late StreamController<PreferenceState> preferenceChanges;
+  late PreferenceState preferenceState;
+  late CommentsCubit Function() createCubit;
+
+  void seedComments() {
+    cubit.emit(
+      cubit.state.copyWith(
+        comments: <Comment>[
+          _comment(1),
+          _comment(2, parent: 1),
+          _comment(3),
+          _comment(4, parent: 3),
+          _comment(5),
+          _comment(6, parent: 5),
+          _comment(7),
+        ],
+        status: CommentsStatus.allLoaded,
+      ),
+    );
+  }
 
   setUp(() {
     locator.registerSingleton<Logger>(MockLogger());
     lifecycle = StreamController<AppLifecycleState>.broadcast();
+    preferenceChanges = StreamController<PreferenceState>.broadcast();
+    preferenceState = PreferenceState.init();
     final _MockFilterCubit filterCubit = _MockFilterCubit();
     when(() => filterCubit.state).thenReturn(FilterState.init());
     preferenceCubit = _MockPreferenceCubit();
-    when(() => preferenceCubit.state).thenReturn(PreferenceState.init());
+    when(() => preferenceCubit.state).thenAnswer((_) => preferenceState);
+    when(
+      () => preferenceCubit.stream,
+    ).thenAnswer((_) => preferenceChanges.stream);
     buttonCubit = _MockThreadNavigationButtonCubit();
     when(
       () => buttonCubit.state,
@@ -71,7 +96,7 @@ void main() {
       () => collapseStates.saveStoryStates(any(), any()),
     ).thenAnswer((_) async {});
 
-    cubit = CommentsCubit(
+    createCubit = () => CommentsCubit(
       filterCubit: filterCubit,
       preferenceCubit: preferenceCubit,
       isOfflineReading: false,
@@ -89,26 +114,30 @@ void main() {
       collapseStateCacheRepository: collapseStates,
       appLifecycleService: appLifecycle,
     );
-    cubit.emit(
-      cubit.state.copyWith(
-        comments: <Comment>[
-          _comment(1),
-          _comment(2, parent: 1),
-          _comment(3),
-          _comment(4, parent: 3),
-          _comment(5),
-          _comment(6, parent: 5),
-          _comment(7),
-        ],
-        status: CommentsStatus.allLoaded,
-      ),
-    );
+    cubit = createCubit();
+    seedComments();
   });
 
   tearDown(() async {
     await cubit.close();
+    await preferenceChanges.close();
     await lifecycle.close();
     await locator.reset();
+  });
+
+  void changePreference(Preference<dynamic> preference) {
+    preferenceState = preferenceState.copyWithPreference(preference);
+    preferenceChanges.add(preferenceState);
+  }
+
+  Future<void> startWithPreferences(
+    WidgetTester tester,
+    PreferenceState initial,
+  ) => tester.runAsync(() async {
+    await cubit.close();
+    preferenceState = initial;
+    cubit = createCubit();
+    seedComments();
   });
 
   Future<void> pumpThread(WidgetTester tester) async {
@@ -184,6 +213,279 @@ void main() {
       .value
       .singleWhere((ItemPosition position) => position.index == index)
       .itemLeadingEdge;
+
+  for (final bool disableSkipButtons in <bool>[false, true]) {
+    testWidgets(
+      '${disableSkipButtons ? 'Skip' : 'History'} buttons off skips history '
+      'while comment jumps keep working',
+      (WidgetTester tester) async {
+        await startWithPreferences(
+          tester,
+          PreferenceState.init().copyWithPreference(
+            disableSkipButtons
+                ? const SkipButtonsPreference(val: false)
+                : const HistoryButtonsPreference(val: false),
+          ),
+        );
+        await pumpThread(tester);
+
+        cubit.scrollToNextRoot();
+        await settleScroll(tester);
+        expectPosition(3, 0.15);
+        cubit.scrollToNextRoot();
+        await settleScroll(tester);
+        expectPosition(5, 0.15);
+        cubit.scrollToPreviousRoot();
+        await settleScroll(tester);
+        expectPosition(3, 0.15);
+
+        final Future<void> searchJump = cubit.scrollToComment(
+          cubit.state.comments.last,
+        );
+        await settleScroll(tester);
+        await searchJump;
+        expectPosition(7, 0.15);
+
+        final Future<void> topJump = cubit.scrollTo(
+          index: 0,
+          recordNavigation: true,
+        );
+        await settleScroll(tester);
+        await topJump;
+        expectPosition(0, 0);
+        expect(cubit.state.navigationStack, isEmpty);
+
+        final List<CommentsState> emitted = <CommentsState>[];
+        final StreamSubscription<CommentsState> subscription = cubit.stream
+            .listen(emitted.add);
+        addTearDown(subscription.cancel);
+        await tester.drag(
+          find.byType(ScrollablePositionedList),
+          const Offset(0, -90),
+        );
+        await settleScroll(tester);
+        final double scrolledAlignment = alignmentOf(0);
+        cubit
+          ..navigateBack()
+          ..navigateForward();
+        await settleScroll(tester);
+        expectPosition(0, scrolledAlignment);
+        expect(cubit.state.navigationStack, isEmpty);
+        expect(cubit.state.hasScrolledFromNavigation, isFalse);
+        expect(emitted, isEmpty);
+      },
+    );
+  }
+
+  testWidgets('disabling history freezes saved stops and ignores navigation', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    cubit.navigateBack();
+    await settleScroll(tester);
+    final List<NavigationAnchor> saved = cubit.state.navigationStack;
+    final int savedIndex = cubit.state.navigationIndex;
+
+    changePreference(const HistoryButtonsPreference(val: false));
+    await tester.pumpAndSettle();
+    await tester.drag(
+      find.byType(ScrollablePositionedList),
+      const Offset(0, -90),
+    );
+    await settleScroll(tester);
+    final double scrolledAlignment = alignmentOf(3);
+    cubit
+      ..navigateBack()
+      ..navigateForward();
+    await settleScroll(tester);
+    expectPosition(3, scrolledAlignment);
+    expect(cubit.state.hasScrolledFromNavigation, isFalse);
+
+    final Future<void> jump = cubit.scrollToComment(cubit.state.comments.last);
+    await settleScroll(tester);
+    await jump;
+    expectPosition(7, 0.15);
+    expect(cubit.state.navigationStack, same(saved));
+    expect(cubit.state.navigationIndex, savedIndex);
+  });
+
+  testWidgets('disabling history cancels a queued manual-scroll check', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    final List<NavigationAnchor> saved = cubit.state.navigationStack;
+
+    await tester.drag(
+      find.byType(ScrollablePositionedList),
+      const Offset(0, -90),
+    );
+    changePreference(const HistoryButtonsPreference(val: false));
+    await settleScroll(tester);
+
+    expect(cubit.state.hasScrolledFromNavigation, isFalse);
+    expect(cubit.state.navigationStack, same(saved));
+    final double scrolledAlignment = alignmentOf(3);
+    cubit.navigateBack();
+    await settleScroll(tester);
+    expectPosition(3, scrolledAlignment);
+  });
+
+  testWidgets('disabling history leaves an in-flight comment jump intact', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    cubit.scrollToNextRoot();
+    final List<NavigationAnchor> saved = cubit.state.navigationStack;
+    changePreference(const HistoryButtonsPreference(val: false));
+    await settleScroll(tester);
+    expectPosition(3, 0.15);
+    expect(cubit.state.navigationStack, same(saved));
+    expect(cubit.state.hasScrolledFromNavigation, isFalse);
+
+    final Future<void> jump = cubit.scrollTo(
+      index: 7,
+      alignment: 0.15,
+      recordNavigation: true,
+    );
+    await settleScroll(tester);
+    await jump;
+    expectPosition(7, 0.15);
+    expect(cubit.state.navigationStack, same(saved));
+  });
+
+  testWidgets('enabling history seeds the current reading position', (
+    WidgetTester tester,
+  ) async {
+    await startWithPreferences(
+      tester,
+      PreferenceState.init().copyWithPreference(
+        const HistoryButtonsPreference(val: false),
+      ),
+    );
+    await pumpThread(tester);
+    final Future<void> jump = cubit.scrollTo(
+      index: 5,
+      alignment: 0.15,
+      recordNavigation: true,
+    );
+    await settleScroll(tester);
+    await jump;
+    expect(cubit.state.navigationStack, isEmpty);
+
+    changePreference(const HistoryButtonsPreference(val: true));
+    await settleScroll(tester);
+    expect(cubit.state.navigationStack, hasLength(1));
+    expect(cubit.state.navigationIndex, 0);
+    expect(cubit.state.canNavigateBack, isFalse);
+
+    await tester.drag(
+      find.byType(ScrollablePositionedList),
+      const Offset(0, -90),
+    );
+    await settleScroll(tester);
+    expect(cubit.state.hasScrolledFromNavigation, isTrue);
+    await tester.tap(find.byIcon(Icons.turn_left));
+    await settleScroll(tester);
+    expectPosition(5, 0.15);
+    expect(cubit.state.navigationIndex, 0);
+  });
+
+  testWidgets('enabling history during a jump records only its final landing', (
+    WidgetTester tester,
+  ) async {
+    await startWithPreferences(
+      tester,
+      PreferenceState.init().copyWithPreference(
+        const HistoryButtonsPreference(val: false),
+      ),
+    );
+    await pumpThread(tester);
+    final Future<void> jump = cubit.scrollTo(
+      index: 7,
+      alignment: 0.15,
+      recordNavigation: true,
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    changePreference(const HistoryButtonsPreference(val: true));
+    await settleScroll(tester);
+    await jump;
+
+    expectPosition(7, 0.15);
+    expect(cubit.state.navigationStack, hasLength(1));
+    expect(cubit.state.navigationIndex, 0);
+    expect(cubit.state.canNavigateBack, isFalse);
+    await tester.drag(
+      find.byType(ScrollablePositionedList),
+      const Offset(0, -90),
+    );
+    await settleScroll(tester);
+    expect(cubit.state.hasScrolledFromNavigation, isTrue);
+    await tester.tap(find.byIcon(Icons.turn_left));
+    await settleScroll(tester);
+    expectPosition(7, 0.15);
+  });
+
+  testWidgets(
+    're-enabling history records only the current disabled position',
+    (WidgetTester tester) async {
+      await pumpThread(tester);
+      cubit.scrollToNextRoot();
+      await settleScroll(tester);
+      cubit.scrollToNextRoot();
+      await settleScroll(tester);
+      cubit.navigateBack();
+      await settleScroll(tester);
+      final List<NavigationAnchor> saved = cubit.state.navigationStack;
+      changePreference(const HistoryButtonsPreference(val: false));
+      await settleScroll(tester);
+
+      final Future<void> jump = cubit.scrollTo(
+        index: 7,
+        alignment: 0.15,
+        recordNavigation: true,
+      );
+      await settleScroll(tester);
+      await jump;
+      expect(cubit.state.navigationStack, same(saved));
+
+      changePreference(const HistoryButtonsPreference(val: true));
+      await settleScroll(tester);
+      expect(cubit.state.navigationStack, hasLength(4));
+      expect(cubit.state.navigationStack.take(2), saved.take(2));
+      expect(cubit.state.navigationStack.last, saved.last);
+      expect(cubit.state.navigationIndex, 2);
+      expect(cubit.state.canNavigateForward, isTrue);
+
+      await tester.drag(
+        find.byType(ScrollablePositionedList),
+        const Offset(0, -90),
+      );
+      await settleScroll(tester);
+      final double scrolledAlignment = alignmentOf(7);
+      await tester.tap(find.byIcon(Icons.turn_left));
+      await settleScroll(tester);
+      expectPosition(7, 0.15);
+      cubit.navigateBack();
+      await settleScroll(tester);
+      expectPosition(3, 0.15);
+      cubit.navigateForward();
+      await settleScroll(tester);
+      expectPosition(7, 0.15);
+      cubit.navigateForward();
+      await settleScroll(tester);
+      expectPosition(7, scrolledAlignment);
+      cubit.navigateForward();
+      await settleScroll(tester);
+      expectPosition(5, 0.15);
+    },
+  );
 
   for (final bool jumpToTop in <bool>[true, false]) {
     testWidgets('Back and Forward retrace a long-press jump to the '

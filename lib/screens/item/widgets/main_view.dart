@@ -54,6 +54,11 @@ class MainView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthState authState = context.watch<AuthBloc>().state;
+    final bool historyEnabled = context.select<PreferenceCubit, bool>(
+      (PreferenceCubit cubit) =>
+          cubit.state.areSkipButtonsEnabled &&
+          cubit.state.areHistoryButtonsEnabled,
+    );
     final Widget threadView = Stack(
       children: <Widget>[
         Positioned.fill(
@@ -290,7 +295,9 @@ class MainView extends StatelessWidget {
       ],
     );
     return NotificationListener<ScrollNotification>(
-      onNotification: context.read<CommentsCubit>().onThreadScrollNotification,
+      onNotification: historyEnabled
+          ? context.read<CommentsCubit>().onThreadScrollNotification
+          : null,
       child: threadView,
     );
   }

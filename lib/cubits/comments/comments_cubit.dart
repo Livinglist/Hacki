@@ -50,6 +50,9 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     AppLifecycleService? appLifecycleService,
   }) : _filterCubit = filterCubit,
        _preferenceCubit = preferenceCubit,
+       _isNavigationHistoryEnabled = _historyButtonsEnabled(
+         preferenceCubit.state,
+       ),
        _commentCache = commentCache ?? locator.get<CommentCache>(),
        _offlineRepository =
            offlineRepository ?? locator.get<OfflineRepository>(),
@@ -73,6 +76,10 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     _appStateSubscription = _appLifecycleService.stream
         .where((AppLifecycleState s) => s == AppLifecycleState.inactive)
         .listen(_onAppHidden);
+    _historyPreferenceSubscription = _preferenceCubit.stream
+        .map(_historyButtonsEnabled)
+        .distinct()
+        .listen(_onHistoryButtonsChanged);
   }
 
   /// Global keys mapped to comment ids, this is used primarily in
@@ -96,6 +103,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   final CollapseStateCacheRepository _collapseStateCacheRepository;
   final AppLifecycleService _appLifecycleService;
   late final StreamSubscription<AppLifecycleState> _appStateSubscription;
+  late final StreamSubscription<bool> _historyPreferenceSubscription;
   void Function()? openInThreadSearch;
 
   final ItemScrollController itemScrollController = ItemScrollController();
@@ -126,10 +134,49 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   /// superseded scroll does not [ItemScrollController.jumpTo] after a newer
   /// one has already begun.
   int _scrollGeneration = 0;
+  int? _activeScrollGeneration;
+  bool _isNavigationHistoryEnabled;
+  int _historyTrackingGeneration = 0;
   NavigationAnchor? _navigationViewport;
   int? _navigationViewportIndex;
   bool _isUserScrolling = false;
   bool _isManualScrollCheckScheduled = false;
+
+  static bool _historyButtonsEnabled(PreferenceState state) =>
+      state.areSkipButtonsEnabled && state.areHistoryButtonsEnabled;
+
+  void _onHistoryButtonsChanged(bool enabled) {
+    if (isClosed || enabled == _isNavigationHistoryEnabled) return;
+    _isNavigationHistoryEnabled = enabled;
+    _resetManualScrollTracking();
+    if (enabled) _establishCurrentHistoryPosition();
+  }
+
+  /// Re-enabling history starts from where the user is now, keeping any
+  /// positions saved before the controls were disabled.
+  void _establishCurrentHistoryPosition() {
+    if (!_isNavigationHistoryEnabled ||
+        !itemScrollController.isAttached ||
+        _activeScrollGeneration != null) {
+      return;
+    }
+    final NavigationAnchor? position = _currentAnchor;
+    if (position == null) return;
+    if (state.navigationIndex < 0) {
+      emit(
+        state.copyWith(
+          navigationStack: <NavigationAnchor>[position],
+          navigationIndex: 0,
+        ),
+      );
+    } else if (!_isAtNavigationAnchor(
+      state.navigationStack.elementAt(state.navigationIndex),
+    )) {
+      emit(state.copyWith(hasScrolledFromNavigation: true));
+      _recordScrolledPosition();
+    }
+    _rememberNavigationViewport();
+  }
 
   bool get hasNewComment => state.comments.any((Comment c) => c.isNew);
 
@@ -775,7 +822,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     // An animated offscreen scroll builds a second copy of the list, which
     // cannot share the comment GlobalKeys. Jump using the updated list instead.
     // Index zero is the thread header.
-    _resetManualScrollTracking();
+    if (_isNavigationHistoryEnabled) _resetManualScrollTracking();
     itemScrollController.jumpTo(index: index + 1, alignment: _jumpAlignment);
 
     await SchedulerBinding.instance.endOfFrame;
@@ -785,7 +832,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
       return;
     }
 
-    _rememberNavigationViewport();
+    if (_isNavigationHistoryEnabled) _rememberNavigationViewport();
 
     final GlobalKey? key = globalKeys[reply.id];
     final BuildContext? context = key?.currentContext;
@@ -1109,7 +1156,10 @@ comments length is ${state.comments.length}
 
     // Only user-initiated jumps opt in; history replay and layout corrections
     // must not add new stops. Index zero is the thread header.
-    if (recordNavigation && index >= 0 && index <= state.comments.length) {
+    if (_isNavigationHistoryEnabled &&
+        recordNavigation &&
+        index >= 0 &&
+        index <= state.comments.length) {
       _recordJump(
         NavigationAnchor(
           itemId: index == 0
@@ -1120,25 +1170,38 @@ comments length is ${state.comments.length}
       );
     }
 
-    _resetManualScrollTracking();
+    if (_isNavigationHistoryEnabled) _resetManualScrollTracking();
+    final int historyGeneration = _historyTrackingGeneration;
     final int generation = ++_scrollGeneration;
+    _activeScrollGeneration = generation;
     debugPrint('scrolling to: $index, alignment: $alignment');
-    await itemScrollController.scrollTo(
-      index: index,
-      alignment: alignment,
-      duration: duration ?? AppDurations.ms400,
-      curve: curve,
-      opacityAnimationWeights: opacityAnimationWeights,
-    );
-    if (generation != _scrollGeneration || isClosed) {
-      return;
+    try {
+      await itemScrollController.scrollTo(
+        index: index,
+        alignment: alignment,
+        duration: duration ?? AppDurations.ms400,
+        curve: curve,
+        opacityAnimationWeights: opacityAnimationWeights,
+      );
+      if (generation != _scrollGeneration || isClosed) return;
+      await _reanchorToTopMostVisibleItem(generation);
+    } finally {
+      if (_activeScrollGeneration == generation) {
+        _activeScrollGeneration = null;
+      }
     }
-    await _reanchorToTopMostVisibleItem(generation);
+    if (!_isNavigationHistoryEnabled) return;
     await SchedulerBinding.instance.endOfFrame;
-    if (generation == _scrollGeneration && !isClosed) {
+    if (generation == _scrollGeneration &&
+        _isNavigationHistoryEnabled &&
+        !isClosed) {
       // Store the measured landing viewport: a short reply above the target
       // can anchor the same position as the target comment itself.
-      _rememberNavigationViewport();
+      if (historyGeneration != _historyTrackingGeneration) {
+        _establishCurrentHistoryPosition();
+      } else {
+        _rememberNavigationViewport();
+      }
     }
   }
 
@@ -1230,6 +1293,7 @@ comments length is ${state.comments.length}
   }
 
   void _rememberNavigationViewport() {
+    if (!_isNavigationHistoryEnabled) return;
     final ItemPosition? position = currentAnchorItem(
       itemPositionsListener.itemPositions.value,
       lastIndex: state.comments.length,
@@ -1241,11 +1305,15 @@ comments length is ${state.comments.length}
   /// Records the user's current position and [comment], which they are
   /// about to jump to, so that they can navigate back and forward between
   /// the two.
-  void _recordNavigationTo(Comment comment) => _recordJump(
-    NavigationAnchor(itemId: comment.id, alignment: _jumpAlignment),
-  );
+  void _recordNavigationTo(Comment comment) {
+    if (!_isNavigationHistoryEnabled) return;
+    _recordJump(
+      NavigationAnchor(itemId: comment.id, alignment: _jumpAlignment),
+    );
+  }
 
   void _recordJump(NavigationAnchor destination) {
+    if (!_isNavigationHistoryEnabled) return;
     _recordScrolledPosition();
     emit(
       state.copyWithNavigation(
@@ -1260,7 +1328,8 @@ comments length is ${state.comments.length}
   /// Observes manual thread scrolling without treating animated jumps or
   /// layout corrections as new reading positions.
   bool onThreadScrollNotification(ScrollNotification notification) {
-    if (notification.depth != 0 ||
+    if (!_isNavigationHistoryEnabled ||
+        notification.depth != 0 ||
         notification.metrics.axis != Axis.vertical ||
         state.navigationIndex < 0) {
       return false;
@@ -1286,13 +1355,23 @@ comments length is ${state.comments.length}
   }
 
   void _scheduleManualScrollCheck() {
-    if (_isManualScrollCheckScheduled || _navigationViewport == null) return;
+    if (!_isNavigationHistoryEnabled ||
+        _isManualScrollCheckScheduled ||
+        _navigationViewport == null) {
+      return;
+    }
     _isManualScrollCheckScheduled = true;
     final int generation = _scrollGeneration;
+    final int historyGeneration = _historyTrackingGeneration;
     unawaited(
       SchedulerBinding.instance.endOfFrame.then((_) {
+        if (historyGeneration != _historyTrackingGeneration) return;
         _isManualScrollCheckScheduled = false;
-        if (isClosed || generation != _scrollGeneration) return;
+        if (isClosed ||
+            !_isNavigationHistoryEnabled ||
+            generation != _scrollGeneration) {
+          return;
+        }
         final NavigationAnchor? viewport = _navigationViewport;
         if (viewport == null) return;
 
@@ -1331,6 +1410,8 @@ comments length is ${state.comments.length}
   }
 
   void _resetManualScrollTracking() {
+    _historyTrackingGeneration++;
+    _isManualScrollCheckScheduled = false;
     _isUserScrolling = false;
     _navigationViewport = null;
     _navigationViewportIndex = null;
@@ -1342,7 +1423,9 @@ comments length is ${state.comments.length}
   /// Preserve the stop the user scrolled away from as well as where they
   /// scrolled to, retaining any existing forward positions.
   bool _recordScrolledPosition() {
-    if (!state.hasScrolledFromNavigation || state.navigationIndex < 0) {
+    if (!_isNavigationHistoryEnabled ||
+        !state.hasScrolledFromNavigation ||
+        state.navigationIndex < 0) {
       return false;
     }
     final NavigationAnchor? position = _currentAnchor;
@@ -1380,6 +1463,7 @@ comments length is ${state.comments.length}
 
   /// Go back to where the user was before their last jump.
   void navigateBack() {
+    if (!_isNavigationHistoryEnabled) return;
     if (state.hasScrolledFromNavigation && !_recordScrolledPosition()) {
       // The footer may be the only visible item, with no comment to anchor it.
       _navigateTo(state.navigationIndex);
@@ -1392,6 +1476,7 @@ comments length is ${state.comments.length}
 
   /// Go to the next recorded position.
   void navigateForward() {
+    if (!_isNavigationHistoryEnabled) return;
     _recordScrolledPosition();
     if (state.canNavigateForward) {
       _navigateHistory(1);
@@ -1812,6 +1897,8 @@ comments length is ${state.comments.length}
 
   @override
   Future<void> close() async {
+    _historyTrackingGeneration++;
+    await _historyPreferenceSubscription.cancel();
     await _streamSubscription?.cancel();
     for (final StreamSubscription<Comment> s in _streamSubscriptions.values) {
       await s.cancel();
