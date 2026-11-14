@@ -80,6 +80,9 @@ class ItemMenuSettingsScreen extends StatelessWidget {
                       Semantics(
                         label: action.description,
                         child: Switch(
+                          activeThumbColor: Theme.of(
+                            context,
+                          ).colorScheme.primary,
                           value: state.enabledItemMenuActions.contains(action),
                           onChanged: (bool enabled) {
                             context
