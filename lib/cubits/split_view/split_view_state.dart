@@ -7,6 +7,7 @@ class SplitViewState extends Equatable {
     required this.enabled,
     required this.resizingAnimationDuration,
     this.submissionPanelWidth,
+    this.showDetail = false,
   });
 
   const SplitViewState.init()
@@ -14,9 +15,13 @@ class SplitViewState extends Equatable {
       expanded = false,
       submissionPanelWidth = null,
       resizingAnimationDuration = Duration.zero,
-      itemScreenArgs = null;
+      itemScreenArgs = null,
+      showDetail = false;
 
   final bool enabled;
+
+  /// Whether the selected thread is visible when only one pane fits.
+  final bool showDetail;
   final bool expanded;
   final double? submissionPanelWidth;
   final Duration resizingAnimationDuration;
@@ -24,6 +29,7 @@ class SplitViewState extends Equatable {
 
   SplitViewState copyWith({
     bool? enabled,
+    bool? showDetail,
     bool? expanded,
     double? submissionPanelWidth,
     Duration? resizingAnimationDuration,
@@ -31,6 +37,7 @@ class SplitViewState extends Equatable {
   }) {
     return SplitViewState(
       enabled: enabled ?? this.enabled,
+      showDetail: showDetail ?? this.showDetail,
       expanded: expanded ?? this.expanded,
       submissionPanelWidth: submissionPanelWidth ?? this.submissionPanelWidth,
       resizingAnimationDuration:
@@ -42,6 +49,7 @@ class SplitViewState extends Equatable {
   @override
   List<Object?> get props => <Object?>[
     enabled,
+    showDetail,
     expanded,
     submissionPanelWidth,
     resizingAnimationDuration,

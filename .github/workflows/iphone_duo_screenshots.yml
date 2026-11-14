@@ -1,0 +1,85 @@
+name: iPhone Duo screenshots
+
+on:
+  pull_request:
+    paths:
+      - lib/**
+      - ios/**
+      - pubspec.*
+      - submodules/**
+      - integration_test/iphone_duo_screenshots_test.dart
+      - test_driver/iphone_duo_screenshots.dart
+      - scripts/iphone_duo_capture.sh
+      - .github/workflows/iphone_duo_screenshots.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: iphone-duo-screenshots-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    if: github.head_ref == 'feat/iphone-duo-layout'
+    runs-on: xcode-27
+    timeout-minutes: 40
+    env:
+      DUO_CAPTURE_DIR: ${{ github.workspace }}/build/iphone-duo-simulator
+      DUO_CAPTURE_PORT: '8765'
+      COCOAPODS_DISABLE_STATS: 'true'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '27.1'
+      - name: Install Flutter dependencies
+        run: |
+          submodules/flutter/bin/flutter config --enable-swift-package-manager
+          submodules/flutter/bin/flutter pub get
+      - name: Install audited simulator pose tool
+        # Simulator-only private HID helper; never linked into the app.
+        # Audited version 0.3.1: no runtime network or credential access.
+        env:
+          HINGE_REVISION: 06cb720276281da7f1aadd3874acb0d0ae5eb2b5
+        run: |
+          echo "XDG_CACHE_HOME=$RUNNER_TEMP/duo-cache" >> "$GITHUB_ENV"
+          git clone https://github.com/artemnovichkov/hinge.git "$RUNNER_TEMP/hinge"
+          git -C "$RUNNER_TEMP/hinge" checkout --detach "$HINGE_REVISION"
+          echo "HINGE_BIN=$RUNNER_TEMP/hinge/bin/hinge" >> "$GITHUB_ENV"
+          mkdir -p "$DUO_CAPTURE_DIR"
+          git -C "$RUNNER_TEMP/hinge" rev-parse HEAD > "$DUO_CAPTURE_DIR/hinge-revision.txt"
+      - name: Boot the native iPhone Duo simulator
+        run: bash scripts/iphone_duo_capture.sh prepare
+      - name: Build unsigned simulator app
+        run: >-
+          submodules/flutter/bin/flutter build ios --simulator --debug --no-codesign
+          --no-pub --target integration_test/iphone_duo_screenshots_test.dart
+          --dart-define=DUO_CAPTURE_PORT=$DUO_CAPTURE_PORT
+      - name: Capture actual folded and unfolded displays
+        run: |
+          set -o pipefail
+          submodules/flutter/bin/flutter drive --no-pub \
+            --device-id "$HINGE_DEVICE" \
+            --use-application-binary=build/ios/iphonesimulator/Runner.app \
+            --driver test_driver/iphone_duo_screenshots.dart \
+            --target integration_test/iphone_duo_screenshots_test.dart \
+            --dart-define=DUO_CAPTURE_PORT="$DUO_CAPTURE_PORT" \
+            2>&1 | tee "$DUO_CAPTURE_DIR/flutter-drive.log"
+      - name: Collect native diagnostics
+        if: always()
+        run: bash scripts/iphone_duo_capture.sh diagnose
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: iphone-duo-simulator
+          path: build/iphone-duo-simulator
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Stop simulator
+        if: always() && env.HINGE_DEVICE != ''
+        run: xcrun simctl shutdown "$HINGE_DEVICE"

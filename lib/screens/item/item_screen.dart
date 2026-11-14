@@ -102,50 +102,40 @@ class ItemScreen extends StatefulWidget {
   }
 
   static Widget tablet(BuildContext context, ItemScreenArgs args) {
-    return PopScope(
-      canPop: () {
-        if (context.read<SplitViewCubit>().state.expanded) {
-          context.read<SplitViewCubit>().zoom();
-          return false;
-        } else {
-          return true;
-        }
-      }(),
-      child: MultiBlocProvider(
-        key: ValueKey<ItemScreenArgs>(args),
-        providers: <BlocProvider<dynamic>>[
-          BlocProvider<CommentsCubit>(
-            create: (BuildContext context) =>
-                CommentsCubit(
-                  filterCubit: context.read<FilterCubit>(),
-                  preferenceCubit: context.read<PreferenceCubit>(),
-                  isOfflineReading: context
-                      .read<StoriesBloc>()
-                      .state
-                      .isOfflineReading,
-                  item: args.item,
-                  defaultFetchMode: context
-                      .read<PreferenceCubit>()
-                      .state
-                      .fetchMode,
-                  defaultCommentsOrder: context
-                      .read<PreferenceCubit>()
-                      .state
-                      .order,
-                )..init(
-                  shouldOnlyShowTargetComment: args.shouldOnlyShowTargetComment,
-                  targetAncestors: args.targetComments,
-                  onError: (AppException e) =>
-                      context.showErrorSnackBar(e.message, e.error),
-                ),
-          ),
-        ],
-        child: ItemScreen(
-          item: args.item,
-          parentComments: args.targetComments ?? <Comment>[],
-          splitViewEnabled: true,
-          shouldMarkNewComment: args.shouldMarkNewComment,
+    return MultiBlocProvider(
+      key: ValueKey<ItemScreenArgs>(args),
+      providers: <BlocProvider<dynamic>>[
+        BlocProvider<CommentsCubit>(
+          create: (BuildContext context) =>
+              CommentsCubit(
+                filterCubit: context.read<FilterCubit>(),
+                preferenceCubit: context.read<PreferenceCubit>(),
+                isOfflineReading: context
+                    .read<StoriesBloc>()
+                    .state
+                    .isOfflineReading,
+                item: args.item,
+                defaultFetchMode: context
+                    .read<PreferenceCubit>()
+                    .state
+                    .fetchMode,
+                defaultCommentsOrder: context
+                    .read<PreferenceCubit>()
+                    .state
+                    .order,
+              )..init(
+                shouldOnlyShowTargetComment: args.shouldOnlyShowTargetComment,
+                targetAncestors: args.targetComments,
+                onError: (AppException e) =>
+                    context.showErrorSnackBar(e.message, e.error),
+              ),
         ),
+      ],
+      child: ItemScreen(
+        item: args.item,
+        parentComments: args.targetComments ?? <Comment>[],
+        splitViewEnabled: true,
+        shouldMarkNewComment: args.shouldMarkNewComment,
       ),
     );
   }
@@ -363,6 +353,7 @@ class _ItemScreenState extends State<ItemScreen>
                   BlocBuilder<SplitViewCubit, SplitViewState>(
                     buildWhen:
                         (SplitViewState previous, SplitViewState current) =>
+                            previous.enabled != current.enabled ||
                             previous.expanded != current.expanded,
                     builder: (BuildContext context, SplitViewState state) {
                       return Positioned(

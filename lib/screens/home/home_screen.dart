@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/scheduler.dart';
@@ -22,7 +23,6 @@ import 'package:hacki/services/services.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:material_ui/material_ui.dart' hide Badge;
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
-import 'package:responsive_builder/responsive_builder.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -138,21 +138,23 @@ class _HomeScreenState extends State<HomeScreen>
       builder: (BuildContext context, PreferenceState preferenceState) {
         final PinState pinState = context.watch<PinCubit>().state;
         final bool hasPins = pinState.pinnedStories.isNotEmpty;
+        final double topInset = MediaQuery.paddingOf(context).top;
         return DefaultTabController(
           length: tabLength,
           child: Scaffold(
             resizeToAvoidBottomInset: false,
             appBar: PreferredSize(
-              preferredSize: const Size(Dimens.zero, Dimens.pt40),
+              preferredSize: Size(
+                Dimens.zero,
+                max(Dimens.pt40, Dimens.pt48 - topInset),
+              ),
               child: OptionalWrapper(
                 enabled: preferenceState.isHackerNewsThemeEnabled,
                 wrapper: (Widget c) =>
                     ColoredBox(color: HackerNewsTheme.hnOrange, child: c),
                 child: Column(
                   children: <Widget>[
-                    SizedBox(
-                      height: MediaQuery.of(context).padding.top - Dimens.pt8,
-                    ),
+                    SizedBox(height: max(0, topInset - Dimens.pt8)),
                     CustomTabBar(tabController: tabController),
                   ],
                 ),
@@ -197,21 +199,7 @@ class _HomeScreenState extends State<HomeScreen>
       },
     );
 
-    if (context.watch<SplitViewCubit>().state.enabled) {
-      return ScreenTypeLayout.builder(
-        mobile: (BuildContext context) {
-          context.read<SplitViewCubit>().disableSplitView();
-          return MobileHomeScreen(homeScreen: homeScreen);
-        },
-        tablet: (BuildContext context) {
-          context.read<SplitViewCubit>().enableSplitView();
-          return TabletHomeScreen(homeScreen: homeScreen);
-        },
-      );
-    } else {
-      context.read<SplitViewCubit>().disableSplitView();
-      return MobileHomeScreen(homeScreen: homeScreen);
-    }
+    return AdaptiveHomeScreen(homeScreen: homeScreen);
   }
 
   Future<void> showFeatureDiscoveryDialog() async {
