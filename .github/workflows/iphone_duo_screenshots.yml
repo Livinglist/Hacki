@@ -38,9 +38,9 @@ jobs:
         with:
           xcode-version: '27.1'
       - name: Install Flutter dependencies
-        run: submodules/flutter/bin/flutter pub get
-      - name: Install CocoaPods
-        run: pod install --project-directory=ios
+        run: |
+          submodules/flutter/bin/flutter config --enable-swift-package-manager
+          submodules/flutter/bin/flutter pub get
       - name: Install audited simulator pose tool
         # Simulator-only private HID helper; never linked into the app.
         # Audited version 0.3.1: no runtime network or credential access.
