@@ -151,6 +151,9 @@ abstract class HeroTags {
 }
 
 abstract class SnackBarMessages {
+  static const String storyPinned = 'Added to Pins.';
+  static const String storyUnpinned = 'Removed from Pins.';
+
   static const String notLoggedInNoVoting =
       '''Not logged in, no voting! (;｀O´)o''';
   static const String noVotingOnYourOwnComment =

@@ -2,6 +2,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
@@ -127,7 +128,7 @@ class _StoriesListViewState extends State<StoriesListView>
                 }
               },
               onTap: onStoryTapped,
-              onPinned: context.read<PinCubit>().pinStory,
+              onPinned: pinStory,
               header: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
@@ -184,7 +185,7 @@ class _StoriesListViewState extends State<StoriesListView>
                       CustomSlidableAction(
                         onPressed: (_) {
                           HapticFeedbackUtils.light();
-                          context.read<PinCubit>().pinStory(story);
+                          pinStory(story);
                         },
                         backgroundColor: Theme.of(
                           context,
@@ -301,6 +302,13 @@ class _StoriesListViewState extends State<StoriesListView>
           },
         );
       },
+    );
+  }
+
+  void pinStory(Story story) {
+    context.read<PinCubit>().pinStory(
+      story,
+      onDone: () => context.showSnackBar(content: SnackBarMessages.storyPinned),
     );
   }
 
