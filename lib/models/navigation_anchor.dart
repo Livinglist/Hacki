@@ -12,6 +12,13 @@ class NavigationAnchor extends Equatable {
   /// of the viewport's height.
   final double alignment;
 
+  /// Treat tiny viewport differences as layout drift.
+  static const double alignmentTolerance = 0.01;
+
+  bool isSamePosition(NavigationAnchor other) =>
+      itemId == other.itemId &&
+      (alignment - other.alignment).abs() <= alignmentTolerance;
+
   @override
   List<Object?> get props => <Object?>[itemId, alignment];
 }

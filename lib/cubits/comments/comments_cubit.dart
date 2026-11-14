@@ -998,7 +998,11 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
 
     /// If index if found, scroll to the comment.
     if (index != -1) {
-      await scrollTo(index: index, duration: AppDurations.ms300);
+      await scrollTo(
+        index: index + 1,
+        alignment: _jumpAlignment,
+        duration: AppDurations.ms300,
+      );
     }
 
     /// Find out all of its ancestors, uncollapse them if they
@@ -1047,7 +1051,7 @@ comments length is ${state.comments.length}
             }
             await scrollTo(
               index: index + 1,
-              alignment: 0.2,
+              alignment: _jumpAlignment,
               duration: AppDurations.ms300,
             );
 
@@ -1106,16 +1110,12 @@ comments length is ${state.comments.length}
     // Only user-initiated jumps opt in; history replay and layout corrections
     // must not add new stops. Index zero is the thread header.
     if (recordNavigation && index >= 0 && index <= state.comments.length) {
-      _recordScrolledPosition();
-      emit(
-        state.copyWithNavigation(
-          from: _currentAnchor,
-          to: NavigationAnchor(
-            itemId: index == 0
-                ? state.item.id
-                : state.comments.elementAt(index - 1).id,
-            alignment: alignment,
-          ),
+      _recordJump(
+        NavigationAnchor(
+          itemId: index == 0
+              ? state.item.id
+              : state.comments.elementAt(index - 1).id,
+          alignment: alignment,
         ),
       );
     }
@@ -1241,12 +1241,18 @@ comments length is ${state.comments.length}
   /// Records the user's current position and [comment], which they are
   /// about to jump to, so that they can navigate back and forward between
   /// the two.
-  void _recordNavigationTo(Comment comment) {
+  void _recordNavigationTo(Comment comment) => _recordJump(
+    NavigationAnchor(itemId: comment.id, alignment: _jumpAlignment),
+  );
+
+  void _recordJump(NavigationAnchor destination) {
     _recordScrolledPosition();
     emit(
       state.copyWithNavigation(
-        from: _currentAnchor,
-        to: NavigationAnchor(itemId: comment.id, alignment: _jumpAlignment),
+        // Different comments can describe the same viewport. A jump that is
+        // already at its destination clears forward history without a stop.
+        from: _isAtNavigationAnchor(destination) ? destination : _currentAnchor,
+        to: destination,
       ),
     );
   }
@@ -1315,7 +1321,8 @@ comments length is ${state.comments.length}
             );
         final bool hasScrolled =
             position == null ||
-            (position.itemLeadingEdge - viewport.alignment).abs() > 0.01;
+            (position.itemLeadingEdge - viewport.alignment).abs() >
+                NavigationAnchor.alignmentTolerance;
         if (hasScrolled != state.hasScrolledFromNavigation) {
           emit(state.copyWith(hasScrolledFromNavigation: hasScrolled));
         }
@@ -1345,7 +1352,8 @@ comments length is ${state.comments.length}
       state.navigationStack,
     );
     final int index = state.navigationIndex + 1;
-    if (index == stack.length || stack.elementAt(index) != position) {
+    if (index == stack.length ||
+        !_isAtNavigationAnchor(stack.elementAt(index))) {
       stack.insert(index, position);
     }
     emit(
@@ -1378,7 +1386,7 @@ comments length is ${state.comments.length}
       return;
     }
     if (state.canNavigateBack) {
-      _navigateTo(state.navigationIndex - 1);
+      _navigateHistory(-1);
     }
   }
 
@@ -1386,24 +1394,80 @@ comments length is ${state.comments.length}
   void navigateForward() {
     _recordScrolledPosition();
     if (state.canNavigateForward) {
-      _navigateTo(state.navigationIndex + 1);
+      _navigateHistory(1);
+    }
+  }
+
+  /// Resolves saved comment ids after the thread has changed.
+  int? _indexOfNavigationAnchor(NavigationAnchor anchor) {
+    if (anchor.itemId == state.item.id) return 0;
+    final int index = state.comments.indexWhere(
+      (Comment comment) => comment.id == anchor.itemId,
+    );
+    return index < 0 ? null : index + 1;
+  }
+
+  bool _isAtNavigationAnchor(NavigationAnchor anchor, {int? index}) {
+    index ??= _indexOfNavigationAnchor(anchor);
+    if (index == null) return false;
+    final ItemPosition? position = itemPositionsListener.itemPositions.value
+        .firstWhereOrNull((ItemPosition position) => position.index == index);
+    return position != null &&
+        (position.itemLeadingEdge - anchor.alignment).abs() <=
+            NavigationAnchor.alignmentTolerance;
+  }
+
+  /// Skip entries that would leave the viewport unchanged, including a
+  /// different comment anchoring the same reading position.
+  void _navigateHistory(int direction) {
+    List<NavigationAnchor> stack = state.navigationStack;
+    int currentIndex = state.navigationIndex;
+    int index = currentIndex + direction;
+    int lastSkipped = currentIndex;
+    bool removedMissing = false;
+    while (index >= 0 && index < stack.length) {
+      final NavigationAnchor anchor = stack.elementAt(index);
+      final int? itemIndex = _indexOfNavigationAnchor(anchor);
+      if (itemIndex == null) {
+        // A refreshed thread can remove every remaining candidate. Discard
+        // these unusable stops while keeping the cursor on a valid anchor.
+        if (!removedMissing) stack = List<NavigationAnchor>.of(stack);
+        removedMissing = true;
+        stack.removeAt(index);
+        if (index < currentIndex) currentIndex--;
+        if (index < lastSkipped) lastSkipped--;
+        if (direction < 0) index--;
+        continue;
+      }
+      if (!_isAtNavigationAnchor(anchor, index: itemIndex)) {
+        if (removedMissing) {
+          emit(
+            state.copyWith(
+              navigationStack: stack,
+              navigationIndex: currentIndex,
+            ),
+          );
+        }
+        _navigateTo(index);
+        return;
+      }
+      lastSkipped = index;
+      index += direction;
+    }
+    if (removedMissing || lastSkipped != state.navigationIndex) {
+      emit(
+        state.copyWith(navigationStack: stack, navigationIndex: lastSkipped),
+      );
     }
   }
 
   void _navigateTo(int navigationIndex) {
-    emit(state.copyWith(navigationIndex: navigationIndex));
-
     final NavigationAnchor anchor = state.navigationStack.elementAt(
       navigationIndex,
     );
-    final int index = anchor.itemId == state.item.id
-        ? 0
-        : state.comments.indexWhere((Comment c) => c.id == anchor.itemId) + 1;
-
-    /// The comment may be gone after a refresh.
-    if (index == 0 && anchor.itemId != state.item.id) {
-      return;
-    }
+    final int? index = _indexOfNavigationAnchor(anchor);
+    if (index == null) return;
+    emit(state.copyWith(navigationIndex: navigationIndex));
 
     unawaited(
       scrollTo(

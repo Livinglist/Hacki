@@ -319,7 +319,7 @@ void main() {
     });
 
     test(
-      'a same-comment jump from a changed offset clears forward history',
+      'a same-comment jump keeps its source offset and clears forward history',
       () {
         const NavigationAnchor shiftedB = NavigationAnchor(
           itemId: 2,
@@ -331,11 +331,40 @@ void main() {
             .copyWith(navigationIndex: 1)
             .copyWithNavigation(from: shiftedB, to: b);
 
-        expect(state.navigationStack, <NavigationAnchor>[a, b]);
-        expect(state.navigationIndex, 1);
+        expect(state.navigationStack, <NavigationAnchor>[a, shiftedB, b]);
+        expect(state.navigationIndex, 2);
         expect(state.canNavigateForward, isFalse);
       },
     );
+
+    test('tiny offset drift does not add a duplicate history stop', () {
+      const NavigationAnchor nearB = NavigationAnchor(
+        itemId: 2,
+        alignment: 0.15000000001,
+      );
+      state = state
+          .copyWithNavigation(from: a, to: b)
+          .copyWithNavigation(from: b, to: c)
+          .copyWith(navigationIndex: 1)
+          .copyWithNavigation(from: nearB, to: b);
+
+      expect(state.navigationStack, <NavigationAnchor>[a, b]);
+      expect(state.navigationIndex, 1);
+      expect(state.canNavigateForward, isFalse);
+    });
+
+    test('different offsets within the current comment remain separate', () {
+      const NavigationAnchor shiftedB = NavigationAnchor(
+        itemId: 2,
+        alignment: -0.2,
+      );
+      state = state
+          .copyWithNavigation(from: a, to: b)
+          .copyWithNavigation(to: shiftedB);
+
+      expect(state.navigationStack, <NavigationAnchor>[a, b, shiftedB]);
+      expect(state.navigationIndex, 2);
+    });
 
     test('a jump from an unknown position only records the destination', () {
       state = state.copyWithNavigation(to: b);

@@ -150,7 +150,7 @@ class CommentsState extends Equatable {
     int index = navigationIndex;
 
     // Even an explicit jump to the current comment clears forward history.
-    if (from?.itemId == to.itemId) {
+    if (from?.isSamePosition(to) ?? false) {
       return stack.length == navigationStack.length
           ? this
           : copyWith(navigationStack: stack);
@@ -173,7 +173,7 @@ class CommentsState extends Equatable {
       }
     }
 
-    if (index < 0 || stack.elementAt(index).itemId != to.itemId) {
+    if (index < 0 || !stack.elementAt(index).isSamePosition(to)) {
       index++;
       stack.insert(index, to);
     }

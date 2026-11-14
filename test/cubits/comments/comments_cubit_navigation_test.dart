@@ -659,6 +659,246 @@ void main() {
     expect(cubit.state.navigationStack, isEmpty);
   });
 
+  for (final bool forward in <bool>[false, true]) {
+    testWidgets(
+      '${forward ? 'Forward' : 'Back'} skips stops for the same viewport',
+      (WidgetTester tester) async {
+        await pumpThread(tester);
+        cubit.itemScrollController.jumpTo(index: 3, alignment: 0.15);
+        await settleScroll(tester);
+        final NavigationAnchor replyAnchor = NavigationAnchor(
+          itemId: 2,
+          alignment: alignmentOf(2),
+        );
+        cubit.itemScrollController.jumpTo(
+          index: forward ? 0 : 5,
+          alignment: forward ? 0 : 0.15,
+        );
+        await settleScroll(tester);
+        cubit.emit(
+          cubit.state.copyWith(
+            navigationStack: <NavigationAnchor>[
+              const NavigationAnchor(itemId: _storyId, alignment: 0),
+              replyAnchor,
+              const NavigationAnchor(itemId: 3, alignment: 0.15),
+              const NavigationAnchor(itemId: 5, alignment: 0.15),
+            ],
+            navigationIndex: forward ? 0 : 3,
+          ),
+        );
+        await settleScroll(tester);
+        final Finder button = find.byIcon(
+          forward ? Icons.turn_right : Icons.turn_left,
+        );
+
+        await tester.tap(button);
+        await settleScroll(tester);
+        expectPosition(3, 0.15);
+        await tester.tap(button);
+        await settleScroll(tester);
+        expectPosition(forward ? 5 : 0, forward ? 0.15 : 0);
+        expect(cubit.state.navigationIndex, forward ? 3 : 0);
+      },
+    );
+
+    testWidgets(
+      '${forward ? 'Forward' : 'Back'} skips removed comments in one tap',
+      (WidgetTester tester) async {
+        await pumpThread(tester);
+        cubit.itemScrollController.jumpTo(
+          index: forward ? 0 : 5,
+          alignment: forward ? 0 : 0.15,
+        );
+        await settleScroll(tester);
+        cubit.emit(
+          cubit.state.copyWith(
+            navigationStack: const <NavigationAnchor>[
+              NavigationAnchor(itemId: _storyId, alignment: 0),
+              NavigationAnchor(itemId: 999, alignment: 0.15),
+              NavigationAnchor(itemId: 5, alignment: 0.15),
+            ],
+            navigationIndex: forward ? 0 : 2,
+          ),
+        );
+        await settleScroll(tester);
+
+        await tester.tap(
+          find.byIcon(forward ? Icons.turn_right : Icons.turn_left),
+        );
+        await settleScroll(tester);
+        expectPosition(forward ? 5 : 0, forward ? 0.15 : 0);
+        expect(cubit.state.navigationIndex, forward ? 1 : 0);
+      },
+    );
+  }
+
+  testWidgets('exhausting missing Back stops preserves the current landing', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    unawaited(
+      cubit.scrollTo(index: 5, alignment: 0.15, recordNavigation: true),
+    );
+    await settleScroll(tester);
+    cubit.emit(
+      cubit.state.copyWith(
+        navigationStack: const <NavigationAnchor>[
+          NavigationAnchor(itemId: 999, alignment: 0.15),
+          NavigationAnchor(itemId: 5, alignment: 0.15),
+        ],
+        navigationIndex: 1,
+      ),
+    );
+    unawaited(cubit.scrollTo(index: 5, alignment: 0.15));
+    await settleScroll(tester);
+
+    await tester.tap(find.byIcon(Icons.turn_left));
+    await settleScroll(tester);
+    expectPosition(5, 0.15);
+    expect(cubit.state.navigationStack, hasLength(1));
+    expect(cubit.state.navigationStack.single.itemId, 5);
+    expect(cubit.state.navigationIndex, 0);
+    expect(cubit.state.canNavigateBack, isFalse);
+
+    await tester.drag(
+      find.byType(ScrollablePositionedList),
+      const Offset(0, -90),
+    );
+    await settleScroll(tester);
+    expect(cubit.state.canNavigateBack, isTrue);
+    await tester.tap(find.byIcon(Icons.turn_left));
+    await settleScroll(tester);
+    expectPosition(5, 0.15);
+    expect(cubit.state.navigationIndex, 0);
+  });
+
+  testWidgets(
+    'exhausting missing Forward stops preserves the current landing',
+    (WidgetTester tester) async {
+      await pumpThread(tester);
+      cubit.scrollToNextRoot();
+      await settleScroll(tester);
+      cubit.navigateBack();
+      await settleScroll(tester);
+      cubit.emit(
+        cubit.state.copyWith(
+          navigationStack: const <NavigationAnchor>[
+            NavigationAnchor(itemId: _storyId, alignment: 0),
+            NavigationAnchor(itemId: 999, alignment: 0.15),
+          ],
+          navigationIndex: 0,
+        ),
+      );
+      unawaited(cubit.scrollTo(index: 0));
+      await settleScroll(tester);
+
+      await tester.tap(find.byIcon(Icons.turn_right));
+      await settleScroll(tester);
+      expectPosition(0, 0);
+      expect(cubit.state.navigationStack, hasLength(1));
+      expect(cubit.state.navigationStack.single.itemId, _storyId);
+      expect(cubit.state.navigationIndex, 0);
+      expect(cubit.state.canNavigateForward, isFalse);
+
+      await tester.drag(
+        find.byType(ScrollablePositionedList),
+        const Offset(0, -80),
+      );
+      await settleScroll(tester);
+      expect(cubit.state.canNavigateBack, isTrue);
+      await tester.tap(find.byIcon(Icons.turn_left));
+      await settleScroll(tester);
+      expectPosition(0, 0);
+      expect(cubit.state.navigationIndex, 0);
+    },
+  );
+
+  testWidgets('Forward skips nearly identical offsets within a comment', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    cubit.emit(
+      cubit.state.copyWith(
+        navigationStack: const <NavigationAnchor>[
+          NavigationAnchor(itemId: _storyId, alignment: 0),
+          NavigationAnchor(itemId: 3, alignment: 0.15),
+          NavigationAnchor(itemId: 3, alignment: 0.154),
+          NavigationAnchor(itemId: 5, alignment: 0.15),
+        ],
+        navigationIndex: 0,
+      ),
+    );
+    await settleScroll(tester);
+    await tester.tap(find.byIcon(Icons.turn_right));
+    await settleScroll(tester);
+    expectPosition(3, 0.15);
+
+    await tester.tap(find.byIcon(Icons.turn_right));
+    await settleScroll(tester);
+    expectPosition(5, 0.15);
+    expect(cubit.state.navigationIndex, 3);
+  });
+
+  testWidgets('repeating a visible search target adds no duplicate stop', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    cubit.navigateBack();
+    await settleScroll(tester);
+    expectPosition(3, 0.15);
+    expect(cubit.state.canNavigateForward, isTrue);
+
+    final Future<void> jump = cubit.scrollToComment(cubit.state.comments[2]);
+    await settleScroll(tester);
+    await jump;
+    expectPosition(3, 0.15);
+    expect(cubit.state.navigationStack, hasLength(2));
+    expect(cubit.state.canNavigateForward, isFalse);
+
+    await tester.tap(find.byIcon(Icons.turn_left));
+    await settleScroll(tester);
+    expectPosition(0, 0);
+    await tester.tap(find.byIcon(Icons.turn_right));
+    await settleScroll(tester);
+    expectPosition(3, 0.15);
+  });
+
+  testWidgets('a same-comment endpoint jump preserves meaningful offsets', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    unawaited(
+      cubit.scrollTo(index: 7, alignment: 0.15, recordNavigation: true),
+    );
+    await settleScroll(tester);
+    await tester.drag(
+      find.byType(ScrollablePositionedList),
+      const Offset(0, -150),
+    );
+    await settleScroll(tester);
+    final double scrolledAlignment = alignmentOf(7);
+    expect(scrolledAlignment.abs(), greaterThan(0.01));
+
+    await tester.longPress(find.byIcon(Icons.keyboard_arrow_down));
+    await settleScroll(tester);
+    expectPosition(7, 0);
+    expect(cubit.state.navigationStack, hasLength(4));
+
+    await tester.tap(find.byIcon(Icons.turn_left));
+    await settleScroll(tester);
+    expectPosition(7, scrolledAlignment);
+    await tester.tap(find.byIcon(Icons.turn_left));
+    await settleScroll(tester);
+    expectPosition(7, 0.15);
+    await tester.tap(find.byIcon(Icons.turn_left));
+    await settleScroll(tester);
+    expectPosition(0, 0);
+  });
+
   testWidgets('Back returns one prior position per root skip', (
     WidgetTester tester,
   ) async {
