@@ -7,6 +7,7 @@ import 'package:hacki/screens/settings/item_menu_settings_screen.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 
 class SlideActionSettings extends StatelessWidget {
   const SlideActionSettings({super.key});
@@ -14,14 +15,27 @@ class SlideActionSettings extends StatelessWidget {
   void _showItemMenuSettings(BuildContext context) {
     HapticFeedbackUtils.selection();
     final PreferenceCubit preferenceCubit = context.read<PreferenceCubit>();
-    Navigator.of(context).push<void>(
-      MaterialPageRoute<void>(
-        builder: (_) => BlocProvider<PreferenceCubit>.value(
-          value: preferenceCubit,
-          child: const ItemMenuSettingsScreen(),
-        ),
-      ),
+    final bool isInBottomSheet =
+        getDeviceType(MediaQuery.sizeOf(context)) != DeviceScreenType.mobile;
+    final Widget settings = BlocProvider<PreferenceCubit>.value(
+      value: preferenceCubit,
+      child: ItemMenuSettingsScreen(isInBottomSheet: isInBottomSheet),
     );
+    if (isInBottomSheet) {
+      showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        showDragHandle: true,
+        builder: (BuildContext context) => SizedBox(
+          height: MediaQuery.sizeOf(context).height - Dimens.pt120,
+          child: settings,
+        ),
+      );
+      return;
+    }
+    Navigator.of(
+      context,
+    ).push<void>(MaterialPageRoute<void>(builder: (_) => settings));
   }
 
   @override
