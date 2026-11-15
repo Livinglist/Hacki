@@ -22,7 +22,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
 
   int currentIndex = 0;
 
-  static const int _profileTabIndex = 5;
+  static final int _profileTabIndex = StoryType.values.length;
 
   @override
   void initState() {

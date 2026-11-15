@@ -27,6 +27,10 @@ class _TabBarSettingsState extends State<TabBarSettings> {
             Spacer(),
           ],
         ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: Dimens.pt16),
+          child: Text('Drag to reorder. The first tab opens on launch.'),
+        ),
         BlocBuilder<TabCubit, TabState>(
           builder: (BuildContext context, TabState state) {
             return Center(
@@ -43,7 +47,7 @@ class _TabBarSettingsState extends State<TabBarSettings> {
                       InkWell(
                         key: ValueKey<StoryType>(tab),
                         child: SizedBox(
-                          width: 60,
+                          width: width / state.tabs.length,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
