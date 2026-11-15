@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:bloc_test/bloc_test.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hacki/config/locator.dart';
@@ -10,6 +13,7 @@ import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
+import 'package:hacki/screens/widgets/shine_overlay.dart';
 import 'package:hacki/services/services.dart';
 import 'package:logger/logger.dart';
 import 'package:material_ui/material_ui.dart';
@@ -142,63 +146,69 @@ void main() {
     seedComments();
   });
 
-  Future<void> pumpThread(WidgetTester tester) async {
+  Future<void> pumpThread(
+    WidgetTester tester, {
+    GlobalKey? captureKey,
+    ThemeData? theme,
+  }) async {
     await tester.binding.setSurfaceSize(const Size(390, 600));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    await tester.pumpWidget(
-      MultiBlocProvider(
-        providers: <BlocProvider<dynamic>>[
-          BlocProvider<CommentsCubit>.value(value: cubit),
-          BlocProvider<PreferenceCubit>.value(value: preferenceCubit),
-          BlocProvider<ThreadNavigationButtonCubit>.value(value: buttonCubit),
-        ],
-        child: FeatureDiscovery(
-          child: MaterialApp(
-            home: Scaffold(
-              body: Stack(
-                children: <Widget>[
-                  NotificationListener<ScrollNotification>(
-                    onNotification: cubit.onThreadScrollNotification,
-                    child: BlocBuilder<CommentsCubit, CommentsState>(
-                      buildWhen:
-                          (CommentsState previous, CommentsState current) =>
-                              previous.comments != current.comments,
-                      builder: (BuildContext context, CommentsState state) {
-                        return ScrollablePositionedList.builder(
-                          itemScrollController: cubit.itemScrollController,
-                          itemPositionsListener: cubit.itemPositionsListener,
-                          itemCount: state.comments.length + 2,
-                          itemBuilder: (BuildContext context, int index) {
-                            if (index == 0) return const SizedBox(height: 100);
-                            if (index > state.comments.length) {
-                              return const SizedBox(height: 600);
-                            }
-                            final Comment comment = state.comments[index - 1];
-                            final GlobalKey? key = cubit.globalKeys[comment.id];
-                            if (comment.isHiddenByUser) {
-                              return SizedBox.shrink(key: key);
-                            }
-                            return SizedBox(
-                              key: key,
-                              height: comment.isCollapsedByUser
-                                  ? 40
-                                  : commentHeights[comment.id] ??
-                                        (comment.isRoot ? 240 : 40),
-                              child: Text(comment.text),
-                            );
-                          },
-                        );
-                      },
-                    ),
+    final Widget app = MultiBlocProvider(
+      providers: <BlocProvider<dynamic>>[
+        BlocProvider<CommentsCubit>.value(value: cubit),
+        BlocProvider<PreferenceCubit>.value(value: preferenceCubit),
+        BlocProvider<ThreadNavigationButtonCubit>.value(value: buttonCubit),
+      ],
+      child: FeatureDiscovery(
+        child: MaterialApp(
+          theme: theme,
+          home: Scaffold(
+            body: Stack(
+              children: <Widget>[
+                NotificationListener<ScrollNotification>(
+                  onNotification: cubit.onThreadScrollNotification,
+                  child: BlocBuilder<CommentsCubit, CommentsState>(
+                    buildWhen:
+                        (CommentsState previous, CommentsState current) =>
+                            previous.comments != current.comments,
+                    builder: (BuildContext context, CommentsState state) {
+                      return ScrollablePositionedList.builder(
+                        itemScrollController: cubit.itemScrollController,
+                        itemPositionsListener: cubit.itemPositionsListener,
+                        itemCount: state.comments.length + 2,
+                        itemBuilder: (BuildContext context, int index) {
+                          if (index == 0) return const SizedBox(height: 100);
+                          if (index > state.comments.length) {
+                            return const SizedBox(height: 600);
+                          }
+                          final Comment comment = state.comments[index - 1];
+                          final GlobalKey? key = cubit.globalKeys[comment.id];
+                          if (comment.isHiddenByUser) {
+                            return SizedBox.shrink(key: key);
+                          }
+                          return SizedBox(
+                            key: key,
+                            height: comment.isCollapsedByUser
+                                ? 40
+                                : commentHeights[comment.id] ??
+                                      (comment.isRoot ? 240 : 40),
+                            child: Text(comment.text),
+                          );
+                        },
+                      );
+                    },
                   ),
-                  const FloatingSkipButtons(),
-                  const FloatingHistoryButtons(),
-                ],
-              ),
+                ),
+                const FloatingSkipButtons(),
+                const FloatingHistoryButtons(),
+              ],
             ),
           ),
         ),
       ),
+    );
+    await tester.pumpWidget(
+      captureKey == null ? app : RepaintBoundary(key: captureKey, child: app),
     );
     await tester.pumpAndSettle();
   }
@@ -214,6 +224,46 @@ void main() {
       await tester.pump(const Duration(milliseconds: 350));
       await tester.pumpAndSettle();
     }
+  }
+
+  Future<Uint8List> capturePixels(
+    WidgetTester tester,
+    GlobalKey captureKey,
+  ) async {
+    final RenderRepaintBoundary boundary =
+        captureKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+    return (await tester.runAsync(() async {
+      final ui.Image image = await boundary.toImage();
+      final ByteData bytes = (await image.toByteData())!;
+      final Uint8List pixels = bytes.buffer.asUint8List();
+      image.dispose();
+      return pixels;
+    }))!;
+  }
+
+  int changedPixels(
+    Uint8List actual,
+    Uint8List baseline,
+    Rect region, {
+    required int width,
+    required int height,
+  }) {
+    final Rect clipped = region.intersect(
+      Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble()),
+    );
+    int changed = 0;
+    for (int y = clipped.top.ceil(); y < clipped.bottom.floor(); y++) {
+      for (int x = clipped.left.ceil(); x < clipped.right.floor(); x++) {
+        final int offset = (y * width + x) * 4;
+        int difference = 0;
+        for (int channel = 0; channel < 3; channel++) {
+          difference += (actual[offset + channel] - baseline[offset + channel])
+              .abs();
+        }
+        if (difference > 12) changed++;
+      }
+    }
+    return changed;
   }
 
   void expectPosition(int index, double alignment) {
@@ -1546,6 +1596,98 @@ void main() {
     expect(cubit.state.comments[3].isHiddenByUser, isFalse);
     expect(cubit.state.comments[3].isNew, isTrue);
   });
+
+  for (final bool scrollDown in <bool>[false, true]) {
+    testWidgets(
+      'comment shine follows manual scrolling ${scrollDown ? 'down' : 'up'}',
+      (WidgetTester tester) async {
+        final GlobalKey captureKey = GlobalKey();
+        final GlobalKey targetKey = GlobalKey();
+        cubit.globalKeys[3] = targetKey;
+        await pumpThread(
+          tester,
+          captureKey: captureKey,
+          theme: ThemeData.dark(),
+        );
+        final Future<void> jump = cubit.scrollToComment(
+          cubit.state.comments[2],
+        );
+        for (int i = 0; i < 20; i++) {
+          await tester.pump(const Duration(milliseconds: 100));
+          if (find.byType(ShineOverlay).evaluate().isNotEmpty) break;
+        }
+        expect(find.byType(ShineOverlay), findsOneWidget);
+        final Finder capture = find.byKey(captureKey);
+        final Offset origin = tester.getTopLeft(capture);
+        final Rect before = tester
+            .getRect(find.byKey(targetKey))
+            .shift(-origin);
+
+        // Keep the pointer down so the later comparison cannot include fling
+        // movement while waiting for the shine to finish.
+        final double direction = scrollDown ? -1 : 1;
+        final TestGesture gesture = await tester.startGesture(
+          tester.getCenter(find.byType(ScrollablePositionedList)),
+        );
+        await gesture.moveBy(Offset(0, direction * 20));
+        await tester.pump();
+        await gesture.moveBy(Offset(0, direction * 120));
+        await tester.pump(const Duration(milliseconds: 16));
+        final Rect after = tester.getRect(find.byKey(targetKey)).shift(-origin);
+        expect((after.top - before.top).abs(), greaterThan(100));
+        final Uint8List shining = await capturePixels(tester, captureKey);
+
+        await tester.pump(const Duration(seconds: 1));
+        await tester.pump();
+        expect(find.byType(ShineOverlay), findsNothing);
+        expect(tester.getRect(find.byKey(targetKey)).shift(-origin), after);
+        final Uint8List baseline = await capturePixels(tester, captureKey);
+        final Size size = tester.getSize(capture);
+        final Rect newBand = scrollDown
+            ? Rect.fromLTRB(after.left, after.top, after.right, before.top)
+            : Rect.fromLTRB(
+                after.left,
+                before.bottom,
+                after.right,
+                after.bottom,
+              );
+        final Rect abandonedBand = scrollDown
+            ? Rect.fromLTRB(
+                before.left,
+                after.bottom,
+                before.right,
+                before.bottom,
+              )
+            : Rect.fromLTRB(before.left, before.top, before.right, after.top);
+        expect(
+          changedPixels(
+            shining,
+            baseline,
+            newBand.deflate(4),
+            width: size.width.round(),
+            height: size.height.round(),
+          ),
+          greaterThan(100),
+          reason: 'The shine should paint in the newly occupied comment area',
+        );
+        expect(
+          changedPixels(
+            shining,
+            baseline,
+            abandonedBand.deflate(4),
+            width: size.width.round(),
+            height: size.height.round(),
+          ),
+          0,
+          reason:
+              'The shine should leave no paint at the former screen position',
+        );
+        await gesture.up();
+        await jump;
+        await tester.pumpAndSettle();
+      },
+    );
+  }
 
   testWidgets('Back returns one prior position per root skip', (
     WidgetTester tester,
