@@ -27,8 +27,12 @@ class ItemMenuSettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: isInBottomSheet ? Palette.transparent : null,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).canvasColor,
+        backgroundColor: isInBottomSheet
+            ? Palette.transparent
+            : Theme.of(context).canvasColor,
+        forceMaterialTransparency: isInBottomSheet,
         leading: isInBottomSheet ? const CloseButton() : null,
         title: const Text('Item Actions'),
         actions: <Widget>[
