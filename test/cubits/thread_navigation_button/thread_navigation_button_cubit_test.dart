@@ -143,7 +143,7 @@ void main() {
     });
 
     test(
-      'resets both positions when the skip buttons are turned off',
+      'turning off skip buttons keeps the separate history position',
       () async {
         final ThreadNavigationButtonCubit cubit = buildCubit();
         await emitPreferences(separate);
@@ -157,8 +157,8 @@ void main() {
 
         expect(cubit.state.dx, defaultOffset.dx);
         expect(cubit.state.dy, defaultOffset.dy);
-        expect(cubit.state.historyDx, defaultHistoryOffset.dx);
-        expect(cubit.state.historyDy, defaultHistoryOffset.dy);
+        expect(cubit.state.historyDx, 200);
+        expect(cubit.state.historyDy, 300);
       },
     );
   });

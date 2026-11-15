@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,14 +23,26 @@ class _MockThreadNavigationButtonCubit
 void main() {
   late _MockThreadNavigationButtonCubit buttonCubit;
   late _MockCommentsCubit commentsCubit;
+  late StreamController<PreferenceState> preferenceChanges;
+  late PreferenceState currentPreferenceState;
+
+  setUp(() {
+    preferenceChanges = StreamController<PreferenceState>.broadcast();
+  });
+
+  tearDown(() => preferenceChanges.close());
 
   Future<void> pumpButtons(
     WidgetTester tester, {
     required PreferenceState preferenceState,
     List<Comment> comments = const <Comment>[],
   }) async {
+    currentPreferenceState = preferenceState;
     final _MockPreferenceCubit preferenceCubit = _MockPreferenceCubit();
-    when(() => preferenceCubit.state).thenReturn(preferenceState);
+    when(() => preferenceCubit.state).thenAnswer((_) => currentPreferenceState);
+    when(
+      () => preferenceCubit.stream,
+    ).thenAnswer((_) => preferenceChanges.stream);
 
     buttonCubit = _MockThreadNavigationButtonCubit();
     when(
@@ -77,6 +91,80 @@ void main() {
   }
 
   group('FloatingSkipButtons', () {
+    for (final bool combine in <bool>[true, false]) {
+      testWidgets(
+        'history works alone when combining is ${combine ? 'on' : 'off'}',
+        (WidgetTester tester) async {
+          await pumpButtons(
+            tester,
+            preferenceState: PreferenceState.init()
+                .copyWithPreference(const SkipButtonsPreference(val: false))
+                .copyWithPreference(
+                  CombineHistoryButtonsPreference(val: combine),
+                ),
+          );
+
+          expect(find.byIcon(Icons.keyboard_arrow_up), findsNothing);
+          expect(find.byIcon(Icons.keyboard_arrow_down), findsNothing);
+          expect(find.byIcon(Icons.turn_left), findsOneWidget);
+          expect(find.byIcon(Icons.turn_right), findsOneWidget);
+          expect(
+            find.descendant(
+              of: find.byType(FloatingHistoryButtons),
+              matching: find.byType(FloatingActionButton),
+            ),
+            findsNWidgets(2),
+          );
+        },
+      );
+    }
+
+    testWidgets('hides both groups when both settings are off', (
+      WidgetTester tester,
+    ) async {
+      await pumpButtons(
+        tester,
+        preferenceState: PreferenceState.init()
+            .copyWithPreference(const SkipButtonsPreference(val: false))
+            .copyWithPreference(const HistoryButtonsPreference(val: false)),
+      );
+
+      expect(find.byType(FloatingActionButton), findsNothing);
+    });
+
+    testWidgets('history remains visible when skip buttons toggle live', (
+      WidgetTester tester,
+    ) async {
+      await pumpButtons(tester, preferenceState: PreferenceState.init());
+
+      currentPreferenceState = currentPreferenceState.copyWithPreference(
+        const SkipButtonsPreference(val: false),
+      );
+      preferenceChanges.add(currentPreferenceState);
+      await tester.pumpAndSettle();
+      expect(find.byIcon(Icons.keyboard_arrow_up), findsNothing);
+      expect(find.byIcon(Icons.keyboard_arrow_down), findsNothing);
+      expect(find.byIcon(Icons.turn_left), findsOneWidget);
+      expect(find.byIcon(Icons.turn_right), findsOneWidget);
+
+      currentPreferenceState = currentPreferenceState.copyWithPreference(
+        const SkipButtonsPreference(val: true),
+      );
+      preferenceChanges.add(currentPreferenceState);
+      await tester.pumpAndSettle();
+      expect(find.byIcon(Icons.keyboard_arrow_up), findsOneWidget);
+      expect(find.byIcon(Icons.keyboard_arrow_down), findsOneWidget);
+      expect(find.byIcon(Icons.turn_left), findsOneWidget);
+      expect(find.byIcon(Icons.turn_right), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(FloatingSkipButtons),
+          matching: find.byType(FloatingActionButton),
+        ),
+        findsNWidgets(4),
+      );
+    });
+
     testWidgets('long presses record jumps to the header and last comment', (
       WidgetTester tester,
     ) async {

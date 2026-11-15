@@ -325,6 +325,7 @@ class _ItemScreenState extends State<ItemScreen>
       child: widget.splitViewEnabled
           ? Material(
               child: Stack(
+                fit: StackFit.expand,
                 children: <Widget>[
                   const Positioned.fill(
                     child: ItemScreenBackground(
@@ -388,13 +389,8 @@ class _ItemScreenState extends State<ItemScreen>
                       );
                     },
                   ),
-                  if (context
-                      .read<PreferenceCubit>()
-                      .state
-                      .areSkipButtonsEnabled) ...<Widget>[
-                    const FloatingSkipButtons(),
-                    const FloatingHistoryButtons(),
-                  ],
+                  const FloatingSkipButtons(),
+                  const FloatingHistoryButtons(),
                   if (shouldShowWebViewBottomSheet)
                     ItemScreenWebView(
                       url: widget.item.url,
@@ -417,6 +413,7 @@ class _ItemScreenState extends State<ItemScreen>
               ),
             )
           : Stack(
+              fit: StackFit.expand,
               children: <Widget>[
                 Positioned.fill(
                   child: ScrollsToTop(
@@ -493,13 +490,8 @@ class _ItemScreenState extends State<ItemScreen>
                         context.read<CommentsCubit>().scrollTo(index: 0),
                   ),
                 ),
-                if (context
-                    .read<PreferenceCubit>()
-                    .state
-                    .areSkipButtonsEnabled) ...<Widget>[
-                  const FloatingSkipButtons(),
-                  const FloatingHistoryButtons(),
-                ],
+                const FloatingSkipButtons(),
+                const FloatingHistoryButtons(),
                 if (shouldShowWebViewBottomSheet)
                   ItemScreenWebView(
                     url: widget.item.url,

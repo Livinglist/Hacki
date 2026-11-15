@@ -46,6 +46,30 @@ void main() {
     expect(restored.state.enabledItemMenuActions.first, order.first);
   });
 
+  test(
+    'history stays available without skip buttons after reloading',
+    () async {
+      final PreferenceCubit original = await loadCubit();
+      original
+        ..update(const SkipButtonsPreference(val: false))
+        ..update(const HistoryButtonsPreference(val: true));
+
+      final PreferenceState restored = (await loadCubit()).state;
+
+      expect(restored.areSkipButtonsEnabled, isFalse);
+      expect(restored.isOn(const HistoryButtonsPreference()), isTrue);
+      expect(
+        const HistoryButtonsPreference().dependencyErrorMessage(
+          restored.preferences,
+        ),
+        isNull,
+      );
+      expect(restored.areHistoryButtonsCombined, isFalse);
+      expect(restored.areHistoryButtonsSeparate, isTrue);
+      expect(restored.isOn(const CombineHistoryButtonsPreference()), isFalse);
+    },
+  );
+
   test('menu reset restores every action and the default order', () async {
     final PreferenceCubit cubit = await loadCubit();
     cubit

@@ -227,11 +227,6 @@ final class HistoryButtonsPreference extends BooleanPreference {
   }
 
   @override
-  Set<Preference<dynamic>> get dependencies => <Preference<dynamic>>{
-    const SkipButtonsPreference(val: true),
-  };
-
-  @override
   String get key => 'historyButtonsPreference';
 
   @override

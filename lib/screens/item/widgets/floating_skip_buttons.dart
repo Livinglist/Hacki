@@ -16,6 +16,11 @@ class FloatingSkipButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool areSkipButtonsEnabled = context.select<PreferenceCubit, bool>(
+      (PreferenceCubit cubit) => cubit.state.areSkipButtonsEnabled,
+    );
+    if (!areSkipButtonsEnabled) return const SizedBox.shrink();
+
     final bool isWebViewBottomSheetEnabled = context
         .select<PreferenceCubit, bool>(
           (PreferenceCubit cubit) => cubit.state.isWebViewBottomSheetEnabled,
@@ -142,8 +147,8 @@ class FloatingSkipButtons extends StatelessWidget {
   }
 }
 
-/// The back and forward buttons as their own group, shown when the user has
-/// chosen not to combine them with [FloatingSkipButtons]. The group can be
+/// The back and forward buttons as their own group, shown when skip buttons
+/// are disabled or the user has chosen not to combine them. The group can be
 /// dragged around and remembers where it was left.
 class FloatingHistoryButtons extends StatelessWidget {
   const FloatingHistoryButtons({super.key});
