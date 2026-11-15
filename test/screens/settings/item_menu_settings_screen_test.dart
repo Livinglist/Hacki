@@ -47,8 +47,11 @@ void main() {
     Widget child = const ItemMenuSettingsScreen(),
     Size size = const Size(390, 844),
   }) async {
-    await tester.binding.setSurfaceSize(size);
-    addTearDown(() => tester.binding.setSurfaceSize(null));
+    tester.view
+      ..devicePixelRatio = 1
+      ..physicalSize = size;
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.theme(
@@ -199,6 +202,11 @@ void main() {
     await tester.tap(find.byTooltip('Customize item actions'));
     await tester.pumpAndSettle();
     expect(find.byType(ItemMenuSettingsScreen), findsOneWidget);
+    expect(
+      ModalRoute.of(tester.element(find.byType(ItemMenuSettingsScreen))),
+      isA<MaterialPageRoute<void>>(),
+    );
+    expect(find.byType(BottomSheet), findsNothing);
 
     await tester.tap(actionSwitch(ItemMenuAction.viewProfile));
     await tester.pumpAndSettle();
@@ -216,6 +224,82 @@ void main() {
       isFalse,
     );
   });
+
+  for (final Size size in <Size>[
+    const Size(800, 1200),
+    const Size(1200, 800),
+  ]) {
+    testWidgets('tablet customization stays in sheets at $size', (
+      WidgetTester tester,
+    ) async {
+      await pumpSettings(
+        tester,
+        size: size,
+        child: Scaffold(
+          body: Builder(
+            builder: (BuildContext context) => TextButton(
+              onPressed: () => showModalBottomSheet<void>(
+                context: context,
+                isScrollControlled: true,
+                showDragHandle: true,
+                builder: (_) => BlocProvider<PreferenceCubit>.value(
+                  value: cubit,
+                  child: SizedBox(
+                    height: size.height - Dimens.pt120,
+                    child: const SlideActionSettings(),
+                  ),
+                ),
+              ),
+              child: const Text('Settings'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Settings'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Customize item actions'));
+      await tester.pumpAndSettle();
+
+      final Finder editor = find.byType(ItemMenuSettingsScreen);
+      final ModalRoute<dynamic>? route = ModalRoute.of(tester.element(editor));
+      expect(route, isA<ModalBottomSheetRoute<void>>());
+      final ModalBottomSheetRoute<void> sheetRoute =
+          route! as ModalBottomSheetRoute<void>;
+      expect(sheetRoute.isScrollControlled, isTrue);
+      expect(sheetRoute.showDragHandle, isTrue);
+      expect(find.byType(BottomSheet), findsNWidgets(2));
+      expect(tester.getSize(editor).height, size.height - Dimens.pt120);
+      expect(tester.getTopLeft(editor).dy, greaterThan(0));
+
+      await tester.tap(actionSwitch(ItemMenuAction.viewProfile));
+      await tester.pumpAndSettle();
+      expect(
+        cubit.state.enabledItemMenuActions,
+        isNot(contains(ItemMenuAction.viewProfile)),
+      );
+      await openPreview(tester);
+      expect(find.byType(ItemMenuPreview), findsOneWidget);
+      expect(find.text('example_user'), findsNothing);
+      await tester.ensureVisible(find.text('Cancel'));
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ItemMenuPreview), findsNothing);
+      expect(editor, findsOneWidget);
+
+      await tester.tap(find.byType(CloseButton));
+      await tester.pumpAndSettle();
+      expect(editor, findsNothing);
+      expect(find.byType(BottomSheet), findsOneWidget);
+      expect(find.byType(SlideActionSettings), findsOneWidget);
+      await tester.tap(find.byTooltip('Customize item actions'));
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<Switch>(actionSwitch(ItemMenuAction.viewProfile)).value,
+        isFalse,
+      );
+      expect(tester.takeException(), isNull);
+    });
+  }
 
   testWidgets('long pressing a handle starts dragging without a tooltip', (
     WidgetTester tester,

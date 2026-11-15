@@ -7,7 +7,9 @@ import 'package:hacki/utils/utils.dart';
 import 'package:material_ui/material_ui.dart';
 
 class ItemMenuSettingsScreen extends StatelessWidget {
-  const ItemMenuSettingsScreen({super.key});
+  const ItemMenuSettingsScreen({super.key, this.isInBottomSheet = false});
+
+  final bool isInBottomSheet;
 
   void _showPreview(BuildContext context) {
     HapticFeedbackUtils.selection();
@@ -27,6 +29,7 @@ class ItemMenuSettingsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).canvasColor,
+        leading: isInBottomSheet ? const CloseButton() : null,
         title: const Text('Item Actions'),
         actions: <Widget>[
           IconButton(
