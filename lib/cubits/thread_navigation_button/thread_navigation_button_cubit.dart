@@ -26,10 +26,7 @@ class ThreadNavigationButtonCubit
     /// so wait until loading is done before reacting to them.
     _areHistoryButtonsSeparateStreamSubscription = _preferenceCubit.stream
         .where((PreferenceState s) => s.status != Status.inProgress)
-        .map(
-          (PreferenceState s) =>
-              s.areSkipButtonsEnabled && s.areHistoryButtonsSeparate,
-        )
+        .map((PreferenceState s) => s.areHistoryButtonsSeparate)
         .distinct()
         .listen((bool separate) {
           if (!separate) {

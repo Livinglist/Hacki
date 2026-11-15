@@ -238,18 +238,18 @@ void main() {
       .singleWhere((ItemPosition position) => position.index == index)
       .itemLeadingEdge;
 
-  for (final bool disableSkipButtons in <bool>[false, true]) {
+  for (final bool skipButtonsEnabled in <bool>[true, false]) {
     testWidgets(
-      '${disableSkipButtons ? 'Skip' : 'History'} buttons off skips history '
-      'while comment jumps keep working',
+      'history off with skip buttons ${skipButtonsEnabled ? 'on' : 'off'} '
+      'skips history while comment jumps keep working',
       (WidgetTester tester) async {
         await startWithPreferences(
           tester,
-          PreferenceState.init().copyWithPreference(
-            disableSkipButtons
-                ? const SkipButtonsPreference(val: false)
-                : const HistoryButtonsPreference(val: false),
-          ),
+          PreferenceState.init()
+              .copyWithPreference(const HistoryButtonsPreference(val: false))
+              .copyWithPreference(
+                SkipButtonsPreference(val: skipButtonsEnabled),
+              ),
         );
         await pumpThread(tester);
 
@@ -300,6 +300,78 @@ void main() {
       },
     );
   }
+
+  testWidgets('history navigation works with skip buttons disabled', (
+    WidgetTester tester,
+  ) async {
+    await startWithPreferences(
+      tester,
+      PreferenceState.init().copyWithPreference(
+        const SkipButtonsPreference(val: false),
+      ),
+    );
+    await pumpThread(tester);
+    expect(find.byIcon(Icons.keyboard_arrow_up), findsNothing);
+    expect(find.byIcon(Icons.keyboard_arrow_down), findsNothing);
+    expect(find.byIcon(Icons.turn_left), findsOneWidget);
+    expect(find.byIcon(Icons.turn_right), findsOneWidget);
+
+    final Future<void> jump = cubit.scrollToComment(cubit.state.comments[2]);
+    await settleScroll(tester);
+    await jump;
+    expectPosition(3, 0.15);
+    expect(cubit.state.navigationStack.last.targetComment?.id, 3);
+
+    await tester.tap(find.byIcon(Icons.turn_left));
+    await settleScroll(tester);
+    expectPosition(0, 0);
+    await tester.tap(find.byIcon(Icons.turn_right));
+    await settleScroll(tester);
+    expectPosition(3, 0.15);
+
+    await tester.drag(
+      find.byType(ScrollablePositionedList),
+      const Offset(0, -90),
+    );
+    await settleScroll(tester);
+    expect(cubit.state.hasScrolledFromNavigation, isTrue);
+    await tester.tap(find.byIcon(Icons.turn_left));
+    await settleScroll(tester);
+    expectPosition(3, 0.15);
+    await tester.tap(find.byIcon(Icons.turn_left));
+    await settleScroll(tester);
+    expectPosition(0, 0);
+  });
+
+  testWidgets('toggling skip buttons preserves active history', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    final List<NavigationAnchor> saved = cubit.state.navigationStack;
+
+    changePreference(const SkipButtonsPreference(val: false));
+    await settleScroll(tester);
+    expect(cubit.state.navigationStack, same(saved));
+    expect(find.byIcon(Icons.keyboard_arrow_up), findsNothing);
+    expect(find.byIcon(Icons.turn_left), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.turn_left));
+    await settleScroll(tester);
+    expectPosition(3, 0.15);
+
+    changePreference(const SkipButtonsPreference(val: true));
+    await settleScroll(tester);
+    expect(cubit.state.navigationStack, same(saved));
+    expect(find.byIcon(Icons.keyboard_arrow_up), findsOneWidget);
+    expect(find.byIcon(Icons.turn_right), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.turn_right));
+    await settleScroll(tester);
+    expectPosition(5, 0.15);
+    expect(cubit.state.navigationStack, same(saved));
+  });
 
   testWidgets('disabling history freezes saved stops and ignores navigation', (
     WidgetTester tester,

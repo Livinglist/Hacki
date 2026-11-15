@@ -50,9 +50,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     AppLifecycleService? appLifecycleService,
   }) : _filterCubit = filterCubit,
        _preferenceCubit = preferenceCubit,
-       _isNavigationHistoryEnabled = _historyButtonsEnabled(
-         preferenceCubit.state,
-       ),
+       _isNavigationHistoryEnabled =
+           preferenceCubit.state.areHistoryButtonsEnabled,
        _commentCache = commentCache ?? locator.get<CommentCache>(),
        _offlineRepository =
            offlineRepository ?? locator.get<OfflineRepository>(),
@@ -77,7 +76,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
         .where((AppLifecycleState s) => s == AppLifecycleState.inactive)
         .listen(_onAppHidden);
     _historyPreferenceSubscription = _preferenceCubit.stream
-        .map(_historyButtonsEnabled)
+        .map((PreferenceState state) => state.areHistoryButtonsEnabled)
         .distinct()
         .listen(_onHistoryButtonsChanged);
   }
@@ -141,9 +140,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   int? _navigationViewportIndex;
   bool _isUserScrolling = false;
   bool _isManualScrollCheckScheduled = false;
-
-  static bool _historyButtonsEnabled(PreferenceState state) =>
-      state.areSkipButtonsEnabled && state.areHistoryButtonsEnabled;
 
   void _onHistoryButtonsChanged(bool enabled) {
     if (isClosed || enabled == _isNavigationHistoryEnabled) return;

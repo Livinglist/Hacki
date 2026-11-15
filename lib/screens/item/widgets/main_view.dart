@@ -55,9 +55,7 @@ class MainView extends StatelessWidget {
   Widget build(BuildContext context) {
     final AuthState authState = context.watch<AuthBloc>().state;
     final bool historyEnabled = context.select<PreferenceCubit, bool>(
-      (PreferenceCubit cubit) =>
-          cubit.state.areSkipButtonsEnabled &&
-          cubit.state.areHistoryButtonsEnabled,
+      (PreferenceCubit cubit) => cubit.state.areHistoryButtonsEnabled,
     );
     final Widget threadView = Stack(
       children: <Widget>[
