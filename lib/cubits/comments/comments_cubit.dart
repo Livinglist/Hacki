@@ -1936,26 +1936,18 @@ comments length is ${state.comments.length}
     await super.close();
   }
 
-  static Rect? _getWidgetRect(GlobalKey targetGlobalKey) {
-    final RenderBox? renderBox =
-        targetGlobalKey.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox == null) return null;
-
-    final Offset offset = renderBox.localToGlobal(Offset.zero);
-    final Size size = renderBox.size;
-    return offset & size;
-  }
-
   static void _startShine(
     BuildContext targetContext,
     GlobalKey targetGlobalKey,
   ) {
-    final Rect? rect = _getWidgetRect(targetGlobalKey);
-    if (rect == null) return;
-
     late OverlayEntry entry;
     entry = OverlayEntry(
-      builder: (_) => ShineOverlay(rect: rect, onDone: () => entry.remove()),
+      builder: (_) => ShineOverlay(
+        targetKey: targetGlobalKey,
+        onDone: () => entry
+          ..remove()
+          ..dispose(),
+      ),
     );
 
     Overlay.of(targetContext).insert(entry);
