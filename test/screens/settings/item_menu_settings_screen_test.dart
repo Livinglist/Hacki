@@ -235,17 +235,19 @@ void main() {
     );
 
     final Finder appBar = find.byType(AppBar);
-    final Finder appBarMaterial = find.descendant(
-      of: appBar,
-      matching: find.byType(Material),
-    ).first;
+    final Finder appBarMaterial = find
+        .descendant(of: appBar, matching: find.byType(Material))
+        .first;
 
     void expectTransparentEditor() {
       expect(
         tester.widget<Scaffold>(find.byType(Scaffold)).backgroundColor,
         Palette.transparent,
       );
-      expect(tester.widget<AppBar>(appBar).backgroundColor, Palette.transparent);
+      expect(
+        tester.widget<AppBar>(appBar).backgroundColor,
+        Palette.transparent,
+      );
       expect(
         tester.widget<Material>(appBarMaterial).type,
         MaterialType.transparency,
