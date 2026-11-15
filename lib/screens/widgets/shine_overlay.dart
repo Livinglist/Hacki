@@ -3,9 +3,13 @@ import 'package:hacki/screens/widgets/painters/shine_painter.dart';
 import 'package:material_ui/material_ui.dart';
 
 class ShineOverlay extends StatefulWidget {
-  const ShineOverlay({required this.rect, required this.onDone, super.key});
+  const ShineOverlay({
+    required this.targetKey,
+    required this.onDone,
+    super.key,
+  });
 
-  final Rect rect;
+  final GlobalKey targetKey;
   final VoidCallback onDone;
 
   @override
@@ -14,6 +18,8 @@ class ShineOverlay extends StatefulWidget {
 
 class _ShineOverlayState extends State<ShineOverlay>
     with SingleTickerProviderStateMixin {
+  final GlobalKey _paintKey = GlobalKey();
+
   late final AnimationController _ctrl = AnimationController(
     vsync: this,
     duration: AppDurations.ms800,
@@ -32,14 +38,15 @@ class _ShineOverlayState extends State<ShineOverlay>
 
   @override
   Widget build(BuildContext context) {
-    return Positioned.fromRect(
-      rect: widget.rect,
+    return Positioned.fill(
       child: IgnorePointer(
-        child: AnimatedBuilder(
-          animation: _anim,
-          builder: (_, __) => CustomPaint(
+        child: RepaintBoundary(
+          child: CustomPaint(
+            key: _paintKey,
             painter: ShinePainter(
-              _anim.value,
+              _anim,
+              targetKey: widget.targetKey,
+              overlayKey: _paintKey,
               color: Theme.of(context).colorScheme.primary,
             ),
           ),
