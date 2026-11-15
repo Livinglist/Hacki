@@ -225,6 +225,47 @@ void main() {
     );
   });
 
+  testWidgets('sheet editor stays transparent after scrolling', (
+    WidgetTester tester,
+  ) async {
+    await pumpSettings(
+      tester,
+      child: const ItemMenuSettingsScreen(isInBottomSheet: true),
+      size: const Size(800, 568),
+    );
+
+    final Finder appBar = find.byType(AppBar);
+    final Finder appBarMaterial = find.descendant(
+      of: appBar,
+      matching: find.byType(Material),
+    ).first;
+
+    void expectTransparentEditor() {
+      expect(
+        tester.widget<Scaffold>(find.byType(Scaffold)).backgroundColor,
+        Palette.transparent,
+      );
+      expect(tester.widget<AppBar>(appBar).backgroundColor, Palette.transparent);
+      expect(
+        tester.widget<Material>(appBarMaterial).type,
+        MaterialType.transparency,
+      );
+    }
+
+    expectTransparentEditor();
+    await tester.drag(find.byType(ReorderableListView), const Offset(0, -200));
+    await tester.pumpAndSettle();
+    final Finder scrollable = find.descendant(
+      of: find.byType(ReorderableListView),
+      matching: find.byType(Scrollable),
+    );
+    expect(
+      tester.state<ScrollableState>(scrollable).position.pixels,
+      greaterThan(0),
+    );
+    expectTransparentEditor();
+  });
+
   for (final Size size in <Size>[
     const Size(800, 1200),
     const Size(1200, 800),
