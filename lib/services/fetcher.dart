@@ -89,12 +89,12 @@ abstract class Fetcher {
                 await hackerNewsRepository
                     .fetchRawComment(id: newCommentId)
                     .then((Comment? comment) async {
-                      final bool hasPushedBefore = await preferenceRepository
-                          .hasPushed(newReply!.id);
-
                       if (comment != null &&
                           !comment.dead &&
                           !comment.deleted) {
+                        final bool hasPushedBefore = await preferenceRepository
+                            .hasPushed(comment.id);
+
                         await sembastRepository.saveComment(comment);
                         await sembastRepository.updateIdsOfCommentsRepliedToMe(
                           comment.id,
