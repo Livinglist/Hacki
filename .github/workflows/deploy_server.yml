@@ -25,7 +25,7 @@ jobs:
       VPS_PLATFORM: ${{ vars.VPS_PLATFORM || 'linux/amd64' }}
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@v7
         with:
           go-version-file: server/go.mod
           cache-dependency-path: server/go.sum
@@ -45,9 +45,9 @@ jobs:
             *) echo 'Set VPS_PLATFORM to linux/amd64 or linux/arm64' >&2; exit 1 ;;
           esac
       - uses: docker/setup-qemu-action@v3
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v4
       - name: Build VPS image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: server
           platforms: ${{ env.VPS_PLATFORM }}
