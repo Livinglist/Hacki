@@ -25,7 +25,7 @@ jobs:
       VPS_PLATFORM: ${{ vars.VPS_PLATFORM || 'linux/amd64' }}
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@v7
         with:
           go-version-file: server/go.mod
           cache-dependency-path: server/go.sum
