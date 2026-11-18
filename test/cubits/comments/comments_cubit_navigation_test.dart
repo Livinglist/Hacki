@@ -1617,6 +1617,8 @@ void main() {
           if (find.byType(ShineOverlay).evaluate().isNotEmpty) break;
         }
         expect(find.byType(ShineOverlay), findsOneWidget);
+        // Let the gentle flash fade in before sampling its painted pixels.
+        await tester.pump(const Duration(milliseconds: 200));
         final Finder capture = find.byKey(captureKey);
         final Offset origin = tester.getTopLeft(capture);
         final Rect before = tester

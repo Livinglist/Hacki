@@ -18,6 +18,16 @@ class _Pixels {
     return bytes[offset] + bytes[offset + 1] + bytes[offset + 2];
   }
 
+  Color colorAt(int x, int y) {
+    final int offset = (y * width + x) * 4;
+    return Color.fromARGB(
+      bytes[offset + 3],
+      bytes[offset],
+      bytes[offset + 1],
+      bytes[offset + 2],
+    );
+  }
+
   bool get isBlack {
     for (int offset = 0; offset < bytes.length; offset += 4) {
       if (bytes[offset] + bytes[offset + 1] + bytes[offset + 2] > 0) {
@@ -48,10 +58,23 @@ void main() {
     targetHeight.dispose();
   });
 
-  Future<void> pumpHighlight(WidgetTester tester) async {
+  const Color primary = Color(0xFF40C080);
+
+  Future<void> pumpHighlight(
+    WidgetTester tester, {
+    Brightness brightness = Brightness.light,
+    Duration elapsed = const Duration(milliseconds: 400),
+  }) async {
     await tester.pumpWidget(
       MaterialApp(
         debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: primary,
+            primary: primary,
+            brightness: brightness,
+          ),
+        ),
         home: RepaintBoundary(
           key: boundaryKey,
           child: ColoredBox(
@@ -100,7 +123,7 @@ void main() {
         ),
       ),
     );
-    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(elapsed);
   }
 
   Future<_Pixels> capture(WidgetTester tester) async {
@@ -117,6 +140,52 @@ void main() {
       image.dispose();
       return result;
     }))!;
+  }
+
+  for (final Brightness brightness in Brightness.values) {
+    testWidgets('gently flashes the entire tile in $brightness primary color', (
+      WidgetTester tester,
+    ) async {
+      await pumpHighlight(
+        tester,
+        brightness: brightness,
+        elapsed: Duration.zero,
+      );
+      expect((await capture(tester)).isBlack, isTrue);
+
+      await tester.pump(const Duration(milliseconds: 200));
+      final _Pixels fadingIn = await capture(tester);
+      final int halfwayBrightness = fadingIn.brightnessAt(180, 170);
+      expect(halfwayBrightness, greaterThan(0));
+
+      await tester.pump(const Duration(milliseconds: 200));
+      final _Pixels peak = await capture(tester);
+      final Color tint = peak.colorAt(180, 170);
+      expect(peak.brightnessAt(180, 170), greaterThan(halfwayBrightness));
+      expect(tint.r, closeTo(primary.r * 0.16, 1 / 255));
+      expect(tint.g, closeTo(primary.g * 0.16, 1 / 255));
+      expect(tint.b, closeTo(primary.b * 0.16, 1 / 255));
+      for (final Offset point in <Offset>[
+        const Offset(91, 131),
+        const Offset(268, 131),
+        const Offset(91, 208),
+        const Offset(268, 208),
+      ]) {
+        expect(peak.colorAt(point.dx.toInt(), point.dy.toInt()), tint);
+      }
+      expect(peak.brightnessAt(89, 170), 0);
+      expect(peak.brightnessAt(271, 170), 0);
+
+      await tester.pump(const Duration(milliseconds: 200));
+      final _Pixels fadingOut = await capture(tester);
+      expect(fadingOut.brightnessAt(180, 170), halfwayBrightness);
+
+      await tester.pump(const Duration(milliseconds: 200));
+      expect((await capture(tester)).isBlack, isTrue);
+      await tester.pumpAndSettle();
+      expect(completions, 1);
+      expect(tester.takeException(), isNull);
+    });
   }
 
   testWidgets('uses nested coordinates and follows a target resize', (

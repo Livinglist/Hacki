@@ -25,10 +25,23 @@ class _ShineOverlayState extends State<ShineOverlay>
     duration: AppDurations.ms800,
   )..forward().whenComplete(widget.onDone);
 
-  late final Animation<double> _anim = CurvedAnimation(
-    parent: _ctrl,
-    curve: Curves.easeInOut,
-  );
+  late final Animation<double> _anim =
+      TweenSequence<double>(<TweenSequenceItem<double>>[
+        TweenSequenceItem<double>(
+          tween: Tween<double>(
+            begin: 0,
+            end: 1,
+          ).chain(CurveTween(curve: Curves.easeInOut)),
+          weight: 1,
+        ),
+        TweenSequenceItem<double>(
+          tween: Tween<double>(
+            begin: 1,
+            end: 0,
+          ).chain(CurveTween(curve: Curves.easeInOut)),
+          weight: 1,
+        ),
+      ]).animate(_ctrl);
 
   @override
   void dispose() {
