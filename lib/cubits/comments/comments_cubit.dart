@@ -1081,7 +1081,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
 
     /// After uncollapsing all the ancestors,
     /// once again, ensure the target comment is visible.
-    /// Then create a shine effect on the widget to
+    /// Then gently flash the widget to
     /// briefly highlight the target comment tile.
     if (targetCommentContext != null) {
       /// Delay here so `itemPositionsListener` can be up to date.
