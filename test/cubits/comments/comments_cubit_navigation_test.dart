@@ -1597,6 +1597,48 @@ void main() {
     expect(cubit.state.comments[3].isNew, isTrue);
   });
 
+  testWidgets('comment flash is visible within 300 ms of the settled jump', (
+    WidgetTester tester,
+  ) async {
+    cubit.globalKeys[3] = GlobalKey();
+    await pumpThread(tester);
+
+    final Future<void> jump = cubit.scrollToComment(cubit.state.comments[2]);
+    await settleScroll(tester);
+    expectPosition(3, 0.15);
+    expect(find.byType(ShineOverlay), findsNothing);
+
+    await tester.pump(const Duration(milliseconds: 150));
+    expect(find.byType(ShineOverlay), findsNothing);
+    await tester.pump(const Duration(milliseconds: 150));
+    expect(find.byType(ShineOverlay), findsOneWidget);
+
+    await jump;
+    await tester.pumpAndSettle();
+    expect(find.byType(ShineOverlay), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('a superseding jump cancels the pending comment flash', (
+    WidgetTester tester,
+  ) async {
+    cubit.globalKeys[3] = GlobalKey();
+    await pumpThread(tester);
+
+    final Future<void> jump = cubit.scrollToComment(cubit.state.comments[2]);
+    await settleScroll(tester);
+    await tester.pump(const Duration(milliseconds: 150));
+    expect(find.byType(ShineOverlay), findsNothing);
+
+    final Future<void> nextJump = cubit.scrollTo(index: 5, alignment: 0.15);
+    await settleScroll(tester);
+    await jump;
+    await nextJump;
+    expectPosition(5, 0.15);
+    expect(find.byType(ShineOverlay), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   for (final bool scrollDown in <bool>[false, true]) {
     testWidgets(
       'comment shine follows manual scrolling ${scrollDown ? 'down' : 'up'}',
