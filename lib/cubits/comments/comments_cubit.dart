@@ -1131,18 +1131,19 @@ comments length is ${state.comments.length}
             );
             return;
           }
+
+          // Keep the same pause after the final corrective scroll.
+          await Future<void>.delayed(AppDurations.ms300);
         }
 
-        await Future<void>.delayed(AppDurations.ms300, () {
-          if (isClosed || generation != _scrollGeneration) return;
-          final BuildContext? newTargetCommentContext =
-              targetCommentGlobalKey?.currentContext;
-          if (targetCommentGlobalKey != null &&
-              newTargetCommentContext != null &&
-              newTargetCommentContext.mounted) {
-            _startShine(newTargetCommentContext, targetCommentGlobalKey);
-          }
-        });
+        if (isClosed || generation != _scrollGeneration) return;
+        final BuildContext? newTargetCommentContext =
+            targetCommentGlobalKey?.currentContext;
+        if (targetCommentGlobalKey != null &&
+            newTargetCommentContext != null &&
+            newTargetCommentContext.mounted) {
+          _startShine(newTargetCommentContext, targetCommentGlobalKey);
+        }
       });
     }
   }
