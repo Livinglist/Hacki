@@ -12,7 +12,6 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:intl/intl.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import 'package:rxdart/rxdart.dart';
 
 part 'stories_event.dart';
 
@@ -51,7 +50,6 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     on<StoryUnread>(onStoryUnread);
     on<StoriesDownload>(onDownload);
     on<StoriesCancelDownload>(onCancelDownload);
-    on<StoryDownloaded>(onStoryDownloaded);
     on<StoriesEnterOfflineMode>(onEnterOfflineMode);
     on<StoriesExitOfflineMode>(onExitOfflineMode);
     on<ClearAllReadStories>(onClearAllReadStories);
@@ -82,8 +80,11 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
   StreamSubscription<Status>? _preferenceStatusSubscription;
   final Map<StoryType, StreamSubscription<Story>> _storySubscriptions =
       <StoryType, StreamSubscription<Story>>{};
+  _StoriesDownloadRun? _download;
+  bool _closing = false;
 
   static const int _pageSize = 30;
+  static const int _downloadConcurrency = 4;
 
   Future<void> onInitialize(
     StoriesInitialize event,
@@ -357,73 +358,98 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     StoriesDownload event,
     Emitter<StoriesState> emit,
   ) async {
-    emit(state.copyWith(downloadStatus: StoriesDownloadStatus.downloading));
-
-    await _offlineRepository.deleteAllStoryIds();
-    await _offlineRepository.deleteAllStories();
-    await _offlineRepository.deleteAllComments();
-    await _offlineRepository.deleteAllWebPages();
-
-    List<int> prioritizedIds = <int>[];
-
-    /// Prioritizing all types of stories except StoryType.latest since
-    /// new stories tend to have less or no comment at all.
-    final List<StoryType> prioritizedTypes = <StoryType>[
-      StoryType.top,
-      StoryType.best,
-      StoryType.ask,
-      StoryType.show,
-    ];
-
-    for (final StoryType type in prioritizedTypes) {
-      final List<int> ids = await _hackerNewsRepository.fetchStoryIds(
-        type: type,
-      );
-      await _offlineRepository.cacheStoryIds(type: type, ids: ids);
-      prioritizedIds.addAll(ids);
+    final _StoriesDownloadRun? previous = _download;
+    if (previous != null) {
+      if (!previous.canceled) return;
+      // A replacement must not clear the cache while old writes are pending.
+      await previous.done.future;
     }
+    if (_closing || emit.isDone || _download != null) return;
 
-    prioritizedIds = prioritizedIds.toSet().toList();
-    prioritizedIds = prioritizedIds.sublist(
-      0,
-      min(
-        state.maxOfflineStoriesCount?.count ?? prioritizedIds.length,
-        prioritizedIds.length,
-      ),
-    );
-
+    final _StoriesDownloadRun run = _StoriesDownloadRun();
+    final int? limit = state.maxOfflineStoriesCount?.count;
+    _download = run;
     emit(
       state.copyWith(
+        downloadStatus: StoriesDownloadStatus.downloading,
         storiesDownloaded: 0,
-        storiesToBeDownloaded: prioritizedIds.length,
+        storiesToBeDownloaded: 0,
       ),
     );
 
     try {
-      await fetchAndCacheStories(
-        prioritizedIds,
-        includingWebPage: event.includingWebPage,
-        isPrioritized: true,
-      );
+      await _clearOfflineDownload();
+      if (run.stopped || emit.isDone) return;
 
+      // Keep latest last, but deduplicate it against the prioritized feeds.
+      final Set<int> ids = <int>{};
+      for (final StoryType type in <StoryType>[
+        StoryType.top,
+        StoryType.best,
+        StoryType.ask,
+        StoryType.show,
+        StoryType.latest,
+      ]) {
+        final List<int> feedIds = await _hackerNewsRepository.fetchStoryIds(
+          type: type,
+        );
+        if (run.stopped || emit.isDone) return;
+        await _offlineRepository.cacheStoryIds(type: type, ids: feedIds);
+        if (run.stopped || emit.isDone) return;
+        ids.addAll(feedIds);
+      }
+
+      final List<int> selectedIds = ids.take(limit ?? ids.length).toList();
+      emit(state.copyWith(storiesToBeDownloaded: selectedIds.length));
+      await _downloadStories(
+        selectedIds,
+        includingWebPage: event.includingWebPage,
+        run: run,
+        emit: emit,
+      );
+      if (run.stopped || emit.isDone) return;
+
+      // All content is written. Commit success once, instead of deriving it
+      // from progress counters or individual stream callbacks.
+      run.completing = true;
       final int timestamp = DateTime.now().millisecondsSinceEpoch;
-      emit(state.copyWith(downloadTimestamp: timestamp));
       await _saveDownloadTimestamp(timestamp);
-
-      final Set<int> latestIds = <int>{};
-      final List<int> ids = await _hackerNewsRepository.fetchStoryIds(
-        type: StoryType.latest,
+      if (run.stopped || emit.isDone) return;
+      emit(
+        state.copyWith(
+          downloadStatus: StoriesDownloadStatus.finished,
+          downloadTimestamp: timestamp,
+        ),
       );
-      await _offlineRepository.cacheStoryIds(type: StoryType.latest, ids: ids);
-      latestIds.addAll(ids);
-
-      await fetchAndCacheStories(
-        latestIds,
-        includingWebPage: event.includingWebPage,
-        isPrioritized: false,
-      );
-    } catch (_) {
-      emit(state.copyWith(downloadStatus: StoriesDownloadStatus.failure));
+    } catch (error, stackTrace) {
+      logError(error, stackTrace: stackTrace);
+      run.stopped = true;
+      if (!run.canceled && !emit.isDone) {
+        emit(state.copyWith(downloadStatus: StoriesDownloadStatus.failure));
+      }
+    } finally {
+      try {
+        if (run.canceled) {
+          await _clearOfflineDownload();
+          if (!emit.isDone) {
+            emit(
+              state.copyWith(
+                downloadStatus: StoriesDownloadStatus.canceled,
+                storiesDownloaded: 0,
+                storiesToBeDownloaded: 0,
+              ),
+            );
+          }
+        }
+      } catch (error, stackTrace) {
+        logError(error, stackTrace: stackTrace);
+        if (!emit.isDone) {
+          emit(state.copyWith(downloadStatus: StoriesDownloadStatus.failure));
+        }
+      } finally {
+        _download = null;
+        run.done.complete();
+      }
     }
   }
 
@@ -431,144 +457,93 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
     StoriesCancelDownload event,
     Emitter<StoriesState> emit,
   ) async {
-    emit(state.copyWith(downloadStatus: StoriesDownloadStatus.canceled));
+    final _StoriesDownloadRun? run = _download;
+    if (run == null || run.completing) return;
+    run
+      ..canceled = true
+      ..stopped = true;
+    await _cancelDownloadStreams(run);
+    await run.done.future;
   }
 
-  Future<void> fetchAndCacheStories(
-    Iterable<int> ids, {
+  Future<void> _downloadStories(
+    List<int> ids, {
     required bool includingWebPage,
-    required bool isPrioritized,
+    required _StoriesDownloadRun run,
+    required Emitter<StoriesState> emit,
   }) async {
-    final List<StreamSubscription<Comment>> downloadStreams =
-        <StreamSubscription<Comment>>[];
-    for (final int id in ids) {
-      if (state.downloadStatus == StoriesDownloadStatus.canceled) {
-        logDebug('aborting downloading');
+    int nextIndex = 0;
+    Future<void> downloadNext() async {
+      try {
+        while (!run.stopped && !emit.isDone && nextIndex < ids.length) {
+          final int id = ids[nextIndex++];
+          final Story? story = await _hackerNewsRepository.fetchStory(id: id);
+          if (run.stopped || emit.isDone) return;
 
-        for (final StreamSubscription<Comment> stream in downloadStreams) {
-          await stream.cancel();
+          if (story == null || story.kids.isEmpty) {
+            emit(
+              state.copyWith(
+                storiesToBeDownloaded: state.storiesToBeDownloaded - 1,
+              ),
+            );
+            continue;
+          }
+
+          await _offlineRepository.cacheStory(story: story);
+          if (run.stopped || emit.isDone) return;
+          if (story.url.isNotEmpty && includingWebPage) {
+            await _offlineRepository.cacheUrl(url: story.url);
+            if (run.stopped || emit.isDone) return;
+          }
+
+          final StreamIterator<Comment?> comments = StreamIterator<Comment?>(
+            _hackerNewsRepository.fetchAllChildrenComments(ids: story.kids),
+          );
+          run.comments.add(comments);
+          try {
+            while (await comments.moveNext()) {
+              if (run.stopped || emit.isDone) return;
+              final Comment? comment = comments.current;
+              if (comment != null) {
+                await _offlineRepository.cacheComment(comment: comment);
+              }
+              if (run.stopped || emit.isDone) return;
+            }
+          } finally {
+            run.comments.remove(comments);
+            await comments.cancel();
+          }
+          if (run.stopped || emit.isDone) return;
+          emit(state.copyWith(storiesDownloaded: state.storiesDownloaded + 1));
         }
-
-        logDebug('deleting downloaded contents');
-        await _offlineRepository.deleteAllStoryIds();
-        await _offlineRepository.deleteAllStories();
-        await _offlineRepository.deleteAllComments();
-        break;
-      } else if (state.downloadStatus == StoriesDownloadStatus.finished) {
-        logDebug(
-          'download status is finished, abort fetching stories and comments',
-        );
-        for (final StreamSubscription<Comment> stream in downloadStreams) {
-          await stream.cancel();
-        }
-        return;
+      } catch (_) {
+        run.stopped = true;
+        await _cancelDownloadStreams(run);
+        rethrow;
       }
-
-      logDebug('fetching story $id');
-      final Story? story = await _hackerNewsRepository.fetchStory(id: id);
-      logDebug('fetched story $id');
-
-      if (story == null) {
-        if (isPrioritized) {
-          add(StoryDownloaded(skipped: true));
-        }
-        continue;
-      }
-
-      if (story.kids.isEmpty) {
-        if (isPrioritized) {
-          add(StoryDownloaded(skipped: true));
-        }
-        continue;
-      }
-
-      await _offlineRepository.cacheStory(story: story);
-
-      if (story.url.isNotEmpty && includingWebPage) {
-        logInfo('downloading ${story.url}');
-        await _offlineRepository.cacheUrl(url: story.url);
-      }
-
-      /// Not awaiting the completion of comments stream because otherwise
-      /// it's going to take forever to finish downloading all the stories
-      /// since we need to make a single http call for each comment.
-      ///
-      /// In other words, we are prioritizing the story itself instead of
-      /// the comments in the story.
-      late final StreamSubscription<Comment>? downloadStream;
-      logDebug('start fetching comments for story ${story.id}');
-      downloadStream =
-          _hackerNewsRepository
-              .fetchAllChildrenComments(ids: story.kids)
-              .whereType<Comment>()
-              .listen((Comment comment) {
-                if (state.downloadStatus == StoriesDownloadStatus.canceled) {
-                  logDebug('aborting downloading from comments stream');
-                  downloadStream?.cancel();
-                  return;
-                } else if (state.downloadStatus ==
-                    StoriesDownloadStatus.finished) {
-                  logDebug(
-                    '''A download status is finished, abort fetching stories and comments''',
-                  );
-                  for (final StreamSubscription<Comment> stream
-                      in downloadStreams) {
-                    stream.cancel();
-                  }
-                  return;
-                }
-
-                logDebug('fetched comment ${comment.id}');
-                unawaited(_offlineRepository.cacheComment(comment: comment));
-              })
-            ..onDone(() {
-              logDebug(
-                '''finished downloading story ${story.id} with ${story.descendants} comments''',
-              );
-              add(StoryDownloaded(skipped: false));
-            });
-
-      downloadStreams.add(downloadStream);
     }
+
+    // Future.wait also waits for the other workers on failure, so no write
+    // from this run can race with a retry clearing or replacing the cache.
+    await Future.wait<void>(<Future<void>>[
+      for (int i = 0; i < min(_downloadConcurrency, ids.length); i++)
+        downloadNext(),
+    ]);
   }
 
-  void onStoryDownloaded(StoryDownloaded event, Emitter<StoriesState> emit) {
-    if (event.skipped) {
-      final int updatedStoriesToBeDownloaded = state.storiesToBeDownloaded - 1;
+  Future<void> _cancelDownloadStreams(_StoriesDownloadRun run) async {
+    await Future.wait<void>(
+      run.comments.toList().map(
+        (StreamIterator<Comment?> comments) => comments.cancel(),
+      ),
+    );
+  }
 
-      emit(
-        state.copyWith(
-          storiesToBeDownloaded: updatedStoriesToBeDownloaded,
-          downloadStatus:
-              updatedStoriesToBeDownloaded == 0 ||
-                  updatedStoriesToBeDownloaded == state.storiesDownloaded ||
-                  state.storiesDownloaded >=
-                      (state.maxOfflineStoriesCount?.count ?? 1000)
-              ? StoriesDownloadStatus.finished
-              : null,
-        ),
-      );
-    } else {
-      final int updatedStoriesDownloaded = state.storiesDownloaded + 1;
-      final int updatedStoriesToBeDownloaded =
-          updatedStoriesDownloaded > state.storiesToBeDownloaded
-          ? state.storiesToBeDownloaded + 1
-          : state.storiesToBeDownloaded;
-
-      emit(
-        state.copyWith(
-          storiesDownloaded: updatedStoriesDownloaded,
-          storiesToBeDownloaded: updatedStoriesToBeDownloaded,
-          downloadStatus:
-              updatedStoriesToBeDownloaded == 0 ||
-                  updatedStoriesToBeDownloaded == updatedStoriesDownloaded ||
-                  updatedStoriesDownloaded >=
-                      (state.maxOfflineStoriesCount?.count ?? 1000)
-              ? StoriesDownloadStatus.finished
-              : null,
-        ),
-      );
-    }
+  Future<void> _clearOfflineDownload() async {
+    await _offlineRepository.deleteAllStoryIds();
+    await _offlineRepository.deleteAllStories();
+    await _offlineRepository.deleteAllComments();
+    await _offlineRepository.deleteAllWebPages();
   }
 
   Future<void> onExitOfflineMode(
@@ -637,6 +612,14 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
 
   @override
   Future<void> close() async {
+    _closing = true;
+    final _StoriesDownloadRun? run = _download;
+    if (run != null) {
+      run.stopped = true;
+      await _cancelDownloadStreams(run);
+      await run.done.future;
+    }
+    await _preferenceStatusSubscription?.cancel();
     await _preferenceSubscription?.cancel();
     for (final StreamSubscription<Story> s in _storySubscriptions.values) {
       await s.cancel();
@@ -646,6 +629,14 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> with Loggable {
 
   @override
   String get logIdentifier => 'StoriesBloc';
+}
+
+class _StoriesDownloadRun {
+  final Completer<void> done = Completer<void>();
+  final Set<StreamIterator<Comment?>> comments = <StreamIterator<Comment?>>{};
+  bool stopped = false;
+  bool canceled = false;
+  bool completing = false;
 }
 
 extension on StoriesBloc {

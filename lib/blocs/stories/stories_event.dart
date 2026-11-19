@@ -77,15 +77,6 @@ class StoriesCancelDownload extends StoriesEvent {
   List<Object?> get props => <Object?>[];
 }
 
-class StoryDownloaded extends StoriesEvent {
-  StoryDownloaded({required this.skipped});
-
-  final bool skipped;
-
-  @override
-  List<Object?> get props => <Object?>[skipped];
-}
-
 class StoriesExitOfflineMode extends StoriesEvent {
   @override
   List<Object?> get props => <Object?>[];

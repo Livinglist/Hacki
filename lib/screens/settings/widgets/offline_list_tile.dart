@@ -20,7 +20,8 @@ class OfflineListTile extends StatelessWidget {
           previous.downloadStatus != current.downloadStatus,
       listener: (BuildContext context, StoriesState state) {
         if (state.downloadStatus == StoriesDownloadStatus.failure ||
-            state.downloadStatus == StoriesDownloadStatus.finished) {
+            state.downloadStatus == StoriesDownloadStatus.finished ||
+            state.downloadStatus == StoriesDownloadStatus.canceled) {
           WakelockPlus.disable();
         }
       },
@@ -58,8 +59,12 @@ class OfflineListTile extends StatelessWidget {
           title: Text(() {
             if (downloading) {
               return '''Downloading Stories (${state.storiesDownloaded}/${state.storiesToBeDownloaded})''';
-            } else if (state.storiesDownloaded != 0) {
+            } else if (downloaded) {
               return '''${state.storiesDownloaded} stories downloaded.''';
+            } else if (state.downloadStatus == StoriesDownloadStatus.failure) {
+              return 'Story download failed.';
+            } else if (state.downloadStatus == StoriesDownloadStatus.canceled) {
+              return 'Story download canceled.';
             }
             return 'Download Stories';
           }()),
