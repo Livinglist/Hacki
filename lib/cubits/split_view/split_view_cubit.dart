@@ -12,32 +12,53 @@ part 'split_view_state.dart';
 class SplitViewCubit extends HydratedCubit<SplitViewState> with Loggable {
   SplitViewCubit({required PreferenceCubit preferenceCubit})
     : _preferenceCubit = preferenceCubit,
+      _splitViewPreferred = preferenceCubit.state.isSplitViewEnabled,
       super(const SplitViewState.init()) {
     init();
   }
 
+  static const double minimumSplitViewWidth = 600;
+
   final PreferenceCubit _preferenceCubit;
+  bool _splitViewPreferred;
+  bool _hasWideWindow = false;
   late final StreamSubscription<bool> _preferenceStateSubscription;
 
   void init() {
     _preferenceStateSubscription = _preferenceCubit.stream
-        .distinct(
-          (PreferenceState previous, PreferenceState current) =>
-              previous.isSplitViewEnabled == current.isSplitViewEnabled,
-        )
-        .map((PreferenceState prefState) => prefState.isSplitViewEnabled)
-        .listen((bool isSplitViewEnabled) {
-          isSplitViewEnabled ? enableSplitView() : disableSplitView();
+        .map((PreferenceState state) => state.isSplitViewEnabled)
+        .distinct()
+        .listen((bool preferred) {
+          _splitViewPreferred = preferred;
+          _updateEnabled();
         });
   }
 
-  void updateItemScreenArgs(ItemScreenArgs args) {
-    emit(state.copyWith(itemScreenArgs: args));
+  /// Re-evaluates the layout whenever the available window width changes.
+  void updateWindowWidth(double width) {
+    _hasWideWindow = width >= minimumSplitViewWidth;
+    _updateEnabled();
   }
 
-  void enableSplitView() => emit(state.copyWith(enabled: true));
+  void _updateEnabled() {
+    final bool enabled = _hasWideWindow && _splitViewPreferred;
+    final bool revealSelectedStory =
+        state.enabled && !enabled && state.itemScreenArgs != null;
+    emit(
+      state.copyWith(
+        enabled: enabled,
+        showDetail: revealSelectedStory || state.showDetail,
+      ),
+    );
+  }
 
-  void disableSplitView() => emit(state.copyWith(enabled: false));
+  void updateItemScreenArgs(ItemScreenArgs args) {
+    emit(state.copyWith(itemScreenArgs: args, showDetail: true));
+  }
+
+  /// Returns to the compact story list without discarding the selected thread.
+  void showStories() =>
+      emit(state.copyWith(showDetail: false, expanded: false));
 
   void zoom() => emit(
     state.copyWith(

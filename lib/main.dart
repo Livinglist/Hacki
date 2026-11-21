@@ -68,13 +68,15 @@ Future<void> main({bool testing = false}) async {
 
   EquatableConfig.stringify = true;
 
-  FlutterError.onError = (FlutterErrorDetails details) {
-    locator.get<Logger>().e(
-      details.summary,
-      error: details.exceptionAsString(),
-      stackTrace: details.stack,
-    );
-  };
+  if (!testing) {
+    FlutterError.onError = (FlutterErrorDetails details) {
+      locator.get<Logger>().e(
+        details.summary,
+        error: details.exceptionAsString(),
+        stackTrace: details.stack,
+      );
+    };
+  }
 
   if (Platform.isIOS) {
     unawaited(Workmanager().initialize(fetcherCallbackDispatcher));
@@ -83,9 +85,13 @@ Future<void> main({bool testing = false}) async {
         FlutterLocalNotificationsPlugin();
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-    const DarwinInitializationSettings initializationSettingsIOS =
-        DarwinInitializationSettings();
-    const InitializationSettings initializationSettings =
+    final DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings(
+          requestAlertPermission: !testing,
+          requestBadgePermission: !testing,
+          requestSoundPermission: !testing,
+        );
+    final InitializationSettings initializationSettings =
         InitializationSettings(
           android: initializationSettingsAndroid,
           iOS: initializationSettingsIOS,
@@ -95,11 +101,13 @@ Future<void> main({bool testing = false}) async {
       onDidReceiveNotificationResponse: notificationReceiver,
       settings: initializationSettings,
     );
-    await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin
-        >()
-        ?.requestPermissions(alert: true, badge: true, sound: true);
+    if (!testing) {
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin
+          >()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
+    }
   } else if (Platform.isAndroid) {
     final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
     final AndroidDeviceInfo androidInfo = await deviceInfoPlugin.androidInfo;
