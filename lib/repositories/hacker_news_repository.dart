@@ -17,11 +17,14 @@ class HackerNewsRepository with Loggable {
   HackerNewsRepository({
     FirebaseClient? firebaseClient,
     SembastRepository? sembastRepository,
+    HckrNewsRepository? hckrNewsRepository,
   }) : _firebaseClient = firebaseClient ?? FirebaseClient.anonymous(),
+       _hckrNewsRepository = hckrNewsRepository ?? HckrNewsRepository(),
        _sembastRepository =
            sembastRepository ?? locator.get<SembastRepository>();
 
   final FirebaseClient _firebaseClient;
+  final HckrNewsRepository _hckrNewsRepository;
   final SembastRepository _sembastRepository;
   static const String _baseUrl = 'https://hacker-news.firebaseio.com/v0/';
 
@@ -115,6 +118,10 @@ class HackerNewsRepository with Loggable {
 
   /// Fetch ids of stories of a certain [StoryType].
   Future<List<int>> fetchStoryIds({required StoryType type}) async {
+    if (type == StoryType.chronological) {
+      return _hckrNewsRepository.fetchStoryIds();
+    }
+
     final List<int> ids = await _firebaseClient
         .get('$_baseUrl${type.apiPathParam}.json')
         .then((dynamic val) {

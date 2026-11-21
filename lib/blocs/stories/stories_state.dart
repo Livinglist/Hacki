@@ -39,6 +39,7 @@ class StoriesState extends Equatable {
       StoryType.latest: <Story>[],
       StoryType.ask: <Story>[],
       StoryType.show: <Story>[],
+      StoryType.chronological: <Story>[],
     },
     this.storyIdsByType = const <StoryType, List<int>>{
       StoryType.top: <int>[],
@@ -46,6 +47,7 @@ class StoriesState extends Equatable {
       StoryType.latest: <int>[],
       StoryType.ask: <int>[],
       StoryType.show: <int>[],
+      StoryType.chronological: <int>[],
     },
     this.statusByType = const <StoryType, Status>{
       StoryType.top: Status.idle,
@@ -53,6 +55,7 @@ class StoriesState extends Equatable {
       StoryType.latest: Status.idle,
       StoryType.ask: Status.idle,
       StoryType.show: Status.idle,
+      StoryType.chronological: Status.idle,
     },
     this.currentPageByType = const <StoryType, int>{
       StoryType.top: 0,
@@ -60,6 +63,7 @@ class StoriesState extends Equatable {
       StoryType.latest: 0,
       StoryType.ask: 0,
       StoryType.show: 0,
+      StoryType.chronological: 0,
     },
   }) : isOfflineReading = false,
        downloadStatus = StoriesDownloadStatus.idle,

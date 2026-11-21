@@ -29,6 +29,62 @@ void main() {
     return cubit;
   }
 
+  final Map<int, List<StoryType>> legacyTabOrders = <int, List<StoryType>>{
+    1234: <StoryType>[
+      StoryType.top,
+      StoryType.best,
+      StoryType.latest,
+      StoryType.ask,
+      StoryType.show,
+      StoryType.chronological,
+    ],
+    10234: <StoryType>[
+      StoryType.best,
+      StoryType.top,
+      StoryType.latest,
+      StoryType.ask,
+      StoryType.show,
+      StoryType.chronological,
+    ],
+    43210: <StoryType>[
+      StoryType.show,
+      StoryType.ask,
+      StoryType.latest,
+      StoryType.best,
+      StoryType.top,
+      StoryType.chronological,
+    ],
+  };
+
+  for (final MapEntry<int, List<StoryType>> order in legacyTabOrders.entries) {
+    test('adds CHRO without changing saved tab order ${order.key}', () async {
+      SharedPreferences.setMockInitialValues(<String, Object>{
+        'tabOrder': order.key,
+      });
+
+      final PreferenceState state = (await loadCubit()).state;
+
+      expect(state.tabs, order.value);
+      expect(state.tabs.toSet().length, StoryType.values.length);
+    });
+  }
+
+  test('CHRO can be the first tab and persists across reloads', () async {
+    final PreferenceCubit original = await loadCubit();
+    final List<StoryType> order = <StoryType>[
+      StoryType.chronological,
+      ...StoryType.values.where(
+        (StoryType type) => type != StoryType.chronological,
+      ),
+    ];
+    original.update(
+      TabOrderPreference(val: StoryType.convertToSettingsValue(order)),
+    );
+
+    expect(original.state.tabs, order);
+    expect((await loadCubit()).state.tabs, order);
+  });
+
   test('persists order and visibility across preference reloads', () async {
     final PreferenceCubit original = await loadCubit();
     final List<ItemMenuAction> order = ItemMenuAction.values.reversed.toList();

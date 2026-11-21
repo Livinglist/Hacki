@@ -126,6 +126,16 @@ class StoryLoadingCompleted extends StoryLoaded {
   StoryLoadingCompleted({required super.type}) : super(story: Story.empty());
 }
 
+class StoryLoadingFailed extends StoryLoaded {
+  StoryLoadingFailed({required super.type, required this.previousPage})
+    : super(story: Story.empty());
+
+  final int previousPage;
+
+  @override
+  List<Object?> get props => <Object?>[...super.props, previousPage];
+}
+
 class StoryRead extends StoriesEvent {
   StoryRead({required this.story});
 

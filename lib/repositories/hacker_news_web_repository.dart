@@ -135,6 +135,9 @@ class HackerNewsWebRepository with Loggable {
             '$_storiesBaseUrl/${storyType.webPathParam}?p=$page',
           StoryType.latest =>
             '$_storiesBaseUrl/${storyType.webPathParam}?next=${_next[page]}',
+          StoryType.chronological => throw UnsupportedError(
+            'Chronological stories must be loaded from hckr news.',
+          ),
         };
 
         final Uri url = Uri.parse(urlStr);
