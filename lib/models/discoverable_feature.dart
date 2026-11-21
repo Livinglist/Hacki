@@ -17,8 +17,9 @@ enum DiscoverableFeature {
   ),
   pinToTop(
     featureId: 'pin_to_top',
-    title: 'Pin a Story',
-    description: '''Pin this story to the top of your home screen.''',
+    title: 'Pin a Thread',
+    description:
+        '''Save this story or comment thread to Pins on your home screen.''',
   ),
   jumpUpButton(
     featureId: 'jump_up_button_with_long_press',

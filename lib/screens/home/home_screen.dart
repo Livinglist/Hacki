@@ -137,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen>
           previous.isHackerNewsThemeEnabled != current.isHackerNewsThemeEnabled,
       builder: (BuildContext context, PreferenceState preferenceState) {
         final PinState pinState = context.watch<PinCubit>().state;
-        final bool hasPins = pinState.pinnedStories.isNotEmpty;
+        final bool hasPins = pinState.pinnedItems.isNotEmpty;
         return DefaultTabController(
           length: tabLength,
           child: Scaffold(
@@ -176,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen>
                               ? ListTile(
                                   leading: const Icon(Icons.push_pin),
                                   title: Text(
-                                    '''${pinState.pinnedStories.length} Pin${pinState.pinnedStories.length > 1 ? 's' : ''}''',
+                                    '''${pinState.pinnedItems.length} Pin${pinState.pinnedItems.length > 1 ? 's' : ''}''',
                                   ),
                                   trailing: const Icon(Icons.chevron_right),
                                   onTap: () {

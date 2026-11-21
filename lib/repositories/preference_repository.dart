@@ -21,7 +21,8 @@ class PreferenceRepository with Loggable {
   static const String _passwordKey = 'password';
   static const String _blocklistKey = 'blocklist';
   static const String _filterKeywordsKey = 'filterKeywords';
-  static const String _pinnedStoriesIdsKey = 'pinnedStoriesIds';
+  // Keep the existing local and iCloud key so previously saved pins survive.
+  static const String _pinnedItemsIdsKey = 'pinnedStoriesIds';
   static const String _unreadCommentsIdsKey = 'unreadCommentsIds';
   static const String _lastReadStoryIdKey = 'lastReadStoryId';
   static const String _downloadTimestampKey = 'downloadTimestamp';
@@ -314,34 +315,31 @@ class PreferenceRepository with Loggable {
 
   //#region pins
 
-  Future<List<int>> get pinnedStoriesIds async {
+  Future<List<int>> get pinnedItemsIds async {
     if (Platform.isIOS) {
       final List<String>? favList = await _syncedPrefs.getStringList(
-        key: _pinnedStoriesIdsKey,
+        key: _pinnedItemsIdsKey,
       );
       return favList?.map(int.parse).toList() ?? <int>[];
     } else {
       return _prefs.then(
         (SharedPreferences prefs) =>
-            prefs
-                .getStringList(_pinnedStoriesIdsKey)
-                ?.map(int.parse)
-                .toList() ??
+            prefs.getStringList(_pinnedItemsIdsKey)?.map(int.parse).toList() ??
             <int>[],
       );
     }
   }
 
-  Future<void> updatePinnedStoriesIds(List<int> ids) async {
+  Future<void> updatePinnedItemsIds(List<int> ids) async {
     if (Platform.isIOS) {
       await _syncedPrefs.setStringList(
-        key: _pinnedStoriesIdsKey,
+        key: _pinnedItemsIdsKey,
         val: ids.map((int e) => e.toString()).toList(),
       );
     } else {
       final SharedPreferences prefs = await _prefs;
       await prefs.setStringList(
-        _pinnedStoriesIdsKey,
+        _pinnedItemsIdsKey,
         ids.map((int e) => e.toString()).toList(),
       );
     }

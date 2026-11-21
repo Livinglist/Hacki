@@ -306,7 +306,7 @@ class _StoriesListViewState extends State<StoriesListView>
   }
 
   void pinStory(Story story) {
-    context.read<PinCubit>().pinStory(
+    context.read<PinCubit>().pinItem(
       story,
       onDone: () => context.showSnackBar(content: SnackBarMessages.storyPinned),
     );

@@ -72,7 +72,7 @@ class CustomAppBar extends AppBar {
              ),
              onPressed: onFontSizeTap,
            ),
-           if (item is Story) PinIconButton(story: item),
+           PinIconButton(item: item),
            FavIconButton(storyId: item.id),
            const SettingsButton(),
          ],

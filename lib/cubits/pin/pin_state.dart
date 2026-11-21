@@ -2,32 +2,32 @@ part of 'pin_cubit.dart';
 
 class PinState extends Equatable {
   const PinState({
-    required this.pinnedStoriesIds,
-    required this.pinnedStories,
+    required this.pinnedItemsIds,
+    required this.pinnedItems,
     required this.status,
   });
 
   PinState.init()
-    : pinnedStoriesIds = <int>[],
-      pinnedStories = <Story>[],
+    : pinnedItemsIds = <int>[],
+      pinnedItems = <Item>[],
       status = Status.idle;
 
-  final List<int> pinnedStoriesIds;
-  final List<Story> pinnedStories;
+  final List<int> pinnedItemsIds;
+  final List<Item> pinnedItems;
   final Status status;
 
   PinState copyWith({
-    List<int>? pinnedStoriesIds,
-    List<Story>? pinnedStories,
+    List<int>? pinnedItemsIds,
+    List<Item>? pinnedItems,
     Status? status,
   }) {
     return PinState(
-      pinnedStoriesIds: pinnedStoriesIds ?? this.pinnedStoriesIds,
-      pinnedStories: pinnedStories ?? this.pinnedStories,
+      pinnedItemsIds: pinnedItemsIds ?? this.pinnedItemsIds,
+      pinnedItems: pinnedItems ?? this.pinnedItems,
       status: status ?? this.status,
     );
   }
 
   @override
-  List<Object?> get props => <Object?>[pinnedStoriesIds, pinnedStories, status];
+  List<Object?> get props => <Object?>[pinnedItemsIds, pinnedItems, status];
 }
