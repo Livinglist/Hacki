@@ -1669,7 +1669,14 @@ comments length is ${state.comments.length}
   }
 
   /// Scroll to previous root level comment.
-  void scrollToPreviousRoot() {
+  ///
+  /// Calls [onNoPreviousRoot] when there is no eligible root comment above.
+  void scrollToPreviousRoot({VoidCallback? onNoPreviousRoot}) {
+    if (state.comments.isEmpty) {
+      onNoPreviousRoot?.call();
+      return;
+    }
+
     final List<Comment> onScreenComments = itemPositionsListener
         .itemPositions
         .value
@@ -1689,7 +1696,7 @@ comments length is ${state.comments.length}
     final int firstVisibleIndex = state.comments.indexOf(
       onScreenComments.firstOrNull ?? state.comments.last,
     );
-    final int startIndex = max(0, firstVisibleIndex - 1);
+    final int startIndex = firstVisibleIndex - 1;
 
     for (int i = startIndex; i >= 0; i--) {
       final Comment cmt = state.comments.elementAt(i);
@@ -1701,6 +1708,8 @@ comments length is ${state.comments.length}
         return;
       }
     }
+
+    onNoPreviousRoot?.call();
   }
 
   Future<void> search(

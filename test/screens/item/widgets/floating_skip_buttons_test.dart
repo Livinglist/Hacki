@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:bloc_test/bloc_test.dart';
 import 'package:feature_discovery/feature_discovery.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/item/widgets/widgets.dart';
+import 'package:hacki/utils/haptic_feedback_utils.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -193,7 +195,11 @@ void main() {
           recordNavigation: true,
         ),
       ).called(1);
-      verifyNever(() => commentsCubit.scrollToPreviousRoot());
+      verifyNever(
+        () => commentsCubit.scrollToPreviousRoot(
+          onNoPreviousRoot: any(named: 'onNoPreviousRoot'),
+        ),
+      );
       verifyNever(
         () => commentsCubit.scrollToNextRoot(onError: any(named: 'onError')),
       );
@@ -219,7 +225,11 @@ void main() {
 
       await tester.tap(find.byIcon(Icons.keyboard_arrow_up));
       await tester.pumpAndSettle();
-      verify(() => commentsCubit.scrollToPreviousRoot()).called(1);
+      verify(
+        () => commentsCubit.scrollToPreviousRoot(
+          onNoPreviousRoot: any(named: 'onNoPreviousRoot'),
+        ),
+      ).called(1);
 
       await tester.tap(find.byIcon(Icons.keyboard_arrow_down));
       await tester.pumpAndSettle();
@@ -233,6 +243,56 @@ void main() {
         ),
       );
     });
+
+    for (final bool hapticsEnabled in <bool>[true, false]) {
+      testWidgets(
+        'reaching the first root respects haptics enabled: $hapticsEnabled',
+        (WidgetTester tester) async {
+          final List<String> haptics = <String>[];
+          final bool wasHapticsEnabled = HapticFeedbackUtils.enabled;
+          HapticFeedbackUtils.enabled = hapticsEnabled;
+          tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+            SystemChannels.platform,
+            (MethodCall call) async {
+              if (call.method == 'HapticFeedback.vibrate') {
+                haptics.add(call.arguments as String);
+              }
+              return null;
+            },
+          );
+          addTearDown(() {
+            HapticFeedbackUtils.enabled = wasHapticsEnabled;
+            tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+              SystemChannels.platform,
+              null,
+            );
+          });
+          await pumpButtons(tester, preferenceState: PreferenceState.init());
+          when(
+            () => commentsCubit.scrollToPreviousRoot(
+              onNoPreviousRoot: any(named: 'onNoPreviousRoot'),
+            ),
+          ).thenAnswer((Invocation invocation) {
+            final VoidCallback onNoPreviousRoot =
+                invocation.namedArguments[#onNoPreviousRoot] as VoidCallback;
+            onNoPreviousRoot();
+          });
+
+          await tester.tap(find.byIcon(Icons.keyboard_arrow_up));
+          await tester.pumpAndSettle();
+
+          expect(
+            haptics,
+            hapticsEnabled
+                ? <String>[
+                    'HapticFeedbackType.selectionClick',
+                    'HapticFeedbackType.successNotification',
+                  ]
+                : isEmpty,
+          );
+        },
+      );
+    }
 
     testWidgets('shows the back and forward buttons by default', (
       WidgetTester tester,

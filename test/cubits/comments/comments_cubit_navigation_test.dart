@@ -1761,6 +1761,93 @@ void main() {
     expectPosition(5, 0.15);
   });
 
+  for (final int index in <int>[0, 1]) {
+    testWidgets('previous-root skip signals the boundary from '
+        '${index == 0 ? 'the header' : 'the first root'}', (
+      WidgetTester tester,
+    ) async {
+      await pumpThread(tester);
+      final double alignment = index == 0 ? 0 : 0.15;
+      cubit.itemScrollController.jumpTo(index: index, alignment: alignment);
+      await settleScroll(tester);
+      final List<NavigationAnchor> saved = cubit.state.navigationStack;
+      int boundarySignals = 0;
+
+      cubit.scrollToPreviousRoot(onNoPreviousRoot: () => boundarySignals++);
+      await settleScroll(tester);
+
+      expect(boundarySignals, 1);
+      expectPosition(index, alignment);
+      expect(cubit.state.navigationStack, same(saved));
+    });
+  }
+
+  testWidgets('previous-root skip signals the boundary in an empty thread', (
+    WidgetTester tester,
+  ) async {
+    cubit.emit(cubit.state.copyWith(comments: <Comment>[]));
+    await pumpThread(tester);
+    int boundarySignals = 0;
+
+    cubit.scrollToPreviousRoot(onNoPreviousRoot: () => boundarySignals++);
+    await settleScroll(tester);
+
+    expect(boundarySignals, 1);
+    expectPosition(0, 0);
+    expect(cubit.state.navigationStack, isEmpty);
+  });
+
+  testWidgets('previous-root skip does not signal when a root is available', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    cubit.itemScrollController.jumpTo(index: 3, alignment: 0.15);
+    await settleScroll(tester);
+    int boundarySignals = 0;
+
+    cubit.scrollToPreviousRoot(onNoPreviousRoot: () => boundarySignals++);
+    await settleScroll(tester);
+
+    expect(boundarySignals, 0);
+    expectPosition(1, 0.15);
+  });
+
+  for (final String skippedRoot in <String>['collapsed', 'deleted', 'dead']) {
+    testWidgets(
+      'previous-root skip signals after skipping the only $skippedRoot root',
+      (WidgetTester tester) async {
+        changePreference(
+          const SkipButtonsIgnoreCollapsedCommentsPreference(val: true),
+        );
+        final Comment firstRoot = Comment.fromJson(<String, dynamic>{
+          'id': 1,
+          'parent': _storyId,
+          'by': 'someone',
+          'text': 'Comment 1',
+          'deleted': skippedRoot == 'deleted',
+          'dead': skippedRoot == 'dead',
+        }).copyWith(isCollapsedByUser: skippedRoot == 'collapsed');
+        cubit.emit(
+          cubit.state.copyWith(
+            comments: <Comment>[firstRoot, ...cubit.state.comments.skip(1)],
+          ),
+        );
+        await pumpThread(tester);
+        cubit.itemScrollController.jumpTo(index: 3, alignment: 0.15);
+        await settleScroll(tester);
+        final List<NavigationAnchor> saved = cubit.state.navigationStack;
+        int boundarySignals = 0;
+
+        cubit.scrollToPreviousRoot(onNoPreviousRoot: () => boundarySignals++);
+        await settleScroll(tester);
+
+        expect(boundarySignals, 1);
+        expectPosition(3, 0.15);
+        expect(cubit.state.navigationStack, same(saved));
+      },
+    );
+  }
+
   testWidgets('Back and Forward retrace previous-root skips once per stop', (
     WidgetTester tester,
   ) async {
