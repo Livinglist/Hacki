@@ -1008,6 +1008,28 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     );
   }
 
+  /// Jumps to the top comment in [comment]'s branch of the current thread.
+  Future<void> scrollToRootComment(Comment comment) async {
+    Comment root = comment;
+    Comment? parent = state.comments.singleWhereOrNull(
+      (Comment c) => c.id == root.parent,
+    );
+    while (parent != null) {
+      root = parent;
+      parent = state.comments.singleWhereOrNull(
+        (Comment c) => c.id == root.parent,
+      );
+    }
+
+    // In a separate comment thread, the root is the header at index zero.
+    if (state.item is Comment &&
+        (root.id == state.item.id || root.parent == state.item.id)) {
+      await scrollTo(index: 0, recordNavigation: true);
+    } else {
+      await scrollToComment(root);
+    }
+  }
+
   Future<void> scrollToComment(
     Comment comment, {
     bool isRetrying = false,
