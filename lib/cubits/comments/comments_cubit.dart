@@ -1692,25 +1692,11 @@ comments length is ${state.comments.length}
         .nonNulls
         .toList();
 
-    final Comment? firstVisibleComment = onScreenComments.firstOrNull;
-    final int startIndex;
-    if (firstVisibleComment != null) {
-      startIndex = state.comments.indexOf(firstVisibleComment) - 1;
-    } else {
-      // A clipped comment or the footer can still have a root above it.
-      final ItemPosition? firstVisibleItem = itemPositionsListener
-          .itemPositions
-          .value
-          .where((ItemPosition position) => position.itemTrailingEdge > 0)
-          .sorted(
-            (ItemPosition a, ItemPosition b) => a.index.compareTo(b.index),
-          )
-          .firstOrNull;
-      startIndex = min(
-        (firstVisibleItem?.index ?? state.comments.length) - 1,
-        state.comments.length - 1,
-      );
-    }
+    /// The index of first comment visible on screen.
+    final int firstVisibleIndex = state.comments.indexOf(
+      onScreenComments.firstOrNull ?? state.comments.last,
+    );
+    final int startIndex = firstVisibleIndex - 1;
 
     for (int i = startIndex; i >= 0; i--) {
       final Comment cmt = state.comments.elementAt(i);

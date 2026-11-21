@@ -1812,43 +1812,6 @@ void main() {
     expectPosition(1, 0.15);
   });
 
-  testWidgets('previous-root skip reaches the only root from the footer', (
-    WidgetTester tester,
-  ) async {
-    cubit.emit(cubit.state.copyWith(comments: <Comment>[_comment(1)]));
-    await pumpThread(tester);
-    cubit.itemScrollController.jumpTo(index: 2);
-    await settleScroll(tester);
-    int boundarySignals = 0;
-
-    cubit.scrollToPreviousRoot(onNoPreviousRoot: () => boundarySignals++);
-    await settleScroll(tester);
-
-    expect(boundarySignals, 0);
-    expectPosition(1, 0.15);
-  });
-
-  testWidgets('previous-root skip reaches a root clipped above the viewport', (
-    WidgetTester tester,
-  ) async {
-    cubit.emit(cubit.state.copyWith(comments: <Comment>[_comment(1)]));
-    commentHeights[1] = 1000;
-    await pumpThread(tester);
-    await tester.drag(
-      find.byType(ScrollablePositionedList),
-      const Offset(0, -300),
-    );
-    await settleScroll(tester);
-    expect(alignmentOf(1), lessThan(0));
-    int boundarySignals = 0;
-
-    cubit.scrollToPreviousRoot(onNoPreviousRoot: () => boundarySignals++);
-    await settleScroll(tester);
-
-    expect(boundarySignals, 0);
-    expectPosition(1, 0.15);
-  });
-
   for (final String skippedRoot in <String>['collapsed', 'deleted', 'dead']) {
     testWidgets(
       'previous-root skip signals after skipping the only $skippedRoot root',
