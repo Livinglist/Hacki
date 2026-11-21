@@ -13,7 +13,8 @@ enum SlideAction {
   share('Share', icon: FeatherIcons.share),
   viewInBrowser('View in Browser', icon: Icons.open_in_browser),
   reply('Reply', icon: Icons.message),
-  viewInSeparateThread('View In Separate Thread', icon: Icons.list);
+  viewInSeparateThread('View In Separate Thread', icon: Icons.list),
+  goToRoot(' Go To Root', icon: Icons.vertical_align_top);
 
   const SlideAction(this.description, {required this.icon});
 
@@ -33,6 +34,7 @@ enum SlideAction {
     viewInBrowser,
     timeMachine,
     goToParent,
+    goToRoot,
   ];
 
   final String description;
