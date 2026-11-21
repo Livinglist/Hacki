@@ -1669,7 +1669,14 @@ comments length is ${state.comments.length}
   }
 
   /// Scroll to previous root level comment.
-  void scrollToPreviousRoot() {
+  ///
+  /// Calls [onNoPreviousRoot] when there is no eligible root comment above.
+  void scrollToPreviousRoot({VoidCallback? onNoPreviousRoot}) {
+    if (state.comments.isEmpty) {
+      onNoPreviousRoot?.call();
+      return;
+    }
+
     final List<Comment> onScreenComments = itemPositionsListener
         .itemPositions
         .value
@@ -1685,11 +1692,25 @@ comments length is ${state.comments.length}
         .nonNulls
         .toList();
 
-    /// The index of first comment visible on screen.
-    final int firstVisibleIndex = state.comments.indexOf(
-      onScreenComments.firstOrNull ?? state.comments.last,
-    );
-    final int startIndex = max(0, firstVisibleIndex - 1);
+    final Comment? firstVisibleComment = onScreenComments.firstOrNull;
+    final int startIndex;
+    if (firstVisibleComment != null) {
+      startIndex = state.comments.indexOf(firstVisibleComment) - 1;
+    } else {
+      // A clipped comment or the footer can still have a root above it.
+      final ItemPosition? firstVisibleItem = itemPositionsListener
+          .itemPositions
+          .value
+          .where((ItemPosition position) => position.itemTrailingEdge > 0)
+          .sorted(
+            (ItemPosition a, ItemPosition b) => a.index.compareTo(b.index),
+          )
+          .firstOrNull;
+      startIndex = min(
+        (firstVisibleItem?.index ?? state.comments.length) - 1,
+        state.comments.length - 1,
+      );
+    }
 
     for (int i = startIndex; i >= 0; i--) {
       final Comment cmt = state.comments.elementAt(i);
@@ -1701,6 +1722,8 @@ comments length is ${state.comments.length}
         return;
       }
     }
+
+    onNoPreviousRoot?.call();
   }
 
   Future<void> search(
