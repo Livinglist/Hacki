@@ -133,6 +133,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   /// superseded scroll does not [ItemScrollController.jumpTo] after a newer
   /// one has already begun.
   int _scrollGeneration = 0;
+  int _commentVisibilityGeneration = 0;
+  Timer? _commentVisibilityTimer;
   int? _activeScrollGeneration;
   int _historyTrackingGeneration = 0;
   NavigationAnchor? _navigationViewport;
@@ -607,7 +609,11 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
 
   bool isCommentLocked(Comment comment) => _lockedCommentId == comment.id;
 
+  /// Shared with the tile so visibility is measured after its size settles.
+  static const Duration collapseAnimationDuration = AppDurations.ms300;
+
   void collapse(Comment comment) {
+    _cancelCommentVisibilityCheck();
     final List<Comment> comments = <Comment>[...state.comments];
     final int commentIndex = state.comments.indexWhere(
       (Comment c) => c.id == comment.id,
@@ -616,12 +622,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     final Comment updatedComment = comment.copyWith(isCollapsedByUser: true);
     final List<Comment> updatedComments = <Comment>[updatedComment];
     int endIndex = commentIndex + 1;
-
-    if (endIndex >= comments.length) {
-      comments.replaceRange(commentIndex, comments.length, updatedComments);
-      emit(state.copyWith(comments: comments));
-      return;
-    }
 
     for (int i = commentIndex + 1; i < comments.length; i++) {
       Comment curCmt = comments.elementAt(i);
@@ -639,9 +639,70 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
 
     comments.replaceRange(commentIndex, endIndex, updatedComments);
     emit(state.copyWith(comments: comments));
+    _scheduleCommentVisibility(comment.id, collapsed: true);
   }
 
-  void uncollapse(Comment comment) {
+  void _cancelCommentVisibilityCheck() {
+    _commentVisibilityGeneration++;
+    _commentVisibilityTimer?.cancel();
+    _commentVisibilityTimer = null;
+  }
+
+  void _scheduleCommentVisibility(int commentId, {required bool collapsed}) {
+    if (!itemScrollController.isAttached) return;
+    final int generation = _commentVisibilityGeneration;
+
+    // The animation starts when the emitted state is built, not at the tap.
+    // Keep this on the cubit: the tile can be disposed as it moves offscreen.
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (isClosed || generation != _commentVisibilityGeneration) return;
+      _commentVisibilityTimer = Timer(collapseAnimationDuration, () {
+        _commentVisibilityTimer = null;
+        unawaited(_revealComment(commentId, generation, collapsed: collapsed));
+      });
+    });
+  }
+
+  Future<void> _revealComment(
+    int commentId,
+    int generation, {
+    required bool collapsed,
+  }) async {
+    // Let the last animation tick lay out and publish its item positions.
+    await SchedulerBinding.instance.endOfFrame;
+    if (isClosed ||
+        generation != _commentVisibilityGeneration ||
+        !itemScrollController.isAttached) {
+      return;
+    }
+    final int index = state.comments.indexWhere(
+      (Comment comment) => comment.id == commentId,
+    );
+    if (index < 0) return;
+    final Comment comment = state.comments.elementAt(index);
+    if (comment.isCollapsedByUser != collapsed || comment.isHiddenByUser) {
+      return;
+    }
+
+    final ItemPosition? position = itemPositionsListener.itemPositions.value
+        .firstWhereOrNull(
+          (ItemPosition position) => position.index == index + 1,
+        );
+    // Offscreen items are absent from the listener. A comment before the list's
+    // layout center can move down as it shrinks, so check the bottom as well.
+    if (position == null ||
+        position.itemLeadingEdge < 0.1 ||
+        (collapsed && position.itemTrailingEdge > 1)) {
+      await scrollTo(
+        index: index + 1,
+        alignment: _jumpAlignment,
+        duration: collapseAnimationDuration,
+      );
+    }
+  }
+
+  void uncollapse(Comment comment, {bool ensureVisible = false}) {
+    _cancelCommentVisibilityCheck();
     final List<Comment> comments = <Comment>[...state.comments];
     final int commentIndex = state.comments.indexWhere(
       (Comment c) => c.id == comment.id,
@@ -654,6 +715,9 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     if (endIndex >= comments.length) {
       comments.replaceRange(commentIndex, comments.length, updatedComments);
       emit(state.copyWith(comments: comments));
+      if (ensureVisible) {
+        _scheduleCommentVisibility(comment.id, collapsed: false);
+      }
       return;
     }
 
@@ -680,6 +744,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
 
     comments.replaceRange(commentIndex, endIndex, updatedComments);
     emit(state.copyWith(comments: comments));
+    if (ensureVisible) _scheduleCommentVisibility(comment.id, collapsed: false);
   }
 
   /// Hidden and new comments count.
@@ -1159,6 +1224,7 @@ comments length is ${state.comments.length}
     if (!itemScrollController.isAttached) {
       return;
     }
+    _cancelCommentVisibilityCheck();
 
     // Only user-initiated jumps opt in; history replay and layout corrections
     // must not add new stops. Index zero is the thread header.
@@ -1332,24 +1398,23 @@ comments length is ${state.comments.length}
     );
   }
 
-  /// Observes manual thread scrolling without treating animated jumps or
-  /// layout corrections as new reading positions.
+  /// Manual scrolling cancels pending tile visibility corrections and updates
+  /// navigation history without treating layout corrections as new positions.
   bool onThreadScrollNotification(ScrollNotification notification) {
-    if (!_isNavigationHistoryEnabled ||
-        notification.depth != 0 ||
-        notification.metrics.axis != Axis.vertical ||
-        state.navigationIndex < 0) {
+    if (notification.depth != 0 || notification.metrics.axis != Axis.vertical) {
       return false;
     }
 
-    if ((notification is ScrollStartNotification &&
+    final bool isManualScroll =
+        (notification is ScrollStartNotification &&
             notification.dragDetails != null) ||
         (notification is ScrollUpdateNotification &&
             notification.dragDetails != null) ||
         (notification is UserScrollNotification &&
-            notification.direction != ScrollDirection.idle)) {
-      _isUserScrolling = true;
-    }
+            notification.direction != ScrollDirection.idle);
+    if (isManualScroll) _cancelCommentVisibilityCheck();
+    if (!_isNavigationHistoryEnabled || state.navigationIndex < 0) return false;
+    if (isManualScroll) _isUserScrolling = true;
 
     if (_isUserScrolling) _scheduleManualScrollCheck();
 
@@ -1923,6 +1988,7 @@ comments length is ${state.comments.length}
 
   @override
   Future<void> close() async {
+    _cancelCommentVisibilityCheck();
     _historyTrackingGeneration++;
     await _historyPreferenceSubscription.cancel();
     await _streamSubscription?.cancel();
