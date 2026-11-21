@@ -51,6 +51,15 @@ class MainView extends StatelessWidget {
 
   static const int _loadingIndicatorOpacityAnimationDuration = 300;
 
+  /// Builds the thread list, refresh handling, and its item action callbacks.
+  ///
+  /// [context] supplies the bloc providers, theme, and viewport configuration
+  /// used by the list and its children. The returned tree subscribes to comment
+  /// and authentication changes; its callbacks can refresh comments, dispatch
+  /// item actions, and update navigation state.
+  ///
+  /// Scroll notifications always reach the cubit so manual movement cancels
+  /// pending tile corrections even with history controls hidden.
   @override
   Widget build(BuildContext context) {
     final AuthState authState = context.watch<AuthBloc>().state;
@@ -290,6 +299,7 @@ class MainView extends StatelessWidget {
       ],
     );
     return NotificationListener<ScrollNotification>(
+      // The cubit gates history tracking itself; cancellation needs every drag.
       onNotification: context.read<CommentsCubit>().onThreadScrollNotification,
       child: threadView,
     );

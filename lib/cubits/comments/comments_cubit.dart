@@ -133,7 +133,11 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   /// superseded scroll does not [ItemScrollController.jumpTo] after a newer
   /// one has already begun.
   int _scrollGeneration = 0;
+
+  /// Invalidates visibility work already queued for a frame or animation end.
   int _commentVisibilityGeneration = 0;
+
+  /// The cancellable wait for the current tile's collapse/expand animation.
   Timer? _commentVisibilityTimer;
   int? _activeScrollGeneration;
   int _historyTrackingGeneration = 0;
@@ -609,9 +613,22 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
 
   bool isCommentLocked(Comment comment) => _lockedCommentId == comment.id;
 
-  /// Shared with the tile so visibility is measured after its size settles.
+  /// Duration used by tile animations and their deferred visibility checks.
+  ///
+  /// Keeping these waits equal prevents scrolling toward an intermediate size.
   static const Duration collapseAnimationDuration = AppDurations.ms300;
 
+  /// Collapses [comment] and hides its descendants in the flattened thread.
+  ///
+  /// [comment] must belong to [CommentsState.comments]; its ID locates the
+  /// current entry and its level determines which following entries are
+  /// descendants. Their individual collapse flags are preserved for a later
+  /// [uncollapse].
+  ///
+  /// Cancels any pending visibility correction and emits the updated comments
+  /// synchronously. With an attached list, also schedules a visibility check
+  /// after the tile animation; that check may scroll without adding a history
+  /// stop. Calling this method does not wait for that scroll to complete.
   void collapse(Comment comment) {
     _cancelCommentVisibilityCheck();
     final List<Comment> comments = <Comment>[...state.comments];
@@ -627,6 +644,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
       Comment curCmt = comments.elementAt(i);
       endIndex = i;
       if (curCmt.level > commentLevel) {
+        // Keep descendants in the list so existing item indices remain valid.
         curCmt = curCmt.copyWith(isHiddenByUser: true);
         updatedComments.add(curCmt);
         if (i == comments.length - 1) {
@@ -642,12 +660,32 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     _scheduleCommentVisibility(comment.id, collapsed: true);
   }
 
+  /// Cancels the visibility timer and invalidates queued follow-up work.
+  ///
+  /// Takes no parameters. Advancing the generation also makes frame callbacks
+  /// and checks already awaiting a frame harmless, since cancelling a timer
+  /// alone cannot remove them. Does not undo comment state or stop a scroll
+  /// animation that has already started.
   void _cancelCommentVisibilityCheck() {
+    // Invalidate callbacks even if the timer has already fired or not started.
     _commentVisibilityGeneration++;
     _commentVisibilityTimer?.cancel();
     _commentVisibilityTimer = null;
   }
 
+  /// Schedules a visibility check after a tile's new size has been rendered.
+  ///
+  /// [commentId] identifies the target across insertions and thread rebuilds.
+  /// [collapsed] is the expected collapse flag when the check runs; a later
+  /// toggle makes that request obsolete. It also selects the visibility rule:
+  /// collapsed tiles must fit below the viewport bottom, while expanded tiles
+  /// only need their heading brought back into view.
+  ///
+  /// Does nothing without an attached list. Otherwise registers a frame
+  /// callback and starts a timer after the emitted state has been built. The
+  /// timer may later initiate a scroll through [_revealComment]. Callers cancel
+  /// previous work before scheduling; the captured generation rejects
+  /// superseded work.
   void _scheduleCommentVisibility(int commentId, {required bool collapsed}) {
     if (!itemScrollController.isAttached) return;
     final int generation = _commentVisibilityGeneration;
@@ -657,12 +695,29 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       if (isClosed || generation != _commentVisibilityGeneration) return;
       _commentVisibilityTimer = Timer(collapseAnimationDuration, () {
+        // From here, cancellation relies on the generation rather than Timer.
         _commentVisibilityTimer = null;
         unawaited(_revealComment(commentId, generation, collapsed: collapsed));
       });
     });
   }
 
+  /// Measures a settled tile and scrolls it near the top when necessary.
+  ///
+  /// [commentId] resolves the target's current index after the final frame.
+  /// [generation] is the token captured when scheduling: a different current
+  /// token means another action cancelled or replaced this request.
+  ///
+  /// [collapsed] must still match the target's collapse flag. Collapsed tiles
+  /// are checked against both viewport boundaries. Expanded bodies can extend
+  /// below the screen so long comments do not force scrolling.
+  ///
+  /// Returns without scrolling if closed, detached, superseded, or the target
+  /// has disappeared, become hidden, or changed collapse state. Otherwise a
+  /// missing position or a heading above the top 10% of the viewport triggers
+  /// [scrollTo]; a collapsed tile extending below the bottom also triggers it.
+  /// The scroll places the heading at 15% and adds no navigation stop. The
+  /// returned future completes after the frame check and any resulting scroll.
   Future<void> _revealComment(
     int commentId,
     int generation, {
@@ -675,6 +730,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
         !itemScrollController.isAttached) {
       return;
     }
+    // Fetching or refreshing comments may have changed their indices meanwhile.
     final int index = state.comments.indexWhere(
       (Comment comment) => comment.id == commentId,
     );
@@ -693,6 +749,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     if (position == null ||
         position.itemLeadingEdge < 0.1 ||
         (collapsed && position.itemTrailingEdge > 1)) {
+      // The header occupies index zero; comment indices start at one.
       await scrollTo(
         index: index + 1,
         alignment: _jumpAlignment,
@@ -701,6 +758,21 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     }
   }
 
+  /// Expands [comment] while preserving descendants' nested collapse state.
+  ///
+  /// [comment] must belong to [CommentsState.comments]; its ID locates the
+  /// current entry and its level bounds the descendant range. Descendants of a
+  /// still-collapsed child remain hidden rather than expanding the entire
+  /// subtree.
+  ///
+  /// [ensureVisible] opts into a check after the expansion animation to bring
+  /// the heading near the top if needed. It defaults to false for internal
+  /// ancestor reveals, whose caller controls the navigation destination.
+  ///
+  /// Always cancels previous visibility work and emits the updated comments
+  /// synchronously. When [ensureVisible] is true and the list is attached, also
+  /// queues a correction without adding a history stop; it does not wait for
+  /// it.
   void uncollapse(Comment comment, {bool ensureVisible = false}) {
     _cancelCommentVisibilityCheck();
     final List<Comment> comments = <Comment>[...state.comments];
@@ -726,6 +798,8 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
       Comment curCmt = comments.elementAt(i);
       endIndex = i;
       if (curCmt.level > commentLevel) {
+        // Restore each branch according to its own parent, preserving nested
+        // collapsed replies instead of blindly showing every descendant.
         final bool isParentCollapsedOrHidden =
             localCollapseState[curCmt.parent] ?? false;
         final bool shouldBeHidden =
@@ -1213,6 +1287,32 @@ comments length is ${state.comments.length}
     }
   }
 
+  /// Scrolls to a list item, then anchors layout at the viewport top.
+  ///
+  /// [index] is the zero-based list index: zero is the header, comments start
+  /// at one, and the footer follows the last comment.
+  ///
+  /// [alignment] places the item's leading edge at that fraction of the
+  /// viewport height (zero is the top).
+  ///
+  /// [recordNavigation] records the source and destination only when history
+  /// is enabled and the target is a header or comment; corrections leave it
+  /// false.
+  ///
+  /// [duration] must be positive when supplied; null uses 400 milliseconds.
+  ///
+  /// [curve] controls scroll easing.
+  ///
+  /// [opacityAnimationWeights] supplies three positive relative weights for
+  /// scrolling out, fading between lists, and scrolling in when the destination
+  /// is too far away for a direct scroll.
+  ///
+  /// Does nothing if the controller is detached. Otherwise cancels pending tile
+  /// visibility work, supersedes older scroll follow-ups, and temporarily
+  /// resets manual history tracking. The future includes reanchoring and, when
+  /// history is enabled, saving the measured landing viewport. A newer scroll
+  /// or closing the cubit prevents stale follow-up work from changing that
+  /// viewport.
   Future<void> scrollTo({
     required int index,
     double alignment = 0.0,
@@ -1224,6 +1324,7 @@ comments length is ${state.comments.length}
     if (!itemScrollController.isAttached) {
       return;
     }
+    // An explicit destination takes precedence over a delayed tile correction.
     _cancelCommentVisibilityCheck();
 
     // Only user-initiated jumps opt in; history replay and layout corrections
@@ -1398,8 +1499,17 @@ comments length is ${state.comments.length}
     );
   }
 
-  /// Manual scrolling cancels pending tile visibility corrections and updates
-  /// navigation history without treating layout corrections as new positions.
+  /// Observes user scrolling and cancels deferred tile visibility corrections.
+  ///
+  /// [notification] is forwarded by the thread's scroll notification listener.
+  /// Only depth-zero vertical notifications are relevant; nested or horizontal
+  /// scrolling is ignored. Drag details or a non-idle user direction identify
+  /// user movement rather than a programmatic animation or layout change.
+  ///
+  /// User movement invalidates visibility work even when history is disabled.
+  /// With history enabled and an existing navigation stop, also tracks drag
+  /// activity and schedules viewport comparisons for the history controls.
+  /// Always returns false so the notification continues bubbling to ancestors.
   bool onThreadScrollNotification(ScrollNotification notification) {
     if (notification.depth != 0 || notification.metrics.axis != Axis.vertical) {
       return false;
@@ -1412,6 +1522,8 @@ comments length is ${state.comments.length}
             notification.dragDetails != null) ||
         (notification is UserScrollNotification &&
             notification.direction != ScrollDirection.idle);
+    // Cancellation must precede the history guard: hiding history buttons does
+    // not give a pending correction permission to override a new user gesture.
     if (isManualScroll) _cancelCommentVisibilityCheck();
     if (!_isNavigationHistoryEnabled || state.navigationIndex < 0) return false;
     if (isManualScroll) _isUserScrolling = true;
@@ -1421,6 +1533,8 @@ comments length is ${state.comments.length}
     if (notification is ScrollEndNotification ||
         (notification is UserScrollNotification &&
             notification.direction == ScrollDirection.idle)) {
+      // Ballistic updates can still be part of the gesture until scrolling
+      // ends.
       _isUserScrolling = false;
     }
     return false;
@@ -1986,8 +2100,18 @@ comments length is ${state.comments.length}
 
   void _onAppHidden(AppLifecycleState _) => _preserveCollapseState();
 
+  /// Releases subscriptions, preserves collapse state, and closes the cubit.
+  ///
+  /// Takes no parameters. Immediately invalidates pending tile visibility and
+  /// history checks, then cancels preference, fetch, search, and lifecycle
+  /// subscriptions. Also invalidates scroll follow-ups, removes pending reply
+  /// placeholders, and preserves comment collapse state according to settings.
+  /// The returned future completes after cleanup and closing the state stream;
+  /// it does not wait for any asynchronous persistence started by that cleanup.
   @override
   Future<void> close() async {
+    // Cancel before awaiting subscriptions: a queued frame may run during any
+    // await, while the underlying state stream has not yet been closed.
     _cancelCommentVisibilityCheck();
     _historyTrackingGeneration++;
     await _historyPreferenceSubscription.cancel();

@@ -77,6 +77,16 @@ class CommentTile extends StatelessWidget {
   /// Override for search screen.
   final VoidCallback? onTap;
 
+  /// Builds an interactive comment tile with animated collapsed/expanded views.
+  ///
+  /// [context] supplies preference, blocklist, authentication, and comments
+  /// bloc providers along with the theme and text scaling. The returned tree
+  /// rebuilds for preference and blocklist changes. Its gesture callbacks can
+  /// toggle comment state, provide haptic feedback, and dispatch configured
+  /// actions.
+  ///
+  /// Both size-changing crossfades share the cubit's visibility-check duration
+  /// so a later scroll is measured against the settled tile layout.
   @override
   Widget build(BuildContext context) {
     return BlocBuilder2<
@@ -446,17 +456,27 @@ class CommentTile extends StatelessWidget {
     }
   }
 
+  /// Toggles this comment and delegates visibility correction to its cubit.
+  ///
+  /// [context] resolves the thread's [CommentsCubit] for this synchronous
+  /// gesture handler. If text selection has locked the comment, only releases
+  /// that lock and ignores the toggle. Otherwise emits collapsed/expanded
+  /// comment state through the cubit and schedules a possible scroll after the
+  /// tile animation. The context is not retained by the deferred visibility
+  /// check.
   void _collapse(BuildContext context) {
     final CommentsCubit commentsCubit = context.read<CommentsCubit>();
 
-    /// When text selection context menu is being displayed,
-    /// ignore the collapse request.
+    // Dismissing the selection lock consumes this tap, leaving the comment open
+    // while the user exits text selection.
     if (commentsCubit.isCommentLocked(comment)) {
       commentsCubit.unlock();
       return;
     }
 
     if (comment.isCollapsedByUser) {
+      // UI expansion restores the heading; internal ancestor reveals leave
+      // ensureVisible false so they cannot compete with a navigation jump.
       commentsCubit.uncollapse(comment, ensureVisible: true);
     } else {
       commentsCubit.collapse(comment);
