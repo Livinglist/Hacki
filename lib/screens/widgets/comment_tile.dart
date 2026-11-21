@@ -1,11 +1,7 @@
-import 'dart:async';
-
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/blocs/blocs.dart';
-import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
@@ -14,7 +10,6 @@ import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/utils.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class CommentTile extends StatelessWidget {
   const CommentTile({
@@ -82,6 +77,16 @@ class CommentTile extends StatelessWidget {
   /// Override for search screen.
   final VoidCallback? onTap;
 
+  /// Builds an interactive comment tile with animated collapsed/expanded views.
+  ///
+  /// [context] supplies preference, blocklist, authentication, and comments
+  /// bloc providers along with the theme and text scaling. The returned tree
+  /// rebuilds for preference and blocklist changes. Its gesture callbacks can
+  /// toggle comment state, provide haptic feedback, and dispatch configured
+  /// actions.
+  ///
+  /// Both size-changing crossfades share the cubit's visibility-check duration
+  /// so a later scroll is measured against the settled tile layout.
   @override
   Widget build(BuildContext context) {
     return BlocBuilder2<
@@ -272,7 +277,8 @@ class CommentTile extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               AnimatedCrossFade(
-                                duration: AppDurations.ms300,
+                                duration:
+                                    CommentsCubit.collapseAnimationDuration,
                                 crossFadeState:
                                     isActionable && comment.isCollapsedByUser
                                     ? CrossFadeState.showFirst
@@ -391,7 +397,7 @@ class CommentTile extends StatelessWidget {
                             crossFadeState: _shouldShowLoadButton(context)
                                 ? CrossFadeState.showFirst
                                 : CrossFadeState.showSecond,
-                            duration: AppDurations.ms300,
+                            duration: CommentsCubit.collapseAnimationDuration,
                           ),
                           if (shouldShowDivider)
                             const Divider(height: Dimens.zero),
@@ -450,47 +456,30 @@ class CommentTile extends StatelessWidget {
     }
   }
 
+  /// Toggles this comment and delegates visibility correction to its cubit.
+  ///
+  /// [context] resolves the thread's [CommentsCubit] for this synchronous
+  /// gesture handler. If text selection has locked the comment, only releases
+  /// that lock and ignores the toggle. Otherwise emits collapsed/expanded
+  /// comment state through the cubit and schedules a possible scroll after the
+  /// tile animation. The context is not retained by the deferred visibility
+  /// check.
   void _collapse(BuildContext context) {
     final CommentsCubit commentsCubit = context.read<CommentsCubit>();
 
-    /// When text selection context menu is being displayed,
-    /// ignore the collapse request.
+    // Dismissing the selection lock consumes this tap, leaving the comment open
+    // while the user exits text selection.
     if (commentsCubit.isCommentLocked(comment)) {
       commentsCubit.unlock();
       return;
     }
 
     if (comment.isCollapsedByUser) {
-      commentsCubit.uncollapse(comment);
+      // UI expansion restores the heading; internal ancestor reveals leave
+      // ensureVisible false so they cannot compete with a navigation jump.
+      commentsCubit.uncollapse(comment, ensureVisible: true);
     } else {
       commentsCubit.collapse(comment);
-    }
-
-    final List<Comment> comments = commentsCubit.state.comments;
-    final int indexOfComment = comments.indexWhere(
-      (Comment c) => c.id == comment.id,
-    );
-    if (indexOfComment < comments.length) {
-      final double? leadingEdge = commentsCubit
-          .itemPositionsListener
-          .itemPositions
-          .value
-          .singleWhereOrNull((ItemPosition e) => e.index - 1 == indexOfComment)
-          ?.itemLeadingEdge;
-      final bool willBeOutsideOfScreen =
-          leadingEdge != null && leadingEdge < 0.1;
-
-      if (willBeOutsideOfScreen) {
-        Future<void>.delayed(AppDurations.ms200, () {
-          unawaited(
-            commentsCubit.scrollTo(
-              index: indexOfComment + 1,
-              alignment: 0.15,
-              duration: AppDurations.ms300,
-            ),
-          );
-        });
-      }
     }
   }
 

@@ -50,6 +50,13 @@ Comment _comment(int id, {int? parent}) => Comment.fromJson(<String, dynamic>{
   'text': 'Comment $id',
 }).copyWith(level: parent == null ? 0 : 1);
 
+/// Registers the navigation and comment-visibility tests and their fixtures.
+///
+/// Calling this entry point installs per-test setup and teardown hooks. Those
+/// hooks register the test logger, create and seed a cubit with mocked
+/// dependencies, and later close the cubit and fixture streams and reset the
+/// service locator. Widget tests also mount thread fixtures and advance their
+/// fake clocks to observe scrolling, layout changes, and rendered pixels.
 void main() {
   late CommentsCubit cubit;
   late _MockPreferenceCubit preferenceCubit;
@@ -146,13 +153,35 @@ void main() {
     seedComments();
   });
 
+  /// Mounts and settles the thread fixture using [tester].
+  ///
+  /// [tester] controls the widget tree, frames, and test binding. This helper
+  /// changes its surface to 390 by 600 logical pixels and registers teardown
+  /// that restores the binding's default surface size.
+  ///
+  /// [captureKey], when supplied, identifies a wrapping [RepaintBoundary] that
+  /// pixel-comparison tests can capture later; mounting the fixture does not
+  /// itself capture an image.
+  ///
+  /// [theme] overrides the default [MaterialApp] theme when supplied.
+  ///
+  /// [animateCollapse] uses [AnimatedCrossFade] with production timing.
+  /// Its default false value makes comment-height changes immediate.
+  ///
+  /// Mounting provides the existing fixture cubits, attaches the list's scroll
+  /// controller and position listener, and forwards scroll notifications to the
+  /// comments cubit. It pumps frames until scheduled animations settle, which
+  /// can rebuild widgets and update reported positions. Pending visibility
+  /// timers require the additional clock advancement in [settleCollapse].
   Future<void> pumpThread(
     WidgetTester tester, {
     GlobalKey? captureKey,
     ThemeData? theme,
+    bool animateCollapse = false,
   }) async {
     await tester.binding.setSurfaceSize(const Size(390, 600));
     addTearDown(() => tester.binding.setSurfaceSize(null));
+    // Value providers leave cubit ownership with the per-test teardown hooks.
     final Widget app = MultiBlocProvider(
       providers: <BlocProvider<dynamic>>[
         BlocProvider<CommentsCubit>.value(value: cubit),
@@ -185,6 +214,31 @@ void main() {
                           final GlobalKey? key = cubit.globalKeys[comment.id];
                           if (comment.isHiddenByUser) {
                             return SizedBox.shrink(key: key);
+                          }
+                          if (animateCollapse) {
+                            // A long jump can build the same comment in both
+                            // package lists. Local keys allow both copies while
+                            // preserving each copy's animation identity.
+                            return AnimatedCrossFade(
+                              key: ValueKey<String>(
+                                'animated-comment-${comment.id}',
+                              ),
+                              duration: CommentsCubit.collapseAnimationDuration,
+                              crossFadeState: comment.isCollapsedByUser
+                                  ? CrossFadeState.showFirst
+                                  : CrossFadeState.showSecond,
+                              firstChild: const SizedBox(
+                                height: 40,
+                                width: double.infinity,
+                              ),
+                              secondChild: SizedBox(
+                                height:
+                                    commentHeights[comment.id] ??
+                                    (comment.isRoot ? 240 : 40),
+                                width: double.infinity,
+                                child: Text(comment.text),
+                              ),
+                            );
                           }
                           return SizedBox(
                             key: key,
@@ -287,6 +341,223 @@ void main() {
       .value
       .singleWhere((ItemPosition position) => position.index == index)
       .itemLeadingEdge;
+
+  /// Advances [tester] through a collapse or expansion and its scroll
+  /// correction.
+  ///
+  /// [tester] supplies the fake clock and rendered frames. The initial pump
+  /// builds the changed comment state, the timed pump advances the shared
+  /// animation duration and any due visibility timer, and [settleScroll] drains
+  /// the resulting frame callbacks, corrective scrolling, and list reanchoring.
+  /// These pumps can rebuild the fixture and change its measured item
+  /// positions.
+  Future<void> settleCollapse(WidgetTester tester) async {
+    // Start the animation and its post-frame timer before advancing time.
+    await tester.pump();
+    // A pending timer does not itself keep pumpAndSettle running.
+    await tester.pump(CommentsCubit.collapseAnimationDuration);
+    await settleScroll(tester);
+  }
+
+  for (final bool startsAboveViewport in <bool>[false, true]) {
+    testWidgets('collapse restores a reverse-sliver tile initially '
+        '${startsAboveViewport ? 'above' : 'inside'} the viewport', (
+      WidgetTester tester,
+    ) async {
+      commentHeights[3] = 3000;
+      await pumpThread(tester, animateCollapse: true);
+
+      unawaited(cubit.scrollTo(index: 7, alignment: 0.15));
+      await settleScroll(tester);
+      // The jump leaves a later comment as the layout center. Manually moving
+      // back puts this long comment in the reverse sliver, where shrinking it
+      // moves its top down rather than leaving its top in place.
+      final double viewportHeight = tester
+          .getSize(find.byType(ScrollablePositionedList))
+          .height;
+      // The target can be outside the cache after the jump. Its expanded
+      // height and the three intervening comment heights locate its top.
+      // The fixture's list starts at y=0, so its normalized edges convert
+      // directly to logical pixels in this calculation.
+      final double targetTop =
+          alignmentOf(7) * viewportHeight -
+          (commentHeights[3]! + 40 + 240 + 40);
+      await tester.drag(
+        find.byType(ScrollablePositionedList),
+        Offset(0, (startsAboveViewport ? -180 : 120) - targetTop),
+      );
+      await settleScroll(tester);
+      expect(
+        alignmentOf(3),
+        startsAboveViewport ? lessThan(0) : greaterThan(0.1),
+      );
+
+      cubit.collapse(cubit.state.comments[2]);
+      await settleCollapse(tester);
+
+      expectPosition(3, 0.15);
+      expect(cubit.state.navigationStack, isEmpty);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('collapse restores a tile that disappears above the viewport', (
+    WidgetTester tester,
+  ) async {
+    commentHeights[3] = 1800;
+    await pumpThread(tester, animateCollapse: true);
+    unawaited(cubit.scrollTo(index: 3, alignment: -0.5));
+    await settleScroll(tester);
+    expectPosition(3, -0.5);
+
+    // Only the expanded body intersects the viewport. After it shrinks, the
+    // entire tile is above the viewport and absent from the position listener.
+    cubit.collapse(cubit.state.comments[2]);
+    await settleCollapse(tester);
+
+    expectPosition(3, 0.15);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('collapse leaves a fully visible tile at its reading position', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester, animateCollapse: true);
+    unawaited(cubit.scrollTo(index: 3, alignment: 0.3));
+    await settleScroll(tester);
+
+    cubit.collapse(cubit.state.comments[2]);
+    await settleCollapse(tester);
+
+    // A visible tile keeps the reading position rather than landing at 0.15.
+    expectPosition(3, 0.3);
+    expect(cubit.state.navigationStack, isEmpty);
+  });
+
+  testWidgets('a newer jump supersedes pending collapse correction', (
+    WidgetTester tester,
+  ) async {
+    commentHeights[3] = 1800;
+    await pumpThread(tester, animateCollapse: true);
+    unawaited(cubit.scrollTo(index: 3, alignment: -0.5));
+    await settleScroll(tester);
+
+    cubit.collapse(cubit.state.comments[2]);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    // The header has stable geometry while the comment shrinks. A stale
+    // correction would pull the viewport away from this newer destination.
+    unawaited(cubit.scrollTo(index: 0));
+    await settleCollapse(tester);
+
+    expectPosition(0, 0);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('uncollapsing cancels pending collapse correction', (
+    WidgetTester tester,
+  ) async {
+    commentHeights[3] = 1800;
+    await pumpThread(tester, animateCollapse: true);
+    unawaited(cubit.scrollTo(index: 3, alignment: -0.5));
+    await settleScroll(tester);
+
+    cubit.collapse(cubit.state.comments[2]);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    // The default programmatic expansion cancels the old correction without
+    // requesting a new visibility correction of its own.
+    cubit.uncollapse(cubit.state.comments[2]);
+    await settleCollapse(tester);
+
+    expect(cubit.state.comments[2].isCollapsedByUser, isFalse);
+    expectPosition(3, -0.5);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'expanding a near-top tile restores its heading after animation',
+    (WidgetTester tester) async {
+      commentHeights[3] = 1800;
+      // Seed the collapsed state before attachment so setup cannot schedule a
+      // visibility correction that competes with the expansion under test.
+      cubit.collapse(cubit.state.comments[2]);
+      await pumpThread(tester, animateCollapse: true);
+      unawaited(cubit.scrollTo(index: 3, alignment: 0.05));
+      await settleScroll(tester);
+      expectPosition(3, 0.05);
+
+      cubit.uncollapse(cubit.state.comments[2], ensureVisible: true);
+      await settleCollapse(tester);
+
+      expect(cubit.state.comments[2].isCollapsedByUser, isFalse);
+      expectPosition(3, 0.15);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('manual scrolling cancels collapse correction with history off', (
+    WidgetTester tester,
+  ) async {
+    await startWithPreferences(
+      tester,
+      PreferenceState.init().copyWithPreference(
+        const HistoryButtonsPreference(val: false),
+      ),
+    );
+    commentHeights[3] = 1800;
+    await pumpThread(tester, animateCollapse: true);
+    unawaited(cubit.scrollTo(index: 3, alignment: -0.5));
+    await settleScroll(tester);
+
+    cubit.collapse(cubit.state.comments[2]);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    final TestGesture gesture = await tester.startGesture(
+      tester.getCenter(find.byType(ScrollablePositionedList)),
+    );
+    await gesture.moveBy(const Offset(0, 20));
+    await tester.pump();
+    await gesture.moveBy(const Offset(0, 60));
+    await tester.pump(const Duration(milliseconds: 16));
+    // Hold the pointer down while the timer deadline passes, keeping fling
+    // movement out of the observation of whether correction was cancelled.
+    await settleCollapse(tester);
+
+    // Layout may leave the tile visible at another position or remove it from
+    // the listener. The forbidden outcome is the correction's landing at 0.15.
+    final ItemPosition? target = cubit.itemPositionsListener.itemPositions.value
+        .where((ItemPosition position) => position.index == 3)
+        .firstOrNull;
+    expect(
+      target?.itemLeadingEdge,
+      isNot(closeTo(0.15, 0.01)),
+      reason: "The correction must not scroll back over the user's gesture",
+    );
+    await gesture.up();
+    await settleScroll(tester);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('closing cancels pending collapse correction', (
+    WidgetTester tester,
+  ) async {
+    commentHeights[3] = 1800;
+    await pumpThread(tester, animateCollapse: true);
+    unawaited(cubit.scrollTo(index: 3, alignment: -0.5));
+    await settleScroll(tester);
+
+    cubit.collapse(cubit.state.comments[2]);
+    await tester.pump();
+    await tester.pumpWidget(const SizedBox.shrink());
+    // Complete stream cleanup outside the fake-clock zone, then pass the old
+    // timer deadline to expose any callbacks retained after the cubit closes.
+    await tester.runAsync(cubit.close);
+    await tester.pump(CommentsCubit.collapseAnimationDuration);
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+  });
 
   for (final bool skipButtonsEnabled in <bool>[true, false]) {
     testWidgets(
