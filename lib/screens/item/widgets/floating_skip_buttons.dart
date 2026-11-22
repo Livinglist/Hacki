@@ -1,5 +1,6 @@
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/context_extension.dart';
 import 'package:hacki/models/discoverable_feature.dart';
@@ -78,7 +79,10 @@ class FloatingSkipButtons extends StatelessWidget {
                     onPressed: () {
                       HapticFeedbackUtils.selection();
                       context.read<CommentsCubit>().scrollToPreviousRoot(
-                        onNoPreviousRoot: HapticFeedbackUtils.success,
+                        onNoPreviousRoot: () async {
+                          await Future<void>.delayed(AppDurations.ms100);
+                          HapticFeedbackUtils.success();
+                        },
                       );
                     },
                     materialTapTargetSize: MaterialTapTargetSize.padded,
