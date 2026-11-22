@@ -2,7 +2,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hacki/blocs/blocs.dart';
-import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
@@ -308,7 +307,7 @@ class _StoriesListViewState extends State<StoriesListView>
   void pinStory(Story story) {
     context.read<PinCubit>().pinItem(
       story,
-      onDone: () => context.showSnackBar(content: SnackBarMessages.storyPinned),
+      onDone: () => context.showPinSnackBar(isPinned: true),
     );
   }
 

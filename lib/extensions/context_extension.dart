@@ -71,6 +71,18 @@ extension ContextExtension on BuildContext {
 
   void removeSnackBar() => ScaffoldMessenger.of(this).removeCurrentSnackBar();
 
+  void showPinSnackBar({required bool isPinned}) {
+    final GoRouter router = GoRouter.of(this);
+    showSnackBar(
+      content: isPinned
+          ? SnackBarMessages.storyPinned
+          : SnackBarMessages.storyUnpinned,
+      label: 'See all pins',
+      action: () => router.push(Paths.pins.landing),
+      persist: false,
+    );
+  }
+
   void showSnackBar({
     required String content,
     VoidCallback? action,

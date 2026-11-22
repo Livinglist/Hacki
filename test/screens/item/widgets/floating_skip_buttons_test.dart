@@ -246,7 +246,7 @@ void main() {
 
     for (final bool hapticsEnabled in <bool>[true, false]) {
       testWidgets(
-        'reaching the first root respects haptics enabled: $hapticsEnabled',
+        'delays first-root feedback with haptics enabled: $hapticsEnabled',
         (WidgetTester tester) async {
           final List<String> haptics = <String>[];
           final bool wasHapticsEnabled = HapticFeedbackUtils.enabled;
@@ -279,7 +279,23 @@ void main() {
           });
 
           await tester.tap(find.byIcon(Icons.keyboard_arrow_up));
-          await tester.pumpAndSettle();
+          await tester.pump();
+          expect(
+            haptics,
+            hapticsEnabled
+                ? <String>['HapticFeedbackType.selectionClick']
+                : isEmpty,
+          );
+
+          await tester.pump(const Duration(milliseconds: 99));
+          expect(
+            haptics,
+            hapticsEnabled
+                ? <String>['HapticFeedbackType.selectionClick']
+                : isEmpty,
+          );
+
+          await tester.pump(const Duration(milliseconds: 1));
 
           expect(
             haptics,

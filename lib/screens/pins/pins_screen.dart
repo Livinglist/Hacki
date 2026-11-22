@@ -68,6 +68,7 @@ class _PinsScreenState extends State<PinsScreen> {
 
               if (context.mounted && (isConfirmed ?? false)) {
                 context.read<PinCubit>().removeAll();
+                HapticFeedbackUtils.success();
               }
             },
           ),
@@ -95,62 +96,66 @@ class _PinsScreenState extends State<PinsScreen> {
           ),
         ],
       ),
-      body: ListView(
-        children: <Widget>[
-          for (final Item item in pinnedItems)
-            FadeIn(
-              child: Slidable(
-                startActionPane: ActionPane(
-                  motion: const BehindMotion(),
-                  children: <Widget>[
-                    CustomSlidableAction(
-                      onPressed: (_) {
-                        HapticFeedbackUtils.light();
-                        context.read<PinCubit>().unpinItem(item);
-                      },
-                      backgroundColor: Palette.red,
-                      foregroundColor: Palette.white,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+      body: pinnedItems.isEmpty
+          ? const CenteredText(text: 'No pins here')
+          : ListView(
+              children: <Widget>[
+                for (final Item item in pinnedItems)
+                  FadeIn(
+                    child: Slidable(
+                      startActionPane: ActionPane(
+                        motion: const BehindMotion(),
                         children: <Widget>[
-                          if (preferenceState.isRichStoryTileEnabled)
-                            const Icon(Icons.close, size: Dimens.pt24),
-                          Text(
-                            'Unpin',
-                            style: TextStyle(
-                              fontFamily: Theme.of(
-                                context,
-                              ).textTheme.bodyMedium?.fontFamily,
+                          CustomSlidableAction(
+                            onPressed: (_) {
+                              HapticFeedbackUtils.light();
+                              context.read<PinCubit>().unpinItem(item);
+                            },
+                            backgroundColor: Palette.red,
+                            foregroundColor: Palette.white,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                if (preferenceState.isRichStoryTileEnabled)
+                                  const Icon(Icons.close, size: Dimens.pt24),
+                                Text(
+                                  'Unpin',
+                                  style: TextStyle(
+                                    fontFamily: Theme.of(
+                                      context,
+                                    ).textTheme.bodyMedium?.fontFamily,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
+                      child: PinnedItemTile(
+                        key: ValueKey<String>('${item.id}-PinnedItemTile'),
+                        item: item,
+                        preferenceState: preferenceState,
+                        onTap: () {
+                          if (item is Story) {
+                            context.onStoryTapped(item);
+                          } else {
+                            final ItemScreenArgs args = ItemScreenArgs(
+                              item: item,
+                            );
+                            final SplitViewCubit splitViewCubit = context
+                                .read<SplitViewCubit>();
+                            if (splitViewCubit.state.enabled) {
+                              splitViewCubit.updateItemScreenArgs(args);
+                            } else {
+                              context.push(Paths.item.landing, extra: args);
+                            }
+                          }
+                        },
+                      ),
                     ),
-                  ],
-                ),
-                child: PinnedItemTile(
-                  key: ValueKey<String>('${item.id}-PinnedItemTile'),
-                  item: item,
-                  preferenceState: preferenceState,
-                  onTap: () {
-                    if (item is Story) {
-                      context.onStoryTapped(item);
-                    } else {
-                      final ItemScreenArgs args = ItemScreenArgs(item: item);
-                      final SplitViewCubit splitViewCubit = context
-                          .read<SplitViewCubit>();
-                      if (splitViewCubit.state.enabled) {
-                        splitViewCubit.updateItemScreenArgs(args);
-                      } else {
-                        context.push(Paths.item.landing, extra: args);
-                      }
-                    }
-                  },
-                ),
-              ),
+                  ),
+              ],
             ),
-        ],
-      ),
     );
   }
 }
