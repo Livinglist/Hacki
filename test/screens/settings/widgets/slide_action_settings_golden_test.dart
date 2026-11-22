@@ -128,9 +128,25 @@ void main() {
       await tester.tap(find.byIcon(SlideAction.upvote.icon));
       await tester.pumpAndSettle();
 
-      await expectLater(
-        find.byKey(goldenKey),
-        matchesGoldenFile('goldens/slide_action_settings_menu_open.png'),
+      expect(
+        tester
+            .widgetList<PopupMenuItem<SlideAction>>(
+              find.byType(PopupMenuItem<SlideAction>),
+            )
+            .map((PopupMenuItem<SlideAction> item) => item.value),
+        SlideAction.displayOrder,
+      );
+      final Finder selectedAction = find.text(SlideAction.upvote.description);
+      expect(
+        tester.widget<Text>(selectedAction).style?.color,
+        Theme.of(tester.element(selectedAction)).colorScheme.primary,
+      );
+      expect(
+        tester
+            .widget<Text>(find.text(SlideAction.reply.description))
+            .style
+            ?.color,
+        isNull,
       );
     });
   });

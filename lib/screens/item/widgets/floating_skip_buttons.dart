@@ -77,7 +77,9 @@ class FloatingSkipButtons extends StatelessWidget {
                     heroTag: UniqueKey().hashCode,
                     onPressed: () {
                       HapticFeedbackUtils.selection();
-                      context.read<CommentsCubit>().scrollToPreviousRoot();
+                      context.read<CommentsCubit>().scrollToPreviousRoot(
+                        onNoPreviousRoot: HapticFeedbackUtils.success,
+                      );
                     },
                     materialTapTargetSize: MaterialTapTargetSize.padded,
                     child: Icon(

@@ -418,6 +418,10 @@ class MainView extends StatelessWidget {
             unawaited(commentsCubit.scrollToComment(parent));
           }
         }
+      case SlideAction.goToRoot:
+        if (item is Comment) {
+          unawaited(context.read<CommentsCubit>().scrollToRootComment(item));
+        }
       case SlideAction.viewProfile:
         _showProfileDialog(context, item.by);
       case SlideAction.searchOnHackerNews:
@@ -576,6 +580,7 @@ class _ParentItemSection extends StatelessWidget {
                 SlideAction.timeMachine,
                 SlideAction.viewInSeparateThread,
                 if (item is Story) SlideAction.goToParent,
+                if (item is Story) SlideAction.goToRoot,
               },
               onLeadingActionTapped: () => onSlideActionTapped(
                 item,
