@@ -69,6 +69,7 @@ class _PinsScreenState extends State<PinsScreen> {
 
               if (context.mounted && (isConfirmed ?? false)) {
                 context.read<PinCubit>().removeAll();
+                HapticFeedbackUtils.success();
               }
             },
           ),
@@ -96,56 +97,60 @@ class _PinsScreenState extends State<PinsScreen> {
           ),
         ],
       ),
-      body: ListView(
-        children: <Widget>[
-          for (final Story story in pinnedStories)
-            FadeIn(
-              child: Slidable(
-                startActionPane: ActionPane(
-                  motion: const BehindMotion(),
-                  children: <Widget>[
-                    CustomSlidableAction(
-                      onPressed: (_) {
-                        HapticFeedbackUtils.light();
-                        context.read<PinCubit>().unpinStory(story);
-                      },
-                      backgroundColor: Palette.red,
-                      foregroundColor: Palette.white,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+      body: pinnedStories.isEmpty
+          ? const CenteredText(text: 'No pins here')
+          : ListView(
+              children: <Widget>[
+                for (final Story story in pinnedStories)
+                  FadeIn(
+                    child: Slidable(
+                      startActionPane: ActionPane(
+                        motion: const BehindMotion(),
                         children: <Widget>[
-                          if (preferenceState.isRichStoryTileEnabled)
-                            const Icon(Icons.close, size: Dimens.pt24),
-                          Text(
-                            'Unpin',
-                            style: TextStyle(
-                              fontFamily: Theme.of(
-                                context,
-                              ).textTheme.bodyMedium?.fontFamily,
+                          CustomSlidableAction(
+                            onPressed: (_) {
+                              HapticFeedbackUtils.light();
+                              context.read<PinCubit>().unpinStory(story);
+                            },
+                            backgroundColor: Palette.red,
+                            foregroundColor: Palette.white,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                if (preferenceState.isRichStoryTileEnabled)
+                                  const Icon(Icons.close, size: Dimens.pt24),
+                                Text(
+                                  'Unpin',
+                                  style: TextStyle(
+                                    fontFamily: Theme.of(
+                                      context,
+                                    ).textTheme.bodyMedium?.fontFamily,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
+                      child: StoryTile(
+                        key: ValueKey<String>('${story.id}-PinnedStoryTile'),
+                        story: story,
+                        onTap: () => context.onStoryTapped(story),
+                        shouldShowWebPreview:
+                            preferenceState.isRichStoryTileEnabled,
+                        shouldShowMetadata: preferenceState.isMetadataEnabled,
+                        shouldShowUrl: preferenceState.isUrlEnabled,
+                        shouldShowFavicon: preferenceState.isFaviconEnabled,
+                        shouldShowPreviewImage:
+                            preferenceState.isStoryTilePreviewImageEnabled,
+                        isImageLeftAligned:
+                            preferenceState.isPreviewImageLeftAligned,
+                        isExpandedTileEnabled: false,
+                      ),
                     ),
-                  ],
-                ),
-                child: StoryTile(
-                  key: ValueKey<String>('${story.id}-PinnedStoryTile'),
-                  story: story,
-                  onTap: () => context.onStoryTapped(story),
-                  shouldShowWebPreview: preferenceState.isRichStoryTileEnabled,
-                  shouldShowMetadata: preferenceState.isMetadataEnabled,
-                  shouldShowUrl: preferenceState.isUrlEnabled,
-                  shouldShowFavicon: preferenceState.isFaviconEnabled,
-                  shouldShowPreviewImage:
-                      preferenceState.isStoryTilePreviewImageEnabled,
-                  isImageLeftAligned: preferenceState.isPreviewImageLeftAligned,
-                  isExpandedTileEnabled: false,
-                ),
-              ),
+                  ),
+              ],
             ),
-        ],
-      ),
     );
   }
 }
