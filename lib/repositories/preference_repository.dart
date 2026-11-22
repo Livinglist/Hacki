@@ -21,7 +21,6 @@ class PreferenceRepository with Loggable {
   static const String _passwordKey = 'password';
   static const String _blocklistKey = 'blocklist';
   static const String _filterKeywordsKey = 'filterKeywords';
-  // Keep the existing local and iCloud key so previously saved pins survive.
   static const String _pinnedItemsIdsKey = 'pinnedStoriesIds';
   static const String _unreadCommentsIdsKey = 'unreadCommentsIds';
   static const String _lastReadStoryIdKey = 'lastReadStoryId';
