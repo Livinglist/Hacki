@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/context_extension.dart';
 import 'package:hacki/models/models.dart';
@@ -43,16 +42,12 @@ class PinIconButton extends StatelessWidget {
                 if (pinned) {
                   context.read<PinCubit>().unpinStory(
                     story,
-                    onDone: () => context.showSnackBar(
-                      content: SnackBarMessages.storyUnpinned,
-                    ),
+                    onDone: () => context.showPinSnackBar(isPinned: false),
                   );
                 } else {
                   context.read<PinCubit>().pinStory(
                     story,
-                    onDone: () => context.showSnackBar(
-                      content: SnackBarMessages.storyPinned,
-                    ),
+                    onDone: () => context.showPinSnackBar(isPinned: true),
                   );
                 }
               },

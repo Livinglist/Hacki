@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/context_extension.dart';
 import 'package:hacki/models/models.dart';
@@ -37,9 +36,8 @@ class PinnedStories extends StatelessWidget {
                           HapticFeedbackUtils.light();
                           context.read<PinCubit>().unpinStory(
                             story,
-                            onDone: () => context.showSnackBar(
-                              content: SnackBarMessages.storyUnpinned,
-                            ),
+                            onDone: () =>
+                                context.showPinSnackBar(isPinned: false),
                           );
                         },
                         backgroundColor: Palette.red,
