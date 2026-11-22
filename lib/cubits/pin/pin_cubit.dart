@@ -24,44 +24,45 @@ class PinCubit extends Cubit<PinState> {
 
   void init() {
     emit(PinState.init());
-    _preferenceRepository.pinnedStoriesIds
+    _preferenceRepository.pinnedItemsIds
         .then((List<int> ids) {
-          emit(state.copyWith(pinnedStoriesIds: ids));
+          emit(state.copyWith(pinnedItemsIds: ids));
 
           _hackerNewsRepository
-              .fetchStoriesStream(ids: ids)
-              .listen(_onStoryFetched);
+              .fetchItemsStream(ids: ids)
+              .listen(_onItemFetched);
         })
         .whenComplete(() => emit(state.copyWith(status: Status.success)));
   }
 
-  void pinStory(Story story, {VoidCallback? onDone}) {
-    if (!state.pinnedStoriesIds.contains(story.id)) {
+  void pinItem(Item item, {VoidCallback? onDone}) {
+    if (!state.pinnedItemsIds.contains(item.id)) {
       emit(
         state.copyWith(
-          pinnedStoriesIds: <int>{story.id, ...state.pinnedStoriesIds}.toList(),
-          pinnedStories: <Story>{story, ...state.pinnedStories}.toList(),
+          pinnedItemsIds: <int>{item.id, ...state.pinnedItemsIds}.toList(),
+          pinnedItems: <Item>{item, ...state.pinnedItems}.toList(),
         ),
       );
-      _preferenceRepository.updatePinnedStoriesIds(state.pinnedStoriesIds);
+      _preferenceRepository.updatePinnedItemsIds(state.pinnedItemsIds);
       onDone?.call();
     }
   }
 
-  void unpinStory(Story story, {VoidCallback? onDone}) {
+  void unpinItem(Item item, {VoidCallback? onDone}) {
     emit(
       state.copyWith(
-        pinnedStoriesIds: <int>[...state.pinnedStoriesIds]..remove(story.id),
-        pinnedStories: <Story>[...state.pinnedStories]..remove(story),
+        pinnedItemsIds: <int>[...state.pinnedItemsIds]..remove(item.id),
+        pinnedItems: <Item>[...state.pinnedItems]
+          ..removeWhere((Item pinned) => pinned.id == item.id),
       ),
     );
-    _preferenceRepository.updatePinnedStoriesIds(state.pinnedStoriesIds);
+    _preferenceRepository.updatePinnedItemsIds(state.pinnedItemsIds);
     onDone?.call();
   }
 
   void removeAll() {
-    emit(state.copyWith(pinnedStoriesIds: <int>[], pinnedStories: <Story>[]));
-    _preferenceRepository.updatePinnedStoriesIds(<int>[]);
+    emit(state.copyWith(pinnedItemsIds: <int>[], pinnedItems: <Item>[]));
+    _preferenceRepository.updatePinnedItemsIds(<int>[]);
   }
 
   void refresh() {
@@ -69,7 +70,19 @@ class PinCubit extends Cubit<PinState> {
     init();
   }
 
-  void _onStoryFetched(Story story) {
-    emit(state.copyWith(pinnedStories: <Story>[...state.pinnedStories, story]));
+  void _onItemFetched(Item item) {
+    if (!state.pinnedItemsIds.contains(item.id)) return;
+    final Map<int, Item> items = <int, Item>{
+      for (final Item pinned in state.pinnedItems) pinned.id: pinned,
+      item.id: item,
+    };
+    emit(
+      state.copyWith(
+        pinnedItems: <Item>[
+          for (final int id in state.pinnedItemsIds)
+            if (items.containsKey(id)) items[id]!,
+        ],
+      ),
+    );
   }
 }

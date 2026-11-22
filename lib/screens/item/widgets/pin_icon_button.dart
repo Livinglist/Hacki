@@ -9,15 +9,15 @@ import 'package:hacki/utils/utils.dart';
 import 'package:material_ui/material_ui.dart';
 
 class PinIconButton extends StatelessWidget {
-  const PinIconButton({required this.story, super.key});
+  const PinIconButton({required this.item, super.key});
 
-  final Story story;
+  final Item item;
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PinCubit, PinState>(
       builder: (BuildContext context, PinState pinState) {
-        final bool pinned = pinState.pinnedStoriesIds.contains(story.id);
+        final bool pinned = pinState.pinnedItemsIds.contains(item.id);
         return Transform.rotate(
           angle: pi / 4,
           child: Transform.translate(
@@ -40,13 +40,13 @@ class PinIconButton extends StatelessWidget {
               onPressed: () {
                 HapticFeedbackUtils.light();
                 if (pinned) {
-                  context.read<PinCubit>().unpinStory(
-                    story,
+                  context.read<PinCubit>().unpinItem(
+                    item,
                     onDone: () => context.showPinSnackBar(isPinned: false),
                   );
                 } else {
-                  context.read<PinCubit>().pinStory(
-                    story,
+                  context.read<PinCubit>().pinItem(
+                    item,
                     onDone: () => context.showPinSnackBar(isPinned: true),
                   );
                 }

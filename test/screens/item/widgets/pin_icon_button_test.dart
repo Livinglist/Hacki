@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,11 +8,24 @@ import 'package:go_router/go_router.dart';
 import 'package:hacki/config/constants.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/screens/item/widgets/custom_app_bar.dart';
 import 'package:hacki/screens/item/widgets/pin_icon_button.dart';
+import 'package:hacki/utils/haptic_feedback_utils.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockPinCubit extends MockCubit<PinState> implements PinCubit {}
+
+class _MockFavCubit extends MockCubit<FavState> implements FavCubit {}
+
+class _MockTipsCubit extends MockCubit<TipsState> implements TipsCubit {}
+
+final Comment _comment = Comment.fromJson(const <String, dynamic>{
+  'id': 123,
+  'type': 'comment',
+  'by': 'alice',
+  'text': 'A thread worth keeping',
+});
 
 final Story _story = Story.fromJson(const <String, dynamic>{
   'id': 1,
@@ -19,9 +34,17 @@ final Story _story = Story.fromJson(const <String, dynamic>{
 
 void main() {
   late _MockPinCubit pinCubit;
+  late bool wasHapticsEnabled;
+
+  setUpAll(() {
+    registerFallbackValue(_story);
+  });
 
   setUp(() {
     pinCubit = _MockPinCubit();
+    when(() => pinCubit.state).thenReturn(PinState.init());
+    wasHapticsEnabled = HapticFeedbackUtils.enabled;
+    HapticFeedbackUtils.enabled = false;
     void completePinChange(Invocation invocation) {
       final VoidCallback onDone =
           invocation.namedArguments[#onDone] as VoidCallback;
@@ -29,37 +52,47 @@ void main() {
     }
 
     when(
-      () => pinCubit.pinStory(_story, onDone: any(named: 'onDone')),
+      () => pinCubit.pinItem(any(), onDone: any(named: 'onDone')),
     ).thenAnswer(completePinChange);
     when(
-      () => pinCubit.unpinStory(_story, onDone: any(named: 'onDone')),
+      () => pinCubit.unpinItem(any(), onDone: any(named: 'onDone')),
     ).thenAnswer(completePinChange);
+  });
+
+  tearDown(() {
+    HapticFeedbackUtils.enabled = wasHapticsEnabled;
   });
 
   Future<GoRouter> pumpButton(
     WidgetTester tester, {
     bool isPinned = false,
+    Item? item,
+    Stream<PinState>? changes,
   }) async {
-    when(() => pinCubit.state).thenReturn(
-      PinState.init().copyWith(
-        pinnedStoriesIds: isPinned ? <int>[_story.id] : <int>[],
-        pinnedStories: isPinned ? <Story>[_story] : <Story>[],
-      ),
+    final Item target = item ?? _story;
+    final PinState initialState = PinState.init().copyWith(
+      pinnedItemsIds: isPinned ? <int>[target.id] : <int>[],
+      pinnedItems: isPinned ? <Item>[target] : <Item>[],
     );
+    if (changes == null) {
+      when(() => pinCubit.state).thenReturn(initialState);
+    } else {
+      whenListen(pinCubit, changes, initialState: initialState);
+    }
     final GoRouter router = GoRouter(
       routes: <RouteBase>[
         GoRoute(
           path: '/',
           builder: (BuildContext context, GoRouterState state) => Scaffold(
             appBar: AppBar(title: const Text('Thread')),
-            body: Center(child: PinIconButton(story: _story)),
+            body: Center(child: PinIconButton(item: target)),
           ),
           routes: <RouteBase>[
             GoRoute(
               path: 'item',
               builder: (BuildContext context, GoRouterState state) => Scaffold(
                 appBar: AppBar(title: const Text('Item')),
-                body: Center(child: PinIconButton(story: _story)),
+                body: Center(child: PinIconButton(item: target)),
               ),
             ),
           ],
@@ -84,11 +117,16 @@ void main() {
     return router;
   }
 
-  for (final bool isPinned in <bool>[false, true]) {
-    testWidgets(
-      '${isPinned ? 'removing' : 'adding'} a pin offers navigation to all pins',
-      (WidgetTester tester) async {
-        final GoRouter router = await pumpButton(tester, isPinned: isPinned);
+  for (final Item item in <Item>[_story, _comment]) {
+    for (final bool isPinned in <bool>[false, true]) {
+      testWidgets('${isPinned ? 'removing' : 'adding'} a '
+          '${item is Comment ? 'comment' : 'story'} pin offers '
+          'navigation to all pins', (WidgetTester tester) async {
+        final GoRouter router = await pumpButton(
+          tester,
+          isPinned: isPinned,
+          item: item,
+        );
 
         await tester.tap(find.byTooltip('Pin to home screen'));
         await tester.pumpAndSettle();
@@ -107,17 +145,17 @@ void main() {
         );
         if (isPinned) {
           verify(
-            () => pinCubit.unpinStory(_story, onDone: any(named: 'onDone')),
+            () => pinCubit.unpinItem(item, onDone: any(named: 'onDone')),
           ).called(1);
           verifyNever(
-            () => pinCubit.pinStory(_story, onDone: any(named: 'onDone')),
+            () => pinCubit.pinItem(item, onDone: any(named: 'onDone')),
           );
         } else {
           verify(
-            () => pinCubit.pinStory(_story, onDone: any(named: 'onDone')),
+            () => pinCubit.pinItem(item, onDone: any(named: 'onDone')),
           ).called(1);
           verifyNever(
-            () => pinCubit.unpinStory(_story, onDone: any(named: 'onDone')),
+            () => pinCubit.unpinItem(item, onDone: any(named: 'onDone')),
           );
         }
 
@@ -134,14 +172,14 @@ void main() {
         expect(router.state.uri.path, '/');
         expect(find.text('Thread'), findsOneWidget);
         expect(find.byType(PinIconButton), findsOneWidget);
-      },
-    );
+      });
+    }
   }
 
   testWidgets('the pins action works after leaving the source item', (
     WidgetTester tester,
   ) async {
-    final GoRouter router = await pumpButton(tester);
+    final GoRouter router = await pumpButton(tester, item: _comment);
     router.go('/item');
     await tester.pumpAndSettle();
 
@@ -176,5 +214,93 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(SnackBar), findsNothing);
+  });
+  testWidgets('pins and unpins a comment thread with visible feedback', (
+    WidgetTester tester,
+  ) async {
+    final StreamController<PinState> pins =
+        StreamController<PinState>.broadcast(sync: true);
+    addTearDown(pins.close);
+    when(
+      () => pinCubit.pinItem(_comment, onDone: any(named: 'onDone')),
+    ).thenAnswer((Invocation invocation) {
+      pins.add(
+        PinState.init().copyWith(
+          pinnedItemsIds: <int>[_comment.id],
+          pinnedItems: <Item>[_comment],
+        ),
+      );
+      (invocation.namedArguments[#onDone] as VoidCallback?)?.call();
+    });
+    when(
+      () => pinCubit.unpinItem(_comment, onDone: any(named: 'onDone')),
+    ).thenAnswer((Invocation invocation) {
+      pins.add(PinState.init());
+      (invocation.namedArguments[#onDone] as VoidCallback?)?.call();
+    });
+
+    await pumpButton(tester, item: _comment, changes: pins.stream);
+
+    expect(find.byIcon(Icons.push_pin_outlined), findsOneWidget);
+    await tester.tap(find.byType(IconButton));
+    await tester.pumpAndSettle();
+    expect(find.byIcon(Icons.push_pin), findsOneWidget);
+    expect(find.text('Added to Pins.'), findsOneWidget);
+    verify(
+      () => pinCubit.pinItem(_comment, onDone: any(named: 'onDone')),
+    ).called(1);
+
+    await tester.tap(find.byType(IconButton));
+    await tester.pumpAndSettle();
+    expect(find.byIcon(Icons.push_pin_outlined), findsOneWidget);
+    expect(find.text('Removed from Pins.'), findsOneWidget);
+    verify(
+      () => pinCubit.unpinItem(_comment, onDone: any(named: 'onDone')),
+    ).called(1);
+  });
+
+  testWidgets('shows the pin button on a comment thread app bar', (
+    WidgetTester tester,
+  ) async {
+    final _MockFavCubit favCubit = _MockFavCubit();
+    when(() => favCubit.state).thenReturn(FavState.init());
+    final _MockTipsCubit tipsCubit = _MockTipsCubit();
+    when(
+      () => tipsCubit.state,
+    ).thenReturn(const TipsState(completedTips: <Tips>{Tips.itemScreen}));
+
+    await tester.pumpWidget(
+      MultiBlocProvider(
+        providers: <BlocProvider<dynamic>>[
+          BlocProvider<PinCubit>.value(value: pinCubit),
+          BlocProvider<FavCubit>.value(value: favCubit),
+          BlocProvider<TipsCubit>.value(value: tipsCubit),
+        ],
+        child: FeatureDiscovery(
+          child: MaterialApp(
+            home: Builder(
+              builder: (BuildContext context) => Scaffold(
+                appBar: CustomAppBar(
+                  context: context,
+                  item: _comment,
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                  onFontSizeTap: () {},
+                  fontSizeIconButtonKey: GlobalKey(),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byType(PinIconButton), findsOneWidget);
+    expect(
+      tester.widget<PinIconButton>(find.byType(PinIconButton)).item,
+      _comment,
+    );
+    expect(tester.takeException(), isNull);
   });
 }

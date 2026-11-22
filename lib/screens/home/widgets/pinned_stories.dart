@@ -12,12 +12,12 @@ import 'package:material_ui/material_ui.dart' hide Badge;
 class PinnedStories extends StatelessWidget {
   const PinnedStories({
     required this.preferenceState,
-    required this.onStoryTapped,
+    required this.onItemTapped,
     super.key,
   });
 
   final PreferenceState preferenceState;
-  final void Function(Story story) onStoryTapped;
+  final void Function(Item item) onItemTapped;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class PinnedStories extends StatelessWidget {
       builder: (BuildContext context, PinState state) {
         return Column(
           children: <Widget>[
-            for (final Story story in state.pinnedStories)
+            for (final Item item in state.pinnedItems)
               FadeIn(
                 child: Slidable(
                   startActionPane: ActionPane(
@@ -34,8 +34,8 @@ class PinnedStories extends StatelessWidget {
                       CustomSlidableAction(
                         onPressed: (_) {
                           HapticFeedbackUtils.light();
-                          context.read<PinCubit>().unpinStory(
-                            story,
+                          context.read<PinCubit>().unpinItem(
+                            item,
                             onDone: () =>
                                 context.showPinSnackBar(isPinned: false),
                           );
@@ -64,25 +64,16 @@ class PinnedStories extends StatelessWidget {
                     color: Theme.of(
                       context,
                     ).colorScheme.primary.withValues(alpha: 0.2),
-                    child: StoryTile(
-                      key: ValueKey<String>('${story.id}-PinnedStoryTile'),
-                      story: story,
-                      onTap: () => onStoryTapped(story),
-                      shouldShowWebPreview:
-                          preferenceState.isRichStoryTileEnabled,
-                      shouldShowMetadata: preferenceState.isMetadataEnabled,
-                      shouldShowUrl: preferenceState.isUrlEnabled,
-                      shouldShowFavicon: preferenceState.isFaviconEnabled,
-                      shouldShowPreviewImage:
-                          preferenceState.isStoryTilePreviewImageEnabled,
-                      isImageLeftAligned:
-                          preferenceState.isPreviewImageLeftAligned,
-                      isExpandedTileEnabled: false,
+                    child: PinnedItemTile(
+                      key: ValueKey<String>('${item.id}-PinnedItemTile'),
+                      item: item,
+                      preferenceState: preferenceState,
+                      onTap: () => onItemTapped(item),
                     ),
                   ),
                 ),
               ),
-            if (state.pinnedStories.isNotEmpty)
+            if (state.pinnedItems.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: Dimens.pt12,

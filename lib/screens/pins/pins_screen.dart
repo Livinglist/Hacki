@@ -4,9 +4,11 @@ import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/config/paths.dart';
 import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
+import 'package:hacki/screens/item/item_screen.dart';
 import 'package:hacki/screens/widgets/widgets.dart';
 import 'package:hacki/styles/styles.dart';
 import 'package:hacki/utils/haptic_feedback_utils.dart';
@@ -28,10 +30,7 @@ class _PinsScreenState extends State<PinsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Story> pinnedStories = context
-        .watch<PinCubit>()
-        .state
-        .pinnedStories;
+    final List<Item> pinnedItems = context.watch<PinCubit>().state.pinnedItems;
     final PreferenceState preferenceState = context
         .watch<PreferenceCubit>()
         .state;
@@ -44,10 +43,10 @@ class _PinsScreenState extends State<PinsScreen> {
           IconButton(
             icon: Icon(
               Icons.delete_sweep_outlined,
-              color: pinnedStories.isEmpty ? Palette.grey : null,
+              color: pinnedItems.isEmpty ? Palette.grey : null,
             ),
             onPressed: () async {
-              if (pinnedStories.isEmpty) return;
+              if (pinnedItems.isEmpty) return;
               final bool? isConfirmed = await showDialog<bool>(
                 context: context,
                 builder: (BuildContext context) {
@@ -77,31 +76,31 @@ class _PinsScreenState extends State<PinsScreen> {
             icon: Icon(
               FeatherIcons.share,
               size: Dimens.pt20,
-              color: pinnedStories.isEmpty ? Palette.grey : null,
+              color: pinnedItems.isEmpty ? Palette.grey : null,
             ),
             onPressed: () async {
-              if (pinnedStories.isEmpty) return;
+              if (pinnedItems.isEmpty) return;
 
-              final String urls = pinnedStories
+              final String urls = pinnedItems
                   .map(
-                    (Story s) =>
-                        '''${s.title}\n${Constants.hackerNewsItemLinkPrefix}${s.id}''',
+                    (Item item) =>
+                        '''${item is Story ? item.title : item.text}\n${Constants.hackerNewsItemLinkPrefix}${item.id}''',
                   )
                   .join('\n\n');
               final ShareParams params = ShareParams(
                 text: urls,
-                subject: 'Pinned Stories on Hacker News',
+                subject: 'Pinned Items on Hacker News',
               );
               await SharePlus.instance.share(params);
             },
           ),
         ],
       ),
-      body: pinnedStories.isEmpty
+      body: pinnedItems.isEmpty
           ? const CenteredText(text: 'No pins here')
           : ListView(
               children: <Widget>[
-                for (final Story story in pinnedStories)
+                for (final Item item in pinnedItems)
                   FadeIn(
                     child: Slidable(
                       startActionPane: ActionPane(
@@ -110,7 +109,7 @@ class _PinsScreenState extends State<PinsScreen> {
                           CustomSlidableAction(
                             onPressed: (_) {
                               HapticFeedbackUtils.light();
-                              context.read<PinCubit>().unpinStory(story);
+                              context.read<PinCubit>().unpinItem(item);
                             },
                             backgroundColor: Palette.red,
                             foregroundColor: Palette.white,
@@ -132,20 +131,26 @@ class _PinsScreenState extends State<PinsScreen> {
                           ),
                         ],
                       ),
-                      child: StoryTile(
-                        key: ValueKey<String>('${story.id}-PinnedStoryTile'),
-                        story: story,
-                        onTap: () => context.onStoryTapped(story),
-                        shouldShowWebPreview:
-                            preferenceState.isRichStoryTileEnabled,
-                        shouldShowMetadata: preferenceState.isMetadataEnabled,
-                        shouldShowUrl: preferenceState.isUrlEnabled,
-                        shouldShowFavicon: preferenceState.isFaviconEnabled,
-                        shouldShowPreviewImage:
-                            preferenceState.isStoryTilePreviewImageEnabled,
-                        isImageLeftAligned:
-                            preferenceState.isPreviewImageLeftAligned,
-                        isExpandedTileEnabled: false,
+                      child: PinnedItemTile(
+                        key: ValueKey<String>('${item.id}-PinnedItemTile'),
+                        item: item,
+                        preferenceState: preferenceState,
+                        onTap: () {
+                          if (item is Story) {
+                            context.onStoryTapped(item);
+                          } else {
+                            final ItemScreenArgs args = ItemScreenArgs(
+                              item: item,
+                            );
+                            final SplitViewCubit splitViewCubit = context
+                                .read<SplitViewCubit>();
+                            if (splitViewCubit.state.enabled) {
+                              splitViewCubit.updateItemScreenArgs(args);
+                            } else {
+                              context.push(Paths.item.landing, extra: args);
+                            }
+                          }
+                        },
                       ),
                     ),
                   ),

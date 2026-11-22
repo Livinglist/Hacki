@@ -24,6 +24,7 @@ export 'optional_wrapper.dart';
 export 'painters/dashed_line_painter.dart';
 export 'painters/shine_painter.dart';
 export 'painters/spindle_painter.dart';
+export 'pinned_item_tile.dart';
 export 'spring_curve.dart';
 export 'stories_list_view.dart';
 export 'story_tile.dart';
