@@ -239,6 +239,10 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
 
     final Item item = state.item;
 
+    if (_preferenceCubit.state.shouldPreserveCollapseStateAfterScreenExit) {
+      _previousCommentStates = _globalItemIdToPreviousCollapseStates[item.id];
+    }
+
     if (shouldOnlyShowTargetComment && (targetAncestors?.isNotEmpty ?? false)) {
       emit(
         state.copyWith(
