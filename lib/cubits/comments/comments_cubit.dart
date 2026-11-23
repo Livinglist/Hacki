@@ -29,7 +29,7 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 part 'comments_state.dart';
 
-final Map<int, Map<int, Comment>> _globalStoryIdToPreviousCollapseStates =
+final Map<int, Map<int, Comment>> _globalItemIdToPreviousCollapseStates =
     <int, Map<int, Comment>>{};
 
 final Map<int, Story> _globalIdToStoryCache = <int, Story>{};
@@ -211,14 +211,10 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   }
 
   Future<void> _initializeCollapseStateCache() async {
-    if (state.item is Comment) {
-      return;
-    }
-
     /// Make sure the global cache is initialized.
     if (_preferenceCubit.state.shouldPersistCollapseStateAcrossSessions &&
-        _globalStoryIdToPreviousCollapseStates.isEmpty) {
-      _globalStoryIdToPreviousCollapseStates.addAll(
+        _globalItemIdToPreviousCollapseStates.isEmpty) {
+      _globalItemIdToPreviousCollapseStates.addAll(
         _collapseStateCacheRepository.cachedItemIdToPreviousStates,
       );
     }
@@ -226,9 +222,9 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     /// Make sure the local cache is initialized.
     if (_preferenceCubit.state.shouldPreserveCollapseStateAfterScreenExit) {
       _previousCommentStates =
-          _globalStoryIdToPreviousCollapseStates[state.item.id];
+          _globalItemIdToPreviousCollapseStates[state.item.id];
     } else {
-      _globalStoryIdToPreviousCollapseStates.clear();
+      _globalItemIdToPreviousCollapseStates.clear();
     }
   }
 
@@ -242,11 +238,6 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     await _initializeCollapseStateCache();
 
     final Item item = state.item;
-
-    if (_preferenceCubit.state.shouldPreserveCollapseStateAfterScreenExit &&
-        item is Story) {
-      _previousCommentStates = _globalStoryIdToPreviousCollapseStates[item.id];
-    }
 
     if (shouldOnlyShowTargetComment && (targetAncestors?.isNotEmpty ?? false)) {
       emit(
@@ -1808,8 +1799,8 @@ comments length is ${state.comments.length}
       _previousCommentStates?[e.id] = e.copyWithOnlyCollapseState();
     }
 
-    if (_previousCommentStates != null && state.item is Story) {
-      _globalStoryIdToPreviousCollapseStates
+    if (_previousCommentStates != null) {
+      _globalItemIdToPreviousCollapseStates
           .putIfAbsent(state.item.id, () => <int, Comment>{})
           .addAll(_previousCommentStates ?? <int, Comment>{});
 
@@ -1823,7 +1814,7 @@ comments length is ${state.comments.length}
       }
 
       if (!_preferenceCubit.state.shouldPreserveCollapseStateAfterScreenExit) {
-        _globalStoryIdToPreviousCollapseStates.clear();
+        _globalItemIdToPreviousCollapseStates.clear();
       }
     }
   }
@@ -1846,7 +1837,7 @@ comments length is ${state.comments.length}
     logInfo('loading of ${state.item.id} is complete.');
     emit(state.copyWith(status: CommentsStatus.allLoaded));
 
-    final bool isFirstTimeReading = !_globalStoryIdToPreviousCollapseStates
+    final bool isFirstTimeReading = !_globalItemIdToPreviousCollapseStates
         .containsKey(state.item.id);
     if (isCompletionSnackBarEnabled && !isFirstTimeReading) {
       final int newCommentsCount = state.comments
