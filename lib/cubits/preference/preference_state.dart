@@ -163,12 +163,19 @@ class PreferenceState extends Equatable {
       (int index) => result.codeUnitAt(index) - 48,
     );
     final List<StoryType> tabs = tabIndexes
+        .where((int index) => index >= 0 && index < StoryType.values.length)
         .map((int index) => StoryType.values.elementAt(index))
+        .toSet()
         .toList();
 
-    if (tabs.length < StoryType.values.length) {
-      tabs.insert(0, StoryType.values.first);
+    // Integer storage drops TOP's leading zero when it is the default tab.
+    if (!tabs.contains(StoryType.top)) {
+      tabs.insert(0, StoryType.top);
     }
+    // Keep saved tab order and append tabs added in newer app versions.
+    tabs.addAll(
+      StoryType.values.where((StoryType type) => !tabs.contains(type)),
+    );
     return tabs;
   }
 

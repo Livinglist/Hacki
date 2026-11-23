@@ -19,6 +19,7 @@ A [Hacker News](https://news.ycombinator.com/) client built with Flutter.
 [<img src="assets/images/app_store_badge.png" height="50">](https://apps.apple.com/us/app/hacki/id1602043763?platform=iphone) [<img src="assets/images/google_play_badge.png" height="50">](https://play.google.com/store/apps/details?id=com.jiaqifeng.hacki&hl=en_US&gl=US) [<img src="assets/images/f_droid_badge.png" height="50">](https://f-droid.org/en/packages/com.jiaqifeng.hacki/)
 
 # Features
+- [x] CHRO tab: front-page stories in chronological order via [hckr news](https://hckrnews.com/). Drag it first in Settings to open it on launch.
 - [x] Hacker News account [login](#login-reply-notification-favorites-sync-and-more)
 - [x] [Favorites sync](#login-reply-notification-favorites-sync-and-more)
 - [x] [Hacker News Search](#hacker-news-search)

@@ -3,16 +3,19 @@ enum StoryType {
   best('beststories', 'best'),
   latest('newstories', 'newest'),
   ask('askstories', 'ask'),
-  show('showstories', 'show');
+  show('showstories', 'show'),
+  chronological('', '');
 
   const StoryType(this.apiPathParam, this.webPathParam);
 
   /// The path param used in the official Hacker News API.
   /// e.g. https://hacker-news.firebaseio.com/v0/{apiPathParam}.json
+  /// Empty for [chronological], which uses the hckr news feed instead.
   final String apiPathParam;
 
   /// The path param used in the HN web.
   /// e.g. https://news.ycombinator.com/{webPathParam}
+  /// [chronological] has no corresponding HN web page.
   final String webPathParam;
 
   String get label {
@@ -27,6 +30,8 @@ enum StoryType {
         return 'ASK';
       case StoryType.show:
         return 'SHOW';
+      case StoryType.chronological:
+        return 'CHRO';
     }
   }
 

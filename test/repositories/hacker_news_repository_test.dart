@@ -6,6 +6,7 @@ import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 import 'package:hacki/services/services.dart';
 import 'package:http/http.dart';
+import 'package:http/testing.dart';
 import 'package:logger/logger.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -89,7 +90,56 @@ void main() {
 
     expect(ids, <int>[3, 4, 6]);
   });
+
+  test(
+    'fetchStoryIds delegates CHRO to hckr news without a Firebase request',
+    () async {
+      final _MockHckrNewsRepository hckrNewsRepository =
+          _MockHckrNewsRepository();
+      when(
+        hckrNewsRepository.fetchStoryIds,
+      ).thenAnswer((_) async => <int>[9, 3]);
+      final MockClient client = MockClient((Request request) async {
+        fail('Unexpected Firebase request: ${request.url}');
+      });
+      addTearDown(client.close);
+      repository = HackerNewsRepository(
+        firebaseClient: FirebaseClient.anonymous(client: client),
+        sembastRepository: sembastRepository,
+        hckrNewsRepository: hckrNewsRepository,
+      );
+
+      expect(
+        await repository.fetchStoryIds(type: StoryType.chronological),
+        <int>[9, 3],
+      );
+      verify(hckrNewsRepository.fetchStoryIds).called(1);
+    },
+  );
+
+  test('fetchStoryIds still uses the official endpoint for TOP', () async {
+    final _MockHckrNewsRepository hckrNewsRepository =
+        _MockHckrNewsRepository();
+    final MockClient client = MockClient((Request request) async {
+      expect(
+        request.url.toString(),
+        'https://hacker-news.firebaseio.com/v0/topstories.json',
+      );
+      return Response('[3,9]', 200);
+    });
+    addTearDown(client.close);
+    repository = HackerNewsRepository(
+      firebaseClient: FirebaseClient.anonymous(client: client),
+      sembastRepository: sembastRepository,
+      hckrNewsRepository: hckrNewsRepository,
+    );
+
+    expect(await repository.fetchStoryIds(type: StoryType.top), <int>[3, 9]);
+    verifyNever(hckrNewsRepository.fetchStoryIds);
+  });
 }
+
+class _MockHckrNewsRepository extends Mock implements HckrNewsRepository {}
 
 Map<String, dynamic> _commentJson({
   required int id,

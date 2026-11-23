@@ -70,6 +70,10 @@ class _StoriesListViewState extends State<StoriesListView>
               refreshController
                 ..refreshCompleted(resetFooterState: true)
                 ..loadComplete();
+            } else if (state.statusByType[storyType] == Status.failure) {
+              refreshController
+                ..refreshFailed()
+                ..loadFailed();
             }
           },
           buildWhen: (StoriesState previous, StoriesState current) =>
