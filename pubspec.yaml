@@ -11,7 +11,7 @@ dependencies:
   advanced_haptics: ^1.2.0
   animations: ^3.0.0
   badges: ^4.0.1
-  bloc: ^9.2.1
+  bloc: ^9.2.2
   bloc_concurrency: ^0.3.0
   cached_network_image: ^4.0.7
   collection: ^1.19.1
