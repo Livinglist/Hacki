@@ -1,43 +1,18 @@
 part of 'history_cubit.dart';
 
 class HistoryState extends Equatable {
-  const HistoryState({
-    required this.submittedIds,
-    required this.submittedItems,
-    required this.status,
-    required this.currentPage,
-  });
+  const HistoryState({required this.stories, required this.status});
 
-  HistoryState.init()
-    : submittedIds = <int>[],
-      submittedItems = <Item>[],
-      status = Status.idle,
-      currentPage = 0;
-
-  final List<int> submittedIds;
-  final List<Item> submittedItems;
+  final List<Story> stories;
   final Status status;
-  final int currentPage;
 
-  HistoryState copyWith({
-    List<int>? submittedIds,
-    List<Item>? submittedItems,
-    Status? status,
-    int? currentPage,
-  }) {
+  HistoryState copyWith({List<Story>? stories, Status? status}) {
     return HistoryState(
-      submittedIds: submittedIds ?? this.submittedIds,
-      submittedItems: submittedItems ?? this.submittedItems,
+      stories: stories ?? this.stories,
       status: status ?? this.status,
-      currentPage: currentPage ?? this.currentPage,
     );
   }
 
   @override
-  List<Object?> get props => <Object?>[
-    status,
-    currentPage,
-    submittedIds,
-    submittedItems,
-  ];
+  List<Object?> get props => <Object?>[stories, status];
 }

@@ -23,6 +23,7 @@ class CustomBlocObserver extends BlocObserver {
   void onChange(BlocBase<dynamic> bloc, Change<dynamic> change) {
     if (bloc is! StoriesBloc &&
         bloc is! CommentsCubit &&
+        bloc is! SubmittedCubit &&
         bloc is! HistoryCubit &&
         bloc is! FavCubit &&
         bloc is! NotificationCubit) {

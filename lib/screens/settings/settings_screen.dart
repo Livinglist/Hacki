@@ -561,7 +561,7 @@ class _SettingsViewState extends State<SettingsView>
               onPressed: () {
                 context.pop();
                 context.read<AuthBloc>().add(AuthLogout());
-                context.read<HistoryCubit>().reset();
+                context.read<SubmittedCubit>().reset();
               },
               child: const Text('Log out'),
             ),

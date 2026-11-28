@@ -211,6 +211,11 @@ class _ItemScreenState extends State<ItemScreen>
   void initState() {
     super.initState();
 
+    final Item item = widget.item;
+    if (item is Story) {
+      unawaited(context.read<HistoryCubit>().recordStory(item));
+    }
+
     SchedulerBinding.instance.addPostFrameCallback((_) {
       final ModalRoute<dynamic>? route = ModalRoute.of(context);
 
