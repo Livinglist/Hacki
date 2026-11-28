@@ -185,13 +185,13 @@ void main() {
       'emits logged-out state only after logout and cleanup complete',
       build: () {
         when(
-          () => mockAuthRepository.logout(),
+          mockAuthRepository.logout,
         ).thenAnswer((Invocation _) => waitForOperation(0));
         when(
           () => mockPreferenceRepository.updateUnreadCommentsIds(any()),
         ).thenAnswer((Invocation _) => waitForOperation(1));
         when(
-          () => mockSembastRepository.deleteCachedComments(),
+          mockSembastRepository.deleteCachedComments,
         ).thenAnswer((Invocation _) => waitForOperation(2));
         return AuthBloc(
           authRepository: mockAuthRepository,
@@ -219,9 +219,9 @@ void main() {
       expect: () => <AuthState>[loggedInState, const AuthState.init()],
       verify: (AuthBloc _) {
         verifyInOrder(<Future<void> Function()>[
-          () => mockAuthRepository.logout(),
+          mockAuthRepository.logout,
           () => mockPreferenceRepository.updateUnreadCommentsIds(<int>[]),
-          () => mockSembastRepository.deleteCachedComments(),
+          mockSembastRepository.deleteCachedComments,
         ]);
       },
     );
@@ -243,13 +243,13 @@ void main() {
         '${operationNames[failingOperation]} fails',
         build: () {
           when(
-            () => mockAuthRepository.logout(),
+            mockAuthRepository.logout,
           ).thenAnswer((Invocation _) => completeOperation(0));
           when(
             () => mockPreferenceRepository.updateUnreadCommentsIds(any()),
           ).thenAnswer((Invocation _) => completeOperation(1));
           when(
-            () => mockSembastRepository.deleteCachedComments(),
+            mockSembastRepository.deleteCachedComments,
           ).thenAnswer((Invocation _) => completeOperation(2));
           return AuthBloc(
             authRepository: mockAuthRepository,
