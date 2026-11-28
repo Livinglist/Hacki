@@ -140,6 +140,20 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   bool _isUserScrolling = false;
   bool _isManualScrollCheckScheduled = false;
 
+  // Consecutive root jumps follow their targets even when a different root
+  // remains visible behind the app bar. Resolve by id as comments can move.
+  int? _lastRootJumpId;
+
+  int? get _lastRootJumpIndex {
+    if (_lastRootJumpId == null) return null;
+    final int index = state.comments.indexWhere(
+      (Comment comment) => comment.id == _lastRootJumpId && comment.isRoot,
+    );
+    if (index >= 0) return index;
+    _lastRootJumpId = null;
+    return null;
+  }
+
   bool get _isNavigationHistoryEnabled =>
       _preferenceCubit.state.areHistoryButtonsEnabled;
 
@@ -270,6 +284,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
       return;
     }
 
+    _lastRootJumpId = null;
     emit(
       state.copyWith(
         status: CommentsStatus.inProgress,
@@ -448,6 +463,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     }
     _streamSubscriptions.clear();
 
+    _lastRootJumpId = null;
     emit(state.copyWith(comments: <Comment>[], currentPage: 0));
 
     final List<int> kids = _sortKids(updatedItem.kids);
@@ -783,6 +799,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
   Future<void> _revealPendingReply(Comment reply) async {
     if (!itemScrollController.isAttached) return;
 
+    _lastRootJumpId = null;
     final int generation = ++_scrollGeneration;
     final Set<int> ancestors = <int>{};
     Comment? ancestor = state.comments.firstWhereOrNull(
@@ -944,6 +961,7 @@ class CommentsCubit extends Cubit<CommentsState> with Loggable, BuildableMixin {
     if (order == null) return;
     if (state.order == order) return;
     if (state.status == CommentsStatus.inProgress) return;
+    _lastRootJumpId = null;
     HapticFeedbackUtils.selection();
     _streamSubscription?.cancel();
     for (final StreamSubscription<Comment> s in _streamSubscriptions.values) {
@@ -1177,6 +1195,8 @@ comments length is ${state.comments.length}
       return;
     }
 
+    _lastRootJumpId = null;
+
     // Only user-initiated jumps opt in; history replay and layout corrections
     // must not add new stops. Index zero is the thread header.
     if (_isNavigationHistoryEnabled &&
@@ -1352,10 +1372,7 @@ comments length is ${state.comments.length}
   /// Observes manual thread scrolling without treating animated jumps or
   /// layout corrections as new reading positions.
   bool onThreadScrollNotification(ScrollNotification notification) {
-    if (!_isNavigationHistoryEnabled ||
-        notification.depth != 0 ||
-        notification.metrics.axis != Axis.vertical ||
-        state.navigationIndex < 0) {
+    if (notification.depth != 0 || notification.metrics.axis != Axis.vertical) {
       return false;
     }
 
@@ -1365,10 +1382,13 @@ comments length is ${state.comments.length}
             notification.dragDetails != null) ||
         (notification is UserScrollNotification &&
             notification.direction != ScrollDirection.idle)) {
+      _lastRootJumpId = null;
       _isUserScrolling = true;
     }
 
-    if (_isUserScrolling) _scheduleManualScrollCheck();
+    if (_isUserScrolling && state.navigationIndex >= 0) {
+      _scheduleManualScrollCheck();
+    }
 
     if (notification is ScrollEndNotification ||
         (notification is UserScrollNotification &&
@@ -1475,14 +1495,17 @@ comments length is ${state.comments.length}
 
   /// Jumps to the comment at [index] in [CommentsState.comments].
   void _jumpToComment(int index) {
+    if (!itemScrollController.isAttached) return;
     _recordNavigationTo(state.comments.elementAt(index));
-    unawaited(
-      scrollTo(
-        index: index + 1,
-        alignment: _jumpAlignment,
-        duration: AppDurations.ms400,
-      ),
+    final Future<void> jump = scrollTo(
+      index: index + 1,
+      alignment: _jumpAlignment,
+      duration: AppDurations.ms400,
     );
+    // scrollTo clears the previous target; remember this one immediately so
+    // another button tap can use it before the animation has finished.
+    _lastRootJumpId = state.comments.elementAt(index).id;
+    unawaited(jump);
   }
 
   /// Go back to where the user was before their last jump.
@@ -1609,42 +1632,52 @@ comments length is ${state.comments.length}
   /// Scroll to next root level comment.
   void scrollToNextRoot({VoidCallback? onError}) {
     final int totalComments = state.comments.length;
-    final List<Comment> onScreenComments = itemPositionsListener
-        .itemPositions
-        .value
-        // The header is also a part of the list view,
-        // thus ignoring it here.
-        .where((ItemPosition e) => e.index >= 1 && e.itemLeadingEdge > 0.1)
-        .sorted((ItemPosition a, ItemPosition b) => a.index.compareTo(b.index))
-        .map(
-          (ItemPosition e) => e.index <= state.comments.length
-              ? state.comments.elementAt(e.index - 1)
-              : null,
-        )
-        .nonNulls
-        .toList();
-
-    if (onScreenComments.isEmpty && state.comments.isNotEmpty) {
-      _jumpToComment(0);
+    if (totalComments == 0) {
+      if (state.status == CommentsStatus.allLoaded) onError?.call();
       return;
     }
+    final int? lastRootIndex = _lastRootJumpIndex;
+    final int startIndex;
+    if (lastRootIndex != null) {
+      startIndex = lastRootIndex + 1;
+    } else {
+      final List<Comment> onScreenComments = itemPositionsListener
+          .itemPositions
+          .value
+          // The header is also a part of the list view,
+          // thus ignoring it here.
+          .where((ItemPosition e) => e.index >= 1 && e.itemLeadingEdge > 0.1)
+          .sorted(
+            (ItemPosition a, ItemPosition b) => a.index.compareTo(b.index),
+          )
+          .map(
+            (ItemPosition e) => e.index <= state.comments.length
+                ? state.comments.elementAt(e.index - 1)
+                : null,
+          )
+          .nonNulls
+          .toList();
 
-    final Comment? firstVisibleRootComment = onScreenComments.firstWhereOrNull(
-      (Comment e) => e.isRoot,
-    );
-    late int startIndex;
+      if (onScreenComments.isEmpty) {
+        _jumpToComment(0);
+        return;
+      }
 
-    if (firstVisibleRootComment != null) {
-      /// The index of first root level comment visible on screen.
-      final int firstVisibleRootCommentIndex = state.comments.indexOf(
-        firstVisibleRootComment,
-      );
-      startIndex = min(firstVisibleRootCommentIndex + 1, totalComments);
-    } else if (onScreenComments.isNotEmpty) {
-      final int lastVisibleCommentIndex = state.comments.indexOf(
-        onScreenComments.last,
-      );
-      startIndex = min(lastVisibleCommentIndex + 1, totalComments);
+      final Comment? firstVisibleRootComment = onScreenComments
+          .firstWhereOrNull((Comment e) => e.isRoot);
+
+      if (firstVisibleRootComment != null) {
+        /// The index of first root level comment visible on screen.
+        final int firstVisibleRootCommentIndex = state.comments.indexOf(
+          firstVisibleRootComment,
+        );
+        startIndex = min(firstVisibleRootCommentIndex + 1, totalComments);
+      } else {
+        final int lastVisibleCommentIndex = state.comments.indexOf(
+          onScreenComments.last,
+        );
+        startIndex = min(lastVisibleCommentIndex + 1, totalComments);
+      }
     }
 
     for (int i = startIndex; i < totalComments; i++) {
@@ -1672,25 +1705,33 @@ comments length is ${state.comments.length}
       return;
     }
 
-    final List<Comment> onScreenComments = itemPositionsListener
-        .itemPositions
-        .value
-        // The header is also a part of the list view,
-        // thus ignoring it here.
-        .where((ItemPosition e) => e.index >= 1 && e.itemLeadingEdge > 0)
-        .sorted((ItemPosition a, ItemPosition b) => a.index.compareTo(b.index))
-        .map(
-          (ItemPosition e) => e.index <= state.comments.length
-              ? state.comments.elementAt(e.index - 1)
-              : null,
-        )
-        .nonNulls
-        .toList();
+    final int? lastRootIndex = _lastRootJumpIndex;
+    final int firstVisibleIndex;
+    if (lastRootIndex != null) {
+      firstVisibleIndex = lastRootIndex;
+    } else {
+      final List<Comment> onScreenComments = itemPositionsListener
+          .itemPositions
+          .value
+          // The header is also a part of the list view,
+          // thus ignoring it here.
+          .where((ItemPosition e) => e.index >= 1 && e.itemLeadingEdge > 0)
+          .sorted(
+            (ItemPosition a, ItemPosition b) => a.index.compareTo(b.index),
+          )
+          .map(
+            (ItemPosition e) => e.index <= state.comments.length
+                ? state.comments.elementAt(e.index - 1)
+                : null,
+          )
+          .nonNulls
+          .toList();
 
-    /// The index of first comment visible on screen.
-    final int firstVisibleIndex = state.comments.indexOf(
-      onScreenComments.firstOrNull ?? state.comments.last,
-    );
+      /// The index of first comment visible on screen.
+      firstVisibleIndex = state.comments.indexOf(
+        onScreenComments.firstOrNull ?? state.comments.last,
+      );
+    }
     final int startIndex = firstVisibleIndex - 1;
 
     for (int i = startIndex; i >= 0; i--) {
