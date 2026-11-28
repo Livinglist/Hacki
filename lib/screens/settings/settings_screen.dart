@@ -73,24 +73,37 @@ class _SettingsViewState extends State<SettingsView>
         return SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              ListTile(
-                leading: Icon(
-                  Icons.person,
-                  color: isLoggedIn
-                      ? Theme.of(context).colorScheme.primary
-                      : null,
-                ),
-                title: Text(isLoggedIn ? 'Log Out' : 'Log In'),
-                subtitle: isLoggedIn
-                    ? Text(context.read<AuthBloc>().state.username)
-                    : null,
-                onTap: () {
-                  if (isLoggedIn) {
-                    onLogoutTapped();
-                  } else {
-                    onLoginTapped();
+              BlocListener<AuthBloc, AuthState>(
+                listenWhen: (AuthState previous, AuthState current) =>
+                    previous.isLoggedIn && !current.isLoggedIn,
+                listener: (BuildContext context, AuthState state) {
+                  if (ModalRoute.of(context)?.isCurrent ?? false) {
+                    showSnackBar(
+                      content:
+                          'Logged out successfully! ${Constants.happyFace}',
+                    );
+                    HapticFeedbackUtils.success();
                   }
                 },
+                child: ListTile(
+                  leading: Icon(
+                    Icons.person,
+                    color: isLoggedIn
+                        ? Theme.of(context).colorScheme.primary
+                        : null,
+                  ),
+                  title: Text(isLoggedIn ? 'Log Out' : 'Log In'),
+                  subtitle: isLoggedIn
+                      ? Text(context.read<AuthBloc>().state.username)
+                      : null,
+                  onTap: () {
+                    if (isLoggedIn) {
+                      onLogoutTapped();
+                    } else {
+                      onLoginTapped();
+                    }
+                  },
+                ),
               ),
               const EnterOfflineModeListTile(),
               const OfflineListTile(),

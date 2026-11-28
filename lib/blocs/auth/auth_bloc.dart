@@ -100,6 +100,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> with Loggable {
   }
 
   Future<void> onLogout(AuthLogout event, Emitter<AuthState> emit) async {
+    await _authRepository.logout();
+    await _preferenceRepository.updateUnreadCommentsIds(<int>[]);
+    await _sembastRepository.deleteCachedComments();
     emit(
       state.copyWith(
         user: const User.empty(),
@@ -107,9 +110,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> with Loggable {
         agreedToEULA: false,
       ),
     );
-    await _authRepository.logout();
-    await _preferenceRepository.updateUnreadCommentsIds(<int>[]);
-    await _sembastRepository.deleteCachedComments();
     logInfo('user logged out');
   }
 

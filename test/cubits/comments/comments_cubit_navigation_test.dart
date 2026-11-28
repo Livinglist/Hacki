@@ -288,6 +288,156 @@ void main() {
       .singleWhere((ItemPosition position) => position.index == index)
       .itemLeadingEdge;
 
+  for (final bool historyEnabled in <bool>[true, false]) {
+    testWidgets('root skips follow their last target with history '
+        '${historyEnabled ? 'on' : 'off'}', (WidgetTester tester) async {
+      await startWithPreferences(
+        tester,
+        PreferenceState.init().copyWithPreference(
+          HistoryButtonsPreference(val: historyEnabled),
+        ),
+      );
+      commentHeights[3] = 40;
+      await pumpThread(tester);
+
+      cubit.scrollToNextRoot();
+      await settleScroll(tester);
+      expectPosition(3, 0.15);
+      cubit.scrollToNextRoot();
+      await settleScroll(tester);
+      expectPosition(5, 0.15);
+      // The short preceding root is still visible above the jump target.
+      expect(alignmentOf(3), greaterThan(0));
+      expect(alignmentOf(3), lessThan(0.1));
+
+      cubit.scrollToPreviousRoot();
+      await settleScroll(tester);
+      expectPosition(3, 0.15);
+      cubit.scrollToNextRoot();
+      await settleScroll(tester);
+      expectPosition(5, 0.15);
+      cubit.scrollToNextRoot();
+      await settleScroll(tester);
+      expectPosition(7, 0.15);
+    });
+
+    testWidgets('manual scrolling resets the root skip target with history '
+        '${historyEnabled ? 'on' : 'off'}', (WidgetTester tester) async {
+      await startWithPreferences(
+        tester,
+        PreferenceState.init().copyWithPreference(
+          HistoryButtonsPreference(val: historyEnabled),
+        ),
+      );
+      commentHeights[3] = 40;
+      await pumpThread(tester);
+      cubit.scrollToNextRoot();
+      await settleScroll(tester);
+      cubit.scrollToNextRoot();
+      await settleScroll(tester);
+      expectPosition(5, 0.15);
+
+      await tester.drag(
+        find.byType(ScrollablePositionedList),
+        const Offset(0, 500),
+      );
+      await settleScroll(tester);
+      expectPosition(0, 0);
+
+      cubit.scrollToNextRoot();
+      await settleScroll(tester);
+      expectPosition(3, 0.15);
+    });
+  }
+
+  testWidgets('rapid root skips advance from each pending target', (
+    WidgetTester tester,
+  ) async {
+    commentHeights[3] = 40;
+    await pumpThread(tester);
+
+    cubit
+      ..scrollToNextRoot()
+      ..scrollToNextRoot();
+    await settleScroll(tester);
+    expectPosition(5, 0.15);
+
+    cubit
+      ..scrollToPreviousRoot()
+      ..scrollToPreviousRoot();
+    await settleScroll(tester);
+    expectPosition(1, 0.15);
+  });
+
+  testWidgets('next root skip does not repeat a target below short rows', (
+    WidgetTester tester,
+  ) async {
+    commentHeights[3] = 10;
+    commentHeights[4] = 10;
+    await pumpThread(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    expectPosition(5, 0.15);
+    expect(alignmentOf(3), greaterThan(0.1));
+
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    expectPosition(7, 0.15);
+  });
+
+  testWidgets('root skips resolve the last target after comments move', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    expectPosition(5, 0.15);
+    final Map<int, Comment> comments = <int, Comment>{
+      for (final Comment comment in cubit.state.comments) comment.id: comment,
+    };
+    cubit.emit(
+      cubit.state.copyWith(
+        comments: <int>[
+          1,
+          2,
+          5,
+          6,
+          3,
+          4,
+          7,
+        ].map((int id) => comments[id]!).toList(),
+      ),
+    );
+    await settleScroll(tester);
+
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    expect(cubit.state.comments[4].id, 3);
+    expectPosition(5, 0.15);
+  });
+
+  testWidgets('an unrelated jump resets the root skip target', (
+    WidgetTester tester,
+  ) async {
+    await pumpThread(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    expectPosition(5, 0.15);
+
+    unawaited(cubit.scrollTo(index: 0));
+    await settleScroll(tester);
+    expectPosition(0, 0);
+    cubit.scrollToNextRoot();
+    await settleScroll(tester);
+    expectPosition(3, 0.15);
+  });
+
   for (final bool skipButtonsEnabled in <bool>[true, false]) {
     testWidgets(
       'history off with skip buttons ${skipButtonsEnabled ? 'on' : 'off'} '
