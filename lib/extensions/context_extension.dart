@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,7 +26,6 @@ extension ContextExtension on BuildContext {
     final bool isJobWithLink = story.isJob && story.url.isNotEmpty;
 
     if (isJobWithLink) {
-      unawaited(read<HistoryCubit>().recordStory(story));
       read<ReminderCubit>().removeLastReadStoryId();
     } else {
       final bool shouldMarkNewComment =
