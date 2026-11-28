@@ -211,6 +211,11 @@ class _ItemScreenState extends State<ItemScreen>
   void initState() {
     super.initState();
 
+    final Item item = widget.item;
+    if (item is Story) {
+      unawaited(context.read<HistoryCubit>().recordStory(item));
+    }
+
     SchedulerBinding.instance.addPostFrameCallback((_) {
       final ModalRoute<dynamic>? route = ModalRoute.of(context);
 
@@ -224,6 +229,15 @@ class _ItemScreenState extends State<ItemScreen>
     );
 
     commentEditingController.text = context.read<EditCubit>().state.text ?? '';
+  }
+
+  @override
+  void didUpdateWidget(covariant ItemScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final Item item = widget.item;
+    if (item is Story && item.id != oldWidget.item.id) {
+      unawaited(context.read<HistoryCubit>().recordStory(item));
+    }
   }
 
   @override

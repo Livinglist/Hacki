@@ -168,8 +168,12 @@ class HackiApp extends StatelessWidget {
         ),
         BlocProvider<HistoryCubit>(
           lazy: false,
+          create: (BuildContext context) => HistoryCubit(),
+        ),
+        BlocProvider<SubmittedCubit>(
+          lazy: false,
           create: (BuildContext context) =>
-              HistoryCubit(authBloc: context.read<AuthBloc>()),
+              SubmittedCubit(authBloc: context.read<AuthBloc>()),
         ),
         BlocProvider<FavCubit>(
           lazy: false,

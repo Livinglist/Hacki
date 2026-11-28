@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
 import 'package:hacki/config/constants.dart';
+import 'package:hacki/cubits/cubits.dart';
 import 'package:hacki/extensions/extensions.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/screens/widgets/link_preview/image_wrapped_text.dart';
@@ -186,6 +188,7 @@ class _LinkPreviewState extends State<LinkPreview> {
             ),
           ),
           onTap: widget.onTap,
+          onLinkTap: _recordStoryVisit,
         );
       } else {
         return LayoutBuilder(
@@ -234,6 +237,7 @@ class _LinkPreviewState extends State<LinkPreview> {
         iconUri: iconUri,
         imagePath: Constants.hackerNewsLogoPath,
         onTap: widget.onTap,
+        onLinkTap: _recordStoryVisit,
         hasRead: widget.hasRead,
         bodyTextOverflow: widget.bodyTextOverflow,
         bodyMaxLines: widget.bodyMaxLines,
@@ -245,6 +249,10 @@ class _LinkPreviewState extends State<LinkPreview> {
         isImageLeftAligned: widget.isImageLeftAligned,
       ),
     );
+  }
+
+  void _recordStoryVisit() {
+    unawaited(context.read<HistoryCubit>().recordStory(widget.story));
   }
 
   @override

@@ -17,6 +17,7 @@ class ImageWrapText extends StatelessWidget {
     required this.hasRead,
     required this.isImageLeftAligned,
     super.key,
+    this.onLinkTap,
     this.imageHeight = 200,
     this.imageWidth = 200,
     this.gap = 8,
@@ -31,6 +32,7 @@ class ImageWrapText extends StatelessWidget {
   final TextStyle? style;
   final String url;
   final VoidCallback onTap;
+  final VoidCallback? onLinkTap;
   final bool hasRead;
   final bool isImageLeftAligned;
 
@@ -70,6 +72,7 @@ class ImageWrapText extends StatelessWidget {
           child: TapDownWrapper(
             onTap: () {
               if (url.isNotEmpty) {
+                onLinkTap?.call();
                 LinkUtils.launch(
                   url,
                   context,

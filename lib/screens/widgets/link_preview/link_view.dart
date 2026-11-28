@@ -25,6 +25,7 @@ class LinkView extends StatelessWidget {
     required this.bodyMaxLines,
     required this.isImageLeftAligned,
     super.key,
+    this.onLinkTap,
     this.imageUri,
     this.iconUri,
     this.imagePath,
@@ -55,6 +56,7 @@ class LinkView extends StatelessWidget {
   final bool isIcon;
   final bool isImageLeftAligned;
   final VoidCallback onTap;
+  final VoidCallback? onLinkTap;
   final TextOverflow? bodyTextOverflow;
   final int bodyMaxLines;
   final double radius;
@@ -98,6 +100,7 @@ class LinkView extends StatelessWidget {
               child: TapDownWrapper(
                 onTap: () {
                   if (url.isNotEmpty) {
+                    onLinkTap?.call();
                     LinkUtils.launch(
                       url,
                       context,

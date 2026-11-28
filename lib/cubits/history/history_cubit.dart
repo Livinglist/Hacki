@@ -1,128 +1,70 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:hacki/blocs/blocs.dart';
 import 'package:hacki/config/locator.dart';
 import 'package:hacki/models/models.dart';
 import 'package:hacki/repositories/repositories.dart';
 
 part 'history_state.dart';
 
+/// Keeps the latest visited stories in most recently visited order.
 class HistoryCubit extends Cubit<HistoryState> {
-  HistoryCubit({
-    required AuthBloc authBloc,
-    HackerNewsRepository? hackerNewsRepository,
-  }) : _authBloc = authBloc,
-       _hackerNewsRepository =
-           hackerNewsRepository ?? locator.get<HackerNewsRepository>(),
-       super(HistoryState.init()) {
-    init();
+  HistoryCubit({HistoryRepository? historyRepository})
+    : _historyRepository =
+          historyRepository ?? locator.get<HistoryRepository>(),
+      super(const HistoryState(stories: <Story>[], status: Status.inProgress)) {
+    _operations = _initialize();
   }
 
-  final AuthBloc _authBloc;
-  final HackerNewsRepository _hackerNewsRepository;
-  static const int _pageSize = 20;
+  final HistoryRepository _historyRepository;
+  late Future<void> _operations;
 
-  void init() {
-    _authBloc.stream.listen((AuthState authState) {
-      if (authState.isLoggedIn) {
-        final String username = authState.username;
-
-        _hackerNewsRepository.fetchSubmitted(userId: username).then((
-          List<int>? submittedIds,
-        ) {
-          emit(
-            state.copyWith(
-              submittedIds: submittedIds,
-              submittedItems: <Item>[],
-              currentPage: 0,
-            ),
-          );
-          if (submittedIds != null) {
-            _hackerNewsRepository
-                .fetchItemsStream(
-                  ids: submittedIds.sublist(
-                    0,
-                    _pageSize.clamp(0, submittedIds.length),
-                  ),
-                )
-                .listen(_onItemLoaded);
-          }
-        });
-        return;
-      }
-    });
-  }
-
-  void loadMore() {
-    emit(state.copyWith(status: Status.inProgress));
-    final int currentPage = state.currentPage;
-    final int len = state.submittedIds.length;
-    emit(state.copyWith(currentPage: currentPage + 1));
-    final int lower = _pageSize * (currentPage + 1);
-    int upper = _pageSize + lower;
-
-    if (len > lower) {
-      if (len < upper) {
-        upper = len;
-      }
-
-      _hackerNewsRepository
-          .fetchItemsStream(ids: state.submittedIds.sublist(lower, upper))
-          .listen(_onItemLoaded)
-          .onDone(() {
-            emit(state.copyWith(status: Status.success));
-          });
-    } else {
-      emit(state.copyWith(status: Status.success));
+  Future<void> _initialize() async {
+    try {
+      final List<Story> stories = await _historyRepository.loadVisitedStories();
+      emit(
+        HistoryState(stories: _recentStories(stories), status: Status.success),
+      );
+    } on Exception catch (error, stackTrace) {
+      emit(state.copyWith(status: Status.failure));
+      addError(error, stackTrace);
     }
   }
 
-  void refresh() {
-    final String username = _authBloc.state.username;
-    emit(
-      state.copyWith(
-        status: Status.inProgress,
-        currentPage: 0,
-        submittedIds: <int>[],
-        submittedItems: <Item>[],
-      ),
-    );
+  /// Serializes visits with restoration and writes so rapid taps keep order.
+  Future<void> recordStory(Story story) {
+    if (isClosed || story.id <= 0 || story.dead || story.deleted) {
+      return Future<void>.value();
+    }
 
-    _hackerNewsRepository.fetchSubmitted(userId: username).then((
-      List<int>? submittedIds,
-    ) {
-      emit(state.copyWith(submittedIds: submittedIds));
-      if (submittedIds != null) {
-        _hackerNewsRepository
-            .fetchItemsStream(
-              ids: submittedIds.sublist(
-                0,
-                _pageSize.clamp(0, submittedIds.length),
-              ),
-            )
-            .listen(_onItemLoaded)
-            .onDone(() {
-              emit(state.copyWith(status: Status.success));
-            });
+    return _operations = _operations.then((_) async {
+      final List<Story> stories = _recentStories(<Story>[
+        story,
+        ...state.stories,
+      ]);
+      emit(HistoryState(stories: stories, status: Status.success));
+      try {
+        await _historyRepository.saveVisitedStories(stories);
+      } on Exception catch (error, stackTrace) {
+        emit(state.copyWith(status: Status.failure));
+        addError(error, stackTrace);
       }
     });
   }
 
-  void reset() {
-    emit(
-      state.copyWith(
-        submittedIds: <int>[],
-        submittedItems: <Item>[],
-        currentPage: 0,
-      ),
+  List<Story> _recentStories(List<Story> stories) {
+    final Set<int> ids = <int>{};
+    return List<Story>.unmodifiable(
+      stories
+          .where((Story story) => ids.add(story.id))
+          .take(HistoryRepository.maxVisitedStories),
     );
   }
 
-  void _onItemLoaded(Item item) {
-    emit(
-      state.copyWith(
-        submittedItems: List<Item>.from(state.submittedItems)..add(item),
-      ),
-    );
+  @override
+  Future<void> close() async {
+    await _operations;
+    await super.close();
   }
 }

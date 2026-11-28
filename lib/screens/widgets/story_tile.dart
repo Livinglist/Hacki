@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fadein/flutter_fadein.dart';
@@ -178,6 +180,9 @@ class StoryTile extends StatelessWidget {
                     onTap: onTap,
                     onLongPress: () {
                       if (story.url.isNotEmpty) {
+                        unawaited(
+                          context.read<HistoryCubit>().recordStory(story),
+                        );
                         LinkUtils.launch(
                           story.url,
                           context,
@@ -281,6 +286,9 @@ class StoryTile extends StatelessWidget {
                         ? GestureDetector(
                             behavior: HitTestBehavior.opaque,
                             onTap: () {
+                              unawaited(
+                                context.read<HistoryCubit>().recordStory(story),
+                              );
                               LinkUtils.launch(
                                 story.url,
                                 context,

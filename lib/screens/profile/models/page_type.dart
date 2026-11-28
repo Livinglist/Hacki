@@ -1,1 +1,1 @@
-enum PageType { fav, history, settings, search, notification }
+enum PageType { fav, history, submitted, settings, search, notification }

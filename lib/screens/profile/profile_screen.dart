@@ -24,7 +24,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen>
     with AutomaticKeepAliveClientMixin, ItemActionMixin {
-  final RefreshController refreshControllerHistory = RefreshController();
+  final RefreshController refreshControllerSubmitted = RefreshController();
   final RefreshController refreshControllerFav = RefreshController();
   final RefreshController refreshControllerNotification = RefreshController();
   final ScrollController scrollController = ScrollController();
@@ -35,7 +35,7 @@ class _ProfileScreenState extends State<ProfileScreen>
   @override
   void dispose() {
     super.dispose();
-    refreshControllerHistory.dispose();
+    refreshControllerSubmitted.dispose();
     refreshControllerFav.dispose();
     refreshControllerNotification.dispose();
     scrollController.dispose();
@@ -71,21 +71,27 @@ class _ProfileScreenState extends State<ProfileScreen>
                 Positioned.fill(
                   top: topPadding,
                   child: Visibility(
-                    visible: pageType == PageType.history,
-                    child: BlocConsumer<HistoryCubit, HistoryState>(
+                    visible: pageType == PageType.submitted,
+                    child: BlocConsumer<SubmittedCubit, SubmittedState>(
                       listener:
-                          (BuildContext context, HistoryState historyState) {
-                            if (historyState.status == Status.success) {
-                              refreshControllerHistory
+                          (
+                            BuildContext context,
+                            SubmittedState submittedState,
+                          ) {
+                            if (submittedState.status == Status.success) {
+                              refreshControllerSubmitted
                                 ..refreshCompleted()
                                 ..loadComplete();
                             }
                           },
                       builder:
-                          (BuildContext context, HistoryState historyState) {
+                          (
+                            BuildContext context,
+                            SubmittedState submittedState,
+                          ) {
                             if ((!authState.isLoggedIn ||
-                                    historyState.submittedItems.isEmpty) &&
-                                historyState.status != Status.inProgress) {
+                                    submittedState.submittedItems.isEmpty) &&
+                                submittedState.status != Status.inProgress) {
                               return const CenteredMessageView(
                                 content:
                                     'Your past comments and stories will '
@@ -104,16 +110,16 @@ class _ProfileScreenState extends State<ProfileScreen>
                               shouldShowUrl: false,
                               shouldShowAuthor: false,
                               shouldUseMinimalTileForStory: true,
-                              refreshController: refreshControllerHistory,
-                              items: historyState.submittedItems
+                              refreshController: refreshControllerSubmitted,
+                              items: submittedState.submittedItems
                                   .where((Item e) => !e.dead && !e.deleted)
                                   .toList(),
                               onRefresh: () {
                                 HapticFeedbackUtils.light();
-                                context.read<HistoryCubit>().refresh();
+                                context.read<SubmittedCubit>().refresh();
                               },
                               onLoadMore: () {
-                                context.read<HistoryCubit>().loadMore();
+                                context.read<SubmittedCubit>().loadMore();
                               },
                               onTap: (Item item) {
                                 if (item is Story) {
@@ -138,6 +144,16 @@ class _ProfileScreenState extends State<ProfileScreen>
                       authState: authState,
                       onItemTap: (Item item) =>
                           goToItemScreen(args: ItemScreenArgs(item: item)),
+                    ),
+                  ),
+                ),
+                Positioned.fill(
+                  top: topPadding,
+                  child: Visibility(
+                    visible: pageType == PageType.history,
+                    child: HistoryView(
+                      onItemTap: (Story story) =>
+                          goToItemScreen(args: ItemScreenArgs(item: story)),
                     ),
                   ),
                 ),
@@ -261,14 +277,26 @@ class _ProfileScreenState extends State<ProfileScreen>
                             },
                           ),
                           const SizedBox(width: Dimens.pt12),
+                          CustomChip(
+                            label: 'History',
+                            selected: pageType == PageType.history,
+                            onSelected: (bool val) {
+                              if (val) {
+                                setState(() {
+                                  pageType = PageType.history;
+                                });
+                              }
+                            },
+                          ),
+                          const SizedBox(width: Dimens.pt12),
                           if (authState.isLoggedIn) ...<Widget>[
                             CustomChip(
                               label: 'Submitted',
-                              selected: pageType == PageType.history,
+                              selected: pageType == PageType.submitted,
                               onSelected: (bool val) {
                                 if (val) {
                                   setState(() {
-                                    pageType = PageType.history;
+                                    pageType = PageType.submitted;
                                   });
                                 }
                               },
