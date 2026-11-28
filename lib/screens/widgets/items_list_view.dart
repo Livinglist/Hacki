@@ -26,7 +26,6 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     this.shouldShowAuthor = true,
     this.shouldUseMinimalTileForStory = false,
     this.shouldEnablePullDown = true,
-    this.shouldEnablePullUp = true,
     this.shouldMarkReadStories = false,
     this.shouldShowOfflineBanner = false,
     this.isExpandedTileEnabled = false,
@@ -52,7 +51,6 @@ class ItemsListView<T extends Item> extends StatelessWidget {
   final bool shouldShowPreviewImage;
   final bool shouldShowUrl;
   final bool shouldEnablePullDown;
-  final bool shouldEnablePullUp;
   final bool shouldMarkReadStories;
   final bool shouldShowOfflineBanner;
   final bool isExpandedTileEnabled;
@@ -270,7 +268,7 @@ class ItemsListView<T extends Item> extends StatelessWidget {
     );
 
     return SmartRefresher(
-      enablePullUp: shouldEnablePullUp,
+      enablePullUp: true,
       enablePullDown: shouldEnablePullDown,
       header: WaterDropMaterialHeader(
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,

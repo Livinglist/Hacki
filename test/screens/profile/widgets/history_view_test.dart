@@ -120,7 +120,10 @@ void main() {
       find.byType(SmartRefresher),
     );
     expect(refresher.enablePullDown, isFalse);
-    expect(refresher.enablePullUp, isFalse);
+    expect(refresher.controller.footerStatus, LoadStatus.noMore);
+    list.onLoadMore!();
+    await tester.pumpAndSettle();
+    expect(refresher.controller.footerStatus, LoadStatus.noMore);
   });
 
   testWidgets('opens the story tapped in history', (WidgetTester tester) async {

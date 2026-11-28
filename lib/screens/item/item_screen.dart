@@ -232,15 +232,6 @@ class _ItemScreenState extends State<ItemScreen>
   }
 
   @override
-  void didUpdateWidget(covariant ItemScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    final Item item = widget.item;
-    if (item is Story && item.id != oldWidget.item.id) {
-      unawaited(context.read<HistoryCubit>().recordStory(item));
-    }
-  }
-
-  @override
   void dispose() {
     commentEditingController.dispose();
     storyLinkTapThrottle.dispose();

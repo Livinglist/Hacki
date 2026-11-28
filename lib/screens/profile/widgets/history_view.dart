@@ -16,7 +16,9 @@ class HistoryView extends StatefulWidget {
 }
 
 class _HistoryViewState extends State<HistoryView> {
-  final RefreshController _refreshController = RefreshController();
+  final RefreshController _refreshController = RefreshController(
+    initialLoadStatus: LoadStatus.noMore,
+  );
 
   @override
   void dispose() {
@@ -52,10 +54,10 @@ class _HistoryViewState extends State<HistoryView> {
               shouldShowUrl: prefState.isUrlEnabled,
               shouldUseMinimalTileForStory: true,
               shouldEnablePullDown: false,
-              shouldEnablePullUp: false,
               refreshController: _refreshController,
               items: historyState.stories,
               onTap: widget.onItemTap,
+              onLoadMore: _refreshController.loadNoData,
             );
           },
         );
