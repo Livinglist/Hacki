@@ -171,10 +171,8 @@ void main() {
       ).thenAnswer((Invocation _) async => tUser);
     });
 
-    final List<Completer<void>> operationStarted = List<Completer<void>>.generate(
-      3,
-      (int _) => Completer<void>(),
-    );
+    final List<Completer<void>> operationStarted =
+        List<Completer<void>>.generate(3, (int _) => Completer<void>());
     final List<Completer<void>> operationCompleted =
         List<Completer<void>>.generate(3, (int _) => Completer<void>());
 

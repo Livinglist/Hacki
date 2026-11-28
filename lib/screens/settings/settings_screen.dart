@@ -79,7 +79,8 @@ class _SettingsViewState extends State<SettingsView>
                 listener: (BuildContext context, AuthState state) {
                   if (ModalRoute.of(context)?.isCurrent ?? false) {
                     showSnackBar(
-                      content: 'Logged out successfully! ${Constants.happyFace}',
+                      content:
+                          'Logged out successfully! ${Constants.happyFace}',
                     );
                     HapticFeedbackUtils.success();
                   }
