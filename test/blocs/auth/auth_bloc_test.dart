@@ -216,10 +216,7 @@ void main() {
           }
         }
       },
-      expect: () => <AuthState>[
-        loggedInState,
-        const AuthState.init(),
-      ],
+      expect: () => <AuthState>[loggedInState, const AuthState.init()],
       verify: (AuthBloc _) {
         verifyInOrder(<Future<void> Function()>[
           () => mockAuthRepository.logout(),
